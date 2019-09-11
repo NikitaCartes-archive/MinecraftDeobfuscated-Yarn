@@ -10,6 +10,7 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.RealmsWorldOptions;
 import com.mojang.realmsclient.dto.WorldTemplate;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.RealmsWorldSlotButton;
 import com.mojang.realmsclient.gui.screens.RealmsBackupScreen;
 import com.mojang.realmsclient.gui.screens.RealmsGenericErrorScreen;
@@ -27,7 +28,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -71,7 +71,7 @@ implements RealmsWorldSlotButton.Listener {
         this.left_x = this.width() / 2 - 187;
         this.right_x = this.width() / 2 + 190;
         this.setKeyboardHandlerSendRepeatsToGui(true);
-        this.playersButton = new RealmsButton(2, this.centerButton(0, 3), class_4359.method_21072(0), 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.players")){
+        this.playersButton = new RealmsButton(2, this.centerButton(0, 3), RealmsConstants.row(0), 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.players")){
 
             @Override
             public void onPress() {
@@ -79,7 +79,7 @@ implements RealmsWorldSlotButton.Listener {
             }
         };
         this.buttonsAdd(this.playersButton);
-        this.settingsButton = new RealmsButton(3, this.centerButton(1, 3), class_4359.method_21072(0), 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.settings")){
+        this.settingsButton = new RealmsButton(3, this.centerButton(1, 3), RealmsConstants.row(0), 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.settings")){
 
             @Override
             public void onPress() {
@@ -87,7 +87,7 @@ implements RealmsWorldSlotButton.Listener {
             }
         };
         this.buttonsAdd(this.settingsButton);
-        this.subscriptionButton = new RealmsButton(4, this.centerButton(2, 3), class_4359.method_21072(0), 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.subscription")){
+        this.subscriptionButton = new RealmsButton(4, this.centerButton(2, 3), RealmsConstants.row(0), 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.subscription")){
 
             @Override
             public void onPress() {
@@ -98,7 +98,7 @@ implements RealmsWorldSlotButton.Listener {
         for (int i = 1; i < 5; ++i) {
             this.addSlotButton(i);
         }
-        this.switchMinigameButton = new RealmsButton(8, this.leftButton(0), class_4359.method_21072(13) - 5, 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.switchminigame")){
+        this.switchMinigameButton = new RealmsButton(8, this.leftButton(0), RealmsConstants.row(13) - 5, 100, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.switchminigame")){
 
             @Override
             public void onPress() {
@@ -108,7 +108,7 @@ implements RealmsWorldSlotButton.Listener {
             }
         };
         this.buttonsAdd(this.switchMinigameButton);
-        this.optionsButton = new RealmsButton(5, this.leftButton(0), class_4359.method_21072(13) - 5, 90, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.options")){
+        this.optionsButton = new RealmsButton(5, this.leftButton(0), RealmsConstants.row(13) - 5, 90, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.options")){
 
             @Override
             public void onPress() {
@@ -116,7 +116,7 @@ implements RealmsWorldSlotButton.Listener {
             }
         };
         this.buttonsAdd(this.optionsButton);
-        this.backupButton = new RealmsButton(6, this.leftButton(1), class_4359.method_21072(13) - 5, 90, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.backup")){
+        this.backupButton = new RealmsButton(6, this.leftButton(1), RealmsConstants.row(13) - 5, 90, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.backup")){
 
             @Override
             public void onPress() {
@@ -124,7 +124,7 @@ implements RealmsWorldSlotButton.Listener {
             }
         };
         this.buttonsAdd(this.backupButton);
-        this.resetWorldButton = new RealmsButton(7, this.leftButton(2), class_4359.method_21072(13) - 5, 90, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.resetworld")){
+        this.resetWorldButton = new RealmsButton(7, this.leftButton(2), RealmsConstants.row(13) - 5, 90, 20, RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.buttons.resetworld")){
 
             @Override
             public void onPress() {
@@ -132,7 +132,7 @@ implements RealmsWorldSlotButton.Listener {
             }
         };
         this.buttonsAdd(this.resetWorldButton);
-        this.buttonsAdd(new RealmsButton(0, this.right_x - 80 + 8, class_4359.method_21072(13) - 5, 70, 20, RealmsConfigureWorldScreen.getLocalizedString("gui.back")){
+        this.buttonsAdd(new RealmsButton(0, this.right_x - 80 + 8, RealmsConstants.row(13) - 5, 70, 20, RealmsConfigureWorldScreen.getLocalizedString("gui.back")){
 
             @Override
             public void onPress() {
@@ -158,7 +158,7 @@ implements RealmsWorldSlotButton.Listener {
 
     private void addSlotButton(int i) {
         int j = this.frame(i);
-        int k = class_4359.method_21072(5) + 5;
+        int k = RealmsConstants.row(5) + 5;
         int l = 100 + i;
         RealmsWorldSlotButton realmsWorldSlotButton = new RealmsWorldSlotButton(j, k, 80, 80, () -> this.field_20493, string -> {
             this.toolTip = string;
@@ -188,7 +188,7 @@ implements RealmsWorldSlotButton.Listener {
     public void render(int i, int j, float f) {
         this.toolTip = null;
         this.renderBackground();
-        this.drawCenteredString(RealmsConfigureWorldScreen.getLocalizedString("mco.configure.worlds.title"), this.width() / 2, class_4359.method_21072(4), 0xFFFFFF);
+        this.drawCenteredString(RealmsConfigureWorldScreen.getLocalizedString("mco.configure.worlds.title"), this.width() / 2, RealmsConstants.row(4), 0xFFFFFF);
         super.render(i, j, f);
         if (this.field_20493 == null) {
             this.drawCenteredString(RealmsConfigureWorldScreen.getLocalizedString("mco.configure.world.title"), this.width() / 2, 17, 0xFFFFFF);
@@ -203,7 +203,7 @@ implements RealmsWorldSlotButton.Listener {
         int n = Math.min(this.centerButton(2, 3) + 80 - 11, this.width() / 2 + k / 2 + m / 2 + 10);
         this.drawServerStatus(n, 7, i, j);
         if (this.isMinigame()) {
-            this.drawString(RealmsConfigureWorldScreen.getLocalizedString("mco.configure.current.minigame") + ": " + this.field_20493.getMinigameName(), this.left_x + 80 + 20 + 10, class_4359.method_21072(13), 0xFFFFFF);
+            this.drawString(RealmsConfigureWorldScreen.getLocalizedString("mco.configure.current.minigame") + ": " + this.field_20493.getMinigameName(), this.left_x + 80 + 20 + 10, RealmsConstants.row(13), 0xFFFFFF);
         }
         if (this.toolTip != null) {
             this.renderMousehoverTooltip(this.toolTip, i, j);

@@ -37,8 +37,8 @@ implements Packet<ClientPlayPacketListener> {
         this.skyLightUpdates = Lists.newArrayList();
         this.blockLightUpdates = Lists.newArrayList();
         for (int i = 0; i < 18; ++i) {
-            ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
-            ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.BLOCK).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
+            ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.SKY).getLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
+            ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.BLOCK).getLightArray(ChunkSectionPos.from(chunkPos, -1 + i));
             if (chunkNibbleArray != null) {
                 if (chunkNibbleArray.isUninitialized()) {
                     this.filledSkyLightMask |= 1 << i;
@@ -67,7 +67,7 @@ implements Packet<ClientPlayPacketListener> {
         for (int k = 0; k < 18; ++k) {
             ChunkNibbleArray chunkNibbleArray;
             if ((this.skyLightMask & 1 << k) != 0) {
-                chunkNibbleArray = lightingProvider.get(LightType.SKY).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
+                chunkNibbleArray = lightingProvider.get(LightType.SKY).getLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
                 if (chunkNibbleArray == null || chunkNibbleArray.isUninitialized()) {
                     this.skyLightMask &= ~(1 << k);
                     if (chunkNibbleArray != null) {
@@ -78,7 +78,7 @@ implements Packet<ClientPlayPacketListener> {
                 }
             }
             if ((this.blockLightMask & 1 << k) == 0) continue;
-            chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
+            chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightArray(ChunkSectionPos.from(chunkPos, -1 + k));
             if (chunkNibbleArray == null || chunkNibbleArray.isUninitialized()) {
                 this.blockLightMask &= ~(1 << k);
                 if (chunkNibbleArray == null) continue;

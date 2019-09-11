@@ -62,7 +62,7 @@ extends Entity {
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
         this.warmup = compoundTag.getInt("Warmup");
-        if (compoundTag.hasUuid("OwnerUUID")) {
+        if (compoundTag.containsUuid("OwnerUUID")) {
             this.ownerUuid = compoundTag.getUuid("OwnerUUID");
         }
     }
@@ -95,7 +95,7 @@ extends Entity {
             }
         } else if (--this.warmup < 0) {
             if (this.warmup == -8) {
-                List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
+                List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2));
                 for (LivingEntity livingEntity : list) {
                     this.damage(livingEntity);
                 }

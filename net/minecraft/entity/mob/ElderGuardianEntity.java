@@ -88,8 +88,8 @@ extends GuardianEntity {
                 serverPlayerEntity2.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2));
             }
         }
-        if (!this.hasWalkTargetRange()) {
-            this.setWalkTarget(new BlockPos(this), 16);
+        if (!this.hasPositionTarget()) {
+            this.setPositionTarget(new BlockPos(this), 16);
         }
     }
 }

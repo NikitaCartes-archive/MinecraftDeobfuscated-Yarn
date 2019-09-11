@@ -148,7 +148,7 @@ public class BlockPattern {
             return MoreObjects.toStringHelper(this).add("up", this.up).add("forwards", this.forwards).add("frontTopLeft", this.frontTopLeft).toString();
         }
 
-        public TeleportTarget method_18478(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
+        public TeleportTarget getTeleportTarget(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
             double j;
             double i;
             double h;

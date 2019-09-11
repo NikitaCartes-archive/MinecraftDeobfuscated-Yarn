@@ -34,7 +34,7 @@ implements DebugRenderer.Renderer {
         double d = SystemUtil.getMeasuringTimeNano();
         if (d - this.field_4541 > 1.0E8) {
             this.field_4541 = d;
-            this.field_4542 = camera.getFocusedEntity().world.getCollisionShapes(camera.getFocusedEntity(), camera.getFocusedEntity().getBoundingBox().expand(6.0), Collections.emptySet()).collect(Collectors.toList());
+            this.field_4542 = camera.getFocusedEntity().world.getCollisions(camera.getFocusedEntity(), camera.getFocusedEntity().getBoundingBox().expand(6.0), Collections.emptySet()).collect(Collectors.toList());
         }
         double e = camera.getPos().x;
         double f = camera.getPos().y;

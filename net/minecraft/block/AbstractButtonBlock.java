@@ -169,7 +169,7 @@ extends WallMountedBlock {
 
     private void tryPowerWithProjectiles(BlockState blockState, World world, BlockPos blockPos) {
         boolean bl2;
-        List<ProjectileEntity> list = world.getEntities(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
+        List<ProjectileEntity> list = world.getNonSpectatingEntities(ProjectileEntity.class, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
         boolean bl = !list.isEmpty();
         if (bl != (bl2 = blockState.get(POWERED).booleanValue())) {
             world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, bl), 3);

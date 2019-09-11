@@ -34,7 +34,7 @@ extends QuadrupedEntityModel<T> {
         this.field_3537 += 2.0f;
     }
 
-    public ModelPart method_2800() {
+    public ModelPart getHead() {
         return this.head;
     }
 }

@@ -9,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
@@ -29,13 +28,13 @@ extends NetworkSyncedItem {
             itemStack2.decrement(1);
         }
         if (itemStack2.isEmpty()) {
-            return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+            return TypedActionResult.method_22427(itemStack);
         }
         if (!playerEntity.inventory.insertStack(itemStack.copy())) {
             playerEntity.dropItem(itemStack, false);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-        return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack2);
+        return TypedActionResult.method_22427(itemStack2);
     }
 }
 

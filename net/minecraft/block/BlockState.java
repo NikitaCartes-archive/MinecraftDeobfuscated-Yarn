@@ -94,11 +94,11 @@ implements PropertyContainer<BlockState> {
         return this.getBlock().isTranslucent(this, blockView, blockPos);
     }
 
-    public int getLightSubtracted(BlockView blockView, BlockPos blockPos) {
+    public int getOpacity(BlockView blockView, BlockPos blockPos) {
         if (this.shapeCache != null) {
             return this.shapeCache.lightSubtracted;
         }
-        return this.getBlock().getLightSubtracted(this, blockView, blockPos);
+        return this.getBlock().getOpacity(this, blockView, blockPos);
     }
 
     public VoxelShape getCullShape(BlockView blockView, BlockPos blockPos, Direction direction) {
@@ -406,7 +406,7 @@ implements PropertyContainer<BlockState> {
             this.opaque = block.isOpaque(blockState);
             this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
             this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-            this.lightSubtracted = block.getLightSubtracted(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+            this.lightSubtracted = block.getOpacity(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
             if (!blockState.isOpaque()) {
                 this.shapes = null;
             } else {

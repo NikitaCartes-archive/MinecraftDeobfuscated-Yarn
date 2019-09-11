@@ -4,7 +4,10 @@
 package net.minecraft.test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.class_4516;
 import net.minecraft.server.world.ServerWorld;
@@ -23,6 +26,7 @@ public class GameTest {
     private final Collection<TestListener> listeners = Lists.newArrayList();
     private int ticksLeft;
     private Runnable tickAction;
+    private Map<Runnable, Long> field_20691 = Maps.newHashMap();
     private boolean started = false;
     private long startTime = -1L;
     private boolean completed = false;
@@ -40,6 +44,17 @@ public class GameTest {
     public void tick() {
         if (this.isCompleted()) {
             return;
+        }
+        Iterator<Map.Entry<Runnable, Long>> iterator = this.field_20691.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Runnable, Long> entry = iterator.next();
+            if (entry.getValue() > this.world.getTime()) continue;
+            try {
+                entry.getKey().run();
+            } catch (Exception exception) {
+                this.fail(exception);
+            }
+            iterator.remove();
         }
         --this.ticksLeft;
         if (this.ticksLeft <= 0) {

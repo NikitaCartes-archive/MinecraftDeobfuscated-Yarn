@@ -41,7 +41,7 @@ public class TagContainer<T> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final int JSON_EXTENSION_LENGTH = ".json".length();
-    private Map<Identifier, Tag<T>> idMap = ImmutableMap.of();
+    private Map<Identifier, Tag<T>> entries = ImmutableMap.of();
     private final Function<Identifier, Optional<T>> getter;
     private final String dataType;
     private final boolean ordered;
@@ -56,11 +56,11 @@ public class TagContainer<T> {
 
     @Nullable
     public Tag<T> get(Identifier identifier) {
-        return this.idMap.get(identifier);
+        return this.entries.get(identifier);
     }
 
     public Tag<T> getOrCreate(Identifier identifier) {
-        Tag<T> tag = this.idMap.get(identifier);
+        Tag<T> tag = this.entries.get(identifier);
         if (tag == null) {
             return new Tag(identifier);
         }
@@ -68,13 +68,13 @@ public class TagContainer<T> {
     }
 
     public Collection<Identifier> getKeys() {
-        return this.idMap.keySet();
+        return this.entries.keySet();
     }
 
     @Environment(value=EnvType.CLIENT)
     public Collection<Identifier> getTagsFor(T object) {
         ArrayList<Identifier> list = Lists.newArrayList();
-        for (Map.Entry<Identifier, Tag<T>> entry : this.idMap.entrySet()) {
+        for (Map.Entry<Identifier, Tag<T>> entry : this.entries.entrySet()) {
             if (!entry.getValue().contains(object)) continue;
             list.add(entry.getKey());
         }
@@ -165,15 +165,15 @@ public class TagContainer<T> {
             break;
         }
         map.forEach((identifier, builder) -> map2.put((Identifier)identifier, builder.build((Identifier)identifier)));
-        this.method_20735(map2);
+        this.setEntries(map2);
     }
 
-    protected void method_20735(Map<Identifier, Tag<T>> map) {
-        this.idMap = ImmutableMap.copyOf(map);
+    protected void setEntries(Map<Identifier, Tag<T>> map) {
+        this.entries = ImmutableMap.copyOf(map);
     }
 
     public Map<Identifier, Tag<T>> getEntries() {
-        return this.idMap;
+        return this.entries;
     }
 }
 

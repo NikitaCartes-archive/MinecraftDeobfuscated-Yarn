@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -25,7 +25,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox) {
+    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
         int p;
         int o;
         int n;
@@ -71,7 +71,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                     BlockPos blockPos2;
                     int u = t - blockPos.getZ();
                     if (Math.abs(s) == m && Math.abs(u) == m && m > 0 || !SpruceTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos2 = new BlockPos(r, p, t)) && !SpruceTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos2)) continue;
-                    this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
+                    this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, blockBox);
                 }
             }
             if (m >= n) {
@@ -86,7 +86,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         o = random.nextInt(3);
         for (p = 0; p < i - o; ++p) {
             if (!SpruceTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos.up(p))) continue;
-            this.setBlockState(set, modifiableTestableWorld, blockPos.up(p), LOG, mutableIntBoundingBox);
+            this.setBlockState(set, modifiableTestableWorld, blockPos.up(p), LOG, blockBox);
         }
         return true;
     }

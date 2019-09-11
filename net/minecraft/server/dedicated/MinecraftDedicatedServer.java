@@ -438,8 +438,8 @@ implements DedicatedServer {
     }
 
     @Override
-    public int method_21714() {
-        return this.getProperties().field_20324;
+    public int getFunctionPermissionLevel() {
+        return this.getProperties().functionPermissionLevel;
     }
 
     @Override

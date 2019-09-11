@@ -48,7 +48,7 @@ implements DebugRenderer.Renderer {
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = lv.getFluidState(blockPos2);
             if (!fluidState.matches(FluidTags.WATER)) continue;
-            DebugRenderer.method_3714(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(lv, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
+            DebugRenderer.drawFloatingText(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(lv, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
         }
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

@@ -209,7 +209,7 @@ extends World {
 
     public void unloadBlockEntities(WorldChunk worldChunk) {
         this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
-        this.chunkManager.getLightingProvider().suppressLight(worldChunk.getPos(), false);
+        this.chunkManager.getLightingProvider().setLightEnabled(worldChunk.getPos(), false);
     }
 
     @Override
@@ -229,7 +229,7 @@ extends World {
         BlockPos blockPos = new BlockPos(this.client.player);
         BlockPos blockPos2 = blockPos.add(4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1));
         double d = blockPos.getSquaredDistance(blockPos2);
-        if (d >= 4.0 && d <= 256.0 && (blockState = this.getBlockState(blockPos2)).isAir() && this.method_22335(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos2) <= 0) {
+        if (d >= 4.0 && d <= 256.0 && (blockState = this.getBlockState(blockPos2)).isAir() && this.getBaseLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos2) <= 0) {
             this.playSound((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, SoundEvents.AMBIENT_CAVE, SoundCategory.AMBIENT, 0.7f, 0.8f + this.random.nextFloat() * 0.2f, false);
             this.ticksUntilCaveAmbientSound = this.random.nextInt(12000) + 6000;
         }

@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -35,7 +34,7 @@ extends Item {
         if (!playerEntity.abilities.creativeMode) {
             itemStack.decrement(1);
         }
-        return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+        return TypedActionResult.method_22427(itemStack);
     }
 }
 

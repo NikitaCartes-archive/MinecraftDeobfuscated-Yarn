@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkPos {
-    public static final long INVALID = ChunkPos.toLong(1875016, 1875016);
+    public static final long MARKER = ChunkPos.toLong(1875016, 1875016);
     public final int x;
     public final int z;
 

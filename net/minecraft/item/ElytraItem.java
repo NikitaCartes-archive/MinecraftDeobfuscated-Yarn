@@ -11,7 +11,6 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -42,9 +41,9 @@ extends Item {
         if (itemStack2.isEmpty()) {
             playerEntity.equipStack(equipmentSlot, itemStack.copy());
             itemStack.setCount(0);
-            return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+            return TypedActionResult.method_22427(itemStack);
         }
-        return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
+        return TypedActionResult.method_22431(itemStack);
     }
 }
 

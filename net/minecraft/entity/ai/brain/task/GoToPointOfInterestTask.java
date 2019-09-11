@@ -1,10 +1,10 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -16,12 +16,12 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.PointOfInterestStorage;
 
-public class class_4458
+public class GoToPointOfInterestTask
 extends Task<VillagerEntity> {
     private final float speed;
     private final int completionRange;
 
-    public class_4458(float f, int i) {
+    public GoToPointOfInterestTask(float f, int i) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
         this.speed = f;
         this.completionRange = i;
@@ -36,7 +36,7 @@ extends Task<VillagerEntity> {
         int i = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(new BlockPos(villagerEntity)));
         Vec3d vec3d = null;
         for (int j = 0; j < 5; ++j) {
-            Vec3d vec3d2 = PathfindingUtil.findTargetStraight(villagerEntity, 15, 7, blockPos -> -serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)));
+            Vec3d vec3d2 = TargetFinder.findGroundTarget(villagerEntity, 15, 7, blockPos -> -serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)));
             if (vec3d2 == null) continue;
             int k = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(new BlockPos(vec3d2)));
             if (k < i) {

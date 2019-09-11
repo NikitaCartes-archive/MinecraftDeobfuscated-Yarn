@@ -124,7 +124,7 @@ Tickable {
             blockPos = new BlockPos(i, this.field_19179 + 1, k);
         }
         BeamSegment beamSegment = this.field_19178.isEmpty() ? null : this.field_19178.get(this.field_19178.size() - 1);
-        int l = this.world.getLightLevel(Heightmap.Type.WORLD_SURFACE, i, k);
+        int l = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
         for (m = 0; m < 10 && blockPos.getY() <= l; ++m) {
             block18: {
                 Block block;
@@ -150,7 +150,7 @@ Tickable {
                     }
                     break block18;
                 }
-                if (beamSegment != null && (blockState.getLightSubtracted(this.world, blockPos) < 15 || block == Blocks.BEDROCK)) {
+                if (beamSegment != null && (blockState.getOpacity(this.world, blockPos) < 15 || block == Blocks.BEDROCK)) {
                     beamSegment.increaseHeight();
                 } else {
                     this.field_19178.clear();
@@ -180,7 +180,7 @@ Tickable {
                 boolean bl3 = bl2 = this.level > 0;
                 if (!bl && bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
-                    for (ServerPlayerEntity serverPlayerEntity : this.world.getEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
+                    for (ServerPlayerEntity serverPlayerEntity : this.world.getNonSpectatingEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
                         Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
                     }
                 } else if (bl && !bl2) {
@@ -210,9 +210,9 @@ Tickable {
     }
 
     @Override
-    public void invalidate() {
+    public void markRemoved() {
         this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
-        super.invalidate();
+        super.markRemoved();
     }
 
     private void applyPlayerEffects() {
@@ -226,7 +226,7 @@ Tickable {
         }
         int j = (9 + this.level * 2) * 20;
         Box box = new Box(this.pos).expand(d).stretch(0.0, this.world.getHeight(), 0.0);
-        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
+        List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
         for (PlayerEntity playerEntity : list) {
             playerEntity.addStatusEffect(new StatusEffectInstance(this.primary, j, i, true, true));
         }

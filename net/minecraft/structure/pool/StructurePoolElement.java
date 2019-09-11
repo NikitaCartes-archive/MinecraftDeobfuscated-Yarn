@@ -12,8 +12,8 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -33,13 +33,13 @@ public abstract class StructurePoolElement {
 
     public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager var1, BlockPos var2, BlockRotation var3, Random var4);
 
-    public abstract MutableIntBoundingBox getBoundingBox(StructureManager var1, BlockPos var2, BlockRotation var3);
+    public abstract BlockBox getBoundingBox(StructureManager var1, BlockPos var2, BlockRotation var3);
 
-    public abstract boolean generate(StructureManager var1, IWorld var2, ChunkGenerator<?> var3, BlockPos var4, BlockRotation var5, MutableIntBoundingBox var6, Random var7);
+    public abstract boolean generate(StructureManager var1, IWorld var2, ChunkGenerator<?> var3, BlockPos var4, BlockRotation var5, BlockBox var6, Random var7);
 
     public abstract StructurePoolElementType getType();
 
-    public void method_16756(IWorld iWorld, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
+    public void method_16756(IWorld iWorld, Structure.StructureBlockInfo structureBlockInfo, BlockPos blockPos, BlockRotation blockRotation, Random random, BlockBox blockBox) {
     }
 
     public StructurePoolElement setProjection(StructurePool.Projection projection) {

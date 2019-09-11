@@ -13,22 +13,22 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
 
-public interface ExtendedBlockView
+public interface BlockRenderView
 extends BlockView {
     public class_4543 method_22385();
 
-    public LightingProvider method_22336();
+    public LightingProvider getLightingProvider();
 
     default public Biome getBiome(BlockPos blockPos) {
-        return this.method_22385().method_22393(blockPos);
+        return this.method_22385().getBiome(blockPos);
     }
 
     default public int getLightLevel(LightType lightType, BlockPos blockPos) {
-        return this.method_22336().get(lightType).getLightLevel(blockPos);
+        return this.getLightingProvider().get(lightType).getLightLevel(blockPos);
     }
 
-    default public int method_22335(BlockPos blockPos, int i) {
-        return this.method_22336().method_22363(blockPos, i);
+    default public int getBaseLightLevel(BlockPos blockPos, int i) {
+        return this.getLightingProvider().getLight(blockPos, i);
     }
 
     default public boolean isSkyVisible(BlockPos blockPos) {
@@ -36,7 +36,7 @@ extends BlockView {
     }
 
     @Environment(value=EnvType.CLIENT)
-    default public int method_22337(BlockPos blockPos) {
+    default public int getLightmapIndex(BlockPos blockPos) {
         return this.getLightmapIndex(this.getBlockState(blockPos), blockPos);
     }
 

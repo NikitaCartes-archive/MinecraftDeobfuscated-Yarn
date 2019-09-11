@@ -323,7 +323,7 @@ implements Monster {
             }
         }
         if (this.random.nextInt(10) == 0) {
-            List<EnderCrystalEntity> list = this.world.getEntities(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
+            List<EnderCrystalEntity> list = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
             EnderCrystalEntity enderCrystalEntity = null;
             double d = Double.MAX_VALUE;
             for (EnderCrystalEntity enderCrystalEntity2 : list) {
@@ -384,7 +384,7 @@ implements Monster {
                         bl = true;
                         continue;
                     }
-                    bl2 = this.world.clearBlockState(blockPos, false) || bl2;
+                    bl2 = this.world.removeBlock(blockPos, false) || bl2;
                 }
             }
         }
@@ -548,7 +548,7 @@ implements Monster {
         }
         for (int k = j; k < 24; ++k) {
             float h;
-            if (this.field_7012[k] == null || !((h = this.field_7012[k].distanceSquared(pathNode)) < g)) continue;
+            if (this.field_7012[k] == null || !((h = this.field_7012[k].getSquaredDistance(pathNode)) < g)) continue;
             g = h;
             i = k;
         }
@@ -560,17 +560,17 @@ implements Monster {
         PathNode pathNode2;
         for (int k = 0; k < 24; ++k) {
             pathNode2 = this.field_7012[k];
-            pathNode2.field_42 = false;
+            pathNode2.visited = false;
             pathNode2.heapWeight = 0.0f;
-            pathNode2.field_36 = 0.0f;
-            pathNode2.field_34 = 0.0f;
-            pathNode2.field_35 = null;
+            pathNode2.penalizedPathLength = 0.0f;
+            pathNode2.distanceToNearestTarget = 0.0f;
+            pathNode2.previous = null;
             pathNode2.heapIndex = -1;
         }
         PathNode pathNode3 = this.field_7012[i];
         pathNode2 = this.field_7012[j];
-        pathNode3.field_36 = 0.0f;
-        pathNode3.heapWeight = pathNode3.field_34 = pathNode3.distance(pathNode2);
+        pathNode3.penalizedPathLength = 0.0f;
+        pathNode3.heapWeight = pathNode3.distanceToNearestTarget = pathNode3.getDistance(pathNode2);
         this.field_7008.clear();
         this.field_7008.push(pathNode3);
         PathNode pathNode4 = pathNode3;
@@ -583,15 +583,15 @@ implements Monster {
             PathNode pathNode5 = this.field_7008.pop();
             if (pathNode5.equals(pathNode2)) {
                 if (pathNode != null) {
-                    pathNode.field_35 = pathNode2;
+                    pathNode.previous = pathNode2;
                     pathNode2 = pathNode;
                 }
                 return this.method_6826(pathNode3, pathNode2);
             }
-            if (pathNode5.distance(pathNode2) < pathNode4.distance(pathNode2)) {
+            if (pathNode5.getDistance(pathNode2) < pathNode4.getDistance(pathNode2)) {
                 pathNode4 = pathNode5;
             }
-            pathNode5.field_42 = true;
+            pathNode5.visited = true;
             int m = 0;
             for (n = 0; n < 24; ++n) {
                 if (this.field_7012[n] != pathNode5) continue;
@@ -601,17 +601,17 @@ implements Monster {
             for (n = l; n < 24; ++n) {
                 if ((this.field_7025[m] & 1 << n) <= 0) continue;
                 PathNode pathNode6 = this.field_7012[n];
-                if (pathNode6.field_42) continue;
-                float f = pathNode5.field_36 + pathNode5.distance(pathNode6);
-                if (pathNode6.isInHeap() && !(f < pathNode6.field_36)) continue;
-                pathNode6.field_35 = pathNode5;
-                pathNode6.field_36 = f;
-                pathNode6.field_34 = pathNode6.distance(pathNode2);
+                if (pathNode6.visited) continue;
+                float f = pathNode5.penalizedPathLength + pathNode5.getDistance(pathNode6);
+                if (pathNode6.isInHeap() && !(f < pathNode6.penalizedPathLength)) continue;
+                pathNode6.previous = pathNode5;
+                pathNode6.penalizedPathLength = f;
+                pathNode6.distanceToNearestTarget = pathNode6.getDistance(pathNode2);
                 if (pathNode6.isInHeap()) {
-                    this.field_7008.setNodeWeight(pathNode6, pathNode6.field_36 + pathNode6.field_34);
+                    this.field_7008.setNodeWeight(pathNode6, pathNode6.penalizedPathLength + pathNode6.distanceToNearestTarget);
                     continue;
                 }
-                pathNode6.heapWeight = pathNode6.field_36 + pathNode6.field_34;
+                pathNode6.heapWeight = pathNode6.penalizedPathLength + pathNode6.distanceToNearestTarget;
                 this.field_7008.push(pathNode6);
             }
         }
@@ -620,7 +620,7 @@ implements Monster {
         }
         LOGGER.debug("Failed to find path from {} to {}", (Object)i, (Object)j);
         if (pathNode != null) {
-            pathNode.field_35 = pathNode4;
+            pathNode.previous = pathNode4;
             pathNode4 = pathNode;
         }
         return this.method_6826(pathNode3, pathNode4);
@@ -630,8 +630,8 @@ implements Monster {
         ArrayList<PathNode> list = Lists.newArrayList();
         PathNode pathNode3 = pathNode2;
         list.add(0, pathNode3);
-        while (pathNode3.field_35 != null) {
-            pathNode3 = pathNode3.field_35;
+        while (pathNode3.previous != null) {
+            pathNode3 = pathNode3.previous;
             list.add(0, pathNode3);
         }
         return new Path(list, new BlockPos(pathNode2.x, pathNode2.y, pathNode2.z), true);

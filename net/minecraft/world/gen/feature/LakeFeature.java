@@ -32,7 +32,7 @@ extends Feature<LakeFeatureConfig> {
     public boolean method_13471(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig) {
         int t;
         int j;
-        while (blockPos.getY() > 5 && iWorld.method_22347(blockPos)) {
+        while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
             blockPos = blockPos.down();
         }
         if (blockPos.getY() <= 4) {
@@ -40,7 +40,7 @@ extends Feature<LakeFeatureConfig> {
         }
         blockPos = blockPos.down(4);
         ChunkPos chunkPos = new ChunkPos(blockPos);
-        if (!iWorld.method_22342(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(Feature.VILLAGE.getName()).isEmpty()) {
+        if (!iWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(Feature.VILLAGE.getName()).isEmpty()) {
             return false;
         }
         boolean[] bls = new boolean[2048];

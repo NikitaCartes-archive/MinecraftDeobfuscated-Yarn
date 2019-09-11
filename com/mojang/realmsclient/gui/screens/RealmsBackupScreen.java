@@ -8,6 +8,7 @@ import com.mojang.realmsclient.client.RealmsClient;
 import com.mojang.realmsclient.dto.Backup;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.screens.RealmsBackupInfoScreen;
 import com.mojang.realmsclient.gui.screens.RealmsConfigureWorldScreen;
 import com.mojang.realmsclient.gui.screens.RealmsLongConfirmationScreen;
@@ -20,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.RealmListEntry;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
@@ -115,7 +115,7 @@ extends RealmsScreen {
     }
 
     private void postInit() {
-        this.downloadButton = new RealmsButton(2, this.width() - 135, class_4359.method_21072(1), 120, 20, RealmsBackupScreen.getLocalizedString("mco.backup.button.download")){
+        this.downloadButton = new RealmsButton(2, this.width() - 135, RealmsConstants.row(1), 120, 20, RealmsBackupScreen.getLocalizedString("mco.backup.button.download")){
 
             @Override
             public void onPress() {
@@ -123,7 +123,7 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.downloadButton);
-        this.restoreButton = new RealmsButton(3, this.width() - 135, class_4359.method_21072(3), 120, 20, RealmsBackupScreen.getLocalizedString("mco.backup.button.restore")){
+        this.restoreButton = new RealmsButton(3, this.width() - 135, RealmsConstants.row(3), 120, 20, RealmsBackupScreen.getLocalizedString("mco.backup.button.restore")){
 
             @Override
             public void onPress() {
@@ -131,7 +131,7 @@ extends RealmsScreen {
             }
         };
         this.buttonsAdd(this.restoreButton);
-        this.changesButton = new RealmsButton(4, this.width() - 135, class_4359.method_21072(5), 120, 20, RealmsBackupScreen.getLocalizedString("mco.backup.changes.tooltip")){
+        this.changesButton = new RealmsButton(4, this.width() - 135, RealmsConstants.row(5), 120, 20, RealmsBackupScreen.getLocalizedString("mco.backup.changes.tooltip")){
 
             @Override
             public void onPress() {

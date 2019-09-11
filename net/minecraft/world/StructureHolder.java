@@ -8,7 +8,7 @@ import java.util.Map;
 import net.minecraft.structure.StructureStart;
 import org.jetbrains.annotations.Nullable;
 
-public interface BlockViewWithStructures {
+public interface StructureHolder {
     @Nullable
     public StructureStart getStructureStart(String var1);
 

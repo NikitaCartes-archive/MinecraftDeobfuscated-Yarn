@@ -18,7 +18,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToRaidCenterGoal;
@@ -234,7 +234,7 @@ extends PatrolEntity {
             EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
             ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
             double d = this.getDropChance(equipmentSlot);
-            if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1f) < d) {
+            if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1f, 0.0f) < d) {
                 this.dropStack(itemStack2);
             }
             this.equipStack(equipmentSlot, itemStack);
@@ -351,9 +351,9 @@ extends PatrolEntity {
                 int k;
                 int j;
                 int i = this.home.getX();
-                Vec3d vec3d = PathfindingUtil.method_6377(this.raider, 16, 7, new Vec3d(i, j = this.home.getY(), k = this.home.getZ()), 0.3141592741012573);
+                Vec3d vec3d = TargetFinder.findTargetTowards(this.raider, 16, 7, new Vec3d(i, j = this.home.getY(), k = this.home.getZ()), 0.3141592741012573);
                 if (vec3d == null) {
-                    vec3d = PathfindingUtil.method_6373(this.raider, 8, 7, new Vec3d(i, j, k));
+                    vec3d = TargetFinder.findTargetTowards(this.raider, 8, 7, new Vec3d(i, j, k));
                 }
                 if (vec3d == null) {
                     this.finished = true;

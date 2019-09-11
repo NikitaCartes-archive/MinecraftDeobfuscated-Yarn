@@ -4,7 +4,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
@@ -29,8 +29,8 @@ extends Goal {
         if (this.mob.isInWalkTargetRange()) {
             return false;
         }
-        BlockPos blockPos = this.mob.getWalkTarget();
-        Vec3d vec3d = PathfindingUtil.method_6373(this.mob, 16, 7, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+        BlockPos blockPos = this.mob.getPositionTarget();
+        Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
         if (vec3d == null) {
             return false;
         }

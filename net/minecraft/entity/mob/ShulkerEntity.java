@@ -208,7 +208,7 @@ implements Monster {
                 Direction direction;
                 if (blockState.getBlock() == Blocks.MOVING_PISTON) {
                     direction = blockState.get(PistonBlock.FACING);
-                    if (this.world.method_22347(blockPos.offset(direction))) {
+                    if (this.world.isAir(blockPos.offset(direction))) {
                         blockPos = blockPos.offset(direction);
                         this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
                     } else {
@@ -216,7 +216,7 @@ implements Monster {
                     }
                 } else if (blockState.getBlock() == Blocks.PISTON_HEAD) {
                     direction = blockState.get(PistonHeadBlock.FACING);
-                    if (this.world.method_22347(blockPos.offset(direction))) {
+                    if (this.world.isAir(blockPos.offset(direction))) {
                         blockPos = blockPos.offset(direction);
                         this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
                     } else {
@@ -226,11 +226,11 @@ implements Monster {
                     this.method_7127();
                 }
             }
-            if (!this.world.doesBlockHaveSolidTopSurface(blockPos2 = blockPos.offset(this.getAttachedFace()), this)) {
+            if (!this.world.isTopSolid(blockPos2 = blockPos.offset(this.getAttachedFace()), this)) {
                 boolean bl = false;
                 for (Direction direction2 : Direction.values()) {
                     blockPos2 = blockPos.offset(direction2);
-                    if (!this.world.doesBlockHaveSolidTopSurface(blockPos2, this)) continue;
+                    if (!this.world.isTopSolid(blockPos2, this)) continue;
                     this.dataTracker.set(ATTACHED_FACE, direction2);
                     bl = true;
                     break;
@@ -239,7 +239,7 @@ implements Monster {
                     this.method_7127();
                 }
             }
-            if (this.world.doesBlockHaveSolidTopSurface(blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite()), this)) {
+            if (this.world.isTopSolid(blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite()), this)) {
                 this.method_7127();
             }
         }
@@ -313,10 +313,10 @@ implements Monster {
         BlockPos blockPos = new BlockPos(this);
         for (int i = 0; i < 5; ++i) {
             BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
-            if (blockPos2.getY() <= 0 || !this.world.method_22347(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
+            if (blockPos2.getY() <= 0 || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.doesNotCollide(this, new Box(blockPos2))) continue;
             boolean bl = false;
             for (Direction direction : Direction.values()) {
-                if (!this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction), this)) continue;
+                if (!this.world.isTopSolid(blockPos2.offset(direction), this)) continue;
                 this.dataTracker.set(ATTACHED_FACE, direction);
                 bl = true;
                 break;

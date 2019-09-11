@@ -105,7 +105,7 @@ implements Chunk {
         this.pos = chunkPos;
         this.upgradeData = upgradeData;
         for (Heightmap.Type type : Heightmap.Type.values()) {
-            if (!ChunkStatus.FULL.isSurfaceGenerated().contains((Object)type)) continue;
+            if (!ChunkStatus.FULL.getHeightmapTypes().contains((Object)type)) continue;
             this.heightmaps.put(type, new Heightmap(this, type));
         }
         for (int i = 0; i < this.entitySections.length; ++i) {
@@ -143,7 +143,7 @@ implements Chunk {
         this.setStructureStarts(protoChunk.getStructureStarts());
         this.setStructureReferences(protoChunk.getStructureReferences());
         for (Map.Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
-            if (!ChunkStatus.FULL.isSurfaceGenerated().contains((Object)entry.getKey())) continue;
+            if (!ChunkStatus.FULL.getHeightmapTypes().contains((Object)entry.getKey())) continue;
             this.getHeightmap(entry.getKey()).setTo(entry.getValue().asLongArray());
         }
         this.setLightOn(protoChunk.isLightOn());
@@ -353,7 +353,7 @@ implements Chunk {
                 blockEntity = this.createBlockEntity(blockPos);
                 this.world.setBlockEntity(blockPos, blockEntity);
             }
-        } else if (blockEntity.isInvalid()) {
+        } else if (blockEntity.isRemoved()) {
             this.blockEntities.remove(blockPos);
             return null;
         }
@@ -374,10 +374,10 @@ implements Chunk {
         }
         blockEntity.setWorld(this.world);
         blockEntity.setPos(blockPos);
-        blockEntity.validate();
+        blockEntity.cancelRemoval();
         BlockEntity blockEntity2 = this.blockEntities.put(blockPos.toImmutable(), blockEntity);
         if (blockEntity2 != null && blockEntity2 != blockEntity) {
-            blockEntity2.invalidate();
+            blockEntity2.markRemoved();
         }
     }
 
@@ -390,7 +390,7 @@ implements Chunk {
     @Nullable
     public CompoundTag method_20598(BlockPos blockPos) {
         BlockEntity blockEntity = this.getBlockEntity(blockPos);
-        if (blockEntity != null && !blockEntity.isInvalid()) {
+        if (blockEntity != null && !blockEntity.isRemoved()) {
             CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
             compoundTag.putBoolean("keepPacked", false);
             return compoundTag;
@@ -407,7 +407,7 @@ implements Chunk {
     public void removeBlockEntity(BlockPos blockPos) {
         BlockEntity blockEntity;
         if ((this.loadedToWorld || this.world.isClient()) && (blockEntity = this.blockEntities.remove(blockPos)) != null) {
-            blockEntity.invalidate();
+            blockEntity.markRemoved();
         }
     }
 
@@ -422,7 +422,7 @@ implements Chunk {
         this.shouldSave = true;
     }
 
-    public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
+    public void getEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
         int i = MathHelper.floor((box.minY - 2.0) / 16.0);
         int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -443,7 +443,7 @@ implements Chunk {
         }
     }
 
-    public void appendEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+    public void getEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
         int i = MathHelper.floor((box.minY - 2.0) / 16.0);
         int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -456,7 +456,7 @@ implements Chunk {
         }
     }
 
-    public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
+    public <T extends Entity> void getEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
         int i = MathHelper.floor((box.minY - 2.0) / 16.0);
         int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);

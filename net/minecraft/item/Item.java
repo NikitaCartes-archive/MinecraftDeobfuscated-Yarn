@@ -146,11 +146,11 @@ implements ItemConvertible {
             ItemStack itemStack = playerEntity.getStackInHand(hand);
             if (playerEntity.canConsume(this.getFoodComponent().isAlwaysEdible())) {
                 playerEntity.setCurrentHand(hand);
-                return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+                return TypedActionResult.method_22427(itemStack);
             }
-            return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
+            return TypedActionResult.method_22431(itemStack);
         }
-        return new TypedActionResult<ItemStack>(ActionResult.PASS, playerEntity.getStackInHand(hand));
+        return TypedActionResult.method_22430(playerEntity.getStackInHand(hand));
     }
 
     public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {

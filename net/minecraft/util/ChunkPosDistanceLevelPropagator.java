@@ -6,19 +6,19 @@ package net.minecraft.util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.light.LevelPropagator;
 
-public abstract class ChunkPosLevelPropagator
+public abstract class ChunkPosDistanceLevelPropagator
 extends LevelPropagator {
-    protected ChunkPosLevelPropagator(int i, int j, int k) {
+    protected ChunkPosDistanceLevelPropagator(int i, int j, int k) {
         super(i, j, k);
     }
 
     @Override
-    protected boolean isInvalid(long l) {
-        return l == ChunkPos.INVALID;
+    protected boolean isMarker(long l) {
+        return l == ChunkPos.MARKER;
     }
 
     @Override
-    protected void updateNeighborsRecursively(long l, int i, boolean bl) {
+    protected void propagateLevel(long l, int i, boolean bl) {
         ChunkPos chunkPos = new ChunkPos(l);
         int j = chunkPos.x;
         int k = chunkPos.z;
@@ -26,13 +26,13 @@ extends LevelPropagator {
             for (int n = -1; n <= 1; ++n) {
                 long o = ChunkPos.toLong(j + m, k + n);
                 if (o == l) continue;
-                this.updateRecursively(l, o, i, bl);
+                this.propagateLevel(l, o, i, bl);
             }
         }
     }
 
     @Override
-    protected int getMergedLevel(long l, long m, int i) {
+    protected int recalculateLevel(long l, long m, int i) {
         int j = i;
         ChunkPos chunkPos = new ChunkPos(l);
         int k = chunkPos.x;
@@ -41,7 +41,7 @@ extends LevelPropagator {
             for (int p = -1; p <= 1; ++p) {
                 long q = ChunkPos.toLong(k + o, n + p);
                 if (q == l) {
-                    q = ChunkPos.INVALID;
+                    q = ChunkPos.MARKER;
                 }
                 if (q == m) continue;
                 int r = this.getPropagatedLevel(q, l, this.getLevel(q));
@@ -57,7 +57,7 @@ extends LevelPropagator {
 
     @Override
     protected int getPropagatedLevel(long l, long m, int i) {
-        if (l == ChunkPos.INVALID) {
+        if (l == ChunkPos.MARKER) {
             return this.getInitialLevel(m);
         }
         return i + 1;
@@ -65,8 +65,8 @@ extends LevelPropagator {
 
     protected abstract int getInitialLevel(long var1);
 
-    public void update(long l, int i, boolean bl) {
-        this.update(ChunkPos.INVALID, l, i, bl);
+    public void updateLevel(long l, int i, boolean bl) {
+        this.updateLevel(ChunkPos.MARKER, l, i, bl);
     }
 }
 

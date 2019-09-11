@@ -89,8 +89,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
-        return EntityView.super.method_20743(entity, box, set);
+    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
+        return EntityView.super.getEntityCollisions(entity, box, set);
     }
 
     @Override

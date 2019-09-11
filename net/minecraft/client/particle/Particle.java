@@ -161,7 +161,7 @@ public abstract class Particle {
         double h = e;
         double i = f;
         if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
-            Vec3d vec3d = Entity.calculateMotionVector(null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
+            Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
             d = vec3d.x;
             e = vec3d.y;
             f = vec3d.z;
@@ -188,8 +188,8 @@ public abstract class Particle {
 
     protected int getColorMultiplier(float f) {
         BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-        if (this.world.method_22340(blockPos)) {
-            return this.world.method_22337(blockPos);
+        if (this.world.isChunkLoaded(blockPos)) {
+            return this.world.getLightmapIndex(blockPos);
         }
         return 0;
     }

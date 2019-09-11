@@ -63,7 +63,7 @@ extends Block {
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         Direction direction = LanternBlock.attachedDirection(blockState).getOpposite();
-        return Block.isSolidSmallSquare(arg, blockPos.offset(direction), direction.getOpposite());
+        return Block.sideCoversSmallSquare(arg, blockPos.offset(direction), direction.getOpposite());
     }
 
     protected static Direction attachedDirection(BlockState blockState) {

@@ -58,7 +58,7 @@ implements DebugRenderer.Renderer {
         double d = (double)blockPos.getX() + 0.5;
         double e = (double)blockPos.getY() + 1.3;
         double f = (double)blockPos.getZ() + 0.5;
-        DebugRenderer.method_3712(string, d, e, f, i, 0.04f, true, 0.0f, true);
+        DebugRenderer.drawFloatingText(string, d, e, f, i, 0.04f, true, 0.0f, true);
     }
 
     private Camera getCamera() {

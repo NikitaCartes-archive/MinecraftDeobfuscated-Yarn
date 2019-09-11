@@ -16,62 +16,62 @@ public class PathNode {
     public final int z;
     private final int hashCode;
     public int heapIndex = -1;
-    public float field_36;
-    public float field_34;
+    public float penalizedPathLength;
+    public float distanceToNearestTarget;
     public float heapWeight;
-    public PathNode field_35;
-    public boolean field_42;
-    public float field_46;
-    public float field_43;
+    public PathNode previous;
+    public boolean visited;
+    public float pathLength;
+    public float penalty;
     public PathNodeType type = PathNodeType.BLOCKED;
 
     public PathNode(int i, int j, int k) {
         this.x = i;
         this.y = j;
         this.z = k;
-        this.hashCode = PathNode.calculateHashCode(i, j, k);
+        this.hashCode = PathNode.hash(i, j, k);
     }
 
     public PathNode copyWithNewPosition(int i, int j, int k) {
         PathNode pathNode = new PathNode(i, j, k);
         pathNode.heapIndex = this.heapIndex;
-        pathNode.field_36 = this.field_36;
-        pathNode.field_34 = this.field_34;
+        pathNode.penalizedPathLength = this.penalizedPathLength;
+        pathNode.distanceToNearestTarget = this.distanceToNearestTarget;
         pathNode.heapWeight = this.heapWeight;
-        pathNode.field_35 = this.field_35;
-        pathNode.field_42 = this.field_42;
-        pathNode.field_46 = this.field_46;
-        pathNode.field_43 = this.field_43;
+        pathNode.previous = this.previous;
+        pathNode.visited = this.visited;
+        pathNode.pathLength = this.pathLength;
+        pathNode.penalty = this.penalty;
         pathNode.type = this.type;
         return pathNode;
     }
 
-    public static int calculateHashCode(int i, int j, int k) {
+    public static int hash(int i, int j, int k) {
         return j & 0xFF | (i & Short.MAX_VALUE) << 8 | (k & Short.MAX_VALUE) << 24 | (i < 0 ? Integer.MIN_VALUE : 0) | (k < 0 ? 32768 : 0);
     }
 
-    public float distance(PathNode pathNode) {
+    public float getDistance(PathNode pathNode) {
         float f = pathNode.x - this.x;
         float g = pathNode.y - this.y;
         float h = pathNode.z - this.z;
         return MathHelper.sqrt(f * f + g * g + h * h);
     }
 
-    public float distanceSquared(PathNode pathNode) {
+    public float getSquaredDistance(PathNode pathNode) {
         float f = pathNode.x - this.x;
         float g = pathNode.y - this.y;
         float h = pathNode.z - this.z;
         return f * f + g * g + h * h;
     }
 
-    public float method_21653(PathNode pathNode) {
+    public float getManhattanDistance(PathNode pathNode) {
         float f = Math.abs(pathNode.x - this.x);
         float g = Math.abs(pathNode.y - this.y);
         float h = Math.abs(pathNode.z - this.z);
         return f + g + h;
     }
 
-    public float method_21654(BlockPos blockPos) {
+    public float getManhattanDistance(BlockPos blockPos) {
         float f = Math.abs(blockPos.getX() - this.x);
         float g = Math.abs(blockPos.getY() - this.y);
         float h = Math.abs(blockPos.getZ() - this.z);
@@ -79,7 +79,7 @@ public class PathNode {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public BlockPos method_21652() {
+    public BlockPos getPos() {
         return new BlockPos(this.x, this.y, this.z);
     }
 
@@ -106,9 +106,9 @@ public class PathNode {
     @Environment(value=EnvType.CLIENT)
     public static PathNode fromBuffer(PacketByteBuf packetByteBuf) {
         PathNode pathNode = new PathNode(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
-        pathNode.field_46 = packetByteBuf.readFloat();
-        pathNode.field_43 = packetByteBuf.readFloat();
-        pathNode.field_42 = packetByteBuf.readBoolean();
+        pathNode.pathLength = packetByteBuf.readFloat();
+        pathNode.penalty = packetByteBuf.readFloat();
+        pathNode.visited = packetByteBuf.readBoolean();
         pathNode.type = PathNodeType.values()[packetByteBuf.readInt()];
         pathNode.heapWeight = packetByteBuf.readFloat();
         return pathNode;

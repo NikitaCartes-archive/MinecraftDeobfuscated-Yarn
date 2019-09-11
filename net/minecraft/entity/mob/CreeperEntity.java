@@ -204,12 +204,11 @@ extends HostileEntity {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
             this.world.playSound(playerEntity2, this.x, this.y, this.z, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.4f + 0.8f);
-            playerEntity2.swingHand(hand);
             if (!this.world.isClient) {
                 this.setIgnited();
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-                return true;
             }
+            return true;
         }
         return super.interactMob(playerEntity2, hand);
     }

@@ -129,6 +129,7 @@ extends HorseBaseEntity {
     protected void updateSaddle() {
         super.updateSaddle();
         this.setArmorTypeFromStack(this.items.getInvStack(1));
+        this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0f);
     }
 
     private void setArmorTypeFromStack(ItemStack itemStack) {
@@ -210,7 +211,7 @@ extends HorseBaseEntity {
             return super.interactMob(playerEntity, hand);
         }
         if (!this.isBaby()) {
-            if (this.isTame() && playerEntity.method_21823()) {
+            if (this.isTame() && playerEntity.shouldCancelInteraction()) {
                 this.openInventory(playerEntity);
                 return true;
             }
@@ -289,18 +290,18 @@ extends HorseBaseEntity {
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
         int i;
-        if ((entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag)) instanceof class_1499) {
+        if (entityData instanceof class_1499) {
             i = ((class_1499)entityData).field_6994;
         } else {
             i = this.random.nextInt(7);
             entityData = new class_1499(i);
         }
         this.setVariant(i | this.random.nextInt(5) << 8);
-        return entityData;
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     public static class class_1499
-    implements EntityData {
+    extends PassiveEntity._1 {
         public final int field_6994;
 
         public class_1499(int i) {

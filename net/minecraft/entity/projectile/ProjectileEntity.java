@@ -98,7 +98,7 @@ implements Projectile {
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension() * 10.0;
+        double e = this.getBoundingBox().getAverageSideLength() * 10.0;
         if (Double.isNaN(e)) {
             e = 1.0;
         }
@@ -342,7 +342,7 @@ implements Projectile {
                 ((LivingEntity)entity2).onAttacking(entity);
             }
         }
-        int j = entity.method_20802();
+        int j = entity.getFireTime();
         if (this.isOnFire() && !(entity instanceof EndermanEntity)) {
             entity.setOnFireFor(5);
         }
@@ -381,7 +381,7 @@ implements Projectile {
                 this.remove();
             }
         } else {
-            entity.method_20803(j);
+            entity.setFireTime(j);
             this.setVelocity(this.getVelocity().multiply(-0.1));
             this.yaw += 180.0f;
             this.prevYaw += 180.0f;
@@ -448,7 +448,7 @@ implements Projectile {
         }
         this.setCritical(compoundTag.getBoolean("crit"));
         this.setPierceLevel(compoundTag.getByte("PierceLevel"));
-        if (compoundTag.hasUuid("OwnerUUID")) {
+        if (compoundTag.containsUuid("OwnerUUID")) {
             this.ownerUuid = compoundTag.getUuid("OwnerUUID");
         }
         if (compoundTag.containsKey("SoundEvent", 8)) {

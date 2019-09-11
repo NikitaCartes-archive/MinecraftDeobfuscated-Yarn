@@ -81,7 +81,7 @@ implements DebugRenderer.Renderer {
         for (Map.Entry entry : map.entrySet()) {
             BlockPos blockPos2 = (BlockPos)entry.getKey();
             Integer integer2 = (Integer)entry.getValue();
-            DebugRenderer.method_3711(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
+            DebugRenderer.drawBlockFloatingText(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
         }
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();

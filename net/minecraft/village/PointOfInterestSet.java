@@ -67,7 +67,7 @@ implements DynamicSerializable {
     private boolean add(PointOfInterest pointOfInterest) {
         BlockPos blockPos = pointOfInterest.getPos();
         PointOfInterestType pointOfInterestType2 = pointOfInterest.getType();
-        short s = ChunkSectionPos.packToShort(blockPos);
+        short s = ChunkSectionPos.getPackedLocalPos(blockPos);
         PointOfInterest pointOfInterest2 = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         if (pointOfInterest2 != null) {
             if (pointOfInterestType2.equals(pointOfInterest2.getType())) {
@@ -81,7 +81,7 @@ implements DynamicSerializable {
     }
 
     public void remove(BlockPos blockPos) {
-        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.remove(ChunkSectionPos.packToShort(blockPos));
+        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.remove(ChunkSectionPos.getPackedLocalPos(blockPos));
         if (pointOfInterest == null) {
             LOGGER.error("POI data mismatch: never registered at " + blockPos);
             return;
@@ -95,7 +95,7 @@ implements DynamicSerializable {
     }
 
     public boolean releaseTicket(BlockPos blockPos) {
-        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(ChunkSectionPos.packToShort(blockPos));
+        PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(ChunkSectionPos.getPackedLocalPos(blockPos));
         if (pointOfInterest == null) {
             throw SystemUtil.throwOrPause(new IllegalStateException("POI never registered at " + blockPos));
         }
@@ -105,13 +105,13 @@ implements DynamicSerializable {
     }
 
     public boolean test(BlockPos blockPos, Predicate<PointOfInterestType> predicate) {
-        short s = ChunkSectionPos.packToShort(blockPos);
+        short s = ChunkSectionPos.getPackedLocalPos(blockPos);
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         return pointOfInterest != null && predicate.test(pointOfInterest.getType());
     }
 
     public Optional<PointOfInterestType> getType(BlockPos blockPos) {
-        short s = ChunkSectionPos.packToShort(blockPos);
+        short s = ChunkSectionPos.getPackedLocalPos(blockPos);
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         return pointOfInterest != null ? Optional.of(pointOfInterest.getType()) : Optional.empty();
     }
@@ -127,7 +127,7 @@ implements DynamicSerializable {
             Short2ObjectOpenHashMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<PointOfInterest>(this.pointsOfInterestByPos);
             this.clear();
             consumer.accept((blockPos, pointOfInterestType) -> {
-                short s = ChunkSectionPos.packToShort(blockPos);
+                short s = ChunkSectionPos.getPackedLocalPos(blockPos);
                 PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s, i -> new PointOfInterest((BlockPos)blockPos, (PointOfInterestType)pointOfInterestType, this.updateListener));
                 this.add(pointOfInterest);
             });
@@ -139,6 +139,10 @@ implements DynamicSerializable {
     private void clear() {
         this.pointsOfInterestByPos.clear();
         this.pointsOfInterestByType.clear();
+    }
+
+    boolean method_22444() {
+        return this.valid;
     }
 }
 

@@ -53,7 +53,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return AbstractRailBlock.isSolidMediumSquare(arg, blockPos.down());
+        return AbstractRailBlock.topCoversMediumSquare(arg, blockPos.down());
     }
 
     @Override
@@ -77,33 +77,33 @@ extends Block {
         RailShape railShape = blockState.get(this.getShapeProperty());
         boolean bl2 = false;
         BlockPos blockPos3 = blockPos.down();
-        if (!AbstractRailBlock.isSolidMediumSquare(world, blockPos3)) {
+        if (!AbstractRailBlock.topCoversMediumSquare(world, blockPos3)) {
             bl2 = true;
         }
         BlockPos blockPos4 = blockPos.east();
-        if (railShape == RailShape.ASCENDING_EAST && !AbstractRailBlock.isSolidMediumSquare(world, blockPos4)) {
+        if (railShape == RailShape.ASCENDING_EAST && !AbstractRailBlock.topCoversMediumSquare(world, blockPos4)) {
             bl2 = true;
         } else {
             BlockPos blockPos5 = blockPos.west();
-            if (railShape == RailShape.ASCENDING_WEST && !AbstractRailBlock.isSolidMediumSquare(world, blockPos5)) {
+            if (railShape == RailShape.ASCENDING_WEST && !AbstractRailBlock.topCoversMediumSquare(world, blockPos5)) {
                 bl2 = true;
             } else {
                 BlockPos blockPos6 = blockPos.north();
-                if (railShape == RailShape.ASCENDING_NORTH && !AbstractRailBlock.isSolidMediumSquare(world, blockPos6)) {
+                if (railShape == RailShape.ASCENDING_NORTH && !AbstractRailBlock.topCoversMediumSquare(world, blockPos6)) {
                     bl2 = true;
                 } else {
                     BlockPos blockPos7 = blockPos.south();
-                    if (railShape == RailShape.ASCENDING_SOUTH && !AbstractRailBlock.isSolidMediumSquare(world, blockPos7)) {
+                    if (railShape == RailShape.ASCENDING_SOUTH && !AbstractRailBlock.topCoversMediumSquare(world, blockPos7)) {
                         bl2 = true;
                     }
                 }
             }
         }
-        if (bl2 && !world.method_22347(blockPos)) {
+        if (bl2 && !world.isAir(blockPos)) {
             if (!bl) {
                 AbstractRailBlock.dropStacks(blockState, world, blockPos);
             }
-            world.clearBlockState(blockPos, bl);
+            world.removeBlock(blockPos, bl);
         } else {
             this.updateBlockState(blockState, world, blockPos, block);
         }

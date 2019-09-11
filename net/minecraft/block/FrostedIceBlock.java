@@ -31,7 +31,7 @@ extends IceBlock {
 
     @Override
     public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        if ((random.nextInt(3) == 0 || this.canMelt(serverWorld, blockPos, 4)) && serverWorld.method_22339(blockPos) > 11 - blockState.get(AGE) - blockState.getLightSubtracted(serverWorld, blockPos) && this.increaseAge(blockState, serverWorld, blockPos)) {
+        if ((random.nextInt(3) == 0 || this.canMelt(serverWorld, blockPos, 4)) && serverWorld.getLightLevel(blockPos) > 11 - blockState.get(AGE) - blockState.getOpacity(serverWorld, blockPos) && this.increaseAge(blockState, serverWorld, blockPos)) {
             try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
                 for (Direction direction : Direction.values()) {
                     pooledMutable.method_10114(blockPos).method_10118(direction);

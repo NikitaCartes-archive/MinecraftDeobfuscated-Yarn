@@ -24,7 +24,7 @@ extends Goal {
         if (this.animal.getBreedingAge() >= 0) {
             return false;
         }
-        List<?> list = this.animal.world.getEntities(this.animal.getClass(), this.animal.getBoundingBox().expand(8.0, 4.0, 8.0));
+        List<?> list = this.animal.world.getNonSpectatingEntities(this.animal.getClass(), this.animal.getBoundingBox().expand(8.0, 4.0, 8.0));
         AnimalEntity animalEntity = null;
         double d = Double.MAX_VALUE;
         for (AnimalEntity animalEntity2 : list) {

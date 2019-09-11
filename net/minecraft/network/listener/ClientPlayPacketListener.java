@@ -7,7 +7,6 @@ import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
-import net.minecraft.client.network.packet.BlockPlayerActionS2CPacket;
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
 import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
@@ -65,6 +64,7 @@ import net.minecraft.client.network.packet.PlaySoundFromEntityS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
+import net.minecraft.client.network.packet.PlayerActionResponseS2CPacket;
 import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
@@ -271,10 +271,10 @@ extends PacketListener {
 
     public void onSetTradeOffers(SetTradeOffersPacket var1);
 
-    public void handleChunkLoadDistance(ChunkLoadDistanceS2CPacket var1);
+    public void onChunkLoadDistance(ChunkLoadDistanceS2CPacket var1);
 
-    public void handleChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket var1);
+    public void onChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket var1);
 
-    public void method_21707(BlockPlayerActionS2CPacket var1);
+    public void handlePlayerActionResponse(PlayerActionResponseS2CPacket var1);
 }
 

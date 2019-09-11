@@ -472,7 +472,7 @@ implements ContainerProvider<T> {
         if (slot != null) {
             i = slot.id;
         }
-        this.minecraft.interactionManager.method_2906(((Container)this.container).syncId, i, j, slotActionType, this.minecraft.player);
+        this.minecraft.interactionManager.clickSlot(((Container)this.container).syncId, i, j, slotActionType, this.minecraft.player);
     }
 
     @Override

@@ -160,29 +160,29 @@ extends Entity {
             BlockPos blockPos2 = new BlockPos(this);
             ArrayList<Direction> list = Lists.newArrayList();
             if (axis != Direction.Axis.X) {
-                if (blockPos2.getX() < blockPos.getX() && this.world.method_22347(blockPos2.east())) {
+                if (blockPos2.getX() < blockPos.getX() && this.world.isAir(blockPos2.east())) {
                     list.add(Direction.EAST);
-                } else if (blockPos2.getX() > blockPos.getX() && this.world.method_22347(blockPos2.west())) {
+                } else if (blockPos2.getX() > blockPos.getX() && this.world.isAir(blockPos2.west())) {
                     list.add(Direction.WEST);
                 }
             }
             if (axis != Direction.Axis.Y) {
-                if (blockPos2.getY() < blockPos.getY() && this.world.method_22347(blockPos2.up())) {
+                if (blockPos2.getY() < blockPos.getY() && this.world.isAir(blockPos2.up())) {
                     list.add(Direction.UP);
-                } else if (blockPos2.getY() > blockPos.getY() && this.world.method_22347(blockPos2.down())) {
+                } else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.down())) {
                     list.add(Direction.DOWN);
                 }
             }
             if (axis != Direction.Axis.Z) {
-                if (blockPos2.getZ() < blockPos.getZ() && this.world.method_22347(blockPos2.south())) {
+                if (blockPos2.getZ() < blockPos.getZ() && this.world.isAir(blockPos2.south())) {
                     list.add(Direction.SOUTH);
-                } else if (blockPos2.getZ() > blockPos.getZ() && this.world.method_22347(blockPos2.north())) {
+                } else if (blockPos2.getZ() > blockPos.getZ() && this.world.isAir(blockPos2.north())) {
                     list.add(Direction.NORTH);
                 }
             }
             direction = Direction.random(this.random);
             if (list.isEmpty()) {
-                for (int i = 5; !this.world.method_22347(blockPos2.offset(direction)) && i > 0; --i) {
+                for (int i = 5; !this.world.isAir(blockPos2.offset(direction)) && i > 0; --i) {
                     direction = Direction.random(this.random);
                 }
             } else {
@@ -221,7 +221,7 @@ extends Entity {
         if (!this.world.isClient) {
             List<LivingEntity> list;
             if (this.target == null && this.targetUuid != null) {
-                list = this.world.getEntities(LivingEntity.class, new Box(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)));
+                list = this.world.getNonSpectatingEntities(LivingEntity.class, new Box(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)));
                 for (LivingEntity livingEntity : list) {
                     if (!livingEntity.getUuid().equals(this.targetUuid)) continue;
                     this.target = livingEntity;
@@ -230,7 +230,7 @@ extends Entity {
                 this.targetUuid = null;
             }
             if (this.owner == null && this.ownerUuid != null) {
-                list = this.world.getEntities(LivingEntity.class, new Box(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)));
+                list = this.world.getNonSpectatingEntities(LivingEntity.class, new Box(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)));
                 for (LivingEntity livingEntity : list) {
                     if (!livingEntity.getUuid().equals(this.ownerUuid)) continue;
                     this.owner = livingEntity;
@@ -267,7 +267,7 @@ extends Entity {
             if (this.direction != null) {
                 BlockPos blockPos = new BlockPos(this);
                 Direction.Axis axis = this.direction.getAxis();
-                if (this.world.doesBlockHaveSolidTopSurface(blockPos.offset(this.direction), this)) {
+                if (this.world.isTopSolid(blockPos.offset(this.direction), this)) {
                     this.method_7486(axis);
                 } else {
                     BlockPos blockPos2 = new BlockPos(this.target);

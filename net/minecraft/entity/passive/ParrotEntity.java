@@ -136,6 +136,10 @@ implements Flutterer {
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
         this.setVariant(this.random.nextInt(5));
+        if (entityData == null) {
+            entityData = new PassiveEntity._1();
+            ((PassiveEntity._1)entityData).method_22434(false);
+        }
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
@@ -273,7 +277,7 @@ implements Flutterer {
 
     public static boolean method_20667(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-        return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && iWorld.method_22335(blockPos, 0) > 8;
+        return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 
     @Override
@@ -340,13 +344,13 @@ implements Flutterer {
     }
 
     @Override
-    protected float calculateAerialStepDelta(float f) {
+    protected float playFlySound(float f) {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
         return f + this.field_6819 / 2.0f;
     }
 
     @Override
-    protected boolean method_5776() {
+    protected boolean hasWings() {
         return true;
     }
 

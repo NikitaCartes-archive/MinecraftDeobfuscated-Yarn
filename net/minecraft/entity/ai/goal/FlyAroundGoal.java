@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.tag.BlockTags;
@@ -26,7 +26,7 @@ extends WanderAroundFarGoal {
     protected Vec3d getWanderTarget() {
         Vec3d vec3d = null;
         if (this.mob.isInsideWater()) {
-            vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 15);
+            vec3d = TargetFinder.findGroundTarget(this.mob, 15, 15);
         }
         if (this.mob.getRand().nextFloat() >= this.probability) {
             vec3d = this.method_6314();
@@ -43,7 +43,7 @@ extends WanderAroundFarGoal {
         for (BlockPos blockPos2 : iterable) {
             Block block;
             boolean bl;
-            if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.matches(BlockTags.LOGS)) || !this.mob.world.method_22347(blockPos2) || !this.mob.world.method_22347(mutable.set(blockPos2).setOffset(Direction.UP))) continue;
+            if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.matches(BlockTags.LOGS)) || !this.mob.world.isAir(blockPos2) || !this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) continue;
             return new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
         }
         return null;

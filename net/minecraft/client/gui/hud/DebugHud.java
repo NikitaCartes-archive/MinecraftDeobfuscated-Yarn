@@ -190,12 +190,12 @@ extends DrawableHelper {
         list.add(String.format("Chunk: %d %d %d in %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF, blockPos.getX() >> 4, blockPos.getY() >> 4, blockPos.getZ() >> 4));
         list.add(String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, Float.valueOf(MathHelper.wrapDegrees(entity.yaw)), Float.valueOf(MathHelper.wrapDegrees(entity.pitch))));
         if (this.client.world != null) {
-            if (this.client.world.method_22340(blockPos)) {
+            if (this.client.world.isChunkLoaded(blockPos)) {
                 WorldChunk worldChunk = this.getClientChunk();
                 if (worldChunk.isEmpty()) {
                     list.add("Waiting for chunk...");
                 } else {
-                    int i = this.client.world.method_2935().getLightingProvider().method_22363(blockPos, 0);
+                    int i = this.client.world.method_2935().getLightingProvider().getLight(blockPos, 0);
                     int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
                     int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
                     list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");

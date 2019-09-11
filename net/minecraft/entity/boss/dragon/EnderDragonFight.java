@@ -84,7 +84,7 @@ public class EnderDragonFight {
     public EnderDragonFight(ServerWorld serverWorld, CompoundTag compoundTag) {
         this.world = serverWorld;
         if (compoundTag.containsKey("DragonKilled", 99)) {
-            if (compoundTag.hasUuid("DragonUUID")) {
+            if (compoundTag.containsUuid("DragonUUID")) {
                 this.dragonUuid = compoundTag.getUuid("DragonUUID");
             }
             this.dragonKilled = compoundTag.getBoolean("DragonKilled");
@@ -296,7 +296,7 @@ public class EnderDragonFight {
         this.crystalCountTimer = 0;
         this.endCrystalsAlive = 0;
         for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-            this.endCrystalsAlive += this.world.getEntities(EnderCrystalEntity.class, spike.getBoundingBox()).size();
+            this.endCrystalsAlive += this.world.getNonSpectatingEntities(EnderCrystalEntity.class, spike.getBoundingBox()).size();
         }
         LOGGER.debug("Found {} end crystals still alive", (Object)this.endCrystalsAlive);
     }
@@ -402,7 +402,7 @@ public class EnderDragonFight {
             ArrayList<EnderCrystalEntity> list = Lists.newArrayList();
             BlockPos blockPos2 = blockPos.up(1);
             for (Direction direction : Direction.Type.HORIZONTAL) {
-                List<EnderCrystalEntity> list2 = this.world.getEntities(EnderCrystalEntity.class, new Box(blockPos2.offset(direction, 2)));
+                List<EnderCrystalEntity> list2 = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, new Box(blockPos2.offset(direction, 2)));
                 if (list2.isEmpty()) {
                     return;
                 }
@@ -437,7 +437,7 @@ public class EnderDragonFight {
 
     public void resetEndCrystals() {
         for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-            List<EnderCrystalEntity> list = this.world.getEntities(EnderCrystalEntity.class, spike.getBoundingBox());
+            List<EnderCrystalEntity> list = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, spike.getBoundingBox());
             for (EnderCrystalEntity enderCrystalEntity : list) {
                 enderCrystalEntity.setInvulnerable(false);
                 enderCrystalEntity.setBeamTarget(null);

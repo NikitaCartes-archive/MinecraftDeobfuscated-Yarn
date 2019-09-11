@@ -206,7 +206,7 @@ public class Raid {
         if (this.status == Status.ONGOING) {
             boolean bl2;
             boolean bl = this.active;
-            this.active = this.world.method_22340(this.center);
+            this.active = this.world.isChunkLoaded(this.center);
             if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
                 this.invalidate();
                 return;
@@ -523,9 +523,9 @@ public class Raid {
             float f = this.world.random.nextFloat() * ((float)Math.PI * 2);
             int m = this.center.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
             int n = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0f * (float)k) + this.world.random.nextInt(5);
-            int o = this.world.getLightLevel(Heightmap.Type.WORLD_SURFACE, m, n);
+            int o = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, m, n);
             mutable.set(m, o, n);
-            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.method_22341(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.method_14178().shouldTickChunk(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
+            if (this.world.isNearOccupiedPointOfInterest(mutable) && i < 2 || !this.world.isRegionLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10) || !this.world.method_14178().shouldTickChunk(new ChunkPos(mutable)) || !SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER) && (this.world.getBlockState(mutable.down()).getBlock() != Blocks.SNOW || !this.world.getBlockState(mutable).isAir())) continue;
             return mutable;
         }
         return null;

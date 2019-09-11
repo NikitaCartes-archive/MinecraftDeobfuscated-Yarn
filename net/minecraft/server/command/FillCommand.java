@@ -28,8 +28,8 @@ import net.minecraft.server.command.SetBlockCommand;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import org.jetbrains.annotations.Nullable;
 
 public class FillCommand {
@@ -38,20 +38,20 @@ public class FillCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed", new Object[0]));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("fill").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("to", BlockPosArgumentType.blockPos()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("block", BlockStateArgumentType.blockState()).executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new MutableIntBoundingBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, null))).then(((LiteralArgumentBuilder)CommandManager.literal("replace").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new MutableIntBoundingBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, null))).then(CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate()).executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new MutableIntBoundingBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter")))))).then(CommandManager.literal("keep").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new MutableIntBoundingBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, cachedBlockPosition -> cachedBlockPosition.getWorld().method_22347(cachedBlockPosition.getBlockPos()))))).then(CommandManager.literal("outline").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new MutableIntBoundingBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.OUTLINE, null)))).then(CommandManager.literal("hollow").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new MutableIntBoundingBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.HOLLOW, null)))).then(CommandManager.literal("destroy").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new MutableIntBoundingBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.DESTROY, null)))))));
+        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("fill").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("from", BlockPosArgumentType.blockPos()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("to", BlockPosArgumentType.blockPos()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("block", BlockStateArgumentType.blockState()).executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, null))).then(((LiteralArgumentBuilder)CommandManager.literal("replace").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, null))).then(CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate()).executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter")))))).then(CommandManager.literal("keep").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.REPLACE, cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos()))))).then(CommandManager.literal("outline").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.OUTLINE, null)))).then(CommandManager.literal("hollow").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.HOLLOW, null)))).then(CommandManager.literal("destroy").executes(commandContext -> FillCommand.execute((ServerCommandSource)commandContext.getSource(), new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")), BlockStateArgumentType.getBlockState(commandContext, "block"), Mode.DESTROY, null)))))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, MutableIntBoundingBox mutableIntBoundingBox, BlockStateArgument blockStateArgument, Mode mode, @Nullable Predicate<CachedBlockPosition> predicate) throws CommandSyntaxException {
-        int i = mutableIntBoundingBox.getBlockCountX() * mutableIntBoundingBox.getBlockCountY() * mutableIntBoundingBox.getBlockCountZ();
+    private static int execute(ServerCommandSource serverCommandSource, BlockBox blockBox, BlockStateArgument blockStateArgument, Mode mode, @Nullable Predicate<CachedBlockPosition> predicate) throws CommandSyntaxException {
+        int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
         if (i > 32768) {
             throw TOOBIG_EXCEPTION.create(32768, i);
         }
         ArrayList<BlockPos> list = Lists.newArrayList();
         ServerWorld serverWorld = serverCommandSource.getWorld();
         int j = 0;
-        for (BlockPos blockPos : BlockPos.iterate(mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ, mutableIntBoundingBox.maxX, mutableIntBoundingBox.maxY, mutableIntBoundingBox.maxZ)) {
+        for (BlockPos blockPos : BlockPos.iterate(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ)) {
             BlockStateArgument blockStateArgument2;
-            if (predicate != null && !predicate.test(new CachedBlockPosition(serverWorld, blockPos, true)) || (blockStateArgument2 = mode.filter.filter(mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld)) == null) continue;
+            if (predicate != null && !predicate.test(new CachedBlockPosition(serverWorld, blockPos, true)) || (blockStateArgument2 = mode.filter.filter(blockBox, blockPos, blockStateArgument, serverWorld)) == null) continue;
             BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
             Clearable.clear(blockEntity);
             if (!blockStateArgument2.setBlockState(serverWorld, blockPos, 2)) continue;
@@ -70,21 +70,21 @@ public class FillCommand {
     }
 
     static enum Mode {
-        REPLACE((mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> blockStateArgument),
-        OUTLINE((mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> {
-            if (blockPos.getX() == mutableIntBoundingBox.minX || blockPos.getX() == mutableIntBoundingBox.maxX || blockPos.getY() == mutableIntBoundingBox.minY || blockPos.getY() == mutableIntBoundingBox.maxY || blockPos.getZ() == mutableIntBoundingBox.minZ || blockPos.getZ() == mutableIntBoundingBox.maxZ) {
+        REPLACE((blockBox, blockPos, blockStateArgument, serverWorld) -> blockStateArgument),
+        OUTLINE((blockBox, blockPos, blockStateArgument, serverWorld) -> {
+            if (blockPos.getX() == blockBox.minX || blockPos.getX() == blockBox.maxX || blockPos.getY() == blockBox.minY || blockPos.getY() == blockBox.maxY || blockPos.getZ() == blockBox.minZ || blockPos.getZ() == blockBox.maxZ) {
                 return blockStateArgument;
             }
             return null;
         }),
-        HOLLOW((mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> {
-            if (blockPos.getX() == mutableIntBoundingBox.minX || blockPos.getX() == mutableIntBoundingBox.maxX || blockPos.getY() == mutableIntBoundingBox.minY || blockPos.getY() == mutableIntBoundingBox.maxY || blockPos.getZ() == mutableIntBoundingBox.minZ || blockPos.getZ() == mutableIntBoundingBox.maxZ) {
+        HOLLOW((blockBox, blockPos, blockStateArgument, serverWorld) -> {
+            if (blockPos.getX() == blockBox.minX || blockPos.getX() == blockBox.maxX || blockPos.getY() == blockBox.minY || blockPos.getY() == blockBox.maxY || blockPos.getZ() == blockBox.minZ || blockPos.getZ() == blockBox.maxZ) {
                 return blockStateArgument;
             }
             return AIR_BLOCK_ARGUMENT;
         }),
-        DESTROY((mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> {
-            serverWorld.method_22352(blockPos, true);
+        DESTROY((blockBox, blockPos, blockStateArgument, serverWorld) -> {
+            serverWorld.breakBlock(blockPos, true);
             return blockStateArgument;
         });
 

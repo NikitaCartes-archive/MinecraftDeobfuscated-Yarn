@@ -207,14 +207,14 @@ implements PaletteResizeListener<T> {
         return this.palette.accepts(object);
     }
 
-    public void method_21732(class_4464<T> arg) {
+    public void count(CountConsumer<T> countConsumer) {
         Int2IntOpenHashMap int2IntMap = new Int2IntOpenHashMap();
-        this.data.method_21739(i -> int2IntMap.put(i, int2IntMap.get(i) + 1));
-        int2IntMap.int2IntEntrySet().forEach(entry -> arg.accept(this.palette.getByIndex(entry.getIntKey()), entry.getIntValue()));
+        this.data.forEach(i -> int2IntMap.put(i, int2IntMap.get(i) + 1));
+        int2IntMap.int2IntEntrySet().forEach(entry -> countConsumer.accept(this.palette.getByIndex(entry.getIntKey()), entry.getIntValue()));
     }
 
     @FunctionalInterface
-    public static interface class_4464<T> {
+    public static interface CountConsumer<T> {
         public void accept(T var1, int var2);
     }
 }

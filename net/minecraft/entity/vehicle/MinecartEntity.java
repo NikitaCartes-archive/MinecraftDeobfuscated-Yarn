@@ -21,7 +21,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public boolean interact(PlayerEntity playerEntity, Hand hand) {
-        if (playerEntity.method_21823()) {
+        if (playerEntity.shouldCancelInteraction()) {
             return false;
         }
         if (this.hasPassengers()) {

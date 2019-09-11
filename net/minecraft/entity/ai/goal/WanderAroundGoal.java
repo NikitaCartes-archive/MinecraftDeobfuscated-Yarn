@@ -4,7 +4,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
@@ -57,7 +57,7 @@ extends Goal {
 
     @Nullable
     protected Vec3d getWanderTarget() {
-        return PathfindingUtil.findTarget(this.mob, 10, 7);
+        return TargetFinder.findTarget(this.mob, 10, 7);
     }
 
     @Override

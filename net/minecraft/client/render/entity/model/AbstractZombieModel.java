@@ -19,7 +19,7 @@ extends BipedEntityModel<T> {
     public void method_17791(T hostileEntity, float f, float g, float h, float i, float j, float k) {
         float n;
         super.method_17087(hostileEntity, f, g, h, i, j, k);
-        boolean bl = this.method_17790(hostileEntity);
+        boolean bl = this.isAttacking(hostileEntity);
         float l = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
         float m = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
         this.rightArm.roll = 0.0f;
@@ -36,6 +36,6 @@ extends BipedEntityModel<T> {
         this.leftArm.pitch -= MathHelper.sin(h * 0.067f) * 0.05f;
     }
 
-    public abstract boolean method_17790(T var1);
+    public abstract boolean isAttacking(T var1);
 }
 

@@ -9,7 +9,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
-import net.minecraft.world.chunk.WorldNibbleStorage;
+import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
 import net.minecraft.world.chunk.light.LightStorage;
 
 public class BlockLightStorage
@@ -20,26 +20,26 @@ extends LightStorage<Data> {
 
     @Override
     protected int getLight(long l) {
-        long m = ChunkSectionPos.toChunkLong(l);
-        ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(m, false);
+        long m = ChunkSectionPos.fromGlobalPos(l);
+        ChunkNibbleArray chunkNibbleArray = this.getLightArray(m, false);
         if (chunkNibbleArray == null) {
             return 0;
         }
-        return chunkNibbleArray.get(ChunkSectionPos.toLocalCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.toLocalCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.toLocalCoord(BlockPos.unpackLongZ(l)));
+        return chunkNibbleArray.get(ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(l)), ChunkSectionPos.getLocalCoord(BlockPos.unpackLongZ(l)));
     }
 
     public static final class Data
-    extends WorldNibbleStorage<Data> {
+    extends ChunkToNibbleArrayMap<Data> {
         public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
             super(long2ObjectOpenHashMap);
         }
 
         public Data method_15443() {
-            return new Data((Long2ObjectOpenHashMap<ChunkNibbleArray>)this.arraysByChunk.clone());
+            return new Data((Long2ObjectOpenHashMap<ChunkNibbleArray>)this.arrays.clone());
         }
 
         @Override
-        public /* synthetic */ WorldNibbleStorage copy() {
+        public /* synthetic */ ChunkToNibbleArrayMap copy() {
             return this.method_15443();
         }
     }

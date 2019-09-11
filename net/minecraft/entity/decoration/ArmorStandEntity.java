@@ -467,7 +467,7 @@ extends LivingEntity {
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension() * 4.0;
+        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
         if (Double.isNaN(e) || e == 0.0) {
             e = 4.0;
         }

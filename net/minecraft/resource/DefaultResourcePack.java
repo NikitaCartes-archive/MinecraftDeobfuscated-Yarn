@@ -144,7 +144,7 @@ implements ResourcePack {
     @Nullable
     protected InputStream findInputStream(ResourceType resourceType, Identifier identifier) {
         Path path;
-        String string = DefaultResourcePack.method_20729(resourceType, identifier);
+        String string = DefaultResourcePack.getPath(resourceType, identifier);
         if (RESOURCE_PATH != null && Files.exists(path = RESOURCE_PATH.resolve(resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath()), new LinkOption[0])) {
             try {
                 return Files.newInputStream(path, new OpenOption[0]);
@@ -154,7 +154,7 @@ implements ResourcePack {
         }
         try {
             URL uRL = DefaultResourcePack.class.getResource(string);
-            if (DefaultResourcePack.method_20728(string, uRL)) {
+            if (DefaultResourcePack.isValidUrl(string, uRL)) {
                 return uRL.openStream();
             }
         } catch (IOException iOException) {
@@ -163,11 +163,11 @@ implements ResourcePack {
         return null;
     }
 
-    private static String method_20729(ResourceType resourceType, Identifier identifier) {
+    private static String getPath(ResourceType resourceType, Identifier identifier) {
         return "/" + resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath();
     }
 
-    private static boolean method_20728(String string, @Nullable URL uRL) throws IOException {
+    private static boolean isValidUrl(String string, @Nullable URL uRL) throws IOException {
         return uRL != null && (uRL.getProtocol().equals("jar") || DirectoryResourcePack.isValidPath(new File(uRL.getFile()), string));
     }
 
@@ -179,13 +179,13 @@ implements ResourcePack {
     @Override
     public boolean contains(ResourceType resourceType, Identifier identifier) {
         Path path;
-        String string = DefaultResourcePack.method_20729(resourceType, identifier);
+        String string = DefaultResourcePack.getPath(resourceType, identifier);
         if (RESOURCE_PATH != null && Files.exists(path = RESOURCE_PATH.resolve(resourceType.getName() + "/" + identifier.getNamespace() + "/" + identifier.getPath()), new LinkOption[0])) {
             return true;
         }
         try {
             URL uRL = DefaultResourcePack.class.getResource(string);
-            return DefaultResourcePack.method_20728(string, uRL);
+            return DefaultResourcePack.isValidUrl(string, uRL);
         } catch (IOException iOException) {
             return false;
         }

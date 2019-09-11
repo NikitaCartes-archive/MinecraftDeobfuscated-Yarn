@@ -60,7 +60,7 @@ extends FallingBlock {
                 }
             } else {
                 world.setBlockState(blockPos2, blockState, 2);
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
             }
             return;
         }

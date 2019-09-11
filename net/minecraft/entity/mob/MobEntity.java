@@ -95,7 +95,7 @@ extends LivingEntity {
     protected final float[] armorDropChances = new float[4];
     private boolean pickUpLoot;
     private boolean persistent;
-    private final Map<PathNodeType, Float> pathNodeTypeWeights = Maps.newEnumMap(PathNodeType.class);
+    private final Map<PathNodeType, Float> pathfindingPenalties = Maps.newEnumMap(PathNodeType.class);
     private Identifier lootTable;
     private long lootTableSeed;
     @Nullable
@@ -103,8 +103,8 @@ extends LivingEntity {
     private int holdingEntityId;
     @Nullable
     private CompoundTag leashTag;
-    private BlockPos walkTarget = BlockPos.ORIGIN;
-    private float walkTargetRange = -1.0f;
+    private BlockPos positionTarget = BlockPos.ORIGIN;
+    private float positionTargetRange = -1.0f;
 
     protected MobEntity(EntityType<? extends MobEntity> entityType, World world) {
         super((EntityType<? extends LivingEntity>)entityType, world);
@@ -137,13 +137,13 @@ extends LivingEntity {
         return new MobNavigation(this, world);
     }
 
-    public float getPathNodeTypeWeight(PathNodeType pathNodeType) {
-        Float float_ = this.pathNodeTypeWeights.get((Object)pathNodeType);
-        return float_ == null ? pathNodeType.getWeight() : float_.floatValue();
+    public float getPathfindingPenalty(PathNodeType pathNodeType) {
+        Float float_ = this.pathfindingPenalties.get((Object)pathNodeType);
+        return float_ == null ? pathNodeType.getDefaultPenalty() : float_.floatValue();
     }
 
-    public void setPathNodeTypeWeight(PathNodeType pathNodeType, float f) {
-        this.pathNodeTypeWeights.put(pathNodeType, Float.valueOf(f));
+    public void setPathfindingPenalty(PathNodeType pathNodeType, float f) {
+        this.pathfindingPenalties.put(pathNodeType, Float.valueOf(f));
     }
 
     protected BodyControl createBodyControl() {
@@ -450,7 +450,7 @@ extends LivingEntity {
         super.tickMovement();
         this.world.getProfiler().push("looting");
         if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-            List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0));
+            List<ItemEntity> list = this.world.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0));
             for (ItemEntity itemEntity : list) {
                 if (itemEntity.removed || itemEntity.getStack().isEmpty() || itemEntity.cannotPickup()) continue;
                 this.loot(itemEntity);
@@ -466,7 +466,7 @@ extends LivingEntity {
         boolean bl = this.isBetterItemFor(itemStack, itemStack2 = this.getEquippedStack(equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack)), equipmentSlot);
         if (bl && this.canPickupItem(itemStack)) {
             double d = this.getDropChance(equipmentSlot);
-            if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1f) < d) {
+            if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1f, 0.0f) < d) {
                 this.dropStack(itemStack2);
             }
             this.equipStack(equipmentSlot, itemStack);
@@ -632,7 +632,7 @@ extends LivingEntity {
     }
 
     public boolean canSpawn(class_4538 arg) {
-        return !arg.method_22345(this.getBoundingBox()) && arg.intersectsEntities(this);
+        return !arg.containsFluid(this.getBoundingBox()) && arg.intersectsEntities(this);
     }
 
     public int getLimitPerChunk() {
@@ -699,7 +699,7 @@ extends LivingEntity {
             ItemStack itemStack = this.getEquippedStack(equipmentSlot);
             float f = this.getDropChance(equipmentSlot);
             boolean bl3 = bl2 = f > 1.0f;
-            if (itemStack.isEmpty() || EnchantmentHelper.hasVanishingCurse(itemStack) || !bl && !bl2 || !(this.random.nextFloat() - (float)i * 0.01f < f)) continue;
+            if (itemStack.isEmpty() || EnchantmentHelper.hasVanishingCurse(itemStack) || !bl && !bl2 || !(Math.max(this.random.nextFloat() - (float)i * 0.01f, 0.0f) < f)) continue;
             if (!bl2 && itemStack.isDamageable()) {
                 itemStack.setDamage(itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1))));
             }
@@ -934,27 +934,27 @@ extends LivingEntity {
     }
 
     public boolean isInWalkTargetRange(BlockPos blockPos) {
-        if (this.walkTargetRange == -1.0f) {
+        if (this.positionTargetRange == -1.0f) {
             return true;
         }
-        return this.walkTarget.getSquaredDistance(blockPos) < (double)(this.walkTargetRange * this.walkTargetRange);
+        return this.positionTarget.getSquaredDistance(blockPos) < (double)(this.positionTargetRange * this.positionTargetRange);
     }
 
-    public void setWalkTarget(BlockPos blockPos, int i) {
-        this.walkTarget = blockPos;
-        this.walkTargetRange = i;
+    public void setPositionTarget(BlockPos blockPos, int i) {
+        this.positionTarget = blockPos;
+        this.positionTargetRange = i;
     }
 
-    public BlockPos getWalkTarget() {
-        return this.walkTarget;
+    public BlockPos getPositionTarget() {
+        return this.positionTarget;
     }
 
-    public float getWalkTargetRange() {
-        return this.walkTargetRange;
+    public float getPositionTargetRange() {
+        return this.positionTargetRange;
     }
 
-    public boolean hasWalkTargetRange() {
-        return this.walkTargetRange != -1.0f;
+    public boolean hasPositionTarget() {
+        return this.positionTargetRange != -1.0f;
     }
 
     protected void updateLeash() {
@@ -1032,7 +1032,7 @@ extends LivingEntity {
 
     private void deserializeLeashTag() {
         if (this.leashTag != null && this.world instanceof ServerWorld) {
-            if (this.leashTag.hasUuid("UUID")) {
+            if (this.leashTag.containsUuid("UUID")) {
                 UUID uUID = this.leashTag.getUuid("UUID");
                 Entity entity = ((ServerWorld)this.world).getEntity(uUID);
                 if (entity != null) {

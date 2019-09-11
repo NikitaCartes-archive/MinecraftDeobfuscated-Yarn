@@ -62,7 +62,7 @@ extends TrackTargetGoal {
 
     protected void callSameTypeForRevenge() {
         double d = this.getFollowRange();
-        List<?> list = this.mob.world.method_21728(this.mob.getClass(), new Box(this.mob.x, this.mob.y, this.mob.z, this.mob.x + 1.0, this.mob.y + 1.0, this.mob.z + 1.0).expand(d, 10.0, d));
+        List<?> list = this.mob.world.getEntitiesIncludingUngeneratedChunks(this.mob.getClass(), new Box(this.mob.x, this.mob.y, this.mob.z, this.mob.x + 1.0, this.mob.y + 1.0, this.mob.z + 1.0).expand(d, 10.0, d));
         for (MobEntity mobEntity : list) {
             if (this.mob == mobEntity || mobEntity.getTarget() != null || this.mob instanceof TameableEntity && ((TameableEntity)this.mob).getOwner() != ((TameableEntity)mobEntity).getOwner() || mobEntity.isTeammate(this.mob.getAttacker())) continue;
             if (this.noHelpTypes != null) {

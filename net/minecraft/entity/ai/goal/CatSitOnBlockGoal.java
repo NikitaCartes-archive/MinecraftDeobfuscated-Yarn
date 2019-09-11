@@ -55,7 +55,7 @@ extends MoveToTargetPosGoal {
 
     @Override
     protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-        if (!arg.method_22347(blockPos.up())) {
+        if (!arg.isAir(blockPos.up())) {
             return false;
         }
         BlockState blockState = arg.getBlockState(blockPos);

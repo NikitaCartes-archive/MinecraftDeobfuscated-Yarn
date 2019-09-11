@@ -34,7 +34,7 @@ extends BlockItem {
         BlockState blockState = world.getBlockState(blockPos);
         Block block = this.getBlock();
         if (blockState.getBlock() == block) {
-            Direction direction = itemPlacementContext.isPlayerSneaking() ? (itemPlacementContext.method_17699() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide()) : (itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP);
+            Direction direction = itemPlacementContext.shouldCancelInteraction() ? (itemPlacementContext.hitsInsideBlock() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide()) : (itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP);
             int i = 0;
             BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(direction);
             while (i < 7) {

@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 public interface ModifiableWorld {
     public boolean setBlockState(BlockPos var1, BlockState var2, int var3);
 
-    public boolean clearBlockState(BlockPos var1, boolean var2);
+    public boolean removeBlock(BlockPos var1, boolean var2);
 
-    default public boolean method_22352(BlockPos blockPos, boolean bl) {
+    default public boolean breakBlock(BlockPos blockPos, boolean bl) {
         return this.breakBlock(blockPos, bl, null);
     }
 

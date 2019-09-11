@@ -33,7 +33,7 @@ extends LightingProvider
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final MailboxProcessor<Runnable> processor;
-    private final ObjectList<Pair<class_3901, Runnable>> pendingTasks = new ObjectArrayList<Pair<class_3901, Runnable>>();
+    private final ObjectList<Pair<Stage, Runnable>> pendingTasks = new ObjectArrayList<Pair<Stage, Runnable>>();
     private final ThreadedAnvilChunkStorage chunkStorage;
     private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> actor;
     private volatile int taskBatchSize = 5;
@@ -56,21 +56,21 @@ implements AutoCloseable {
     }
 
     @Override
-    public void method_15560(BlockPos blockPos, int i) {
+    public void addLightSource(BlockPos blockPos, int i) {
         throw SystemUtil.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
     @Override
-    public void enqueueLightUpdate(BlockPos blockPos) {
+    public void checkBlock(BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.toImmutable();
-        this.enqueue(blockPos.getX() >> 4, blockPos.getZ() >> 4, class_3901.POST_UPDATE, SystemUtil.debugRunnable(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos2));
+        this.enqueue(blockPos.getX() >> 4, blockPos.getZ() >> 4, Stage.POST_UPDATE, SystemUtil.debugRunnable(() -> super.checkBlock(blockPos2), () -> "checkBlock " + blockPos2));
     }
 
-    protected void method_20386(ChunkPos chunkPos) {
-        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
+    protected void updateChunkStatus(ChunkPos chunkPos) {
+        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
             int i;
-            super.method_20601(chunkPos, false);
-            super.suppressLight(chunkPos, false);
+            super.setRetainData(chunkPos, false);
+            super.setLightEnabled(chunkPos, false);
             for (i = -1; i < 17; ++i) {
                 super.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, i), null);
                 super.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, i), null);
@@ -83,26 +83,26 @@ implements AutoCloseable {
 
     @Override
     public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
-        this.enqueue(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ(), () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl));
+        this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl));
     }
 
     @Override
-    public void suppressLight(ChunkPos chunkPos, boolean bl) {
-        this.enqueue(chunkPos.x, chunkPos.z, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.suppressLight(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl));
+    public void setLightEnabled(ChunkPos chunkPos, boolean bl) {
+        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.setLightEnabled(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl));
     }
 
     @Override
     public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
-        this.enqueue(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ(), () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos));
+        this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos));
     }
 
-    private void enqueue(int i, int j, class_3901 arg, Runnable runnable) {
-        this.enqueue(i, j, this.chunkStorage.getCompletedLevelSupplier(ChunkPos.toLong(i, j)), arg, runnable);
+    private void enqueue(int i, int j, Stage stage, Runnable runnable) {
+        this.enqueue(i, j, this.chunkStorage.getCompletedLevelSupplier(ChunkPos.toLong(i, j)), stage, runnable);
     }
 
-    private void enqueue(int i, int j, IntSupplier intSupplier, class_3901 arg, Runnable runnable) {
+    private void enqueue(int i, int j, IntSupplier intSupplier, Stage stage, Runnable runnable) {
         this.actor.send(ChunkTaskPrioritySystem.createRunnableMessage(() -> {
-            this.pendingTasks.add(Pair.of(arg, runnable));
+            this.pendingTasks.add(Pair.of(stage, runnable));
             if (this.pendingTasks.size() >= this.taskBatchSize) {
                 this.runTasks();
             }
@@ -110,31 +110,31 @@ implements AutoCloseable {
     }
 
     @Override
-    public void method_20601(ChunkPos chunkPos, boolean bl) {
-        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.method_20601(chunkPos, bl), () -> "retainData " + chunkPos));
+    public void setRetainData(ChunkPos chunkPos, boolean bl) {
+        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.setRetainData(chunkPos, bl), () -> "retainData " + chunkPos));
     }
 
     public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
         ChunkPos chunkPos = chunk.getPos();
         chunk.setLightOn(false);
-        this.enqueue(chunkPos.x, chunkPos.z, class_3901.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
+        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
             ChunkSection[] chunkSections = chunk.getSectionArray();
             for (int i = 0; i < 16; ++i) {
                 ChunkSection chunkSection = chunkSections[i];
                 if (ChunkSection.isEmpty(chunkSection)) continue;
                 super.updateSectionStatus(ChunkSectionPos.from(chunkPos, i), false);
             }
-            super.suppressLight(chunkPos, true);
+            super.setLightEnabled(chunkPos, true);
             if (!bl) {
-                chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560((BlockPos)blockPos, chunk.getLuminance((BlockPos)blockPos)));
+                chunk.getLightSourcesStream().forEach(blockPos -> super.addLightSource((BlockPos)blockPos, chunk.getLuminance((BlockPos)blockPos)));
             }
-            this.chunkStorage.method_20441(chunkPos);
+            this.chunkStorage.releaseLightTicket(chunkPos);
         }, () -> "lightChunk " + chunkPos + " " + bl));
         return CompletableFuture.supplyAsync(() -> {
             chunk.setLightOn(true);
-            super.method_20601(chunkPos, false);
+            super.setRetainData(chunkPos, false);
             return chunk;
-        }, runnable -> this.enqueue(chunkPos.x, chunkPos.z, class_3901.POST_UPDATE, runnable));
+        }, runnable -> this.enqueue(chunkPos.x, chunkPos.z, Stage.POST_UPDATE, runnable));
     }
 
     public void tick() {
@@ -153,14 +153,14 @@ implements AutoCloseable {
         Iterator objectListIterator = this.pendingTasks.iterator();
         for (j = 0; objectListIterator.hasNext() && j < i; ++j) {
             pair = (Pair)objectListIterator.next();
-            if (pair.getFirst() != class_3901.PRE_UPDATE) continue;
+            if (pair.getFirst() != Stage.PRE_UPDATE) continue;
             ((Runnable)pair.getSecond()).run();
         }
         objectListIterator.back(j);
         super.doLightUpdates(Integer.MAX_VALUE, true, true);
         for (j = 0; objectListIterator.hasNext() && j < i; ++j) {
             pair = (Pair)objectListIterator.next();
-            if (pair.getFirst() == class_3901.POST_UPDATE) {
+            if (pair.getFirst() == Stage.POST_UPDATE) {
                 ((Runnable)pair.getSecond()).run();
             }
             objectListIterator.remove();
@@ -171,7 +171,7 @@ implements AutoCloseable {
         this.taskBatchSize = i;
     }
 
-    static enum class_3901 {
+    static enum Stage {
         PRE_UPDATE,
         POST_UPDATE;
 

@@ -106,7 +106,7 @@ implements Waterloggable {
             if (blockState.get(DISTANCE) == 7) {
                 serverWorld.spawnEntity(new FallingBlockEntity(serverWorld, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, (BlockState)blockState2.with(WATERLOGGED, false)));
             } else {
-                serverWorld.method_22352(blockPos, true);
+                serverWorld.breakBlock(blockPos, true);
             }
         } else if (blockState != blockState2) {
             serverWorld.setBlockState(blockPos, blockState2, 3);

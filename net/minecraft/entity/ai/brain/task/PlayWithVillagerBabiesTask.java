@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityPosWrapper;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -50,7 +50,7 @@ extends Task<MobEntityWithAi> {
 
     private void method_19585(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, LivingEntity livingEntity) {
         for (int i = 0; i < 10; ++i) {
-            Vec3d vec3d = PathfindingUtil.findTargetStraight(mobEntityWithAi, 20, 8);
+            Vec3d vec3d = TargetFinder.findGroundTarget(mobEntityWithAi, 20, 8);
             if (vec3d == null || !serverWorld.isNearOccupiedPointOfInterest(new BlockPos(vec3d))) continue;
             mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, 0.6f, 0));
             return;

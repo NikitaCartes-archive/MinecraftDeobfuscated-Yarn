@@ -202,7 +202,7 @@ public abstract class Biome {
                 if (!bl) {
                     return true;
                 }
-                boolean bl3 = bl2 = arg.method_22351(blockPos.west()) && arg.method_22351(blockPos.east()) && arg.method_22351(blockPos.north()) && arg.method_22351(blockPos.south());
+                boolean bl3 = bl2 = arg.isWater(blockPos.west()) && arg.isWater(blockPos.east()) && arg.isWater(blockPos.north()) && arg.isWater(blockPos.south());
                 if (!bl2) {
                     return true;
                 }

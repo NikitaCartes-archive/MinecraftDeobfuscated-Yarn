@@ -883,7 +883,7 @@ extends Entity {
     }
 
     private boolean tryUseTotem(DamageSource damageSource) {
-        if (damageSource.doesDamageToCreative()) {
+        if (damageSource.isOutOfWorld()) {
             return false;
         }
         ItemStack itemStack = null;
@@ -932,7 +932,7 @@ extends Entity {
         if (entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).getPierceLevel() > 0) {
             bl = true;
         }
-        if (!damageSource.bypassesArmor() && this.isBlocking() && !bl && (vec3d = damageSource.method_5510()) != null) {
+        if (!damageSource.bypassesArmor() && this.isBlocking() && !bl && (vec3d = damageSource.getPosition()) != null) {
             Vec3d vec3d2 = this.getRotationVec(1.0f);
             Vec3d vec3d3 = vec3d.reverseSubtract(new Vec3d(this.x, this.y, this.z)).normalize();
             vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
@@ -1476,7 +1476,7 @@ extends Entity {
         double l = entity.getBoundingBox().minY + (double)entity.getHeight();
         double e = entity.z;
         Direction direction = entity.getMovementDirection();
-        if (direction != null) {
+        if (direction != null && direction.getAxis() != Direction.Axis.Y) {
             Direction direction2 = direction.rotateYClockwise();
             int[][] is = new int[][]{{0, 1}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}, {-1, 0}, {1, 0}, {0, 1}};
             double m = Math.floor(this.x) + 0.5;
@@ -1657,7 +1657,7 @@ extends Entity {
                 if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
                     q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d7.y) * 0.2;
                     this.fallDistance = 0.0f;
-                } else if (!this.world.isClient || this.world.method_22340(blockPos)) {
+                } else if (!this.world.isClient || this.world.isChunkLoaded(blockPos)) {
                     if (!this.hasNoGravity()) {
                         q -= d;
                     }
@@ -2345,7 +2345,7 @@ extends Entity {
         boolean bl2 = false;
         World world = this.world;
         BlockPos blockPos = new BlockPos(this);
-        if (world.method_22340(blockPos)) {
+        if (world.isChunkLoaded(blockPos)) {
             boolean bl3 = false;
             while (!bl3 && blockPos.getY() > 0) {
                 BlockPos blockPos2 = blockPos.down();
@@ -2359,7 +2359,7 @@ extends Entity {
             }
             if (bl3) {
                 this.requestTeleport(this.x, this.y, this.z);
-                if (world.doesNotCollide(this) && !world.method_22345(this.getBoundingBox())) {
+                if (world.doesNotCollide(this) && !world.containsFluid(this.getBoundingBox())) {
                     bl2 = true;
                 }
             }
@@ -2443,7 +2443,7 @@ extends Entity {
     }
 
     public void wakeUp() {
-        this.getSleepingPosition().filter(this.world::method_22340).ifPresent(blockPos -> {
+        this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(blockPos -> {
             BlockState blockState = this.world.getBlockState((BlockPos)blockPos);
             if (blockState.getBlock() instanceof BedBlock) {
                 this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), 3);

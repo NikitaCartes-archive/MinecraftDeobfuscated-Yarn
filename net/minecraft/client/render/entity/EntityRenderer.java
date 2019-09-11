@@ -55,7 +55,7 @@ public abstract class EntityRenderer<T extends Entity> {
             return true;
         }
         Box box = ((Entity)entity).getVisibilityBoundingBox().expand(0.5);
-        if (box.isValid() || box.averageDimension() == 0.0) {
+        if (box.isValid() || box.getAverageSideLength() == 0.0) {
             box = new Box(((Entity)entity).x - 2.0, ((Entity)entity).y - 2.0, ((Entity)entity).z - 2.0, ((Entity)entity).x + 2.0, ((Entity)entity).y + 2.0, ((Entity)entity).z + 2.0);
         }
         return visibleRegion.intersects(box);
@@ -183,7 +183,7 @@ public abstract class EntityRenderer<T extends Entity> {
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
             BlockPos blockPos2 = blockPos.down();
             BlockState blockState = lv.getBlockState(blockPos2);
-            if (blockState.getRenderType() == BlockRenderType.INVISIBLE || lv.method_22339(blockPos) <= 3) continue;
+            if (blockState.getRenderType() == BlockRenderType.INVISIBLE || lv.getLightLevel(blockPos) <= 3) continue;
             this.projectShadow(blockState, lv, blockPos2, d, e, f, blockPos, g, i, s, t, u);
         }
         tessellator.draw();
@@ -206,7 +206,7 @@ public abstract class EntityRenderer<T extends Entity> {
         }
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().method_22349(blockPos2);
+        double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().getBrightness(blockPos2);
         if (l < 0.0) {
             return;
         }

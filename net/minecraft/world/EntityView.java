@@ -27,7 +27,7 @@ public interface EntityView {
 
     public <T extends Entity> List<T> getEntities(Class<? extends T> var1, Box var2, @Nullable Predicate<? super T> var3);
 
-    default public <T extends Entity> List<T> method_21729(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+    default public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
         return this.getEntities(class_, box, predicate);
     }
 
@@ -44,16 +44,16 @@ public interface EntityView {
         return this.getEntities(entity3, voxelShape.getBoundingBox()).stream().filter(entity2 -> !entity2.removed && entity2.inanimate && (entity3 == null || !entity2.isConnectedThroughVehicle(entity3))).noneMatch(entity -> VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND));
     }
 
-    default public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box) {
+    default public <T extends Entity> List<T> getNonSpectatingEntities(Class<? extends T> class_, Box box) {
         return this.getEntities(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
-    default public <T extends Entity> List<T> method_21728(Class<? extends T> class_, Box box) {
-        return this.method_21729(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
+    default public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> class_, Box box) {
+        return this.getEntitiesIncludingUngeneratedChunks(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
-    default public Stream<VoxelShape> method_20743(@Nullable Entity entity3, Box box, Set<Entity> set) {
-        if (box.averageDimension() < 1.0E-7) {
+    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity3, Box box, Set<Entity> set) {
+        if (box.getAverageSideLength() < 1.0E-7) {
             return Stream.empty();
         }
         Box box2 = box.expand(1.0E-7);
@@ -125,13 +125,13 @@ public interface EntityView {
     }
 
     @Nullable
-    default public <T extends LivingEntity> T method_21726(Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box) {
+    default public <T extends LivingEntity> T getClosestEntity(Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box) {
         return this.getClosestEntity(this.getEntities(class_, box, null), targetPredicate, livingEntity, d, e, f);
     }
 
     @Nullable
-    default public <T extends LivingEntity> T method_21727(Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box) {
-        return this.getClosestEntity(this.method_21729(class_, box, null), targetPredicate, livingEntity, d, e, f);
+    default public <T extends LivingEntity> T getClosestEntityIncludingUngeneratedChunks(Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box) {
+        return this.getClosestEntity(this.getEntitiesIncludingUngeneratedChunks(class_, box, null), targetPredicate, livingEntity, d, e, f);
     }
 
     @Nullable
@@ -148,7 +148,7 @@ public interface EntityView {
         return (T)livingEntity2;
     }
 
-    default public List<PlayerEntity> getPlayersInBox(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
+    default public List<PlayerEntity> getPlayers(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
         ArrayList<PlayerEntity> list = Lists.newArrayList();
         for (PlayerEntity playerEntity : this.getPlayers()) {
             if (!box.contains(playerEntity.x, playerEntity.y, playerEntity.z) || !targetPredicate.test(livingEntity, playerEntity)) continue;

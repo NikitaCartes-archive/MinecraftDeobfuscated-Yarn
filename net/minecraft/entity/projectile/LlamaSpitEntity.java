@@ -156,9 +156,9 @@ implements Projectile {
     }
 
     private void readTag() {
-        if (this.tag != null && this.tag.hasUuid("OwnerUUID")) {
+        if (this.tag != null && this.tag.containsUuid("OwnerUUID")) {
             UUID uUID = this.tag.getUuid("OwnerUUID");
-            List<LlamaEntity> list = this.world.getEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0));
+            List<LlamaEntity> list = this.world.getNonSpectatingEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0));
             for (LlamaEntity llamaEntity : list) {
                 if (!llamaEntity.getUuid().equals(uUID)) continue;
                 this.owner = llamaEntity;

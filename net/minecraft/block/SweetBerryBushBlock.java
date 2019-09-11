@@ -65,7 +65,7 @@ implements Fertilizable {
     public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         super.onScheduledTick(blockState, serverWorld, blockPos, random);
         int i = blockState.get(AGE);
-        if (i < 3 && random.nextInt(5) == 0 && serverWorld.method_22335(blockPos.up(), 0) >= 9) {
+        if (i < 3 && random.nextInt(5) == 0 && serverWorld.getBaseLightLevel(blockPos.up(), 0) >= 9) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
         }
     }

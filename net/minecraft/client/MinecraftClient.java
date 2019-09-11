@@ -178,6 +178,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -760,7 +761,7 @@ AutoCloseable {
         if (bl) {
             this.renderTickCounter.beginRenderTick(SystemUtil.getMeasuringTimeMs());
             this.profiler.push("scheduledExecutables");
-            this.executeTaskQueue();
+            this.executeQueuedTasks();
             this.profiler.pop();
         }
         long m = SystemUtil.getMeasuringTimeNano();
@@ -1105,16 +1106,16 @@ AutoCloseable {
             LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
         }
         for (Hand hand : Hand.values()) {
+            TypedActionResult<ItemStack> typedActionResult;
             ItemStack itemStack = this.player.getStackInHand(hand);
             if (this.hitResult != null) {
                 switch (this.hitResult.getType()) {
                     case ENTITY: {
                         EntityHitResult entityHitResult = (EntityHitResult)this.hitResult;
                         Entity entity = entityHitResult.getEntity();
-                        if (this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand) == ActionResult.SUCCESS) {
-                            return;
+                        if (this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand) == ActionResult.SUCCESS || this.interactionManager.interactEntity(this.player, entity, hand) == ActionResult.SUCCESS) {
+                            this.player.swingHand(hand);
                         }
-                        if (this.interactionManager.interactEntity(this.player, entity, hand) != ActionResult.SUCCESS) break;
                         return;
                     }
                     case BLOCK: {
@@ -1133,7 +1134,10 @@ AutoCloseable {
                     }
                 }
             }
-            if (itemStack.isEmpty() || this.interactionManager.interactItem(this.player, this.world, hand) != ActionResult.SUCCESS) continue;
+            if (itemStack.isEmpty() || (typedActionResult = this.interactionManager.interactItem(this.player, this.world, hand)).getResult() != ActionResult.SUCCESS) continue;
+            if (typedActionResult.method_22429()) {
+                this.player.swingHand(hand);
+            }
             this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
             return;
         }
@@ -1292,8 +1296,8 @@ AutoCloseable {
             this.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.SWAP_HELD_ITEMS, BlockPos.ORIGIN, Direction.DOWN));
         }
         while (this.options.keyDrop.wasPressed()) {
-            if (this.player.isSpectator()) continue;
-            this.player.dropSelectedItem(Screen.hasControlDown());
+            if (this.player.isSpectator() || !this.player.dropSelectedItem(Screen.hasControlDown())) continue;
+            this.player.swingHand(Hand.MAIN_HAND);
         }
         boolean bl = bl3 = this.options.chatVisibility != ChatVisibility.HIDDEN;
         if (bl3) {
@@ -1415,7 +1419,7 @@ AutoCloseable {
     public void disconnect(Screen screen) {
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
         if (clientPlayNetworkHandler != null) {
-            this.clear();
+            this.clearTasks();
             clientPlayNetworkHandler.clearWorld();
         }
         IntegratedServer integratedServer = this.server;
@@ -1644,7 +1648,7 @@ AutoCloseable {
     }
 
     public CompletableFuture<Void> reloadResourcesConcurrently() {
-        return this.executeFuture(this::reloadResources).thenCompose(completableFuture -> completableFuture);
+        return this.supply(this::reloadResources).thenCompose(completableFuture -> completableFuture);
     }
 
     @Override
@@ -1834,12 +1838,12 @@ AutoCloseable {
     }
 
     @Override
-    protected Runnable prepareRunnable(Runnable runnable) {
+    protected Runnable createTask(Runnable runnable) {
         return runnable;
     }
 
     @Override
-    protected boolean canRun(Runnable runnable) {
+    protected boolean canExecute(Runnable runnable) {
         return true;
     }
 

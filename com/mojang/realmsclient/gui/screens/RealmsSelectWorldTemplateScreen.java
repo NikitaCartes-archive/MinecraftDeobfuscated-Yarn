@@ -11,6 +11,7 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.WorldTemplate;
 import com.mojang.realmsclient.dto.WorldTemplatePaginatedList;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.screens.RealmsScreenWithCallback;
 import com.mojang.realmsclient.util.RealmsTextureManager;
 import com.mojang.realmsclient.util.RealmsUtil;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.RealmListEntry;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
@@ -267,7 +267,7 @@ extends RealmsScreen {
             for (k = 0; k < strings.length; ++k) {
                 int l = this.fontWidth(strings[k]);
                 m = this.width() / 2 - l / 2;
-                int n = class_4359.method_21072(-1 + k);
+                int n = RealmsConstants.row(-1 + k);
                 if (i < m || i > m + l || j < n || j > n + this.fontLineHeight()) continue;
                 this.hoverWarning = true;
             }
@@ -282,7 +282,7 @@ extends RealmsScreen {
                         m = 0x3366BB;
                     }
                 }
-                this.drawCenteredString(string, this.width() / 2, class_4359.method_21072(-1 + k), m);
+                this.drawCenteredString(string, this.width() / 2, RealmsConstants.row(-1 + k), m);
             }
         }
         super.render(i, j, f);
@@ -294,7 +294,7 @@ extends RealmsScreen {
     private void method_21414(int i, int j, List<TextRenderingUtils.Line> list) {
         for (int k = 0; k < list.size(); ++k) {
             TextRenderingUtils.Line line = list.get(k);
-            int l = class_4359.method_21072(4 + k);
+            int l = RealmsConstants.row(4 + k);
             int m = line.segments.stream().mapToInt(lineSegment -> this.fontWidth(lineSegment.renderedText())).sum();
             int n = this.width() / 2 - m / 2;
             for (TextRenderingUtils.LineSegment lineSegment2 : line.segments) {
@@ -406,7 +406,7 @@ extends RealmsScreen {
         }
 
         public WorldTemplateObjectSelectionList(Iterable<WorldTemplate> iterable) {
-            super(RealmsSelectWorldTemplateScreen.this.width(), RealmsSelectWorldTemplateScreen.this.height(), RealmsSelectWorldTemplateScreen.this.displayWarning ? class_4359.method_21072(1) : 32, RealmsSelectWorldTemplateScreen.this.height() - 40, 46);
+            super(RealmsSelectWorldTemplateScreen.this.width(), RealmsSelectWorldTemplateScreen.this.height(), RealmsSelectWorldTemplateScreen.this.displayWarning ? RealmsConstants.row(1) : 32, RealmsSelectWorldTemplateScreen.this.height() - 40, 46);
             iterable.forEach(this::addEntry);
         }
 

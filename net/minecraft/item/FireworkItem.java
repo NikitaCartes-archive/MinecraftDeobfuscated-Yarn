@@ -59,9 +59,9 @@ extends Item {
                     itemStack.decrement(1);
                 }
             }
-            return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
+            return TypedActionResult.method_22427(playerEntity.getStackInHand(hand));
         }
-        return new TypedActionResult<ItemStack>(ActionResult.PASS, playerEntity.getStackInHand(hand));
+        return TypedActionResult.method_22430(playerEntity.getStackInHand(hand));
     }
 
     @Override

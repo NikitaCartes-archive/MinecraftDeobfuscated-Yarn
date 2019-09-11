@@ -40,7 +40,7 @@ implements Tickable {
         super(BlockEntityType.BEEHIVE);
     }
 
-    public boolean method_22400() {
+    public boolean hasNoBees() {
         return this.bees.isEmpty();
     }
 
@@ -112,7 +112,7 @@ implements Tickable {
         }
         compoundTag.remove("Passengers");
         compoundTag.remove("Leash");
-        compoundTag.method_22421("UUID");
+        compoundTag.removeUuid("UUID");
         Optional<Object> optional = Optional.empty();
         BlockState blockState = this.getCachedState();
         Direction direction = blockState.get(BeeHiveBlock.FACING);
@@ -234,7 +234,7 @@ implements Tickable {
     public ListTag getBees() {
         ListTag listTag = new ListTag();
         for (Bee bee : this.bees) {
-            bee.entityData.method_22421("UUID");
+            bee.entityData.removeUuid("UUID");
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.put("EntityData", bee.entityData);
             compoundTag.putInt("TicksInHive", bee.ticksInHive);
@@ -250,7 +250,7 @@ implements Tickable {
         private final int minOccupationTIcks;
 
         private Bee(CompoundTag compoundTag, int i, int j) {
-            compoundTag.method_22421("UUID");
+            compoundTag.removeUuid("UUID");
             this.entityData = compoundTag;
             this.ticksInHive = i;
             this.minOccupationTIcks = j;

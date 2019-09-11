@@ -87,7 +87,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
         while (var6_11 < blockStates.length) {
             BlockState blockState = blockStates[var6_11];
             if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
-                ((FlatChunkGeneratorConfig)this.config).method_20314((int)var6_11);
+                ((FlatChunkGeneratorConfig)this.config).removeLayerBlock((int)var6_11);
                 flatChunkGeneratorBiome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Biome.configureFeature(Feature.FILL_LAYER, new FillLayerFeatureConfig((int)var6_11, blockState), Decorator.NOPE, DecoratorConfig.DEFAULT));
             }
             ++var6_11;

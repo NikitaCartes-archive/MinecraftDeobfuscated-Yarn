@@ -30,7 +30,7 @@ extends Feature<GrassFeatureConfig> {
         int i = 0;
         for (int j = 0; j < 128; ++j) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.method_22347(blockPos2) || !grassFeatureConfig.state.canPlaceAt(iWorld, blockPos2)) continue;
+            if (!iWorld.isAir(blockPos2) || !grassFeatureConfig.state.canPlaceAt(iWorld, blockPos2)) continue;
             iWorld.setBlockState(blockPos2, grassFeatureConfig.state, 2);
             ++i;
         }

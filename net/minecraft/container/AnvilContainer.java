@@ -96,7 +96,7 @@ extends Container {
                     if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.ANVIL) && playerEntity.getRand().nextFloat() < 0.12f) {
                         BlockState blockState2 = AnvilBlock.getLandingState(blockState);
                         if (blockState2 == null) {
-                            world.clearBlockState((BlockPos)blockPos, false);
+                            world.removeBlock((BlockPos)blockPos, false);
                             world.playLevelEvent(1029, (BlockPos)blockPos, 0);
                         } else {
                             world.setBlockState((BlockPos)blockPos, blockState2, 2);

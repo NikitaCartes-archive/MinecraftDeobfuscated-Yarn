@@ -17,8 +17,8 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -56,19 +56,19 @@ extends StructurePoolElement {
     }
 
     @Override
-    public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
-        MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
+    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+        BlockBox blockBox = BlockBox.empty();
         for (StructurePoolElement structurePoolElement : this.elements) {
-            MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation);
-            mutableIntBoundingBox.setFrom(mutableIntBoundingBox2);
+            BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation);
+            blockBox.encompass(blockBox2);
         }
-        return mutableIntBoundingBox;
+        return blockBox;
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
         for (StructurePoolElement structurePoolElement : this.elements) {
-            if (structurePoolElement.generate(structureManager, iWorld, chunkGenerator, blockPos, blockRotation, mutableIntBoundingBox, random)) continue;
+            if (structurePoolElement.generate(structureManager, iWorld, chunkGenerator, blockPos, blockRotation, blockBox, random)) continue;
             return false;
         }
         return true;

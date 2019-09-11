@@ -74,7 +74,7 @@ public class FileNameUtil {
         return true;
     }
 
-    public static Path method_20202(Path path, String string, String string2) {
+    public static Path getResourcePath(Path path, String string, String string2) {
         String string3 = string + string2;
         Path path2 = Paths.get(string3, new String[0]);
         if (path2.endsWith(string2)) {

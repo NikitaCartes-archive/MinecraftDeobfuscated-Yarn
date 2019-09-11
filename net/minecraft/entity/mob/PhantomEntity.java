@@ -235,7 +235,7 @@ implements Monster {
                 return false;
             }
             this.delay = 60;
-            List<PlayerEntity> list = PhantomEntity.this.world.getPlayersInBox(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
+            List<PlayerEntity> list = PhantomEntity.this.world.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
             if (!list.isEmpty()) {
                 list.sort((playerEntity, playerEntity2) -> playerEntity.y > playerEntity2.y ? -1 : 1);
                 for (PlayerEntity playerEntity3 : list) {
@@ -407,11 +407,11 @@ implements Monster {
             if (this.method_7104()) {
                 this.method_7103();
             }
-            if (((PhantomEntity)PhantomEntity.this).field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.method_22347(new BlockPos(PhantomEntity.this).down(1))) {
+            if (((PhantomEntity)PhantomEntity.this).field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).down(1))) {
                 this.field_7326 = Math.max(1.0f, this.field_7326);
                 this.method_7103();
             }
-            if (((PhantomEntity)PhantomEntity.this).field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.method_22347(new BlockPos(PhantomEntity.this).up(1))) {
+            if (((PhantomEntity)PhantomEntity.this).field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).up(1))) {
                 this.field_7326 = Math.min(-1.0f, this.field_7326);
                 this.method_7103();
             }

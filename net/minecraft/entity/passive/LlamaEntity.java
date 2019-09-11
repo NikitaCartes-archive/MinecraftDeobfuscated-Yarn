@@ -230,7 +230,6 @@ implements RangedAttackMob {
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
         int i;
-        entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
         this.initializeStrength();
         if (entityData instanceof class_1503) {
             i = ((class_1503)entityData).field_7001;
@@ -239,7 +238,7 @@ implements RangedAttackMob {
             entityData = new class_1503(i);
         }
         this.setVariant(i);
-        return entityData;
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     @Override
@@ -485,7 +484,7 @@ implements RangedAttackMob {
     }
 
     static class class_1503
-    implements EntityData {
+    extends PassiveEntity._1 {
         public final int field_7001;
 
         private class_1503(int i) {

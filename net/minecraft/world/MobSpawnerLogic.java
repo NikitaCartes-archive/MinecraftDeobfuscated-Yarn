@@ -115,7 +115,7 @@ public abstract class MobSpawnerLogic {
                     this.updateSpawns();
                     return;
                 }
-                int l = world.getEntities(entity2.getClass(), new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1).expand(this.spawnRange)).size();
+                int l = world.getNonSpectatingEntities(entity2.getClass(), new Box(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ() + 1).expand(this.spawnRange)).size();
                 if (l >= this.maxNearbyEntities) {
                     this.updateSpawns();
                     return;

@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -43,7 +42,6 @@ extends Item {
                 int i = playerEntity2.fishHook.method_6957(itemStack);
                 itemStack.damage(i, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
-            playerEntity2.swingHand(hand);
             world.playSound(null, playerEntity2.x, playerEntity2.y, playerEntity2.z, SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
         } else {
             world.playSound(null, playerEntity2.x, playerEntity2.y, playerEntity2.z, SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
@@ -52,10 +50,9 @@ extends Item {
                 int j = EnchantmentHelper.getLuckOfTheSea(itemStack);
                 world.spawnEntity(new FishingBobberEntity(playerEntity2, world, j, i));
             }
-            playerEntity2.swingHand(hand);
             playerEntity2.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+        return TypedActionResult.method_22427(itemStack);
     }
 
     @Override

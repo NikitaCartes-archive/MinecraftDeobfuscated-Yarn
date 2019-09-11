@@ -57,7 +57,7 @@ public class DamageSourcePredicate {
         if (this.bypassesArmor != null && this.bypassesArmor.booleanValue() != damageSource.bypassesArmor()) {
             return false;
         }
-        if (this.bypassesInvulnerability != null && this.bypassesInvulnerability.booleanValue() != damageSource.doesDamageToCreative()) {
+        if (this.bypassesInvulnerability != null && this.bypassesInvulnerability.booleanValue() != damageSource.isOutOfWorld()) {
             return false;
         }
         if (this.bypassesMagic != null && this.bypassesMagic.booleanValue() != damageSource.isUnblockable()) {

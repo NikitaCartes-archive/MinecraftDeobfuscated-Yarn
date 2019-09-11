@@ -73,7 +73,7 @@ extends HorizontalFacingBlock {
                 BlockPos blockPos2 = result.translate(0, 2, 0).getBlockPos();
                 snowGolemEntity.setPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0f, 0.0f);
                 world.spawnEntity(snowGolemEntity);
-                for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
+                for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
                     Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowGolemEntity);
                 }
                 for (int j = 0; j < this.getSnowGolemPattern().getHeight(); ++j) {
@@ -96,7 +96,7 @@ extends HorizontalFacingBlock {
             ironGolemEntity.setPlayerCreated(true);
             ironGolemEntity.setPositionAndAngles((double)blockPos3.getX() + 0.5, (double)blockPos3.getY() + 0.05, (double)blockPos3.getZ() + 0.5, 0.0f, 0.0f);
             world.spawnEntity(ironGolemEntity);
-            for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
+            for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
                 Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
             }
             for (int j = 0; j < this.getIronGolemPattern().getWidth(); ++j) {

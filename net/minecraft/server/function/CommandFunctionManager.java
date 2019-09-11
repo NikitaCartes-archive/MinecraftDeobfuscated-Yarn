@@ -79,7 +79,7 @@ implements SynchronousResourceReloadListener {
     public void tick() {
         this.server.getProfiler().push(TICK_FUNCTION::toString);
         for (CommandFunction commandFunction : this.tickFunctions) {
-            this.execute(commandFunction, this.getFunctionCommandSource());
+            this.execute(commandFunction, this.getTaggedFunctionSource());
         }
         this.server.getProfiler().pop();
         if (this.needToRunLoadFunctions) {
@@ -87,7 +87,7 @@ implements SynchronousResourceReloadListener {
             Collection<CommandFunction> collection = this.getTags().getOrCreate(LOAD_FUNCTION).values();
             this.server.getProfiler().push(LOAD_FUNCTION::toString);
             for (CommandFunction commandFunction2 : collection) {
-                this.execute(commandFunction2, this.getFunctionCommandSource());
+                this.execute(commandFunction2, this.getTaggedFunctionSource());
             }
             this.server.getProfiler().pop();
         }
@@ -186,12 +186,12 @@ implements SynchronousResourceReloadListener {
         }
     }
 
-    public ServerCommandSource getFunctionCommandSource() {
+    public ServerCommandSource getTaggedFunctionSource() {
         return this.server.getCommandSource().withLevel(2).withSilent();
     }
 
-    public ServerCommandSource method_20796() {
-        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.server.method_21714(), "", new LiteralText(""), this.server, null);
+    public ServerCommandSource getCommandFunctionSource() {
+        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.server.getFunctionPermissionLevel(), "", new LiteralText(""), this.server, null);
     }
 
     public TagContainer<CommandFunction> getTags() {

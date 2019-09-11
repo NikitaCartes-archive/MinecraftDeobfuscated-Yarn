@@ -42,7 +42,7 @@ extends Item {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         playerEntity.openEditBookScreen(itemStack, hand);
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-        return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+        return TypedActionResult.method_22427(itemStack);
     }
 
     public static boolean isValid(@Nullable CompoundTag compoundTag) {

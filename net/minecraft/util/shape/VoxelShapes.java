@@ -189,12 +189,12 @@ public final class VoxelShapes {
         return d;
     }
 
-    public static double calculateSoftOffset(Direction.Axis axis, Box box, class_4538 arg, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
+    public static double method_17945(Direction.Axis axis, Box box, class_4538 arg, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
         return VoxelShapes.method_17944(box, arg, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
     }
 
     private static double method_17944(Box box, class_4538 arg, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream) {
-        if (box.getXSize() < 1.0E-6 || box.getYSize() < 1.0E-6 || box.getZSize() < 1.0E-6) {
+        if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
             return d;
         }
         if (Math.abs(d) < 1.0E-7) {
@@ -289,7 +289,7 @@ public final class VoxelShapes {
         return new SliceVoxelShape(voxelShape, axis, i);
     }
 
-    public static boolean method_1080(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
+    public static boolean adjacentSidesCoverSquare(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
         VoxelShape voxelShape4;
         if (voxelShape == VoxelShapes.fullCube() || voxelShape2 == VoxelShapes.fullCube()) {
             return true;
@@ -307,7 +307,7 @@ public final class VoxelShapes {
         return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), VoxelShapes.combine(new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), BooleanBiFunction.OR), BooleanBiFunction.ONLY_FIRST);
     }
 
-    public static boolean method_20713(VoxelShape voxelShape, VoxelShape voxelShape2) {
+    public static boolean unionCoversFullCube(VoxelShape voxelShape, VoxelShape voxelShape2) {
         if (voxelShape == VoxelShapes.fullCube() || voxelShape2 == VoxelShapes.fullCube()) {
             return true;
         }

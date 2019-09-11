@@ -23,7 +23,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean method_13325(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         for (int i = 0; i < 64; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.method_22347(blockPos2) || iWorld.getBlockState(blockPos2.down()).getBlock() != Blocks.NETHERRACK) continue;
+            if (!iWorld.isAir(blockPos2) || iWorld.getBlockState(blockPos2.down()).getBlock() != Blocks.NETHERRACK) continue;
             iWorld.setBlockState(blockPos2, Blocks.FIRE.getDefaultState(), 2);
         }
         return true;

@@ -15,9 +15,9 @@ import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -60,15 +60,15 @@ extends Feature<DefaultFeatureConfig> {
         Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
         Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
         ChunkPos chunkPos = new ChunkPos(blockPos);
-        MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ());
-        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(mutableIntBoundingBox).setRandom(random2).addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+        BlockBox blockBox = new BlockBox(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ());
+        StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(blockBox).setRandom(random2).addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
         BlockPos blockPos2 = structure.method_15166(blockRotation);
         int j = random2.nextInt(16 - blockPos2.getX());
         int k = random2.nextInt(16 - blockPos2.getZ());
         int l = 256;
         for (m = 0; m < blockPos2.getX(); ++m) {
             for (int n = 0; n < blockPos2.getZ(); ++n) {
-                l = Math.min(l, iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+                l = Math.min(l, iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
             }
         }
         m = Math.max(l - 15 - random2.nextInt(10), 10);

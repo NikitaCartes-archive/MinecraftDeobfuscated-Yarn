@@ -76,7 +76,7 @@ implements Fertilizable {
         float f;
         int i;
         super.onScheduledTick(blockState, serverWorld, blockPos, random);
-        if (serverWorld.method_22335(blockPos, 0) >= 9 && (i = this.getAge(blockState)) < this.getMaxAge() && random.nextInt((int)(25.0f / (f = CropBlock.getAvailableMoisture(this, serverWorld, blockPos))) + 1) == 0) {
+        if (serverWorld.getBaseLightLevel(blockPos, 0) >= 9 && (i = this.getAge(blockState)) < this.getMaxAge() && random.nextInt((int)(25.0f / (f = CropBlock.getAvailableMoisture(this, serverWorld, blockPos))) + 1) == 0) {
             serverWorld.setBlockState(blockPos, this.withAge(i + 1), 2);
         }
     }
@@ -134,7 +134,7 @@ implements Fertilizable {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return (arg.method_22335(blockPos, 0) >= 8 || arg.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, arg, blockPos);
+        return (arg.getBaseLightLevel(blockPos, 0) >= 8 || arg.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, arg, blockPos);
     }
 
     @Override

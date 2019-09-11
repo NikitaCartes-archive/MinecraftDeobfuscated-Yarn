@@ -58,10 +58,10 @@ extends Task<MobEntityWithAi> {
             this.field_19289.put(l, this.lastRunTime + 40L);
             return true;
         };
-        Stream<BlockPos> stream = pointOfInterestStorage.method_21647(this.poiType.getCompletionCondition(), predicate, new BlockPos(mobEntityWithAi), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE);
-        Path path = mobEntityWithAi.getNavigation().method_21643(stream, this.poiType.method_21648());
-        if (path != null && path.method_21655()) {
-            BlockPos blockPos2 = path.method_48();
+        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(this.poiType.getCompletionCondition(), predicate, new BlockPos(mobEntityWithAi), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE);
+        Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, this.poiType.method_21648());
+        if (path != null && path.reachesTarget()) {
+            BlockPos blockPos2 = path.getTarget();
             pointOfInterestStorage.getType(blockPos2).ifPresent(pointOfInterestType -> {
                 pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos2), blockPos2, 1);
                 mobEntityWithAi.getBrain().putMemory(this.field_20287, GlobalPos.create(serverWorld.getDimension().getType(), blockPos2));

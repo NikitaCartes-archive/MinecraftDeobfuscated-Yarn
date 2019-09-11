@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -38,7 +38,7 @@ extends Task<MobEntityWithAi> {
     public static void method_19596(MobEntityWithAi mobEntityWithAi, Entity entity, float f) {
         for (int i = 0; i < 10; ++i) {
             Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
-            Vec3d vec3d2 = PathfindingUtil.method_20658(mobEntityWithAi, 16, 7, vec3d);
+            Vec3d vec3d2 = TargetFinder.findGroundTargetAwayFrom(mobEntityWithAi, 16, 7, vec3d);
             if (vec3d2 == null) continue;
             mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d2, f, 0));
             return;

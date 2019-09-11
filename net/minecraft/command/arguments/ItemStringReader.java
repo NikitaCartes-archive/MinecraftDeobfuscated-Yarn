@@ -112,7 +112,7 @@ public class ItemStringReader {
         return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), suggestionsBuilder);
     }
 
-    public CompletableFuture<Suggestions> method_9793(SuggestionsBuilder suggestionsBuilder) {
+    public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder suggestionsBuilder) {
         return this.suggestions.apply(suggestionsBuilder.createOffset(this.reader.getCursor()));
     }
 }

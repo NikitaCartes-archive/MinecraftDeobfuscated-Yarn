@@ -164,8 +164,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         int i;
         if (bl) {
             ChunkSectionPos chunkSectionPos = serverPlayerEntity.getCameraPosition();
-            i = chunkSectionPos.getChunkX();
-            j = chunkSectionPos.getChunkZ();
+            i = chunkSectionPos.getSectionX();
+            j = chunkSectionPos.getSectionZ();
         } else {
             i = MathHelper.floor(serverPlayerEntity.x / 16.0);
             j = MathHelper.floor(serverPlayerEntity.z / 16.0);
@@ -317,7 +317,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     CompletableFuture<Chunk> completableFuture;
                     do {
                         completableFuture = chunkHolder.getFuture();
-                        this.mainThreadExecutor.waitFor(completableFuture::isDone);
+                        this.mainThreadExecutor.executeTasks(completableFuture::isDone);
                     } while (completableFuture != chunkHolder.getFuture());
                     return completableFuture.join();
                 }).filter(chunk -> chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
@@ -383,7 +383,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     WorldChunk worldChunk = (WorldChunk)chunk;
                     this.world.unloadEntities(worldChunk);
                 }
-                this.serverLightingProvider.method_20386(chunk.getPos());
+                this.serverLightingProvider.updateChunkStatus(chunk.getPos());
                 this.serverLightingProvider.tick();
                 this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
             }
@@ -471,12 +471,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 throw new CrashException(crashReport);
             }
         }, unloaded -> {
-            this.method_20441(chunkPos);
+            this.releaseLightTicket(chunkPos);
             return CompletableFuture.completedFuture(Either.right(unloaded));
         }), runnable -> this.worldgenActor.send(ChunkTaskPrioritySystem.createExecutorMessage(chunkHolder, runnable)));
     }
 
-    protected void method_20441(ChunkPos chunkPos) {
+    protected void releaseLightTicket(ChunkPos chunkPos) {
         this.mainThreadExecutor.method_18858(SystemUtil.debugRunnable(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos), () -> "release light ticket " + chunkPos));
     }
 
@@ -713,7 +713,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity) {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(serverPlayerEntity);
         serverPlayerEntity.setCameraPosition(chunkSectionPos);
-        serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ()));
+        serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
         return chunkSectionPos;
     }
 
@@ -753,8 +753,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.playerChunkWatchingManager.movePlayer(l, m, serverPlayerEntity);
             }
         }
-        int k = chunkSectionPos.getChunkX();
-        int n = chunkSectionPos.getChunkZ();
+        int k = chunkSectionPos.getSectionX();
+        int n = chunkSectionPos.getSectionZ();
         if (Math.abs(k - i) <= this.watchDistance * 2 && Math.abs(n - j) <= this.watchDistance * 2) {
             int o = Math.min(i, k) - this.watchDistance;
             int p = Math.min(j, n) - this.watchDistance;

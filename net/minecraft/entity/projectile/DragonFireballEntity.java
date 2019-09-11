@@ -41,7 +41,7 @@ extends ExplosiveProjectileEntity {
             return;
         }
         if (!this.world.isClient) {
-            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
+            List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
             AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
             areaEffectCloudEntity.setOwner(this.owner);
             areaEffectCloudEntity.setParticleType(ParticleTypes.DRAGON_BREATH);

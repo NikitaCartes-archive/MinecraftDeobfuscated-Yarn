@@ -89,7 +89,7 @@ public class PackedIntegerArray {
         return this.elementBits;
     }
 
-    public void method_21739(IntConsumer intConsumer) {
+    public void forEach(IntConsumer intConsumer) {
         int i = this.storage.length;
         if (i == 0) {
             return;

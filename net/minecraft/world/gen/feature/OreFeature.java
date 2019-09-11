@@ -40,7 +40,7 @@ extends Feature<OreFeatureConfig> {
         int r = 2 * (2 + i);
         for (int s = n; s <= n + q; ++s) {
             for (int t = p; t <= p + q; ++t) {
-                if (o > iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) continue;
+                if (o > iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) continue;
                 return this.generateVeinPart(iWorld, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
             }
         }

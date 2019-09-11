@@ -69,7 +69,7 @@ extends ChunkGeneratorConfig {
     private static final ConfiguredFeature<?> WOODLAND_MANSION = Biome.configureFeature(Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> NETHER_BRIDGE = Biome.configureFeature(Feature.NETHER_BRIDGE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT);
     private static final ConfiguredFeature<?> OCEAN_RUIN = Biome.configureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.1f), Decorator.NOPE, DecoratorConfig.DEFAULT);
-    private static final ConfiguredFeature<?> field_19182 = Biome.configureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT);
+    private static final ConfiguredFeature<?> PILLAGER_OUTPOST = Biome.configureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT);
     public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
         hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
@@ -86,7 +86,7 @@ extends ChunkGeneratorConfig {
         hashMap.put(WOODLAND_MANSION, GenerationStep.Feature.SURFACE_STRUCTURES);
         hashMap.put(NETHER_BRIDGE, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
         hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
-        hashMap.put(field_19182, GenerationStep.Feature.SURFACE_STRUCTURES);
+        hashMap.put(PILLAGER_OUTPOST, GenerationStep.Feature.SURFACE_STRUCTURES);
     });
     public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
@@ -99,7 +99,7 @@ extends ChunkGeneratorConfig {
         hashMap.put("endcity", new ConfiguredFeature[]{END_CITY});
         hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
         hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
-        hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
+        hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
     });
     public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
@@ -115,7 +115,7 @@ extends ChunkGeneratorConfig {
         hashMap.put(END_CITY, FeatureConfig.DEFAULT);
         hashMap.put(WOODLAND_MANSION, FeatureConfig.DEFAULT);
         hashMap.put(NETHER_BRIDGE, FeatureConfig.DEFAULT);
-        hashMap.put(field_19182, new PillagerOutpostFeatureConfig(0.004));
+        hashMap.put(PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004));
     });
     private final List<FlatChunkGeneratorLayer> layers = Lists.newArrayList();
     private final Map<String, Map<String, String>> structures = Maps.newHashMap();
@@ -312,7 +312,7 @@ extends ChunkGeneratorConfig {
                 for (String string3 : strings3 = strings2[1].substring(0, strings2[1].length() - 1).split(" ")) {
                     String[] strings4 = string3.split("=", 2);
                     if (strings4.length != 2) continue;
-                    flatChunkGeneratorConfig.method_14324(strings2[0], strings4[0], strings4[1]);
+                    flatChunkGeneratorConfig.setStructureOption(strings2[0], strings4[0], strings4[1]);
                 }
             }
         } else {
@@ -328,7 +328,7 @@ extends ChunkGeneratorConfig {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void method_14324(String string, String string2, String string3) {
+    private void setStructureOption(String string, String string2, String string3) {
         this.structures.get(string).put(string2, string3);
         if ("village".equals(string) && "distance".equals(string2)) {
             this.villageDistance = MathHelper.parseInt(string3, this.villageDistance, 9);
@@ -379,7 +379,7 @@ extends ChunkGeneratorConfig {
         return this.layerBlocks;
     }
 
-    public void method_20314(int i) {
+    public void removeLayerBlock(int i) {
         this.layerBlocks[i] = null;
     }
 }

@@ -50,7 +50,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         RenderSystem.popMatrix();
         RenderSystem.popMatrix();
         RenderSystem.pushMatrix();
-        ((CowEntityModel)this.getModel()).method_2800().applyTransform(0.0625f);
+        ((CowEntityModel)this.getModel()).getHead().applyTransform(0.0625f);
         RenderSystem.scalef(1.0f, -1.0f, 1.0f);
         RenderSystem.translatef(0.0f, 0.7f, -0.2f);
         RenderSystem.rotatef(12.0f, 0.0f, 1.0f, 0.0f);

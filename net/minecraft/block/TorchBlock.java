@@ -43,7 +43,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return TorchBlock.isSolidSmallSquare(arg, blockPos.down(), Direction.UP);
+        return TorchBlock.sideCoversSmallSquare(arg, blockPos.down(), Direction.UP);
     }
 
     @Override

@@ -307,7 +307,7 @@ public interface DispenserBehavior {
                     world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true));
                 } else if (blockState.getBlock() instanceof TntBlock) {
                     TntBlock.primeTnt(world, blockPos);
-                    world.clearBlockState(blockPos, false);
+                    world.removeBlock(blockPos, false);
                 } else {
                     this.success = false;
                 }
@@ -368,7 +368,7 @@ public interface DispenserBehavior {
                 Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
                 BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
                 this.success = true;
-                if (world.method_22347(blockPos) && WitherSkullBlock.canDispense(world, blockPos, itemStack)) {
+                if (world.isAir(blockPos) && WitherSkullBlock.canDispense(world, blockPos, itemStack)) {
                     world.setBlockState(blockPos, (BlockState)Blocks.WITHER_SKELETON_SKULL.getDefaultState().with(SkullBlock.ROTATION, direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4), 3);
                     BlockEntity blockEntity = world.getBlockEntity(blockPos);
                     if (blockEntity instanceof SkullBlockEntity) {
@@ -389,7 +389,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
                 CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
                 this.success = true;
-                if (world.method_22347(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
+                if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
                     if (!world.isClient) {
                         world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
                     }
@@ -447,7 +447,7 @@ public interface DispenserBehavior {
                     BlockState blockState;
                     this.success = false;
                     BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-                    List<SheepEntity> list = world.getEntities(SheepEntity.class, new Box(blockPos));
+                    List<SheepEntity> list = world.getNonSpectatingEntities(SheepEntity.class, new Box(blockPos));
                     for (SheepEntity sheepEntity : list) {
                         if (!sheepEntity.isAlive() || sheepEntity.isSheared() || sheepEntity.isBaby()) continue;
                         sheepEntity.dropItems();

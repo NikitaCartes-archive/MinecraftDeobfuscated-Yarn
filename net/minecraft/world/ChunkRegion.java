@@ -63,8 +63,8 @@ implements IWorld {
     private final Random random;
     private final Dimension dimension;
     private final ChunkGeneratorConfig generatorSettings;
-    private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(blockPos -> this.method_22350((BlockPos)blockPos).getBlockTickScheduler());
-    private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.method_22350((BlockPos)blockPos).getFluidTickScheduler());
+    private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(blockPos -> this.getChunk((BlockPos)blockPos).getBlockTickScheduler());
+    private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.getChunk((BlockPos)blockPos).getFluidTickScheduler());
     private final class_4543 field_20668;
 
     public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
@@ -97,7 +97,7 @@ implements IWorld {
 
     @Override
     public Chunk getChunk(int i, int j) {
-        return this.method_22342(i, j, ChunkStatus.EMPTY);
+        return this.getChunk(i, j, ChunkStatus.EMPTY);
     }
 
     @Override
@@ -142,7 +142,7 @@ implements IWorld {
 
     @Override
     public FluidState getFluidState(BlockPos blockPos) {
-        return this.method_22350(blockPos).getFluidState(blockPos);
+        return this.getChunk(blockPos).getFluidState(blockPos);
     }
 
     @Override
@@ -167,8 +167,8 @@ implements IWorld {
     }
 
     @Override
-    public LightingProvider method_22336() {
-        return this.world.method_22336();
+    public LightingProvider getLightingProvider() {
+        return this.world.getLightingProvider();
     }
 
     @Override
@@ -187,7 +187,7 @@ implements IWorld {
     @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos blockPos) {
-        Chunk chunk = this.method_22350(blockPos);
+        Chunk chunk = this.getChunk(blockPos);
         BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
         if (blockEntity != null) {
             return blockEntity;
@@ -217,7 +217,7 @@ implements IWorld {
     @Override
     public boolean setBlockState(BlockPos blockPos, BlockState blockState, int i) {
         Block block;
-        Chunk chunk = this.method_22350(blockPos);
+        Chunk chunk = this.getChunk(blockPos);
         BlockState blockState2 = chunk.setBlockState(blockPos, blockState, false);
         if (blockState2 != null) {
             this.world.onBlockChanged(blockPos, blockState2, blockState);
@@ -243,7 +243,7 @@ implements IWorld {
     }
 
     private void markBlockForPostProcessing(BlockPos blockPos) {
-        this.method_22350(blockPos).markBlockForPostProcessing(blockPos);
+        this.getChunk(blockPos).markBlockForPostProcessing(blockPos);
     }
 
     @Override
@@ -255,7 +255,7 @@ implements IWorld {
     }
 
     @Override
-    public boolean clearBlockState(BlockPos blockPos, boolean bl) {
+    public boolean removeBlock(BlockPos blockPos, boolean bl) {
         return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
     }
 
@@ -322,7 +322,7 @@ implements IWorld {
     }
 
     @Override
-    public int getLightLevel(Heightmap.Type type, int i, int j) {
+    public int getTopY(Heightmap.Type type, int i, int j) {
         return this.getChunk(i >> 4, j >> 4).sampleHeightmap(type, i & 0xF, j & 0xF) + 1;
     }
 

@@ -453,7 +453,7 @@ extends AnimalEntity {
         Vec3d vec3d = this.getVelocity();
         this.world.addParticle(ParticleTypes.SNEEZE, this.x - (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180)), this.y + (double)this.getStandingEyeHeight() - (double)0.1f, this.z + (double)(this.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180)), vec3d.x, 0.0, vec3d.z);
         this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0f, 1.0f);
-        List<PandaEntity> list = this.world.getEntities(PandaEntity.class, this.getBoundingBox().expand(10.0));
+        List<PandaEntity> list = this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0));
         for (PandaEntity pandaEntity : list) {
             if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isInsideWater() || !pandaEntity.method_18442()) continue;
             pandaEntity.jump();
@@ -483,18 +483,14 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
         this.setMainGene(Gene.createRandom(this.random));
         this.setHiddenGene(Gene.createRandom(this.random));
         this.resetAttributes();
-        if (entityData instanceof SpawnData) {
-            if (this.random.nextInt(5) == 0) {
-                this.setBreedingAge(-24000);
-            }
-        } else {
-            entityData = new SpawnData();
+        if (entityData == null) {
+            entityData = new PassiveEntity._1();
+            ((PassiveEntity._1)entityData).method_22433(0.2f);
         }
-        return entityData;
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     public void initGenes(PandaEntity pandaEntity, @Nullable PandaEntity pandaEntity2) {
@@ -957,12 +953,6 @@ extends AnimalEntity {
         @Override
         public boolean canStart() {
             return this.panda.method_18442() && super.canStart();
-        }
-    }
-
-    static class SpawnData
-    implements EntityData {
-        private SpawnData() {
         }
     }
 

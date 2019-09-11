@@ -96,7 +96,7 @@ public class WanderingTraderManager {
                 this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
                 wanderingTraderEntity.setDespawnDelay(48000);
                 wanderingTraderEntity.setWanderTarget(blockPos22);
-                wanderingTraderEntity.setWalkTarget(blockPos22, 16);
+                wanderingTraderEntity.setPositionTarget(blockPos22, 16);
                 return true;
             }
         }
@@ -122,7 +122,7 @@ public class WanderingTraderManager {
             int l;
             int m;
             int k = blockPos.getX() + this.random.nextInt(i * 2) - i;
-            BlockPos blockPos3 = new BlockPos(k, m = this.world.getLightLevel(Heightmap.Type.WORLD_SURFACE, k, l = blockPos.getZ() + this.random.nextInt(i * 2) - i), l);
+            BlockPos blockPos3 = new BlockPos(k, m = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, k, l = blockPos.getZ() + this.random.nextInt(i * 2) - i), l);
             if (!SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos3, EntityType.WANDERING_TRADER)) continue;
             blockPos2 = blockPos3;
             break;

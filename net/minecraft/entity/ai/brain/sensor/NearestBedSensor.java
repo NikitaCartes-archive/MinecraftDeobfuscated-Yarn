@@ -52,10 +52,10 @@ extends Sensor<MobEntity> {
             this.field_20295.put(l, this.field_20297 + 40L);
             return true;
         };
-        Stream<BlockPos> stream = pointOfInterestStorage.method_21647(PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 48, PointOfInterestStorage.OccupationStatus.ANY);
-        Path path = mobEntity.getNavigation().method_21643(stream, PointOfInterestType.HOME.method_21648());
-        if (path != null && path.method_21655()) {
-            BlockPos blockPos2 = path.method_48();
+        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Path path = mobEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.method_21648());
+        if (path != null && path.reachesTarget()) {
+            BlockPos blockPos2 = path.getTarget();
             Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos2);
             if (optional.isPresent()) {
                 mobEntity.getBrain().putMemory(MemoryModuleType.NEAREST_BED, blockPos2);

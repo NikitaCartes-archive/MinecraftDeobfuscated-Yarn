@@ -45,20 +45,20 @@ extends BlockItem {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         HitResult hitResult = LilyPadItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
+            return TypedActionResult.method_22430(itemStack);
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult)hitResult;
             BlockPos blockPos = blockHitResult.getBlockPos();
             Direction direction = blockHitResult.getSide();
             if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos.offset(direction), direction, itemStack)) {
-                return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
+                return TypedActionResult.method_22431(itemStack);
             }
             BlockPos blockPos2 = blockPos.up();
             BlockState blockState = world.getBlockState(blockPos);
             Material material = blockState.getMaterial();
             FluidState fluidState = world.getFluidState(blockPos);
-            if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.method_22347(blockPos2)) {
+            if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
                 world.setBlockState(blockPos2, Blocks.LILY_PAD.getDefaultState(), 11);
                 if (playerEntity instanceof ServerPlayerEntity) {
                     Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
@@ -68,10 +68,10 @@ extends BlockItem {
                 }
                 playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
                 world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_LILY_PAD_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+                return TypedActionResult.method_22427(itemStack);
             }
         }
-        return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
+        return TypedActionResult.method_22431(itemStack);
     }
 }
 

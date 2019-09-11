@@ -63,7 +63,7 @@ implements DebugRenderer.Renderer {
                 String[] strings = string.split("\n");
                 int i = 0;
                 for (String string2 : strings) {
-                    DebugRenderer.method_19429(string2, (chunkPos.x << 4) + 8, e + (double)i, (chunkPos.z << 4) + 8, -1, 0.15f);
+                    DebugRenderer.drawFloatingText(string2, (chunkPos.x << 4) + 8, e + (double)i, (chunkPos.z << 4) + 8, -1, 0.15f);
                     i -= 2;
                 }
             }
@@ -104,7 +104,7 @@ implements DebugRenderer.Renderer {
                 }
             }
             this.field_4515 = builder.build();
-            this.field_4514 = integratedServer.executeFuture(() -> {
+            this.field_4514 = integratedServer.supply(() -> {
                 ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
                 ServerChunkManager serverChunkManager = serverWorld.method_14178();
                 for (int k = i - 12; k <= i + 12; ++k) {

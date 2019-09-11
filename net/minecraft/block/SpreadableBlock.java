@@ -28,7 +28,7 @@ extends SnowyBlock {
         if (blockState2.getBlock() == Blocks.SNOW && blockState2.get(SnowBlock.LAYERS) == 1) {
             return true;
         }
-        int i = ChunkLightProvider.method_20049(arg, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getLightSubtracted(arg, blockPos2));
+        int i = ChunkLightProvider.getRealisticOpacity(arg, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getOpacity(arg, blockPos2));
         return i < arg.getMaxLightLevel();
     }
 
@@ -43,7 +43,7 @@ extends SnowyBlock {
             serverWorld.setBlockState(blockPos, Blocks.DIRT.getDefaultState());
             return;
         }
-        if (serverWorld.method_22339(blockPos.up()) >= 9) {
+        if (serverWorld.getLightLevel(blockPos.up()) >= 9) {
             BlockState blockState2 = this.getDefaultState();
             for (int i = 0; i < 4; ++i) {
                 BlockPos blockPos2 = blockPos.add(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);

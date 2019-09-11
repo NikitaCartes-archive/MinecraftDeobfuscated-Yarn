@@ -13,8 +13,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -67,7 +67,7 @@ implements RangedAttackMob {
         super((EntityType<? extends ZombieEntity>)entityType, world);
         this.stepHeight = 1.0f;
         this.moveControl = new DrownedMoveControl(this);
-        this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0f);
+        this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
         this.waterNavigation = new SwimNavigation(this, world);
         this.landNavigation = new MobNavigation(this, world);
     }
@@ -242,7 +242,7 @@ implements RangedAttackMob {
         double d;
         BlockPos blockPos;
         Path path = this.getNavigation().getCurrentPath();
-        return path != null && (blockPos = path.method_48()) != null && (d = this.squaredDistanceTo(blockPos.getX(), blockPos.getY(), blockPos.getZ())) < 4.0;
+        return path != null && (blockPos = path.getTarget()) != null && (d = this.squaredDistanceTo(blockPos.getX(), blockPos.getY(), blockPos.getZ())) < 4.0;
     }
 
     @Override
@@ -400,7 +400,7 @@ implements RangedAttackMob {
         @Override
         protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
             BlockPos blockPos2 = blockPos.up();
-            if (!arg.method_22347(blockPos2) || !arg.method_22347(blockPos2.up())) {
+            if (!arg.isAir(blockPos2) || !arg.isAir(blockPos2.up())) {
                 return false;
             }
             return arg.getBlockState(blockPos).hasSolidTopSurface(arg, blockPos, this.drowned);
@@ -445,7 +445,7 @@ implements RangedAttackMob {
         @Override
         public void tick() {
             if (this.drowned.y < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.method_7016())) {
-                Vec3d vec3d = PathfindingUtil.method_6373(this.drowned, 4, 8, new Vec3d(this.drowned.x, this.minY - 1, this.drowned.z));
+                Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.x, this.minY - 1, this.drowned.z));
                 if (vec3d == null) {
                     this.field_7248 = true;
                     return;

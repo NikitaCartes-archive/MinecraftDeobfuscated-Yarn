@@ -30,7 +30,7 @@ extends Feature<SeagrassFeatureConfig> {
             BlockState blockState;
             int k = random.nextInt(8) - random.nextInt(8);
             int l = random.nextInt(8) - random.nextInt(8);
-            int m = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
+            int m = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
             BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
             if (iWorld.getBlockState(blockPos2).getBlock() != Blocks.WATER) continue;
             boolean bl = random.nextDouble() < seagrassFeatureConfig.tallSeagrassProbability;

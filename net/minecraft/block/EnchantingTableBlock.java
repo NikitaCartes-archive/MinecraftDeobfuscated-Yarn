@@ -64,7 +64,7 @@ extends BlockWithEntity {
                 for (int k = 0; k <= 1; ++k) {
                     BlockPos blockPos2 = blockPos.add(i, k, j);
                     if (world.getBlockState(blockPos2).getBlock() != Blocks.BOOKSHELF) continue;
-                    if (!world.method_22347(blockPos.add(i / 2, 0, j / 2))) continue block1;
+                    if (!world.isAir(blockPos.add(i / 2, 0, j / 2))) continue block1;
                     world.addParticle(ParticleTypes.ENCHANT, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 2.0, (double)blockPos.getZ() + 0.5, (double)((float)i + random.nextFloat()) - 0.5, (float)k - random.nextFloat() - 1.0f, (double)((float)j + random.nextFloat()) - 0.5);
                 }
             }

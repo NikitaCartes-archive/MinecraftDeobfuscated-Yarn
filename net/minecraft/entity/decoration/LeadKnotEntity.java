@@ -99,7 +99,7 @@ extends AbstractDecorationEntity {
         }
         boolean bl = false;
         double d = 7.0;
-        List<MobEntity> list = this.world.getEntities(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
+        List<MobEntity> list = this.world.getNonSpectatingEntities(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
         for (MobEntity mobEntity : list) {
             if (mobEntity.getHoldingEntity() != playerEntity) continue;
             mobEntity.attachLeash(this, true);
@@ -126,7 +126,7 @@ extends AbstractDecorationEntity {
         int i = blockPos.getX();
         int j = blockPos.getY();
         int k = blockPos.getZ();
-        List<LeadKnotEntity> list = world.getEntities(LeadKnotEntity.class, new Box((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0));
+        List<LeadKnotEntity> list = world.getNonSpectatingEntities(LeadKnotEntity.class, new Box((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0));
         for (LeadKnotEntity leadKnotEntity : list) {
             if (!leadKnotEntity.getDecorationBlockPos().equals(blockPos)) continue;
             return leadKnotEntity;

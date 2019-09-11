@@ -20,9 +20,9 @@ import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -70,13 +70,13 @@ extends StructurePoolElement {
     }
 
     @Override
-    public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
         BlockPos blockPos2 = this.method_16601(structureManager, blockRotation);
-        return new MutableIntBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + blockPos2.getX(), blockPos.getY() + blockPos2.getY(), blockPos.getZ() + blockPos2.getZ());
+        return new BlockBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() + blockPos2.getX(), blockPos.getY() + blockPos2.getY(), blockPos.getZ() + blockPos2.getZ());
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
         return this.feature.generate(iWorld, chunkGenerator, random, blockPos);
     }
 

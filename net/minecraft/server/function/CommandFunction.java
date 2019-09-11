@@ -49,7 +49,7 @@ public class CommandFunction {
                 throw new IllegalArgumentException("Unknown or invalid command '" + string + "' on line " + j + " (did you mean '" + string2 + "'? Do not use a preceding forwards slash.)");
             }
             try {
-                ParseResults<ServerCommandSource> parseResults = commandFunctionManager.getServer().getCommandManager().getDispatcher().parse(stringReader, commandFunctionManager.method_20796());
+                ParseResults<ServerCommandSource> parseResults = commandFunctionManager.getServer().getCommandManager().getDispatcher().parse(stringReader, commandFunctionManager.getCommandFunctionSource());
                 if (parseResults.getReader().canRead()) {
                     if (parseResults.getExceptions().size() == 1) {
                         throw parseResults.getExceptions().values().iterator().next();

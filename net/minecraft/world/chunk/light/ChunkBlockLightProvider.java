@@ -19,7 +19,7 @@ import net.minecraft.world.chunk.light.ChunkLightProvider;
 
 public final class ChunkBlockLightProvider
 extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
-    private static final Direction[] DIRECTIONS_BLOCKLIGHT = Direction.values();
+    private static final Direction[] DIRECTIONS = Direction.values();
     private final BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
     public ChunkBlockLightProvider(ChunkProvider chunkProvider) {
@@ -57,31 +57,31 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
             return 15;
         }
         AtomicInteger atomicInteger = new AtomicInteger();
-        BlockState blockState = this.method_20479(m, atomicInteger);
+        BlockState blockState = this.getStateForLighting(m, atomicInteger);
         if (atomicInteger.get() >= 15) {
             return 15;
         }
-        BlockState blockState2 = this.method_20479(l, null);
-        VoxelShape voxelShape = this.method_20710(blockState2, l, direction);
-        if (VoxelShapes.method_20713(voxelShape, voxelShape2 = this.method_20710(blockState, m, direction.getOpposite()))) {
+        BlockState blockState2 = this.getStateForLighting(l, null);
+        VoxelShape voxelShape = this.getOpaqueShape(blockState2, l, direction);
+        if (VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2 = this.getOpaqueShape(blockState, m, direction.getOpposite()))) {
             return 15;
         }
         return i + Math.max(1, atomicInteger.get());
     }
 
     @Override
-    protected void updateNeighborsRecursively(long l, int i, boolean bl) {
-        long m = ChunkSectionPos.toChunkLong(l);
-        for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
+    protected void propagateLevel(long l, int i, boolean bl) {
+        long m = ChunkSectionPos.fromGlobalPos(l);
+        for (Direction direction : DIRECTIONS) {
             long n = BlockPos.offset(l, direction);
-            long o = ChunkSectionPos.toChunkLong(n);
-            if (m != o && !((BlockLightStorage)this.lightStorage).hasChunk(o)) continue;
-            this.updateRecursively(l, n, i, bl);
+            long o = ChunkSectionPos.fromGlobalPos(n);
+            if (m != o && !((BlockLightStorage)this.lightStorage).hasLight(o)) continue;
+            this.propagateLevel(l, n, i, bl);
         }
     }
 
     @Override
-    protected int getMergedLevel(long l, long m, int i) {
+    protected int recalculateLevel(long l, long m, int i) {
         int j = i;
         if (Long.MAX_VALUE != m) {
             int k = this.getPropagatedLevel(Long.MAX_VALUE, l, 0);
@@ -92,13 +92,13 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
                 return j;
             }
         }
-        long n = ChunkSectionPos.toChunkLong(l);
-        ChunkNibbleArray chunkNibbleArray = ((BlockLightStorage)this.lightStorage).getDataForChunk(n, true);
-        for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
+        long n = ChunkSectionPos.fromGlobalPos(l);
+        ChunkNibbleArray chunkNibbleArray = ((BlockLightStorage)this.lightStorage).getLightArray(n, true);
+        for (Direction direction : DIRECTIONS) {
             long p;
             ChunkNibbleArray chunkNibbleArray2;
             long o = BlockPos.offset(l, direction);
-            if (o == m || (chunkNibbleArray2 = n == (p = ChunkSectionPos.toChunkLong(o)) ? chunkNibbleArray : ((BlockLightStorage)this.lightStorage).getDataForChunk(p, true)) == null) continue;
+            if (o == m || (chunkNibbleArray2 = n == (p = ChunkSectionPos.fromGlobalPos(o)) ? chunkNibbleArray : ((BlockLightStorage)this.lightStorage).getLightArray(p, true)) == null) continue;
             int q = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
             if (j > q) {
                 j = q;
@@ -110,9 +110,9 @@ extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
     }
 
     @Override
-    public void method_15514(BlockPos blockPos, int i) {
+    public void addLightSource(BlockPos blockPos, int i) {
         ((BlockLightStorage)this.lightStorage).updateAll();
-        this.update(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
+        this.updateLevel(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
     }
 }
 

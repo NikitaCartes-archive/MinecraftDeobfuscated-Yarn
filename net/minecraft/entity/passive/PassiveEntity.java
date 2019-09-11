@@ -3,7 +3,9 @@
  */
 package net.minecraft.entity.passive;
 
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -15,6 +17,8 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Hand;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +31,19 @@ extends MobEntityWithAi {
 
     protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
         super((EntityType<? extends MobEntityWithAi>)entityType, world);
+    }
+
+    @Override
+    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+        _1 lv;
+        if (entityData == null) {
+            entityData = new _1();
+        }
+        if ((lv = (_1)entityData).method_22436() && lv.method_22432() > 0 && this.random.nextFloat() <= lv.method_22437()) {
+            this.setBreedingAge(-24000);
+        }
+        lv.method_22435();
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     @Nullable
@@ -151,6 +168,37 @@ extends MobEntityWithAi {
     @Override
     public boolean isBaby() {
         return this.getBreedingAge() < 0;
+    }
+
+    public static class _1
+    implements EntityData {
+        private int field_20684;
+        private boolean field_20685 = true;
+        private float field_20686 = 0.05f;
+
+        public int method_22432() {
+            return this.field_20684;
+        }
+
+        public void method_22435() {
+            ++this.field_20684;
+        }
+
+        public boolean method_22436() {
+            return this.field_20685;
+        }
+
+        public void method_22434(boolean bl) {
+            this.field_20685 = bl;
+        }
+
+        public float method_22437() {
+            return this.field_20686;
+        }
+
+        public void method_22433(float f) {
+            this.field_20686 = f;
+        }
     }
 }
 

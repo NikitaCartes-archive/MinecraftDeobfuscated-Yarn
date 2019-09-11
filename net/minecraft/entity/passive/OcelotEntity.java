@@ -252,7 +252,7 @@ extends AnimalEntity {
 
     @Override
     public boolean canSpawn(class_4538 arg) {
-        if (arg.intersectsEntities(this) && !arg.method_22345(this.getBoundingBox())) {
+        if (arg.intersectsEntities(this) && !arg.containsFluid(this.getBoundingBox())) {
             BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
             if (blockPos.getY() < arg.getSeaLevel()) {
                 return false;
@@ -266,23 +266,14 @@ extends AnimalEntity {
         return false;
     }
 
-    protected void spawnKittens() {
-        for (int i = 0; i < 2; ++i) {
-            OcelotEntity ocelotEntity = EntityType.OCELOT.create(this.world);
-            ocelotEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
-            ocelotEntity.setBreedingAge(-24000);
-            this.world.spawnEntity(ocelotEntity);
-        }
-    }
-
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-        if (iWorld.getRandom().nextInt(7) == 0) {
-            this.spawnKittens();
+        if (entityData == null) {
+            entityData = new PassiveEntity._1();
+            ((PassiveEntity._1)entityData).method_22433(0.14285715f);
         }
-        return entityData;
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     @Override

@@ -141,7 +141,7 @@ extends HorseBaseEntity {
             return super.interactMob(playerEntity, hand);
         }
         if (!this.isBaby()) {
-            if (this.isTame() && playerEntity.method_21823()) {
+            if (this.isTame() && playerEntity.shouldCancelInteraction()) {
                 this.openInventory(playerEntity);
                 return true;
             }

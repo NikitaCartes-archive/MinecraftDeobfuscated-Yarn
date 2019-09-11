@@ -118,7 +118,7 @@ extends FacingBlock {
         BlockPos blockPos2;
         Block block;
         if (!world.isClient && playerEntity.abilities.creativeMode && ((block = world.getBlockState(blockPos2 = blockPos.offset(blockState.get(FACING).getOpposite())).getBlock()) == Blocks.PISTON || block == Blocks.STICKY_PISTON)) {
-            world.clearBlockState(blockPos2, false);
+            world.removeBlock(blockPos2, false);
         }
         super.onBreak(world, blockPos, blockState, playerEntity);
     }
@@ -134,7 +134,7 @@ extends FacingBlock {
         BlockState blockState3 = world.getBlockState(blockPos);
         if ((blockState3.getBlock() == Blocks.PISTON || blockState3.getBlock() == Blocks.STICKY_PISTON) && blockState3.get(PistonBlock.EXTENDED).booleanValue()) {
             PistonHeadBlock.dropStacks(blockState3, world, blockPos);
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
         }
     }
 

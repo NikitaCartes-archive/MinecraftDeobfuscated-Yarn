@@ -296,9 +296,9 @@ extends HostileEntity {
                     int n;
                     int m = i + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
                     BlockPos blockPos = new BlockPos(m, (n = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1)) - 1, o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1));
-                    if (!this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, zombieEntity) || this.world.method_22339(new BlockPos(m, n, o)) >= 10) continue;
+                    if (!this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, zombieEntity) || this.world.getLightLevel(new BlockPos(m, n, o)) >= 10) continue;
                     zombieEntity.setPosition(m, n, o);
-                    if (this.world.isPlayerInRange(m, n, o, 7.0) || !this.world.intersectsEntities(zombieEntity) || !this.world.doesNotCollide(zombieEntity) || this.world.method_22345(zombieEntity.getBoundingBox())) continue;
+                    if (this.world.isPlayerInRange(m, n, o, 7.0) || !this.world.intersectsEntities(zombieEntity) || !this.world.doesNotCollide(zombieEntity) || this.world.containsFluid(zombieEntity.getBoundingBox())) continue;
                     this.world.spawnEntity(zombieEntity);
                     zombieEntity.setTarget(livingEntity);
                     zombieEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.REINFORCEMENT, null, null);

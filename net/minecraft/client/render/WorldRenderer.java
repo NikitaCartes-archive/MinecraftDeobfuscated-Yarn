@@ -1525,7 +1525,7 @@ SynchronousResourceReloadListener {
     }
 
     private void updateEntitiesForSong(World world, BlockPos blockPos, boolean bl) {
-        List<LivingEntity> list = world.getEntities(LivingEntity.class, new Box(blockPos).expand(3.0));
+        List<LivingEntity> list = world.getNonSpectatingEntities(LivingEntity.class, new Box(blockPos).expand(3.0));
         for (LivingEntity livingEntity : list) {
             livingEntity.setNearbySongPlaying(blockPos, bl);
         }

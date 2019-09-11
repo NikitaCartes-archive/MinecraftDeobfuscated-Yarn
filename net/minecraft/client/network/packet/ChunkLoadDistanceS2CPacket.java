@@ -32,7 +32,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public void method_20205(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.handleChunkLoadDistance(this);
+        clientPlayPacketListener.onChunkLoadDistance(this);
     }
 
     @Environment(value=EnvType.CLIENT)

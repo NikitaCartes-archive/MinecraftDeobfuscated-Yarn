@@ -33,7 +33,7 @@ extends Task<MobEntityWithAi> {
         BlockPos blockPos2 = new BlockPos(mobEntityWithAi);
         List list = BlockPos.stream(blockPos2.add(-1, -1, -1), blockPos2.add(1, 1, 1)).map(BlockPos::toImmutable).collect(Collectors.toList());
         Collections.shuffle(list);
-        Optional<BlockPos> optional = list.stream().filter(blockPos -> !serverWorld.isSkyVisible((BlockPos)blockPos)).filter(blockPos -> serverWorld.doesBlockHaveSolidTopSurface((BlockPos)blockPos, mobEntityWithAi)).filter(blockPos -> serverWorld.doesNotCollide(mobEntityWithAi)).findFirst();
+        Optional<BlockPos> optional = list.stream().filter(blockPos -> !serverWorld.isSkyVisible((BlockPos)blockPos)).filter(blockPos -> serverWorld.isTopSolid((BlockPos)blockPos, mobEntityWithAi)).filter(blockPos -> serverWorld.doesNotCollide(mobEntityWithAi)).findFirst();
         optional.ifPresent(blockPos -> mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget((BlockPos)blockPos, this.speed, 0)));
     }
 }

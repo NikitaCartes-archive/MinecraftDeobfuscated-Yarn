@@ -153,7 +153,7 @@ implements ItemConvertible {
 
     public static BlockState pushEntitiesUpBeforeBlockChange(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {
         VoxelShape voxelShape = VoxelShapes.combine(blockState.getCollisionShape(world, blockPos), blockState2.getCollisionShape(world, blockPos), BooleanBiFunction.ONLY_SECOND).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        List<Entity> list = world.getEntities((Entity)null, voxelShape.getBoundingBox());
+        List<Entity> list = world.getEntities(null, voxelShape.getBoundingBox());
         for (Entity entity : list) {
             double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
             entity.requestTeleport(entity.x, entity.y + 1.0 + d, entity.z);
@@ -220,7 +220,7 @@ implements ItemConvertible {
         if (blockState2 != blockState) {
             if (blockState2.isAir()) {
                 if (!iWorld.isClient()) {
-                    iWorld.method_22352(blockPos, (i & 0x20) == 0);
+                    iWorld.breakBlock(blockPos, (i & 0x20) == 0);
                 }
             } else {
                 iWorld.setBlockState(blockPos, blockState2, i & 0xFFFFFFDF);
@@ -397,12 +397,12 @@ implements ItemConvertible {
         return VoxelShapes.empty();
     }
 
-    public static boolean isSolidMediumSquare(BlockView blockView, BlockPos blockPos) {
+    public static boolean topCoversMediumSquare(BlockView blockView, BlockPos blockPos) {
         BlockState blockState = blockView.getBlockState(blockPos);
         return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
-    public static boolean isSolidSmallSquare(class_4538 arg, BlockPos blockPos, Direction direction) {
+    public static boolean sideCoversSmallSquare(class_4538 arg, BlockPos blockPos, Direction direction) {
         BlockState blockState = arg.getBlockState(blockPos);
         return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(arg, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
@@ -433,7 +433,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public int getOpacity(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         if (blockState.isFullOpaque(blockView, blockPos)) {
             return blockView.getMaxLightLevel();
         }

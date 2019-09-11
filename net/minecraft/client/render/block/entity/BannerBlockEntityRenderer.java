@@ -29,7 +29,7 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         float h = 0.6666667f;
         boolean bl = bannerBlockEntity.getWorld() == null;
         RenderSystem.pushMatrix();
-        ModelPart modelPart = this.model.method_2791();
+        ModelPart modelPart = this.model.getVerticalStick();
         if (bl) {
             l = 0L;
             RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
@@ -50,14 +50,14 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         }
         BlockPos blockPos = bannerBlockEntity.getPos();
         float j = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + g) / 100.0f;
-        this.model.method_2792().pitch = (-0.0125f + 0.01f * MathHelper.cos((float)Math.PI * 2 * j)) * (float)Math.PI;
+        this.model.getBanner().pitch = (-0.0125f + 0.01f * MathHelper.cos((float)Math.PI * 2 * j)) * (float)Math.PI;
         RenderSystem.enableRescaleNormal();
         Identifier identifier = this.getTextureId(bannerBlockEntity);
         if (identifier != null) {
             this.bindTexture(identifier);
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.6666667f, -0.6666667f, -0.6666667f);
-            this.model.method_2793();
+            this.model.render();
             RenderSystem.popMatrix();
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);

@@ -168,9 +168,9 @@ extends BlockEntity {
     }
 
     @Override
-    public void validate() {
+    public void cancelRemoval() {
         this.resetBlock();
-        super.validate();
+        super.cancelRemoval();
     }
 
     public static enum Type {

@@ -119,7 +119,7 @@ implements Tickable {
             for (j = -1; j <= 1; ++j) {
                 for (k = -1; k <= 1; ++k) {
                     BlockPos blockPos = this.pos.add(i, j, k);
-                    if (this.world.method_22351(blockPos)) continue;
+                    if (this.world.isWater(blockPos)) continue;
                     return false;
                 }
             }
@@ -151,7 +151,7 @@ implements Tickable {
         int j = i / 7 * 16;
         int k = this.pos.getX();
         Box box = new Box(k, l = this.pos.getY(), m = this.pos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, this.world.getHeight(), 0.0);
-        List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
+        List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
         if (list.isEmpty()) {
             return;
         }

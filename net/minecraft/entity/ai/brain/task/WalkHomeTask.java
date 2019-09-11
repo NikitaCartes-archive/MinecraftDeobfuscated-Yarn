@@ -63,10 +63,10 @@ extends Task<LivingEntity> {
             this.field_20291.put(l, this.lastRunTime + 40L);
             return true;
         };
-        Stream<BlockPos> stream = pointOfInterestStorage.method_21647(PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY);
-        Path path = mobEntityWithAi.getNavigation().method_21643(stream, PointOfInterestType.HOME.method_21648());
-        if (path != null && path.method_21655()) {
-            BlockPos blockPos2 = path.method_48();
+        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.method_21648());
+        if (path != null && path.reachesTarget()) {
+            BlockPos blockPos2 = path.getTarget();
             Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos2);
             if (optional.isPresent()) {
                 livingEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos2, this.field_20290, 1));

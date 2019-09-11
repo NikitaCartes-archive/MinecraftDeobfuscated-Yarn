@@ -27,7 +27,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -93,7 +93,7 @@ implements Flutterer {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.lookControl = new BeeLookControl(this);
-        this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
     }
 
     @Override
@@ -452,7 +452,7 @@ implements Flutterer {
     }
 
     @Override
-    protected boolean method_5776() {
+    protected boolean hasWings() {
         return true;
     }
 
@@ -842,12 +842,12 @@ implements Flutterer {
             BlockPos blockPos = this.getTargetPos();
             boolean bl = blockPos.isWithinDistance(BeeEntity.this.getPos(), 8.0);
             if (BeeEntity.this.getNavigation().isIdle()) {
-                Vec3d vec3d = PathfindingUtil.method_6377(BeeEntity.this, 8, 6, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3141592741012573);
+                Vec3d vec3d = TargetFinder.findTargetTowards(BeeEntity.this, 8, 6, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), 0.3141592741012573);
                 if (vec3d == null) {
-                    vec3d = PathfindingUtil.method_6373(BeeEntity.this, 3, 3, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                    vec3d = TargetFinder.findTargetTowards(BeeEntity.this, 3, 3, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                 }
                 if (vec3d != null && !bl && BeeEntity.this.world.getBlockState(new BlockPos(vec3d)).getBlock() != Blocks.WATER) {
-                    vec3d = PathfindingUtil.method_6373(BeeEntity.this, 8, 6, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+                    vec3d = TargetFinder.findTargetTowards(BeeEntity.this, 8, 6, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
                 }
                 if (vec3d == null) {
                     this.failedToFindPath = true;
@@ -887,11 +887,11 @@ implements Flutterer {
         private Vec3d getRandomLocation() {
             Vec3d vec3d = BeeEntity.this.getRotationVec(0.5f);
             int i = 8;
-            Vec3d vec3d2 = PathfindingUtil.method_21757(BeeEntity.this, 8, 7, vec3d, 1.5707964f, 2, 1);
+            Vec3d vec3d2 = TargetFinder.method_21757(BeeEntity.this, 8, 7, vec3d, 1.5707964f, 2, 1);
             if (vec3d2 != null) {
                 return vec3d2;
             }
-            return PathfindingUtil.method_21756(BeeEntity.this, 8, 4, -2, vec3d, 1.5707963705062866);
+            return TargetFinder.method_21756(BeeEntity.this, 8, 4, -2, vec3d, 1.5707963705062866);
         }
     }
 

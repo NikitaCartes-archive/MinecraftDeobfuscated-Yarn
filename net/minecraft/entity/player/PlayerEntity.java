@@ -171,7 +171,7 @@ extends LivingEntity {
         this.field_6215 = 180.0f;
     }
 
-    public boolean method_21701(World world, BlockPos blockPos, GameMode gameMode) {
+    public boolean canMine(World world, BlockPos blockPos, GameMode gameMode) {
         if (!gameMode.shouldLimitWorldModification()) {
             return false;
         }
@@ -270,11 +270,11 @@ extends LivingEntity {
         this.updateSize();
     }
 
-    public boolean method_21823() {
+    public boolean shouldCancelInteraction() {
         return this.isSneaking();
     }
 
-    protected boolean method_21824() {
+    protected boolean shouldDismount() {
         return this.isSneaking();
     }
 
@@ -413,7 +413,7 @@ extends LivingEntity {
 
     @Override
     public void tickRiding() {
-        if (!this.world.isClient && this.method_21824() && this.hasVehicle()) {
+        if (!this.world.isClient && this.shouldDismount() && this.hasVehicle()) {
             this.stopRiding();
             this.setSneaking(false);
             return;
@@ -572,9 +572,8 @@ extends LivingEntity {
         return SoundEvents.ENTITY_PLAYER_DEATH;
     }
 
-    @Nullable
-    public ItemEntity dropSelectedItem(boolean bl) {
-        return this.dropItem(this.inventory.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1), false, true);
+    public boolean dropSelectedItem(boolean bl) {
+        return this.dropItem(this.inventory.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1), false, true) != null;
     }
 
     @Nullable
@@ -729,7 +728,7 @@ extends LivingEntity {
         if (damageSource == DamageSource.FALL) {
             return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
         }
-        if (damageSource == DamageSource.ON_FIRE || damageSource == DamageSource.IN_FIRE) {
+        if (damageSource == DamageSource.ON_FIRE || damageSource == DamageSource.IN_FIRE || damageSource == DamageSource.LAVA) {
             return !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
         }
         return false;
@@ -740,7 +739,7 @@ extends LivingEntity {
         if (this.isInvulnerableTo(damageSource)) {
             return false;
         }
-        if (this.abilities.invulnerable && !damageSource.doesDamageToCreative()) {
+        if (this.abilities.invulnerable && !damageSource.isOutOfWorld()) {
             return false;
         }
         this.despawnCounter = 0;
@@ -908,7 +907,7 @@ extends LivingEntity {
     }
 
     @Override
-    protected Vec3d clipSneakingMovement(Vec3d vec3d, MovementType movementType) {
+    protected Vec3d adjustMovementForSneaking(Vec3d vec3d, MovementType movementType) {
         if ((movementType == MovementType.SELF || movementType == MovementType.PLAYER) && this.onGround && this.method_21825()) {
             double d = vec3d.x;
             double e = vec3d.z;
@@ -1010,7 +1009,7 @@ extends LivingEntity {
                 }
                 if (bl42) {
                     float l = 1.0f + EnchantmentHelper.getSweepingMultiplier(this) * f;
-                    List<LivingEntity> list = this.world.getEntities(LivingEntity.class, entity.getBoundingBox().expand(1.0, 0.25, 1.0));
+                    List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, entity.getBoundingBox().expand(1.0, 0.25, 1.0));
                     for (LivingEntity livingEntity : list) {
                         if (livingEntity == this || livingEntity == entity || this.isTeammate(livingEntity) || livingEntity instanceof ArmorStandEntity && ((ArmorStandEntity)livingEntity).isMarker() || !(this.squaredDistanceTo(livingEntity) < 9.0)) continue;
                         livingEntity.takeKnockback(this, 0.4f, MathHelper.sin(this.yaw * ((float)Math.PI / 180)), -MathHelper.cos(this.yaw * ((float)Math.PI / 180)));

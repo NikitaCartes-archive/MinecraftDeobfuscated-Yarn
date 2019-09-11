@@ -747,7 +747,7 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         this.method_16293(Blocks.SEAGRASS, BlockLootTableGenerator::method_10372);
         this.method_16293(Blocks.VINE, BlockLootTableGenerator::method_10372);
         this.method_16258(Blocks.TALL_SEAGRASS, BlockLootTableGenerator.method_10372(Blocks.SEAGRASS));
-        this.method_16258(Blocks.LARGE_FERN, BlockLootTableGenerator.method_10372(Blocks.FERN));
+        this.method_16293(Blocks.LARGE_FERN, block -> BlockLootTableGenerator.method_10380(Blocks.FERN, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))).method_421(RandomChanceLootCondition.builder(0.125f))));
         this.method_16293(Blocks.TALL_GRASS, block -> BlockLootTableGenerator.method_10380(Blocks.GRASS, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))).method_421(RandomChanceLootCondition.builder(0.125f))));
         this.method_16293(Blocks.MELON_STEM, block -> BlockLootTableGenerator.method_10387(block, Items.MELON_SEEDS));
         this.method_16293(Blocks.PUMPKIN_STEM, block -> BlockLootTableGenerator.method_10387(block, Items.PUMPKIN_SEEDS));

@@ -128,7 +128,7 @@ extends ChunkManager {
             return chunk2;
         }
         CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(i, j, chunkStatus, bl);
-        this.mainThreadExecutor.waitFor(completableFuture::isDone);
+        this.mainThreadExecutor.executeTasks(completableFuture::isDone);
         chunk2 = completableFuture.join().map(chunk -> chunk, unloaded -> {
             if (bl) {
                 throw SystemUtil.throwOrPause(new IllegalStateException("Chunk not there when requested: " + unloaded));
@@ -141,7 +141,7 @@ extends ChunkManager {
 
     @Override
     @Nullable
-    public WorldChunk method_21730(int i, int j) {
+    public WorldChunk getWorldChunk(int i, int j) {
         if (Thread.currentThread() != this.serverThread) {
             return null;
         }
@@ -170,7 +170,7 @@ extends ChunkManager {
     }
 
     private void initChunkCaches() {
-        Arrays.fill(this.chunkPosCache, ChunkPos.INVALID);
+        Arrays.fill(this.chunkPosCache, ChunkPos.MARKER);
         Arrays.fill(this.chunkStatusCache, null);
         Arrays.fill(this.chunkCache, null);
     }
@@ -182,7 +182,7 @@ extends ChunkManager {
         boolean bl3 = bl2 = Thread.currentThread() == this.serverThread;
         if (bl2) {
             completableFuture2 = this.getChunkFuture(i, j, chunkStatus, bl);
-            this.mainThreadExecutor.waitFor(() -> completableFuture2.isDone());
+            this.mainThreadExecutor.executeTasks(() -> completableFuture2.isDone());
         } else {
             completableFuture2 = CompletableFuture.supplyAsync(() -> this.getChunkFuture(i, j, chunkStatus, bl), this.mainThreadExecutor).thenCompose(completableFuture -> completableFuture);
         }
@@ -378,7 +378,7 @@ extends ChunkManager {
 
     @VisibleForTesting
     public int method_21694() {
-        return this.mainThreadExecutor.method_21684();
+        return this.mainThreadExecutor.getTaskQueueSize();
     }
 
     public ChunkGenerator<?> getChunkGenerator() {
@@ -403,7 +403,7 @@ extends ChunkManager {
         this.mainThreadExecutor.execute(() -> {
             ChunkHolder chunkHolder = this.getChunkHolder(chunkSectionPos.toChunkPos().toLong());
             if (chunkHolder != null) {
-                chunkHolder.markForLightUpdate(lightType, chunkSectionPos.getChunkY());
+                chunkHolder.markForLightUpdate(lightType, chunkSectionPos.getSectionY());
             }
         });
     }
@@ -481,17 +481,17 @@ extends ChunkManager {
         }
 
         @Override
-        protected Runnable prepareRunnable(Runnable runnable) {
+        protected Runnable createTask(Runnable runnable) {
             return runnable;
         }
 
         @Override
-        protected boolean canRun(Runnable runnable) {
+        protected boolean canExecute(Runnable runnable) {
             return true;
         }
 
         @Override
-        protected boolean shouldRunAsync() {
+        protected boolean shouldExecuteAsync() {
             return true;
         }
 

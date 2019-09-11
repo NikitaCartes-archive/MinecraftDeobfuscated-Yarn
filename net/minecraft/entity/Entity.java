@@ -149,10 +149,10 @@ CommandOutput {
     public boolean removed;
     public float prevHorizontalSpeed;
     public float horizontalSpeed;
-    public float distanceWalked;
+    public float distanceTraveled;
     public float fallDistance;
-    private float nextStepDistance = 1.0f;
-    private float aerialStepDelta = 1.0f;
+    private float nextStepSoundDistance = 1.0f;
+    private float nextFlySoundDistance = 1.0f;
     public double prevRenderX;
     public double prevRenderY;
     public double prevRenderZ;
@@ -430,11 +430,11 @@ CommandOutput {
         }
     }
 
-    public void method_20803(int i) {
+    public void setFireTime(int i) {
         this.fireTime = i;
     }
 
-    public int method_20802() {
+    public int getFireTime() {
         return this.fireTime;
     }
 
@@ -451,7 +451,7 @@ CommandOutput {
     }
 
     private boolean doesNotCollide(Box box) {
-        return this.world.doesNotCollide(this, box) && !this.world.method_22345(box);
+        return this.world.doesNotCollide(this, box) && !this.world.containsFluid(box);
     }
 
     public void move(MovementType movementType, Vec3d vec3d) {
@@ -464,7 +464,7 @@ CommandOutput {
             this.moveToBoundingBoxCenter();
             return;
         }
-        if (movementType == MovementType.PISTON && (vec3d = this.applyPistonMovement(vec3d)).equals(Vec3d.ZERO)) {
+        if (movementType == MovementType.PISTON && (vec3d = this.adjustMovementForPiston(vec3d)).equals(Vec3d.ZERO)) {
             return;
         }
         this.world.getProfiler().push("move");
@@ -473,13 +473,13 @@ CommandOutput {
             this.movementMultiplier = Vec3d.ZERO;
             this.setVelocity(Vec3d.ZERO);
         }
-        if ((vec3d2 = this.handleCollisions(vec3d = this.clipSneakingMovement(vec3d, movementType))).lengthSquared() > 1.0E-7) {
+        if ((vec3d2 = this.adjustMovementForCollisions(vec3d = this.adjustMovementForSneaking(vec3d, movementType))).lengthSquared() > 1.0E-7) {
             this.setBoundingBox(this.getBoundingBox().offset(vec3d2));
             this.moveToBoundingBoxCenter();
         }
         this.world.getProfiler().pop();
         this.world.getProfiler().push("rest");
-        this.horizontalCollision = !MathHelper.method_20390(vec3d.x, vec3d2.x) || !MathHelper.method_20390(vec3d.z, vec3d2.z);
+        this.horizontalCollision = !MathHelper.approximatelyEquals(vec3d.x, vec3d2.x) || !MathHelper.approximatelyEquals(vec3d.z, vec3d2.z);
         this.verticalCollision = vec3d.y != vec3d2.y;
         this.onGround = this.verticalCollision && vec3d.y < 0.0;
         this.collided = this.horizontalCollision || this.verticalCollision;
@@ -515,9 +515,9 @@ CommandOutput {
                 e = 0.0;
             }
             this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d2)) * 0.6);
-            this.distanceWalked = (float)((double)this.distanceWalked + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
-            if (this.distanceWalked > this.nextStepDistance && !blockState.isAir()) {
-                this.nextStepDistance = this.calculateStepDelta();
+            this.distanceTraveled = (float)((double)this.distanceTraveled + (double)MathHelper.sqrt(d * d + e * e + f * f) * 0.6);
+            if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
+                this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isInsideWater()) {
                     Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
                     float g = entity == this ? 0.35f : 0.4f;
@@ -530,8 +530,8 @@ CommandOutput {
                 } else {
                     this.playStepSound(blockPos, blockState);
                 }
-            } else if (this.distanceWalked > this.aerialStepDelta && this.method_5776() && blockState.isAir()) {
-                this.aerialStepDelta = this.calculateAerialStepDelta(this.distanceWalked);
+            } else if (this.distanceTraveled > this.nextFlySoundDistance && this.hasWings() && blockState.isAir()) {
+                this.nextFlySoundDistance = this.playFlySound(this.distanceTraveled);
             }
         }
         try {
@@ -562,11 +562,11 @@ CommandOutput {
         this.world.getProfiler().pop();
     }
 
-    protected Vec3d clipSneakingMovement(Vec3d vec3d, MovementType movementType) {
+    protected Vec3d adjustMovementForSneaking(Vec3d vec3d, MovementType movementType) {
         return vec3d;
     }
 
-    protected Vec3d applyPistonMovement(Vec3d vec3d) {
+    protected Vec3d adjustMovementForPiston(Vec3d vec3d) {
         if (vec3d.lengthSquared() <= 1.0E-7) {
             return vec3d;
         }
@@ -598,28 +598,28 @@ CommandOutput {
         return d;
     }
 
-    private Vec3d handleCollisions(Vec3d vec3d) {
+    private Vec3d adjustMovementForCollisions(Vec3d vec3d) {
         boolean bl4;
         Box box = this.getBoundingBox();
         EntityContext entityContext = EntityContext.of(this);
         VoxelShape voxelShape = this.world.getWorldBorder().asVoxelShape();
         Stream<Object> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(box.contract(1.0E-7)), BooleanBiFunction.AND) ? Stream.empty() : Stream.of(voxelShape);
-        Stream<VoxelShape> stream2 = this.world.method_20743(this, box.stretch(vec3d), ImmutableSet.of());
+        Stream<VoxelShape> stream2 = this.world.getEntityCollisions(this, box.stretch(vec3d), ImmutableSet.of());
         ReusableStream<VoxelShape> reusableStream = new ReusableStream<VoxelShape>(Stream.concat(stream2, stream));
-        Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : Entity.calculateMotionVector(this, vec3d, box, this.world, entityContext, reusableStream);
+        Vec3d vec3d2 = vec3d.lengthSquared() == 0.0 ? vec3d : Entity.adjustMovementForCollisions(this, vec3d, box, this.world, entityContext, reusableStream);
         boolean bl = vec3d.x != vec3d2.x;
         boolean bl2 = vec3d.y != vec3d2.y;
         boolean bl3 = vec3d.z != vec3d2.z;
         boolean bl5 = bl4 = this.onGround || bl2 && vec3d.y < 0.0;
         if (this.stepHeight > 0.0f && bl4 && (bl || bl3)) {
             Vec3d vec3d5;
-            Vec3d vec3d3 = Entity.calculateMotionVector(this, new Vec3d(vec3d.x, this.stepHeight, vec3d.z), box, this.world, entityContext, reusableStream);
-            Vec3d vec3d4 = Entity.calculateMotionVector(this, new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(vec3d.x, 0.0, vec3d.z), this.world, entityContext, reusableStream);
-            if (vec3d4.y < (double)this.stepHeight && Entity.squaredHorizontalLength(vec3d5 = Entity.calculateMotionVector(this, new Vec3d(vec3d.x, 0.0, vec3d.z), box.offset(vec3d4), this.world, entityContext, reusableStream).add(vec3d4)) > Entity.squaredHorizontalLength(vec3d3)) {
+            Vec3d vec3d3 = Entity.adjustMovementForCollisions(this, new Vec3d(vec3d.x, this.stepHeight, vec3d.z), box, this.world, entityContext, reusableStream);
+            Vec3d vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(vec3d.x, 0.0, vec3d.z), this.world, entityContext, reusableStream);
+            if (vec3d4.y < (double)this.stepHeight && Entity.squaredHorizontalLength(vec3d5 = Entity.adjustMovementForCollisions(this, new Vec3d(vec3d.x, 0.0, vec3d.z), box.offset(vec3d4), this.world, entityContext, reusableStream).add(vec3d4)) > Entity.squaredHorizontalLength(vec3d3)) {
                 vec3d3 = vec3d5;
             }
             if (Entity.squaredHorizontalLength(vec3d3) > Entity.squaredHorizontalLength(vec3d2)) {
-                return vec3d3.add(Entity.calculateMotionVector(this, new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), box.offset(vec3d3), this.world, entityContext, reusableStream));
+                return vec3d3.add(Entity.adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d3.y + vec3d.y, 0.0), box.offset(vec3d3), this.world, entityContext, reusableStream));
             }
         }
         return vec3d2;
@@ -629,19 +629,19 @@ CommandOutput {
         return vec3d.x * vec3d.x + vec3d.z * vec3d.z;
     }
 
-    public static Vec3d calculateMotionVector(@Nullable Entity entity, Vec3d vec3d, Box box, World world, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
+    public static Vec3d adjustMovementForCollisions(@Nullable Entity entity, Vec3d vec3d, Box box, World world, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
         boolean bl3;
         boolean bl = vec3d.x == 0.0;
         boolean bl2 = vec3d.y == 0.0;
         boolean bl4 = bl3 = vec3d.z == 0.0;
         if (bl && bl2 || bl && bl3 || bl2 && bl3) {
-            return Entity.calculateTangentialMotionVector(vec3d, box, world, entityContext, reusableStream);
+            return Entity.adjustSingleAxisMovementForCollisions(vec3d, box, world, entityContext, reusableStream);
         }
-        ReusableStream<VoxelShape> reusableStream2 = new ReusableStream<VoxelShape>(Stream.concat(reusableStream.stream(), world.method_20812(entity, box.stretch(vec3d))));
-        return Entity.method_20737(vec3d, box, reusableStream2);
+        ReusableStream<VoxelShape> reusableStream2 = new ReusableStream<VoxelShape>(Stream.concat(reusableStream.stream(), world.getBlockCollisions(entity, box.stretch(vec3d))));
+        return Entity.adjustMovementForCollisions(vec3d, box, reusableStream2);
     }
 
-    public static Vec3d method_20737(Vec3d vec3d, Box box, ReusableStream<VoxelShape> reusableStream) {
+    public static Vec3d adjustMovementForCollisions(Vec3d vec3d, Box box, ReusableStream<VoxelShape> reusableStream) {
         boolean bl;
         double d = vec3d.x;
         double e = vec3d.y;
@@ -665,32 +665,32 @@ CommandOutput {
         return new Vec3d(d, e, f);
     }
 
-    public static Vec3d calculateTangentialMotionVector(Vec3d vec3d, Box box, class_4538 arg, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
+    public static Vec3d adjustSingleAxisMovementForCollisions(Vec3d vec3d, Box box, class_4538 arg, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
         boolean bl;
         double d = vec3d.x;
         double e = vec3d.y;
         double f = vec3d.z;
-        if (e != 0.0 && (e = VoxelShapes.calculateSoftOffset(Direction.Axis.Y, box, arg, e, entityContext, reusableStream.stream())) != 0.0) {
+        if (e != 0.0 && (e = VoxelShapes.method_17945(Direction.Axis.Y, box, arg, e, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, e, 0.0);
         }
         boolean bl2 = bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0 && (f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream())) != 0.0) {
+        if (bl && f != 0.0 && (f = VoxelShapes.method_17945(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, 0.0, f);
         }
         if (d != 0.0) {
-            d = VoxelShapes.calculateSoftOffset(Direction.Axis.X, box, arg, d, entityContext, reusableStream.stream());
+            d = VoxelShapes.method_17945(Direction.Axis.X, box, arg, d, entityContext, reusableStream.stream());
             if (!bl && d != 0.0) {
                 box = box.offset(d, 0.0, 0.0);
             }
         }
         if (!bl && f != 0.0) {
-            f = VoxelShapes.calculateSoftOffset(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream());
+            f = VoxelShapes.method_17945(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream());
         }
         return new Vec3d(d, e, f);
     }
 
-    protected float calculateStepDelta() {
-        return (int)this.distanceWalked + 1;
+    protected float calculateNextStepSoundDistance() {
+        return (int)this.distanceTraveled + 1;
     }
 
     public void moveToBoundingBoxCenter() {
@@ -717,7 +717,7 @@ CommandOutput {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.minX + 0.001, box.minY + 0.001, box.minZ + 0.001);
              BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.maxX - 0.001, box.maxY - 0.001, box.maxZ - 0.001);
              BlockPos.PooledMutable pooledMutable3 = BlockPos.PooledMutable.get();){
-            if (this.world.method_22343(pooledMutable, pooledMutable2)) {
+            if (this.world.isRegionLoaded(pooledMutable, pooledMutable2)) {
                 for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); ++i) {
                     for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); ++j) {
                         for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); ++k) {
@@ -756,11 +756,11 @@ CommandOutput {
         this.playSound(this.getSwimSound(), f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
     }
 
-    protected float calculateAerialStepDelta(float f) {
+    protected float playFlySound(float f) {
         return 0.0f;
     }
 
-    protected boolean method_5776() {
+    protected boolean hasWings() {
         return false;
     }
 
@@ -983,17 +983,17 @@ CommandOutput {
     @Environment(value=EnvType.CLIENT)
     public int getLightmapCoordinates() {
         BlockPos blockPos = new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
-        if (this.world.method_22340(blockPos)) {
-            return this.world.method_22337(blockPos);
+        if (this.world.isChunkLoaded(blockPos)) {
+            return this.world.getLightmapIndex(blockPos);
         }
         return 0;
     }
 
     public float getBrightnessAtEyes() {
         BlockPos.Mutable mutable = new BlockPos.Mutable(this.x, 0.0, this.z);
-        if (this.world.method_22340(mutable)) {
+        if (this.world.isChunkLoaded(mutable)) {
             mutable.setY(MathHelper.floor(this.y + (double)this.getStandingEyeHeight()));
-            return this.world.method_22349(mutable);
+            return this.world.getBrightness(mutable);
         }
         return 0.0f;
     }
@@ -1200,7 +1200,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension();
+        double e = this.getBoundingBox().getAverageSideLength();
         if (Double.isNaN(e)) {
             e = 1.0;
         }
@@ -1316,7 +1316,7 @@ CommandOutput {
             }
             this.invulnerable = compoundTag.getBoolean("Invulnerable");
             this.portalCooldown = compoundTag.getInt("PortalCooldown");
-            if (compoundTag.hasUuid("UUID")) {
+            if (compoundTag.containsUuid("UUID")) {
                 this.uuid = compoundTag.getUuid("UUID");
                 this.uuidString = this.uuid.toString();
             }
@@ -2423,7 +2423,7 @@ CommandOutput {
         int k = MathHelper.floor(box.minY);
         int l = MathHelper.ceil(box.maxY);
         int m = MathHelper.floor(box.minZ);
-        if (!this.world.method_22341(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
+        if (!this.world.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
             return false;
         }
         double d = 0.0;

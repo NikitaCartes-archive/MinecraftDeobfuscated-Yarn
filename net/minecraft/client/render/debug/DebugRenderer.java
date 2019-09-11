@@ -79,7 +79,7 @@ public class DebugRenderer {
         this.gameTestDebugRenderer = new GameTestDebugRenderer();
     }
 
-    public void method_20413() {
+    public void reset() {
         this.pathfindingDebugRenderer.clear();
         this.waterDebugRenderer.clear();
         this.chunkBorderDebugRenderer.clear();
@@ -103,7 +103,7 @@ public class DebugRenderer {
         return this.showChunkBorder;
     }
 
-    public void renderDebuggers(long l) {
+    public void render(long l) {
         if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
             this.chunkBorderDebugRenderer.render(l);
         }
@@ -162,19 +162,19 @@ public class DebugRenderer {
         tessellator.draw();
     }
 
-    public static void method_3711(String string, int i, int j, int k, int l) {
-        DebugRenderer.method_3714(string, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, l);
+    public static void drawBlockFloatingText(String string, int i, int j, int k, int l) {
+        DebugRenderer.drawFloatingText(string, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, l);
     }
 
-    public static void method_3714(String string, double d, double e, double f, int i) {
-        DebugRenderer.method_19429(string, d, e, f, i, 0.02f);
+    public static void drawFloatingText(String string, double d, double e, double f, int i) {
+        DebugRenderer.drawFloatingText(string, d, e, f, i, 0.02f);
     }
 
-    public static void method_19429(String string, double d, double e, double f, int i, float g) {
-        DebugRenderer.method_3712(string, d, e, f, i, g, true, 0.0f, false);
+    public static void drawFloatingText(String string, double d, double e, double f, int i, float g) {
+        DebugRenderer.drawFloatingText(string, d, e, f, i, g, true, 0.0f, false);
     }
 
-    public static void method_3712(String string, double d, double e, double f, int i, float g, boolean bl, float h, boolean bl2) {
+    public static void drawFloatingText(String string, double d, double e, double f, int i, float g, boolean bl, float h, boolean bl2) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         Camera camera = minecraftClient.gameRenderer.getCamera();
         if (!camera.isReady() || minecraftClient.getEntityRenderManager().gameOptions == null) {

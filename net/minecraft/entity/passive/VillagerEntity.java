@@ -762,7 +762,7 @@ VillagerDataContainer {
             return;
         }
         Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
-        List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, box);
+        List<VillagerEntity> list = this.world.getNonSpectatingEntities(VillagerEntity.class, box);
         List list2 = list.stream().filter(villagerEntity -> villagerEntity.canSummonGolem(l)).limit(5L).collect(Collectors.toList());
         if (list2.size() < i) {
             return;

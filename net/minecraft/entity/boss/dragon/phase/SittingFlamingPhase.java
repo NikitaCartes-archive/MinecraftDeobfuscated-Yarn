@@ -62,7 +62,7 @@ extends AbstractSittingPhase {
             double e = this.dragon.partHead.z + vec3d.z * 5.0 / 2.0;
             double h = g = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0f);
             BlockPos.Mutable mutable = new BlockPos.Mutable(d, h, e);
-            while (this.dragon.world.method_22347(mutable)) {
+            while (this.dragon.world.isAir(mutable)) {
                 if ((h -= 1.0) < 0.0) {
                     h = g;
                     break;

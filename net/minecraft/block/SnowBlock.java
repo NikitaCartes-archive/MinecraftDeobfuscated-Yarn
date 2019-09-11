@@ -87,7 +87,7 @@ extends Block {
     public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11) {
             SnowBlock.dropStacks(blockState, serverWorld, blockPos);
-            serverWorld.clearBlockState(blockPos, false);
+            serverWorld.removeBlock(blockPos, false);
         }
     }
 

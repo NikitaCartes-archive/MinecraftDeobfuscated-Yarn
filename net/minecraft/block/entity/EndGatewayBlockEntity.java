@@ -86,7 +86,7 @@ implements Tickable {
         if (bl2) {
             --this.teleportCooldown;
         } else if (!this.world.isClient) {
-            List<Entity> list = this.world.getEntities(Entity.class, new Box(this.getPos()));
+            List<Entity> list = this.world.getNonSpectatingEntities(Entity.class, new Box(this.getPos()));
             if (!list.isEmpty()) {
                 this.tryTeleportingEntity(list.get(0));
             }

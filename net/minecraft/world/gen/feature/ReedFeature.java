@@ -26,7 +26,7 @@ extends Feature<DefaultFeatureConfig> {
         for (int j = 0; j < 20; ++j) {
             BlockPos blockPos3;
             BlockPos blockPos2 = blockPos.add(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
-            if (!iWorld.method_22347(blockPos2) || !iWorld.getFluidState((blockPos3 = blockPos2.down()).west()).matches(FluidTags.WATER) && !iWorld.getFluidState(blockPos3.east()).matches(FluidTags.WATER) && !iWorld.getFluidState(blockPos3.north()).matches(FluidTags.WATER) && !iWorld.getFluidState(blockPos3.south()).matches(FluidTags.WATER)) continue;
+            if (!iWorld.isAir(blockPos2) || !iWorld.getFluidState((blockPos3 = blockPos2.down()).west()).matches(FluidTags.WATER) && !iWorld.getFluidState(blockPos3.east()).matches(FluidTags.WATER) && !iWorld.getFluidState(blockPos3.north()).matches(FluidTags.WATER) && !iWorld.getFluidState(blockPos3.south()).matches(FluidTags.WATER)) continue;
             int k = 2 + random.nextInt(random.nextInt(3) + 1);
             for (int l = 0; l < k; ++l) {
                 if (!Blocks.SUGAR_CANE.getDefaultState().canPlaceAt(iWorld, blockPos2)) continue;

@@ -53,11 +53,11 @@ extends CowEntity {
         if (arg.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM) {
             return 10.0f;
         }
-        return arg.method_22349(blockPos) - 0.5f;
+        return arg.getBrightness(blockPos) - 0.5f;
     }
 
     public static boolean method_20665(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.method_22335(blockPos, 0) > 8;
+        return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.MYCELIUM && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 
     @Override

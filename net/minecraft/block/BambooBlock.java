@@ -106,13 +106,13 @@ implements Fertilizable {
     public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int i;
         if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-            serverWorld.method_22352(blockPos, true);
+            serverWorld.breakBlock(blockPos, true);
             return;
         }
         if (blockState.get(STAGE) != 0) {
             return;
         }
-        if (random.nextInt(3) == 0 && serverWorld.method_22347(blockPos.up()) && serverWorld.method_22335(blockPos.up(), 0) >= 9 && (i = this.countBambooBelow(serverWorld, blockPos) + 1) < 16) {
+        if (random.nextInt(3) == 0 && serverWorld.isAir(blockPos.up()) && serverWorld.getBaseLightLevel(blockPos.up(), 0) >= 9 && (i = this.countBambooBelow(serverWorld, blockPos) + 1) < 16) {
             this.updateLeaves(blockState, serverWorld, blockPos, random, i);
         }
     }
@@ -154,7 +154,7 @@ implements Fertilizable {
         for (int m = 0; m < l; ++m) {
             BlockPos blockPos2 = blockPos.up(i);
             BlockState blockState2 = serverWorld.getBlockState(blockPos2);
-            if (k >= 16 || blockState2.get(STAGE) == 1 || !serverWorld.method_22347(blockPos2.up())) {
+            if (k >= 16 || blockState2.get(STAGE) == 1 || !serverWorld.isAir(blockPos2.up())) {
                 return;
             }
             this.updateLeaves(blockState2, serverWorld, blockPos2, random, k);

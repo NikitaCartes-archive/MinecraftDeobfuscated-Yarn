@@ -17,7 +17,7 @@ public class BoatEntityModel
 extends EntityModel<BoatEntity> {
     private final ModelPart[] body = new ModelPart[5];
     private final ModelPart[] paddles = new ModelPart[2];
-    private final ModelPart field_3326;
+    private final ModelPart bottom;
 
     public BoatEntityModel() {
         this.body[0] = new ModelPart(this, 0, 0).setTextureSize(128, 64);
@@ -51,10 +51,10 @@ extends EntityModel<BoatEntity> {
         this.paddles[1].yaw = (float)Math.PI;
         this.paddles[0].roll = 0.19634955f;
         this.paddles[1].roll = 0.19634955f;
-        this.field_3326 = new ModelPart(this, 0, 0).setTextureSize(128, 64);
-        this.field_3326.addCuboid(-14.0f, -9.0f, -3.0f, 28, 16, 3, 0.0f);
-        this.field_3326.setRotationPoint(0.0f, -3.0f, 1.0f);
-        this.field_3326.pitch = 1.5707964f;
+        this.bottom = new ModelPart(this, 0, 0).setTextureSize(128, 64);
+        this.bottom.addCuboid(-14.0f, -9.0f, -3.0f, 28, 16, 3, 0.0f);
+        this.bottom.setRotationPoint(0.0f, -3.0f, 1.0f);
+        this.bottom.pitch = 1.5707964f;
     }
 
     public void method_17071(BoatEntity boatEntity, float f, float g, float h, float i, float j, float k) {
@@ -70,7 +70,7 @@ extends EntityModel<BoatEntity> {
     public void renderPass(Entity entity, float f, float g, float h, float i, float j, float k) {
         RenderSystem.rotatef(90.0f, 0.0f, 1.0f, 0.0f);
         RenderSystem.colorMask(false, false, false, false);
-        this.field_3326.render(k);
+        this.bottom.render(k);
         RenderSystem.colorMask(true, true, true, true);
     }
 

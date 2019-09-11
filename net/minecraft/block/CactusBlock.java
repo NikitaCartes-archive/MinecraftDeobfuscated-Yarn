@@ -40,11 +40,11 @@ extends Block {
     @Override
     public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-            serverWorld.method_22352(blockPos, true);
+            serverWorld.breakBlock(blockPos, true);
             return;
         }
         BlockPos blockPos2 = blockPos.up();
-        if (!serverWorld.method_22347(blockPos2)) {
+        if (!serverWorld.isAir(blockPos2)) {
             return;
         }
         int i = 1;

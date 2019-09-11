@@ -120,8 +120,8 @@ extends AnimalEntity {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.lookControl = new FoxLookControl();
         this.moveControl = new FoxMoveControl();
-        this.setPathNodeTypeWeight(PathNodeType.DANGER_OTHER, 0.0f);
-        this.setPathNodeTypeWeight(PathNodeType.DAMAGE_OTHER, 0.0f);
+        this.setPathfindingPenalty(PathNodeType.DANGER_OTHER, 0.0f);
+        this.setPathfindingPenalty(PathNodeType.DAMAGE_OTHER, 0.0f);
         this.setCanPickUpLoot(true);
     }
 
@@ -258,14 +258,11 @@ extends AnimalEntity {
         boolean bl = false;
         if (entityData instanceof FoxData) {
             type = ((FoxData)entityData).type;
-            if (((FoxData)entityData).uses >= 2) {
+            if (((FoxData)entityData).method_22432() >= 2) {
                 bl = true;
-            } else {
-                ++((FoxData)entityData).uses;
             }
         } else {
             entityData = new FoxData(type);
-            ++((FoxData)entityData).uses;
         }
         this.setType(type);
         if (bl) {
@@ -884,11 +881,11 @@ extends AnimalEntity {
     }
 
     public static class FoxData
-    implements EntityData {
+    extends PassiveEntity._1 {
         public final Type type;
-        public int uses;
 
         public FoxData(Type type) {
+            this.method_22434(false);
             this.type = type;
         }
     }

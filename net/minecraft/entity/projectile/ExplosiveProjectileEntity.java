@@ -65,7 +65,7 @@ extends Entity {
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderAtDistance(double d) {
-        double e = this.getBoundingBox().averageDimension() * 4.0;
+        double e = this.getBoundingBox().getAverageSideLength() * 4.0;
         if (Double.isNaN(e)) {
             e = 4.0;
         }
@@ -74,7 +74,7 @@ extends Entity {
 
     @Override
     public void tick() {
-        if (!this.world.isClient && (this.owner != null && this.owner.removed || !this.world.method_22340(new BlockPos(this)))) {
+        if (!this.world.isClient && (this.owner != null && this.owner.removed || !this.world.isChunkLoaded(new BlockPos(this)))) {
             this.remove();
             return;
         }

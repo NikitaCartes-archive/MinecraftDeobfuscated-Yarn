@@ -11,6 +11,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
@@ -40,14 +41,22 @@ extends MiningToolItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-        BlockState blockState;
         World world = itemUsageContext.getWorld();
         BlockPos blockPos = itemUsageContext.getBlockPos();
-        if (itemUsageContext.getSide() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir() && (blockState = PATH_BLOCKSTATES.get(world.getBlockState(blockPos).getBlock())) != null) {
+        BlockState blockState = world.getBlockState(blockPos);
+        if (itemUsageContext.getSide() != Direction.DOWN) {
             PlayerEntity playerEntity2 = itemUsageContext.getPlayer();
-            world.playSound(playerEntity2, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            if (!world.isClient) {
-                world.setBlockState(blockPos, blockState, 11);
+            BlockState blockState2 = PATH_BLOCKSTATES.get(blockState.getBlock());
+            BlockState blockState3 = null;
+            if (blockState2 != null && world.getBlockState(blockPos.up()).isAir()) {
+                world.playSound(playerEntity2, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                blockState3 = blockState2;
+            } else if (blockState.getBlock() instanceof CampfireBlock && blockState.get(CampfireBlock.LIT).booleanValue()) {
+                world.playLevelEvent(null, 1009, blockPos, 0);
+                blockState3 = (BlockState)blockState.with(CampfireBlock.LIT, false);
+            }
+            if (!world.isClient && blockState3 != null) {
+                world.setBlockState(blockPos, blockState3, 11);
                 if (playerEntity2 != null) {
                     itemUsageContext.getStack().damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
                 }

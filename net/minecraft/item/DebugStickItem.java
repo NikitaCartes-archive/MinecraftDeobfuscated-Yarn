@@ -78,11 +78,11 @@ extends Item {
             if (property == null) {
                 property = collection.iterator().next();
             }
-            BlockState blockState2 = DebugStickItem.cycle(blockState, property, playerEntity.method_21823());
+            BlockState blockState2 = DebugStickItem.cycle(blockState, property, playerEntity.shouldCancelInteraction());
             iWorld.setBlockState(blockPos, blockState2, 18);
             DebugStickItem.sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), DebugStickItem.getValueString(blockState2, property)));
         } else {
-            property = DebugStickItem.cycle(collection, property, playerEntity.method_21823());
+            property = DebugStickItem.cycle(collection, property, playerEntity.shouldCancelInteraction());
             String string3 = property.getName();
             compoundTag.putString(string, string3);
             DebugStickItem.sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(blockState, property)));

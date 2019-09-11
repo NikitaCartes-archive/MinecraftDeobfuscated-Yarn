@@ -53,7 +53,7 @@ extends EntityRenderer<BoatEntity> {
         if (h > 0.0f) {
             RenderSystem.rotatef(MathHelper.sin(h) * h * i / 10.0f * (float)boatEntity.getDamageWobbleSide(), 1.0f, 0.0f, 0.0f);
         }
-        if (!MathHelper.equalsApproximate(j = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
+        if (!MathHelper.approximatelyEquals(j = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
             RenderSystem.rotatef(boatEntity.interpolateBubbleWobble(g), 1.0f, 0.0f, 1.0f);
         }
         RenderSystem.scalef(-1.0f, -1.0f, 1.0f);

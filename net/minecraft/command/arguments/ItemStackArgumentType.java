@@ -42,7 +42,7 @@ implements ArgumentType<ItemStackArgument> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return itemStringReader.method_9793(suggestionsBuilder);
+        return itemStringReader.getSuggestions(suggestionsBuilder);
     }
 
     @Override

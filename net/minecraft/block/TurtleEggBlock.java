@@ -71,7 +71,7 @@ extends Block {
         world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7f, 0.9f + world.random.nextFloat() * 0.2f);
         int i = blockState.get(EGGS);
         if (i <= 1) {
-            world.method_22352(blockPos, false);
+            world.breakBlock(blockPos, false);
         } else {
             world.setBlockState(blockPos, (BlockState)blockState.with(EGGS, i - 1), 2);
             world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
@@ -87,7 +87,7 @@ extends Block {
                 serverWorld.setBlockState(blockPos, (BlockState)blockState.with(HATCH, i + 1), 2);
             } else {
                 serverWorld.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                serverWorld.clearBlockState(blockPos, false);
+                serverWorld.removeBlock(blockPos, false);
                 for (int j = 0; j < blockState.get(EGGS); ++j) {
                     serverWorld.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
                     TurtleEntity turtleEntity = EntityType.TURTLE.create(serverWorld);

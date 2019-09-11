@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.thrown.ThrownPotionEntity;
@@ -9,14 +9,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class class_4537
+public class ThrowablePotionItem
 extends PotionItem {
-    public class_4537(Item.Settings settings) {
+    public ThrowablePotionItem(Item.Settings settings) {
         super(settings);
     }
 
@@ -33,7 +32,7 @@ extends PotionItem {
         if (!playerEntity.abilities.creativeMode) {
             itemStack.decrement(1);
         }
-        return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack);
+        return TypedActionResult.method_22427(itemStack);
     }
 }
 

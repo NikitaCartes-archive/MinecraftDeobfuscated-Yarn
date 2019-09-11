@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -40,13 +40,13 @@ public class BlockModelRenderer {
         this.colorMap = blockColors;
     }
 
-    public boolean tesselate(ExtendedBlockView extendedBlockView, BakedModel bakedModel, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, boolean bl, Random random, long l) {
+    public boolean tesselate(BlockRenderView blockRenderView, BakedModel bakedModel, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, boolean bl, Random random, long l) {
         boolean bl2 = MinecraftClient.isAmbientOcclusionEnabled() && blockState.getLuminance() == 0 && bakedModel.useAmbientOcclusion();
         try {
             if (bl2) {
-                return this.tesselateSmooth(extendedBlockView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l);
+                return this.tesselateSmooth(blockRenderView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l);
             }
-            return this.tesselateFlat(extendedBlockView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l);
+            return this.tesselateFlat(blockRenderView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating block model");
             CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
@@ -56,7 +56,7 @@ public class BlockModelRenderer {
         }
     }
 
-    public boolean tesselateSmooth(ExtendedBlockView extendedBlockView, BakedModel bakedModel, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, boolean bl, Random random, long l) {
+    public boolean tesselateSmooth(BlockRenderView blockRenderView, BakedModel bakedModel, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, boolean bl, Random random, long l) {
         boolean bl2 = false;
         float[] fs = new float[Direction.values().length * 2];
         BitSet bitSet = new BitSet(3);
@@ -64,53 +64,53 @@ public class BlockModelRenderer {
         for (Direction direction : Direction.values()) {
             random.setSeed(l);
             List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
-            if (list.isEmpty() || bl && !Block.shouldDrawSide(blockState, extendedBlockView, blockPos, direction)) continue;
-            this.tesselateQuadsSmooth(extendedBlockView, blockState, blockPos, bufferBuilder, list, fs, bitSet, ambientOcclusionCalculator);
+            if (list.isEmpty() || bl && !Block.shouldDrawSide(blockState, blockRenderView, blockPos, direction)) continue;
+            this.tesselateQuadsSmooth(blockRenderView, blockState, blockPos, bufferBuilder, list, fs, bitSet, ambientOcclusionCalculator);
             bl2 = true;
         }
         random.setSeed(l);
         List<BakedQuad> list2 = bakedModel.getQuads(blockState, null, random);
         if (!list2.isEmpty()) {
-            this.tesselateQuadsSmooth(extendedBlockView, blockState, blockPos, bufferBuilder, list2, fs, bitSet, ambientOcclusionCalculator);
+            this.tesselateQuadsSmooth(blockRenderView, blockState, blockPos, bufferBuilder, list2, fs, bitSet, ambientOcclusionCalculator);
             bl2 = true;
         }
         return bl2;
     }
 
-    public boolean tesselateFlat(ExtendedBlockView extendedBlockView, BakedModel bakedModel, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, boolean bl, Random random, long l) {
+    public boolean tesselateFlat(BlockRenderView blockRenderView, BakedModel bakedModel, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, boolean bl, Random random, long l) {
         boolean bl2 = false;
         BitSet bitSet = new BitSet(3);
         for (Direction direction : Direction.values()) {
             random.setSeed(l);
             List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
-            if (list.isEmpty() || bl && !Block.shouldDrawSide(blockState, extendedBlockView, blockPos, direction)) continue;
-            int i = extendedBlockView.getLightmapIndex(blockState, blockPos.offset(direction));
-            this.tesselateQuadsFlat(extendedBlockView, blockState, blockPos, i, false, bufferBuilder, list, bitSet);
+            if (list.isEmpty() || bl && !Block.shouldDrawSide(blockState, blockRenderView, blockPos, direction)) continue;
+            int i = blockRenderView.getLightmapIndex(blockState, blockPos.offset(direction));
+            this.tesselateQuadsFlat(blockRenderView, blockState, blockPos, i, false, bufferBuilder, list, bitSet);
             bl2 = true;
         }
         random.setSeed(l);
         List<BakedQuad> list2 = bakedModel.getQuads(blockState, null, random);
         if (!list2.isEmpty()) {
-            this.tesselateQuadsFlat(extendedBlockView, blockState, blockPos, -1, true, bufferBuilder, list2, bitSet);
+            this.tesselateQuadsFlat(blockRenderView, blockState, blockPos, -1, true, bufferBuilder, list2, bitSet);
             bl2 = true;
         }
         return bl2;
     }
 
-    private void tesselateQuadsSmooth(ExtendedBlockView extendedBlockView, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, List<BakedQuad> list, float[] fs, BitSet bitSet, AmbientOcclusionCalculator ambientOcclusionCalculator) {
-        Vec3d vec3d = blockState.getOffsetPos(extendedBlockView, blockPos);
+    private void tesselateQuadsSmooth(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, BufferBuilder bufferBuilder, List<BakedQuad> list, float[] fs, BitSet bitSet, AmbientOcclusionCalculator ambientOcclusionCalculator) {
+        Vec3d vec3d = blockState.getOffsetPos(blockRenderView, blockPos);
         double d = (double)blockPos.getX() + vec3d.x;
         double e = (double)blockPos.getY() + vec3d.y;
         double f = (double)blockPos.getZ() + vec3d.z;
         int j = list.size();
         for (int i = 0; i < j; ++i) {
             BakedQuad bakedQuad = list.get(i);
-            this.updateShape(extendedBlockView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), fs, bitSet);
-            ambientOcclusionCalculator.apply(extendedBlockView, blockState, blockPos, bakedQuad.getFace(), fs, bitSet);
+            this.updateShape(blockRenderView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), fs, bitSet);
+            ambientOcclusionCalculator.apply(blockRenderView, blockState, blockPos, bakedQuad.getFace(), fs, bitSet);
             bufferBuilder.putVertexData(bakedQuad.getVertexData());
             bufferBuilder.brightness(ambientOcclusionCalculator.brightness[0], ambientOcclusionCalculator.brightness[1], ambientOcclusionCalculator.brightness[2], ambientOcclusionCalculator.brightness[3]);
             if (bakedQuad.hasColor()) {
-                int k = this.colorMap.getColorMultiplier(blockState, extendedBlockView, blockPos, bakedQuad.getColorIndex());
+                int k = this.colorMap.getColorMultiplier(blockState, blockRenderView, blockPos, bakedQuad.getColorIndex());
                 float g = (float)(k >> 16 & 0xFF) / 255.0f;
                 float h = (float)(k >> 8 & 0xFF) / 255.0f;
                 float l = (float)(k & 0xFF) / 255.0f;
@@ -128,7 +128,7 @@ public class BlockModelRenderer {
         }
     }
 
-    private void updateShape(ExtendedBlockView extendedBlockView, BlockState blockState, BlockPos blockPos, int[] is, Direction direction, @Nullable float[] fs, BitSet bitSet) {
+    private void updateShape(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, int[] is, Direction direction, @Nullable float[] fs, BitSet bitSet) {
         float m;
         int l;
         float f = 32.0f;
@@ -168,38 +168,38 @@ public class BlockModelRenderer {
         switch (direction) {
             case DOWN: {
                 bitSet.set(1, f >= 1.0E-4f || h >= 1.0E-4f || i <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, g == j && (g < 1.0E-4f || blockState.method_21743(extendedBlockView, blockPos)));
+                bitSet.set(0, g == j && (g < 1.0E-4f || blockState.method_21743(blockRenderView, blockPos)));
                 break;
             }
             case UP: {
                 bitSet.set(1, f >= 1.0E-4f || h >= 1.0E-4f || i <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, g == j && (j > 0.9999f || blockState.method_21743(extendedBlockView, blockPos)));
+                bitSet.set(0, g == j && (j > 0.9999f || blockState.method_21743(blockRenderView, blockPos)));
                 break;
             }
             case NORTH: {
                 bitSet.set(1, f >= 1.0E-4f || g >= 1.0E-4f || i <= 0.9999f || j <= 0.9999f);
-                bitSet.set(0, h == k && (h < 1.0E-4f || blockState.method_21743(extendedBlockView, blockPos)));
+                bitSet.set(0, h == k && (h < 1.0E-4f || blockState.method_21743(blockRenderView, blockPos)));
                 break;
             }
             case SOUTH: {
                 bitSet.set(1, f >= 1.0E-4f || g >= 1.0E-4f || i <= 0.9999f || j <= 0.9999f);
-                bitSet.set(0, h == k && (k > 0.9999f || blockState.method_21743(extendedBlockView, blockPos)));
+                bitSet.set(0, h == k && (k > 0.9999f || blockState.method_21743(blockRenderView, blockPos)));
                 break;
             }
             case WEST: {
                 bitSet.set(1, g >= 1.0E-4f || h >= 1.0E-4f || j <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, f == i && (f < 1.0E-4f || blockState.method_21743(extendedBlockView, blockPos)));
+                bitSet.set(0, f == i && (f < 1.0E-4f || blockState.method_21743(blockRenderView, blockPos)));
                 break;
             }
             case EAST: {
                 bitSet.set(1, g >= 1.0E-4f || h >= 1.0E-4f || j <= 0.9999f || k <= 0.9999f);
-                bitSet.set(0, f == i && (i > 0.9999f || blockState.method_21743(extendedBlockView, blockPos)));
+                bitSet.set(0, f == i && (i > 0.9999f || blockState.method_21743(blockRenderView, blockPos)));
             }
         }
     }
 
-    private void tesselateQuadsFlat(ExtendedBlockView extendedBlockView, BlockState blockState, BlockPos blockPos, int i, boolean bl, BufferBuilder bufferBuilder, List<BakedQuad> list, BitSet bitSet) {
-        Vec3d vec3d = blockState.getOffsetPos(extendedBlockView, blockPos);
+    private void tesselateQuadsFlat(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, int i, boolean bl, BufferBuilder bufferBuilder, List<BakedQuad> list, BitSet bitSet) {
+        Vec3d vec3d = blockState.getOffsetPos(blockRenderView, blockPos);
         double d = (double)blockPos.getX() + vec3d.x;
         double e = (double)blockPos.getY() + vec3d.y;
         double f = (double)blockPos.getZ() + vec3d.z;
@@ -207,14 +207,14 @@ public class BlockModelRenderer {
         for (int j = 0; j < k; ++j) {
             BakedQuad bakedQuad = list.get(j);
             if (bl) {
-                this.updateShape(extendedBlockView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, bitSet);
+                this.updateShape(blockRenderView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, bitSet);
                 BlockPos blockPos2 = bitSet.get(0) ? blockPos.offset(bakedQuad.getFace()) : blockPos;
-                i = extendedBlockView.getLightmapIndex(blockState, blockPos2);
+                i = blockRenderView.getLightmapIndex(blockState, blockPos2);
             }
             bufferBuilder.putVertexData(bakedQuad.getVertexData());
             bufferBuilder.brightness(i, i, i, i);
             if (bakedQuad.hasColor()) {
-                int l = this.colorMap.getColorMultiplier(blockState, extendedBlockView, blockPos, bakedQuad.getColorIndex());
+                int l = this.colorMap.getColorMultiplier(blockState, blockRenderView, blockPos, bakedQuad.getColorIndex());
                 float g = (float)(l >> 16 & 0xFF) / 255.0f;
                 float h = (float)(l >> 8 & 0xFF) / 255.0f;
                 float m = (float)(l & 0xFF) / 255.0f;
@@ -350,7 +350,7 @@ public class BlockModelRenderer {
         private final float[] colorMultiplier = new float[4];
         private final int[] brightness = new int[4];
 
-        public void apply(ExtendedBlockView extendedBlockView, BlockState blockState, BlockPos blockPos, Direction direction, float[] fs, BitSet bitSet) {
+        public void apply(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos, Direction direction, float[] fs, BitSet bitSet) {
             int u;
             float t;
             int s;
@@ -366,72 +366,72 @@ public class BlockModelRenderer {
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             BrightnessCache brightnessCache = (BrightnessCache)brightnessCache.get();
             mutable.set(blockPos2).setOffset(neighborData.faces[0]);
-            BlockState blockState2 = extendedBlockView.getBlockState(mutable);
-            int i = brightnessCache.getInt(blockState2, extendedBlockView, mutable);
-            float f = brightnessCache.getFloat(blockState2, extendedBlockView, mutable);
+            BlockState blockState2 = blockRenderView.getBlockState(mutable);
+            int i = brightnessCache.getInt(blockState2, blockRenderView, mutable);
+            float f = brightnessCache.getFloat(blockState2, blockRenderView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[1]);
-            BlockState blockState3 = extendedBlockView.getBlockState(mutable);
-            int j = brightnessCache.getInt(blockState3, extendedBlockView, mutable);
-            float g = brightnessCache.getFloat(blockState3, extendedBlockView, mutable);
+            BlockState blockState3 = blockRenderView.getBlockState(mutable);
+            int j = brightnessCache.getInt(blockState3, blockRenderView, mutable);
+            float g = brightnessCache.getFloat(blockState3, blockRenderView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[2]);
-            BlockState blockState4 = extendedBlockView.getBlockState(mutable);
-            int k = brightnessCache.getInt(blockState4, extendedBlockView, mutable);
-            float h = brightnessCache.getFloat(blockState4, extendedBlockView, mutable);
+            BlockState blockState4 = blockRenderView.getBlockState(mutable);
+            int k = brightnessCache.getInt(blockState4, blockRenderView, mutable);
+            float h = brightnessCache.getFloat(blockState4, blockRenderView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[3]);
-            BlockState blockState5 = extendedBlockView.getBlockState(mutable);
-            int l = brightnessCache.getInt(blockState5, extendedBlockView, mutable);
-            float m = brightnessCache.getFloat(blockState5, extendedBlockView, mutable);
+            BlockState blockState5 = blockRenderView.getBlockState(mutable);
+            int l = brightnessCache.getInt(blockState5, blockRenderView, mutable);
+            float m = brightnessCache.getFloat(blockState5, blockRenderView, mutable);
             mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(direction);
-            boolean bl = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
+            boolean bl = blockRenderView.getBlockState(mutable).getOpacity(blockRenderView, mutable) == 0;
             mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(direction);
-            boolean bl2 = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
+            boolean bl2 = blockRenderView.getBlockState(mutable).getOpacity(blockRenderView, mutable) == 0;
             mutable.set(blockPos2).setOffset(neighborData.faces[2]).setOffset(direction);
-            boolean bl3 = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
+            boolean bl3 = blockRenderView.getBlockState(mutable).getOpacity(blockRenderView, mutable) == 0;
             mutable.set(blockPos2).setOffset(neighborData.faces[3]).setOffset(direction);
-            boolean bl5 = bl4 = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
+            boolean bl5 = bl4 = blockRenderView.getBlockState(mutable).getOpacity(blockRenderView, mutable) == 0;
             if (bl3 || bl) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[2]);
-                blockState6 = extendedBlockView.getBlockState(mutable);
-                n = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
-                o = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
+                blockState6 = blockRenderView.getBlockState(mutable);
+                n = brightnessCache.getFloat(blockState6, blockRenderView, mutable);
+                o = brightnessCache.getInt(blockState6, blockRenderView, mutable);
             } else {
                 n = f;
                 o = i;
             }
             if (bl4 || bl) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[3]);
-                blockState6 = extendedBlockView.getBlockState(mutable);
-                p = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
-                q = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
+                blockState6 = blockRenderView.getBlockState(mutable);
+                p = brightnessCache.getFloat(blockState6, blockRenderView, mutable);
+                q = brightnessCache.getInt(blockState6, blockRenderView, mutable);
             } else {
                 p = f;
                 q = i;
             }
             if (bl3 || bl2) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[2]);
-                blockState6 = extendedBlockView.getBlockState(mutable);
-                r = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
-                s = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
+                blockState6 = blockRenderView.getBlockState(mutable);
+                r = brightnessCache.getFloat(blockState6, blockRenderView, mutable);
+                s = brightnessCache.getInt(blockState6, blockRenderView, mutable);
             } else {
                 r = f;
                 s = i;
             }
             if (bl4 || bl2) {
                 mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[3]);
-                blockState6 = extendedBlockView.getBlockState(mutable);
-                t = brightnessCache.getFloat(blockState6, extendedBlockView, mutable);
-                u = brightnessCache.getInt(blockState6, extendedBlockView, mutable);
+                blockState6 = blockRenderView.getBlockState(mutable);
+                t = brightnessCache.getFloat(blockState6, blockRenderView, mutable);
+                u = brightnessCache.getInt(blockState6, blockRenderView, mutable);
             } else {
                 t = f;
                 u = i;
             }
-            int v = brightnessCache.getInt(blockState, extendedBlockView, blockPos);
+            int v = brightnessCache.getInt(blockState, blockRenderView, blockPos);
             mutable.set(blockPos).setOffset(direction);
-            BlockState blockState7 = extendedBlockView.getBlockState(mutable);
-            if (bitSet.get(0) || !blockState7.isFullOpaque(extendedBlockView, mutable)) {
-                v = brightnessCache.getInt(blockState7, extendedBlockView, mutable);
+            BlockState blockState7 = blockRenderView.getBlockState(mutable);
+            if (bitSet.get(0) || !blockState7.isFullOpaque(blockRenderView, mutable)) {
+                v = brightnessCache.getInt(blockState7, blockRenderView, mutable);
             }
-            float w = bitSet.get(0) ? brightnessCache.getFloat(extendedBlockView.getBlockState(blockPos2), extendedBlockView, blockPos2) : brightnessCache.getFloat(extendedBlockView.getBlockState(blockPos), extendedBlockView, blockPos);
+            float w = bitSet.get(0) ? brightnessCache.getFloat(blockRenderView.getBlockState(blockPos2), blockRenderView, blockPos2) : brightnessCache.getFloat(blockRenderView.getBlockState(blockPos), blockRenderView, blockPos);
             Translation translation = Translation.getTranslations(direction);
             if (!bitSet.get(1) || !neighborData.nonCubicWeight) {
                 float x = (m + f + p + w) * 0.25f;
@@ -539,13 +539,13 @@ public class BlockModelRenderer {
             this.floatCache.clear();
         }
 
-        public int getInt(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+        public int getInt(BlockState blockState, BlockRenderView blockRenderView, BlockPos blockPos) {
             int i;
             long l = blockPos.asLong();
             if (this.enabled && (i = this.intCache.get(l)) != Integer.MAX_VALUE) {
                 return i;
             }
-            i = extendedBlockView.getLightmapIndex(blockState, blockPos);
+            i = blockRenderView.getLightmapIndex(blockState, blockPos);
             if (this.enabled) {
                 if (this.intCache.size() == 100) {
                     this.intCache.removeFirstInt();
@@ -555,13 +555,13 @@ public class BlockModelRenderer {
             return i;
         }
 
-        public float getFloat(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+        public float getFloat(BlockState blockState, BlockRenderView blockRenderView, BlockPos blockPos) {
             float f;
             long l = blockPos.asLong();
             if (this.enabled && !Float.isNaN(f = this.floatCache.get(l))) {
                 return f;
             }
-            f = blockState.getAmbientOcclusionLightLevel(extendedBlockView, blockPos);
+            f = blockState.getAmbientOcclusionLightLevel(blockRenderView, blockPos);
             if (this.enabled) {
                 if (this.floatCache.size() == 100) {
                     this.floatCache.removeFirstFloat();

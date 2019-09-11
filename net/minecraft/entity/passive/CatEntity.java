@@ -492,7 +492,7 @@ extends TameableEntity {
         }
 
         private boolean method_16098() {
-            List<CatEntity> list = this.cat.world.getEntities(CatEntity.class, new Box(this.bedPos).expand(2.0));
+            List<CatEntity> list = this.cat.world.getNonSpectatingEntities(CatEntity.class, new Box(this.bedPos).expand(2.0));
             for (CatEntity catEntity : list) {
                 if (catEntity == this.cat || !catEntity.isSleepingWithOwner() && !catEntity.isHeadDown()) continue;
                 return true;

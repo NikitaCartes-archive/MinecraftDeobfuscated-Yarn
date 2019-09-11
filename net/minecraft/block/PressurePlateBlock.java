@@ -65,11 +65,11 @@ extends AbstractPressurePlateBlock {
         Box box = BOX.offset(blockPos);
         switch (this.type) {
             case EVERYTHING: {
-                list = world.getEntities((Entity)null, box);
+                list = world.getEntities(null, box);
                 break;
             }
             case MOBS: {
-                list = world.getEntities(LivingEntity.class, box);
+                list = world.getNonSpectatingEntities(LivingEntity.class, box);
                 break;
             }
             default: {

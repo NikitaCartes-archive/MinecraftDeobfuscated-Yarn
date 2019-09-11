@@ -82,7 +82,7 @@ extends RegionBasedStorage {
     }
 
     protected boolean isPosInvalid(ChunkSectionPos chunkSectionPos) {
-        return World.isHeightInvalid(ChunkSectionPos.fromChunkCoord(chunkSectionPos.getChunkY()));
+        return World.isHeightInvalid(ChunkSectionPos.getWorldCoord(chunkSectionPos.getSectionY()));
     }
 
     protected R getOrCreate(long l) {

@@ -30,10 +30,10 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -73,7 +73,7 @@ public class OceanRuinGenerator {
         int i = blockPos.getX();
         int j = blockPos.getZ();
         BlockPos blockPos2 = Structure.method_15168(new BlockPos(15, 0, 15), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(i, 0, j);
-        MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.create(i, 0, j, blockPos2.getX(), 0, blockPos2.getZ());
+        BlockBox blockBox = BlockBox.create(i, 0, j, blockPos2.getX(), 0, blockPos2.getZ());
         BlockPos blockPos3 = new BlockPos(Math.min(i, blockPos2.getX()), 0, Math.min(j, blockPos2.getZ()));
         List<BlockPos> list2 = OceanRuinGenerator.getRoomPositions(random, blockPos3.getX(), blockPos3.getZ());
         int k = MathHelper.nextInt(random, 4, 8);
@@ -84,8 +84,8 @@ public class OceanRuinGenerator {
             int m;
             BlockPos blockPos4;
             int n;
-            MutableIntBoundingBox mutableIntBoundingBox2;
-            if (list2.isEmpty() || (mutableIntBoundingBox2 = MutableIntBoundingBox.create(n = (blockPos4 = list2.remove(m = random.nextInt(list2.size()))).getX(), 0, o = blockPos4.getZ(), (blockPos5 = Structure.method_15168(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation2 = BlockRotation.values()[random.nextInt(BlockRotation.values().length)], BlockPos.ORIGIN).add(n, 0, o)).getX(), 0, blockPos5.getZ())).intersects(mutableIntBoundingBox)) continue;
+            BlockBox blockBox2;
+            if (list2.isEmpty() || (blockBox2 = BlockBox.create(n = (blockPos4 = list2.remove(m = random.nextInt(list2.size()))).getX(), 0, o = blockPos4.getZ(), (blockPos5 = Structure.method_15168(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation2 = BlockRotation.values()[random.nextInt(BlockRotation.values().length)], BlockPos.ORIGIN).add(n, 0, o)).getX(), 0, blockPos5.getZ())).intersects(blockBox)) continue;
             OceanRuinGenerator.method_14822(structureManager, blockPos4, blockRotation2, list, random, oceanRuinFeatureConfig, false, 0.8f);
         }
     }
@@ -164,7 +164,7 @@ public class OceanRuinGenerator {
         }
 
         @Override
-        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
+        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
             if ("chest".equals(string)) {
                 iWorld.setBlockState(blockPos, (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, iWorld.getFluidState(blockPos).matches(FluidTags.WATER)), 2);
                 BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
@@ -186,13 +186,13 @@ public class OceanRuinGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
             this.placementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(this.integrity)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-            int i = iWorld.getLightLevel(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
+            int i = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
             this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
             BlockPos blockPos = Structure.method_15168(new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.rotation, BlockPos.ORIGIN).add(this.pos);
             this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, iWorld, blockPos), this.pos.getZ());
-            return super.generate(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
+            return super.generate(iWorld, chunkGenerator, random, blockBox, chunkPos);
         }
 
         private int method_14829(BlockPos blockPos, BlockView blockView, BlockPos blockPos2) {

@@ -81,7 +81,7 @@ extends BaseFluid {
         if (i > 0) {
             BlockPos blockPos2 = blockPos;
             for (int j = 0; j < i; ++j) {
-                if (!world.isHeightValidAndBlockLoaded(blockPos2 = blockPos2.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1))) {
+                if (!world.canSetBlock(blockPos2 = blockPos2.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1))) {
                     return;
                 }
                 BlockState blockState = world.getBlockState(blockPos2);
@@ -96,10 +96,10 @@ extends BaseFluid {
         } else {
             for (int k = 0; k < 3; ++k) {
                 BlockPos blockPos3 = blockPos.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-                if (!world.isHeightValidAndBlockLoaded(blockPos3)) {
+                if (!world.canSetBlock(blockPos3)) {
                     return;
                 }
-                if (!world.method_22347(blockPos3.up()) || !this.method_15817(world, blockPos3)) continue;
+                if (!world.isAir(blockPos3.up()) || !this.method_15817(world, blockPos3)) continue;
                 world.setBlockState(blockPos3.up(), Blocks.FIRE.getDefaultState());
             }
         }
@@ -114,7 +114,7 @@ extends BaseFluid {
     }
 
     private boolean method_15817(class_4538 arg, BlockPos blockPos) {
-        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && !arg.method_22340(blockPos)) {
+        if (blockPos.getY() >= 0 && blockPos.getY() < 256 && !arg.isChunkLoaded(blockPos)) {
             return false;
         }
         return arg.getBlockState(blockPos).getMaterial().isBurnable();

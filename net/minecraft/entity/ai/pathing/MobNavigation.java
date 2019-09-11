@@ -165,7 +165,7 @@ extends EntityNavigation {
                 double f = (double)q + 0.5 - vec3d.x;
                 double g = (double)r + 0.5 - vec3d.z;
                 if (f * d + g * e < 0.0) continue;
-                PathNodeType pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
+                PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
                 if (pathNodeType == PathNodeType.WATER) {
                     return false;
                 }
@@ -175,8 +175,8 @@ extends EntityNavigation {
                 if (pathNodeType == PathNodeType.OPEN) {
                     return false;
                 }
-                pathNodeType = this.nodeMaker.getPathNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
-                float h = this.entity.getPathNodeTypeWeight(pathNodeType);
+                pathNodeType = this.nodeMaker.getNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
+                float h = this.entity.getPathfindingPenalty(pathNodeType);
                 if (h < 0.0f || h >= 8.0f) {
                     return false;
                 }
@@ -198,7 +198,7 @@ extends EntityNavigation {
     }
 
     public void setCanPathThroughDoors(boolean bl) {
-        this.nodeMaker.setCanPathThroughDoors(bl);
+        this.nodeMaker.setCanOpenDoors(bl);
     }
 
     public boolean canEnterOpenDoors() {

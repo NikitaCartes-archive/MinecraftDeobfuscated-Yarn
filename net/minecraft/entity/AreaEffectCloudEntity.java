@@ -239,7 +239,7 @@ extends Entity {
                 if (list.isEmpty()) {
                     this.affectedEntities.clear();
                 } else {
-                    List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, this.getBoundingBox());
+                    List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
                     if (!list2.isEmpty()) {
                         for (LivingEntity livingEntity : list2) {
                             double e;

@@ -142,7 +142,7 @@ implements ParsableText {
             BlockEntity blockEntity;
             BlockPos blockPos;
             ServerWorld serverWorld;
-            if (this.pos != null && (serverWorld = serverCommandSource.getWorld()).isHeightValidAndBlockLoaded(blockPos = this.pos.toAbsoluteBlockPos(serverCommandSource)) && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
+            if (this.pos != null && (serverWorld = serverCommandSource.getWorld()).canSetBlock(blockPos = this.pos.toAbsoluteBlockPos(serverCommandSource)) && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
                 return Stream.of(blockEntity.toTag(new CompoundTag()));
             }
             return Stream.empty();

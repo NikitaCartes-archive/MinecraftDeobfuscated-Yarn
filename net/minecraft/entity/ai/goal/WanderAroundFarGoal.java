@@ -3,7 +3,7 @@
  */
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
@@ -26,11 +26,11 @@ extends WanderAroundGoal {
     @Nullable
     protected Vec3d getWanderTarget() {
         if (this.mob.isInsideWaterOrBubbleColumn()) {
-            Vec3d vec3d = PathfindingUtil.findTargetStraight(this.mob, 15, 7);
+            Vec3d vec3d = TargetFinder.findGroundTarget(this.mob, 15, 7);
             return vec3d == null ? super.getWanderTarget() : vec3d;
         }
         if (this.mob.getRand().nextFloat() >= this.probability) {
-            return PathfindingUtil.findTargetStraight(this.mob, 10, 7);
+            return TargetFinder.findGroundTarget(this.mob, 10, 7);
         }
         return super.getWanderTarget();
     }

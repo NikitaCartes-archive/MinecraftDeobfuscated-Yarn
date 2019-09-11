@@ -662,7 +662,7 @@ SynchronousResourceReloadListener {
             worldRenderer.drawHighlightedBlockOutline(camera, this.client.hitResult, 0);
             RenderSystem.enableAlphaTest();
         }
-        this.client.debugRenderer.renderDebuggers(l);
+        this.client.debugRenderer.render(l);
         this.client.getProfiler().swap("destroyProgress");
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
@@ -865,7 +865,7 @@ SynchronousResourceReloadListener {
                     float ac = MathHelper.sqrt(aa * aa + ab * ab) / (float)m;
                     float ad = ((1.0f - ac * ac) * 0.5f + 0.5f) * g;
                     mutable.set(q, x, p);
-                    int ae = world.method_22337(mutable);
+                    int ae = world.getLightmapIndex(mutable);
                     int af = ae >> 16 & 0xFFFF;
                     int ag = ae & 0xFFFF;
                     bufferBuilder.vertex((double)q - s + 0.5, w, (double)p - t + 0.5).texture(0.0, (double)v * 0.25 + z).color(1.0f, 1.0f, 1.0f, ad).texture(af, ag).next();
@@ -890,7 +890,7 @@ SynchronousResourceReloadListener {
                 float aj = MathHelper.sqrt(ah * ah + ai * ai) / (float)m;
                 float ak = ((1.0f - aj * aj) * 0.3f + 0.5f) * g;
                 mutable.set(q, x, p);
-                int al = (world.method_22337(mutable) * 3 + 0xF000F0) / 4;
+                int al = (world.getLightmapIndex(mutable) * 3 + 0xF000F0) / 4;
                 int am = al >> 16 & 0xFFFF;
                 int an = al & 0xFFFF;
                 bufferBuilder.vertex((double)q - s + 0.5, w, (double)p - t + 0.5).texture(0.0 + aa, (double)v * 0.25 + z + ab).color(1.0f, 1.0f, 1.0f, ak).texture(am, an).next();

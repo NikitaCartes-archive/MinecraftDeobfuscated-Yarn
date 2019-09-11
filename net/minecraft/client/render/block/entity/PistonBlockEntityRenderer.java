@@ -32,7 +32,7 @@ extends BlockEntityRenderer<PistonBlockEntity> {
     private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
 
     public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
-        BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.method_11506().getOpposite());
+        BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.getMovementDirection().getOpposite());
         BlockState blockState = pistonBlockEntity.getPushedBlock();
         if (blockState.isAir() || pistonBlockEntity.getProgress(g) >= 1.0f) {
             return;
@@ -61,7 +61,7 @@ extends BlockEntityRenderer<PistonBlockEntity> {
             BlockState blockState2 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.TYPE, pistonType)).with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
             blockState2 = (BlockState)blockState2.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(g) >= 0.5f);
             this.method_3575(blockPos, blockState2, bufferBuilder, world, false);
-            BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.method_11506());
+            BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());
             bufferBuilder.setOffset(d - (double)blockPos2.getX(), e - (double)blockPos2.getY(), f - (double)blockPos2.getZ());
             blockState = (BlockState)blockState.with(PistonBlock.EXTENDED, true);
             this.method_3575(blockPos2, blockState, bufferBuilder, world, true);

@@ -174,7 +174,7 @@ Runnable {
     private volatile boolean running = true;
     private boolean stopped;
     private int ticks;
-    protected final Proxy field_4599;
+    protected final Proxy proxy;
     private boolean onlineMode;
     private boolean preventProxyConnections;
     private boolean spawnAnimals;
@@ -239,7 +239,7 @@ Runnable {
 
     public MinecraftServer(File file, Proxy proxy, DataFixer dataFixer, CommandManager commandManager, YggdrasilAuthenticationService yggdrasilAuthenticationService, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory, String string) {
         super("Server");
-        this.field_4599 = proxy;
+        this.proxy = proxy;
         this.commandManager = commandManager;
         this.authService = yggdrasilAuthenticationService;
         this.sessionService = minecraftSessionService;
@@ -486,7 +486,7 @@ Runnable {
 
     public abstract int getOpPermissionLevel();
 
-    public abstract int method_21714();
+    public abstract int getFunctionPermissionLevel();
 
     public abstract boolean shouldBroadcastRconToOps();
 
@@ -633,8 +633,8 @@ Runnable {
     }
 
     protected void method_16208() {
-        this.executeTaskQueue();
-        this.waitFor(() -> !this.shouldKeepTicking());
+        this.executeQueuedTasks();
+        this.executeTasks(() -> !this.shouldKeepTicking());
     }
 
     protected ServerTask method_16209(Runnable runnable) {
@@ -1279,8 +1279,8 @@ Runnable {
     }
 
     @Override
-    public boolean shouldRunAsync() {
-        return super.shouldRunAsync() && !this.isStopped();
+    public boolean shouldExecuteAsync() {
+        return super.shouldExecuteAsync() && !this.isStopped();
     }
 
     @Override
@@ -1337,7 +1337,7 @@ Runnable {
         ArrayList<ResourcePack> list2 = Lists.newArrayList();
         this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> list2.add(resourcePackContainer.createResourcePack()));
         CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, field_20279);
-        this.waitFor(completableFuture::isDone);
+        this.executeTasks(completableFuture::isDone);
         try {
             completableFuture.get();
         } catch (Exception exception) {
@@ -1480,7 +1480,7 @@ Runnable {
 
     private void dumpStats(Path path) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
-            writer.write(String.format("pending_tasks: %d\n", this.method_21684()));
+            writer.write(String.format("pending_tasks: %d\n", this.getTaskQueueSize()));
             writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
             writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
             writer.write(String.format("queue: %s\n", SystemUtil.getServerWorkerExecutor()));
@@ -1536,12 +1536,12 @@ Runnable {
     }
 
     @Override
-    public /* synthetic */ boolean canRun(Runnable runnable) {
+    public /* synthetic */ boolean canExecute(Runnable runnable) {
         return this.method_19464((ServerTask)runnable);
     }
 
     @Override
-    public /* synthetic */ Runnable prepareRunnable(Runnable runnable) {
+    public /* synthetic */ Runnable createTask(Runnable runnable) {
         return this.method_16209(runnable);
     }
 }

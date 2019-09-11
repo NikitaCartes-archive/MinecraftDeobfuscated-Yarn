@@ -16,7 +16,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -39,23 +38,23 @@ extends Item {
             AreaEffectCloudEntity areaEffectCloudEntity2 = list.get(0);
             areaEffectCloudEntity2.setRadius(areaEffectCloudEntity2.getRadius() - 0.5f);
             world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-            return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
+            return TypedActionResult.method_22427(this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
         }
         HitResult hitResult = GlassBottleItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
+            return TypedActionResult.method_22430(itemStack);
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
             if (!world.canPlayerModifyAt(playerEntity, blockPos)) {
-                return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
+                return TypedActionResult.method_22430(itemStack);
             }
             if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
                 world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-                return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                return TypedActionResult.method_22427(this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
             }
         }
-        return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
+        return TypedActionResult.method_22430(itemStack);
     }
 
     protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {

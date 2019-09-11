@@ -280,7 +280,7 @@ extends Block {
             this.update(world, blockPos, blockState);
         } else {
             RedstoneWireBlock.dropStacks(blockState, world, blockPos);
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
         }
     }
 
@@ -306,7 +306,7 @@ extends Block {
         }
         EnumSet<Direction> enumSet = EnumSet.noneOf(Direction.class);
         for (Direction direction2 : Direction.Type.HORIZONTAL) {
-            if (!this.method_10478(blockView, blockPos, direction2)) continue;
+            if (!this.couldConnectTo(blockView, blockPos, direction2)) continue;
             enumSet.add(direction2);
         }
         if (direction.getAxis().isHorizontal() && enumSet.isEmpty()) {
@@ -318,7 +318,7 @@ extends Block {
         return 0;
     }
 
-    private boolean method_10478(BlockView blockView, BlockPos blockPos, Direction direction) {
+    private boolean couldConnectTo(BlockView blockView, BlockPos blockPos, Direction direction) {
         BlockPos blockPos2 = blockPos.offset(direction);
         BlockState blockState = blockView.getBlockState(blockPos2);
         boolean bl = blockState.isSimpleFullBlock(blockView, blockPos2);

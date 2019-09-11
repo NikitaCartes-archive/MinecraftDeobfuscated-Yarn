@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -480,7 +481,7 @@ JumpingMount {
         }
         for (int i = 0; i < this.items.getInvSize(); ++i) {
             ItemStack itemStack = this.items.getInvStack(i);
-            if (itemStack.isEmpty()) continue;
+            if (itemStack.isEmpty() || EnchantmentHelper.hasVanishingCurse(itemStack)) continue;
             this.dropStack(itemStack);
         }
     }
@@ -511,7 +512,7 @@ JumpingMount {
 
     protected void walkToParent() {
         HorseBaseEntity livingEntity;
-        if (this.isBred() && this.isBaby() && !this.isEatingGrass() && (livingEntity = this.world.method_21726(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0))) != null && this.squaredDistanceTo(livingEntity) > 4.0) {
+        if (this.isBred() && this.isBaby() && !this.isEatingGrass() && (livingEntity = this.world.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0))) != null && this.squaredDistanceTo(livingEntity) > 4.0) {
             this.navigation.findPathTo(livingEntity, 0);
         }
     }
@@ -914,11 +915,11 @@ JumpingMount {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-        if (this.random.nextInt(5) == 0) {
-            this.setBreedingAge(-24000);
+        if (entityData == null) {
+            entityData = new PassiveEntity._1();
+            ((PassiveEntity._1)entityData).method_22433(0.2f);
         }
-        return entityData;
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 }
 

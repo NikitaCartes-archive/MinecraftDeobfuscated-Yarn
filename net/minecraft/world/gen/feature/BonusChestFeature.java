@@ -37,7 +37,7 @@ extends Feature<DefaultFeatureConfig> {
         blockPos = blockPos.up();
         for (int i = 0; i < 4; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(4) - random.nextInt(4), random.nextInt(3) - random.nextInt(3), random.nextInt(4) - random.nextInt(4));
-            if (!iWorld.method_22347(blockPos2)) continue;
+            if (!iWorld.isAir(blockPos2)) continue;
             iWorld.setBlockState(blockPos2, Blocks.CHEST.getDefaultState(), 2);
             LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
             BlockState blockState2 = Blocks.TORCH.getDefaultState();

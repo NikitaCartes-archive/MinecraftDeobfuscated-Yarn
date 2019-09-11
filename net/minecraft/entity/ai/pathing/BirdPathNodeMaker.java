@@ -8,10 +8,10 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4459;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -24,12 +24,12 @@ extends LandPathNodeMaker {
     @Override
     public void init(ChunkCache chunkCache, MobEntity mobEntity) {
         super.init(chunkCache, mobEntity);
-        this.waterPathNodeTypeWeight = mobEntity.getPathNodeTypeWeight(PathNodeType.WATER);
+        this.waterPathNodeTypeWeight = mobEntity.getPathfindingPenalty(PathNodeType.WATER);
     }
 
     @Override
     public void clear() {
-        this.entity.setPathNodeTypeWeight(PathNodeType.WATER, this.waterPathNodeTypeWeight);
+        this.entity.setPathfindingPenalty(PathNodeType.WATER, this.waterPathNodeTypeWeight);
         super.clear();
     }
 
@@ -49,7 +49,7 @@ extends LandPathNodeMaker {
         } else {
             i = MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
         }
-        if (this.entity.getPathNodeTypeWeight(pathNodeType = this.method_9(this.entity, (blockPos = new BlockPos(this.entity)).getX(), i, blockPos.getZ())) < 0.0f) {
+        if (this.entity.getPathfindingPenalty(pathNodeType = this.method_9(this.entity, (blockPos = new BlockPos(this.entity)).getX(), i, blockPos.getZ())) < 0.0f) {
             HashSet<BlockPos> set = Sets.newHashSet();
             set.add(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().minZ));
             set.add(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().maxZ));
@@ -57,20 +57,20 @@ extends LandPathNodeMaker {
             set.add(new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().maxZ));
             for (BlockPos blockPos2 : set) {
                 PathNodeType pathNodeType2 = this.method_10(this.entity, blockPos2);
-                if (!(this.entity.getPathNodeTypeWeight(pathNodeType2) >= 0.0f)) continue;
-                return super.getPathNode(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+                if (!(this.entity.getPathfindingPenalty(pathNodeType2) >= 0.0f)) continue;
+                return super.getNode(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
             }
         }
-        return super.getPathNode(blockPos.getX(), i, blockPos.getZ());
+        return super.getNode(blockPos.getX(), i, blockPos.getZ());
     }
 
     @Override
-    public class_4459 getPathNode(double d, double e, double f) {
-        return new class_4459(super.getPathNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f)));
+    public TargetPathNode getNode(double d, double e, double f) {
+        return new TargetPathNode(super.getNode(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f)));
     }
 
     @Override
-    public int getPathNodes(PathNode[] pathNodes, PathNode pathNode) {
+    public int getSuccessors(PathNode[] pathNodes, PathNode pathNode) {
         PathNode pathNode19;
         PathNode pathNode18;
         PathNode pathNode17;
@@ -89,59 +89,59 @@ extends LandPathNodeMaker {
         PathNode pathNode4;
         PathNode pathNode3;
         int i = 0;
-        PathNode pathNode2 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z + 1);
-        if (pathNode2 != null && !pathNode2.field_42) {
+        PathNode pathNode2 = this.getNode(pathNode.x, pathNode.y, pathNode.z + 1);
+        if (pathNode2 != null && !pathNode2.visited) {
             pathNodes[i++] = pathNode2;
         }
-        if ((pathNode3 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z)) != null && !pathNode3.field_42) {
+        if ((pathNode3 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z)) != null && !pathNode3.visited) {
             pathNodes[i++] = pathNode3;
         }
-        if ((pathNode4 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z)) != null && !pathNode4.field_42) {
+        if ((pathNode4 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z)) != null && !pathNode4.visited) {
             pathNodes[i++] = pathNode4;
         }
-        if ((pathNode5 = this.getPathNode(pathNode.x, pathNode.y, pathNode.z - 1)) != null && !pathNode5.field_42) {
+        if ((pathNode5 = this.getNode(pathNode.x, pathNode.y, pathNode.z - 1)) != null && !pathNode5.visited) {
             pathNodes[i++] = pathNode5;
         }
-        if ((pathNode6 = this.getPathNode(pathNode.x, pathNode.y + 1, pathNode.z)) != null && !pathNode6.field_42) {
+        if ((pathNode6 = this.getNode(pathNode.x, pathNode.y + 1, pathNode.z)) != null && !pathNode6.visited) {
             pathNodes[i++] = pathNode6;
         }
-        if ((pathNode7 = this.getPathNode(pathNode.x, pathNode.y - 1, pathNode.z)) != null && !pathNode7.field_42) {
+        if ((pathNode7 = this.getNode(pathNode.x, pathNode.y - 1, pathNode.z)) != null && !pathNode7.visited) {
             pathNodes[i++] = pathNode7;
         }
-        if ((pathNode8 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z - 1)) != null && !pathNode8.field_42 && pathNode5 != null && pathNode5.field_43 >= 0.0f && pathNode4 != null && pathNode4.field_43 >= 0.0f) {
+        if ((pathNode8 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z - 1)) != null && !pathNode8.visited && pathNode5 != null && pathNode5.penalty >= 0.0f && pathNode4 != null && pathNode4.penalty >= 0.0f) {
             pathNodes[i++] = pathNode8;
         }
-        if ((pathNode9 = this.getPathNode(pathNode.x + 1, pathNode.y, pathNode.z + 1)) != null && !pathNode9.field_42 && pathNode2 != null && pathNode2.field_43 >= 0.0f && pathNode4 != null && pathNode4.field_43 >= 0.0f) {
+        if ((pathNode9 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z + 1)) != null && !pathNode9.visited && pathNode2 != null && pathNode2.penalty >= 0.0f && pathNode4 != null && pathNode4.penalty >= 0.0f) {
             pathNodes[i++] = pathNode9;
         }
-        if ((pathNode10 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z - 1)) != null && !pathNode10.field_42 && pathNode5 != null && pathNode5.field_43 >= 0.0f && pathNode3 != null && pathNode3.field_43 >= 0.0f) {
+        if ((pathNode10 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z - 1)) != null && !pathNode10.visited && pathNode5 != null && pathNode5.penalty >= 0.0f && pathNode3 != null && pathNode3.penalty >= 0.0f) {
             pathNodes[i++] = pathNode10;
         }
-        if ((pathNode11 = this.getPathNode(pathNode.x - 1, pathNode.y, pathNode.z + 1)) != null && !pathNode11.field_42 && pathNode2 != null && pathNode2.field_43 >= 0.0f && pathNode3 != null && pathNode3.field_43 >= 0.0f) {
+        if ((pathNode11 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z + 1)) != null && !pathNode11.visited && pathNode2 != null && pathNode2.penalty >= 0.0f && pathNode3 != null && pathNode3.penalty >= 0.0f) {
             pathNodes[i++] = pathNode11;
         }
-        if ((pathNode12 = this.getPathNode(pathNode.x + 1, pathNode.y + 1, pathNode.z - 1)) != null && !pathNode12.field_42 && pathNode8 != null && pathNode8.field_43 >= 0.0f && pathNode6 != null && pathNode6.field_43 >= 0.0f) {
+        if ((pathNode12 = this.getNode(pathNode.x + 1, pathNode.y + 1, pathNode.z - 1)) != null && !pathNode12.visited && pathNode8 != null && pathNode8.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
             pathNodes[i++] = pathNode12;
         }
-        if ((pathNode13 = this.getPathNode(pathNode.x + 1, pathNode.y + 1, pathNode.z + 1)) != null && !pathNode13.field_42 && pathNode9 != null && pathNode9.field_43 >= 0.0f && pathNode6 != null && pathNode6.field_43 >= 0.0f) {
+        if ((pathNode13 = this.getNode(pathNode.x + 1, pathNode.y + 1, pathNode.z + 1)) != null && !pathNode13.visited && pathNode9 != null && pathNode9.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
             pathNodes[i++] = pathNode13;
         }
-        if ((pathNode14 = this.getPathNode(pathNode.x - 1, pathNode.y + 1, pathNode.z - 1)) != null && !pathNode14.field_42 && pathNode10 != null && pathNode10.field_43 >= 0.0f && pathNode6 != null && pathNode6.field_43 >= 0.0f) {
+        if ((pathNode14 = this.getNode(pathNode.x - 1, pathNode.y + 1, pathNode.z - 1)) != null && !pathNode14.visited && pathNode10 != null && pathNode10.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
             pathNodes[i++] = pathNode14;
         }
-        if ((pathNode15 = this.getPathNode(pathNode.x - 1, pathNode.y + 1, pathNode.z + 1)) != null && !pathNode15.field_42 && pathNode11 != null && pathNode11.field_43 >= 0.0f && pathNode6 != null && pathNode6.field_43 >= 0.0f) {
+        if ((pathNode15 = this.getNode(pathNode.x - 1, pathNode.y + 1, pathNode.z + 1)) != null && !pathNode15.visited && pathNode11 != null && pathNode11.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
             pathNodes[i++] = pathNode15;
         }
-        if ((pathNode16 = this.getPathNode(pathNode.x + 1, pathNode.y - 1, pathNode.z - 1)) != null && !pathNode16.field_42 && pathNode8 != null && pathNode8.field_43 >= 0.0f && pathNode7 != null && pathNode7.field_43 >= 0.0f) {
+        if ((pathNode16 = this.getNode(pathNode.x + 1, pathNode.y - 1, pathNode.z - 1)) != null && !pathNode16.visited && pathNode8 != null && pathNode8.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
             pathNodes[i++] = pathNode16;
         }
-        if ((pathNode17 = this.getPathNode(pathNode.x + 1, pathNode.y - 1, pathNode.z + 1)) != null && !pathNode17.field_42 && pathNode9 != null && pathNode9.field_43 >= 0.0f && pathNode7 != null && pathNode7.field_43 >= 0.0f) {
+        if ((pathNode17 = this.getNode(pathNode.x + 1, pathNode.y - 1, pathNode.z + 1)) != null && !pathNode17.visited && pathNode9 != null && pathNode9.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
             pathNodes[i++] = pathNode17;
         }
-        if ((pathNode18 = this.getPathNode(pathNode.x - 1, pathNode.y - 1, pathNode.z - 1)) != null && !pathNode18.field_42 && pathNode10 != null && pathNode10.field_43 >= 0.0f && pathNode7 != null && pathNode7.field_43 >= 0.0f) {
+        if ((pathNode18 = this.getNode(pathNode.x - 1, pathNode.y - 1, pathNode.z - 1)) != null && !pathNode18.visited && pathNode10 != null && pathNode10.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
             pathNodes[i++] = pathNode18;
         }
-        if ((pathNode19 = this.getPathNode(pathNode.x - 1, pathNode.y - 1, pathNode.z + 1)) != null && !pathNode19.field_42 && pathNode11 != null && pathNode11.field_43 >= 0.0f && pathNode7 != null && pathNode7.field_43 >= 0.0f) {
+        if ((pathNode19 = this.getNode(pathNode.x - 1, pathNode.y - 1, pathNode.z + 1)) != null && !pathNode19.visited && pathNode11 != null && pathNode11.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
             pathNodes[i++] = pathNode19;
         }
         return i;
@@ -149,16 +149,16 @@ extends LandPathNodeMaker {
 
     @Override
     @Nullable
-    protected PathNode getPathNode(int i, int j, int k) {
+    protected PathNode getNode(int i, int j, int k) {
         PathNode pathNode = null;
         PathNodeType pathNodeType = this.method_9(this.entity, i, j, k);
-        float f = this.entity.getPathNodeTypeWeight(pathNodeType);
+        float f = this.entity.getPathfindingPenalty(pathNodeType);
         if (f >= 0.0f) {
-            pathNode = super.getPathNode(i, j, k);
+            pathNode = super.getNode(i, j, k);
             pathNode.type = pathNodeType;
-            pathNode.field_43 = Math.max(pathNode.field_43, f);
+            pathNode.penalty = Math.max(pathNode.penalty, f);
             if (pathNodeType == PathNodeType.WALKABLE) {
-                pathNode.field_43 += 1.0f;
+                pathNode.penalty += 1.0f;
             }
         }
         if (pathNodeType == PathNodeType.OPEN || pathNodeType == PathNodeType.WALKABLE) {
@@ -168,30 +168,30 @@ extends LandPathNodeMaker {
     }
 
     @Override
-    public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2) {
+    public PathNodeType getNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2) {
         EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
         PathNodeType pathNodeType = PathNodeType.BLOCKED;
         BlockPos blockPos = new BlockPos(mobEntity);
-        pathNodeType = this.method_64(blockView, i, j, k, l, m, n, bl, bl2, enumSet, pathNodeType, blockPos);
+        pathNodeType = this.getNodeType(blockView, i, j, k, l, m, n, bl, bl2, enumSet, pathNodeType, blockPos);
         if (enumSet.contains((Object)PathNodeType.FENCE)) {
             return PathNodeType.FENCE;
         }
         PathNodeType pathNodeType2 = PathNodeType.BLOCKED;
         for (PathNodeType pathNodeType3 : enumSet) {
-            if (mobEntity.getPathNodeTypeWeight(pathNodeType3) < 0.0f) {
+            if (mobEntity.getPathfindingPenalty(pathNodeType3) < 0.0f) {
                 return pathNodeType3;
             }
-            if (!(mobEntity.getPathNodeTypeWeight(pathNodeType3) >= mobEntity.getPathNodeTypeWeight(pathNodeType2))) continue;
+            if (!(mobEntity.getPathfindingPenalty(pathNodeType3) >= mobEntity.getPathfindingPenalty(pathNodeType2))) continue;
             pathNodeType2 = pathNodeType3;
         }
-        if (pathNodeType == PathNodeType.OPEN && mobEntity.getPathNodeTypeWeight(pathNodeType2) == 0.0f) {
+        if (pathNodeType == PathNodeType.OPEN && mobEntity.getPathfindingPenalty(pathNodeType2) == 0.0f) {
             return PathNodeType.OPEN;
         }
         return pathNodeType2;
     }
 
     @Override
-    public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k) {
+    public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
         PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
         if (pathNodeType == PathNodeType.OPEN && j >= 1) {
             Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
@@ -207,7 +207,7 @@ extends LandPathNodeMaker {
     }
 
     private PathNodeType method_9(MobEntity mobEntity, int i, int j, int k) {
-        return this.getPathNodeType(this.field_20622, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canPathThroughDoors(), this.canEnterOpenDoors());
+        return this.getNodeType(this.field_20622, i, j, k, mobEntity, this.field_31, this.field_30, this.field_28, this.canOpenDoors(), this.canEnterOpenDoors());
     }
 }
 

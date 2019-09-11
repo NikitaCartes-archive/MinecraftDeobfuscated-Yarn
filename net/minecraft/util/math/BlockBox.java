@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 
-public class MutableIntBoundingBox {
+public class BlockBox {
     public int minX;
     public int minY;
     public int minZ;
@@ -19,10 +19,10 @@ public class MutableIntBoundingBox {
     public int maxY;
     public int maxZ;
 
-    public MutableIntBoundingBox() {
+    public BlockBox() {
     }
 
-    public MutableIntBoundingBox(int[] is) {
+    public BlockBox(int[] is) {
         if (is.length == 6) {
             this.minX = is[0];
             this.minY = is[1];
@@ -33,43 +33,43 @@ public class MutableIntBoundingBox {
         }
     }
 
-    public static MutableIntBoundingBox empty() {
-        return new MutableIntBoundingBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+    public static BlockBox empty() {
+        return new BlockBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
 
-    public static MutableIntBoundingBox createRotated(int i, int j, int k, int l, int m, int n, int o, int p, int q, Direction direction) {
+    public static BlockBox rotated(int i, int j, int k, int l, int m, int n, int o, int p, int q, Direction direction) {
         switch (direction) {
             default: {
-                return new MutableIntBoundingBox(i + l, j + m, k + n, i + o - 1 + l, j + p - 1 + m, k + q - 1 + n);
+                return new BlockBox(i + l, j + m, k + n, i + o - 1 + l, j + p - 1 + m, k + q - 1 + n);
             }
             case NORTH: {
-                return new MutableIntBoundingBox(i + l, j + m, k - q + 1 + n, i + o - 1 + l, j + p - 1 + m, k + n);
+                return new BlockBox(i + l, j + m, k - q + 1 + n, i + o - 1 + l, j + p - 1 + m, k + n);
             }
             case SOUTH: {
-                return new MutableIntBoundingBox(i + l, j + m, k + n, i + o - 1 + l, j + p - 1 + m, k + q - 1 + n);
+                return new BlockBox(i + l, j + m, k + n, i + o - 1 + l, j + p - 1 + m, k + q - 1 + n);
             }
             case WEST: {
-                return new MutableIntBoundingBox(i - q + 1 + n, j + m, k + l, i + n, j + p - 1 + m, k + o - 1 + l);
+                return new BlockBox(i - q + 1 + n, j + m, k + l, i + n, j + p - 1 + m, k + o - 1 + l);
             }
             case EAST: 
         }
-        return new MutableIntBoundingBox(i + n, j + m, k + l, i + q - 1 + n, j + p - 1 + m, k + o - 1 + l);
+        return new BlockBox(i + n, j + m, k + l, i + q - 1 + n, j + p - 1 + m, k + o - 1 + l);
     }
 
-    public static MutableIntBoundingBox create(int i, int j, int k, int l, int m, int n) {
-        return new MutableIntBoundingBox(Math.min(i, l), Math.min(j, m), Math.min(k, n), Math.max(i, l), Math.max(j, m), Math.max(k, n));
+    public static BlockBox create(int i, int j, int k, int l, int m, int n) {
+        return new BlockBox(Math.min(i, l), Math.min(j, m), Math.min(k, n), Math.max(i, l), Math.max(j, m), Math.max(k, n));
     }
 
-    public MutableIntBoundingBox(MutableIntBoundingBox mutableIntBoundingBox) {
-        this.minX = mutableIntBoundingBox.minX;
-        this.minY = mutableIntBoundingBox.minY;
-        this.minZ = mutableIntBoundingBox.minZ;
-        this.maxX = mutableIntBoundingBox.maxX;
-        this.maxY = mutableIntBoundingBox.maxY;
-        this.maxZ = mutableIntBoundingBox.maxZ;
+    public BlockBox(BlockBox blockBox) {
+        this.minX = blockBox.minX;
+        this.minY = blockBox.minY;
+        this.minZ = blockBox.minZ;
+        this.maxX = blockBox.maxX;
+        this.maxY = blockBox.maxY;
+        this.maxZ = blockBox.maxZ;
     }
 
-    public MutableIntBoundingBox(int i, int j, int k, int l, int m, int n) {
+    public BlockBox(int i, int j, int k, int l, int m, int n) {
         this.minX = i;
         this.minY = j;
         this.minZ = k;
@@ -78,7 +78,7 @@ public class MutableIntBoundingBox {
         this.maxZ = n;
     }
 
-    public MutableIntBoundingBox(Vec3i vec3i, Vec3i vec3i2) {
+    public BlockBox(Vec3i vec3i, Vec3i vec3i2) {
         this.minX = Math.min(vec3i.getX(), vec3i2.getX());
         this.minY = Math.min(vec3i.getY(), vec3i2.getY());
         this.minZ = Math.min(vec3i.getZ(), vec3i2.getZ());
@@ -87,7 +87,7 @@ public class MutableIntBoundingBox {
         this.maxZ = Math.max(vec3i.getZ(), vec3i2.getZ());
     }
 
-    public MutableIntBoundingBox(int i, int j, int k, int l) {
+    public BlockBox(int i, int j, int k, int l) {
         this.minX = i;
         this.minZ = j;
         this.maxX = k;
@@ -96,24 +96,24 @@ public class MutableIntBoundingBox {
         this.maxY = 512;
     }
 
-    public boolean intersects(MutableIntBoundingBox mutableIntBoundingBox) {
-        return this.maxX >= mutableIntBoundingBox.minX && this.minX <= mutableIntBoundingBox.maxX && this.maxZ >= mutableIntBoundingBox.minZ && this.minZ <= mutableIntBoundingBox.maxZ && this.maxY >= mutableIntBoundingBox.minY && this.minY <= mutableIntBoundingBox.maxY;
+    public boolean intersects(BlockBox blockBox) {
+        return this.maxX >= blockBox.minX && this.minX <= blockBox.maxX && this.maxZ >= blockBox.minZ && this.minZ <= blockBox.maxZ && this.maxY >= blockBox.minY && this.minY <= blockBox.maxY;
     }
 
     public boolean intersectsXZ(int i, int j, int k, int l) {
         return this.maxX >= i && this.minX <= k && this.maxZ >= j && this.minZ <= l;
     }
 
-    public void setFrom(MutableIntBoundingBox mutableIntBoundingBox) {
-        this.minX = Math.min(this.minX, mutableIntBoundingBox.minX);
-        this.minY = Math.min(this.minY, mutableIntBoundingBox.minY);
-        this.minZ = Math.min(this.minZ, mutableIntBoundingBox.minZ);
-        this.maxX = Math.max(this.maxX, mutableIntBoundingBox.maxX);
-        this.maxY = Math.max(this.maxY, mutableIntBoundingBox.maxY);
-        this.maxZ = Math.max(this.maxZ, mutableIntBoundingBox.maxZ);
+    public void encompass(BlockBox blockBox) {
+        this.minX = Math.min(this.minX, blockBox.minX);
+        this.minY = Math.min(this.minY, blockBox.minY);
+        this.minZ = Math.min(this.minZ, blockBox.minZ);
+        this.maxX = Math.max(this.maxX, blockBox.maxX);
+        this.maxY = Math.max(this.maxY, blockBox.maxY);
+        this.maxZ = Math.max(this.maxZ, blockBox.maxZ);
     }
 
-    public void translate(int i, int j, int k) {
+    public void offset(int i, int j, int k) {
         this.minX += i;
         this.minY += j;
         this.minZ += k;
@@ -122,15 +122,15 @@ public class MutableIntBoundingBox {
         this.maxZ += k;
     }
 
-    public MutableIntBoundingBox method_19311(int i, int j, int k) {
-        return new MutableIntBoundingBox(this.minX + i, this.minY + j, this.minZ + k, this.maxX + i, this.maxY + j, this.maxZ + k);
+    public BlockBox translated(int i, int j, int k) {
+        return new BlockBox(this.minX + i, this.minY + j, this.minZ + k, this.maxX + i, this.maxY + j, this.maxZ + k);
     }
 
     public boolean contains(Vec3i vec3i) {
         return vec3i.getX() >= this.minX && vec3i.getX() <= this.maxX && vec3i.getZ() >= this.minZ && vec3i.getZ() <= this.maxZ && vec3i.getY() >= this.minY && vec3i.getY() <= this.maxY;
     }
 
-    public Vec3i getSize() {
+    public Vec3i getDimensions() {
         return new Vec3i(this.maxX - this.minX, this.maxY - this.minY, this.maxZ - this.minZ);
     }
 
@@ -147,7 +147,7 @@ public class MutableIntBoundingBox {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vec3i method_19635() {
+    public Vec3i getCenter() {
         return new BlockPos(this.minX + (this.maxX - this.minX + 1) / 2, this.minY + (this.maxY - this.minY + 1) / 2, this.minZ + (this.maxZ - this.minZ + 1) / 2);
     }
 

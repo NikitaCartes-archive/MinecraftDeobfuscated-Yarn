@@ -35,7 +35,7 @@ extends Feature<ProbabilityConfig> {
         int i = 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
         BlockPos.Mutable mutable2 = new BlockPos.Mutable(blockPos);
-        if (iWorld.method_22347(mutable)) {
+        if (iWorld.isAir(mutable)) {
             if (Blocks.BAMBOO.getDefaultState().canPlaceAt(iWorld, mutable)) {
                 int k;
                 int j = random.nextInt(12) + 5;
@@ -46,13 +46,13 @@ extends Feature<ProbabilityConfig> {
                             int o;
                             int n = l - blockPos.getX();
                             if (n * n + (o = m - blockPos.getZ()) * o > k * k) continue;
-                            mutable2.set(l, iWorld.getLightLevel(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
+                            mutable2.set(l, iWorld.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
                             if (!iWorld.getBlockState(mutable2).getBlock().matches(BlockTags.DIRT_LIKE)) continue;
                             iWorld.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
                         }
                     }
                 }
-                for (k = 0; k < j && iWorld.method_22347(mutable); ++k) {
+                for (k = 0; k < j && iWorld.isAir(mutable); ++k) {
                     iWorld.setBlockState(mutable, BAMBOO, 2);
                     mutable.setOffset(Direction.UP, 1);
                 }

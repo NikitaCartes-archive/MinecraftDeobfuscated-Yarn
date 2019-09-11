@@ -62,7 +62,7 @@ public enum EnderDragonSpawnState {
                     } else {
                         int l = 10;
                         for (BlockPos blockPos2 : BlockPos.iterate(new BlockPos(spike.getCenterX() - 10, spike.getHeight() - 10, spike.getCenterZ() - 10), new BlockPos(spike.getCenterX() + 10, spike.getHeight() + 10, spike.getCenterZ() + 10))) {
-                            serverWorld.clearBlockState(blockPos2, false);
+                            serverWorld.removeBlock(blockPos2, false);
                         }
                         serverWorld.createExplosion(null, (float)spike.getCenterX() + 0.5f, spike.getHeight(), (float)spike.getCenterZ() + 0.5f, 5.0f, Explosion.DestructionType.DESTROY);
                         EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));

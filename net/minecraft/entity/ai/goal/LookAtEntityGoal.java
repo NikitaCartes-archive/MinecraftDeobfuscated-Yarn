@@ -43,7 +43,7 @@ extends Goal {
         if (this.mob.getTarget() != null) {
             this.target = this.mob.getTarget();
         }
-        this.target = this.targetType == PlayerEntity.class ? this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z) : this.mob.world.method_21727(this.targetType, this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z, this.mob.getBoundingBox().expand(this.range, 3.0, this.range));
+        this.target = this.targetType == PlayerEntity.class ? this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z) : this.mob.world.getClosestEntityIncludingUngeneratedChunks(this.targetType, this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z, this.mob.getBoundingBox().expand(this.range, 3.0, this.range));
         return this.target != null;
     }
 

@@ -337,20 +337,14 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
         int i = this.chooseType(iWorld);
-        boolean bl = false;
         if (entityData instanceof RabbitEntityData) {
             i = ((RabbitEntityData)entityData).type;
-            bl = true;
         } else {
             entityData = new RabbitEntityData(i);
         }
         this.setRabbitType(i);
-        if (bl) {
-            this.setBreedingAge(-24000);
-        }
-        return entityData;
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     private int chooseType(IWorld iWorld) {
@@ -367,7 +361,7 @@ extends AnimalEntity {
 
     public static boolean method_20669(EntityType<RabbitEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-        return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.method_22335(blockPos, 0) > 8;
+        return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 
     private boolean wantsCarrots() {
@@ -564,11 +558,12 @@ extends AnimalEntity {
     }
 
     public static class RabbitEntityData
-    implements EntityData {
+    extends PassiveEntity._1 {
         public final int type;
 
         public RabbitEntityData(int i) {
             this.type = i;
+            this.method_22433(1.0f);
         }
     }
 }

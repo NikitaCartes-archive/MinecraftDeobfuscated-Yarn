@@ -344,7 +344,7 @@ implements ContainerListener {
             if (entity.isAlive()) {
                 this.setPositionAnglesAndUpdate(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
                 this.getServerWorld().method_14178().updateCameraPosition(this);
-                if (this.method_21824()) {
+                if (this.shouldDismount()) {
                     this.setCameraEntity(this);
                 }
             } else {
@@ -360,7 +360,7 @@ implements ContainerListener {
 
     public void method_14226() {
         try {
-            if (!this.isSpectator() || this.world.method_22340(new BlockPos(this))) {
+            if (!this.isSpectator() || this.world.isChunkLoaded(new BlockPos(this))) {
                 super.tick();
             }
             for (int i = 0; i < this.inventory.getInvSize(); ++i) {
@@ -743,7 +743,7 @@ implements ContainerListener {
         int j;
         int i = MathHelper.floor(this.x);
         BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.y - (double)0.2f), k = MathHelper.floor(this.z));
-        if (!this.world.method_22340(blockPos)) {
+        if (!this.world.isChunkLoaded(blockPos)) {
             return;
         }
         BlockState blockState = this.world.getBlockState(blockPos);

@@ -10,19 +10,19 @@ import net.minecraft.util.math.MathHelper;
 
 public abstract class LevelPropagator {
     private final int levelCount;
-    private final LongLinkedOpenHashSet[] levelToIds;
-    private final Long2ByteFunction idToLevel;
-    private int minLevel;
-    private volatile boolean hasUpdates;
+    private final LongLinkedOpenHashSet[] pendingIdUpdatesByLevel;
+    private final Long2ByteFunction pendingUpdates;
+    private int minPendingLevel;
+    private volatile boolean hasPendingUpdates;
 
     protected LevelPropagator(int i, final int j, final int k) {
         if (i >= 254) {
             throw new IllegalArgumentException("Level count must be < 254.");
         }
         this.levelCount = i;
-        this.levelToIds = new LongLinkedOpenHashSet[i];
+        this.pendingIdUpdatesByLevel = new LongLinkedOpenHashSet[i];
         for (int l = 0; l < i; ++l) {
-            this.levelToIds[l] = new LongLinkedOpenHashSet(j, 0.5f){
+            this.pendingIdUpdatesByLevel[l] = new LongLinkedOpenHashSet(j, 0.5f){
 
                 @Override
                 protected void rehash(int i) {
@@ -32,7 +32,7 @@ public abstract class LevelPropagator {
                 }
             };
         }
-        this.idToLevel = new Long2ByteOpenHashMap(k, 0.5f){
+        this.pendingUpdates = new Long2ByteOpenHashMap(k, 0.5f){
 
             @Override
             protected void rehash(int i) {
@@ -41,11 +41,11 @@ public abstract class LevelPropagator {
                 }
             }
         };
-        this.idToLevel.defaultReturnValue((byte)-1);
-        this.minLevel = i;
+        this.pendingUpdates.defaultReturnValue((byte)-1);
+        this.minPendingLevel = i;
     }
 
-    private int min(int i, int j) {
+    private int minLevel(int i, int j) {
         int k = i;
         if (k > j) {
             k = j;
@@ -56,57 +56,57 @@ public abstract class LevelPropagator {
         return k;
     }
 
-    private void updateMinLevel(int i) {
-        int j = this.minLevel;
-        this.minLevel = i;
+    private void increaseMinPendingLevel(int i) {
+        int j = this.minPendingLevel;
+        this.minPendingLevel = i;
         for (int k = j + 1; k < i; ++k) {
-            if (this.levelToIds[k].isEmpty()) continue;
-            this.minLevel = k;
+            if (this.pendingIdUpdatesByLevel[k].isEmpty()) continue;
+            this.minPendingLevel = k;
             break;
         }
     }
 
-    protected void remove(long l) {
-        int i = this.idToLevel.get(l) & 0xFF;
+    protected void removePendingUpdate(long l) {
+        int i = this.pendingUpdates.get(l) & 0xFF;
         if (i == 255) {
             return;
         }
         int j = this.getLevel(l);
-        int k = this.min(j, i);
-        this.removeFromLevel(l, k, this.levelCount, true);
-        this.hasUpdates = this.minLevel < this.levelCount;
+        int k = this.minLevel(j, i);
+        this.removePendingUpdate(l, k, this.levelCount, true);
+        this.hasPendingUpdates = this.minPendingLevel < this.levelCount;
     }
 
-    private void removeFromLevel(long l, int i, int j, boolean bl) {
+    private void removePendingUpdate(long l, int i, int j, boolean bl) {
         if (bl) {
-            this.idToLevel.remove(l);
+            this.pendingUpdates.remove(l);
         }
-        this.levelToIds[i].remove(l);
-        if (this.levelToIds[i].isEmpty() && this.minLevel == i) {
-            this.updateMinLevel(j);
-        }
-    }
-
-    private void add(long l, int i, int j) {
-        this.idToLevel.put(l, (byte)i);
-        this.levelToIds[j].add(l);
-        if (this.minLevel > j) {
-            this.minLevel = j;
+        this.pendingIdUpdatesByLevel[i].remove(l);
+        if (this.pendingIdUpdatesByLevel[i].isEmpty() && this.minPendingLevel == i) {
+            this.increaseMinPendingLevel(j);
         }
     }
 
-    protected void fullyUpdate(long l) {
-        this.update(l, l, this.levelCount - 1, false);
+    private void addPendingUpdate(long l, int i, int j) {
+        this.pendingUpdates.put(l, (byte)i);
+        this.pendingIdUpdatesByLevel[j].add(l);
+        if (this.minPendingLevel > j) {
+            this.minPendingLevel = j;
+        }
     }
 
-    protected void update(long l, long m, int i, boolean bl) {
-        this.update(l, m, i, this.getLevel(m), this.idToLevel.get(m) & 0xFF, bl);
-        this.hasUpdates = this.minLevel < this.levelCount;
+    protected void resetLevel(long l) {
+        this.updateLevel(l, l, this.levelCount - 1, false);
     }
 
-    private void update(long l, long m, int i, int j, int k, boolean bl) {
+    protected void updateLevel(long l, long m, int i, boolean bl) {
+        this.updateLevel(l, m, i, this.getLevel(m), this.pendingUpdates.get(m) & 0xFF, bl);
+        this.hasPendingUpdates = this.minPendingLevel < this.levelCount;
+    }
+
+    private void updateLevel(long l, long m, int i, int j, int k, boolean bl) {
         boolean bl2;
-        if (this.isInvalid(m)) {
+        if (this.isMarker(m)) {
             return;
         }
         i = MathHelper.clamp(i, 0, this.levelCount - 1);
@@ -117,24 +117,24 @@ public abstract class LevelPropagator {
         } else {
             bl2 = false;
         }
-        int n = bl ? Math.min(k, i) : MathHelper.clamp(this.getMergedLevel(m, l, i), 0, this.levelCount - 1);
-        int o = this.min(j, k);
+        int n = bl ? Math.min(k, i) : MathHelper.clamp(this.recalculateLevel(m, l, i), 0, this.levelCount - 1);
+        int o = this.minLevel(j, k);
         if (j != n) {
-            int p = this.min(j, n);
+            int p = this.minLevel(j, n);
             if (o != p && !bl2) {
-                this.removeFromLevel(m, o, p, false);
+                this.removePendingUpdate(m, o, p, false);
             }
-            this.add(m, n, p);
+            this.addPendingUpdate(m, n, p);
         } else if (!bl2) {
-            this.removeFromLevel(m, o, this.levelCount, true);
+            this.removePendingUpdate(m, o, this.levelCount, true);
         }
     }
 
-    protected final void updateRecursively(long l, long m, int i, boolean bl) {
-        int j = this.idToLevel.get(m) & 0xFF;
+    protected final void propagateLevel(long l, long m, int i, boolean bl) {
+        int j = this.pendingUpdates.get(m) & 0xFF;
         int k = MathHelper.clamp(this.getPropagatedLevel(l, m, i), 0, this.levelCount - 1);
         if (bl) {
-            this.update(l, m, k, this.getLevel(m), j, true);
+            this.updateLevel(l, m, k, this.getLevel(m), j, true);
         } else {
             int n;
             boolean bl2;
@@ -146,47 +146,47 @@ public abstract class LevelPropagator {
                 bl2 = false;
             }
             if (k == n) {
-                this.update(l, m, this.levelCount - 1, bl2 ? n : this.getLevel(m), j, false);
+                this.updateLevel(l, m, this.levelCount - 1, bl2 ? n : this.getLevel(m), j, false);
             }
         }
     }
 
-    protected final boolean hasLevelUpdates() {
-        return this.hasUpdates;
+    protected final boolean hasPendingUpdates() {
+        return this.hasPendingUpdates;
     }
 
-    protected final int updateAllRecursively(int i) {
-        if (this.minLevel >= this.levelCount) {
+    protected final int applyPendingUpdates(int i) {
+        if (this.minPendingLevel >= this.levelCount) {
             return i;
         }
-        while (this.minLevel < this.levelCount && i > 0) {
+        while (this.minPendingLevel < this.levelCount && i > 0) {
             int k;
             --i;
-            LongLinkedOpenHashSet longLinkedOpenHashSet = this.levelToIds[this.minLevel];
+            LongLinkedOpenHashSet longLinkedOpenHashSet = this.pendingIdUpdatesByLevel[this.minPendingLevel];
             long l = longLinkedOpenHashSet.removeFirstLong();
             int j = MathHelper.clamp(this.getLevel(l), 0, this.levelCount - 1);
             if (longLinkedOpenHashSet.isEmpty()) {
-                this.updateMinLevel(this.levelCount);
+                this.increaseMinPendingLevel(this.levelCount);
             }
-            if ((k = this.idToLevel.remove(l) & 0xFF) < j) {
+            if ((k = this.pendingUpdates.remove(l) & 0xFF) < j) {
                 this.setLevel(l, k);
-                this.updateNeighborsRecursively(l, k, true);
+                this.propagateLevel(l, k, true);
                 continue;
             }
             if (k <= j) continue;
-            this.add(l, k, this.min(this.levelCount - 1, k));
+            this.addPendingUpdate(l, k, this.minLevel(this.levelCount - 1, k));
             this.setLevel(l, this.levelCount - 1);
-            this.updateNeighborsRecursively(l, j, false);
+            this.propagateLevel(l, j, false);
         }
-        this.hasUpdates = this.minLevel < this.levelCount;
+        this.hasPendingUpdates = this.minPendingLevel < this.levelCount;
         return i;
     }
 
-    protected abstract boolean isInvalid(long var1);
+    protected abstract boolean isMarker(long var1);
 
-    protected abstract int getMergedLevel(long var1, long var3, int var5);
+    protected abstract int recalculateLevel(long var1, long var3, int var5);
 
-    protected abstract void updateNeighborsRecursively(long var1, int var3, boolean var4);
+    protected abstract void propagateLevel(long var1, int var3, boolean var4);
 
     protected abstract int getLevel(long var1);
 

@@ -94,7 +94,7 @@ public class FirstPersonRenderer {
 
     private void applyLightmap() {
         ClientPlayerEntity abstractClientPlayerEntity = this.client.player;
-        int i = this.client.world.method_22337(new BlockPos(abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getStandingEyeHeight(), abstractClientPlayerEntity.z));
+        int i = this.client.world.getLightmapIndex(new BlockPos(abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getStandingEyeHeight(), abstractClientPlayerEntity.z));
         float f = i & 0xFFFF;
         float g = i >> 16;
         RenderSystem.glMultiTexCoord2f(33985, f, g);

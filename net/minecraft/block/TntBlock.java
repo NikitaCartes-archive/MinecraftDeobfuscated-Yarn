@@ -42,7 +42,7 @@ extends Block {
         }
         if (world.isReceivingRedstonePower(blockPos)) {
             TntBlock.primeTnt(world, blockPos);
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
         }
     }
 
@@ -50,7 +50,7 @@ extends Block {
     public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
         if (world.isReceivingRedstonePower(blockPos)) {
             TntBlock.primeTnt(world, blockPos);
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
         }
     }
 
@@ -110,7 +110,7 @@ extends Block {
             if (projectileEntity.isOnFire()) {
                 BlockPos blockPos = blockHitResult.getBlockPos();
                 TntBlock.primeTnt(world, blockPos, entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null);
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
             }
         }
     }

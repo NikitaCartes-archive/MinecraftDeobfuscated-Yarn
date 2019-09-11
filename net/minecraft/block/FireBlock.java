@@ -109,13 +109,13 @@ extends Block {
             return;
         }
         if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-            serverWorld.clearBlockState(blockPos, false);
+            serverWorld.removeBlock(blockPos, false);
         }
         Block block = serverWorld.getBlockState(blockPos.down()).getBlock();
         boolean bl = serverWorld.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
         int i = blockState.get(AGE);
         if (!bl && serverWorld.isRaining() && this.isRainingAround(serverWorld, blockPos) && random.nextFloat() < 0.2f + (float)i * 0.03f) {
-            serverWorld.clearBlockState(blockPos, false);
+            serverWorld.removeBlock(blockPos, false);
             return;
         }
         int j = Math.min(15, i + random.nextInt(3) / 2);
@@ -128,12 +128,12 @@ extends Block {
             if (!this.areBlocksAroundFlammable(serverWorld, blockPos)) {
                 BlockPos blockPos2 = blockPos.down();
                 if (!serverWorld.getBlockState(blockPos2).isSideSolidFullSquare(serverWorld, blockPos2, Direction.UP) || i > 3) {
-                    serverWorld.clearBlockState(blockPos, false);
+                    serverWorld.removeBlock(blockPos, false);
                 }
                 return;
             }
             if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(serverWorld.getBlockState(blockPos.down()))) {
-                serverWorld.clearBlockState(blockPos, false);
+                serverWorld.removeBlock(blockPos, false);
                 return;
             }
         }
@@ -194,7 +194,7 @@ extends Block {
                 int l = Math.min(j + random.nextInt(5) / 4, 15);
                 world.setBlockState(blockPos, (BlockState)this.getStateForPosition(world, blockPos).with(AGE, l), 3);
             } else {
-                world.clearBlockState(blockPos, false);
+                world.removeBlock(blockPos, false);
             }
             Block block = blockState.getBlock();
             if (block instanceof TntBlock) {
@@ -213,7 +213,7 @@ extends Block {
     }
 
     private int getBurnChance(class_4538 arg, BlockPos blockPos) {
-        if (!arg.method_22347(blockPos)) {
+        if (!arg.isAir(blockPos)) {
             return 0;
         }
         int i = 0;
@@ -237,7 +237,7 @@ extends Block {
             return;
         }
         if (!blockState.canPlaceAt(world, blockPos)) {
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
             return;
         }
         world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + world.random.nextInt(10));

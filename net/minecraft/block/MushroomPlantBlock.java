@@ -44,12 +44,12 @@ implements Fertilizable {
             }
             BlockPos blockPos3 = blockPos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
             for (int k = 0; k < 4; ++k) {
-                if (serverWorld.method_22347(blockPos3) && blockState.canPlaceAt(serverWorld, blockPos3)) {
+                if (serverWorld.isAir(blockPos3) && blockState.canPlaceAt(serverWorld, blockPos3)) {
                     blockPos = blockPos3;
                 }
                 blockPos3 = blockPos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
             }
-            if (serverWorld.method_22347(blockPos3) && blockState.canPlaceAt(serverWorld, blockPos3)) {
+            if (serverWorld.isAir(blockPos3) && blockState.canPlaceAt(serverWorld, blockPos3)) {
                 serverWorld.setBlockState(blockPos3, blockState, 2);
             }
         }
@@ -68,11 +68,11 @@ implements Fertilizable {
         if (block == Blocks.MYCELIUM || block == Blocks.PODZOL) {
             return true;
         }
-        return arg.method_22335(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, arg, blockPos2);
+        return arg.getBaseLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, arg, blockPos2);
     }
 
     public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos blockPos, BlockState blockState, Random random) {
-        serverWorld.clearBlockState(blockPos, false);
+        serverWorld.removeBlock(blockPos, false);
         Feature<PlantedFeatureConfig> feature = null;
         if (this == Blocks.BROWN_MUSHROOM) {
             feature = Feature.HUGE_BROWN_MUSHROOM;

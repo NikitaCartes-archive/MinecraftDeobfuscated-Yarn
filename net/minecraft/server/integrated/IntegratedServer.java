@@ -272,7 +272,7 @@ extends MinecraftServer {
     }
 
     @Override
-    public int method_21714() {
+    public int getFunctionPermissionLevel() {
         return 2;
     }
 

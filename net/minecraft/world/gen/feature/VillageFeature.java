@@ -10,9 +10,9 @@ import net.minecraft.class_4543;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.VillageGenerator;
 import net.minecraft.structure.VillageStructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -69,8 +69,8 @@ extends StructureFeature<VillageFeatureConfig> {
 
     public static class Start
     extends VillageStructureStart {
-        public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-            super(structureFeature, i, j, mutableIntBoundingBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override

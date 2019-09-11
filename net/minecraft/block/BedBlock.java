@@ -99,10 +99,10 @@ implements BlockEntityProvider {
             return true;
         }
         if (!world.dimension.canPlayersSleep() || world.getBiome(blockPos) == Biomes.NETHER) {
-            world.clearBlockState(blockPos, false);
+            world.removeBlock(blockPos, false);
             BlockPos blockPos2 = blockPos.offset(blockState.get(FACING).getOpposite());
             if (world.getBlockState(blockPos2).getBlock() == this) {
-                world.clearBlockState(blockPos2, false);
+                world.removeBlock(blockPos2, false);
             }
             world.createExplosion(null, DamageSource.netherBed(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
             return true;

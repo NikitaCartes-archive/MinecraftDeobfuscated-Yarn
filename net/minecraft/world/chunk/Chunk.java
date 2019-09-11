@@ -22,8 +22,8 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Chunk
 extends BlockView,
-BlockViewWithStructures {
+StructureHolder {
     @Nullable
     public BlockState setBlockState(BlockPos var1, BlockState var2, boolean var3);
 

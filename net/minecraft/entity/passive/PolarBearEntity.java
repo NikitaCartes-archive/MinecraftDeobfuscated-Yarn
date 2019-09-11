@@ -97,9 +97,9 @@ extends AnimalEntity {
     public static boolean method_20668(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         Biome biome = iWorld.getBiome(blockPos);
         if (biome == Biomes.FROZEN_OCEAN || biome == Biomes.DEEP_FROZEN_OCEAN) {
-            return iWorld.method_22335(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.ICE;
+            return iWorld.getBaseLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.ICE;
         }
-        return PolarBearEntity.method_20663(entityType, iWorld, spawnType, blockPos, random);
+        return PolarBearEntity.isValidNaturalSpawn(entityType, iWorld, spawnType, blockPos, random);
     }
 
     @Override
@@ -192,12 +192,11 @@ extends AnimalEntity {
 
     @Override
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        if (entityData instanceof PolarBearEntityData) {
-            this.setBreedingAge(-24000);
-        } else {
-            entityData = new PolarBearEntityData();
+        if (entityData == null) {
+            entityData = new PassiveEntity._1();
+            ((PassiveEntity._1)entityData).method_22433(1.0f);
         }
-        return entityData;
+        return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     class PolarBearEscapeDangerGoal
@@ -267,7 +266,7 @@ extends AnimalEntity {
                 return false;
             }
             if (super.canStart()) {
-                List<PolarBearEntity> list = PolarBearEntity.this.world.getEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0));
+                List<PolarBearEntity> list = PolarBearEntity.this.world.getNonSpectatingEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0));
                 for (PolarBearEntity polarBearEntity : list) {
                     if (!polarBearEntity.isBaby()) continue;
                     return true;
@@ -302,12 +301,6 @@ extends AnimalEntity {
             if (mobEntity instanceof PolarBearEntity && !mobEntity.isBaby()) {
                 super.setMobEntityTarget(mobEntity, livingEntity);
             }
-        }
-    }
-
-    static class PolarBearEntityData
-    implements EntityData {
-        private PolarBearEntityData() {
         }
     }
 }

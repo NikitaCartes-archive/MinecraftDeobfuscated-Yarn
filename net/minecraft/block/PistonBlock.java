@@ -202,11 +202,11 @@ extends FacingBlock {
                     if (i == 1 && !blockState2.isAir() && PistonBlock.isMovable(blockState2, world, blockPos2, direction.getOpposite(), false, direction) && (blockState2.getPistonBehavior() == PistonBehavior.NORMAL || block == Blocks.PISTON || block == Blocks.STICKY_PISTON)) {
                         this.move(world, blockPos, direction, false);
                     } else {
-                        world.clearBlockState(blockPos.offset(direction), false);
+                        world.removeBlock(blockPos.offset(direction), false);
                     }
                 }
             } else {
-                world.clearBlockState(blockPos.offset(direction), false);
+                world.removeBlock(blockPos.offset(direction), false);
             }
             world.playSound(null, blockPos, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.15f + 0.6f);
         }

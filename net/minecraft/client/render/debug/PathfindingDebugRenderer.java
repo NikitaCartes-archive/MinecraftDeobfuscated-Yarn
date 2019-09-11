@@ -78,12 +78,12 @@ implements DebugRenderer.Renderer {
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double g = camera.getPos().z;
-        BlockPos blockPos = path.method_48();
+        BlockPos blockPos = path.getTarget();
         if (PathfindingDebugRenderer.method_20554(camera, blockPos) <= 40.0f) {
             DebugRenderer.method_19695(new Box((float)blockPos.getX() + 0.25f, (float)blockPos.getY() + 0.25f, (double)blockPos.getZ() + 0.25, (float)blockPos.getX() + 0.75f, (float)blockPos.getY() + 0.75f, (float)blockPos.getZ() + 0.75f).offset(-d, -e, -g), 0.0f, 1.0f, 0.0f, 0.5f);
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode.method_21652()) <= 40.0f)) continue;
+                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode.getPos()) <= 40.0f)) continue;
                 float h = i == path.getCurrentNodeIndex() ? 1.0f : 0.0f;
                 float j = i == path.getCurrentNodeIndex() ? 0.0f : 1.0f;
                 DebugRenderer.method_19695(new Box((float)pathNode.x + 0.5f - f, (float)pathNode.y + 0.01f * (float)i, (float)pathNode.z + 0.5f - f, (float)pathNode.x + 0.5f + f, (float)pathNode.y + 0.25f + 0.01f * (float)i, (float)pathNode.z + 0.5f + f).offset(-d, -e, -g), h, 0.0f, j, 0.5f);
@@ -91,22 +91,22 @@ implements DebugRenderer.Renderer {
         }
         if (bl) {
             for (PathNode pathNode2 : path.method_37()) {
-                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode2.method_21652()) <= 40.0f)) continue;
-                DebugRenderer.method_3714(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
-                DebugRenderer.method_3714(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.field_43)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536);
+                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode2.getPos()) <= 40.0f)) continue;
+                DebugRenderer.drawFloatingText(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
+                DebugRenderer.drawFloatingText(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536);
             }
             for (PathNode pathNode2 : path.method_43()) {
-                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode2.method_21652()) <= 40.0f)) continue;
-                DebugRenderer.method_3714(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -16776961);
-                DebugRenderer.method_3714(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.field_43)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -16776961);
+                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode2.getPos()) <= 40.0f)) continue;
+                DebugRenderer.drawFloatingText(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -16776961);
+                DebugRenderer.drawFloatingText(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -16776961);
             }
         }
         if (bl2) {
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode.method_21652()) <= 40.0f)) continue;
-                DebugRenderer.method_3714(String.format("%s", new Object[]{pathNode.type}), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
-                DebugRenderer.method_3714(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode.field_43)), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1);
+                if (!(PathfindingDebugRenderer.method_20554(camera, pathNode.getPos()) <= 40.0f)) continue;
+                DebugRenderer.drawFloatingText(String.format("%s", new Object[]{pathNode.type}), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
+                DebugRenderer.drawFloatingText(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode.penalty)), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1);
             }
         }
     }
@@ -120,7 +120,7 @@ implements DebugRenderer.Renderer {
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (int i = 0; i < path.getLength(); ++i) {
             PathNode pathNode = path.getNode(i);
-            if (PathfindingDebugRenderer.method_20554(camera, pathNode.method_21652()) > 40.0f) continue;
+            if (PathfindingDebugRenderer.method_20554(camera, pathNode.getPos()) > 40.0f) continue;
             float g = (float)i / (float)path.getLength() * 0.33f;
             int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9f, 0.9f);
             int k = j >> 16 & 0xFF;

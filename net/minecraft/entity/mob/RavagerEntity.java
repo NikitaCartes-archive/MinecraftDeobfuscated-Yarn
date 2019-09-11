@@ -313,7 +313,7 @@ extends RaiderEntity {
 
     @Override
     public boolean canSpawn(class_4538 arg) {
-        return !arg.method_22345(this.getBoundingBox());
+        return !arg.containsFluid(this.getBoundingBox());
     }
 
     @Override
@@ -331,11 +331,11 @@ extends RaiderEntity {
         }
 
         @Override
-        protected PathNodeType method_61(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
+        protected PathNodeType adjustNodeType(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
             if (pathNodeType == PathNodeType.LEAVES) {
                 return PathNodeType.OPEN;
             }
-            return super.method_61(blockView, bl, bl2, blockPos, pathNodeType);
+            return super.adjustNodeType(blockView, bl, bl2, blockPos, pathNodeType);
         }
     }
 

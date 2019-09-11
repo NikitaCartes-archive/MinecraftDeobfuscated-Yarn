@@ -16,22 +16,22 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BlockPlayerActionS2CPacket
+public class PlayerActionResponseS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private static final Logger LOGGER = LogManager.getLogger();
     private BlockPos pos;
     private BlockState state;
     PlayerActionC2SPacket.Action action;
-    private boolean field_20323;
+    private boolean approved;
 
-    public BlockPlayerActionS2CPacket() {
+    public PlayerActionResponseS2CPacket() {
     }
 
-    public BlockPlayerActionS2CPacket(BlockPos blockPos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean bl, String string) {
+    public PlayerActionResponseS2CPacket(BlockPos blockPos, BlockState blockState, PlayerActionC2SPacket.Action action, boolean bl, String string) {
         this.pos = blockPos.toImmutable();
         this.state = blockState;
         this.action = action;
-        this.field_20323 = bl;
+        this.approved = bl;
     }
 
     @Override
@@ -39,7 +39,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pos = packetByteBuf.readBlockPos();
         this.state = Block.STATE_IDS.get(packetByteBuf.readVarInt());
         this.action = packetByteBuf.readEnumConstant(PlayerActionC2SPacket.Action.class);
-        this.field_20323 = packetByteBuf.readBoolean();
+        this.approved = packetByteBuf.readBoolean();
     }
 
     @Override
@@ -47,11 +47,11 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeBlockPos(this.pos);
         packetByteBuf.writeVarInt(Block.getRawIdFromState(this.state));
         packetByteBuf.writeEnumConstant(this.action);
-        packetByteBuf.writeBoolean(this.field_20323);
+        packetByteBuf.writeBoolean(this.approved);
     }
 
     public void method_21708(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.method_21707(this);
+        clientPlayPacketListener.handlePlayerActionResponse(this);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -65,8 +65,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_21711() {
-        return this.field_20323;
+    public boolean isApproved() {
+        return this.approved;
     }
 
     @Environment(value=EnvType.CLIENT)

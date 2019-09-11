@@ -128,7 +128,7 @@ implements Criterion<Conditions> {
         }
 
         public static Conditions item(ItemConvertible itemConvertible) {
-            return new Conditions(new ItemPredicate(null, itemConvertible.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY));
+            return new Conditions(new ItemPredicate(null, itemConvertible.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.field_20687, EnchantmentPredicate.field_20687, null, NbtPredicate.ANY));
         }
 
         public boolean matches(ItemStack itemStack) {

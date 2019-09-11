@@ -137,7 +137,7 @@ extends AmbientEntity {
                 this.world.playLevelEvent(null, 1025, blockPos, 0);
             }
         } else {
-            if (!(this.hangingPosition == null || this.world.method_22347(this.hangingPosition) && this.hangingPosition.getY() >= 1)) {
+            if (!(this.hangingPosition == null || this.world.isAir(this.hangingPosition) && this.hangingPosition.getY() >= 1)) {
                 this.hangingPosition = null;
             }
             if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
@@ -204,7 +204,7 @@ extends AmbientEntity {
         if (blockPos.getY() >= iWorld.getSeaLevel()) {
             return false;
         }
-        int i = iWorld.method_22339(blockPos);
+        int i = iWorld.getLightLevel(blockPos);
         int j = 4;
         if (BatEntity.isTodayAroundHalloween()) {
             j = 7;

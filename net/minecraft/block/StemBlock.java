@@ -56,7 +56,7 @@ implements Fertilizable {
     @Override
     public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         super.onScheduledTick(blockState, serverWorld, blockPos, random);
-        if (serverWorld.method_22335(blockPos, 0) < 9) {
+        if (serverWorld.getBaseLightLevel(blockPos, 0) < 9) {
             return;
         }
         float f = CropBlock.getAvailableMoisture(this, serverWorld, blockPos);

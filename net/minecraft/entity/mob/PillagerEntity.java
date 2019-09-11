@@ -161,7 +161,7 @@ RangedAttackMob {
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }
-        return 0.5f - arg.method_22349(blockPos);
+        return 0.5f - arg.getBrightness(blockPos);
     }
 
     @Override

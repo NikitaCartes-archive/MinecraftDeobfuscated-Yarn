@@ -38,7 +38,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
@@ -180,7 +179,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void tick() {
-        if (!this.world.method_22340(new BlockPos(this.x, 0.0, this.z))) {
+        if (!this.world.isChunkLoaded(new BlockPos(this.x, 0.0, this.z))) {
             return;
         }
         super.tick();
@@ -252,12 +251,10 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    @Nullable
-    public ItemEntity dropSelectedItem(boolean bl) {
+    public boolean dropSelectedItem(boolean bl) {
         PlayerActionC2SPacket.Action action = bl ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
         this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
-        this.inventory.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1);
-        return null;
+        return this.inventory.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1) != ItemStack.EMPTY;
     }
 
     public void sendChatMessage(String string) {
@@ -869,7 +866,7 @@ extends AbstractClientPlayerEntity {
         Vec3d vec3d11 = vec3d7.subtract(vec3d9);
         Vec3d vec3d12 = vec3d6.add(vec3d9);
         Vec3d vec3d13 = vec3d7.add(vec3d9);
-        Iterator iterator = this.world.getCollisionShapes(this, box, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
+        Iterator iterator = this.world.getCollisions(this, box, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
         float t = Float.MIN_VALUE;
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();

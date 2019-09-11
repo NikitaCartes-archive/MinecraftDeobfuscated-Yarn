@@ -8,7 +8,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -46,7 +46,7 @@ extends Goal {
             if (((RaiderEntity)this.actor).age % 20 == 0) {
                 this.includeFreeRaiders(raid);
             }
-            if (!((MobEntityWithAi)this.actor).isNavigating() && (vec3d = PathfindingUtil.method_6373(this.actor, 15, 4, new Vec3d(raid.getCenter()))) != null) {
+            if (!((MobEntityWithAi)this.actor).isNavigating() && (vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, new Vec3d(raid.getCenter()))) != null) {
                 ((MobEntity)this.actor).getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
             }
         }

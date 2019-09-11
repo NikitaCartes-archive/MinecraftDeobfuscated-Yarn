@@ -22,12 +22,12 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
@@ -47,14 +47,16 @@ extends Item {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         HitResult hitResult = BucketItem.rayTrace(world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
+            return TypedActionResult.method_22430(itemStack);
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockPos2;
+            BlockPos blockPos3;
             BlockHitResult blockHitResult = (BlockHitResult)hitResult;
             BlockPos blockPos = blockHitResult.getBlockPos();
-            if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
-                return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
+            Direction direction = blockHitResult.getSide();
+            BlockPos blockPos2 = blockPos.offset(direction);
+            if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos2, direction, itemStack)) {
+                return TypedActionResult.method_22431(itemStack);
             }
             if (this.fluid == Fluids.EMPTY) {
                 Fluid fluid;
@@ -66,23 +68,23 @@ extends Item {
                     if (!world.isClient) {
                         Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
                     }
-                    return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, itemStack2);
+                    return TypedActionResult.method_22427(itemStack2);
                 }
-                return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
+                return TypedActionResult.method_22431(itemStack);
             }
             BlockState blockState = world.getBlockState(blockPos);
-            BlockPos blockPos3 = blockPos2 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER ? blockPos : blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-            if (this.placeFluid(playerEntity, world, blockPos2, blockHitResult)) {
-                this.onEmptied(world, itemStack, blockPos2);
+            BlockPos blockPos4 = blockPos3 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER ? blockPos : blockPos2;
+            if (this.placeFluid(playerEntity, world, blockPos3, blockHitResult)) {
+                this.onEmptied(world, itemStack, blockPos3);
                 if (playerEntity instanceof ServerPlayerEntity) {
-                    Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+                    Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos3, itemStack);
                 }
                 playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-                return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, this.getEmptiedStack(itemStack, playerEntity));
+                return TypedActionResult.method_22427(this.getEmptiedStack(itemStack, playerEntity));
             }
-            return new TypedActionResult<ItemStack>(ActionResult.FAIL, itemStack);
+            return TypedActionResult.method_22431(itemStack);
         }
-        return new TypedActionResult<ItemStack>(ActionResult.PASS, itemStack);
+        return TypedActionResult.method_22430(itemStack);
     }
 
     protected ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {
@@ -131,7 +133,7 @@ extends Item {
                 }
             } else {
                 if (!world.isClient && bl && !material.isLiquid()) {
-                    world.method_22352(blockPos, true);
+                    world.breakBlock(blockPos, true);
                 }
                 this.playEmptyingSound(playerEntity, world, blockPos);
                 world.setBlockState(blockPos, this.fluid.getDefaultState().getBlockState(), 11);

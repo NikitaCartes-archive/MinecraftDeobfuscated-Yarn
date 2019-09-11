@@ -11,13 +11,13 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.NumberRange;
 import org.jetbrains.annotations.Nullable;
 
-public class FloatRange {
-    public static final FloatRange ANY = new FloatRange(null, null);
+public class FloatRangeArgument {
+    public static final FloatRangeArgument ANY = new FloatRangeArgument(null, null);
     public static final SimpleCommandExceptionType ONLY_INTS_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.range.ints", new Object[0]));
     private final Float min;
     private final Float max;
 
-    public FloatRange(@Nullable Float float_, @Nullable Float float2) {
+    public FloatRangeArgument(@Nullable Float float_, @Nullable Float float2) {
         this.min = float_;
         this.max = float2;
     }
@@ -32,17 +32,17 @@ public class FloatRange {
         return this.max;
     }
 
-    public static FloatRange parse(StringReader stringReader, boolean bl, Function<Float, Float> function) throws CommandSyntaxException {
+    public static FloatRangeArgument parse(StringReader stringReader, boolean bl, Function<Float, Float> function) throws CommandSyntaxException {
         Float float2;
         if (!stringReader.canRead()) {
             throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
         }
         int i = stringReader.getCursor();
-        Float float_ = FloatRange.mapFloat(FloatRange.parseFloat(stringReader, bl), function);
+        Float float_ = FloatRangeArgument.mapFloat(FloatRangeArgument.parseFloat(stringReader, bl), function);
         if (stringReader.canRead(2) && stringReader.peek() == '.' && stringReader.peek(1) == '.') {
             stringReader.skip();
             stringReader.skip();
-            float2 = FloatRange.mapFloat(FloatRange.parseFloat(stringReader, bl), function);
+            float2 = FloatRangeArgument.mapFloat(FloatRangeArgument.parseFloat(stringReader, bl), function);
             if (float_ == null && float2 == null) {
                 stringReader.setCursor(i);
                 throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
@@ -58,13 +58,13 @@ public class FloatRange {
             stringReader.setCursor(i);
             throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
         }
-        return new FloatRange(float_, float2);
+        return new FloatRangeArgument(float_, float2);
     }
 
     @Nullable
     private static Float parseFloat(StringReader stringReader, boolean bl) throws CommandSyntaxException {
         int i = stringReader.getCursor();
-        while (stringReader.canRead() && FloatRange.peekDigit(stringReader, bl)) {
+        while (stringReader.canRead() && FloatRangeArgument.peekDigit(stringReader, bl)) {
             stringReader.skip();
         }
         String string = stringReader.getString().substring(i, stringReader.getCursor());

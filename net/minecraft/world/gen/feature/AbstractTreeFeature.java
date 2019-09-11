@@ -24,9 +24,9 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.structure.Structure;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.IWorld;
@@ -105,9 +105,9 @@ extends Feature<T> {
         this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
     }
 
-    protected final void setBlockState(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, MutableIntBoundingBox mutableIntBoundingBox) {
+    protected final void setBlockState(Set<BlockPos> set, ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, BlockBox blockBox) {
         this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
-        mutableIntBoundingBox.setFrom(new MutableIntBoundingBox(blockPos, blockPos));
+        blockBox.encompass(new BlockBox(blockPos, blockPos));
         if (BlockTags.LOGS.contains(blockState.getBlock())) {
             set.add(blockPos.toImmutable());
         }
@@ -124,9 +124,9 @@ extends Feature<T> {
     public final boolean method_22362(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T featureConfig, boolean bl) {
         Biome biome;
         HashSet<BlockPos> set = Sets.newHashSet();
-        MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
-        boolean bl2 = this.generate(set, iWorld, random, blockPos, mutableIntBoundingBox);
-        if (mutableIntBoundingBox.minX > mutableIntBoundingBox.maxX) {
+        BlockBox blockBox = BlockBox.empty();
+        boolean bl2 = this.generate(set, iWorld, random, blockPos, blockBox);
+        if (blockBox.minX > blockBox.maxX) {
             return false;
         }
         ArrayList<Set<BlockPos>> list = Lists.newArrayList();
@@ -134,12 +134,12 @@ extends Feature<T> {
         for (int j = 0; j < 6; ++j) {
             list.add(Sets.newHashSet());
         }
-        BitSetVoxelSet voxelSet = new BitSetVoxelSet(mutableIntBoundingBox.getBlockCountX(), mutableIntBoundingBox.getBlockCountY(), mutableIntBoundingBox.getBlockCountZ());
+        BitSetVoxelSet voxelSet = new BitSetVoxelSet(blockBox.getBlockCountX(), blockBox.getBlockCountY(), blockBox.getBlockCountZ());
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             if (bl2 && !set.isEmpty()) {
                 for (BlockPos blockPos2 : Lists.newArrayList(set)) {
-                    if (mutableIntBoundingBox.contains(blockPos2)) {
-                        ((VoxelSet)voxelSet).set(blockPos2.getX() - mutableIntBoundingBox.minX, blockPos2.getY() - mutableIntBoundingBox.minY, blockPos2.getZ() - mutableIntBoundingBox.minZ, true, true);
+                    if (blockBox.contains(blockPos2)) {
+                        ((VoxelSet)voxelSet).set(blockPos2.getX() - blockBox.minX, blockPos2.getY() - blockBox.minY, blockPos2.getZ() - blockBox.minZ, true, true);
                     }
                     for (Direction direction : Direction.values()) {
                         BlockState blockState;
@@ -147,8 +147,8 @@ extends Feature<T> {
                         if (set.contains(pooledMutable) || !(blockState = iWorld.getBlockState(pooledMutable)).contains(Properties.DISTANCE_1_7)) continue;
                         ((Set)list.get(0)).add(pooledMutable.toImmutable());
                         this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, (BlockState)blockState.with(Properties.DISTANCE_1_7, 1));
-                        if (!mutableIntBoundingBox.contains(pooledMutable)) continue;
-                        ((VoxelSet)voxelSet).set(pooledMutable.getX() - mutableIntBoundingBox.minX, pooledMutable.getY() - mutableIntBoundingBox.minY, pooledMutable.getZ() - mutableIntBoundingBox.minZ, true, true);
+                        if (!blockBox.contains(pooledMutable)) continue;
+                        ((VoxelSet)voxelSet).set(pooledMutable.getX() - blockBox.minX, pooledMutable.getY() - blockBox.minY, pooledMutable.getZ() - blockBox.minZ, true, true);
                     }
                 }
             }
@@ -156,8 +156,8 @@ extends Feature<T> {
                 Set set2 = (Set)list.get(k - 1);
                 Set set3 = (Set)list.get(k);
                 for (BlockPos blockPos3 : set2) {
-                    if (mutableIntBoundingBox.contains(blockPos3)) {
-                        ((VoxelSet)voxelSet).set(blockPos3.getX() - mutableIntBoundingBox.minX, blockPos3.getY() - mutableIntBoundingBox.minY, blockPos3.getZ() - mutableIntBoundingBox.minZ, true, true);
+                    if (blockBox.contains(blockPos3)) {
+                        ((VoxelSet)voxelSet).set(blockPos3.getX() - blockBox.minX, blockPos3.getY() - blockBox.minY, blockPos3.getZ() - blockBox.minZ, true, true);
                     }
                     for (Direction direction2 : Direction.values()) {
                         int l;
@@ -166,8 +166,8 @@ extends Feature<T> {
                         if (set2.contains(pooledMutable) || set3.contains(pooledMutable) || !(blockState2 = iWorld.getBlockState(pooledMutable)).contains(Properties.DISTANCE_1_7) || (l = blockState2.get(Properties.DISTANCE_1_7).intValue()) <= k + 1) continue;
                         BlockState blockState3 = (BlockState)blockState2.with(Properties.DISTANCE_1_7, k + 1);
                         this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState3);
-                        if (mutableIntBoundingBox.contains(pooledMutable)) {
-                            ((VoxelSet)voxelSet).set(pooledMutable.getX() - mutableIntBoundingBox.minX, pooledMutable.getY() - mutableIntBoundingBox.minY, pooledMutable.getZ() - mutableIntBoundingBox.minZ, true, true);
+                        if (blockBox.contains(pooledMutable)) {
+                            ((VoxelSet)voxelSet).set(pooledMutable.getX() - blockBox.minX, pooledMutable.getY() - blockBox.minY, pooledMutable.getZ() - blockBox.minZ, true, true);
                         }
                         set3.add(pooledMutable.toImmutable());
                     }
@@ -175,9 +175,9 @@ extends Feature<T> {
             }
         }
         if (bl && ((biome = iWorld.getBiome(blockPos)) == Biomes.FLOWER_FOREST || biome == Biomes.SUNFLOWER_PLAINS || biome == Biomes.PLAINS)) {
-            this.generateBeeHive(iWorld, random, blockPos, mutableIntBoundingBox, list, biome);
+            this.generateBeeHive(iWorld, random, blockPos, blockBox, list, biome);
         }
-        Structure.method_20532(iWorld, 3, voxelSet, mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ);
+        Structure.method_20532(iWorld, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
         return bl2;
     }
 
@@ -186,13 +186,13 @@ extends Feature<T> {
         return this.method_22362(iWorld, chunkGenerator, random, blockPos, featureConfig, true);
     }
 
-    private void generateBeeHive(IWorld iWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox, List<Set<BlockPos>> list, Biome biome) {
+    private void generateBeeHive(IWorld iWorld, Random random, BlockPos blockPos, BlockBox blockBox, List<Set<BlockPos>> list, Biome biome) {
         float f;
         float f2 = f = biome == Biomes.FLOWER_FOREST ? 0.01f : 0.05f;
         if (random.nextFloat() < f) {
             BlockPos blockPos22;
             Direction direction = BeeHiveBlock.field_20418[random.nextInt(BeeHiveBlock.field_20418.length)];
-            int i = mutableIntBoundingBox.maxY;
+            int i = blockBox.maxY;
             if (!list.isEmpty()) {
                 for (BlockPos blockPos22 : list.get(0)) {
                     if (blockPos22.getY() >= i) continue;
@@ -201,7 +201,7 @@ extends Feature<T> {
             }
             BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeeHiveBlock.FACING, Direction.SOUTH);
             blockPos22 = blockPos.add(direction.getOffsetX(), i - 1 - blockPos.getY(), direction.getOffsetZ());
-            if (iWorld.method_22347(blockPos22) && iWorld.method_22347(blockPos22.offset(Direction.SOUTH))) {
+            if (iWorld.isAir(blockPos22) && iWorld.isAir(blockPos22.offset(Direction.SOUTH))) {
                 this.setBlockState(iWorld, blockPos22, blockState);
                 BlockEntity blockEntity = iWorld.getBlockEntity(blockPos22);
                 if (blockEntity instanceof BeeHiveBlockEntity) {
@@ -216,6 +216,6 @@ extends Feature<T> {
         }
     }
 
-    protected abstract boolean generate(Set<BlockPos> var1, ModifiableTestableWorld var2, Random var3, BlockPos var4, MutableIntBoundingBox var5);
+    protected abstract boolean generate(Set<BlockPos> var1, ModifiableTestableWorld var2, Random var3, BlockPos var4, BlockBox var5);
 }
 

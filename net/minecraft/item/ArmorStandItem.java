@@ -44,14 +44,14 @@ extends Item {
             return ActionResult.FAIL;
         }
         double d = blockPos.getX();
-        List<Entity> list = world.getEntities((Entity)null, new Box(d, e = (double)blockPos.getY(), f = (double)blockPos.getZ(), d + 1.0, e + 2.0, f + 1.0));
+        List<Entity> list = world.getEntities(null, new Box(d, e = (double)blockPos.getY(), f = (double)blockPos.getZ(), d + 1.0, e + 2.0, f + 1.0));
         if (!list.isEmpty()) {
             return ActionResult.FAIL;
         }
         ItemStack itemStack = itemUsageContext.getStack();
         if (!world.isClient) {
-            world.clearBlockState(blockPos, false);
-            world.clearBlockState(blockPos2, false);
+            world.removeBlock(blockPos, false);
+            world.removeBlock(blockPos2, false);
             ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, d + 0.5, e, f + 0.5);
             float g = (float)MathHelper.floor((MathHelper.wrapDegrees(itemUsageContext.getPlayerYaw() - 180.0f) + 22.5f) / 45.0f) * 45.0f;
             armorStandEntity.setPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0f);

@@ -151,7 +151,7 @@ extends Block {
                 serverWorld.setBlockState(blockPos, blockState2, 2);
             } else {
                 VineBlock.dropStacks(blockState, serverWorld, blockPos);
-                serverWorld.clearBlockState(blockPos, false);
+                serverWorld.removeBlock(blockPos, false);
             }
             return;
         }
@@ -179,9 +179,9 @@ extends Block {
                     serverWorld.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction3), true), 2);
                 } else {
                     Direction direction4 = direction.getOpposite();
-                    if (bl && serverWorld.method_22347(blockPos4) && VineBlock.shouldConnectTo(serverWorld, blockPos.offset(direction2), direction4)) {
+                    if (bl && serverWorld.isAir(blockPos4) && VineBlock.shouldConnectTo(serverWorld, blockPos.offset(direction2), direction4)) {
                         serverWorld.setBlockState(blockPos4, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
-                    } else if (bl2 && serverWorld.method_22347(blockPos5) && VineBlock.shouldConnectTo(serverWorld, blockPos.offset(direction3), direction4)) {
+                    } else if (bl2 && serverWorld.isAir(blockPos5) && VineBlock.shouldConnectTo(serverWorld, blockPos.offset(direction3), direction4)) {
                         serverWorld.setBlockState(blockPos5, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
                     } else if ((double)serverWorld.random.nextFloat() < 0.05 && VineBlock.shouldConnectTo(serverWorld, blockPos32.up(), Direction.UP)) {
                         serverWorld.setBlockState(blockPos32, (BlockState)this.getDefaultState().with(UP, true), 2);
@@ -197,7 +197,7 @@ extends Block {
                 serverWorld.setBlockState(blockPos, (BlockState)blockState.with(UP, true), 2);
                 return;
             }
-            if (serverWorld.method_22347(blockPos2)) {
+            if (serverWorld.isAir(blockPos2)) {
                 if (!this.canGrowAt(serverWorld, blockPos)) {
                     return;
                 }

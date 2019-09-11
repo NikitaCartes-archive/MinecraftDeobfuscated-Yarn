@@ -25,7 +25,7 @@ extends Decorator<CarvingMaskDecoratorConfig> {
     }
 
     public Stream<BlockPos> method_14341(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CarvingMaskDecoratorConfig carvingMaskDecoratorConfig, BlockPos blockPos) {
-        Chunk chunk = iWorld.method_22350(blockPos);
+        Chunk chunk = iWorld.getChunk(blockPos);
         ChunkPos chunkPos = chunk.getPos();
         BitSet bitSet = chunk.getCarvingMask(carvingMaskDecoratorConfig.step);
         return IntStream.range(0, bitSet.length()).filter(i -> bitSet.get(i) && random.nextFloat() < carvingMaskDecoratorConfig.probability).mapToObj(i -> {

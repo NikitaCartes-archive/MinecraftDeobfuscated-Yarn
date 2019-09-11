@@ -22,9 +22,9 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -84,7 +84,7 @@ public class IglooGenerator {
         }
 
         @Override
-        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
+        protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
             if (!"chest".equals(string)) {
                 return;
             }
@@ -96,16 +96,16 @@ public class IglooGenerator {
         }
 
         @Override
-        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
             BlockPos blockPos4;
             BlockState blockState;
             StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirrored(BlockMirror.NONE).setPosition((BlockPos)field_14408.get(this.template)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
             BlockPos blockPos = (BlockPos)field_14406.get(this.template);
             BlockPos blockPos2 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
-            int i = iWorld.getLightLevel(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
+            int i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
             BlockPos blockPos3 = this.pos;
             this.pos = this.pos.add(0, i - 90 - 1, 0);
-            boolean bl = super.generate(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
+            boolean bl = super.generate(iWorld, chunkGenerator, random, blockBox, chunkPos);
             if (this.template.equals(TOP_TEMPLATE) && !(blockState = iWorld.getBlockState((blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && blockState.getBlock() != Blocks.LADDER) {
                 iWorld.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
             }

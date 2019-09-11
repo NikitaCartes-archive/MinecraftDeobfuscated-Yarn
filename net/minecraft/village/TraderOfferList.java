@@ -57,7 +57,7 @@ extends ArrayList<TradeOffer> {
             packetByteBuf.writeInt(tradeOffer.getTraderExperience());
             packetByteBuf.writeInt(tradeOffer.getSpecialPrice());
             packetByteBuf.writeFloat(tradeOffer.getPriceMultiplier());
-            packetByteBuf.writeInt(tradeOffer.method_21725());
+            packetByteBuf.writeInt(tradeOffer.getDemandBonus());
         }
     }
 

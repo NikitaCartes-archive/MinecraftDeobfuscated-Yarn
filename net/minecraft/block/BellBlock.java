@@ -68,7 +68,7 @@ extends BlockWithEntity {
         boolean bl2 = world.isReceivingRedstonePower(blockPos);
         if (bl2 != blockState.get(field_20648)) {
             if (bl2) {
-                this.ring(world, blockPos, Direction.NORTH);
+                this.ring(world, blockPos, null);
             }
             world.setBlockState(blockPos, (BlockState)blockState.with(field_20648, bl2), 3);
         }
@@ -121,9 +121,12 @@ extends BlockWithEntity {
         return false;
     }
 
-    private boolean ring(World world, BlockPos blockPos, Direction direction) {
+    public boolean ring(World world, BlockPos blockPos, @Nullable Direction direction) {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (!world.isClient && blockEntity instanceof BellBlockEntity) {
+            if (direction == null) {
+                direction = world.getBlockState(blockPos).get(FACING);
+            }
             ((BellBlockEntity)blockEntity).activate(direction);
             world.playSound(null, blockPos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0f, 1.0f);
             return true;

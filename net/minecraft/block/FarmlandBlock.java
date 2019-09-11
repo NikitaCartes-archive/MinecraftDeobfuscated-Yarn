@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.PistonExtensionBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
@@ -52,7 +53,7 @@ extends Block {
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         BlockState blockState2 = arg.getBlockState(blockPos.up());
-        return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
+        return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock || blockState2.getBlock() instanceof PistonExtensionBlock;
     }
 
     @Override

@@ -145,7 +145,7 @@ implements Criterion<Conditions> {
         public static Conditions items(ItemConvertible ... itemConvertibles) {
             ItemPredicate[] itemPredicates = new ItemPredicate[itemConvertibles.length];
             for (int i = 0; i < itemConvertibles.length; ++i) {
-                itemPredicates[i] = new ItemPredicate(null, itemConvertibles[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY);
+                itemPredicates[i] = new ItemPredicate(null, itemConvertibles[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.field_20687, EnchantmentPredicate.field_20687, null, NbtPredicate.ANY);
             }
             return Conditions.items(itemPredicates);
         }

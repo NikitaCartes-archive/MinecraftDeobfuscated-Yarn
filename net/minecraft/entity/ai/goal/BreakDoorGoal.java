@@ -75,7 +75,7 @@ extends DoorInteractGoal {
             this.prevBreakProgress = i;
         }
         if (this.breakProgress == this.method_16462() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {
-            this.mob.world.clearBlockState(this.doorPos, false);
+            this.mob.world.removeBlock(this.doorPos, false);
             this.mob.world.playLevelEvent(1021, this.doorPos, 0);
             this.mob.world.playLevelEvent(2001, this.doorPos, Block.getRawIdFromState(this.mob.world.getBlockState(this.doorPos)));
         }

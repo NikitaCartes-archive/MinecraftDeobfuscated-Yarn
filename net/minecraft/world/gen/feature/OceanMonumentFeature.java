@@ -14,9 +14,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.structure.OceanMonumentGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
@@ -93,8 +93,8 @@ extends StructureFeature<DefaultFeatureConfig> {
     extends StructureStart {
         private boolean field_13717;
 
-        public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-            super(structureFeature, i, j, mutableIntBoundingBox, k, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override
@@ -112,12 +112,12 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+        public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
             if (!this.field_13717) {
                 this.children.clear();
                 this.method_16588(this.getChunkX(), this.getChunkZ());
             }
-            super.generateStructure(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
+            super.generateStructure(iWorld, chunkGenerator, random, blockBox, chunkPos);
         }
     }
 }

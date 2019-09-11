@@ -7,10 +7,10 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,8 +43,8 @@ public class Box {
         this(vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
     }
 
-    public static Box from(MutableIntBoundingBox mutableIntBoundingBox) {
-        return new Box(mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ, mutableIntBoundingBox.maxX + 1, mutableIntBoundingBox.maxY + 1, mutableIntBoundingBox.maxZ + 1);
+    public static Box from(BlockBox blockBox) {
+        return new Box(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX + 1, blockBox.maxY + 1, blockBox.maxZ + 1);
     }
 
     public double getMin(Direction.Axis axis) {
@@ -218,22 +218,22 @@ public class Box {
         return d >= this.minX && d < this.maxX && e >= this.minY && e < this.maxY && f >= this.minZ && f < this.maxZ;
     }
 
-    public double averageDimension() {
-        double d = this.getXSize();
-        double e = this.getYSize();
-        double f = this.getZSize();
+    public double getAverageSideLength() {
+        double d = this.getXLength();
+        double e = this.getYLength();
+        double f = this.getZLength();
         return (d + e + f) / 3.0;
     }
 
-    public double getXSize() {
+    public double getXLength() {
         return this.maxX - this.minX;
     }
 
-    public double getYSize() {
+    public double getYLength() {
         return this.maxY - this.minY;
     }
 
-    public double getZSize() {
+    public double getZLength() {
         return this.maxZ - this.minZ;
     }
 
@@ -246,7 +246,7 @@ public class Box {
         double d = vec3d2.x - vec3d.x;
         double e = vec3d2.y - vec3d.y;
         double f = vec3d2.z - vec3d.z;
-        Direction direction = Box.method_1007(this, vec3d, ds, null, d, e, f);
+        Direction direction = Box.traceCollisionSide(this, vec3d, ds, null, d, e, f);
         if (direction == null) {
             return Optional.empty();
         }
@@ -262,7 +262,7 @@ public class Box {
         double e = vec3d2.y - vec3d.y;
         double f = vec3d2.z - vec3d.z;
         for (Box box : iterable) {
-            direction = Box.method_1007(box.offset(blockPos), vec3d, ds, direction, d, e, f);
+            direction = Box.traceCollisionSide(box.offset(blockPos), vec3d, ds, direction, d, e, f);
         }
         if (direction == null) {
             return null;
@@ -272,27 +272,27 @@ public class Box {
     }
 
     @Nullable
-    private static Direction method_1007(Box box, Vec3d vec3d, double[] ds, @Nullable Direction direction, double d, double e, double f) {
+    private static Direction traceCollisionSide(Box box, Vec3d vec3d, double[] ds, @Nullable Direction direction, double d, double e, double f) {
         if (d > 1.0E-7) {
-            direction = Box.method_998(ds, direction, d, e, f, box.minX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.WEST, vec3d.x, vec3d.y, vec3d.z);
+            direction = Box.traceCollisionSide(ds, direction, d, e, f, box.minX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.WEST, vec3d.x, vec3d.y, vec3d.z);
         } else if (d < -1.0E-7) {
-            direction = Box.method_998(ds, direction, d, e, f, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.EAST, vec3d.x, vec3d.y, vec3d.z);
+            direction = Box.traceCollisionSide(ds, direction, d, e, f, box.maxX, box.minY, box.maxY, box.minZ, box.maxZ, Direction.EAST, vec3d.x, vec3d.y, vec3d.z);
         }
         if (e > 1.0E-7) {
-            direction = Box.method_998(ds, direction, e, f, d, box.minY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.DOWN, vec3d.y, vec3d.z, vec3d.x);
+            direction = Box.traceCollisionSide(ds, direction, e, f, d, box.minY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.DOWN, vec3d.y, vec3d.z, vec3d.x);
         } else if (e < -1.0E-7) {
-            direction = Box.method_998(ds, direction, e, f, d, box.maxY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.UP, vec3d.y, vec3d.z, vec3d.x);
+            direction = Box.traceCollisionSide(ds, direction, e, f, d, box.maxY, box.minZ, box.maxZ, box.minX, box.maxX, Direction.UP, vec3d.y, vec3d.z, vec3d.x);
         }
         if (f > 1.0E-7) {
-            direction = Box.method_998(ds, direction, f, d, e, box.minZ, box.minX, box.maxX, box.minY, box.maxY, Direction.NORTH, vec3d.z, vec3d.x, vec3d.y);
+            direction = Box.traceCollisionSide(ds, direction, f, d, e, box.minZ, box.minX, box.maxX, box.minY, box.maxY, Direction.NORTH, vec3d.z, vec3d.x, vec3d.y);
         } else if (f < -1.0E-7) {
-            direction = Box.method_998(ds, direction, f, d, e, box.maxZ, box.minX, box.maxX, box.minY, box.maxY, Direction.SOUTH, vec3d.z, vec3d.x, vec3d.y);
+            direction = Box.traceCollisionSide(ds, direction, f, d, e, box.maxZ, box.minX, box.maxX, box.minY, box.maxY, Direction.SOUTH, vec3d.z, vec3d.x, vec3d.y);
         }
         return direction;
     }
 
     @Nullable
-    private static Direction method_998(double[] ds, @Nullable Direction direction, double d, double e, double f, double g, double h, double i, double j, double k, Direction direction2, double l, double m, double n) {
+    private static Direction traceCollisionSide(double[] ds, @Nullable Direction direction, double d, double e, double f, double g, double h, double i, double j, double k, Direction direction2, double l, double m, double n) {
         double o = (g - l) / d;
         double p = m + o * e;
         double q = n + o * f;

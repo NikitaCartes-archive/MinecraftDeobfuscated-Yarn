@@ -44,7 +44,7 @@ extends Block {
     public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!blockState.get(PERSISTENT).booleanValue() && blockState.get(DISTANCE) == 7) {
             LeavesBlock.dropStacks(blockState, serverWorld, blockPos);
-            serverWorld.clearBlockState(blockPos, false);
+            serverWorld.removeBlock(blockPos, false);
         }
     }
 
@@ -54,7 +54,7 @@ extends Block {
     }
 
     @Override
-    public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public int getOpacity(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return 1;
     }
 

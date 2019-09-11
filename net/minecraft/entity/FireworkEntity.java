@@ -217,7 +217,7 @@ Projectile {
             }
             double d = 5.0;
             Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
-            List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(5.0));
+            List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(5.0));
             for (LivingEntity livingEntity : list) {
                 if (livingEntity == this.shooter || this.squaredDistanceTo(livingEntity) > 25.0) continue;
                 boolean bl = false;

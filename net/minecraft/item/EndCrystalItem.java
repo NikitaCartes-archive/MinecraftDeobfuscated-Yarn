@@ -37,11 +37,11 @@ extends Item {
             return ActionResult.FAIL;
         }
         BlockPos blockPos2 = blockPos.up();
-        if (!world.method_22347(blockPos2)) {
+        if (!world.isAir(blockPos2)) {
             return ActionResult.FAIL;
         }
         double d = blockPos2.getX();
-        List<Entity> list = world.getEntities((Entity)null, new Box(d, e = (double)blockPos2.getY(), f = (double)blockPos2.getZ(), d + 1.0, e + 2.0, f + 1.0));
+        List<Entity> list = world.getEntities(null, new Box(d, e = (double)blockPos2.getY(), f = (double)blockPos2.getZ(), d + 1.0, e + 2.0, f + 1.0));
         if (!list.isEmpty()) {
             return ActionResult.FAIL;
         }

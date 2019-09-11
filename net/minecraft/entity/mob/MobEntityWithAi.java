@@ -43,7 +43,7 @@ extends MobEntity {
         super.updateLeash();
         Entity entity = this.getHoldingEntity();
         if (entity != null && entity.world == this.world) {
-            this.setWalkTarget(new BlockPos(entity), 5);
+            this.setPositionTarget(new BlockPos(entity), 5);
             float f = this.distanceTo(entity);
             if (this instanceof TameableEntity && ((TameableEntity)this).isSitting()) {
                 if (f > 10.0f) {

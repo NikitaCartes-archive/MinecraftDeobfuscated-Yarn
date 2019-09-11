@@ -58,7 +58,7 @@ extends Block {
         if (i < 6) {
             iWorld.setBlockState(blockPos, (BlockState)blockState.with(BITES, i + 1), 3);
         } else {
-            iWorld.clearBlockState(blockPos, false);
+            iWorld.removeBlock(blockPos, false);
         }
         return true;
     }

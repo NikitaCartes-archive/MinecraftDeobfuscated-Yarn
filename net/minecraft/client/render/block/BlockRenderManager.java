@@ -25,7 +25,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.BlockRenderView;
 
 @Environment(value=EnvType.CLIENT)
 public class BlockRenderManager
@@ -46,17 +46,17 @@ implements SynchronousResourceReloadListener {
         return this.models;
     }
 
-    public void tesselateDamage(BlockState blockState, BlockPos blockPos, Sprite sprite, ExtendedBlockView extendedBlockView) {
+    public void tesselateDamage(BlockState blockState, BlockPos blockPos, Sprite sprite, BlockRenderView blockRenderView) {
         if (blockState.getRenderType() != BlockRenderType.MODEL) {
             return;
         }
         BakedModel bakedModel = this.models.getModel(blockState);
         long l = blockState.getRenderingSeed(blockPos);
         BakedModel bakedModel2 = new BasicBakedModel.Builder(blockState, bakedModel, sprite, this.random, l).build();
-        this.renderer.tesselate(extendedBlockView, bakedModel2, blockState, blockPos, Tessellator.getInstance().getBufferBuilder(), true, this.random, l);
+        this.renderer.tesselate(blockRenderView, bakedModel2, blockState, blockPos, Tessellator.getInstance().getBufferBuilder(), true, this.random, l);
     }
 
-    public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, ExtendedBlockView extendedBlockView, BufferBuilder bufferBuilder, Random random) {
+    public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, BufferBuilder bufferBuilder, Random random) {
         try {
             BlockRenderType blockRenderType = blockState.getRenderType();
             if (blockRenderType == BlockRenderType.INVISIBLE) {
@@ -64,7 +64,7 @@ implements SynchronousResourceReloadListener {
             }
             switch (blockRenderType) {
                 case MODEL: {
-                    return this.renderer.tesselate(extendedBlockView, this.getModel(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
+                    return this.renderer.tesselate(blockRenderView, this.getModel(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
                 }
                 case ENTITYBLOCK_ANIMATED: {
                     return false;
@@ -79,9 +79,9 @@ implements SynchronousResourceReloadListener {
         return false;
     }
 
-    public boolean tesselateFluid(BlockPos blockPos, ExtendedBlockView extendedBlockView, BufferBuilder bufferBuilder, FluidState fluidState) {
+    public boolean tesselateFluid(BlockPos blockPos, BlockRenderView blockRenderView, BufferBuilder bufferBuilder, FluidState fluidState) {
         try {
-            return this.fluidRenderer.tesselate(extendedBlockView, blockPos, bufferBuilder, fluidState);
+            return this.fluidRenderer.tesselate(blockRenderView, blockPos, bufferBuilder, fluidState);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating liquid in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");

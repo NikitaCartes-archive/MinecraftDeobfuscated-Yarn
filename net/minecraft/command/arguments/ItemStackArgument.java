@@ -45,7 +45,7 @@ implements Predicate<ItemStack> {
         return itemStack;
     }
 
-    public String method_9782() {
+    public String asString() {
         StringBuilder stringBuilder = new StringBuilder(Registry.ITEM.getRawId(this.item));
         if (this.tag != null) {
             stringBuilder.append(this.tag);

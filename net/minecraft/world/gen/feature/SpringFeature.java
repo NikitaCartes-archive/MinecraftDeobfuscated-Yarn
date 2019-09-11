@@ -47,16 +47,16 @@ extends Feature<SpringFeatureConfig> {
             ++j;
         }
         int k = 0;
-        if (iWorld.method_22347(blockPos.west())) {
+        if (iWorld.isAir(blockPos.west())) {
             ++k;
         }
-        if (iWorld.method_22347(blockPos.east())) {
+        if (iWorld.isAir(blockPos.east())) {
             ++k;
         }
-        if (iWorld.method_22347(blockPos.north())) {
+        if (iWorld.isAir(blockPos.north())) {
             ++k;
         }
-        if (iWorld.method_22347(blockPos.south())) {
+        if (iWorld.isAir(blockPos.south())) {
             ++k;
         }
         if (j == 3 && k == 1) {

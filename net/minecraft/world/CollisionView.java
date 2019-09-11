@@ -25,12 +25,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.border.WorldBorder;
 import org.jetbrains.annotations.Nullable;
 
-public interface ViewableWorld
+public interface CollisionView
 extends BlockView {
     public WorldBorder getWorldBorder();
 
     @Nullable
-    public BlockView method_22338(int var1, int var2);
+    public BlockView getExistingChunk(int var1, int var2);
 
     default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
         return true;
@@ -58,18 +58,18 @@ extends BlockView {
     }
 
     default public boolean doesNotCollide(@Nullable Entity entity, Box box, Set<Entity> set) {
-        return this.getCollisionShapes(entity, box, set).allMatch(VoxelShape::isEmpty);
+        return this.getCollisions(entity, box, set).allMatch(VoxelShape::isEmpty);
     }
 
-    default public Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
+    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
         return Stream.empty();
     }
 
-    default public Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, Box box, Set<Entity> set) {
-        return Streams.concat(this.method_20812(entity, box), this.method_20743(entity, box, set));
+    default public Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
+        return Streams.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, set));
     }
 
-    default public Stream<VoxelShape> method_20812(final @Nullable Entity entity, Box box) {
+    default public Stream<VoxelShape> getBlockCollisions(final @Nullable Entity entity, Box box) {
         int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
         int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
         int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
@@ -91,7 +91,7 @@ extends BlockView {
             public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
                 if (!this.field_19296) {
                     this.field_19296 = true;
-                    VoxelShape voxelShape4 = ViewableWorld.this.getWorldBorder().asVoxelShape();
+                    VoxelShape voxelShape4 = CollisionView.this.getWorldBorder().asVoxelShape();
                     boolean bl = VoxelShapes.matchesAnywhere(voxelShape4, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
                     boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape4, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
                     if (!bl && bl2) {
@@ -108,11 +108,11 @@ extends BlockView {
                     int i = cuboidBlockIterator.getX();
                     int j = cuboidBlockIterator.getY();
                     int k = cuboidBlockIterator.getZ();
-                    int l = cuboidBlockIterator.method_20789();
-                    if (l == 3 || (blockView = ViewableWorld.this.method_22338(m = i >> 4, n = k >> 4)) == null) continue;
+                    int l = cuboidBlockIterator.getEdgeCoordinatesCount();
+                    if (l == 3 || (blockView = CollisionView.this.getExistingChunk(m = i >> 4, n = k >> 4)) == null) continue;
                     mutable.set(i, j, k);
                     BlockState blockState = blockView.getBlockState(mutable);
-                    if (l == 1 && !blockState.method_17900() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
+                    if (l == 1 && !blockState.method_17900() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, entityContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
                     consumer.accept(voxelShape3);
                     return true;
                 }

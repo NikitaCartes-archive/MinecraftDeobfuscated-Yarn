@@ -193,7 +193,7 @@ implements Waterloggable {
         ChestType chestType = ChestType.SINGLE;
         Direction direction = itemPlacementContext.getPlayerFacing().getOpposite();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-        boolean bl = itemPlacementContext.isPlayerSneaking();
+        boolean bl = itemPlacementContext.shouldCancelInteraction();
         Direction direction2 = itemPlacementContext.getSide();
         if (direction2.getAxis().isHorizontal() && bl && (direction3 = this.getNeighborChestDirection(itemPlacementContext, direction2.getOpposite())) != null && direction3.getAxis() != direction2.getAxis()) {
             direction = direction3;
@@ -318,7 +318,7 @@ implements Waterloggable {
     }
 
     private static boolean hasOcelotOnTop(IWorld iWorld, BlockPos blockPos) {
-        List<CatEntity> list = iWorld.getEntities(CatEntity.class, new Box(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 2, blockPos.getZ() + 1));
+        List<CatEntity> list = iWorld.getNonSpectatingEntities(CatEntity.class, new Box(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ(), blockPos.getX() + 1, blockPos.getY() + 2, blockPos.getZ() + 1));
         if (!list.isEmpty()) {
             for (CatEntity catEntity : list) {
                 if (!catEntity.isSitting()) continue;

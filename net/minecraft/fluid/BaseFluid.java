@@ -199,7 +199,7 @@ extends Fluid {
         } else {
             neighborGroup = null;
         }
-        boolean bl2 = bl = !VoxelShapes.method_1080(voxelShape = blockState.getCollisionShape(blockView, blockPos), voxelShape2 = blockState2.getCollisionShape(blockView, blockPos2), direction);
+        boolean bl2 = bl = !VoxelShapes.adjacentSidesCoverSquare(voxelShape = blockState.getCollisionShape(blockView, blockPos), voxelShape2 = blockState2.getCollisionShape(blockView, blockPos2), direction);
         if (object2ByteLinkedOpenHashMap != null) {
             if (object2ByteLinkedOpenHashMap.size() == 200) {
                 object2ByteLinkedOpenHashMap.removeLastByte();
