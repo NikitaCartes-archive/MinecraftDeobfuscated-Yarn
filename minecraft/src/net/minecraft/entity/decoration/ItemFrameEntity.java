@@ -134,7 +134,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			return false;
 		} else if (!damageSource.isExplosive() && !this.getHeldItemStack().isEmpty()) {
 			if (!this.world.isClient) {
-				this.method_6936(damageSource.getAttacker(), false);
+				this.dropHeldStack(damageSource.getAttacker(), false);
 				this.playSound(SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, 1.0F, 1.0F);
 			}
 
@@ -165,7 +165,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	@Override
 	public void onBreak(@Nullable Entity entity) {
 		this.playSound(SoundEvents.ENTITY_ITEM_FRAME_BREAK, 1.0F, 1.0F);
-		this.method_6936(entity, true);
+		this.dropHeldStack(entity, true);
 	}
 
 	@Override
@@ -173,7 +173,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		this.playSound(SoundEvents.ENTITY_ITEM_FRAME_PLACE, 1.0F, 1.0F);
 	}
 
-	private void method_6936(@Nullable Entity entity, boolean bl) {
+	private void dropHeldStack(@Nullable Entity entity, boolean bl) {
 		if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			if (entity == null) {
 				this.removeFromFrame(this.getHeldItemStack());

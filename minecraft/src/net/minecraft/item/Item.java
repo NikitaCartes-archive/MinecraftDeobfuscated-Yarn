@@ -144,12 +144,12 @@ public class Item implements ItemConvertible {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (playerEntity.canConsume(this.getFoodComponent().isAlwaysEdible())) {
 				playerEntity.setCurrentHand(hand);
-				return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+				return TypedActionResult.method_22427(itemStack);
 			} else {
-				return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+				return TypedActionResult.method_22431(itemStack);
 			}
 		} else {
-			return new TypedActionResult<>(ActionResult.PASS, playerEntity.getStackInHand(hand));
+			return TypedActionResult.method_22430(playerEntity.getStackInHand(hand));
 		}
 	}
 

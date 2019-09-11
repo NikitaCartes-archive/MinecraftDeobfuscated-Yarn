@@ -111,7 +111,7 @@ public class TradeOffer {
 		this.uses++;
 	}
 
-	public int method_21725() {
+	public int getDemandBonus() {
 		return this.demandBonus;
 	}
 

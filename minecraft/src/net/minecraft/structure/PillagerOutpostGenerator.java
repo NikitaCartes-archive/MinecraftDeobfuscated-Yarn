@@ -13,8 +13,8 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -86,14 +86,9 @@ public class PillagerOutpostGenerator {
 
 	public static class Piece extends PoolStructurePiece {
 		public Piece(
-			StructureManager structureManager,
-			StructurePoolElement structurePoolElement,
-			BlockPos blockPos,
-			int i,
-			BlockRotation blockRotation,
-			MutableIntBoundingBox mutableIntBoundingBox
+			StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox
 		) {
-			super(StructurePieceType.PCP, structureManager, structurePoolElement, blockPos, i, blockRotation, mutableIntBoundingBox);
+			super(StructurePieceType.PCP, structureManager, structurePoolElement, blockPos, i, blockRotation, blockBox);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {

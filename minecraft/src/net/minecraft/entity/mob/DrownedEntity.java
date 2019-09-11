@@ -11,8 +11,8 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -58,7 +58,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.moveControl = new DrownedEntity.DrownedMoveControl(this);
-		this.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.waterNavigation = new SwimNavigation(this, world);
 		this.landNavigation = new MobNavigation(this, world);
 	}
@@ -218,7 +218,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	protected boolean method_7016() {
 		Path path = this.getNavigation().getCurrentPath();
 		if (path != null) {
-			BlockPos blockPos = path.method_48();
+			BlockPos blockPos = path.getTarget();
 			if (blockPos != null) {
 				double d = this.squaredDistanceTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 				if (d < 4.0) {
@@ -332,7 +332,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Override
 		protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
 			BlockPos blockPos2 = blockPos.up();
-			return arg.method_22347(blockPos2) && arg.method_22347(blockPos2.up()) ? arg.getBlockState(blockPos).hasSolidTopSurface(arg, blockPos, this.drowned) : false;
+			return arg.isAir(blockPos2) && arg.isAir(blockPos2.up()) ? arg.getBlockState(blockPos).hasSolidTopSurface(arg, blockPos, this.drowned) : false;
 		}
 
 		@Override
@@ -461,7 +461,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Override
 		public void tick() {
 			if (this.drowned.y < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.method_7016())) {
-				Vec3d vec3d = PathfindingUtil.method_6373(this.drowned, 4, 8, new Vec3d(this.drowned.x, (double)(this.minY - 1), this.drowned.z));
+				Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.x, (double)(this.minY - 1), this.drowned.z));
 				if (vec3d == null) {
 					this.field_7248 = true;
 					return;

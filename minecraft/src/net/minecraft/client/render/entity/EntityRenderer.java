@@ -50,7 +50,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			return true;
 		} else {
 			Box box = entity.getVisibilityBoundingBox().expand(0.5);
-			if (box.isValid() || box.averageDimension() == 0.0) {
+			if (box.isValid() || box.getAverageSideLength() == 0.0) {
 				box = new Box(entity.x - 2.0, entity.y - 2.0, entity.z - 2.0, entity.x + 2.0, entity.y + 2.0, entity.z + 2.0);
 			}
 
@@ -184,7 +184,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState = lv.getBlockState(blockPos2);
-			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && lv.method_22339(blockPos) > 3) {
+			if (blockState.getRenderType() != BlockRenderType.INVISIBLE && lv.getLightLevel(blockPos) > 3) {
 				this.projectShadow(blockState, lv, blockPos2, d, e, f, blockPos, g, i, s, t, u);
 			}
 		}
@@ -207,7 +207,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			if (!voxelShape.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().method_22349(blockPos2);
+				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.getWorld().getBrightness(blockPos2);
 				if (!(l < 0.0)) {
 					if (l > 1.0) {
 						l = 1.0;

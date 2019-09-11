@@ -9,11 +9,11 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 
-public class ChunkCache implements BlockView, ViewableWorld {
+public class ChunkCache implements BlockView, CollisionView {
 	protected final int minX;
 	protected final int minZ;
 	protected final Chunk[][] chunks;
@@ -67,7 +67,7 @@ public class ChunkCache implements BlockView, ViewableWorld {
 	}
 
 	@Override
-	public BlockView method_22338(int i, int j) {
+	public BlockView getExistingChunk(int i, int j) {
 		return this.method_22353(i, j);
 	}
 

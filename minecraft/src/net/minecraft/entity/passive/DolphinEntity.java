@@ -18,7 +18,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.WaterCreatureEntity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.DolphinLookControl;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -502,18 +502,18 @@ public class DolphinEntity extends WaterCreatureEntity {
 			BlockPos blockPos = this.dolphin.getTreasurePos();
 			World world = this.dolphin.world;
 			if (this.dolphin.isCloseToTarget() || this.dolphin.getNavigation().isIdle()) {
-				Vec3d vec3d = PathfindingUtil.method_6377(
+				Vec3d vec3d = TargetFinder.findTargetTowards(
 					this.dolphin, 16, 1, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 8)
 				);
 				if (vec3d == null) {
-					vec3d = PathfindingUtil.method_6373(this.dolphin, 8, 4, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = TargetFinder.findTargetTowards(this.dolphin, 8, 4, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d != null) {
 					BlockPos blockPos2 = new BlockPos(vec3d);
 					if (!world.getFluidState(blockPos2).matches(FluidTags.WATER)
 						|| !world.getBlockState(blockPos2).canPlaceAtSide(world, blockPos2, BlockPlacementEnvironment.WATER)) {
-						vec3d = PathfindingUtil.method_6373(this.dolphin, 8, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+						vec3d = TargetFinder.findTargetTowards(this.dolphin, 8, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 					}
 				}
 

@@ -22,7 +22,7 @@ public class CachedBlockPosition {
 	}
 
 	public BlockState getBlockState() {
-		if (this.state == null && (this.forceLoad || this.world.method_22340(this.pos))) {
+		if (this.state == null && (this.forceLoad || this.world.isChunkLoaded(this.pos))) {
 			this.state = this.world.getBlockState(this.pos);
 		}
 

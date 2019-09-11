@@ -691,7 +691,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		if (playerEntity.method_21823()) {
+		if (playerEntity.shouldCancelInteraction()) {
 			return false;
 		} else {
 			if (!this.world.isClient && this.ticksUnderwater < 60.0F) {

@@ -23,10 +23,10 @@ public abstract class BlockEntity {
 	@Nullable
 	protected World world;
 	protected BlockPos pos = BlockPos.ORIGIN;
-	protected boolean invalid;
+	protected boolean removed;
 	@Nullable
 	private BlockState cachedState;
-	private boolean field_19314;
+	private boolean invalid;
 
 	public BlockEntity(BlockEntityType<?> blockEntityType) {
 		this.type = blockEntityType;
@@ -134,16 +134,16 @@ public abstract class BlockEntity {
 		return this.writeIdentifyingData(new CompoundTag());
 	}
 
-	public boolean isInvalid() {
-		return this.invalid;
+	public boolean isRemoved() {
+		return this.removed;
 	}
 
-	public void invalidate() {
-		this.invalid = true;
+	public void markRemoved() {
+		this.removed = true;
 	}
 
-	public void validate() {
-		this.invalid = false;
+	public void cancelRemoval() {
+		this.removed = false;
 	}
 
 	public boolean onBlockAction(int i, int j) {
@@ -180,9 +180,9 @@ public abstract class BlockEntity {
 		return this.type;
 	}
 
-	public void method_20525() {
-		if (!this.field_19314) {
-			this.field_19314 = true;
+	public void markInvalid() {
+		if (!this.invalid) {
+			this.invalid = true;
 			LOGGER.warn("Block entity invalid: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()), this::getPos);
 		}
 	}

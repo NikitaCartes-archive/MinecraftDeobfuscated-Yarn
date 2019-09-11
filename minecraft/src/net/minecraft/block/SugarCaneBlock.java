@@ -32,8 +32,8 @@ public class SugarCaneBlock extends Block {
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-			serverWorld.method_22352(blockPos, true);
-		} else if (serverWorld.method_22347(blockPos.up())) {
+			serverWorld.breakBlock(blockPos, true);
+		} else if (serverWorld.isAir(blockPos.up())) {
 			int i = 1;
 
 			while (serverWorld.getBlockState(blockPos.down(i)).getBlock() == this) {

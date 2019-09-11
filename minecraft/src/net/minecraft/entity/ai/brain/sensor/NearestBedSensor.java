@@ -45,12 +45,12 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 					return true;
 				}
 			};
-			Stream<BlockPos> stream = pointOfInterestStorage.method_21647(
+			Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
 				PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(mobEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
-			Path path = mobEntity.getNavigation().method_21643(stream, PointOfInterestType.HOME.method_21648());
-			if (path != null && path.method_21655()) {
-				BlockPos blockPos = path.method_48();
+			Path path = mobEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.method_21648());
+			if (path != null && path.reachesTarget()) {
+				BlockPos blockPos = path.getTarget();
 				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 				if (optional.isPresent()) {
 					mobEntity.getBrain().putMemory(MemoryModuleType.NEAREST_BED, blockPos);

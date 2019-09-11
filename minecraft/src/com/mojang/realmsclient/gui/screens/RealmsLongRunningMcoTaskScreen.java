@@ -2,9 +2,9 @@ package com.mojang.realmsclient.gui.screens;
 
 import com.mojang.realmsclient.exception.RealmsDefaultUncaughtExceptionHandler;
 import com.mojang.realmsclient.gui.LongRunningTask;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -82,7 +82,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.task.init();
-		this.buttonsAdd(new RealmsButton(666, this.width() / 2 - 106, class_4359.method_21072(12), 212, 20, getLocalizedString("gui.cancel")) {
+		this.buttonsAdd(new RealmsButton(666, this.width() / 2 - 106, RealmsConstants.row(12), 212, 20, getLocalizedString("gui.cancel")) {
 			@Override
 			public void onPress() {
 				RealmsLongRunningMcoTaskScreen.this.cancelOrBackButtonClicked();
@@ -99,13 +99,13 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawCenteredString(this.title, this.width() / 2, class_4359.method_21072(3), 16777215);
+		this.drawCenteredString(this.title, this.width() / 2, RealmsConstants.row(3), 16777215);
 		if (!this.error) {
-			this.drawCenteredString(symbols[this.animTicks % symbols.length], this.width() / 2, class_4359.method_21072(8), 8421504);
+			this.drawCenteredString(symbols[this.animTicks % symbols.length], this.width() / 2, RealmsConstants.row(8), 8421504);
 		}
 
 		if (this.error) {
-			this.drawCenteredString(this.errorMessage, this.width() / 2, class_4359.method_21072(8), 16711680);
+			this.drawCenteredString(this.errorMessage, this.width() / 2, RealmsConstants.row(8), 16711680);
 		}
 
 		super.render(i, j, f);

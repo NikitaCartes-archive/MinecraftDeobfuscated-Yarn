@@ -55,8 +55,8 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.NumberRange;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class ExecuteCommand {
 	private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
@@ -654,22 +654,18 @@ public class ExecuteCommand {
 	}
 
 	private static OptionalInt testBlocksCondition(ServerWorld serverWorld, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, boolean bl) throws CommandSyntaxException {
-		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(blockPos, blockPos2);
-		MutableIntBoundingBox mutableIntBoundingBox2 = new MutableIntBoundingBox(blockPos3, blockPos3.add(mutableIntBoundingBox.getSize()));
-		BlockPos blockPos4 = new BlockPos(
-			mutableIntBoundingBox2.minX - mutableIntBoundingBox.minX,
-			mutableIntBoundingBox2.minY - mutableIntBoundingBox.minY,
-			mutableIntBoundingBox2.minZ - mutableIntBoundingBox.minZ
-		);
-		int i = mutableIntBoundingBox.getBlockCountX() * mutableIntBoundingBox.getBlockCountY() * mutableIntBoundingBox.getBlockCountZ();
+		BlockBox blockBox = new BlockBox(blockPos, blockPos2);
+		BlockBox blockBox2 = new BlockBox(blockPos3, blockPos3.add(blockBox.getDimensions()));
+		BlockPos blockPos4 = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
+		int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
 		if (i > 32768) {
 			throw BLOCKS_TOOBIG_EXCEPTION.create(32768, i);
 		} else {
 			int j = 0;
 
-			for (int k = mutableIntBoundingBox.minZ; k <= mutableIntBoundingBox.maxZ; k++) {
-				for (int l = mutableIntBoundingBox.minY; l <= mutableIntBoundingBox.maxY; l++) {
-					for (int m = mutableIntBoundingBox.minX; m <= mutableIntBoundingBox.maxX; m++) {
+			for (int k = blockBox.minZ; k <= blockBox.maxZ; k++) {
+				for (int l = blockBox.minY; l <= blockBox.maxY; l++) {
+					for (int m = blockBox.minX; m <= blockBox.maxX; m++) {
 						BlockPos blockPos5 = new BlockPos(m, l, k);
 						BlockPos blockPos6 = blockPos5.add(blockPos4);
 						BlockState blockState = serverWorld.getBlockState(blockPos5);

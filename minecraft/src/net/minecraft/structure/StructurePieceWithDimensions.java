@@ -2,9 +2,9 @@ package net.minecraft.structure;
 
 import java.util.Random;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 
@@ -21,9 +21,9 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		this.depth = n;
 		this.setOrientation(Direction.Type.HORIZONTAL.random(random));
 		if (this.getFacing().getAxis() == Direction.Axis.Z) {
-			this.boundingBox = new MutableIntBoundingBox(i, j, k, i + l - 1, j + m - 1, k + n - 1);
+			this.boundingBox = new BlockBox(i, j, k, i + l - 1, j + m - 1, k + n - 1);
 		} else {
-			this.boundingBox = new MutableIntBoundingBox(i, j, k, i + n - 1, j + m - 1, k + l - 1);
+			this.boundingBox = new BlockBox(i, j, k, i + n - 1, j + m - 1, k + l - 1);
 		}
 	}
 
@@ -43,7 +43,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		compoundTag.putInt("HPos", this.hPos);
 	}
 
-	protected boolean method_14839(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i) {
+	protected boolean method_14839(IWorld iWorld, BlockBox blockBox, int i) {
 		if (this.hPos >= 0) {
 			return true;
 		} else {
@@ -54,7 +54,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 			for (int l = this.boundingBox.minZ; l <= this.boundingBox.maxZ; l++) {
 				for (int m = this.boundingBox.minX; m <= this.boundingBox.maxX; m++) {
 					mutable.set(m, 64, l);
-					if (mutableIntBoundingBox.contains(mutable)) {
+					if (blockBox.contains(mutable)) {
 						j += iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
 						k++;
 					}
@@ -65,7 +65,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 				return false;
 			} else {
 				this.hPos = j / k;
-				this.boundingBox.translate(0, this.hPos - this.boundingBox.minY + i, 0);
+				this.boundingBox.offset(0, this.hPos - this.boundingBox.minY + i, 0);
 				return true;
 			}
 		}

@@ -2,7 +2,6 @@ package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
@@ -22,14 +21,14 @@ public class EmptyMapItem extends NetworkSyncedItem {
 		}
 
 		if (itemStack2.isEmpty()) {
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22427(itemStack);
 		} else {
 			if (!playerEntity.inventory.insertStack(itemStack.copy())) {
 				playerEntity.dropItem(itemStack, false);
 			}
 
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
+			return TypedActionResult.method_22427(itemStack2);
 		}
 	}
 }

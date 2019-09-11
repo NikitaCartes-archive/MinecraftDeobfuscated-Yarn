@@ -61,12 +61,12 @@ public class WalkHomeTask extends Task<LivingEntity> {
 				return true;
 			}
 		};
-		Stream<BlockPos> stream = pointOfInterestStorage.method_21647(
+		Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
 			PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
 		);
-		Path path = mobEntityWithAi.getNavigation().method_21643(stream, PointOfInterestType.HOME.method_21648());
-		if (path != null && path.method_21655()) {
-			BlockPos blockPos = path.method_48();
+		Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.method_21648());
+		if (path != null && path.reachesTarget()) {
+			BlockPos blockPos = path.getTarget();
 			Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
 			if (optional.isPresent()) {
 				livingEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.field_20290, 1));

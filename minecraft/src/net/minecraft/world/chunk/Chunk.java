@@ -21,13 +21,13 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
 
-public interface Chunk extends BlockView, BlockViewWithStructures {
+public interface Chunk extends BlockView, StructureHolder {
 	@Nullable
 	BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl);
 

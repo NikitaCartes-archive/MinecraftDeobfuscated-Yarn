@@ -43,7 +43,7 @@ public class FarmlandBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockState blockState2 = arg.getBlockState(blockPos.up());
-		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
+		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock || blockState2.getBlock() instanceof PistonExtensionBlock;
 	}
 
 	@Override

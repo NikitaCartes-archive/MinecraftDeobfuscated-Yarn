@@ -21,19 +21,19 @@ public class LightingProvider implements LightingView {
 		this.skyLightProvider = bl2 ? new ChunkSkyLightProvider(chunkProvider) : null;
 	}
 
-	public void enqueueLightUpdate(BlockPos blockPos) {
+	public void checkBlock(BlockPos blockPos) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.queueLightCheck(blockPos);
+			this.blockLightProvider.checkBlock(blockPos);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.queueLightCheck(blockPos);
+			this.skyLightProvider.checkBlock(blockPos);
 		}
 	}
 
-	public void method_15560(BlockPos blockPos, int i) {
+	public void addLightSource(BlockPos blockPos, int i) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.method_15514(blockPos, i);
+			this.blockLightProvider.addLightSource(blockPos, i);
 		}
 	}
 
@@ -66,13 +66,13 @@ public class LightingProvider implements LightingView {
 		}
 	}
 
-	public void suppressLight(ChunkPos chunkPos, boolean bl) {
+	public void setLightEnabled(ChunkPos chunkPos, boolean bl) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.method_15512(chunkPos, bl);
+			this.blockLightProvider.setLightEnabled(chunkPos, bl);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.method_15512(chunkPos, bl);
+			this.skyLightProvider.setLightEnabled(chunkPos, bl);
 		}
 	}
 
@@ -85,13 +85,13 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_15564(LightType lightType, ChunkSectionPos chunkSectionPos) {
+	public String getSectionDebugString(LightType lightType, ChunkSectionPos chunkSectionPos) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				return this.blockLightProvider.method_15520(chunkSectionPos.asLong());
+				return this.blockLightProvider.getSectionDebugString(chunkSectionPos.asLong());
 			}
 		} else if (this.skyLightProvider != null) {
-			return this.skyLightProvider.method_15520(chunkSectionPos.asLong());
+			return this.skyLightProvider.getSectionDebugString(chunkSectionPos.asLong());
 		}
 
 		return "n/a";
@@ -100,24 +100,24 @@ public class LightingProvider implements LightingView {
 	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				this.blockLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);
+				this.blockLightProvider.setLightArray(chunkSectionPos.asLong(), chunkNibbleArray);
 			}
 		} else if (this.skyLightProvider != null) {
-			this.skyLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);
+			this.skyLightProvider.setLightArray(chunkSectionPos.asLong(), chunkNibbleArray);
 		}
 	}
 
-	public void method_20601(ChunkPos chunkPos, boolean bl) {
+	public void setRetainData(ChunkPos chunkPos, boolean bl) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.method_20599(chunkPos, bl);
+			this.blockLightProvider.setRetainData(chunkPos, bl);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.method_20599(chunkPos, bl);
+			this.skyLightProvider.setRetainData(chunkPos, bl);
 		}
 	}
 
-	public int method_22363(BlockPos blockPos, int i) {
+	public int getLight(BlockPos blockPos, int i) {
 		int j = this.skyLightProvider == null ? 0 : this.skyLightProvider.getLightLevel(blockPos) - i;
 		int k = this.blockLightProvider == null ? 0 : this.blockLightProvider.getLightLevel(blockPos);
 		return Math.max(k, j);

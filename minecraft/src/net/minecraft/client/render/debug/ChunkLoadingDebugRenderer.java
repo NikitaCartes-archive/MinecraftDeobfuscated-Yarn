@@ -70,7 +70,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				int i = 0;
 
 				for (String string2 : strings) {
-					DebugRenderer.method_19429(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
+					DebugRenderer.drawFloatingText(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
 					i -= 2;
 				}
 			}
@@ -121,7 +121,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			this.field_4515 = builder.build();
-			this.field_4514 = integratedServer.executeFuture(() -> {
+			this.field_4514 = integratedServer.supply(() -> {
 				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
 				ServerChunkManager serverChunkManager = serverWorld.method_14178();
 

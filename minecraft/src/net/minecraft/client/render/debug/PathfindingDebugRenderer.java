@@ -76,7 +76,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double g = camera.getPos().z;
-		BlockPos blockPos = path.method_48();
+		BlockPos blockPos = path.getTarget();
 		if (method_20554(camera, blockPos) <= 40.0F) {
 			DebugRenderer.method_19695(
 				new Box(
@@ -96,7 +96,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 			for (int i = 0; i < path.getLength(); i++) {
 				PathNode pathNode = path.getNode(i);
-				if (method_20554(camera, pathNode.method_21652()) <= 40.0F) {
+				if (method_20554(camera, pathNode.getPos()) <= 40.0F) {
 					float h = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
 					float j = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
 					DebugRenderer.method_19695(
@@ -120,21 +120,23 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 		if (bl) {
 			for (PathNode pathNode2 : path.method_37()) {
-				if (method_20554(camera, pathNode2.method_21652()) <= 40.0F) {
-					DebugRenderer.method_3714(String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
-					DebugRenderer.method_3714(
-						String.format(Locale.ROOT, "%.2f", pathNode2.field_43), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536
+				if (method_20554(camera, pathNode2.getPos()) <= 40.0F) {
+					DebugRenderer.drawFloatingText(
+						String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536
+					);
+					DebugRenderer.drawFloatingText(
+						String.format(Locale.ROOT, "%.2f", pathNode2.penalty), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536
 					);
 				}
 			}
 
 			for (PathNode pathNode2x : path.method_43()) {
-				if (method_20554(camera, pathNode2x.method_21652()) <= 40.0F) {
-					DebugRenderer.method_3714(
+				if (method_20554(camera, pathNode2x.getPos()) <= 40.0F) {
+					DebugRenderer.drawFloatingText(
 						String.format("%s", pathNode2x.type), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.75, (double)pathNode2x.z + 0.5, -16776961
 					);
-					DebugRenderer.method_3714(
-						String.format(Locale.ROOT, "%.2f", pathNode2x.field_43), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.25, (double)pathNode2x.z + 0.5, -16776961
+					DebugRenderer.drawFloatingText(
+						String.format(Locale.ROOT, "%.2f", pathNode2x.penalty), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.25, (double)pathNode2x.z + 0.5, -16776961
 					);
 				}
 			}
@@ -143,10 +145,10 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		if (bl2) {
 			for (int ix = 0; ix < path.getLength(); ix++) {
 				PathNode pathNode = path.getNode(ix);
-				if (method_20554(camera, pathNode.method_21652()) <= 40.0F) {
-					DebugRenderer.method_3714(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
-					DebugRenderer.method_3714(
-						String.format(Locale.ROOT, "%.2f", pathNode.field_43), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1
+				if (method_20554(camera, pathNode.getPos()) <= 40.0F) {
+					DebugRenderer.drawFloatingText(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
+					DebugRenderer.drawFloatingText(
+						String.format(Locale.ROOT, "%.2f", pathNode.penalty), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1
 					);
 				}
 			}
@@ -163,7 +165,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
-			if (!(method_20554(camera, pathNode.method_21652()) > 40.0F)) {
+			if (!(method_20554(camera, pathNode.getPos()) > 40.0F)) {
 				float g = (float)i / (float)path.getLength() * 0.33F;
 				int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9F, 0.9F);
 				int k = j >> 16 & 0xFF;

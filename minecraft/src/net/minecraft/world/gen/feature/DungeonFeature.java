@@ -57,7 +57,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						return false;
 					}
 
-					if ((s == k || s == l || u == p || u == q) && t == 0 && iWorld.method_22347(blockPos2) && iWorld.method_22347(blockPos2.up())) {
+					if ((s == k || s == l || u == p || u == q) && t == 0 && iWorld.isAir(blockPos2) && iWorld.isAir(blockPos2.up())) {
 						r++;
 					}
 				}
@@ -92,7 +92,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					int v = blockPos.getY();
 					int w = blockPos.getZ() + random.nextInt(o * 2 + 1) - o;
 					BlockPos blockPos3 = new BlockPos(ux, v, w);
-					if (iWorld.method_22347(blockPos3)) {
+					if (iWorld.isAir(blockPos3)) {
 						int x = 0;
 
 						for (Direction direction : Direction.Type.HORIZONTAL) {

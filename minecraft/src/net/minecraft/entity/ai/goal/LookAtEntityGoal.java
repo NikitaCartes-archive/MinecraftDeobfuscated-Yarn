@@ -53,7 +53,7 @@ public class LookAtEntityGoal extends Goal {
 			} else {
 				this.target = this.mob
 					.world
-					.method_21727(
+					.getClosestEntityIncludingUngeneratedChunks(
 						this.targetType,
 						this.targetPredicate,
 						this.mob,

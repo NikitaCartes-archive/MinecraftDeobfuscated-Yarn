@@ -32,7 +32,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return isSolidMediumSquare(arg, blockPos.down());
+		return topCoversMediumSquare(arg, blockPos.down());
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		} else {
 			BlockEntity blockEntity = this.hasBlockEntity() ? world.getBlockEntity(blockPos) : null;
 			dropStacks(blockState, world, blockPos, blockEntity);
-			world.clearBlockState(blockPos, false);
+			world.removeBlock(blockPos, false);
 
 			for (Direction direction : Direction.values()) {
 				world.updateNeighborsAlways(blockPos.offset(direction), this);
@@ -131,7 +131,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			if (block == Blocks.REDSTONE_BLOCK) {
 				return 15;
 			} else {
-				return block == Blocks.REDSTONE_WIRE ? (Integer)blockState.get(RedstoneWireBlock.POWER) : arg.method_22344(blockPos, direction);
+				return block == Blocks.REDSTONE_WIRE ? (Integer)blockState.get(RedstoneWireBlock.POWER) : arg.getStrongRedstonePower(blockPos, direction);
 			}
 		} else {
 			return 0;

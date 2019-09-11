@@ -29,7 +29,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -81,7 +80,7 @@ public class CrossbowItem extends RangedWeaponItem {
 		if (isCharged(itemStack)) {
 			shootAll(world, playerEntity, hand, itemStack, getSpeed(itemStack), 1.0F);
 			setCharged(itemStack, false);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22428(itemStack);
 		} else if (!playerEntity.getArrowType(itemStack).isEmpty()) {
 			if (!isCharged(itemStack)) {
 				this.charged = false;
@@ -89,9 +88,9 @@ public class CrossbowItem extends RangedWeaponItem {
 				playerEntity.setCurrentHand(hand);
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22428(itemStack);
 		} else {
-			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return TypedActionResult.method_22431(itemStack);
 		}
 	}
 

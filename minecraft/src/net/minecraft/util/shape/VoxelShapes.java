@@ -221,14 +221,14 @@ public final class VoxelShapes {
 		return d;
 	}
 
-	public static double calculateSoftOffset(Direction.Axis axis, Box box, class_4538 arg, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
+	public static double method_17945(Direction.Axis axis, Box box, class_4538 arg, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
 		return method_17944(box, arg, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
 	}
 
 	private static double method_17944(
 		Box box, class_4538 arg, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream
 	) {
-		if (box.getXSize() < 1.0E-6 || box.getYSize() < 1.0E-6 || box.getZSize() < 1.0E-6) {
+		if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
 			return d;
 		} else if (Math.abs(d) < 1.0E-7) {
 			return 0.0;
@@ -331,7 +331,7 @@ public final class VoxelShapes {
 		}
 	}
 
-	public static boolean method_1080(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
+	public static boolean adjacentSidesCoverSquare(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
 		if (voxelShape != fullCube() && voxelShape2 != fullCube()) {
 			Direction.Axis axis = direction.getAxis();
 			Direction.AxisDirection axisDirection = direction.getDirection();
@@ -355,7 +355,7 @@ public final class VoxelShapes {
 		}
 	}
 
-	public static boolean method_20713(VoxelShape voxelShape, VoxelShape voxelShape2) {
+	public static boolean unionCoversFullCube(VoxelShape voxelShape, VoxelShape voxelShape2) {
 		if (voxelShape == fullCube() || voxelShape2 == fullCube()) {
 			return true;
 		} else {

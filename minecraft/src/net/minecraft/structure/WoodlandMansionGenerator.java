@@ -17,9 +17,9 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.loot.LootTables;
 
@@ -717,7 +717,7 @@ public class WoodlandMansionGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
+		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
 			if (string.startsWith("Chest")) {
 				BlockRotation blockRotation = this.placementData.getRotation();
 				BlockState blockState = Blocks.CHEST.getDefaultState();
@@ -731,7 +731,7 @@ public class WoodlandMansionGenerator {
 					blockState = blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.NORTH));
 				}
 
-				this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, LootTables.WOODLAND_MANSION_CHEST, blockState);
+				this.addChest(iWorld, blockBox, random, blockPos, LootTables.WOODLAND_MANSION_CHEST, blockState);
 			} else {
 				IllagerEntity illagerEntity;
 				switch (string) {

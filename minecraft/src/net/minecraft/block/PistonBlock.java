@@ -213,13 +213,13 @@ public class PistonBlock extends FacingBlock {
 						|| blockState2.isAir()
 						|| !isMovable(blockState2, world, blockPos2, direction.getOpposite(), false, direction)
 						|| blockState2.getPistonBehavior() != PistonBehavior.NORMAL && block != Blocks.PISTON && block != Blocks.STICKY_PISTON) {
-						world.clearBlockState(blockPos.offset(direction), false);
+						world.removeBlock(blockPos.offset(direction), false);
 					} else {
 						this.move(world, blockPos, direction, false);
 					}
 				}
 			} else {
-				world.clearBlockState(blockPos.offset(direction), false);
+				world.removeBlock(blockPos.offset(direction), false);
 			}
 
 			world.playSound(null, blockPos, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.15F + 0.6F);

@@ -365,7 +365,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		}
 
 		if (this.random.nextInt(10) == 0) {
-			List<EnderCrystalEntity> list = this.world.getEntities(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
+			List<EnderCrystalEntity> list = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, this.getBoundingBox().expand(32.0));
 			EnderCrystalEntity enderCrystalEntity = null;
 			double d = Double.MAX_VALUE;
 
@@ -431,7 +431,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					Block block = blockState.getBlock();
 					if (!blockState.isAir() && blockState.getMaterial() != Material.FIRE) {
 						if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) && !BlockTags.DRAGON_IMMUNE.contains(block)) {
-							bl2 = this.world.clearBlockState(blockPos, false) || bl2;
+							bl2 = this.world.removeBlock(blockPos, false) || bl2;
 						} else {
 							bl = true;
 						}
@@ -618,7 +618,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 		for (int k = j; k < 24; k++) {
 			if (this.field_7012[k] != null) {
-				float h = this.field_7012[k].distanceSquared(pathNode);
+				float h = this.field_7012[k].getSquaredDistance(pathNode);
 				if (h < g) {
 					g = h;
 					i = k;
@@ -633,19 +633,19 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	public Path method_6833(int i, int j, @Nullable PathNode pathNode) {
 		for (int k = 0; k < 24; k++) {
 			PathNode pathNode2 = this.field_7012[k];
-			pathNode2.field_42 = false;
+			pathNode2.visited = false;
 			pathNode2.heapWeight = 0.0F;
-			pathNode2.field_36 = 0.0F;
-			pathNode2.field_34 = 0.0F;
-			pathNode2.field_35 = null;
+			pathNode2.penalizedPathLength = 0.0F;
+			pathNode2.distanceToNearestTarget = 0.0F;
+			pathNode2.previous = null;
 			pathNode2.heapIndex = -1;
 		}
 
 		PathNode pathNode3 = this.field_7012[i];
 		PathNode pathNode2 = this.field_7012[j];
-		pathNode3.field_36 = 0.0F;
-		pathNode3.field_34 = pathNode3.distance(pathNode2);
-		pathNode3.heapWeight = pathNode3.field_34;
+		pathNode3.penalizedPathLength = 0.0F;
+		pathNode3.distanceToNearestTarget = pathNode3.getDistance(pathNode2);
+		pathNode3.heapWeight = pathNode3.distanceToNearestTarget;
 		this.field_7008.clear();
 		this.field_7008.push(pathNode3);
 		PathNode pathNode4 = pathNode3;
@@ -658,18 +658,18 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			PathNode pathNode5 = this.field_7008.pop();
 			if (pathNode5.equals(pathNode2)) {
 				if (pathNode != null) {
-					pathNode.field_35 = pathNode2;
+					pathNode.previous = pathNode2;
 					pathNode2 = pathNode;
 				}
 
 				return this.method_6826(pathNode3, pathNode2);
 			}
 
-			if (pathNode5.distance(pathNode2) < pathNode4.distance(pathNode2)) {
+			if (pathNode5.getDistance(pathNode2) < pathNode4.getDistance(pathNode2)) {
 				pathNode4 = pathNode5;
 			}
 
-			pathNode5.field_42 = true;
+			pathNode5.visited = true;
 			int m = 0;
 
 			for (int n = 0; n < 24; n++) {
@@ -682,16 +682,16 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			for (int nx = l; nx < 24; nx++) {
 				if ((this.field_7025[m] & 1 << nx) > 0) {
 					PathNode pathNode6 = this.field_7012[nx];
-					if (!pathNode6.field_42) {
-						float f = pathNode5.field_36 + pathNode5.distance(pathNode6);
-						if (!pathNode6.isInHeap() || f < pathNode6.field_36) {
-							pathNode6.field_35 = pathNode5;
-							pathNode6.field_36 = f;
-							pathNode6.field_34 = pathNode6.distance(pathNode2);
+					if (!pathNode6.visited) {
+						float f = pathNode5.penalizedPathLength + pathNode5.getDistance(pathNode6);
+						if (!pathNode6.isInHeap() || f < pathNode6.penalizedPathLength) {
+							pathNode6.previous = pathNode5;
+							pathNode6.penalizedPathLength = f;
+							pathNode6.distanceToNearestTarget = pathNode6.getDistance(pathNode2);
 							if (pathNode6.isInHeap()) {
-								this.field_7008.setNodeWeight(pathNode6, pathNode6.field_36 + pathNode6.field_34);
+								this.field_7008.setNodeWeight(pathNode6, pathNode6.penalizedPathLength + pathNode6.distanceToNearestTarget);
 							} else {
-								pathNode6.heapWeight = pathNode6.field_36 + pathNode6.field_34;
+								pathNode6.heapWeight = pathNode6.penalizedPathLength + pathNode6.distanceToNearestTarget;
 								this.field_7008.push(pathNode6);
 							}
 						}
@@ -705,7 +705,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		} else {
 			LOGGER.debug("Failed to find path from {} to {}", i, j);
 			if (pathNode != null) {
-				pathNode.field_35 = pathNode4;
+				pathNode.previous = pathNode4;
 				pathNode4 = pathNode;
 			}
 
@@ -718,8 +718,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		PathNode pathNode3 = pathNode2;
 		list.add(0, pathNode2);
 
-		while (pathNode3.field_35 != null) {
-			pathNode3 = pathNode3.field_35;
+		while (pathNode3.previous != null) {
+			pathNode3 = pathNode3.previous;
 			list.add(0, pathNode3);
 		}
 

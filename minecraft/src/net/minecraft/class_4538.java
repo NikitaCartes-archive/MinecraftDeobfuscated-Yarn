@@ -7,23 +7,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
 
-public interface class_4538 extends ExtendedBlockView, ViewableWorld, class_4543.class_4544 {
+public interface class_4538 extends BlockRenderView, CollisionView, class_4543.class_4544 {
 	@Nullable
 	Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
 	@Deprecated
 	boolean isChunkLoaded(int i, int j);
 
-	int getLightLevel(Heightmap.Type type, int i, int j);
+	int getTopY(Heightmap.Type type, int i, int j);
 
 	int getAmbientDarkness();
 
@@ -42,14 +42,14 @@ public interface class_4538 extends ExtendedBlockView, ViewableWorld, class_4543
 	Dimension getDimension();
 
 	default BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-		return new BlockPos(blockPos.getX(), this.getLightLevel(type, blockPos.getX(), blockPos.getZ()), blockPos.getZ());
+		return new BlockPos(blockPos.getX(), this.getTopY(type, blockPos.getX(), blockPos.getZ()), blockPos.getZ());
 	}
 
-	default boolean method_22347(BlockPos blockPos) {
+	default boolean isAir(BlockPos blockPos) {
 		return this.getBlockState(blockPos).isAir();
 	}
 
-	default boolean method_22348(BlockPos blockPos) {
+	default boolean isSkyVisibleAllowingSea(BlockPos blockPos) {
 		if (blockPos.getY() >= this.getSeaLevel()) {
 			return this.isSkyVisible(blockPos);
 		} else {
@@ -59,7 +59,7 @@ public interface class_4538 extends ExtendedBlockView, ViewableWorld, class_4543
 			} else {
 				for (BlockPos var4 = blockPos2.down(); var4.getY() > blockPos.getY(); var4 = var4.down()) {
 					BlockState blockState = this.getBlockState(var4);
-					if (blockState.getLightSubtracted(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
+					if (blockState.getOpacity(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
 						return false;
 					}
 				}
@@ -69,15 +69,15 @@ public interface class_4538 extends ExtendedBlockView, ViewableWorld, class_4543
 		}
 	}
 
-	default float method_22349(BlockPos blockPos) {
-		return this.getDimension().getLightLevelToBrightness()[this.method_22339(blockPos)];
+	default float getBrightness(BlockPos blockPos) {
+		return this.getDimension().getLightLevelToBrightness()[this.getLightLevel(blockPos)];
 	}
 
-	default int method_22344(BlockPos blockPos, Direction direction) {
+	default int getStrongRedstonePower(BlockPos blockPos, Direction direction) {
 		return this.getBlockState(blockPos).getStrongRedstonePower(this, blockPos, direction);
 	}
 
-	default Chunk method_22350(BlockPos blockPos) {
+	default Chunk getChunk(BlockPos blockPos) {
 		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
@@ -85,21 +85,21 @@ public interface class_4538 extends ExtendedBlockView, ViewableWorld, class_4543
 		return this.getChunk(i, j, ChunkStatus.FULL, true);
 	}
 
-	default Chunk method_22342(int i, int j, ChunkStatus chunkStatus) {
+	default Chunk getChunk(int i, int j, ChunkStatus chunkStatus) {
 		return this.getChunk(i, j, chunkStatus, true);
 	}
 
 	@Nullable
 	@Override
-	default BlockView method_22338(int i, int j) {
+	default BlockView getExistingChunk(int i, int j) {
 		return this.getChunk(i, j, ChunkStatus.EMPTY, false);
 	}
 
-	default boolean method_22351(BlockPos blockPos) {
+	default boolean isWater(BlockPos blockPos) {
 		return this.getFluidState(blockPos).matches(FluidTags.WATER);
 	}
 
-	default boolean method_22345(Box box) {
+	default boolean containsFluid(Box box) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);
 		int k = MathHelper.floor(box.minY);
@@ -123,28 +123,28 @@ public interface class_4538 extends ExtendedBlockView, ViewableWorld, class_4543
 		}
 	}
 
-	default int method_22339(BlockPos blockPos) {
-		return this.method_22346(blockPos, this.getAmbientDarkness());
+	default int getLightLevel(BlockPos blockPos) {
+		return this.getLightLevel(blockPos, this.getAmbientDarkness());
 	}
 
-	default int method_22346(BlockPos blockPos, int i) {
+	default int getLightLevel(BlockPos blockPos, int i) {
 		return blockPos.getX() >= -30000000 && blockPos.getZ() >= -30000000 && blockPos.getX() < 30000000 && blockPos.getZ() < 30000000
-			? this.method_22335(blockPos, i)
+			? this.getBaseLightLevel(blockPos, i)
 			: 15;
 	}
 
 	@Deprecated
-	default boolean method_22340(BlockPos blockPos) {
+	default boolean isChunkLoaded(BlockPos blockPos) {
 		return this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
 	@Deprecated
-	default boolean method_22343(BlockPos blockPos, BlockPos blockPos2) {
-		return this.method_22341(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+	default boolean isRegionLoaded(BlockPos blockPos, BlockPos blockPos2) {
+		return this.isRegionLoaded(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
 	}
 
 	@Deprecated
-	default boolean method_22341(int i, int j, int k, int l, int m, int n) {
+	default boolean isRegionLoaded(int i, int j, int k, int l, int m, int n) {
 		if (m >= 0 && j < 256) {
 			i >>= 4;
 			k >>= 4;

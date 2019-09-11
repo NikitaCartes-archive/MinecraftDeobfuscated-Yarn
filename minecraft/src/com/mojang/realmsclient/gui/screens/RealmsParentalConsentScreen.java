@@ -1,10 +1,10 @@
 package com.mojang.realmsclient.gui.screens;
 
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsUtil;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
@@ -25,19 +25,19 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 		int i = Math.max(this.fontWidth(string), this.fontWidth(string2)) + 30;
 		String string3 = getLocalizedString("mco.account.privacy.info");
 		int j = (int)((double)this.fontWidth(string3) * 1.2);
-		this.buttonsAdd(new RealmsButton(1, this.width() / 2 - j / 2, class_4359.method_21072(11), j, 20, string3) {
+		this.buttonsAdd(new RealmsButton(1, this.width() / 2 - j / 2, RealmsConstants.row(11), j, 20, string3) {
 			@Override
 			public void onPress() {
 				RealmsUtil.browseTo("https://minecraft.net/privacy/gdpr/");
 			}
 		});
-		this.buttonsAdd(new RealmsButton(1, this.width() / 2 - (i + 5), class_4359.method_21072(13), i, 20, string) {
+		this.buttonsAdd(new RealmsButton(1, this.width() / 2 - (i + 5), RealmsConstants.row(13), i, 20, string) {
 			@Override
 			public void onPress() {
 				RealmsUtil.browseTo("https://minecraft.net/update-account");
 			}
 		});
-		this.buttonsAdd(new RealmsButton(0, this.width() / 2 + 5, class_4359.method_21072(13), i, 20, string2) {
+		this.buttonsAdd(new RealmsButton(0, this.width() / 2 + 5, RealmsConstants.row(13), i, 20, string2) {
 			@Override
 			public void onPress() {
 				Realms.setScreen(RealmsParentalConsentScreen.this.nextScreen);

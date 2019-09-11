@@ -121,7 +121,7 @@ public class MerchantContainer extends Container {
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-				this.method_20595();
+				this.playYesSound();
 			} else if (i != 0 && i != 1) {
 				if (i >= 3 && i < 30) {
 					if (!this.insertItem(itemStack2, 30, 39, false)) {
@@ -150,10 +150,10 @@ public class MerchantContainer extends Container {
 		return itemStack;
 	}
 
-	private void method_20595() {
+	private void playYesSound() {
 		if (!this.trader.getTraderWorld().isClient) {
 			Entity entity = (Entity)this.trader;
-			this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.method_18010(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
+			this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 		}
 	}
 

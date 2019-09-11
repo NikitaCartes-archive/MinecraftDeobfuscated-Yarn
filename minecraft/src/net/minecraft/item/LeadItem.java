@@ -40,7 +40,7 @@ public class LeadItem extends Item {
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 
-		for (MobEntity mobEntity : world.getEntities(
+		for (MobEntity mobEntity : world.getNonSpectatingEntities(
 			MobEntity.class, new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0)
 		)) {
 			if (mobEntity.getHoldingEntity() == playerEntity) {

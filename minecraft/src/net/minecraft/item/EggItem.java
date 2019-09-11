@@ -5,7 +5,6 @@ import net.minecraft.entity.thrown.ThrownEggEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -33,6 +32,6 @@ public class EggItem extends Item {
 			itemStack.decrement(1);
 		}
 
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		return TypedActionResult.method_22427(itemStack);
 	}
 }

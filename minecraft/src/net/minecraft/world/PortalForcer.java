@@ -59,9 +59,11 @@ public class PortalForcer {
 
 	@Nullable
 	public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double d, double e, boolean bl) {
-		List<PointOfInterest> list = (List<PointOfInterest>)this.world
-			.getPointOfInterestStorage()
-			.method_22383(pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY)
+		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
+		pointOfInterestStorage.method_22439(this.world, blockPos, 128);
+		List<PointOfInterest> list = (List<PointOfInterest>)pointOfInterestStorage.method_22383(
+				pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY
+			)
 			.collect(Collectors.toList());
 		Optional<PointOfInterest> optional = list.stream()
 			.min(
@@ -72,7 +74,7 @@ public class PortalForcer {
 			BlockPos blockPosx = pointOfInterest.getPos();
 			this.world.method_14178().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
 			BlockPattern.Result result = PortalBlock.findPortal(this.world, blockPosx);
-			return result.method_18478(direction, blockPosx, e, vec3d, d);
+			return result.getTeleportTarget(direction, blockPosx, e, vec3d, d);
 		}).orElse(null);
 	}
 
@@ -97,8 +99,8 @@ public class PortalForcer {
 
 				label279:
 				for (int t = this.world.getEffectiveHeight() - 1; t >= 0; t--) {
-					if (this.world.method_22347(mutable.set(r, t, s))) {
-						while (t > 0 && this.world.method_22347(mutable.set(r, t - 1, s))) {
+					if (this.world.isAir(mutable.set(r, t, s))) {
+						while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
 							t--;
 						}
 
@@ -117,7 +119,7 @@ public class PortalForcer {
 										int ab = t + z;
 										int ac = s + (y - 1) * w - x * v;
 										mutable.set(aa, ab, ac);
-										if (z < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || z >= 0 && !this.world.method_22347(mutable)) {
+										if (z < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || z >= 0 && !this.world.isAir(mutable)) {
 											continue label279;
 										}
 									}
@@ -148,8 +150,8 @@ public class PortalForcer {
 
 					label216:
 					for (int tx = this.world.getEffectiveHeight() - 1; tx >= 0; tx--) {
-						if (this.world.method_22347(mutable.set(r, tx, s))) {
-							while (tx > 0 && this.world.method_22347(mutable.set(r, tx - 1, s))) {
+						if (this.world.isAir(mutable.set(r, tx, s))) {
+							while (tx > 0 && this.world.isAir(mutable.set(r, tx - 1, s))) {
 								tx--;
 							}
 
@@ -163,7 +165,7 @@ public class PortalForcer {
 										int aa = tx + y;
 										int ab = s + (x - 1) * wx;
 										mutable.set(zx, aa, ab);
-										if (y < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || y >= 0 && !this.world.method_22347(mutable)) {
+										if (y < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || y >= 0 && !this.world.isAir(mutable)) {
 											continue label216;
 										}
 									}

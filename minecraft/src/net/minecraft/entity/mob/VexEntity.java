@@ -283,7 +283,7 @@ public class VexEntity extends HostileEntity {
 
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos2 = blockPos.add(VexEntity.this.random.nextInt(15) - 7, VexEntity.this.random.nextInt(11) - 5, VexEntity.this.random.nextInt(15) - 7);
-				if (VexEntity.this.world.method_22347(blockPos2)) {
+				if (VexEntity.this.world.isAir(blockPos2)) {
 					VexEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
 					if (VexEntity.this.getTarget() == null) {
 						VexEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0F, 20.0F);
@@ -325,7 +325,7 @@ public class VexEntity extends HostileEntity {
 			if (this.state == MoveControl.State.MOVE_TO) {
 				Vec3d vec3d = new Vec3d(this.targetX - VexEntity.this.x, this.targetY - VexEntity.this.y, this.targetZ - VexEntity.this.z);
 				double d = vec3d.length();
-				if (d < VexEntity.this.getBoundingBox().averageDimension()) {
+				if (d < VexEntity.this.getBoundingBox().getAverageSideLength()) {
 					this.state = MoveControl.State.WAIT;
 					VexEntity.this.setVelocity(VexEntity.this.getVelocity().multiply(0.5));
 				} else {

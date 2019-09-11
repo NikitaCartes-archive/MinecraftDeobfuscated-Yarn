@@ -556,7 +556,7 @@ public class EntityType<T extends Entity> {
 			box2 = box2.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = arg.getCollisionShapes(null, box2, Collections.emptySet());
+		Stream<VoxelShape> stream = arg.getCollisions(null, box2, Collections.emptySet());
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
 	}
 

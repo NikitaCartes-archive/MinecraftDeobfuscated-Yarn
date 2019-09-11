@@ -8,10 +8,10 @@ import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class StructurePlacementData {
 	private BlockMirror mirror = BlockMirror.NONE;
@@ -21,7 +21,7 @@ public class StructurePlacementData {
 	@Nullable
 	private ChunkPos chunkPosition;
 	@Nullable
-	private MutableIntBoundingBox boundingBox;
+	private BlockBox boundingBox;
 	private boolean placeFluids = true;
 	@Nullable
 	private Random random;
@@ -73,8 +73,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setBoundingBox(MutableIntBoundingBox mutableIntBoundingBox) {
-		this.boundingBox = mutableIntBoundingBox;
+	public StructurePlacementData setBoundingBox(BlockBox blockBox) {
+		this.boundingBox = blockBox;
 		return this;
 	}
 
@@ -128,7 +128,7 @@ public class StructurePlacementData {
 	}
 
 	@Nullable
-	public MutableIntBoundingBox method_15124() {
+	public BlockBox method_15124() {
 		if (this.boundingBox == null && this.chunkPosition != null) {
 			this.method_15132();
 		}
@@ -165,13 +165,13 @@ public class StructurePlacementData {
 	}
 
 	@Nullable
-	private MutableIntBoundingBox method_15117(@Nullable ChunkPos chunkPos) {
+	private BlockBox method_15117(@Nullable ChunkPos chunkPos) {
 		if (chunkPos == null) {
 			return this.boundingBox;
 		} else {
 			int i = chunkPos.x * 16;
 			int j = chunkPos.z * 16;
-			return new MutableIntBoundingBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
+			return new BlockBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
 		}
 	}
 }

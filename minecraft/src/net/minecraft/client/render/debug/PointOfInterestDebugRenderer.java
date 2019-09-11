@@ -231,7 +231,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		double f = (double)blockPos.getX() + 0.5;
 		double g = (double)blockPos.getY() + 1.3 + (double)i * 0.2;
 		double h = (double)blockPos.getZ() + 0.5;
-		DebugRenderer.method_3712(string, f, g, h, j, 0.02F, true, 0.0F, true);
+		DebugRenderer.drawFloatingText(string, f, g, h, j, 0.02F, true, 0.0F, true);
 	}
 
 	private static void method_19704(Position position, int i, String string, int j, float f) {
@@ -242,7 +242,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		double h = position.getY() + 2.4 + (double)i * 0.25;
 		double k = (double)blockPos.getZ() + 0.5;
 		float l = 0.5F;
-		DebugRenderer.method_3712(string, g, h, k, j, f, false, 0.5F, true);
+		DebugRenderer.drawFloatingText(string, g, h, k, j, f, false, 0.5F, true);
 	}
 
 	private Camera getCamera() {

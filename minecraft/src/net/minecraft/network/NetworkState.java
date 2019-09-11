@@ -13,7 +13,6 @@ import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
-import net.minecraft.client.network.packet.BlockPlayerActionS2CPacket;
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
 import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
@@ -76,6 +75,7 @@ import net.minecraft.client.network.packet.PlaySoundFromEntityS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
+import net.minecraft.client.network.packet.PlayerActionResponseS2CPacket;
 import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
@@ -177,7 +177,7 @@ public enum NetworkState {
 					.method_22313(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
 					.method_22313(EntityAnimationS2CPacket.class, EntityAnimationS2CPacket::new)
 					.method_22313(StatisticsS2CPacket.class, StatisticsS2CPacket::new)
-					.method_22313(BlockPlayerActionS2CPacket.class, BlockPlayerActionS2CPacket::new)
+					.method_22313(PlayerActionResponseS2CPacket.class, PlayerActionResponseS2CPacket::new)
 					.method_22313(BlockBreakingProgressS2CPacket.class, BlockBreakingProgressS2CPacket::new)
 					.method_22313(BlockEntityUpdateS2CPacket.class, BlockEntityUpdateS2CPacket::new)
 					.method_22313(BlockActionS2CPacket.class, BlockActionS2CPacket::new)

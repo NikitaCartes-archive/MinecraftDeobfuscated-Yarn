@@ -192,7 +192,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return arg.getFluidState(blockPos).matches(FluidTags.WATER) ? 10.0F + arg.method_22349(blockPos) - 0.5F : super.getPathfindingFavor(blockPos, arg);
+		return arg.getFluidState(blockPos).matches(FluidTags.WATER) ? 10.0F + arg.getBrightness(blockPos) - 0.5F : super.getPathfindingFavor(blockPos, arg);
 	}
 
 	@Override
@@ -207,7 +207,7 @@ public class GuardianEntity extends HostileEntity {
 						this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down(), this);
+					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -315,7 +315,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	public static boolean method_20676(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return (random.nextInt(20) == 0 || !iWorld.method_22348(blockPos))
+		return (random.nextInt(20) == 0 || !iWorld.isSkyVisibleAllowingSea(blockPos))
 			&& iWorld.getDifficulty() != Difficulty.PEACEFUL
 			&& (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
 	}

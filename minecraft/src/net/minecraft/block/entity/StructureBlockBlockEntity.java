@@ -28,9 +28,9 @@ import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MutableIntBoundingBox;
 
 public class StructureBlockBlockEntity extends BlockEntity {
 	private Identifier structureName;
@@ -292,18 +292,10 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			if (list2.size() < 1) {
 				return false;
 			} else {
-				MutableIntBoundingBox mutableIntBoundingBox = this.makeBoundingBox(blockPos, list2);
-				if (mutableIntBoundingBox.maxX - mutableIntBoundingBox.minX > 1
-					&& mutableIntBoundingBox.maxY - mutableIntBoundingBox.minY > 1
-					&& mutableIntBoundingBox.maxZ - mutableIntBoundingBox.minZ > 1) {
-					this.offset = new BlockPos(
-						mutableIntBoundingBox.minX - blockPos.getX() + 1, mutableIntBoundingBox.minY - blockPos.getY() + 1, mutableIntBoundingBox.minZ - blockPos.getZ() + 1
-					);
-					this.size = new BlockPos(
-						mutableIntBoundingBox.maxX - mutableIntBoundingBox.minX - 1,
-						mutableIntBoundingBox.maxY - mutableIntBoundingBox.minY - 1,
-						mutableIntBoundingBox.maxZ - mutableIntBoundingBox.minZ - 1
-					);
+				BlockBox blockBox = this.makeBoundingBox(blockPos, list2);
+				if (blockBox.maxX - blockBox.minX > 1 && blockBox.maxY - blockBox.minY > 1 && blockBox.maxZ - blockBox.minZ > 1) {
+					this.offset = new BlockPos(blockBox.minX - blockPos.getX() + 1, blockBox.minY - blockPos.getY() + 1, blockBox.minZ - blockPos.getZ() + 1);
+					this.size = new BlockPos(blockBox.maxX - blockBox.minX - 1, blockBox.maxY - blockBox.minY - 1, blockBox.maxZ - blockBox.minZ - 1);
 					this.markDirty();
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.world.updateListeners(blockPos, blockState, blockState, 3);
@@ -337,37 +329,37 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return list;
 	}
 
-	private MutableIntBoundingBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
-		MutableIntBoundingBox mutableIntBoundingBox;
+	private BlockBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
+		BlockBox blockBox;
 		if (list.size() > 1) {
 			BlockPos blockPos2 = ((StructureBlockBlockEntity)list.get(0)).getPos();
-			mutableIntBoundingBox = new MutableIntBoundingBox(blockPos2, blockPos2);
+			blockBox = new BlockBox(blockPos2, blockPos2);
 		} else {
-			mutableIntBoundingBox = new MutableIntBoundingBox(blockPos, blockPos);
+			blockBox = new BlockBox(blockPos, blockPos);
 		}
 
 		for (StructureBlockBlockEntity structureBlockBlockEntity : list) {
 			BlockPos blockPos3 = structureBlockBlockEntity.getPos();
-			if (blockPos3.getX() < mutableIntBoundingBox.minX) {
-				mutableIntBoundingBox.minX = blockPos3.getX();
-			} else if (blockPos3.getX() > mutableIntBoundingBox.maxX) {
-				mutableIntBoundingBox.maxX = blockPos3.getX();
+			if (blockPos3.getX() < blockBox.minX) {
+				blockBox.minX = blockPos3.getX();
+			} else if (blockPos3.getX() > blockBox.maxX) {
+				blockBox.maxX = blockPos3.getX();
 			}
 
-			if (blockPos3.getY() < mutableIntBoundingBox.minY) {
-				mutableIntBoundingBox.minY = blockPos3.getY();
-			} else if (blockPos3.getY() > mutableIntBoundingBox.maxY) {
-				mutableIntBoundingBox.maxY = blockPos3.getY();
+			if (blockPos3.getY() < blockBox.minY) {
+				blockBox.minY = blockPos3.getY();
+			} else if (blockPos3.getY() > blockBox.maxY) {
+				blockBox.maxY = blockPos3.getY();
 			}
 
-			if (blockPos3.getZ() < mutableIntBoundingBox.minZ) {
-				mutableIntBoundingBox.minZ = blockPos3.getZ();
-			} else if (blockPos3.getZ() > mutableIntBoundingBox.maxZ) {
-				mutableIntBoundingBox.maxZ = blockPos3.getZ();
+			if (blockPos3.getZ() < blockBox.minZ) {
+				blockBox.minZ = blockPos3.getZ();
+			} else if (blockPos3.getZ() > blockBox.maxZ) {
+				blockBox.maxZ = blockPos3.getZ();
 			}
 		}
 
-		return mutableIntBoundingBox;
+		return blockBox;
 	}
 
 	public boolean saveStructure() {

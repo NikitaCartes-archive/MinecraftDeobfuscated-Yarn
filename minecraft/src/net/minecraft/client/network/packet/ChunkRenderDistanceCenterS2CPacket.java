@@ -32,7 +32,7 @@ public class ChunkRenderDistanceCenterS2CPacket implements Packet<ClientPlayPack
 	}
 
 	public void method_20321(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.handleChunkRenderDistanceCenter(this);
+		clientPlayPacketListener.onChunkRenderDistanceCenter(this);
 	}
 
 	@Environment(EnvType.CLIENT)

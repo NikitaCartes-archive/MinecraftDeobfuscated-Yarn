@@ -19,7 +19,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		if (blockState2.getBlock() == Blocks.SNOW && (Integer)blockState2.get(SnowBlock.LAYERS) == 1) {
 			return true;
 		} else {
-			int i = ChunkLightProvider.method_20049(arg, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getLightSubtracted(arg, blockPos2));
+			int i = ChunkLightProvider.getRealisticOpacity(arg, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getOpacity(arg, blockPos2));
 			return i < arg.getMaxLightLevel();
 		}
 	}
@@ -34,7 +34,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		if (!canSurvive(blockState, serverWorld, blockPos)) {
 			serverWorld.setBlockState(blockPos, Blocks.DIRT.getDefaultState());
 		} else {
-			if (serverWorld.method_22339(blockPos.up()) >= 9) {
+			if (serverWorld.getLightLevel(blockPos.up()) >= 9) {
 				BlockState blockState2 = this.getDefaultState();
 
 				for (int i = 0; i < 4; i++) {

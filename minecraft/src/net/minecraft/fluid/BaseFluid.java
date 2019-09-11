@@ -212,7 +212,7 @@ public abstract class BaseFluid extends Fluid {
 
 		VoxelShape voxelShape = blockState.getCollisionShape(blockView, blockPos);
 		VoxelShape voxelShape2 = blockState2.getCollisionShape(blockView, blockPos2);
-		boolean bl = !VoxelShapes.method_1080(voxelShape, voxelShape2, direction);
+		boolean bl = !VoxelShapes.adjacentSidesCoverSquare(voxelShape, voxelShape2, direction);
 		if (object2ByteLinkedOpenHashMap != null) {
 			if (object2ByteLinkedOpenHashMap.size() == 200) {
 				object2ByteLinkedOpenHashMap.removeLastByte();

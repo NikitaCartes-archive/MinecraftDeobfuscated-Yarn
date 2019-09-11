@@ -96,7 +96,7 @@ public class EnchantingTableContainer extends Container {
 
 					for (int j = -1; j <= 1; j++) {
 						for (int k = -1; k <= 1; k++) {
-							if ((j != 0 || k != 0) && world.method_22347(blockPos.add(k, 0, j)) && world.method_22347(blockPos.add(k, 1, j))) {
+							if ((j != 0 || k != 0) && world.isAir(blockPos.add(k, 0, j)) && world.isAir(blockPos.add(k, 1, j))) {
 								if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).getBlock() == Blocks.BOOKSHELF) {
 									ix++;
 								}

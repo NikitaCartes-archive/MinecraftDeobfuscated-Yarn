@@ -9,9 +9,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 
@@ -38,9 +38,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(
-		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
-	) {
+	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
 		int i = this.getTreeHeight(random);
 		boolean bl = true;
 		if (blockPos.getY() >= 1 && blockPos.getY() + i + 1 <= 256) {
@@ -86,7 +84,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 							if (Math.abs(p) != mx || Math.abs(r) != mx || random.nextInt(2) != 0 && l != 0) {
 								BlockPos blockPos2 = new BlockPos(o, n, q);
 								if (isAirOrLeaves(modifiableTestableWorld, blockPos2) || isReplaceablePlant(modifiableTestableWorld, blockPos2)) {
-									this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
+									this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
 								}
 							}
 						}
@@ -95,7 +93,7 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 				for (int n = 0; n < i; n++) {
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(n)) || isReplaceablePlant(modifiableTestableWorld, blockPos.up(n))) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), this.log, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), this.log, blockBox);
 						if (this.hasVinesAndCocoa && n > 0) {
 							if (random.nextInt(3) > 0 && isAir(modifiableTestableWorld, blockPos.add(-1, n, 0))) {
 								this.makeVine(modifiableTestableWorld, blockPos.add(-1, n, 0), VineBlock.EAST);

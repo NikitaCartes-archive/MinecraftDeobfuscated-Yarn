@@ -21,11 +21,11 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.border.WorldBorder;
 
-public interface ViewableWorld extends BlockView {
+public interface CollisionView extends BlockView {
 	WorldBorder getWorldBorder();
 
 	@Nullable
-	BlockView method_22338(int i, int j);
+	BlockView getExistingChunk(int i, int j);
 
 	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
 		return true;
@@ -53,18 +53,18 @@ public interface ViewableWorld extends BlockView {
 	}
 
 	default boolean doesNotCollide(@Nullable Entity entity, Box box, Set<Entity> set) {
-		return this.getCollisionShapes(entity, box, set).allMatch(VoxelShape::isEmpty);
+		return this.getCollisions(entity, box, set).allMatch(VoxelShape::isEmpty);
 	}
 
-	default Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
+	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
 		return Stream.empty();
 	}
 
-	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, Box box, Set<Entity> set) {
-		return Streams.concat(this.method_20812(entity, box), this.method_20743(entity, box, set));
+	default Stream<VoxelShape> getCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
+		return Streams.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, set));
 	}
 
-	default Stream<VoxelShape> method_20812(@Nullable Entity entity, Box box) {
+	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {
 		int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
 		int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
 		int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
@@ -81,7 +81,7 @@ public interface ViewableWorld extends BlockView {
 			public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
 				if (!this.field_19296) {
 					this.field_19296 = true;
-					VoxelShape voxelShape = ViewableWorld.this.getWorldBorder().asVoxelShape();
+					VoxelShape voxelShape = CollisionView.this.getWorldBorder().asVoxelShape();
 					boolean bl = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
 					boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
 					if (!bl && bl2) {
@@ -94,16 +94,16 @@ public interface ViewableWorld extends BlockView {
 					int i = cuboidBlockIterator.getX();
 					int j = cuboidBlockIterator.getY();
 					int k = cuboidBlockIterator.getZ();
-					int l = cuboidBlockIterator.method_20789();
+					int l = cuboidBlockIterator.getEdgeCoordinatesCount();
 					if (l != 3) {
 						int m = i >> 4;
 						int n = k >> 4;
-						BlockView blockView = ViewableWorld.this.method_22338(m, n);
+						BlockView blockView = CollisionView.this.getExistingChunk(m, n);
 						if (blockView != null) {
 							mutable.set(i, j, k);
 							BlockState blockState = blockView.getBlockState(mutable);
 							if ((l != 1 || blockState.method_17900()) && (l != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
-								VoxelShape voxelShape2 = blockState.getCollisionShape(ViewableWorld.this, mutable, entityContext);
+								VoxelShape voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, entityContext);
 								VoxelShape voxelShape3 = voxelShape2.offset((double)i, (double)j, (double)k);
 								if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape3, BooleanBiFunction.AND)) {
 									consumer.accept(voxelShape3);

@@ -20,7 +20,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_13408(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		while (iWorld.method_22347(blockPos) && blockPos.getY() > 2) {
+		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
 			blockPos = blockPos.down();
 		}
 

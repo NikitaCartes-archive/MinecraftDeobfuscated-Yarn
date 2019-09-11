@@ -15,7 +15,7 @@ public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
 	public void method_967(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
 		commandFunctionManager.getFunction(this.name)
-			.ifPresent(commandFunction -> commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource()));
+			.ifPresent(commandFunction -> commandFunctionManager.execute(commandFunction, commandFunctionManager.getTaggedFunctionSource()));
 	}
 
 	public static class Serializer extends TimerCallback.Serializer<MinecraftServer, FunctionTimerCallback> {

@@ -50,7 +50,7 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 
 	@Override
 	protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-		if (!arg.method_22347(blockPos.up())) {
+		if (!arg.isAir(blockPos.up())) {
 			return false;
 		} else {
 			BlockState blockState = arg.getBlockState(blockPos);

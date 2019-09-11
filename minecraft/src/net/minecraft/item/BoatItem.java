@@ -7,7 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
@@ -30,7 +29,7 @@ public class BoatItem extends Item {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.ANY);
 		if (hitResult.getType() == HitResult.Type.MISS) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return TypedActionResult.method_22430(itemStack);
 		} else {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F);
 			double d = 5.0;
@@ -41,7 +40,7 @@ public class BoatItem extends Item {
 				for (Entity entity : list) {
 					Box box = entity.getBoundingBox().expand((double)entity.getTargetingMargin());
 					if (box.contains(vec3d2)) {
-						return new TypedActionResult<>(ActionResult.PASS, itemStack);
+						return TypedActionResult.method_22430(itemStack);
 					}
 				}
 			}
@@ -51,7 +50,7 @@ public class BoatItem extends Item {
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
 				if (!world.doesNotCollide(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
-					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+					return TypedActionResult.method_22431(itemStack);
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
@@ -62,10 +61,10 @@ public class BoatItem extends Item {
 					}
 
 					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+					return TypedActionResult.method_22427(itemStack);
 				}
 			} else {
-				return new TypedActionResult<>(ActionResult.PASS, itemStack);
+				return TypedActionResult.method_22430(itemStack);
 			}
 		}
 	}

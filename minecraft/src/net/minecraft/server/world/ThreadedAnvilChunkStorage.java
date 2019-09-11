@@ -163,8 +163,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int j;
 		if (bl) {
 			ChunkSectionPos chunkSectionPos = serverPlayerEntity.getCameraPosition();
-			i = chunkSectionPos.getChunkX();
-			j = chunkSectionPos.getChunkZ();
+			i = chunkSectionPos.getSectionX();
+			j = chunkSectionPos.getSectionZ();
 		} else {
 			i = MathHelper.floor(serverPlayerEntity.x / 16.0);
 			j = MathHelper.floor(serverPlayerEntity.z / 16.0);
@@ -333,7 +333,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					CompletableFuture<Chunk> completableFuture;
 					do {
 						completableFuture = chunkHolder.getFuture();
-						this.mainThreadExecutor.waitFor(completableFuture::isDone);
+						this.mainThreadExecutor.executeTasks(completableFuture::isDone);
 					} while (completableFuture != chunkHolder.getFuture());
 
 					return (Chunk)completableFuture.join();
@@ -403,7 +403,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						this.world.unloadEntities(worldChunk);
 					}
 
-					this.serverLightingProvider.method_20386(chunk.getPos());
+					this.serverLightingProvider.updateChunkStatus(chunk.getPos());
 					this.serverLightingProvider.tick();
 					this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
 				}
@@ -517,7 +517,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 						}
 					},
 					unloaded -> {
-						this.method_20441(chunkPos);
+						this.releaseLightTicket(chunkPos);
 						return CompletableFuture.completedFuture(Either.right(unloaded));
 					}
 				),
@@ -525,7 +525,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		);
 	}
 
-	protected void method_20441(ChunkPos chunkPos) {
+	protected void releaseLightTicket(ChunkPos chunkPos) {
 		this.mainThreadExecutor
 			.method_18858(
 				SystemUtil.debugRunnable(
@@ -812,7 +812,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(serverPlayerEntity);
 		serverPlayerEntity.setCameraPosition(chunkSectionPos);
-		serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkZ()));
+		serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
 		return chunkSectionPos;
 	}
 
@@ -857,8 +857,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		int k = chunkSectionPos.getChunkX();
-		int n = chunkSectionPos.getChunkZ();
+		int k = chunkSectionPos.getSectionX();
+		int n = chunkSectionPos.getSectionZ();
 		if (Math.abs(k - i) <= this.watchDistance * 2 && Math.abs(n - j) <= this.watchDistance * 2) {
 			int o = Math.min(i, k) - this.watchDistance;
 			int p = Math.min(j, n) - this.watchDistance;

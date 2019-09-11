@@ -319,7 +319,7 @@ public class RedstoneWireBlock extends Block {
 				this.update(world, blockPos, blockState);
 			} else {
 				dropStacks(blockState, world, blockPos);
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 			}
 		}
 	}
@@ -343,7 +343,7 @@ public class RedstoneWireBlock extends Block {
 				EnumSet<Direction> enumSet = EnumSet.noneOf(Direction.class);
 
 				for (Direction direction2 : Direction.Type.HORIZONTAL) {
-					if (this.method_10478(blockView, blockPos, direction2)) {
+					if (this.couldConnectTo(blockView, blockPos, direction2)) {
 						enumSet.add(direction2);
 					}
 				}
@@ -357,7 +357,7 @@ public class RedstoneWireBlock extends Block {
 		}
 	}
 
-	private boolean method_10478(BlockView blockView, BlockPos blockPos, Direction direction) {
+	private boolean couldConnectTo(BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState = blockView.getBlockState(blockPos2);
 		boolean bl = blockState.isSimpleFullBlock(blockView, blockPos2);

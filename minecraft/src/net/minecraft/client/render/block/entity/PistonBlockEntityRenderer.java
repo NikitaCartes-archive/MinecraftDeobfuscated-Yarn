@@ -27,7 +27,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 	private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
 
 	public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
-		BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.method_11506().getOpposite());
+		BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.getMovementDirection().getOpposite());
 		BlockState blockState = pistonBlockEntity.getPushedBlock();
 		if (!blockState.isAir() && !(pistonBlockEntity.getProgress(g) >= 1.0F)) {
 			Tessellator tessellator = Tessellator.getInstance();
@@ -62,7 +62,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 					.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
 				blockState2 = blockState2.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(g) >= 0.5F));
 				this.method_3575(blockPos, blockState2, bufferBuilder, world, false);
-				BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.method_11506());
+				BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());
 				bufferBuilder.setOffset(d - (double)blockPos2.getX(), e - (double)blockPos2.getY(), f - (double)blockPos2.getZ());
 				blockState = blockState.with(PistonBlock.EXTENDED, Boolean.valueOf(true));
 				this.method_3575(blockPos2, blockState, bufferBuilder, world, true);

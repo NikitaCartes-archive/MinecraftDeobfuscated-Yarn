@@ -760,7 +760,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.enableAlphaTest();
 		}
 
-		this.client.debugRenderer.renderDebuggers(l);
+		this.client.debugRenderer.render(l);
 		this.client.getProfiler().swap("destroyProgress");
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(
@@ -1009,7 +1009,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 								float ac = MathHelper.sqrt(aa * aa + ab * ab) / (float)m;
 								float ad = ((1.0F - ac * ac) * 0.5F + 0.5F) * g;
 								mutable.set(q, x, p);
-								int ae = world.method_22337(mutable);
+								int ae = world.getLightmapIndex(mutable);
 								int af = ae >> 16 & 65535;
 								int ag = ae & 65535;
 								bufferBuilder.vertex((double)q - s + 0.5, (double)w, (double)p - t + 0.5)
@@ -1051,7 +1051,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 								float aj = MathHelper.sqrt(ah * ah + ai * ai) / (float)m;
 								float ak = ((1.0F - aj * aj) * 0.3F + 0.5F) * g;
 								mutable.set(q, x, p);
-								int al = (world.method_22337(mutable) * 3 + 15728880) / 4;
+								int al = (world.getLightmapIndex(mutable) * 3 + 15728880) / 4;
 								int am = al >> 16 & 65535;
 								int an = al & 65535;
 								bufferBuilder.vertex((double)q - s + 0.5, (double)w, (double)p - t + 0.5)

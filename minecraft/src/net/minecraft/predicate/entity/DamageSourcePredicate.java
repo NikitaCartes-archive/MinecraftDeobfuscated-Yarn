@@ -60,7 +60,7 @@ public class DamageSourcePredicate {
 			return false;
 		} else if (this.bypassesArmor != null && this.bypassesArmor != damageSource.bypassesArmor()) {
 			return false;
-		} else if (this.bypassesInvulnerability != null && this.bypassesInvulnerability != damageSource.doesDamageToCreative()) {
+		} else if (this.bypassesInvulnerability != null && this.bypassesInvulnerability != damageSource.isOutOfWorld()) {
 			return false;
 		} else if (this.bypassesMagic != null && this.bypassesMagic != damageSource.isUnblockable()) {
 			return false;

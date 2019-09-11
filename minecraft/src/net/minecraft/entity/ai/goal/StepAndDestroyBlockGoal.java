@@ -106,7 +106,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 			}
 
 			if (this.counter > 60) {
-				world.clearBlockState(blockPos2, false);
+				world.removeBlock(blockPos2, false);
 				if (!world.isClient) {
 					for (int i = 0; i < 20; i++) {
 						double d = random.nextGaussian() * 0.02;

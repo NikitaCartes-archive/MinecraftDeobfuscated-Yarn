@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.LAVA, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
 	}
 
 	@Override

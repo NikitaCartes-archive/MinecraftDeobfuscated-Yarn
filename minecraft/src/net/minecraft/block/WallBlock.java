@@ -78,7 +78,7 @@ public class WallBlock extends HorizontalConnectedBlock {
 		boolean bl4 = this.shouldConnectTo(blockState4, blockState4.isSideSolidFullSquare(lv, blockPos5, Direction.EAST), Direction.EAST);
 		boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
 		return this.getDefaultState()
-			.with(UP, Boolean.valueOf(bl5 || !lv.method_22347(blockPos.up())))
+			.with(UP, Boolean.valueOf(bl5 || !lv.isAir(blockPos.up())))
 			.with(NORTH, Boolean.valueOf(bl))
 			.with(EAST, Boolean.valueOf(bl2))
 			.with(SOUTH, Boolean.valueOf(bl3))
@@ -111,7 +111,7 @@ public class WallBlock extends HorizontalConnectedBlock {
 				? this.shouldConnectTo(blockState2, blockState2.isSideSolidFullSquare(iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(WEST);
 			boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
-			return blockState.with(UP, Boolean.valueOf(bl5 || !iWorld.method_22347(blockPos.up())))
+			return blockState.with(UP, Boolean.valueOf(bl5 || !iWorld.isAir(blockPos.up())))
 				.with(NORTH, Boolean.valueOf(bl))
 				.with(EAST, Boolean.valueOf(bl2))
 				.with(SOUTH, Boolean.valueOf(bl3))

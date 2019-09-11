@@ -61,7 +61,7 @@ public class EatGrassGoal extends Goal {
 			BlockPos blockPos = new BlockPos(this.mob);
 			if (GRASS_PREDICATE.test(this.world.getBlockState(blockPos))) {
 				if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-					this.world.method_22352(blockPos, false);
+					this.world.breakBlock(blockPos, false);
 				}
 
 				this.mob.onEatingGrass();

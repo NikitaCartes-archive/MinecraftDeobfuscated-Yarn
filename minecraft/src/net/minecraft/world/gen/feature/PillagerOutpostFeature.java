@@ -10,9 +10,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.VillageStructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -53,7 +53,7 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 			if (chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST)) {
 				for (int m = i - 10; m <= i + 10; m++) {
 					for (int n = j - 10; n <= j + 10; n++) {
-						if (Feature.VILLAGE.shouldStartAt(arg, chunkGenerator, random, m, n, arg.method_22393(new BlockPos((m << 4) + 9, 0, (n << 4) + 9)))) {
+						if (Feature.VILLAGE.shouldStartAt(arg, chunkGenerator, random, m, n, arg.getBiome(new BlockPos((m << 4) + 9, 0, (n << 4) + 9)))) {
 							return false;
 						}
 					}
@@ -77,8 +77,8 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 	}
 
 	public static class Start extends VillageStructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override

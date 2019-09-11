@@ -17,7 +17,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -121,12 +120,12 @@ public class TridentItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return TypedActionResult.method_22431(itemStack);
 		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
-			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return TypedActionResult.method_22431(itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22428(itemStack);
 		}
 	}
 

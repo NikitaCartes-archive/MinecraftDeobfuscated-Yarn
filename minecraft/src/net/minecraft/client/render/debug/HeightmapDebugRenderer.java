@@ -41,7 +41,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
-			int i = iWorld.getLightLevel(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
+			int i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			if (iWorld.getBlockState(blockPos2.add(0, i, 0).down()).isAir()) {
 				WorldRenderer.buildBox(
 					bufferBuilder,

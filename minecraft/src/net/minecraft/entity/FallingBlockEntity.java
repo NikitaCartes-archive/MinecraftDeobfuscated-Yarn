@@ -106,7 +106,7 @@ public class FallingBlockEntity extends Entity {
 			if (this.timeFalling++ == 0) {
 				BlockPos blockPos = new BlockPos(this);
 				if (this.world.getBlockState(blockPos).getBlock() == block) {
-					this.world.clearBlockState(blockPos, false);
+					this.world.removeBlock(blockPos, false);
 				} else if (!this.world.isClient) {
 					this.remove();
 					return;

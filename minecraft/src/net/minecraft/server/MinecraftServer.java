@@ -151,7 +151,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private volatile boolean running = true;
 	private boolean stopped;
 	private int ticks;
-	protected final Proxy field_4599;
+	protected final Proxy proxy;
 	private boolean onlineMode;
 	private boolean preventProxyConnections;
 	private boolean spawnAnimals;
@@ -229,7 +229,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		String string
 	) {
 		super("Server");
-		this.field_4599 = proxy;
+		this.proxy = proxy;
 		this.commandManager = commandManager;
 		this.authService = yggdrasilAuthenticationService;
 		this.sessionService = minecraftSessionService;
@@ -506,7 +506,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 	public abstract int getOpPermissionLevel();
 
-	public abstract int method_21714();
+	public abstract int getFunctionPermissionLevel();
 
 	public abstract boolean shouldBroadcastRconToOps();
 
@@ -673,8 +673,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	protected void method_16208() {
-		this.executeTaskQueue();
-		this.waitFor(() -> !this.shouldKeepTicking());
+		this.executeQueuedTasks();
+		this.executeTasks(() -> !this.shouldKeepTicking());
 	}
 
 	protected ServerTask method_16209(Runnable runnable) {
@@ -1370,8 +1370,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	@Override
-	public boolean shouldRunAsync() {
-		return super.shouldRunAsync() && !this.isStopped();
+	public boolean shouldExecuteAsync() {
+		return super.shouldExecuteAsync() && !this.isStopped();
 	}
 
 	@Override
@@ -1428,7 +1428,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		List<ResourcePack> list2 = Lists.<ResourcePack>newArrayList();
 		this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
 		CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, field_20279);
-		this.waitFor(completableFuture::isDone);
+		this.executeTasks(completableFuture::isDone);
 
 		try {
 			completableFuture.get();
@@ -1588,7 +1588,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		Throwable var3 = null;
 
 		try {
-			writer.write(String.format("pending_tasks: %d\n", this.method_21684()));
+			writer.write(String.format("pending_tasks: %d\n", this.getTaskQueueSize()));
 			writer.write(String.format("average_tick_time: %f\n", this.getTickTime()));
 			writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
 			writer.write(String.format("queue: %s\n", SystemUtil.getServerWorkerExecutor()));

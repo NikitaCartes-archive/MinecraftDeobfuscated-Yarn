@@ -27,10 +27,10 @@ public class ChorusFlowerBlock extends Block {
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-			serverWorld.method_22352(blockPos, true);
+			serverWorld.breakBlock(blockPos, true);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
-			if (serverWorld.method_22347(blockPos2) && blockPos2.getY() < 256) {
+			if (serverWorld.isAir(blockPos2) && blockPos2.getY() < 256) {
 				int i = (Integer)blockState.get(AGE);
 				if (i < 5) {
 					boolean bl = false;
@@ -61,7 +61,7 @@ public class ChorusFlowerBlock extends Block {
 						bl = true;
 					}
 
-					if (bl && isSurroundedByAir(serverWorld, blockPos2, null) && serverWorld.method_22347(blockPos.up(2))) {
+					if (bl && isSurroundedByAir(serverWorld, blockPos2, null) && serverWorld.isAir(blockPos.up(2))) {
 						serverWorld.setBlockState(blockPos, this.plantBlock.withConnectionProperties(serverWorld, blockPos), 2);
 						this.grow(serverWorld, blockPos2, i);
 					} else if (i < 4) {
@@ -75,9 +75,7 @@ public class ChorusFlowerBlock extends Block {
 						for (int l = 0; l < j; l++) {
 							Direction direction = Direction.Type.HORIZONTAL.random(random);
 							BlockPos blockPos3 = blockPos.offset(direction);
-							if (serverWorld.method_22347(blockPos3)
-								&& serverWorld.method_22347(blockPos3.down())
-								&& isSurroundedByAir(serverWorld, blockPos3, direction.getOpposite())) {
+							if (serverWorld.isAir(blockPos3) && serverWorld.isAir(blockPos3.down()) && isSurroundedByAir(serverWorld, blockPos3, direction.getOpposite())) {
 								this.grow(serverWorld, blockPos3, i + 1);
 								bl3 = true;
 							}
@@ -108,7 +106,7 @@ public class ChorusFlowerBlock extends Block {
 
 	private static boolean isSurroundedByAir(class_4538 arg, BlockPos blockPos, @Nullable Direction direction) {
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
-			if (direction2 != direction && !arg.method_22347(blockPos.offset(direction2))) {
+			if (direction2 != direction && !arg.isAir(blockPos.offset(direction2))) {
 				return false;
 			}
 		}
@@ -201,8 +199,8 @@ public class ChorusFlowerBlock extends Block {
 				BlockPos blockPos4 = blockPos.up(k).offset(direction);
 				if (Math.abs(blockPos4.getX() - blockPos2.getX()) < i
 					&& Math.abs(blockPos4.getZ() - blockPos2.getZ()) < i
-					&& iWorld.method_22347(blockPos4)
-					&& iWorld.method_22347(blockPos4.down())
+					&& iWorld.isAir(blockPos4)
+					&& iWorld.isAir(blockPos4.down())
 					&& isSurroundedByAir(iWorld, blockPos4, direction.getOpposite())) {
 					bl = true;
 					iWorld.setBlockState(blockPos4, chorusPlantBlock.withConnectionProperties(iWorld, blockPos4), 2);

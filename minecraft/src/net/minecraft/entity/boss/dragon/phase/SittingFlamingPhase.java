@@ -60,7 +60,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			double h = g;
 			BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
 
-			while (this.dragon.world.method_22347(mutable)) {
+			while (this.dragon.world.isAir(mutable)) {
 				if (--h < 0.0) {
 					h = g;
 					break;

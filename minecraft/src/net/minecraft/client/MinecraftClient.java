@@ -170,6 +170,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -820,7 +821,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		if (bl) {
 			this.renderTickCounter.beginRenderTick(SystemUtil.getMeasuringTimeMs());
 			this.profiler.push("scheduledExecutables");
-			this.executeTaskQueue();
+			this.executeQueuedTasks();
 			this.profiler.pop();
 		}
 
@@ -1191,14 +1192,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 							case ENTITY:
 								EntityHitResult entityHitResult = (EntityHitResult)this.hitResult;
 								Entity entity = entityHitResult.getEntity();
-								if (this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand) == ActionResult.SUCCESS) {
-									return;
+								if (this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand) == ActionResult.SUCCESS
+									|| this.interactionManager.interactEntity(this.player, entity, hand) == ActionResult.SUCCESS) {
+									this.player.swingHand(hand);
 								}
 
-								if (this.interactionManager.interactEntity(this.player, entity, hand) == ActionResult.SUCCESS) {
-									return;
-								}
-								break;
+								return;
 							case BLOCK:
 								BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
 								int i = itemStack.getCount();
@@ -1218,9 +1217,16 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 						}
 					}
 
-					if (!itemStack.isEmpty() && this.interactionManager.interactItem(this.player, this.world, hand) == ActionResult.SUCCESS) {
-						this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
-						return;
+					if (!itemStack.isEmpty()) {
+						TypedActionResult<ItemStack> typedActionResult = this.interactionManager.interactItem(this.player, this.world, hand);
+						if (typedActionResult.getResult() == ActionResult.SUCCESS) {
+							if (typedActionResult.method_22429()) {
+								this.player.swingHand(hand);
+							}
+
+							this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
+							return;
+						}
 					}
 				}
 			}
@@ -1406,8 +1412,8 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		}
 
 		while (this.options.keyDrop.wasPressed()) {
-			if (!this.player.isSpectator()) {
-				this.player.dropSelectedItem(Screen.hasControlDown());
+			if (!this.player.isSpectator() && this.player.dropSelectedItem(Screen.hasControlDown())) {
+				this.player.swingHand(Hand.MAIN_HAND);
 			}
 		}
 
@@ -1552,7 +1558,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	public void disconnect(Screen screen) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
-			this.clear();
+			this.clearTasks();
 			clientPlayNetworkHandler.clearWorld();
 		}
 
@@ -1801,7 +1807,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	public CompletableFuture<Void> reloadResourcesConcurrently() {
-		return this.executeFuture(this::reloadResources).thenCompose(completableFuture -> completableFuture);
+		return this.supply(this::reloadResources).thenCompose(completableFuture -> completableFuture);
 	}
 
 	@Override
@@ -1990,12 +1996,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	}
 
 	@Override
-	protected Runnable prepareRunnable(Runnable runnable) {
+	protected Runnable createTask(Runnable runnable) {
 		return runnable;
 	}
 
 	@Override
-	protected boolean canRun(Runnable runnable) {
+	protected boolean canExecute(Runnable runnable) {
 		return true;
 	}
 

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
@@ -50,7 +50,7 @@ public class MoveThroughVillageGoal extends Goal {
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
-				Vec3d vec3d = PathfindingUtil.findTargetStraight(
+				Vec3d vec3d = TargetFinder.findGroundTarget(
 					this.mob,
 					15,
 					7,
@@ -79,7 +79,7 @@ public class MoveThroughVillageGoal extends Goal {
 						this.targetPath = mobNavigation.findPathTo(this.target, 0);
 						mobNavigation.setCanPathThroughDoors(bl);
 						if (this.targetPath == null) {
-							Vec3d vec3d2 = PathfindingUtil.method_6373(
+							Vec3d vec3d2 = TargetFinder.findTargetTowards(
 								this.mob, 10, 7, new Vec3d((double)this.target.getX(), (double)this.target.getY(), (double)this.target.getZ())
 							);
 							if (vec3d2 == null) {

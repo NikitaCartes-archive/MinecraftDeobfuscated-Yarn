@@ -50,12 +50,12 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 				return true;
 			}
 		};
-		Stream<BlockPos> stream = pointOfInterestStorage.method_21647(
+		Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
 			this.poiType.getCompletionCondition(), predicate, new BlockPos(mobEntityWithAi), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE
 		);
-		Path path = mobEntityWithAi.getNavigation().method_21643(stream, this.poiType.method_21648());
-		if (path != null && path.method_21655()) {
-			BlockPos blockPos = path.method_48();
+		Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, this.poiType.method_21648());
+		if (path != null && path.reachesTarget()) {
+			BlockPos blockPos = path.getTarget();
 			pointOfInterestStorage.getType(blockPos).ifPresent(pointOfInterestType -> {
 				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos), blockPos, 1);
 				mobEntityWithAi.getBrain().putMemory(this.field_20287, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));

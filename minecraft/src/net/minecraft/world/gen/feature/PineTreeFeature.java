@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
@@ -19,9 +19,7 @@ public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(
-		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
-	) {
+	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
 		int i = random.nextInt(5) + 7;
 		int j = i - random.nextInt(2) - 3;
 		int k = i - j;
@@ -65,7 +63,7 @@ public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 							if (Math.abs(o) != m || Math.abs(r) != m || m <= 0) {
 								BlockPos blockPos2 = new BlockPos(q, n, px);
 								if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
+									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, blockBox);
 								}
 							}
 						}
@@ -80,7 +78,7 @@ public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 				for (int n = 0; n < i - 1; n++) {
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(n))) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), LOG, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos.up(n), LOG, blockBox);
 					}
 				}
 

@@ -60,7 +60,7 @@ public class EvokerFangsEntity extends Entity {
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		this.warmup = compoundTag.getInt("Warmup");
-		if (compoundTag.hasUuid("OwnerUUID")) {
+		if (compoundTag.containsUuid("OwnerUUID")) {
 			this.ownerUuid = compoundTag.getUuid("OwnerUUID");
 		}
 	}
@@ -93,7 +93,7 @@ public class EvokerFangsEntity extends Entity {
 			}
 		} else if (--this.warmup < 0) {
 			if (this.warmup == -8) {
-				for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
+				for (LivingEntity livingEntity : this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
 					this.damage(livingEntity);
 				}
 			}

@@ -2,9 +2,9 @@ package com.mojang.realmsclient.gui.screens;
 
 import com.mojang.realmsclient.client.RealmsClient;
 import com.mojang.realmsclient.dto.RealmsServer;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsEditBox;
@@ -41,22 +41,20 @@ public class RealmsInviteScreen extends RealmsScreen {
 	public void init() {
 		this.setKeyboardHandlerSendRepeatsToGui(true);
 		this.buttonsAdd(
-			this.inviteButton = new RealmsButton(0, this.width() / 2 - 100, class_4359.method_21072(10), getLocalizedString("mco.configure.world.buttons.invite")) {
+			this.inviteButton = new RealmsButton(0, this.width() / 2 - 100, RealmsConstants.row(10), getLocalizedString("mco.configure.world.buttons.invite")) {
 				@Override
 				public void onPress() {
 					RealmsInviteScreen.this.onInvite();
 				}
 			}
 		);
-		this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, class_4359.method_21072(12), getLocalizedString("gui.cancel")) {
+		this.buttonsAdd(new RealmsButton(1, this.width() / 2 - 100, RealmsConstants.row(12), getLocalizedString("gui.cancel")) {
 			@Override
 			public void onPress() {
 				Realms.setScreen(RealmsInviteScreen.this.lastScreen);
 			}
 		});
-		this.profileName = this.newEditBox(
-			2, this.width() / 2 - 100, class_4359.method_21072(2), 200, 20, getLocalizedString("mco.configure.world.invite.profile.name")
-		);
+		this.profileName = this.newEditBox(2, this.width() / 2 - 100, RealmsConstants.row(2), 200, 20, getLocalizedString("mco.configure.world.invite.profile.name"));
 		this.focusOn(this.profileName);
 		this.addWidget(this.profileName);
 	}
@@ -105,9 +103,9 @@ public class RealmsInviteScreen extends RealmsScreen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.drawString(getLocalizedString("mco.configure.world.invite.profile.name"), this.width() / 2 - 100, class_4359.method_21072(1), 10526880);
+		this.drawString(getLocalizedString("mco.configure.world.invite.profile.name"), this.width() / 2 - 100, RealmsConstants.row(1), 10526880);
 		if (this.showError) {
-			this.drawCenteredString(this.errorMsg, this.width() / 2, class_4359.method_21072(5), 16711680);
+			this.drawCenteredString(this.errorMsg, this.width() / 2, RealmsConstants.row(5), 16711680);
 		}
 
 		this.profileName.render(i, j, f);

@@ -21,8 +21,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ExtendedBlockView;
 
 @Environment(EnvType.CLIENT)
 public class FluidRenderer {
@@ -57,19 +57,19 @@ public class FluidRenderer {
 		}
 	}
 
-	public boolean tesselate(ExtendedBlockView extendedBlockView, BlockPos blockPos, BufferBuilder bufferBuilder, FluidState fluidState) {
+	public boolean tesselate(BlockRenderView blockRenderView, BlockPos blockPos, BufferBuilder bufferBuilder, FluidState fluidState) {
 		boolean bl = fluidState.matches(FluidTags.LAVA);
 		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
-		int i = bl ? 16777215 : BiomeColors.getWaterColor(extendedBlockView, blockPos);
+		int i = bl ? 16777215 : BiomeColors.getWaterColor(blockRenderView, blockPos);
 		float f = (float)(i >> 16 & 0xFF) / 255.0F;
 		float g = (float)(i >> 8 & 0xFF) / 255.0F;
 		float h = (float)(i & 0xFF) / 255.0F;
-		boolean bl2 = !isSameFluid(extendedBlockView, blockPos, Direction.UP, fluidState);
-		boolean bl3 = !isSameFluid(extendedBlockView, blockPos, Direction.DOWN, fluidState) && !method_3344(extendedBlockView, blockPos, Direction.DOWN, 0.8888889F);
-		boolean bl4 = !isSameFluid(extendedBlockView, blockPos, Direction.NORTH, fluidState);
-		boolean bl5 = !isSameFluid(extendedBlockView, blockPos, Direction.SOUTH, fluidState);
-		boolean bl6 = !isSameFluid(extendedBlockView, blockPos, Direction.WEST, fluidState);
-		boolean bl7 = !isSameFluid(extendedBlockView, blockPos, Direction.EAST, fluidState);
+		boolean bl2 = !isSameFluid(blockRenderView, blockPos, Direction.UP, fluidState);
+		boolean bl3 = !isSameFluid(blockRenderView, blockPos, Direction.DOWN, fluidState) && !method_3344(blockRenderView, blockPos, Direction.DOWN, 0.8888889F);
+		boolean bl4 = !isSameFluid(blockRenderView, blockPos, Direction.NORTH, fluidState);
+		boolean bl5 = !isSameFluid(blockRenderView, blockPos, Direction.SOUTH, fluidState);
+		boolean bl6 = !isSameFluid(blockRenderView, blockPos, Direction.WEST, fluidState);
+		boolean bl7 = !isSameFluid(blockRenderView, blockPos, Direction.EAST, fluidState);
 		if (!bl2 && !bl3 && !bl7 && !bl6 && !bl4 && !bl5) {
 			return false;
 		} else {
@@ -78,21 +78,21 @@ public class FluidRenderer {
 			float k = 1.0F;
 			float l = 0.8F;
 			float m = 0.6F;
-			float n = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos, fluidState.getFluid());
-			float o = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos.south(), fluidState.getFluid());
-			float p = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos.east().south(), fluidState.getFluid());
-			float q = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos.east(), fluidState.getFluid());
+			float n = this.getNorthWestCornerFluidHeight(blockRenderView, blockPos, fluidState.getFluid());
+			float o = this.getNorthWestCornerFluidHeight(blockRenderView, blockPos.south(), fluidState.getFluid());
+			float p = this.getNorthWestCornerFluidHeight(blockRenderView, blockPos.east().south(), fluidState.getFluid());
+			float q = this.getNorthWestCornerFluidHeight(blockRenderView, blockPos.east(), fluidState.getFluid());
 			double d = (double)blockPos.getX();
 			double e = (double)blockPos.getY();
 			double r = (double)blockPos.getZ();
 			float s = 0.001F;
-			if (bl2 && !method_3344(extendedBlockView, blockPos, Direction.UP, Math.min(Math.min(n, o), Math.min(p, q)))) {
+			if (bl2 && !method_3344(blockRenderView, blockPos, Direction.UP, Math.min(Math.min(n, o), Math.min(p, q)))) {
 				bl8 = true;
 				n -= 0.001F;
 				o -= 0.001F;
 				p -= 0.001F;
 				q -= 0.001F;
-				Vec3d vec3d = fluidState.getVelocity(extendedBlockView, blockPos);
+				Vec3d vec3d = fluidState.getVelocity(blockRenderView, blockPos);
 				float t;
 				float v;
 				float x;
@@ -140,7 +140,7 @@ public class FluidRenderer {
 				w = MathHelper.lerp(ae, w, ab);
 				y = MathHelper.lerp(ae, y, ab);
 				aa = MathHelper.lerp(ae, aa, ab);
-				int ag = this.method_3343(extendedBlockView, blockPos);
+				int ag = this.method_3343(blockRenderView, blockPos);
 				int ah = ag >> 16 & 65535;
 				int ai = ag & 65535;
 				float aj = 1.0F * f;
@@ -150,7 +150,7 @@ public class FluidRenderer {
 				bufferBuilder.vertex(d + 0.0, e + (double)o, r + 1.0).color(aj, ak, al, 1.0F).texture((double)v, (double)w).texture(ah, ai).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0F).texture((double)x, (double)y).texture(ah, ai).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0F).texture((double)z, (double)aa).texture(ah, ai).next();
-				if (fluidState.method_15756(extendedBlockView, blockPos.up())) {
+				if (fluidState.method_15756(blockRenderView, blockPos.up())) {
 					bufferBuilder.vertex(d + 0.0, e + (double)n, r + 0.0).color(aj, ak, al, 1.0F).texture((double)t, (double)u).texture(ah, ai).next();
 					bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0F).texture((double)z, (double)aa).texture(ah, ai).next();
 					bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0F).texture((double)x, (double)y).texture(ah, ai).next();
@@ -163,7 +163,7 @@ public class FluidRenderer {
 				float vx = sprites[0].getMaxU();
 				float xx = sprites[0].getMinV();
 				float zx = sprites[0].getMaxV();
-				int am = this.method_3343(extendedBlockView, blockPos.down());
+				int am = this.method_3343(blockRenderView, blockPos.down());
 				int an = am >> 16 & 65535;
 				int ao = am & 65535;
 				float aax = 0.5F * f;
@@ -223,12 +223,12 @@ public class FluidRenderer {
 					bl9 = bl7;
 				}
 
-				if (bl9 && !method_3344(extendedBlockView, blockPos, direction, Math.max(vx, xx))) {
+				if (bl9 && !method_3344(blockRenderView, blockPos, direction, Math.max(vx, xx))) {
 					bl8 = true;
 					BlockPos blockPos2 = blockPos.offset(direction);
 					Sprite sprite2 = sprites[1];
 					if (!bl) {
-						Block block = extendedBlockView.getBlockState(blockPos2).getBlock();
+						Block block = blockRenderView.getBlockState(blockPos2).getBlock();
 						if (block == Blocks.GLASS || block instanceof StainedGlassBlock) {
 							sprite2 = this.waterOverlaySprite;
 						}
@@ -239,7 +239,7 @@ public class FluidRenderer {
 					float aj = sprite2.getV((double)((1.0F - vx) * 16.0F * 0.5F));
 					float ak = sprite2.getV((double)((1.0F - xx) * 16.0F * 0.5F));
 					float al = sprite2.getV(8.0);
-					int ax = this.method_3343(extendedBlockView, blockPos2);
+					int ax = this.method_3343(blockRenderView, blockPos2);
 					int ay = ax >> 16 & 65535;
 					int az = ax & 65535;
 					float ba = aq < 2 ? 0.8F : 0.6F;
@@ -263,9 +263,9 @@ public class FluidRenderer {
 		}
 	}
 
-	private int method_3343(ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-		int i = extendedBlockView.method_22337(blockPos);
-		int j = extendedBlockView.method_22337(blockPos.up());
+	private int method_3343(BlockRenderView blockRenderView, BlockPos blockPos) {
+		int i = blockRenderView.getLightmapIndex(blockPos);
+		int j = blockRenderView.getLightmapIndex(blockPos.up());
 		int k = i & 0xFF;
 		int l = j & 0xFF;
 		int m = i >> 16 & 0xFF;

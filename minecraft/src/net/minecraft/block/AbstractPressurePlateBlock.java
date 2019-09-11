@@ -50,7 +50,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return isSolidMediumSquare(arg, blockPos2) || isSolidSmallSquare(arg, blockPos2, Direction.UP);
+		return topCoversMediumSquare(arg, blockPos2) || sideCoversSmallSquare(arg, blockPos2, Direction.UP);
 	}
 
 	@Override

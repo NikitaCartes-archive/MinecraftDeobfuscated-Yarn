@@ -8,8 +8,8 @@ public abstract class NonBlockingThreadExecutor<R extends Runnable> extends Thre
 	}
 
 	@Override
-	protected boolean shouldRunAsync() {
-		return this.hasRunningTasks() || super.shouldRunAsync();
+	protected boolean shouldExecuteAsync() {
+		return this.hasRunningTasks() || super.shouldExecuteAsync();
 	}
 
 	protected boolean hasRunningTasks() {
@@ -17,11 +17,11 @@ public abstract class NonBlockingThreadExecutor<R extends Runnable> extends Thre
 	}
 
 	@Override
-	protected void runSafely(R runnable) {
+	protected void executeTask(R runnable) {
 		this.runningTasks++;
 
 		try {
-			super.runSafely(runnable);
+			super.executeTask(runnable);
 		} finally {
 			this.runningTasks--;
 		}

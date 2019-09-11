@@ -50,7 +50,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
 			this.targetEntity = this.mob
 				.world
-				.method_21727(
+				.getClosestEntityIncludingUngeneratedChunks(
 					this.targetClass,
 					this.targetPredicate,
 					this.mob,

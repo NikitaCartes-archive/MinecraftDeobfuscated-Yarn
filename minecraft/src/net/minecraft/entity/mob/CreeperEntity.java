@@ -205,15 +205,15 @@ public class CreeperEntity extends HostileEntity {
 		if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
 			this.world
 				.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
-			playerEntity.swingHand(hand);
 			if (!this.world.isClient) {
 				this.setIgnited();
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
-				return true;
 			}
-		}
 
-		return super.interactMob(playerEntity, hand);
+			return true;
+		} else {
+			return super.interactMob(playerEntity, hand);
+		}
 	}
 
 	private void explode() {

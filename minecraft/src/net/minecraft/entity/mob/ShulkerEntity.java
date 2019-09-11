@@ -203,7 +203,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			if (!blockState.isAir()) {
 				if (blockState.getBlock() == Blocks.MOVING_PISTON) {
 					Direction direction = blockState.get(PistonBlock.FACING);
-					if (this.world.method_22347(blockPos.offset(direction))) {
+					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
 					} else {
@@ -211,7 +211,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					}
 				} else if (blockState.getBlock() == Blocks.PISTON_HEAD) {
 					Direction direction = blockState.get(PistonHeadBlock.FACING);
-					if (this.world.method_22347(blockPos.offset(direction))) {
+					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
 					} else {
@@ -223,12 +223,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			}
 
 			BlockPos blockPos2 = blockPos.offset(this.getAttachedFace());
-			if (!this.world.doesBlockHaveSolidTopSurface(blockPos2, this)) {
+			if (!this.world.isTopSolid(blockPos2, this)) {
 				boolean bl = false;
 
 				for (Direction direction2 : Direction.values()) {
 					blockPos2 = blockPos.offset(direction2);
-					if (this.world.doesBlockHaveSolidTopSurface(blockPos2, this)) {
+					if (this.world.isTopSolid(blockPos2, this)) {
 						this.dataTracker.set(ATTACHED_FACE, direction2);
 						bl = true;
 						break;
@@ -241,7 +241,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			}
 
 			BlockPos blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite());
-			if (this.world.doesBlockHaveSolidTopSurface(blockPos3, this)) {
+			if (this.world.isTopSolid(blockPos3, this)) {
 				this.method_7127();
 			}
 		}
@@ -325,13 +325,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			for (int i = 0; i < 5; i++) {
 				BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
 				if (blockPos2.getY() > 0
-					&& this.world.method_22347(blockPos2)
+					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
 					&& this.world.doesNotCollide(this, new Box(blockPos2))) {
 					boolean bl = false;
 
 					for (Direction direction : Direction.values()) {
-						if (this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction), this)) {
+						if (this.world.isTopSolid(blockPos2.offset(direction), this)) {
 							this.dataTracker.set(ATTACHED_FACE, direction);
 							bl = true;
 							break;

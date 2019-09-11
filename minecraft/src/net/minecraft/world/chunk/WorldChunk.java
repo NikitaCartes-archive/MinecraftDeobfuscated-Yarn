@@ -108,7 +108,7 @@ public class WorldChunk implements Chunk {
 		this.upgradeData = upgradeData;
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
-			if (ChunkStatus.FULL.isSurfaceGenerated().contains(type)) {
+			if (ChunkStatus.FULL.getHeightmapTypes().contains(type)) {
 				this.heightmaps.put(type, new Heightmap(this, type));
 			}
 		}
@@ -165,7 +165,7 @@ public class WorldChunk implements Chunk {
 		this.setStructureReferences(protoChunk.getStructureReferences());
 
 		for (Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
-			if (ChunkStatus.FULL.isSurfaceGenerated().contains(entry.getKey())) {
+			if (ChunkStatus.FULL.getHeightmapTypes().contains(entry.getKey())) {
 				this.getHeightmap((Heightmap.Type)entry.getKey()).setTo(((Heightmap)entry.getValue()).asLongArray());
 			}
 		}
@@ -405,7 +405,7 @@ public class WorldChunk implements Chunk {
 				blockEntity = this.createBlockEntity(blockPos);
 				this.world.setBlockEntity(blockPos, blockEntity);
 			}
-		} else if (blockEntity.isInvalid()) {
+		} else if (blockEntity.isRemoved()) {
 			this.blockEntities.remove(blockPos);
 			return null;
 		}
@@ -425,10 +425,10 @@ public class WorldChunk implements Chunk {
 		if (this.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
 			blockEntity.setWorld(this.world);
 			blockEntity.setPos(blockPos);
-			blockEntity.validate();
+			blockEntity.cancelRemoval();
 			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(blockPos.toImmutable(), blockEntity);
 			if (blockEntity2 != null && blockEntity2 != blockEntity) {
-				blockEntity2.invalidate();
+				blockEntity2.markRemoved();
 			}
 		}
 	}
@@ -442,7 +442,7 @@ public class WorldChunk implements Chunk {
 	@Override
 	public CompoundTag method_20598(BlockPos blockPos) {
 		BlockEntity blockEntity = this.getBlockEntity(blockPos);
-		if (blockEntity != null && !blockEntity.isInvalid()) {
+		if (blockEntity != null && !blockEntity.isRemoved()) {
 			CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 			compoundTag.putBoolean("keepPacked", false);
 			return compoundTag;
@@ -462,7 +462,7 @@ public class WorldChunk implements Chunk {
 		if (this.loadedToWorld || this.world.isClient()) {
 			BlockEntity blockEntity = (BlockEntity)this.blockEntities.remove(blockPos);
 			if (blockEntity != null) {
-				blockEntity.invalidate();
+				blockEntity.markRemoved();
 			}
 		}
 	}
@@ -478,7 +478,7 @@ public class WorldChunk implements Chunk {
 		this.shouldSave = true;
 	}
 
-	public void appendEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
+	public void getEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -505,7 +505,7 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public void appendEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+	public void getEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -520,7 +520,7 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public <T extends Entity> void appendEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> void getEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);

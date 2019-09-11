@@ -13,7 +13,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
@@ -95,9 +94,9 @@ public class ArmorItem extends Item {
 		if (itemStack2.isEmpty()) {
 			playerEntity.equipStack(equipmentSlot, itemStack.copy());
 			itemStack.setCount(0);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22427(itemStack);
 		} else {
-			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return TypedActionResult.method_22431(itemStack);
 		}
 	}
 

@@ -1,7 +1,9 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -13,6 +15,8 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Hand;
+import net.minecraft.world.IWorld;
+import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public abstract class PassiveEntity extends MobEntityWithAi {
@@ -23,6 +27,23 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 
 	protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
 		super(entityType, world);
+	}
+
+	@Override
+	public EntityData initialize(
+		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	) {
+		if (entityData == null) {
+			entityData = new PassiveEntity$1();
+		}
+
+		PassiveEntity$1 lv = (PassiveEntity$1)entityData;
+		if (lv.method_22436() && lv.method_22432() > 0 && this.random.nextFloat() <= lv.method_22437()) {
+			this.setBreedingAge(-24000);
+		}
+
+		lv.method_22435();
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Nullable

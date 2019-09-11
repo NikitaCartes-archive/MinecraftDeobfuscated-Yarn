@@ -92,7 +92,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.getBoundingBox().averageDimension() * 10.0;
+		double e = this.getBoundingBox().getAverageSideLength() * 10.0;
 		if (Double.isNaN(e)) {
 			e = 1.0;
 		}
@@ -379,7 +379,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			}
 		}
 
-		int j = entity.method_20802();
+		int j = entity.getFireTime();
 		if (this.isOnFire() && !(entity instanceof EndermanEntity)) {
 			entity.setOnFireFor(5);
 		}
@@ -427,7 +427,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 				this.remove();
 			}
 		} else {
-			entity.method_20803(j);
+			entity.setFireTime(j);
 			this.setVelocity(this.getVelocity().multiply(-0.1));
 			this.yaw += 180.0F;
 			this.prevYaw += 180.0F;
@@ -511,7 +511,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 		this.setCritical(compoundTag.getBoolean("crit"));
 		this.setPierceLevel(compoundTag.getByte("PierceLevel"));
-		if (compoundTag.hasUuid("OwnerUUID")) {
+		if (compoundTag.containsUuid("OwnerUUID")) {
 			this.ownerUuid = compoundTag.getUuid("OwnerUUID");
 		}
 

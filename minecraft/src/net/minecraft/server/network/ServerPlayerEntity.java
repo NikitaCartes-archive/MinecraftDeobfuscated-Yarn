@@ -350,7 +350,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			if (entity.isAlive()) {
 				this.setPositionAnglesAndUpdate(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
 				this.getServerWorld().method_14178().updateCameraPosition(this);
-				if (this.method_21824()) {
+				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
 			} else {
@@ -368,7 +368,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	public void method_14226() {
 		try {
-			if (!this.isSpectator() || this.world.method_22340(new BlockPos(this))) {
+			if (!this.isSpectator() || this.world.isChunkLoaded(new BlockPos(this))) {
 				super.tick();
 			}
 
@@ -793,7 +793,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		int j = MathHelper.floor(this.y - 0.2F);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		if (this.world.method_22340(blockPos)) {
+		if (this.world.isChunkLoaded(blockPos)) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isAir()) {
 				BlockPos blockPos2 = blockPos.down();

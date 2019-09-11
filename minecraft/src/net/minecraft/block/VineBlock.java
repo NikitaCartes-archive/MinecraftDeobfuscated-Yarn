@@ -165,7 +165,7 @@ public class VineBlock extends Block {
 				serverWorld.setBlockState(blockPos, blockState2, 2);
 			} else {
 				dropStacks(blockState, serverWorld, blockPos);
-				serverWorld.clearBlockState(blockPos, false);
+				serverWorld.removeBlock(blockPos, false);
 			}
 		} else if (serverWorld.random.nextInt(4) == 0) {
 			Direction direction = Direction.random(random);
@@ -187,9 +187,9 @@ public class VineBlock extends Block {
 							serverWorld.setBlockState(blockPos3, this.getDefaultState().with(getFacingProperty(direction3), Boolean.valueOf(true)), 2);
 						} else {
 							Direction direction4 = direction.getOpposite();
-							if (bl && serverWorld.method_22347(blockPos4) && shouldConnectTo(serverWorld, blockPos.offset(direction2), direction4)) {
+							if (bl && serverWorld.isAir(blockPos4) && shouldConnectTo(serverWorld, blockPos.offset(direction2), direction4)) {
 								serverWorld.setBlockState(blockPos4, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), 2);
-							} else if (bl2 && serverWorld.method_22347(blockPos5) && shouldConnectTo(serverWorld, blockPos.offset(direction3), direction4)) {
+							} else if (bl2 && serverWorld.isAir(blockPos5) && shouldConnectTo(serverWorld, blockPos.offset(direction3), direction4)) {
 								serverWorld.setBlockState(blockPos5, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), 2);
 							} else if ((double)serverWorld.random.nextFloat() < 0.05 && shouldConnectTo(serverWorld, blockPos3.up(), Direction.UP)) {
 								serverWorld.setBlockState(blockPos3, this.getDefaultState().with(UP, Boolean.valueOf(true)), 2);
@@ -206,7 +206,7 @@ public class VineBlock extends Block {
 						return;
 					}
 
-					if (serverWorld.method_22347(blockPos2)) {
+					if (serverWorld.isAir(blockPos2)) {
 						if (!this.canGrowAt(serverWorld, blockPos)) {
 							return;
 						}

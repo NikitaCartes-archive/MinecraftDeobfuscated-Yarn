@@ -36,7 +36,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 		int i = 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable(blockPos);
-		if (iWorld.method_22347(mutable)) {
+		if (iWorld.isAir(mutable)) {
 			if (Blocks.BAMBOO.getDefaultState().canPlaceAt(iWorld, mutable)) {
 				int j = random.nextInt(12) + 5;
 				if (random.nextFloat() < probabilityConfig.probability) {
@@ -47,7 +47,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 							int n = l - blockPos.getX();
 							int o = m - blockPos.getZ();
 							if (n * n + o * o <= k * k) {
-								mutable2.set(l, iWorld.getLightLevel(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
+								mutable2.set(l, iWorld.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
 								if (iWorld.getBlockState(mutable2).getBlock().matches(BlockTags.DIRT_LIKE)) {
 									iWorld.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
 								}
@@ -56,7 +56,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 					}
 				}
 
-				for (int k = 0; k < j && iWorld.method_22347(mutable); k++) {
+				for (int k = 0; k < j && iWorld.isAir(mutable); k++) {
 					iWorld.setBlockState(mutable, BAMBOO, 2);
 					mutable.setOffset(Direction.UP, 1);
 				}

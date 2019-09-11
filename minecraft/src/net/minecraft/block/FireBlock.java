@@ -113,14 +113,14 @@ public class FireBlock extends Block {
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (serverWorld.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-				serverWorld.clearBlockState(blockPos, false);
+				serverWorld.removeBlock(blockPos, false);
 			}
 
 			Block block = serverWorld.getBlockState(blockPos.down()).getBlock();
 			boolean bl = serverWorld.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
 			int i = (Integer)blockState.get(AGE);
 			if (!bl && serverWorld.isRaining() && this.isRainingAround(serverWorld, blockPos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
-				serverWorld.clearBlockState(blockPos, false);
+				serverWorld.removeBlock(blockPos, false);
 			} else {
 				int j = Math.min(15, i + random.nextInt(3) / 2);
 				if (i != j) {
@@ -133,14 +133,14 @@ public class FireBlock extends Block {
 					if (!this.areBlocksAroundFlammable(serverWorld, blockPos)) {
 						BlockPos blockPos2 = blockPos.down();
 						if (!serverWorld.getBlockState(blockPos2).isSideSolidFullSquare(serverWorld, blockPos2, Direction.UP) || i > 3) {
-							serverWorld.clearBlockState(blockPos, false);
+							serverWorld.removeBlock(blockPos, false);
 						}
 
 						return;
 					}
 
 					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(serverWorld.getBlockState(blockPos.down()))) {
-						serverWorld.clearBlockState(blockPos, false);
+						serverWorld.removeBlock(blockPos, false);
 						return;
 					}
 				}
@@ -209,7 +209,7 @@ public class FireBlock extends Block {
 				int l = Math.min(j + random.nextInt(5) / 4, 15);
 				world.setBlockState(blockPos, this.getStateForPosition(world, blockPos).with(AGE, Integer.valueOf(l)), 3);
 			} else {
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 			}
 
 			Block block = blockState.getBlock();
@@ -230,7 +230,7 @@ public class FireBlock extends Block {
 	}
 
 	private int getBurnChance(class_4538 arg, BlockPos blockPos) {
-		if (!arg.method_22347(blockPos)) {
+		if (!arg.isAir(blockPos)) {
 			return 0;
 		} else {
 			int i = 0;
@@ -254,7 +254,7 @@ public class FireBlock extends Block {
 			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
 				|| !((PortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, blockPos)) {
 				if (!blockState.canPlaceAt(world, blockPos)) {
-					world.clearBlockState(blockPos, false);
+					world.removeBlock(blockPos, false);
 				} else {
 					world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + world.random.nextInt(10));
 				}

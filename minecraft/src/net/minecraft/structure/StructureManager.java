@@ -213,7 +213,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		try {
 			Path path = this.generatedPath.resolve(identifier.getNamespace());
 			Path path2 = path.resolve("structures");
-			return FileNameUtil.method_20202(path2, identifier.getPath(), string);
+			return FileNameUtil.getResourcePath(path2, identifier.getPath(), string);
 		} catch (InvalidPathException var5) {
 			throw new InvalidIdentifierException("Invalid resource path: " + identifier, var5);
 		}

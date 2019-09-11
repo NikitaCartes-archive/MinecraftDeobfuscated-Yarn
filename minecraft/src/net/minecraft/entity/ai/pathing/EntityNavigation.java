@@ -38,7 +38,7 @@ public abstract class EntityNavigation {
 	protected boolean shouldRecalculate;
 	protected long lastRecalculateTime;
 	protected PathNodeMaker nodeMaker;
-	private BlockPos field_20293;
+	private BlockPos currentTarget;
 	private int field_20294;
 	private PathNodeNavigator pathNodeNavigator;
 
@@ -50,7 +50,7 @@ public abstract class EntityNavigation {
 	}
 
 	public BlockPos getTargetPos() {
-		return this.field_20293;
+		return this.currentTarget;
 	}
 
 	protected abstract PathNodeNavigator createPathNodeNavigator(int i);
@@ -69,9 +69,9 @@ public abstract class EntityNavigation {
 
 	public void recalculatePath() {
 		if (this.world.getTime() - this.lastRecalculateTime > 20L) {
-			if (this.field_20293 != null) {
+			if (this.currentTarget != null) {
 				this.currentPath = null;
-				this.currentPath = this.findPathTo(this.field_20293, this.field_20294);
+				this.currentPath = this.findPathTo(this.currentTarget, this.field_20294);
 				this.lastRecalculateTime = this.world.getTime();
 				this.shouldRecalculate = false;
 			}
@@ -86,29 +86,29 @@ public abstract class EntityNavigation {
 	}
 
 	@Nullable
-	public Path method_21643(Stream<BlockPos> stream, int i) {
-		return this.findPathTo((Set<BlockPos>)stream.collect(Collectors.toSet()), 8, false, i);
+	public Path findPathToAny(Stream<BlockPos> stream, int i) {
+		return this.findPathToAny((Set<BlockPos>)stream.collect(Collectors.toSet()), 8, false, i);
 	}
 
 	@Nullable
 	public Path findPathTo(BlockPos blockPos, int i) {
-		return this.findPathTo(ImmutableSet.of(blockPos), 8, false, i);
+		return this.findPathToAny(ImmutableSet.of(blockPos), 8, false, i);
 	}
 
 	@Nullable
 	public Path findPathTo(Entity entity, int i) {
-		return this.findPathTo(ImmutableSet.of(new BlockPos(entity)), 16, true, i);
+		return this.findPathToAny(ImmutableSet.of(new BlockPos(entity)), 16, true, i);
 	}
 
 	@Nullable
-	protected Path findPathTo(Set<BlockPos> set, int i, boolean bl, int j) {
+	protected Path findPathToAny(Set<BlockPos> set, int i, boolean bl, int j) {
 		if (set.isEmpty()) {
 			return null;
 		} else if (this.entity.y < 0.0) {
 			return null;
 		} else if (!this.isAtValidPosition()) {
 			return null;
-		} else if (this.currentPath != null && !this.currentPath.isFinished() && set.contains(this.field_20293)) {
+		} else if (this.currentPath != null && !this.currentPath.isFinished() && set.contains(this.currentTarget)) {
 			return this.currentPath;
 		} else {
 			this.world.getProfiler().push("pathfind");
@@ -116,10 +116,10 @@ public abstract class EntityNavigation {
 			BlockPos blockPos = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
 			int k = (int)(f + (float)i);
 			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
-			Path path = this.pathNodeNavigator.pathfind(chunkCache, this.entity, set, f, j);
+			Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, set, f, j);
 			this.world.getProfiler().pop();
-			if (path != null && path.method_48() != null) {
-				this.field_20293 = path.method_48();
+			if (path != null && path.getTarget() != null) {
+				this.currentTarget = path.getTarget();
 				this.field_20294 = j;
 			}
 
@@ -189,7 +189,7 @@ public abstract class EntityNavigation {
 				BlockPos blockPos = new BlockPos(vec3d);
 				this.entity
 					.getMoveControl()
-					.moveTo(vec3d.x, this.world.getBlockState(blockPos.down()).isAir() ? vec3d.y : LandPathNodeMaker.method_60(this.world, blockPos), vec3d.z, this.speed);
+					.moveTo(vec3d.x, this.world.getBlockState(blockPos.down()).isAir() ? vec3d.y : LandPathNodeMaker.getHeight(this.world, blockPos), vec3d.z, this.speed);
 			}
 		}
 	}

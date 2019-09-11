@@ -66,9 +66,9 @@ public class BeeHiveBlock extends BlockWithEntity {
 				world.updateHorizontalAdjacent(blockPos, this);
 			}
 
-			List<BeeEntity> list = world.getEntities(BeeEntity.class, new Box(blockPos).expand(8.0, 6.0, 8.0));
+			List<BeeEntity> list = world.getNonSpectatingEntities(BeeEntity.class, new Box(blockPos).expand(8.0, 6.0, 8.0));
 			if (!list.isEmpty()) {
-				List<PlayerEntity> list2 = world.getEntities(PlayerEntity.class, new Box(blockPos).expand(8.0, 6.0, 8.0));
+				List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(8.0, 6.0, 8.0));
 				int i = list2.size();
 
 				for (BeeEntity beeEntity : list) {
@@ -145,14 +145,14 @@ public class BeeHiveBlock extends BlockWithEntity {
 			if (d >= 1.0 && !blockState.matches(BlockTags.IMPERMEABLE)) {
 				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
-					this.method_21844(world, blockPos, voxelShape, (double)blockPos.getY() + e - 0.05);
+					this.addHoneyParticle(world, blockPos, voxelShape, (double)blockPos.getY() + e - 0.05);
 				} else {
 					BlockPos blockPos2 = blockPos.down();
 					BlockState blockState2 = world.getBlockState(blockPos2);
 					VoxelShape voxelShape2 = blockState2.getCollisionShape(world, blockPos2);
 					double f = voxelShape2.getMaximum(Direction.Axis.Y);
 					if ((f < 1.0 || !blockState2.method_21743(world, blockPos2)) && blockState2.getFluidState().isEmpty()) {
-						this.method_21844(world, blockPos, voxelShape, (double)blockPos.getY() - 0.05);
+						this.addHoneyParticle(world, blockPos, voxelShape, (double)blockPos.getY() - 0.05);
 					}
 				}
 			}
@@ -160,8 +160,8 @@ public class BeeHiveBlock extends BlockWithEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void method_21844(World world, BlockPos blockPos, VoxelShape voxelShape, double d) {
-		this.method_21840(
+	private void addHoneyParticle(World world, BlockPos blockPos, VoxelShape voxelShape, double d) {
+		this.addHoneyParticle(
 			world,
 			(double)blockPos.getX() + voxelShape.getMinimum(Direction.Axis.X),
 			(double)blockPos.getX() + voxelShape.getMaximum(Direction.Axis.X),
@@ -172,7 +172,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void method_21840(World world, double d, double e, double f, double g, double h) {
+	private void addHoneyParticle(World world, double d, double e, double f, double g, double h) {
 		world.addParticle(
 			ParticleTypes.DRIPPING_HONEY, MathHelper.lerp(world.random.nextDouble(), d, e), h, MathHelper.lerp(world.random.nextDouble(), f, g), 0.0, 0.0, 0.0
 		);
@@ -206,7 +206,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 			if (blockEntity instanceof BeeHiveBlockEntity) {
 				ItemStack itemStack = new ItemStack(this);
 				BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-				if (!beeHiveBlockEntity.method_22400()) {
+				if (!beeHiveBlockEntity.hasNoBees()) {
 					CompoundTag compoundTag = new CompoundTag();
 					compoundTag.put("Bees", beeHiveBlockEntity.getBees());
 					itemStack.putSubTag("BlockEntityTag", compoundTag);

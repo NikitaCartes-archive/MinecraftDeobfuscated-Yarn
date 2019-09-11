@@ -57,7 +57,7 @@ public class KelpBlock extends Block implements FluidFillable {
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-			serverWorld.method_22352(blockPos, true);
+			serverWorld.breakBlock(blockPos, true);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 			BlockState blockState2 = serverWorld.getBlockState(blockPos2);

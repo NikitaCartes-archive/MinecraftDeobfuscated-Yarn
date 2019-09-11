@@ -20,7 +20,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -170,7 +170,9 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	public static boolean method_20671(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND && iWorld.method_22335(blockPos, 0) > 8;
+		return blockPos.getY() < iWorld.getSeaLevel() + 4
+			&& iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND
+			&& iWorld.getBaseLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override
@@ -253,8 +255,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float calculateStepDelta() {
-		return this.distanceWalked + 0.15F;
+	protected float calculateNextStepSoundDistance() {
+		return this.distanceTraveled + 0.15F;
 	}
 
 	@Override
@@ -283,7 +285,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (!this.isLandBound() && arg.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return arg.getBlockState(blockPos.down()).getBlock() == Blocks.SAND ? 10.0F : arg.method_22349(blockPos) - 0.5F;
+			return arg.getBlockState(blockPos.down()).getBlock() == Blocks.SAND ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
 		}
 	}
 
@@ -433,15 +435,15 @@ public class TurtleEntity extends AnimalEntity {
 			}
 
 			if (this.turtle.getNavigation().isIdle()) {
-				Vec3d vec3d = PathfindingUtil.method_6377(
+				Vec3d vec3d = TargetFinder.findTargetTowards(
 					this.turtle, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
 				);
 				if (vec3d == null) {
-					vec3d = PathfindingUtil.method_6373(this.turtle, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = TargetFinder.findTargetTowards(this.turtle, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d != null && !bl && this.turtle.world.getBlockState(new BlockPos(vec3d)).getBlock() != Blocks.WATER) {
-					vec3d = PathfindingUtil.method_6373(this.turtle, 16, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = TargetFinder.findTargetTowards(this.turtle, 16, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d == null) {
@@ -498,7 +500,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-			if (!arg.method_22347(blockPos.up())) {
+			if (!arg.isAir(blockPos.up())) {
 				return false;
 			} else {
 				Block block = arg.getBlockState(blockPos).getBlock();
@@ -579,18 +581,18 @@ public class TurtleEntity extends AnimalEntity {
 		public void tick() {
 			if (this.turtle.getNavigation().isIdle()) {
 				BlockPos blockPos = this.turtle.getTravelPos();
-				Vec3d vec3d = PathfindingUtil.method_6377(
+				Vec3d vec3d = TargetFinder.findTargetTowards(
 					this.turtle, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
 				);
 				if (vec3d == null) {
-					vec3d = PathfindingUtil.method_6373(this.turtle, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = TargetFinder.findTargetTowards(this.turtle, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d != null) {
 					int i = MathHelper.floor(vec3d.x);
 					int j = MathHelper.floor(vec3d.z);
 					int k = 34;
-					if (!this.turtle.world.method_22341(i - 34, 0, j - 34, i + 34, 0, j + 34)) {
+					if (!this.turtle.world.isRegionLoaded(i - 34, 0, j - 34, i + 34, 0, j + 34)) {
 						vec3d = null;
 					}
 				}

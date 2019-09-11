@@ -244,7 +244,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.initializeStrength();
 		int i;
 		if (entityData instanceof LlamaEntity.class_1503) {
@@ -255,7 +254,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		this.setVariant(i);
-		return entityData;
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -495,7 +494,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 	}
 
-	static class class_1503 implements EntityData {
+	static class class_1503 extends PassiveEntity$1 {
 		public final int field_7001;
 
 		private class_1503(int i) {

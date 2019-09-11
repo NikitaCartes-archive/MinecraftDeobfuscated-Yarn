@@ -9,7 +9,6 @@ import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -42,7 +41,7 @@ public class FollowOwnerGoal extends Goal {
 		LivingEntity livingEntity = this.tameable.getOwner();
 		if (livingEntity == null) {
 			return false;
-		} else if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).isSpectator()) {
+		} else if (livingEntity.isSpectator()) {
 			return false;
 		} else if (this.tameable.isSitting()) {
 			return false;
@@ -56,48 +55,45 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.navigation.isIdle() && this.tameable.squaredDistanceTo(this.owner) > (double)(this.maxDistance * this.maxDistance) && !this.tameable.isSitting();
+		return !this.navigation.isIdle() && !this.tameable.isSitting() && this.tameable.squaredDistanceTo(this.owner) > (double)(this.maxDistance * this.maxDistance);
 	}
 
 	@Override
 	public void start() {
 		this.field_6443 = 0;
-		this.field_6447 = this.tameable.getPathNodeTypeWeight(PathNodeType.WATER);
-		this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, 0.0F);
+		this.field_6447 = this.tameable.getPathfindingPenalty(PathNodeType.WATER);
+		this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 	}
 
 	@Override
 	public void stop() {
 		this.owner = null;
 		this.navigation.stop();
-		this.tameable.setPathNodeTypeWeight(PathNodeType.WATER, this.field_6447);
+		this.tameable.setPathfindingPenalty(PathNodeType.WATER, this.field_6447);
 	}
 
 	@Override
 	public void tick() {
 		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getLookPitchSpeed());
-		if (!this.tameable.isSitting()) {
-			if (--this.field_6443 <= 0) {
-				this.field_6443 = 10;
-				if (!this.navigation.startMovingTo(this.owner, this.field_6442)) {
-					if (!this.tameable.isLeashed() && !this.tameable.hasVehicle()) {
-						if (!(this.tameable.squaredDistanceTo(this.owner) < 144.0)) {
-							int i = MathHelper.floor(this.owner.x) - 2;
-							int j = MathHelper.floor(this.owner.z) - 2;
-							int k = MathHelper.floor(this.owner.getBoundingBox().minY);
+		if (--this.field_6443 <= 0) {
+			this.field_6443 = 10;
+			if (!this.tameable.isLeashed() && !this.tameable.hasVehicle()) {
+				if (this.tameable.squaredDistanceTo(this.owner) >= 144.0) {
+					int i = MathHelper.floor(this.owner.x) - 2;
+					int j = MathHelper.floor(this.owner.z) - 2;
+					int k = MathHelper.floor(this.owner.getBoundingBox().minY);
 
-							for (int l = 0; l <= 4; l++) {
-								for (int m = 0; m <= 4; m++) {
-									if ((l < 1 || m < 1 || l > 3 || m > 3) && this.method_6263(new BlockPos(i + l, k - 1, j + m))) {
-										this.tameable
-											.setPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.tameable.yaw, this.tameable.pitch);
-										this.navigation.stop();
-										return;
-									}
-								}
+					for (int l = 0; l <= 4; l++) {
+						for (int m = 0; m <= 4; m++) {
+							if ((l < 1 || m < 1 || l > 3 || m > 3) && this.method_6263(new BlockPos(i + l, k - 1, j + m))) {
+								this.tameable.setPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.tameable.yaw, this.tameable.pitch);
+								this.navigation.stop();
+								return;
 							}
 						}
 					}
+				} else {
+					this.navigation.startMovingTo(this.owner, this.field_6442);
 				}
 			}
 		}
@@ -105,8 +101,6 @@ public class FollowOwnerGoal extends Goal {
 
 	protected boolean method_6263(BlockPos blockPos) {
 		BlockState blockState = this.world.getBlockState(blockPos);
-		return blockState.allowsSpawning(this.world, blockPos, this.tameable.getType())
-			&& this.world.method_22347(blockPos.up())
-			&& this.world.method_22347(blockPos.up(2));
+		return blockState.allowsSpawning(this.world, blockPos, this.tameable.getType()) && this.world.isAir(blockPos.up()) && this.world.isAir(blockPos.up(2));
 	}
 }

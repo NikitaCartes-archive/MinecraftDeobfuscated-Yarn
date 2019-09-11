@@ -76,11 +76,11 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 
 	public ItemStack add(ItemStack itemStack) {
 		ItemStack itemStack2 = itemStack.copy();
-		this.method_20634(itemStack2);
+		this.addToExistingSlot(itemStack2);
 		if (itemStack2.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.method_20633(itemStack2);
+			this.addToNewSlot(itemStack2);
 			return itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2;
 		}
 	}
@@ -153,7 +153,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return ((List)this.stackList.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList())).toString();
 	}
 
-	private void method_20633(ItemStack itemStack) {
+	private void addToNewSlot(ItemStack itemStack) {
 		for (int i = 0; i < this.size; i++) {
 			ItemStack itemStack2 = this.getInvStack(i);
 			if (itemStack2.isEmpty()) {
@@ -164,11 +164,11 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	private void method_20634(ItemStack itemStack) {
+	private void addToExistingSlot(ItemStack itemStack) {
 		for (int i = 0; i < this.size; i++) {
 			ItemStack itemStack2 = this.getInvStack(i);
 			if (ItemStack.areItemsEqualIgnoreDamage(itemStack2, itemStack)) {
-				this.method_20632(itemStack, itemStack2);
+				this.transfer(itemStack, itemStack2);
 				if (itemStack.isEmpty()) {
 					return;
 				}
@@ -176,7 +176,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	private void method_20632(ItemStack itemStack, ItemStack itemStack2) {
+	private void transfer(ItemStack itemStack, ItemStack itemStack2) {
 		int i = Math.min(this.getInvMaxStackAmount(), itemStack2.getMaxCount());
 		int j = Math.min(itemStack.getCount(), i - itemStack2.getCount());
 		if (j > 0) {

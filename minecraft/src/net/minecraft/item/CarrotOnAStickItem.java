@@ -3,7 +3,6 @@ package net.minecraft.item;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -17,7 +16,7 @@ public class CarrotOnAStickItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return TypedActionResult.method_22430(itemStack);
 		} else {
 			if (playerEntity.hasVehicle() && playerEntity.getVehicle() instanceof PigEntity) {
 				PigEntity pigEntity = (PigEntity)playerEntity.getVehicle();
@@ -26,15 +25,15 @@ public class CarrotOnAStickItem extends Item {
 					if (itemStack.isEmpty()) {
 						ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
 						itemStack2.setTag(itemStack.getTag());
-						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack2);
+						return TypedActionResult.method_22427(itemStack2);
 					}
 
-					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+					return TypedActionResult.method_22427(itemStack);
 				}
 			}
 
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return TypedActionResult.method_22430(itemStack);
 		}
 	}
 }

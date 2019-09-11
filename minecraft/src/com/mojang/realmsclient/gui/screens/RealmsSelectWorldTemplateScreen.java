@@ -8,6 +8,7 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.WorldTemplate;
 import com.mojang.realmsclient.dto.WorldTemplatePaginatedList;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsTextureManager;
 import com.mojang.realmsclient.util.RealmsUtil;
 import com.mojang.realmsclient.util.TextRenderingUtils;
@@ -21,7 +22,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.RealmListEntry;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
@@ -287,7 +287,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			for (int k = 0; k < strings.length; k++) {
 				int l = this.fontWidth(strings[k]);
 				int m = this.width() / 2 - l / 2;
-				int n = class_4359.method_21072(-1 + k);
+				int n = RealmsConstants.row(-1 + k);
 				if (i >= m && i <= m + l && j >= n && j <= n + this.fontLineHeight()) {
 					this.hoverWarning = true;
 				}
@@ -305,7 +305,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 					}
 				}
 
-				this.drawCenteredString(string, this.width() / 2, class_4359.method_21072(-1 + kx), m);
+				this.drawCenteredString(string, this.width() / 2, RealmsConstants.row(-1 + kx), m);
 			}
 		}
 
@@ -318,7 +318,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	private void method_21414(int i, int j, List<TextRenderingUtils.Line> list) {
 		for (int k = 0; k < list.size(); k++) {
 			TextRenderingUtils.Line line = (TextRenderingUtils.Line)list.get(k);
-			int l = class_4359.method_21072(4 + k);
+			int l = RealmsConstants.row(4 + k);
 			int m = line.segments.stream().mapToInt(lineSegmentx -> this.fontWidth(lineSegmentx.renderedText())).sum();
 			int n = this.width() / 2 - m / 2;
 
@@ -355,7 +355,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			super(
 				RealmsSelectWorldTemplateScreen.this.width(),
 				RealmsSelectWorldTemplateScreen.this.height(),
-				RealmsSelectWorldTemplateScreen.this.displayWarning ? class_4359.method_21072(1) : 32,
+				RealmsSelectWorldTemplateScreen.this.displayWarning ? RealmsConstants.row(1) : 32,
 				RealmsSelectWorldTemplateScreen.this.height() - 40,
 				46
 			);

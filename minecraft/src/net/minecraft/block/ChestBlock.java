@@ -164,7 +164,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 		ChestType chestType = ChestType.SINGLE;
 		Direction direction = itemPlacementContext.getPlayerFacing().getOpposite();
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		boolean bl = itemPlacementContext.isPlayerSneaking();
+		boolean bl = itemPlacementContext.shouldCancelInteraction();
 		Direction direction2 = itemPlacementContext.getSide();
 		if (direction2.getAxis().isHorizontal() && bl) {
 			Direction direction3 = this.getNeighborChestDirection(itemPlacementContext, direction2.getOpposite());
@@ -300,7 +300,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	private static boolean hasOcelotOnTop(IWorld iWorld, BlockPos blockPos) {
-		List<CatEntity> list = iWorld.getEntities(
+		List<CatEntity> list = iWorld.getNonSpectatingEntities(
 			CatEntity.class,
 			new Box(
 				(double)blockPos.getX(),

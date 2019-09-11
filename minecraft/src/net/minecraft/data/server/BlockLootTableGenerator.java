@@ -1087,7 +1087,15 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16293(Blocks.SEAGRASS, BlockLootTableGenerator::method_10372);
 		this.method_16293(Blocks.VINE, BlockLootTableGenerator::method_10372);
 		this.method_16258(Blocks.TALL_SEAGRASS, method_10372(Blocks.SEAGRASS));
-		this.method_16258(Blocks.LARGE_FERN, method_10372(Blocks.FERN));
+		this.method_16293(
+			Blocks.LARGE_FERN,
+			blockx -> method_10380(
+					Blocks.FERN,
+					((LeafEntry.Builder)((LeafEntry.Builder)method_10392(blockx, ItemEntry.builder(Items.WHEAT_SEEDS)))
+							.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)))
+						.method_421(RandomChanceLootCondition.builder(0.125F))
+				)
+		);
 		this.method_16293(
 			Blocks.TALL_GRASS,
 			blockx -> method_10380(

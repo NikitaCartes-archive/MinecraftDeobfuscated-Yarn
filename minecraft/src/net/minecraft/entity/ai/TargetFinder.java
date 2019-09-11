@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class PathfindingUtil {
+public class TargetFinder {
 	@Nullable
 	public static Vec3d findTarget(MobEntityWithAi mobEntityWithAi, int i, int j) {
 		return findTarget(mobEntityWithAi, i, j, null);
@@ -37,35 +37,35 @@ public class PathfindingUtil {
 	}
 
 	@Nullable
-	public static Vec3d findTargetStraight(MobEntityWithAi mobEntityWithAi, int i, int j) {
-		return findTargetStraight(mobEntityWithAi, i, j, mobEntityWithAi::getPathfindingFavor);
+	public static Vec3d findGroundTarget(MobEntityWithAi mobEntityWithAi, int i, int j) {
+		return findGroundTarget(mobEntityWithAi, i, j, mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d findTargetStraight(MobEntityWithAi mobEntityWithAi, int i, int j, ToDoubleFunction<BlockPos> toDoubleFunction) {
+	public static Vec3d findGroundTarget(MobEntityWithAi mobEntityWithAi, int i, int j, ToDoubleFunction<BlockPos> toDoubleFunction) {
 		return method_21758(mobEntityWithAi, i, j, null, false, 0.0, toDoubleFunction);
 	}
 
 	@Nullable
-	public static Vec3d method_6373(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+	public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
 		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
 		return findTarget(mobEntityWithAi, i, j, vec3d2);
 	}
 
 	@Nullable
-	public static Vec3d method_6377(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
+	public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
 		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
 		return method_21758(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d method_20658(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+	public static Vec3d findGroundTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
 		Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
 		return method_21758(mobEntityWithAi, i, j, vec3d2, false, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d method_6379(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+	public static Vec3d findTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
 		Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
 		return findTarget(mobEntityWithAi, i, j, vec3d2);
 	}
@@ -108,8 +108,8 @@ public class PathfindingUtil {
 		EntityNavigation entityNavigation = mobEntityWithAi.getNavigation();
 		Random random = mobEntityWithAi.getRand();
 		boolean bl4;
-		if (mobEntityWithAi.hasWalkTargetRange()) {
-			bl4 = mobEntityWithAi.getWalkTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getWalkTargetRange() + (float)i) + 1.0);
+		if (mobEntityWithAi.hasPositionTarget()) {
+			bl4 = mobEntityWithAi.getPositionTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getPositionTargetRange() + (float)i) + 1.0);
 		} else {
 			bl4 = false;
 		}
@@ -124,8 +124,8 @@ public class PathfindingUtil {
 				int o = blockPos2.getX();
 				int p = blockPos2.getY();
 				int q = blockPos2.getZ();
-				if (mobEntityWithAi.hasWalkTargetRange() && i > 1) {
-					BlockPos blockPos3 = mobEntityWithAi.getWalkTarget();
+				if (mobEntityWithAi.hasPositionTarget() && i > 1) {
+					BlockPos blockPos3 = mobEntityWithAi.getPositionTarget();
 					if (mobEntityWithAi.x > (double)blockPos3.getX()) {
 						o -= random.nextInt(i / 2);
 					} else {

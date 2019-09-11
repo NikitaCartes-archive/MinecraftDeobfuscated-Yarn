@@ -1,11 +1,11 @@
-package net.minecraft;
+package com.mojang.realmsclient.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class class_4359 {
-	public static int method_21072(int i) {
+public class RealmsConstants {
+	public static int row(int i) {
 		return 40 + i * 13;
 	}
 }

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
@@ -52,14 +52,11 @@ public class StructureFeatures {
 				int i = compoundTag.getInt("ChunkX");
 				int j = compoundTag.getInt("ChunkZ");
 				int k = compoundTag.getInt("references");
-				MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB")
-					? new MutableIntBoundingBox(compoundTag.getIntArray("BB"))
-					: MutableIntBoundingBox.empty();
+				BlockBox blockBox = compoundTag.containsKey("BB") ? new BlockBox(compoundTag.getIntArray("BB")) : BlockBox.empty();
 				ListTag listTag = compoundTag.getList("Children", 10);
 
 				try {
-					StructureStart structureStart = structureFeature.getStructureStartFactory()
-						.create(structureFeature, i, j, mutableIntBoundingBox, k, chunkGenerator.getSeed());
+					StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, blockBox, k, chunkGenerator.getSeed());
 
 					for (int l = 0; l < listTag.size(); l++) {
 						CompoundTag compoundTag2 = listTag.getCompoundTag(l);

@@ -71,11 +71,11 @@ public class DebugStickItem extends Item {
 						property = (Property<?>)collection.iterator().next();
 					}
 
-					BlockState blockState2 = cycle(blockState, property, playerEntity.method_21823());
+					BlockState blockState2 = cycle(blockState, property, playerEntity.shouldCancelInteraction());
 					iWorld.setBlockState(blockPos, blockState2, 18);
 					sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState2, property)));
 				} else {
-					property = cycle(collection, property, playerEntity.method_21823());
+					property = cycle(collection, property, playerEntity.shouldCancelInteraction());
 					String string3 = property.getName();
 					compoundTag.putString(string, string3);
 					sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".select", string3, getValueString(blockState, property)));

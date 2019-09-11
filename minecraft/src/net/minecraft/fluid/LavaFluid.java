@@ -83,7 +83,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 				for (int j = 0; j < i; j++) {
 					blockPos2 = blockPos2.add(random.nextInt(3) - 1, 1, random.nextInt(3) - 1);
-					if (!world.isHeightValidAndBlockLoaded(blockPos2)) {
+					if (!world.canSetBlock(blockPos2)) {
 						return;
 					}
 
@@ -100,11 +100,11 @@ public abstract class LavaFluid extends BaseFluid {
 			} else {
 				for (int k = 0; k < 3; k++) {
 					BlockPos blockPos3 = blockPos.add(random.nextInt(3) - 1, 0, random.nextInt(3) - 1);
-					if (!world.isHeightValidAndBlockLoaded(blockPos3)) {
+					if (!world.canSetBlock(blockPos3)) {
 						return;
 					}
 
-					if (world.method_22347(blockPos3.up()) && this.method_15817(world, blockPos3)) {
+					if (world.isAir(blockPos3.up()) && this.method_15817(world, blockPos3)) {
 						world.setBlockState(blockPos3.up(), Blocks.FIRE.getDefaultState());
 					}
 				}
@@ -123,7 +123,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	private boolean method_15817(class_4538 arg, BlockPos blockPos) {
-		return blockPos.getY() >= 0 && blockPos.getY() < 256 && !arg.method_22340(blockPos) ? false : arg.getBlockState(blockPos).getMaterial().isBurnable();
+		return blockPos.getY() >= 0 && blockPos.getY() < 256 && !arg.isChunkLoaded(blockPos) ? false : arg.getBlockState(blockPos).getMaterial().isBurnable();
 	}
 
 	@Nullable

@@ -8,13 +8,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 @Environment(EnvType.CLIENT)
-public class ChunkRendererRegion implements ExtendedBlockView {
+public class ChunkRendererRegion implements BlockRenderView {
 	protected final int chunkXOffset;
 	protected final int chunkZOffset;
 	protected final BlockPos offset;
@@ -105,8 +105,8 @@ public class ChunkRendererRegion implements ExtendedBlockView {
 	}
 
 	@Override
-	public LightingProvider method_22336() {
-		return this.world.method_22336();
+	public LightingProvider getLightingProvider() {
+		return this.world.getLightingProvider();
 	}
 
 	@Override

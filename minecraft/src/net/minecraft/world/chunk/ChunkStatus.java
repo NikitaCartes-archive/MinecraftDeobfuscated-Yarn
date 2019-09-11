@@ -131,7 +131,7 @@ public class ChunkStatus {
 			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 	);
-	public static final ChunkStatus LIGHT = method_20611(
+	public static final ChunkStatus LIGHT = register(
 		"light",
 		FEATURES,
 		1,
@@ -154,7 +154,7 @@ public class ChunkStatus {
 		"heightmaps", SPAWN, 0, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (serverWorld, chunkGenerator, list, chunk) -> {
 		}
 	);
-	public static final ChunkStatus FULL = method_20611(
+	public static final ChunkStatus FULL = register(
 		"full",
 		HEIGHTMAPS,
 		0,
@@ -191,14 +191,14 @@ public class ChunkStatus {
 			intArrayList.add(0, i);
 		}
 	});
-	private final String name;
+	private final String id;
 	private final int index;
 	private final ChunkStatus previous;
 	private final ChunkStatus.Task task;
 	private final ChunkStatus.class_4305 field_19346;
 	private final int taskMargin;
 	private final ChunkStatus.ChunkType chunkType;
-	private final EnumSet<Heightmap.Type> surfaceGenerated;
+	private final EnumSet<Heightmap.Type> heightMapTypes;
 
 	private static CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20610(
 		ChunkStatus chunkStatus, ServerLightingProvider serverLightingProvider, Chunk chunk
@@ -220,10 +220,10 @@ public class ChunkStatus {
 	private static ChunkStatus register(
 		String string, @Nullable ChunkStatus chunkStatus, int i, EnumSet<Heightmap.Type> enumSet, ChunkStatus.ChunkType chunkType, ChunkStatus.Task task
 	) {
-		return method_20611(string, chunkStatus, i, enumSet, chunkType, task, field_19345);
+		return register(string, chunkStatus, i, enumSet, chunkType, task, field_19345);
 	}
 
-	private static ChunkStatus method_20611(
+	private static ChunkStatus register(
 		String string,
 		@Nullable ChunkStatus chunkStatus,
 		int i,
@@ -277,13 +277,13 @@ public class ChunkStatus {
 		ChunkStatus.Task task,
 		ChunkStatus.class_4305 arg
 	) {
-		this.name = string;
+		this.id = string;
 		this.previous = chunkStatus == null ? this : chunkStatus;
 		this.task = task;
 		this.field_19346 = arg;
 		this.taskMargin = i;
 		this.chunkType = chunkType;
-		this.surfaceGenerated = enumSet;
+		this.heightMapTypes = enumSet;
 		this.index = chunkStatus == null ? 0 : chunkStatus.getIndex() + 1;
 	}
 
@@ -291,8 +291,8 @@ public class ChunkStatus {
 		return this.index;
 	}
 
-	public String getName() {
-		return this.name;
+	public String getId() {
+		return this.id;
 	}
 
 	public ChunkStatus getPrevious() {
@@ -332,8 +332,8 @@ public class ChunkStatus {
 		return Registry.CHUNK_STATUS.get(Identifier.tryParse(string));
 	}
 
-	public EnumSet<Heightmap.Type> isSurfaceGenerated() {
-		return this.surfaceGenerated;
+	public EnumSet<Heightmap.Type> getHeightmapTypes() {
+		return this.heightMapTypes;
 	}
 
 	public boolean isAtLeast(ChunkStatus chunkStatus) {

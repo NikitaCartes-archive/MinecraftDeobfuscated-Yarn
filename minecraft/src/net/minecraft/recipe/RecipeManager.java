@@ -37,15 +37,15 @@ import org.apache.logging.log4j.Logger;
 public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private static final Logger LOGGER = LogManager.getLogger();
-	private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipeMap = ImmutableMap.of();
-	private boolean hadErrors;
+	private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes = ImmutableMap.of();
+	private boolean errored;
 
 	public RecipeManager() {
 		super(GSON, "recipes");
 	}
 
 	protected void method_20705(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
-		this.hadErrors = false;
+		this.errored = false;
 		Map<RecipeType<?>, Builder<Identifier, Recipe<?>>> map2 = Maps.<RecipeType<?>, Builder<Identifier, Recipe<?>>>newHashMap();
 
 		for (Entry<Identifier, JsonObject> entry : map.entrySet()) {
@@ -59,18 +59,18 @@ public class RecipeManager extends JsonDataLoader {
 			}
 		}
 
-		this.recipeMap = (Map<RecipeType<?>, Map<Identifier, Recipe<?>>>)map2.entrySet()
+		this.recipes = (Map<RecipeType<?>, Map<Identifier, Recipe<?>>>)map2.entrySet()
 			.stream()
 			.collect(ImmutableMap.toImmutableMap(Entry::getKey, entryx -> ((Builder)entryx.getValue()).build()));
 		LOGGER.info("Loaded {} recipes", map2.size());
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> recipeType, C inventory, World world) {
-		return this.getAllForType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).findFirst();
+		return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).findFirst();
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> recipeType, C inventory, World world) {
-		return (List<T>)this.getAllForType(recipeType)
+		return (List<T>)this.getAllOfType(recipeType)
 			.values()
 			.stream()
 			.flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory)))
@@ -78,8 +78,8 @@ public class RecipeManager extends JsonDataLoader {
 			.collect(Collectors.toList());
 	}
 
-	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllForType(RecipeType<T> recipeType) {
-		return (Map<Identifier, Recipe<C>>)this.recipeMap.getOrDefault(recipeType, Collections.emptyMap());
+	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllOfType(RecipeType<T> recipeType) {
+		return (Map<Identifier, Recipe<C>>)this.recipes.getOrDefault(recipeType, Collections.emptyMap());
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
@@ -98,15 +98,15 @@ public class RecipeManager extends JsonDataLoader {
 	}
 
 	public Optional<? extends Recipe<?>> get(Identifier identifier) {
-		return this.recipeMap.values().stream().map(map -> (Recipe)map.get(identifier)).filter(Objects::nonNull).findFirst();
+		return this.recipes.values().stream().map(map -> (Recipe)map.get(identifier)).filter(Objects::nonNull).findFirst();
 	}
 
 	public Collection<Recipe<?>> values() {
-		return (Collection<Recipe<?>>)this.recipeMap.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toSet());
+		return (Collection<Recipe<?>>)this.recipes.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toSet());
 	}
 
 	public Stream<Identifier> keys() {
-		return this.recipeMap.values().stream().flatMap(map -> map.keySet().stream());
+		return this.recipes.values().stream().flatMap(map -> map.keySet().stream());
 	}
 
 	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
@@ -118,8 +118,8 @@ public class RecipeManager extends JsonDataLoader {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_20702(Iterable<Recipe<?>> iterable) {
-		this.hadErrors = false;
+	public void setRecipes(Iterable<Recipe<?>> iterable) {
+		this.errored = false;
 		Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map = Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap();
 		iterable.forEach(recipe -> {
 			Map<Identifier, Recipe<?>> map2 = (Map<Identifier, Recipe<?>>)map.computeIfAbsent(recipe.getType(), recipeType -> Maps.newHashMap());
@@ -128,6 +128,6 @@ public class RecipeManager extends JsonDataLoader {
 				throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
 			}
 		});
-		this.recipeMap = ImmutableMap.copyOf(map);
+		this.recipes = ImmutableMap.copyOf(map);
 	}
 }

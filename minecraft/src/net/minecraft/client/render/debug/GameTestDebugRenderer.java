@@ -42,7 +42,7 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 			double d = (double)blockPos.getX() + 0.5;
 			double e = (double)blockPos.getY() + 1.2;
 			double f = (double)blockPos.getZ() + 0.5;
-			DebugRenderer.method_3712(marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
+			DebugRenderer.drawFloatingText(marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
 		}
 
 		RenderSystem.enableTexture();

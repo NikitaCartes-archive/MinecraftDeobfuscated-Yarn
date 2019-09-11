@@ -45,7 +45,7 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	@Override
 	protected void run(ServerWorld serverWorld, E livingEntity, long l) {
 		this.order.apply(this.tasks);
-		this.runMode.method_19559(this.tasks, serverWorld, livingEntity, l);
+		this.runMode.run(this.tasks, serverWorld, livingEntity, l);
 	}
 
 	@Override
@@ -87,13 +87,13 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	static enum RunMode {
 		RUN_ONE {
 			@Override
-			public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
+			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
 				weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(serverWorld, livingEntity, l)).findFirst();
 			}
 		},
 		TRY_ALL {
 			@Override
-			public <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
+			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
 				weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(serverWorld, livingEntity, l));
 			}
 		};
@@ -101,6 +101,6 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 		private RunMode() {
 		}
 
-		public abstract <E extends LivingEntity> void method_19559(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l);
+		public abstract <E extends LivingEntity> void run(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l);
 	}
 }

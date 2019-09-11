@@ -8,6 +8,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -67,22 +68,29 @@ public class ShovelItem extends MiningToolItem {
 	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
-		if (itemUsageContext.getSide() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
-			BlockState blockState = (BlockState)PATH_BLOCKSTATES.get(world.getBlockState(blockPos).getBlock());
-			if (blockState != null) {
-				PlayerEntity playerEntity = itemUsageContext.getPlayer();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (itemUsageContext.getSide() == Direction.DOWN) {
+			return ActionResult.PASS;
+		} else {
+			PlayerEntity playerEntity = itemUsageContext.getPlayer();
+			BlockState blockState2 = (BlockState)PATH_BLOCKSTATES.get(blockState.getBlock());
+			BlockState blockState3 = null;
+			if (blockState2 != null && world.getBlockState(blockPos.up()).isAir()) {
 				world.playSound(playerEntity, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				if (!world.isClient) {
-					world.setBlockState(blockPos, blockState, 11);
-					if (playerEntity != null) {
-						itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
-					}
-				}
-
-				return ActionResult.SUCCESS;
+				blockState3 = blockState2;
+			} else if (blockState.getBlock() instanceof CampfireBlock && (Boolean)blockState.get(CampfireBlock.LIT)) {
+				world.playLevelEvent(null, 1009, blockPos, 0);
+				blockState3 = blockState.with(CampfireBlock.LIT, Boolean.valueOf(false));
 			}
-		}
 
-		return ActionResult.PASS;
+			if (!world.isClient && blockState3 != null) {
+				world.setBlockState(blockPos, blockState3, 11);
+				if (playerEntity != null) {
+					itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+				}
+			}
+
+			return ActionResult.SUCCESS;
+		}
 	}
 }

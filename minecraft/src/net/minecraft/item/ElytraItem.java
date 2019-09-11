@@ -4,7 +4,6 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -34,9 +33,9 @@ public class ElytraItem extends Item {
 		if (itemStack2.isEmpty()) {
 			playerEntity.equipStack(equipmentSlot, itemStack.copy());
 			itemStack.setCount(0);
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22427(itemStack);
 		} else {
-			return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+			return TypedActionResult.method_22431(itemStack);
 		}
 	}
 }

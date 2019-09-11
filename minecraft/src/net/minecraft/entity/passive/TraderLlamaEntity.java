@@ -101,12 +101,16 @@ public class TraderLlamaEntity extends LlamaEntity {
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (spawnType == SpawnType.EVENT) {
 			this.setBreedingAge(0);
 		}
 
-		return entityData2;
+		if (entityData == null) {
+			entityData = new PassiveEntity$1();
+			((PassiveEntity$1)entityData).method_22434(false);
+		}
+
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	public class DefendTraderGoal extends TrackTargetGoal {

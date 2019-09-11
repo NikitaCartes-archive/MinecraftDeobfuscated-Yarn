@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -46,7 +46,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			}
 
 			if (!this.actor.isNavigating()) {
-				Vec3d vec3d = PathfindingUtil.method_6373(this.actor, 15, 4, new Vec3d(raid.getCenter()));
+				Vec3d vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, new Vec3d(raid.getCenter()));
 				if (vec3d != null) {
 					this.actor.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 				}

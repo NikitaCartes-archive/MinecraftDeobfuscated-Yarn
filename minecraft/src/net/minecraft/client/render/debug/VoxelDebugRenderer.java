@@ -31,7 +31,7 @@ public class VoxelDebugRenderer implements DebugRenderer.Renderer {
 			this.field_4541 = d;
 			this.field_4542 = (List<VoxelShape>)camera.getFocusedEntity()
 				.world
-				.getCollisionShapes(camera.getFocusedEntity(), camera.getFocusedEntity().getBoundingBox().expand(6.0), Collections.emptySet())
+				.getCollisions(camera.getFocusedEntity(), camera.getFocusedEntity().getBoundingBox().expand(6.0), Collections.emptySet())
 				.collect(Collectors.toList());
 		}
 

@@ -64,7 +64,6 @@ import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
-import net.minecraft.client.network.packet.BlockPlayerActionS2CPacket;
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
 import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
@@ -122,6 +121,7 @@ import net.minecraft.client.network.packet.PlaySoundFromEntityS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.client.network.packet.PlayerAbilitiesS2CPacket;
+import net.minecraft.client.network.packet.PlayerActionResponseS2CPacket;
 import net.minecraft.client.network.packet.PlayerListHeaderS2CPacket;
 import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.network.packet.PlayerPositionLookS2CPacket;
@@ -275,12 +275,12 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
@@ -359,7 +359,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			}
 		}
 
-		this.client.debugRenderer.method_20413();
+		this.client.debugRenderer.reset();
 		this.client.player.afterSpawn();
 		int i = gameJoinS2CPacket.getEntityId();
 		this.world.addPlayer(i, this.client.player);
@@ -772,7 +772,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, k, j), true);
 		}
 
-		lightingProvider.suppressLight(new ChunkPos(i, j), false);
+		lightingProvider.setLightEnabled(new ChunkPos(i, j), false);
 	}
 
 	@Override
@@ -1194,7 +1194,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onBlockEntityUpdate(BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket) {
 		NetworkThreadUtils.forceMainThread(blockEntityUpdateS2CPacket, this, this.client);
-		if (this.client.world.method_22340(blockEntityUpdateS2CPacket.getPos())) {
+		if (this.client.world.isChunkLoaded(blockEntityUpdateS2CPacket.getPos())) {
 			BlockEntity blockEntity = this.client.world.getBlockEntity(blockEntityUpdateS2CPacket.getPos());
 			int i = blockEntityUpdateS2CPacket.getActionId();
 			boolean bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
@@ -1413,7 +1413,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onSynchronizeRecipes(SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket) {
 		NetworkThreadUtils.forceMainThread(synchronizeRecipesS2CPacket, this, this.client);
-		this.recipeManager.method_20702(synchronizeRecipesS2CPacket.getRecipes());
+		this.recipeManager.setRecipes(synchronizeRecipesS2CPacket.getRecipes());
 		SearchableContainer<RecipeResultCollection> searchableContainer = this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT);
 		searchableContainer.clear();
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
@@ -1875,23 +1875,23 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.client.debugRenderer.caveDebugRenderer.method_3704(blockPos2, list, list2);
 			} else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
 				DimensionType dimensionType = DimensionType.byRawId(packetByteBuf.readInt());
-				MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(
+				BlockBox blockBox = new BlockBox(
 					packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()
 				);
 				int m = packetByteBuf.readInt();
-				List<MutableIntBoundingBox> list2 = Lists.<MutableIntBoundingBox>newArrayList();
+				List<BlockBox> list2 = Lists.<BlockBox>newArrayList();
 				List<Boolean> list3 = Lists.<Boolean>newArrayList();
 
 				for (int n = 0; n < m; n++) {
 					list2.add(
-						new MutableIntBoundingBox(
+						new BlockBox(
 							packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()
 						)
 					);
 					list3.add(packetByteBuf.readBoolean());
 				}
 
-				this.client.debugRenderer.structureDebugRenderer.method_3871(mutableIntBoundingBox, list2, list3, dimensionType);
+				this.client.debugRenderer.structureDebugRenderer.method_3871(blockBox, list2, list3, dimensionType);
 			} else if (CustomPayloadS2CPacket.DEBUG_WORLDGEN_ATTEMPT.equals(identifier)) {
 				((WorldGenAttemptDebugRenderer)this.client.debugRenderer.worldGenAttemptDebugRenderer)
 					.method_3872(
@@ -2239,29 +2239,29 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void handleChunkLoadDistance(ChunkLoadDistanceS2CPacket chunkLoadDistanceS2CPacket) {
+	public void onChunkLoadDistance(ChunkLoadDistanceS2CPacket chunkLoadDistanceS2CPacket) {
 		NetworkThreadUtils.forceMainThread(chunkLoadDistanceS2CPacket, this, this.client);
 		this.chunkLoadDistance = chunkLoadDistanceS2CPacket.getDistance();
 		this.world.method_2935().updateLoadDistance(chunkLoadDistanceS2CPacket.getDistance());
 	}
 
 	@Override
-	public void handleChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket chunkRenderDistanceCenterS2CPacket) {
+	public void onChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket chunkRenderDistanceCenterS2CPacket) {
 		NetworkThreadUtils.forceMainThread(chunkRenderDistanceCenterS2CPacket, this, this.client);
 		this.world.method_2935().setChunkMapCenter(chunkRenderDistanceCenterS2CPacket.getChunkX(), chunkRenderDistanceCenterS2CPacket.getChunkZ());
 	}
 
 	@Override
-	public void method_21707(BlockPlayerActionS2CPacket blockPlayerActionS2CPacket) {
-		NetworkThreadUtils.forceMainThread(blockPlayerActionS2CPacket, this, this.client);
+	public void handlePlayerActionResponse(PlayerActionResponseS2CPacket playerActionResponseS2CPacket) {
+		NetworkThreadUtils.forceMainThread(playerActionResponseS2CPacket, this, this.client);
 		this.client
 			.interactionManager
-			.method_21705(
+			.processPlayerActionResponse(
 				this.world,
-				blockPlayerActionS2CPacket.getBlockPos(),
-				blockPlayerActionS2CPacket.getBlockState(),
-				blockPlayerActionS2CPacket.getAction(),
-				blockPlayerActionS2CPacket.method_21711()
+				playerActionResponseS2CPacket.getBlockPos(),
+				playerActionResponseS2CPacket.getBlockState(),
+				playerActionResponseS2CPacket.getAction(),
+				playerActionResponseS2CPacket.isApproved()
 			);
 	}
 

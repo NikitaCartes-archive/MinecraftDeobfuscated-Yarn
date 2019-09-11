@@ -60,7 +60,7 @@ public enum EnderDragonSpawnState {
 							new BlockPos(spike.getCenterX() - 10, spike.getHeight() - 10, spike.getCenterZ() - 10),
 							new BlockPos(spike.getCenterX() + 10, spike.getHeight() + 10, spike.getCenterZ() + 10)
 						)) {
-							serverWorld.clearBlockState(blockPos2, false);
+							serverWorld.removeBlock(blockPos2, false);
 						}
 
 						serverWorld.createExplosion(

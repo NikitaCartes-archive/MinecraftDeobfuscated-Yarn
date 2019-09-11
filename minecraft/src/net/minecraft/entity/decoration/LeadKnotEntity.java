@@ -94,7 +94,8 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		} else {
 			boolean bl = false;
 			double d = 7.0;
-			List<MobEntity> list = this.world.getEntities(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
+			List<MobEntity> list = this.world
+				.getNonSpectatingEntities(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
 
 			for (MobEntity mobEntity : list) {
 				if (mobEntity.getHoldingEntity() == playerEntity) {
@@ -128,7 +129,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		int j = blockPos.getY();
 		int k = blockPos.getZ();
 
-		for (LeadKnotEntity leadKnotEntity : world.getEntities(
+		for (LeadKnotEntity leadKnotEntity : world.getNonSpectatingEntities(
 			LeadKnotEntity.class, new Box((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)
 		)) {
 			if (leadKnotEntity.getDecorationBlockPos().equals(blockPos)) {

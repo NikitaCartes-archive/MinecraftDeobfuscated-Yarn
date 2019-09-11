@@ -83,7 +83,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (bl2) {
 			this.teleportCooldown--;
 		} else if (!this.world.isClient) {
-			List<Entity> list = this.world.getEntities(Entity.class, new Box(this.getPos()));
+			List<Entity> list = this.world.getNonSpectatingEntities(Entity.class, new Box(this.getPos()));
 			if (!list.isEmpty()) {
 				this.tryTeleportingEntity((Entity)list.get(0));
 			}

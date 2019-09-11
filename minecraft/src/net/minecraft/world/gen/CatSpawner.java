@@ -35,7 +35,7 @@ public class CatSpawner {
 					int i = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 					int j = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 					BlockPos blockPos = new BlockPos(playerEntity).add(i, 0, j);
-					if (!serverWorld.method_22341(
+					if (!serverWorld.isRegionLoaded(
 						blockPos.getX() - 10, blockPos.getY() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getY() + 10, blockPos.getZ() + 10
 					)) {
 						return 0;
@@ -64,7 +64,7 @@ public class CatSpawner {
 		if (serverWorld.getPointOfInterestStorage()
 				.count(PointOfInterestType.HOME.getCompletionCondition(), blockPos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 			> 4L) {
-			List<CatEntity> list = serverWorld.getEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
+			List<CatEntity> list = serverWorld.getNonSpectatingEntities(CatEntity.class, new Box(blockPos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {
 				return this.spawn(blockPos, serverWorld);
 			}
@@ -75,7 +75,7 @@ public class CatSpawner {
 
 	private int spawnInSwampHut(World world, BlockPos blockPos) {
 		int i = 16;
-		List<CatEntity> list = world.getEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
+		List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(blockPos).expand(16.0, 8.0, 16.0));
 		return list.size() < 1 ? this.spawn(blockPos, world) : 0;
 	}
 

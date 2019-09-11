@@ -363,7 +363,7 @@ public class PacketByteBuf extends ByteBuf {
 		this.writeFloat((float)(vec3d.x - (double)blockPos.getX()));
 		this.writeFloat((float)(vec3d.y - (double)blockPos.getY()));
 		this.writeFloat((float)(vec3d.z - (double)blockPos.getZ()));
-		this.writeBoolean(blockHitResult.method_17781());
+		this.writeBoolean(blockHitResult.isInsideBlock());
 	}
 
 	@Override

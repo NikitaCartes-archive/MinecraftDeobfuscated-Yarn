@@ -93,7 +93,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i];
 			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
-				this.config.method_20314(i);
+				this.config.removeLayerBlock(i);
 				flatChunkGeneratorBiome.addFeature(
 					GenerationStep.Feature.TOP_LAYER_MODIFICATION,
 					Biome.configureFeature(Feature.FILL_LAYER, new FillLayerFeatureConfig(i, blockState), Decorator.NOPE, DecoratorConfig.DEFAULT)

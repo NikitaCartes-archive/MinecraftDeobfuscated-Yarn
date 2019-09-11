@@ -9,15 +9,15 @@ public class RenderTickCounter {
 	public float tickDelta;
 	public float lastFrameDuration;
 	private long prevTimeMillis;
-	private final float timeScale;
+	private final float tickTime;
 
 	public RenderTickCounter(float f, long l) {
-		this.timeScale = 1000.0F / f;
+		this.tickTime = 1000.0F / f;
 		this.prevTimeMillis = l;
 	}
 
 	public void beginRenderTick(long l) {
-		this.lastFrameDuration = (float)(l - this.prevTimeMillis) / this.timeScale;
+		this.lastFrameDuration = (float)(l - this.prevTimeMillis) / this.tickTime;
 		this.prevTimeMillis = l;
 		this.tickDelta = this.tickDelta + this.lastFrameDuration;
 		this.ticksThisFrame = (int)this.tickDelta;

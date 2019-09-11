@@ -65,7 +65,7 @@ public class EnderEyeItem extends Item {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.NONE);
 		if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.END_PORTAL_FRAME) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return TypedActionResult.method_22430(itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
 			if (world instanceof ServerWorld) {
@@ -95,11 +95,11 @@ public class EnderEyeItem extends Item {
 					}
 
 					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-					return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+					return TypedActionResult.method_22427(itemStack);
 				}
 			}
 
-			return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+			return TypedActionResult.method_22427(itemStack);
 		}
 	}
 }

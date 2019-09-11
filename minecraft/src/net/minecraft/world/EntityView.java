@@ -23,7 +23,7 @@ public interface EntityView {
 
 	<T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate);
 
-	default <T extends Entity> List<T> method_21729(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+	default <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
 		return this.getEntities(class_, box, predicate);
 	}
 
@@ -42,16 +42,16 @@ public interface EntityView {
 				.noneMatch(entityx -> VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entityx.getBoundingBox()), BooleanBiFunction.AND));
 	}
 
-	default <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box) {
+	default <T extends Entity> List<T> getNonSpectatingEntities(Class<? extends T> class_, Box box) {
 		return this.getEntities(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default <T extends Entity> List<T> method_21728(Class<? extends T> class_, Box box) {
-		return this.method_21729(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
+	default <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> class_, Box box) {
+		return this.getEntitiesIncludingUngeneratedChunks(class_, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default Stream<VoxelShape> method_20743(@Nullable Entity entity, Box box, Set<Entity> set) {
-		if (box.averageDimension() < 1.0E-7) {
+	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> set) {
+		if (box.getAverageSideLength() < 1.0E-7) {
 			return Stream.empty();
 		} else {
 			Box box2 = box.expand(1.0E-7);
@@ -142,17 +142,17 @@ public interface EntityView {
 	}
 
 	@Nullable
-	default <T extends LivingEntity> T method_21726(
+	default <T extends LivingEntity> T getClosestEntity(
 		Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box
 	) {
 		return this.getClosestEntity(this.getEntities(class_, box, null), targetPredicate, livingEntity, d, e, f);
 	}
 
 	@Nullable
-	default <T extends LivingEntity> T method_21727(
+	default <T extends LivingEntity> T getClosestEntityIncludingUngeneratedChunks(
 		Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, Box box
 	) {
-		return this.getClosestEntity(this.method_21729(class_, box, null), targetPredicate, livingEntity, d, e, f);
+		return this.getClosestEntity(this.getEntitiesIncludingUngeneratedChunks(class_, box, null), targetPredicate, livingEntity, d, e, f);
 	}
 
 	@Nullable
@@ -175,7 +175,7 @@ public interface EntityView {
 		return livingEntity2;
 	}
 
-	default List<PlayerEntity> getPlayersInBox(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
+	default List<PlayerEntity> getPlayers(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
 		List<PlayerEntity> list = Lists.<PlayerEntity>newArrayList();
 
 		for (PlayerEntity playerEntity : this.getPlayers()) {

@@ -52,7 +52,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		super.onScheduledTick(blockState, serverWorld, blockPos, random);
-		if (serverWorld.method_22335(blockPos, 0) >= 9) {
+		if (serverWorld.getBaseLightLevel(blockPos, 0) >= 9) {
 			float f = CropBlock.getAvailableMoisture(this, serverWorld, blockPos);
 			if (random.nextInt((int)(25.0F / f) + 1) == 0) {
 				int i = (Integer)blockState.get(AGE);

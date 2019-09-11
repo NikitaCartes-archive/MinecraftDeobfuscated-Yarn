@@ -11,7 +11,8 @@ import org.apache.logging.log4j.Logger;
 
 public class BlockStateFlattening {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Dynamic<?>[] NEW_IDS_TO_STATES = new Dynamic[4095];
+	private static final Dynamic<?>[] NEW_IDS_TO_STATES = new Dynamic[4096];
+	private static final Dynamic<?>[] field_20682 = new Dynamic[256];
 	private static final Object2IntMap<Dynamic<?>> OLD_STATES_TO_NEW_IDS = DataFixUtils.make(
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
@@ -19,14 +20,27 @@ public class BlockStateFlattening {
 		new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 	);
 
-	static void putStates(int i, String string, String... strings) {
-		NEW_IDS_TO_STATES[i] = parseState(string);
+	private static void putStates(int i, String string, String... strings) {
+		Dynamic<?> dynamic = parseState(string);
+		NEW_IDS_TO_STATES[i] = dynamic;
+		int j = i >> 4;
+		if (field_20682[j] == null) {
+			field_20682[j] = dynamic;
+		}
 
 		for (String string2 : strings) {
-			Dynamic<?> dynamic = parseState(string2);
-			String string3 = dynamic.get("Name").asString("");
+			Dynamic<?> dynamic2 = parseState(string2);
+			String string3 = dynamic2.get("Name").asString("");
 			BLOCKS_TO_DEFAULT_IDS.putIfAbsent(string3, i);
-			OLD_STATES_TO_NEW_IDS.put(dynamic, i);
+			OLD_STATES_TO_NEW_IDS.put(dynamic2, i);
+		}
+	}
+
+	private static void method_22426() {
+		for (int i = 0; i < NEW_IDS_TO_STATES.length; i++) {
+			if (NEW_IDS_TO_STATES[i] == null) {
+				NEW_IDS_TO_STATES[i] = field_20682[i >> 4];
+			}
 		}
 	}
 
@@ -70,7 +84,7 @@ public class BlockStateFlattening {
 
 	public static Dynamic<?> lookupState(int i) {
 		Dynamic<?> dynamic = null;
-		if (i > 0 && i < NEW_IDS_TO_STATES.length) {
+		if (i >= 0 && i < NEW_IDS_TO_STATES.length) {
 			dynamic = NEW_IDS_TO_STATES[i];
 		}
 
@@ -9097,5 +9111,6 @@ public class BlockStateFlattening {
 		putStates(4081, "{Name:'minecraft:structure_block',Properties:{mode:'load'}}", "{Name:'minecraft:structure_block',Properties:{mode:'load'}}");
 		putStates(4082, "{Name:'minecraft:structure_block',Properties:{mode:'corner'}}", "{Name:'minecraft:structure_block',Properties:{mode:'corner'}}");
 		putStates(4083, "{Name:'minecraft:structure_block',Properties:{mode:'data'}}", "{Name:'minecraft:structure_block',Properties:{mode:'data'}}");
+		method_22426();
 	}
 }

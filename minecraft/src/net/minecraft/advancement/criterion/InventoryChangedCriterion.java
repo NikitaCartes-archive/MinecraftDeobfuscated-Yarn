@@ -102,7 +102,14 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 
 			for (int i = 0; i < itemConvertibles.length; i++) {
 				itemPredicates[i] = new ItemPredicate(
-					null, itemConvertibles[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY
+					null,
+					itemConvertibles[i].asItem(),
+					NumberRange.IntRange.ANY,
+					NumberRange.IntRange.ANY,
+					EnchantmentPredicate.field_20687,
+					EnchantmentPredicate.field_20687,
+					null,
+					NbtPredicate.ANY
 				);
 			}
 

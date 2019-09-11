@@ -138,7 +138,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 
 	private void applySplashPotion(List<StatusEffectInstance> list, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, box);
+		List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
 		if (!list2.isEmpty()) {
 			for (LivingEntity livingEntity : list2) {
 				if (livingEntity.isAffectedBySplashPotions()) {
@@ -199,7 +199,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 		BlockState blockState = this.world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (block == Blocks.FIRE) {
-			this.world.method_8506(null, blockPos.offset(direction), direction.getOpposite());
+			this.world.extinguishFire(null, blockPos.offset(direction), direction.getOpposite());
 		} else if (block == Blocks.CAMPFIRE && (Boolean)blockState.get(CampfireBlock.LIT)) {
 			this.world.playLevelEvent(null, 1009, blockPos, 0);
 			this.world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));

@@ -34,7 +34,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
@@ -180,7 +179,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void tick() {
-		if (this.world.method_22340(new BlockPos(this.x, 0.0, this.z))) {
+		if (this.world.isChunkLoaded(new BlockPos(this.x, 0.0, this.z))) {
 			super.tick();
 			if (this.hasVehicle()) {
 				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
@@ -255,14 +254,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	@Nullable
 	@Override
-	public ItemEntity dropSelectedItem(boolean bl) {
+	public boolean dropSelectedItem(boolean bl) {
 		PlayerActionC2SPacket.Action action = bl ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
 		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
-		this.inventory
-			.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1);
-		return null;
+		return this.inventory
+				.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1)
+			!= ItemStack.EMPTY;
 	}
 
 	public void sendChatMessage(String string) {
@@ -909,7 +907,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						Vec3d vec3d12 = vec3d6.add(vec3d9);
 						Vec3d vec3d13 = vec3d7.add(vec3d9);
 						Iterator<Box> iterator = this.world
-							.getCollisionShapes(this, box, Collections.emptySet())
+							.getCollisions(this, box, Collections.emptySet())
 							.flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream())
 							.iterator();
 						float t = Float.MIN_VALUE;

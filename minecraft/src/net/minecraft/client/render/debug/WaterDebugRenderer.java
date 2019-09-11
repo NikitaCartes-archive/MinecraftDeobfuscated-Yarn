@@ -61,7 +61,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 		for (BlockPos blockPos2x : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = lv.getFluidState(blockPos2x);
 			if (fluidState.matches(FluidTags.WATER)) {
-				DebugRenderer.method_3714(
+				DebugRenderer.drawFloatingText(
 					String.valueOf(fluidState.getLevel()),
 					(double)blockPos2x.getX() + 0.5,
 					(double)((float)blockPos2x.getY() + fluidState.getHeight(lv, blockPos2x)),

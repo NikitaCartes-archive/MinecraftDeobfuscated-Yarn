@@ -320,7 +320,7 @@ public interface DispenserBehavior {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
 				} else if (blockState.getBlock() instanceof TntBlock) {
 					TntBlock.primeTnt(world, blockPos);
-					world.clearBlockState(blockPos, false);
+					world.removeBlock(blockPos, false);
 				} else {
 					this.success = false;
 				}
@@ -380,7 +380,7 @@ public interface DispenserBehavior {
 					Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 					BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
 					this.success = true;
-					if (world.method_22347(blockPos) && WitherSkullBlock.canDispense(world, blockPos, itemStack)) {
+					if (world.isAir(blockPos) && WitherSkullBlock.canDispense(world, blockPos, itemStack)) {
 						world.setBlockState(
 							blockPos,
 							Blocks.WITHER_SKELETON_SKULL
@@ -409,7 +409,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				CarvedPumpkinBlock carvedPumpkinBlock = (CarvedPumpkinBlock)Blocks.CARVED_PUMPKIN;
 				this.success = true;
-				if (world.method_22347(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
+				if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
 					if (!world.isClient) {
 						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
 					}
@@ -474,7 +474,7 @@ public interface DispenserBehavior {
 					this.success = false;
 					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 
-					for (SheepEntity sheepEntity : world.getEntities(SheepEntity.class, new Box(blockPos))) {
+					for (SheepEntity sheepEntity : world.getNonSpectatingEntities(SheepEntity.class, new Box(blockPos))) {
 						if (sheepEntity.isAlive() && !sheepEntity.isSheared() && !sheepEntity.isBaby()) {
 							sheepEntity.dropItems();
 							if (itemStack.damage(1, world.random, null)) {

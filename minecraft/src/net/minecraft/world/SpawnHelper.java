@@ -265,7 +265,7 @@ public final class SpawnHelper {
 	}
 
 	private static BlockPos getEntitySpawnPos(class_4538 arg, @Nullable EntityType<?> entityType, int i, int j) {
-		BlockPos blockPos = new BlockPos(i, arg.getLightLevel(SpawnRestriction.getHeightMapType(entityType), i, j), j);
+		BlockPos blockPos = new BlockPos(i, arg.getTopY(SpawnRestriction.getHeightMapType(entityType), i, j), j);
 		BlockPos blockPos2 = blockPos.down();
 		return arg.getBlockState(blockPos2).canPlaceAtSide(arg, blockPos2, BlockPlacementEnvironment.LAND) ? blockPos2 : blockPos;
 	}

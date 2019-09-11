@@ -85,7 +85,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private static final ConfiguredFeature<?> OCEAN_RUIN = Biome.configureFeature(
 		Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.1F), Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
-	private static final ConfiguredFeature<?> field_19182 = Biome.configureFeature(
+	private static final ConfiguredFeature<?> PILLAGER_OUTPOST = Biome.configureFeature(
 		Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
 	public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(
@@ -105,7 +105,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(WOODLAND_MANSION, GenerationStep.Feature.SURFACE_STRUCTURES);
 			hashMap.put(NETHER_BRIDGE, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
 			hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
-			hashMap.put(field_19182, GenerationStep.Feature.SURFACE_STRUCTURES);
+			hashMap.put(PILLAGER_OUTPOST, GenerationStep.Feature.SURFACE_STRUCTURES);
 		}
 	);
 	public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(
@@ -120,7 +120,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put("endcity", new ConfiguredFeature[]{END_CITY});
 			hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
 			hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
-			hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
+			hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
 		}
 	);
 	public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(
@@ -138,7 +138,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(END_CITY, FeatureConfig.DEFAULT);
 			hashMap.put(WOODLAND_MANSION, FeatureConfig.DEFAULT);
 			hashMap.put(NETHER_BRIDGE, FeatureConfig.DEFAULT);
-			hashMap.put(field_19182, new PillagerOutpostFeatureConfig(0.004));
+			hashMap.put(PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004));
 		}
 	);
 	private final List<FlatChunkGeneratorLayer> layers = Lists.<FlatChunkGeneratorLayer>newArrayList();
@@ -410,7 +410,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 								for (String string3 : strings3) {
 									String[] strings4 = string3.split("=", 2);
 									if (strings4.length == 2) {
-										flatChunkGeneratorConfig.method_14324(strings2[0], strings4[0], strings4[1]);
+										flatChunkGeneratorConfig.setStructureOption(strings2[0], strings4[0], strings4[1]);
 									}
 								}
 							}
@@ -432,7 +432,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void method_14324(String string, String string2, String string3) {
+	private void setStructureOption(String string, String string2, String string3) {
 		((Map)this.structures.get(string)).put(string2, string3);
 		if ("village".equals(string) && "distance".equals(string2)) {
 			this.villageDistance = MathHelper.parseInt(string3, this.villageDistance, 9);
@@ -488,7 +488,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		return this.layerBlocks;
 	}
 
-	public void method_20314(int i) {
+	public void removeLayerBlock(int i) {
 		this.layerBlocks[i] = null;
 	}
 }

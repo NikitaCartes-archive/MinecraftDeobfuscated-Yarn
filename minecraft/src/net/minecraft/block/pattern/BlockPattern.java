@@ -164,7 +164,7 @@ public class BlockPattern {
 			return MoreObjects.toStringHelper(this).add("up", this.up).add("forwards", this.forwards).add("frontTopLeft", this.frontTopLeft).toString();
 		}
 
-		public BlockPattern.TeleportTarget method_18478(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
+		public BlockPattern.TeleportTarget getTeleportTarget(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
 			Direction direction2 = this.getForwards();
 			Direction direction3 = direction2.rotateYClockwise();
 			double f = (double)(this.getFrontTopLeft().getY() + 1) - d * (double)this.getHeight();

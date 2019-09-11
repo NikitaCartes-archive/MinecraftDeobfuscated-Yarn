@@ -88,7 +88,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected final float[] armorDropChances = new float[4];
 	private boolean pickUpLoot;
 	private boolean persistent;
-	private final Map<PathNodeType, Float> pathNodeTypeWeights = Maps.newEnumMap(PathNodeType.class);
+	private final Map<PathNodeType, Float> pathfindingPenalties = Maps.newEnumMap(PathNodeType.class);
 	private Identifier lootTable;
 	private long lootTableSeed;
 	@Nullable
@@ -96,8 +96,8 @@ public abstract class MobEntity extends LivingEntity {
 	private int holdingEntityId;
 	@Nullable
 	private CompoundTag leashTag;
-	private BlockPos walkTarget = BlockPos.ORIGIN;
-	private float walkTargetRange = -1.0F;
+	private BlockPos positionTarget = BlockPos.ORIGIN;
+	private float positionTargetRange = -1.0F;
 
 	protected MobEntity(EntityType<? extends MobEntity> entityType, World world) {
 		super(entityType, world);
@@ -130,13 +130,13 @@ public abstract class MobEntity extends LivingEntity {
 		return new MobNavigation(this, world);
 	}
 
-	public float getPathNodeTypeWeight(PathNodeType pathNodeType) {
-		Float float_ = (Float)this.pathNodeTypeWeights.get(pathNodeType);
-		return float_ == null ? pathNodeType.getWeight() : float_;
+	public float getPathfindingPenalty(PathNodeType pathNodeType) {
+		Float float_ = (Float)this.pathfindingPenalties.get(pathNodeType);
+		return float_ == null ? pathNodeType.getDefaultPenalty() : float_;
 	}
 
-	public void setPathNodeTypeWeight(PathNodeType pathNodeType, float f) {
-		this.pathNodeTypeWeights.put(pathNodeType, f);
+	public void setPathfindingPenalty(PathNodeType pathNodeType, float f) {
+		this.pathfindingPenalties.put(pathNodeType, f);
 	}
 
 	protected BodyControl createBodyControl() {
@@ -482,7 +482,7 @@ public abstract class MobEntity extends LivingEntity {
 		super.tickMovement();
 		this.world.getProfiler().push("looting");
 		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-			for (ItemEntity itemEntity : this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
+			for (ItemEntity itemEntity : this.world.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
 				if (!itemEntity.removed && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup()) {
 					this.loot(itemEntity);
 				}
@@ -499,7 +499,7 @@ public abstract class MobEntity extends LivingEntity {
 		boolean bl = this.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
 		if (bl && this.canPickupItem(itemStack)) {
 			double d = (double)this.getDropChance(equipmentSlot);
-			if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1F) < d) {
+			if (!itemStack2.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
 				this.dropStack(itemStack2);
 			}
 
@@ -680,7 +680,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean canSpawn(class_4538 arg) {
-		return !arg.method_22345(this.getBoundingBox()) && arg.intersectsEntities(this);
+		return !arg.containsFluid(this.getBoundingBox()) && arg.intersectsEntities(this);
 	}
 
 	public int getLimitPerChunk() {
@@ -747,7 +747,9 @@ public abstract class MobEntity extends LivingEntity {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 			float f = this.getDropChance(equipmentSlot);
 			boolean bl2 = f > 1.0F;
-			if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack) && (bl || bl2) && this.random.nextFloat() - (float)i * 0.01F < f) {
+			if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack) && (bl || bl2) && Math.max(this.random.nextFloat() - (float)i * 0.01F, 0.0F) < f
+				)
+			 {
 				if (!bl2 && itemStack.isDamageable()) {
 					itemStack.setDamage(itemStack.getMaxDamage() - this.random.nextInt(1 + this.random.nextInt(Math.max(itemStack.getMaxDamage() - 3, 1))));
 				}
@@ -978,24 +980,26 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean isInWalkTargetRange(BlockPos blockPos) {
-		return this.walkTargetRange == -1.0F ? true : this.walkTarget.getSquaredDistance(blockPos) < (double)(this.walkTargetRange * this.walkTargetRange);
+		return this.positionTargetRange == -1.0F
+			? true
+			: this.positionTarget.getSquaredDistance(blockPos) < (double)(this.positionTargetRange * this.positionTargetRange);
 	}
 
-	public void setWalkTarget(BlockPos blockPos, int i) {
-		this.walkTarget = blockPos;
-		this.walkTargetRange = (float)i;
+	public void setPositionTarget(BlockPos blockPos, int i) {
+		this.positionTarget = blockPos;
+		this.positionTargetRange = (float)i;
 	}
 
-	public BlockPos getWalkTarget() {
-		return this.walkTarget;
+	public BlockPos getPositionTarget() {
+		return this.positionTarget;
 	}
 
-	public float getWalkTargetRange() {
-		return this.walkTargetRange;
+	public float getPositionTargetRange() {
+		return this.positionTargetRange;
 	}
 
-	public boolean hasWalkTargetRange() {
-		return this.walkTargetRange != -1.0F;
+	public boolean hasPositionTarget() {
+		return this.positionTargetRange != -1.0F;
 	}
 
 	protected void updateLeash() {
@@ -1079,7 +1083,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	private void deserializeLeashTag() {
 		if (this.leashTag != null && this.world instanceof ServerWorld) {
-			if (this.leashTag.hasUuid("UUID")) {
+			if (this.leashTag.containsUuid("UUID")) {
 				UUID uUID = this.leashTag.getUuid("UUID");
 				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
 				if (entity != null) {

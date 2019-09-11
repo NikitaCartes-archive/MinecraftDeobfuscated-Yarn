@@ -105,7 +105,7 @@ public class ClientChunkManager extends ChunkManager {
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
 			LightingProvider lightingProvider = this.getLightingProvider();
-			lightingProvider.suppressLight(new ChunkPos(i, j), true);
+			lightingProvider.setLightEnabled(new ChunkPos(i, j), true);
 
 			for (int m = 0; m < chunkSections.length; m++) {
 				ChunkSection chunkSection = chunkSections[m];
@@ -162,7 +162,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
-		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
+		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionY(), chunkSectionPos.getSectionZ());
 	}
 
 	@Override

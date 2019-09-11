@@ -82,8 +82,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.shapeCache != null ? this.shapeCache.translucent : this.getBlock().isTranslucent(this, blockView, blockPos);
 	}
 
-	public int getLightSubtracted(BlockView blockView, BlockPos blockPos) {
-		return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getLightSubtracted(this, blockView, blockPos);
+	public int getOpacity(BlockView blockView, BlockPos blockPos) {
+		return this.shapeCache != null ? this.shapeCache.lightSubtracted : this.getBlock().getOpacity(this, blockView, blockPos);
 	}
 
 	public VoxelShape getCullShape(BlockView blockView, BlockPos blockPos, Direction direction) {
@@ -403,7 +403,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 			this.opaque = block.isOpaque(blockState);
 			this.fullOpaque = block.isFullOpaque(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 			this.translucent = block.isTranslucent(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-			this.lightSubtracted = block.getLightSubtracted(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+			this.lightSubtracted = block.getOpacity(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 			if (!blockState.isOpaque()) {
 				this.shapes = null;
 			} else {

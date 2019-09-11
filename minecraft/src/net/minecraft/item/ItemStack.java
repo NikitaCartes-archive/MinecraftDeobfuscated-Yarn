@@ -95,6 +95,10 @@ public final class ItemStack {
 	public ItemStack(ItemConvertible itemConvertible, int i) {
 		this.item = itemConvertible == null ? null : itemConvertible.asItem();
 		this.count = i;
+		if (this.item != null && this.item.isDamageable()) {
+			this.setDamage(this.getDamage());
+		}
+
 		this.updateEmptyState();
 	}
 
@@ -181,7 +185,7 @@ public final class ItemStack {
 		compoundTag.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
 		compoundTag.putByte("Count", (byte)this.count);
 		if (this.tag != null) {
-			compoundTag.put("tag", this.tag);
+			compoundTag.put("tag", this.tag.method_10553());
 		}
 
 		return compoundTag;

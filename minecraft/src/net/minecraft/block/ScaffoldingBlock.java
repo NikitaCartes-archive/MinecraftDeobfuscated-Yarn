@@ -110,7 +110,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 					)
 				);
 			} else {
-				serverWorld.method_22352(blockPos, true);
+				serverWorld.breakBlock(blockPos, true);
 			}
 		} else if (blockState != blockState2) {
 			serverWorld.setBlockState(blockPos, blockState2, 3);

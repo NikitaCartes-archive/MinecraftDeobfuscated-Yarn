@@ -53,26 +53,26 @@ public class EntitySelectorReader {
 	public static final BiConsumer<Vec3d, List<? extends Entity>> RANDOM = (vec3d, list) -> Collections.shuffle(list);
 	public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> DEFAULT_SUGGESTION_PROVIDER = (suggestionsBuilder, consumer) -> suggestionsBuilder.buildFuture();
 	private final StringReader reader;
-	private final boolean field_10846;
+	private final boolean atAllowed;
 	private int limit;
-	private boolean includingNonPlayer;
+	private boolean includesNonPlayers;
 	private boolean localWorldOnly;
 	private NumberRange.FloatRange distance = NumberRange.FloatRange.ANY;
 	private NumberRange.IntRange levelRange = NumberRange.IntRange.ANY;
 	@Nullable
-	private Double offsetX;
+	private Double x;
 	@Nullable
-	private Double offsetY;
+	private Double y;
 	@Nullable
-	private Double offsetZ;
+	private Double z;
 	@Nullable
-	private Double boxX;
+	private Double dx;
 	@Nullable
-	private Double boxY;
+	private Double dy;
 	@Nullable
-	private Double boxZ;
-	private FloatRange pitchRange = FloatRange.ANY;
-	private FloatRange yawRange = FloatRange.ANY;
+	private Double dz;
+	private FloatRangeArgument pitchRange = FloatRangeArgument.ANY;
+	private FloatRangeArgument yawRange = FloatRangeArgument.ANY;
 	private Predicate<Entity> predicate = entity -> true;
 	private BiConsumer<Vec3d, List<? extends Entity>> sorter = ARBITRARY;
 	private boolean senderOnly;
@@ -82,20 +82,20 @@ public class EntitySelectorReader {
 	@Nullable
 	private UUID uuid;
 	private BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestionProvider = DEFAULT_SUGGESTION_PROVIDER;
-	private boolean field_10854;
-	private boolean field_10874;
-	private boolean field_10851;
-	private boolean field_10873;
-	private boolean field_10849;
-	private boolean field_10871;
-	private boolean field_10845;
-	private boolean field_10868;
+	private boolean selectsName;
+	private boolean excludesName;
+	private boolean hasLimit;
+	private boolean hasSorter;
+	private boolean selectsGameMode;
+	private boolean excludesGameMode;
+	private boolean selectsTeam;
+	private boolean excludesTeam;
 	@Nullable
 	private EntityType<?> entityType;
-	private boolean field_10865;
-	private boolean field_10841;
-	private boolean field_10864;
-	private boolean checkPermissions;
+	private boolean excludesEntityType;
+	private boolean selectsScores;
+	private boolean selectsAdvancements;
+	private boolean usesAt;
 
 	public EntitySelectorReader(StringReader stringReader) {
 		this(stringReader, true);
@@ -103,12 +103,12 @@ public class EntitySelectorReader {
 
 	public EntitySelectorReader(StringReader stringReader, boolean bl) {
 		this.reader = stringReader;
-		this.field_10846 = bl;
+		this.atAllowed = bl;
 	}
 
 	public EntitySelector build() {
 		Box box;
-		if (this.boxX == null && this.boxY == null && this.boxZ == null) {
+		if (this.dx == null && this.dy == null && this.dz == null) {
 			if (this.distance.getMax() != null) {
 				float f = (Float)this.distance.getMax();
 				box = new Box((double)(-f), (double)(-f), (double)(-f), (double)(f + 1.0F), (double)(f + 1.0F), (double)(f + 1.0F));
@@ -116,21 +116,19 @@ public class EntitySelectorReader {
 				box = null;
 			}
 		} else {
-			box = this.createBox(this.boxX == null ? 0.0 : this.boxX, this.boxY == null ? 0.0 : this.boxY, this.boxZ == null ? 0.0 : this.boxZ);
+			box = this.createBox(this.dx == null ? 0.0 : this.dx, this.dy == null ? 0.0 : this.dy, this.dz == null ? 0.0 : this.dz);
 		}
 
 		Function<Vec3d, Vec3d> function;
-		if (this.offsetX == null && this.offsetY == null && this.offsetZ == null) {
+		if (this.x == null && this.y == null && this.z == null) {
 			function = vec3d -> vec3d;
 		} else {
-			function = vec3d -> new Vec3d(
-					this.offsetX == null ? vec3d.x : this.offsetX, this.offsetY == null ? vec3d.y : this.offsetY, this.offsetZ == null ? vec3d.z : this.offsetZ
-				);
+			function = vec3d -> new Vec3d(this.x == null ? vec3d.x : this.x, this.y == null ? vec3d.y : this.y, this.z == null ? vec3d.z : this.z);
 		}
 
 		return new EntitySelector(
 			this.limit,
-			this.includingNonPlayer,
+			this.includesNonPlayers,
 			this.localWorldOnly,
 			this.predicate,
 			this.distance,
@@ -141,7 +139,7 @@ public class EntitySelectorReader {
 			this.playerName,
 			this.uuid,
 			this.entityType,
-			this.checkPermissions
+			this.usesAt
 		);
 	}
 
@@ -159,11 +157,11 @@ public class EntitySelectorReader {
 	}
 
 	private void buildPredicate() {
-		if (this.pitchRange != FloatRange.ANY) {
+		if (this.pitchRange != FloatRangeArgument.ANY) {
 			this.predicate = this.predicate.and(this.rotationPredicate(this.pitchRange, entity -> (double)entity.pitch));
 		}
 
-		if (this.yawRange != FloatRange.ANY) {
+		if (this.yawRange != FloatRangeArgument.ANY) {
 			this.predicate = this.predicate.and(this.rotationPredicate(this.yawRange, entity -> (double)entity.yaw));
 		}
 
@@ -173,9 +171,9 @@ public class EntitySelectorReader {
 		}
 	}
 
-	private Predicate<Entity> rotationPredicate(FloatRange floatRange, ToDoubleFunction<Entity> toDoubleFunction) {
-		double d = (double)MathHelper.wrapDegrees(floatRange.getMin() == null ? 0.0F : floatRange.getMin());
-		double e = (double)MathHelper.wrapDegrees(floatRange.getMax() == null ? 359.0F : floatRange.getMax());
+	private Predicate<Entity> rotationPredicate(FloatRangeArgument floatRangeArgument, ToDoubleFunction<Entity> toDoubleFunction) {
+		double d = (double)MathHelper.wrapDegrees(floatRangeArgument.getMin() == null ? 0.0F : floatRangeArgument.getMin());
+		double e = (double)MathHelper.wrapDegrees(floatRangeArgument.getMax() == null ? 359.0F : floatRangeArgument.getMax());
 		return entity -> {
 			double f = MathHelper.wrapDegrees(toDoubleFunction.applyAsDouble(entity));
 			return d > e ? f >= d || f <= e : f >= d && f <= e;
@@ -183,7 +181,7 @@ public class EntitySelectorReader {
 	}
 
 	protected void readAtVariable() throws CommandSyntaxException {
-		this.checkPermissions = true;
+		this.usesAt = true;
 		this.suggestionProvider = this::suggestSelectorRest;
 		if (!this.reader.canRead()) {
 			throw MISSING_EXCEPTION.createWithContext(this.reader);
@@ -192,22 +190,22 @@ public class EntitySelectorReader {
 			char c = this.reader.read();
 			if (c == 'p') {
 				this.limit = 1;
-				this.includingNonPlayer = false;
+				this.includesNonPlayers = false;
 				this.sorter = NEAREST;
 				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 'a') {
 				this.limit = Integer.MAX_VALUE;
-				this.includingNonPlayer = false;
+				this.includesNonPlayers = false;
 				this.sorter = ARBITRARY;
 				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 'r') {
 				this.limit = 1;
-				this.includingNonPlayer = false;
+				this.includesNonPlayers = false;
 				this.sorter = RANDOM;
 				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 's') {
 				this.limit = 1;
-				this.includingNonPlayer = true;
+				this.includesNonPlayers = true;
 				this.senderOnly = true;
 			} else {
 				if (c != 'e') {
@@ -216,7 +214,7 @@ public class EntitySelectorReader {
 				}
 
 				this.limit = Integer.MAX_VALUE;
-				this.includingNonPlayer = true;
+				this.includesNonPlayers = true;
 				this.sorter = ARBITRARY;
 				this.predicate = Entity::isAlive;
 			}
@@ -240,14 +238,14 @@ public class EntitySelectorReader {
 
 		try {
 			this.uuid = UUID.fromString(string);
-			this.includingNonPlayer = true;
+			this.includesNonPlayers = true;
 		} catch (IllegalArgumentException var4) {
 			if (string.isEmpty() || string.length() > 16) {
 				this.reader.setCursor(i);
 				throw INVALID_ENTITY_EXCEPTION.createWithContext(this.reader);
 			}
 
-			this.includingNonPlayer = false;
+			this.includesNonPlayers = false;
 			this.playerName = string;
 		}
 
@@ -346,82 +344,82 @@ public class EntitySelectorReader {
 		this.levelRange = intRange;
 	}
 
-	public FloatRange getPitchRange() {
+	public FloatRangeArgument getPitchRange() {
 		return this.pitchRange;
 	}
 
-	public void setPitchRange(FloatRange floatRange) {
-		this.pitchRange = floatRange;
+	public void setPitchRange(FloatRangeArgument floatRangeArgument) {
+		this.pitchRange = floatRangeArgument;
 	}
 
-	public FloatRange getYawRange() {
+	public FloatRangeArgument getYawRange() {
 		return this.yawRange;
 	}
 
-	public void setYawRange(FloatRange floatRange) {
-		this.yawRange = floatRange;
+	public void setYawRange(FloatRangeArgument floatRangeArgument) {
+		this.yawRange = floatRangeArgument;
 	}
 
 	@Nullable
-	public Double getOffsetX() {
-		return this.offsetX;
+	public Double getX() {
+		return this.x;
 	}
 
 	@Nullable
-	public Double getOffsetY() {
-		return this.offsetY;
+	public Double getY() {
+		return this.y;
 	}
 
 	@Nullable
-	public Double getOffsetZ() {
-		return this.offsetZ;
+	public Double getZ() {
+		return this.z;
 	}
 
-	public void setOffsetX(double d) {
-		this.offsetX = d;
+	public void setX(double d) {
+		this.x = d;
 	}
 
-	public void setOffsetY(double d) {
-		this.offsetY = d;
+	public void setY(double d) {
+		this.y = d;
 	}
 
-	public void setOffsetZ(double d) {
-		this.offsetZ = d;
+	public void setZ(double d) {
+		this.z = d;
 	}
 
-	public void setBoxX(double d) {
-		this.boxX = d;
+	public void setDx(double d) {
+		this.dx = d;
 	}
 
-	public void setBoxY(double d) {
-		this.boxY = d;
+	public void setDy(double d) {
+		this.dy = d;
 	}
 
-	public void setBoxZ(double d) {
-		this.boxZ = d;
-	}
-
-	@Nullable
-	public Double getBoxX() {
-		return this.boxX;
+	public void setDz(double d) {
+		this.dz = d;
 	}
 
 	@Nullable
-	public Double getBoxY() {
-		return this.boxY;
+	public Double getDx() {
+		return this.dx;
 	}
 
 	@Nullable
-	public Double getBoxZ() {
-		return this.boxZ;
+	public Double getDy() {
+		return this.dy;
+	}
+
+	@Nullable
+	public Double getDz() {
+		return this.dz;
 	}
 
 	public void setLimit(int i) {
 		this.limit = i;
 	}
 
-	public void setIncludingNonPlayer(boolean bl) {
-		this.includingNonPlayer = bl;
+	public void setIncludesNonPlayers(boolean bl) {
+		this.includesNonPlayers = bl;
 	}
 
 	public void setSorter(BiConsumer<Vec3d, List<? extends Entity>> biConsumer) {
@@ -432,7 +430,7 @@ public class EntitySelectorReader {
 		this.startCursor = this.reader.getCursor();
 		this.suggestionProvider = this::suggestSelector;
 		if (this.reader.canRead() && this.reader.peek() == '@') {
-			if (!this.field_10846) {
+			if (!this.atAllowed) {
 				throw NOT_ALLOWED_EXCEPTION.createWithContext(this.reader);
 			}
 
@@ -456,7 +454,7 @@ public class EntitySelectorReader {
 
 	private CompletableFuture<Suggestions> suggestSelector(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
 		consumer.accept(suggestionsBuilder);
-		if (this.field_10846) {
+		if (this.atAllowed) {
 			suggestSelector(suggestionsBuilder);
 		}
 
@@ -510,95 +508,95 @@ public class EntitySelectorReader {
 		return (CompletableFuture<Suggestions>)this.suggestionProvider.apply(suggestionsBuilder.createOffset(this.reader.getCursor()), consumer);
 	}
 
-	public boolean method_9912() {
-		return this.field_10854;
+	public boolean selectsName() {
+		return this.selectsName;
 	}
 
-	public void method_9899(boolean bl) {
-		this.field_10854 = bl;
+	public void setSelectsName(boolean bl) {
+		this.selectsName = bl;
 	}
 
-	public boolean method_9844() {
-		return this.field_10874;
+	public boolean excludesName() {
+		return this.excludesName;
 	}
 
-	public void method_9913(boolean bl) {
-		this.field_10874 = bl;
+	public void setExcludesName(boolean bl) {
+		this.excludesName = bl;
 	}
 
-	public boolean method_9866() {
-		return this.field_10851;
+	public boolean hasLimit() {
+		return this.hasLimit;
 	}
 
-	public void method_9877(boolean bl) {
-		this.field_10851 = bl;
+	public void setHasLimit(boolean bl) {
+		this.hasLimit = bl;
 	}
 
-	public boolean method_9889() {
-		return this.field_10873;
+	public boolean hasSorter() {
+		return this.hasSorter;
 	}
 
-	public void method_9887(boolean bl) {
-		this.field_10873 = bl;
+	public void setHasSorter(boolean bl) {
+		this.hasSorter = bl;
 	}
 
-	public boolean method_9839() {
-		return this.field_10849;
+	public boolean selectsGameMode() {
+		return this.selectsGameMode;
 	}
 
-	public void method_9890(boolean bl) {
-		this.field_10849 = bl;
+	public void setSelectsGameMode(boolean bl) {
+		this.selectsGameMode = bl;
 	}
 
-	public boolean method_9837() {
-		return this.field_10871;
+	public boolean excludesGameMode() {
+		return this.excludesGameMode;
 	}
 
-	public void method_9857(boolean bl) {
-		this.field_10871 = bl;
+	public void setHasNegatedGameMode(boolean bl) {
+		this.excludesGameMode = bl;
 	}
 
-	public boolean method_9904() {
-		return this.field_10845;
+	public boolean selectsTeam() {
+		return this.selectsTeam;
 	}
 
-	public void method_9865(boolean bl) {
-		this.field_10845 = bl;
+	public void setSelectsTeam(boolean bl) {
+		this.selectsTeam = bl;
 	}
 
-	public void method_9833(boolean bl) {
-		this.field_10868 = bl;
+	public void setExcludesTeam(boolean bl) {
+		this.excludesTeam = bl;
 	}
 
 	public void setEntityType(EntityType<?> entityType) {
 		this.entityType = entityType;
 	}
 
-	public void method_9860() {
-		this.field_10865 = true;
+	public void setExcludesEntityType() {
+		this.excludesEntityType = true;
 	}
 
-	public boolean hasEntityType() {
+	public boolean selectsEntityType() {
 		return this.entityType != null;
 	}
 
-	public boolean method_9910() {
-		return this.field_10865;
+	public boolean excludesEntityType() {
+		return this.excludesEntityType;
 	}
 
-	public boolean method_9843() {
-		return this.field_10841;
+	public boolean selectsScores() {
+		return this.selectsScores;
 	}
 
-	public void method_9848(boolean bl) {
-		this.field_10841 = bl;
+	public void setSelectsScores(boolean bl) {
+		this.selectsScores = bl;
 	}
 
-	public boolean method_9861() {
-		return this.field_10864;
+	public boolean selectsAdvancements() {
+		return this.selectsAdvancements;
 	}
 
-	public void method_9906(boolean bl) {
-		this.field_10864 = bl;
+	public void setSelectsAdvancements(boolean bl) {
+		this.selectsAdvancements = bl;
 	}
 }

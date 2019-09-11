@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
@@ -76,9 +76,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
 	}
 
-	protected void makeSquaredLeafLayer(
-		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
-	) {
+	protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox, Set<BlockPos> set) {
 		int j = i * i;
 
 		for (int k = -i; k <= i + 1; k++) {
@@ -88,16 +86,14 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (m + n < 7 && m * m + n * n <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
 					}
 				}
 			}
 		}
 	}
 
-	protected void makeRoundLeafLayer(
-		ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, MutableIntBoundingBox mutableIntBoundingBox, Set<BlockPos> set
-	) {
+	protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox, Set<BlockPos> set) {
 		int j = i * i;
 
 		for (int k = -i; k <= i; k++) {
@@ -105,7 +101,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				if (k * k + l * l <= j) {
 					BlockPos blockPos2 = blockPos.add(k, 0, l);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
 					}
 				}
 			}

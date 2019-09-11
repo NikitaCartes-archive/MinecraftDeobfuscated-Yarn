@@ -35,7 +35,7 @@ public interface Trader {
 
 	boolean isLevelledTrader();
 
-	SoundEvent method_18010();
+	SoundEvent getYesSound();
 
 	default boolean canRefreshTrades() {
 		return false;

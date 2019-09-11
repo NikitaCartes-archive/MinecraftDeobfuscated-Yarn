@@ -28,10 +28,10 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.IdList;
 import net.minecraft.util.TagHelper;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
@@ -128,11 +128,11 @@ public class Structure {
 
 	public List<Structure.StructureBlockInfo> method_15165(BlockPos blockPos, StructurePlacementData structurePlacementData, Block block, boolean bl) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		MutableIntBoundingBox mutableIntBoundingBox = structurePlacementData.method_15124();
+		BlockBox blockBox = structurePlacementData.method_15124();
 
 		for (Structure.StructureBlockInfo structureBlockInfo : structurePlacementData.method_15121(this.blocks, blockPos)) {
 			BlockPos blockPos2 = bl ? method_15171(structurePlacementData, structureBlockInfo.pos).add(blockPos) : structureBlockInfo.pos;
-			if (mutableIntBoundingBox == null || mutableIntBoundingBox.contains(blockPos2)) {
+			if (blockBox == null || blockBox.contains(blockPos2)) {
 				BlockState blockState = structureBlockInfo.state;
 				if (blockState.getBlock() == block) {
 					list.add(new Structure.StructureBlockInfo(blockPos2, blockState.rotate(structurePlacementData.getRotation()), structureBlockInfo.tag));
@@ -173,7 +173,7 @@ public class Structure {
 				&& this.size.getX() >= 1
 				&& this.size.getY() >= 1
 				&& this.size.getZ() >= 1) {
-				MutableIntBoundingBox mutableIntBoundingBox = structurePlacementData.method_15124();
+				BlockBox blockBox = structurePlacementData.method_15124();
 				List<BlockPos> list2 = Lists.<BlockPos>newArrayListWithCapacity(structurePlacementData.shouldPlaceFluids() ? list.size() : 0);
 				List<Pair<BlockPos, CompoundTag>> list3 = Lists.<Pair<BlockPos, CompoundTag>>newArrayListWithCapacity(list.size());
 				int j = Integer.MAX_VALUE;
@@ -185,7 +185,7 @@ public class Structure {
 
 				for (Structure.StructureBlockInfo structureBlockInfo : process(iWorld, blockPos, structurePlacementData, list)) {
 					BlockPos blockPos2 = structureBlockInfo.pos;
-					if (mutableIntBoundingBox == null || mutableIntBoundingBox.contains(blockPos2)) {
+					if (blockBox == null || blockBox.contains(blockPos2)) {
 						FluidState fluidState = structurePlacementData.shouldPlaceFluids() ? iWorld.getFluidState(blockPos2) : null;
 						BlockState blockState = structureBlockInfo.state.mirror(structurePlacementData.getMirror()).rotate(structurePlacementData.getRotation());
 						if (structureBlockInfo.tag != null) {
@@ -295,7 +295,7 @@ public class Structure {
 
 				if (!structurePlacementData.shouldIgnoreEntities()) {
 					this.method_15179(
-						iWorld, blockPos, structurePlacementData.getMirror(), structurePlacementData.getRotation(), structurePlacementData.getPosition(), mutableIntBoundingBox
+						iWorld, blockPos, structurePlacementData.getMirror(), structurePlacementData.getRotation(), structurePlacementData.getPosition(), blockBox
 					);
 				}
 
@@ -347,16 +347,11 @@ public class Structure {
 	}
 
 	private void method_15179(
-		IWorld iWorld,
-		BlockPos blockPos,
-		BlockMirror blockMirror,
-		BlockRotation blockRotation,
-		BlockPos blockPos2,
-		@Nullable MutableIntBoundingBox mutableIntBoundingBox
+		IWorld iWorld, BlockPos blockPos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos blockPos2, @Nullable BlockBox blockBox
 	) {
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
 			BlockPos blockPos3 = method_15168(structureEntityInfo.blockPos, blockMirror, blockRotation, blockPos2).add(blockPos);
-			if (mutableIntBoundingBox == null || mutableIntBoundingBox.contains(blockPos3)) {
+			if (blockBox == null || blockBox.contains(blockPos3)) {
 				CompoundTag compoundTag = structureEntityInfo.tag;
 				Vec3d vec3d = method_15176(structureEntityInfo.pos, blockMirror, blockRotation, blockPos2);
 				Vec3d vec3d2 = vec3d.add((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
@@ -482,7 +477,7 @@ public class Structure {
 		return blockPos2;
 	}
 
-	public MutableIntBoundingBox calculateBoundingBox(StructurePlacementData structurePlacementData, BlockPos blockPos) {
+	public BlockBox calculateBoundingBox(StructurePlacementData structurePlacementData, BlockPos blockPos) {
 		BlockRotation blockRotation = structurePlacementData.getRotation();
 		BlockPos blockPos2 = structurePlacementData.getPosition();
 		BlockPos blockPos3 = this.method_15166(blockRotation);
@@ -492,35 +487,35 @@ public class Structure {
 		int k = blockPos3.getX() - 1;
 		int l = blockPos3.getY() - 1;
 		int m = blockPos3.getZ() - 1;
-		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(0, 0, 0, 0, 0, 0);
+		BlockBox blockBox = new BlockBox(0, 0, 0, 0, 0, 0);
 		switch (blockRotation) {
 			case COUNTERCLOCKWISE_90:
-				mutableIntBoundingBox = new MutableIntBoundingBox(i - j, 0, i + j - m, i - j + k, l, i + j);
+				blockBox = new BlockBox(i - j, 0, i + j - m, i - j + k, l, i + j);
 				break;
 			case CLOCKWISE_90:
-				mutableIntBoundingBox = new MutableIntBoundingBox(i + j - k, 0, j - i, i + j, l, j - i + m);
+				blockBox = new BlockBox(i + j - k, 0, j - i, i + j, l, j - i + m);
 				break;
 			case CLOCKWISE_180:
-				mutableIntBoundingBox = new MutableIntBoundingBox(i + i - k, 0, j + j - m, i + i, l, j + j);
+				blockBox = new BlockBox(i + i - k, 0, j + j - m, i + i, l, j + j);
 				break;
 			case NONE:
-				mutableIntBoundingBox = new MutableIntBoundingBox(0, 0, 0, k, l, m);
+				blockBox = new BlockBox(0, 0, 0, k, l, m);
 		}
 
 		switch (blockMirror) {
 			case LEFT_RIGHT:
-				this.method_16186(blockRotation, m, k, mutableIntBoundingBox, Direction.NORTH, Direction.SOUTH);
+				this.method_16186(blockRotation, m, k, blockBox, Direction.NORTH, Direction.SOUTH);
 				break;
 			case FRONT_BACK:
-				this.method_16186(blockRotation, k, m, mutableIntBoundingBox, Direction.WEST, Direction.EAST);
+				this.method_16186(blockRotation, k, m, blockBox, Direction.WEST, Direction.EAST);
 			case NONE:
 		}
 
-		mutableIntBoundingBox.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-		return mutableIntBoundingBox;
+		blockBox.offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+		return blockBox;
 	}
 
-	private void method_16186(BlockRotation blockRotation, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, Direction direction, Direction direction2) {
+	private void method_16186(BlockRotation blockRotation, int i, int j, BlockBox blockBox, Direction direction, Direction direction2) {
 		BlockPos blockPos = BlockPos.ORIGIN;
 		if (blockRotation == BlockRotation.CLOCKWISE_90 || blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
 			blockPos = blockPos.offset(blockRotation.rotate(direction), j);
@@ -530,7 +525,7 @@ public class Structure {
 			blockPos = blockPos.offset(direction, i);
 		}
 
-		mutableIntBoundingBox.translate(blockPos.getX(), 0, blockPos.getZ());
+		blockBox.offset(blockPos.getX(), 0, blockPos.getZ());
 	}
 
 	public CompoundTag toTag(CompoundTag compoundTag) {

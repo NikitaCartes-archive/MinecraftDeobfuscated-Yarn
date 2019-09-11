@@ -6,7 +6,6 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -39,7 +38,6 @@ public class FishingRodItem extends Item {
 				itemStack.damage(i, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			}
 
-			playerEntity.swingHand(hand);
 			world.playSound(
 				null,
 				playerEntity.x,
@@ -67,11 +65,10 @@ public class FishingRodItem extends Item {
 				world.spawnEntity(new FishingBobberEntity(playerEntity, world, j, i));
 			}
 
-			playerEntity.swingHand(hand);
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+		return TypedActionResult.method_22427(itemStack);
 	}
 
 	@Override

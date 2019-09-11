@@ -91,7 +91,7 @@ public class FirstPersonRenderer {
 		AbstractClientPlayerEntity abstractClientPlayerEntity = this.client.player;
 		int i = this.client
 			.world
-			.method_22337(
+			.getLightmapIndex(
 				new BlockPos(
 					abstractClientPlayerEntity.x, abstractClientPlayerEntity.y + (double)abstractClientPlayerEntity.getStandingEyeHeight(), abstractClientPlayerEntity.z
 				)

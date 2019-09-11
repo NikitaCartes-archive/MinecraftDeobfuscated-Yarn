@@ -205,7 +205,7 @@ public abstract class NumberRange<T extends Number> {
 		private final Long minSquared;
 		private final Long maxSquared;
 
-		private static NumberRange.IntRange method_9055(StringReader stringReader, @Nullable Integer integer, @Nullable Integer integer2) throws CommandSyntaxException {
+		private static NumberRange.IntRange parse(StringReader stringReader, @Nullable Integer integer, @Nullable Integer integer2) throws CommandSyntaxException {
 			if (integer != null && integer2 != null && integer > integer2) {
 				throw EXCEPTION_SWAPPED.createWithContext(stringReader);
 			} else {
@@ -245,7 +245,7 @@ public abstract class NumberRange<T extends Number> {
 		}
 
 		public static NumberRange.IntRange fromStringReader(StringReader stringReader, Function<Integer, Integer> function) throws CommandSyntaxException {
-			return parse(stringReader, NumberRange.IntRange::method_9055, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, function);
+			return parse(stringReader, NumberRange.IntRange::parse, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, function);
 		}
 	}
 

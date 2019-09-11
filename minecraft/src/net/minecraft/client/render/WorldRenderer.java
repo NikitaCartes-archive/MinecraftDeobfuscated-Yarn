@@ -1774,7 +1774,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void updateEntitiesForSong(World world, BlockPos blockPos, boolean bl) {
-		for (LivingEntity livingEntity : world.getEntities(LivingEntity.class, new Box(blockPos).expand(3.0))) {
+		for (LivingEntity livingEntity : world.getNonSpectatingEntities(LivingEntity.class, new Box(blockPos).expand(3.0))) {
 			livingEntity.setNearbySongPlaying(blockPos, bl);
 		}
 	}

@@ -129,7 +129,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 			if (this.pos != null) {
 				ServerWorld serverWorld = serverCommandSource.getWorld();
 				BlockPos blockPos = this.pos.toAbsoluteBlockPos(serverCommandSource);
-				if (serverWorld.isHeightValidAndBlockLoaded(blockPos)) {
+				if (serverWorld.canSetBlock(blockPos)) {
 					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 					if (blockEntity != null) {
 						return Stream.of(blockEntity.toTag(new CompoundTag()));

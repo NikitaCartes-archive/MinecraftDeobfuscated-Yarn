@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -23,7 +23,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		if (!this.horse.isTame() && this.horse.hasPassengers()) {
-			Vec3d vec3d = PathfindingUtil.findTarget(this.horse, 5, 4);
+			Vec3d vec3d = TargetFinder.findTarget(this.horse, 5, 4);
 			if (vec3d == null) {
 				return false;
 			} else {

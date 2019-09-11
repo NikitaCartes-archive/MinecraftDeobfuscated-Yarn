@@ -32,7 +32,7 @@ public class IceBlock extends TransparentBlock {
 		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
 		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
 			if (world.dimension.doesWaterVaporize()) {
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 				return;
 			}
 
@@ -45,14 +45,14 @@ public class IceBlock extends TransparentBlock {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(serverWorld, blockPos)) {
+		if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getOpacity(serverWorld, blockPos)) {
 			this.melt(blockState, serverWorld, blockPos);
 		}
 	}
 
 	protected void melt(BlockState blockState, World world, BlockPos blockPos) {
 		if (world.dimension.doesWaterVaporize()) {
-			world.clearBlockState(blockPos, false);
+			world.removeBlock(blockPos, false);
 		} else {
 			world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
 			world.updateNeighbor(blockPos, Blocks.WATER, blockPos);

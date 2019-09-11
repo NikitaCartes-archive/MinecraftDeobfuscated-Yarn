@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -89,7 +89,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 		this.field_18371 = walkTarget.getSpeed();
 		if (!this.method_18980(mobEntity, walkTarget)) {
 			Brain<?> brain = mobEntity.getBrain();
-			boolean bl = this.field_18369 != null && this.field_18369.method_21655();
+			boolean bl = this.field_18369 != null && this.field_18369.reachesTarget();
 			if (bl) {
 				brain.setMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, Optional.empty());
 			} else if (!brain.hasMemoryModule(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)) {
@@ -100,7 +100,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = PathfindingUtil.method_6373((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
+			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
 			if (vec3d != null) {
 				this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.field_18369 != null;

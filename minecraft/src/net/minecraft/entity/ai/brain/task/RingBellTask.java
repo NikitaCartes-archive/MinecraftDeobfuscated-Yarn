@@ -10,10 +10,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 
 public class RingBellTask extends Task<LivingEntity> {
 	public RingBellTask() {
@@ -33,12 +30,7 @@ public class RingBellTask extends Task<LivingEntity> {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			if (blockState.getBlock() == Blocks.BELL) {
 				BellBlock bellBlock = (BellBlock)blockState.getBlock();
-
-				for (Direction direction : Direction.Type.HORIZONTAL) {
-					if (bellBlock.ring(serverWorld, blockState, new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false), null, false)) {
-						break;
-					}
-				}
+				bellBlock.ring(serverWorld, blockPos, null);
 			}
 		}
 	}

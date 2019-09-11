@@ -40,8 +40,8 @@ public class ItemUsageContext {
 		return this.hit.getPos();
 	}
 
-	public boolean method_17699() {
-		return this.hit.method_17781();
+	public boolean hitsInsideBlock() {
+		return this.hit.isInsideBlock();
 	}
 
 	public ItemStack getStack() {
@@ -65,8 +65,8 @@ public class ItemUsageContext {
 		return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
 	}
 
-	public boolean isPlayerSneaking() {
-		return this.player != null && this.player.method_21823();
+	public boolean shouldCancelInteraction() {
+		return this.player != null && this.player.shouldCancelInteraction();
 	}
 
 	public float getPlayerYaw() {

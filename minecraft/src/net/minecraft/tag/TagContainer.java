@@ -36,7 +36,7 @@ public class TagContainer<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new Gson();
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
-	private Map<Identifier, Tag<T>> idMap = ImmutableMap.of();
+	private Map<Identifier, Tag<T>> entries = ImmutableMap.of();
 	private final Function<Identifier, Optional<T>> getter;
 	private final String dataType;
 	private final boolean ordered;
@@ -51,23 +51,23 @@ public class TagContainer<T> {
 
 	@Nullable
 	public Tag<T> get(Identifier identifier) {
-		return (Tag<T>)this.idMap.get(identifier);
+		return (Tag<T>)this.entries.get(identifier);
 	}
 
 	public Tag<T> getOrCreate(Identifier identifier) {
-		Tag<T> tag = (Tag<T>)this.idMap.get(identifier);
+		Tag<T> tag = (Tag<T>)this.entries.get(identifier);
 		return tag == null ? new Tag<>(identifier) : tag;
 	}
 
 	public Collection<Identifier> getKeys() {
-		return this.idMap.keySet();
+		return this.entries.keySet();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public Collection<Identifier> getTagsFor(T object) {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 
-		for (Entry<Identifier, Tag<T>> entry : this.idMap.entrySet()) {
+		for (Entry<Identifier, Tag<T>> entry : this.entries.entrySet()) {
 			if (((Tag)entry.getValue()).contains(object)) {
 				list.add(entry.getKey());
 			}
@@ -189,14 +189,14 @@ public class TagContainer<T> {
 		map.forEach((identifierx, builderx) -> {
 			Tag var10000 = (Tag)map2.put(identifierx, builderx.build(identifierx));
 		});
-		this.method_20735(map2);
+		this.setEntries(map2);
 	}
 
-	protected void method_20735(Map<Identifier, Tag<T>> map) {
-		this.idMap = ImmutableMap.copyOf(map);
+	protected void setEntries(Map<Identifier, Tag<T>> map) {
+		this.entries = ImmutableMap.copyOf(map);
 	}
 
 	public Map<Identifier, Tag<T>> getEntries() {
-		return this.idMap;
+		return this.entries;
 	}
 }

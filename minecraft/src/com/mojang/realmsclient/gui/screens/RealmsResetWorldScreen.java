@@ -6,11 +6,11 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.WorldTemplate;
 import com.mojang.realmsclient.dto.WorldTemplatePaginatedList;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsTasks;
 import com.mojang.realmsclient.util.RealmsTextureManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsLabel;
@@ -73,7 +73,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 
 	@Override
 	public void init() {
-		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 40, class_4359.method_21072(14) - 10, 80, 20, this.buttonTitle) {
+		this.buttonsAdd(new RealmsButton(0, this.width() / 2 - 40, RealmsConstants.row(14) - 10, 80, 20, this.buttonTitle) {
 			@Override
 			public void onPress() {
 				Realms.setScreen(RealmsResetWorldScreen.this.lastScreen);
@@ -104,7 +104,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
-				class_4359.method_21072(0) + 10,
+				RealmsConstants.row(0) + 10,
 				getLocalizedString("mco.reset.world.generate"),
 				-1L,
 				"realms:textures/gui/realms/new_world.png",
@@ -119,7 +119,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
-				class_4359.method_21072(0) + 10,
+				RealmsConstants.row(0) + 10,
 				getLocalizedString("mco.reset.world.upload"),
 				-1L,
 				"realms:textures/gui/realms/upload.png",
@@ -135,7 +135,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
-				class_4359.method_21072(0) + 10,
+				RealmsConstants.row(0) + 10,
 				getLocalizedString("mco.reset.world.template"),
 				-1L,
 				"realms:textures/gui/realms/survival_spawn.png",
@@ -154,7 +154,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
-				class_4359.method_21072(6) + 20,
+				RealmsConstants.row(6) + 20,
 				getLocalizedString("mco.reset.world.adventure"),
 				-1L,
 				"realms:textures/gui/realms/adventure.png",
@@ -173,7 +173,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
-				class_4359.method_21072(6) + 20,
+				RealmsConstants.row(6) + 20,
 				getLocalizedString("mco.reset.world.experience"),
 				-1L,
 				"realms:textures/gui/realms/experience.png",
@@ -192,7 +192,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback<WorldTempla
 		this.buttonsAdd(
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
-				class_4359.method_21072(6) + 20,
+				RealmsConstants.row(6) + 20,
 				getLocalizedString("mco.reset.world.inspiration"),
 				-1L,
 				"realms:textures/gui/realms/inspiration.png",

@@ -24,7 +24,7 @@ public class DamageSource {
 	public static final DamageSource CACTUS = new DamageSource("cactus");
 	public static final DamageSource FALL = new DamageSource("fall").setBypassesArmor();
 	public static final DamageSource FLY_INTO_WALL = new DamageSource("flyIntoWall").setBypassesArmor();
-	public static final DamageSource OUT_OF_WORLD = new DamageSource("outOfWorld").setBypassesArmor().setDamageToCreative();
+	public static final DamageSource OUT_OF_WORLD = new DamageSource("outOfWorld").setBypassesArmor().setOutOfWorld();
 	public static final DamageSource GENERIC = new DamageSource("generic").setBypassesArmor();
 	public static final DamageSource MAGIC = new DamageSource("magic").setBypassesArmor().setUsesMagic();
 	public static final DamageSource WITHER = new DamageSource("wither").setBypassesArmor();
@@ -35,7 +35,7 @@ public class DamageSource {
 	public static final DamageSource DRYOUT = new DamageSource("dryout");
 	public static final DamageSource SWEET_BERRY_BUSH = new DamageSource("sweetBerryBush");
 	private boolean bypassesArmor;
-	private boolean damageToCreative;
+	private boolean outOfWorld;
 	private boolean unblockable;
 	private float exhaustion = 0.1F;
 	private boolean fire;
@@ -129,8 +129,8 @@ public class DamageSource {
 		return this.exhaustion;
 	}
 
-	public boolean doesDamageToCreative() {
-		return this.damageToCreative;
+	public boolean isOutOfWorld() {
+		return this.outOfWorld;
 	}
 
 	public boolean isUnblockable() {
@@ -157,8 +157,8 @@ public class DamageSource {
 		return this;
 	}
 
-	protected DamageSource setDamageToCreative() {
-		this.damageToCreative = true;
+	protected DamageSource setOutOfWorld() {
+		this.outOfWorld = true;
 		return this;
 	}
 
@@ -214,7 +214,7 @@ public class DamageSource {
 	}
 
 	@Nullable
-	public Vec3d method_5510() {
+	public Vec3d getPosition() {
 		return null;
 	}
 }

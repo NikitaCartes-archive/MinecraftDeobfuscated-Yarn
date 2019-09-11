@@ -23,12 +23,12 @@ public class SoundExecutor extends ThreadExecutor<Runnable> {
 	}
 
 	@Override
-	protected Runnable prepareRunnable(Runnable runnable) {
+	protected Runnable createTask(Runnable runnable) {
 		return runnable;
 	}
 
 	@Override
-	protected boolean canRun(Runnable runnable) {
+	protected boolean canExecute(Runnable runnable) {
 		return !this.stopped;
 	}
 
@@ -39,12 +39,12 @@ public class SoundExecutor extends ThreadExecutor<Runnable> {
 
 	private void waitForStop() {
 		while (!this.stopped) {
-			this.waitFor(() -> this.stopped);
+			this.executeTasks(() -> this.stopped);
 		}
 	}
 
 	@Override
-	protected void method_20813() {
+	protected void waitForTasks() {
 		LockSupport.park("waiting for tasks");
 	}
 
@@ -58,7 +58,7 @@ public class SoundExecutor extends ThreadExecutor<Runnable> {
 			Thread.currentThread().interrupt();
 		}
 
-		this.clear();
+		this.clearTasks();
 		this.stopped = false;
 		this.thread = this.createThread();
 	}

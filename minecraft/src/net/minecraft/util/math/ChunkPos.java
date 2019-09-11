@@ -7,7 +7,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
 public class ChunkPos {
-	public static final long INVALID = toLong(1875016, 1875016);
+	public static final long MARKER = toLong(1875016, 1875016);
 	public final int x;
 	public final int z;
 

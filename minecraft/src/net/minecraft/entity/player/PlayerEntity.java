@@ -171,7 +171,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.field_6215 = 180.0F;
 	}
 
-	public boolean method_21701(World world, BlockPos blockPos, GameMode gameMode) {
+	public boolean canMine(World world, BlockPos blockPos, GameMode gameMode) {
 		if (!gameMode.shouldLimitWorldModification()) {
 			return false;
 		} else if (gameMode == GameMode.SPECTATOR) {
@@ -281,11 +281,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.updateSize();
 	}
 
-	public boolean method_21823() {
+	public boolean shouldCancelInteraction() {
 		return this.isSneaking();
 	}
 
-	protected boolean method_21824() {
+	protected boolean shouldDismount() {
 		return this.isSneaking();
 	}
 
@@ -466,7 +466,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void tickRiding() {
-		if (!this.world.isClient && this.method_21824() && this.hasVehicle()) {
+		if (!this.world.isClient && this.shouldDismount() && this.hasVehicle()) {
 			this.stopRiding();
 			this.setSneaking(false);
 		} else {
@@ -649,14 +649,14 @@ public abstract class PlayerEntity extends LivingEntity {
 		return SoundEvents.ENTITY_PLAYER_DEATH;
 	}
 
-	@Nullable
-	public ItemEntity dropSelectedItem(boolean bl) {
+	public boolean dropSelectedItem(boolean bl) {
 		return this.dropItem(
-			this.inventory
-				.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1),
-			false,
-			true
-		);
+				this.inventory
+					.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1),
+				false,
+				true
+			)
+			!= null;
 	}
 
 	@Nullable
@@ -825,7 +825,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (damageSource == DamageSource.FALL) {
 			return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
 		} else {
-			return damageSource != DamageSource.ON_FIRE && damageSource != DamageSource.IN_FIRE ? false : !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
+			return damageSource != DamageSource.ON_FIRE && damageSource != DamageSource.IN_FIRE && damageSource != DamageSource.LAVA
+				? false
+				: !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
 		}
 	}
 
@@ -833,7 +835,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (this.abilities.invulnerable && !damageSource.doesDamageToCreative()) {
+		} else if (this.abilities.invulnerable && !damageSource.isOutOfWorld()) {
 			return false;
 		} else {
 			this.despawnCounter = 0;
@@ -1007,7 +1009,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected Vec3d clipSneakingMovement(Vec3d vec3d, MovementType movementType) {
+	protected Vec3d adjustMovementForSneaking(Vec3d vec3d, MovementType movementType) {
 		if ((movementType == MovementType.SELF || movementType == MovementType.PLAYER) && this.onGround && this.method_21825()) {
 			double d = vec3d.x;
 			double e = vec3d.z;
@@ -1141,7 +1143,7 @@ public abstract class PlayerEntity extends LivingEntity {
 						if (bl4) {
 							float l = 1.0F + EnchantmentHelper.getSweepingMultiplier(this) * f;
 
-							for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, entity.getBoundingBox().expand(1.0, 0.25, 1.0))) {
+							for (LivingEntity livingEntity : this.world.getNonSpectatingEntities(LivingEntity.class, entity.getBoundingBox().expand(1.0, 0.25, 1.0))) {
 								if (livingEntity != this
 									&& livingEntity != entity
 									&& !this.isTeammate(livingEntity)

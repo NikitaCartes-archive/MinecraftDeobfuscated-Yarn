@@ -144,7 +144,7 @@ public class ServerChunkManager extends ChunkManager {
 			}
 
 			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getChunkFuture(i, j, chunkStatus, bl);
-			this.mainThreadExecutor.waitFor(completableFuture::isDone);
+			this.mainThreadExecutor.executeTasks(completableFuture::isDone);
 			Chunk chunk = ((Either)completableFuture.join()).map(chunkx -> chunkx, unloaded -> {
 				if (bl) {
 					throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Chunk not there when requested: " + unloaded));
@@ -159,7 +159,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	@Nullable
 	@Override
-	public WorldChunk method_21730(int i, int j) {
+	public WorldChunk getWorldChunk(int i, int j) {
 		if (Thread.currentThread() != this.serverThread) {
 			return null;
 		} else {
@@ -195,7 +195,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	private void initChunkCaches() {
-		Arrays.fill(this.chunkPosCache, ChunkPos.INVALID);
+		Arrays.fill(this.chunkPosCache, ChunkPos.MARKER);
 		Arrays.fill(this.chunkStatusCache, null);
 		Arrays.fill(this.chunkCache, null);
 	}
@@ -206,7 +206,7 @@ public class ServerChunkManager extends ChunkManager {
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture;
 		if (bl2) {
 			completableFuture = this.getChunkFuture(i, j, chunkStatus, bl);
-			this.mainThreadExecutor.waitFor(completableFuture::isDone);
+			this.mainThreadExecutor.executeTasks(completableFuture::isDone);
 		} else {
 			completableFuture = CompletableFuture.supplyAsync(() -> this.getChunkFuture(i, j, chunkStatus, bl), this.mainThreadExecutor)
 				.thenCompose(completableFuturex -> completableFuturex);
@@ -422,7 +422,7 @@ public class ServerChunkManager extends ChunkManager {
 
 	@VisibleForTesting
 	public int method_21694() {
-		return this.mainThreadExecutor.method_21684();
+		return this.mainThreadExecutor.getTaskQueueSize();
 	}
 
 	public ChunkGenerator<?> getChunkGenerator() {
@@ -447,7 +447,7 @@ public class ServerChunkManager extends ChunkManager {
 		this.mainThreadExecutor.execute(() -> {
 			ChunkHolder chunkHolder = this.getChunkHolder(chunkSectionPos.toChunkPos().toLong());
 			if (chunkHolder != null) {
-				chunkHolder.markForLightUpdate(lightType, chunkSectionPos.getChunkY());
+				chunkHolder.markForLightUpdate(lightType, chunkSectionPos.getSectionY());
 			}
 		});
 	}
@@ -514,17 +514,17 @@ public class ServerChunkManager extends ChunkManager {
 		}
 
 		@Override
-		protected Runnable prepareRunnable(Runnable runnable) {
+		protected Runnable createTask(Runnable runnable) {
 			return runnable;
 		}
 
 		@Override
-		protected boolean canRun(Runnable runnable) {
+		protected boolean canExecute(Runnable runnable) {
 			return true;
 		}
 
 		@Override
-		protected boolean shouldRunAsync() {
+		protected boolean shouldExecuteAsync() {
 			return true;
 		}
 

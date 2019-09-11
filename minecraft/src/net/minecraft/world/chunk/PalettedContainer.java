@@ -219,14 +219,14 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 		return this.palette.accepts(object);
 	}
 
-	public void method_21732(PalettedContainer.class_4464<T> arg) {
+	public void count(PalettedContainer.CountConsumer<T> countConsumer) {
 		Int2IntMap int2IntMap = new Int2IntOpenHashMap();
-		this.data.method_21739(i -> int2IntMap.put(i, int2IntMap.get(i) + 1));
-		int2IntMap.int2IntEntrySet().forEach(entry -> arg.accept(this.palette.getByIndex(entry.getIntKey()), entry.getIntValue()));
+		this.data.forEach(i -> int2IntMap.put(i, int2IntMap.get(i) + 1));
+		int2IntMap.int2IntEntrySet().forEach(entry -> countConsumer.accept(this.palette.getByIndex(entry.getIntKey()), entry.getIntValue()));
 	}
 
 	@FunctionalInterface
-	public interface class_4464<T> {
+	public interface CountConsumer<T> {
 		void accept(T object, int i);
 	}
 }

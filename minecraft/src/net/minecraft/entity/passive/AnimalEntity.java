@@ -77,7 +77,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return arg.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : arg.method_22349(blockPos) - 0.5F;
+		return arg.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
 	}
 
 	@Override
@@ -98,11 +98,11 @@ public abstract class AnimalEntity extends PassiveEntity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		this.loveTicks = compoundTag.getInt("InLove");
-		this.lovingPlayer = compoundTag.hasUuid("LoveCause") ? compoundTag.getUuid("LoveCause") : null;
+		this.lovingPlayer = compoundTag.containsUuid("LoveCause") ? compoundTag.getUuid("LoveCause") : null;
 	}
 
-	public static boolean method_20663(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK && iWorld.method_22335(blockPos, 0) > 8;
+	public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK && iWorld.getBaseLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override

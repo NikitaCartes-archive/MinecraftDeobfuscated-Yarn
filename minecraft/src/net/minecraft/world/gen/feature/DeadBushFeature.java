@@ -33,7 +33,7 @@ public class DeadBushFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int i = 0; i < 4; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.method_22347(blockPos2) && blockState2.canPlaceAt(iWorld, blockPos2)) {
+			if (iWorld.isAir(blockPos2) && blockState2.canPlaceAt(iWorld, blockPos2)) {
 				iWorld.setBlockState(blockPos2, blockState2, 2);
 			}
 		}

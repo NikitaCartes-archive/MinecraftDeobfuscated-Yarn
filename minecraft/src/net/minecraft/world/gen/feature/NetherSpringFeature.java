@@ -52,23 +52,23 @@ public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 			}
 
 			int j = 0;
-			if (iWorld.method_22347(blockPos.west())) {
+			if (iWorld.isAir(blockPos.west())) {
 				j++;
 			}
 
-			if (iWorld.method_22347(blockPos.east())) {
+			if (iWorld.isAir(blockPos.east())) {
 				j++;
 			}
 
-			if (iWorld.method_22347(blockPos.north())) {
+			if (iWorld.isAir(blockPos.north())) {
 				j++;
 			}
 
-			if (iWorld.method_22347(blockPos.south())) {
+			if (iWorld.isAir(blockPos.south())) {
 				j++;
 			}
 
-			if (iWorld.method_22347(blockPos.down())) {
+			if (iWorld.isAir(blockPos.down())) {
 				j++;
 			}
 

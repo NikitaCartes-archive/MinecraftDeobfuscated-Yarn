@@ -101,7 +101,7 @@ public class PistonHeadBlock extends FacingBlock {
 			BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 			Block block = world.getBlockState(blockPos2).getBlock();
 			if (block == Blocks.PISTON || block == Blocks.STICKY_PISTON) {
-				world.clearBlockState(blockPos2, false);
+				world.removeBlock(blockPos2, false);
 			}
 		}
 
@@ -117,7 +117,7 @@ public class PistonHeadBlock extends FacingBlock {
 			BlockState blockState3 = world.getBlockState(blockPos);
 			if ((blockState3.getBlock() == Blocks.PISTON || blockState3.getBlock() == Blocks.STICKY_PISTON) && (Boolean)blockState3.get(PistonBlock.EXTENDED)) {
 				dropStacks(blockState3, world, blockPos);
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 			}
 		}
 	}

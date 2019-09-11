@@ -10,11 +10,11 @@ import javax.annotation.Nullable;
 import net.minecraft.class_4543;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
-import net.minecraft.world.BlockViewWithStructures;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.StructureHolder;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -49,7 +49,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 				ChunkPos chunkPos = new ChunkPos(long_);
 				StructureStart structureStart = iWorld.getChunk(chunkPos.x, chunkPos.z).getStructureStart(this.getName());
 				if (structureStart != null && structureStart != StructureStart.DEFAULT) {
-					structureStart.generateStructure(iWorld, chunkGenerator, random, new MutableIntBoundingBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
+					structureStart.generateStructure(iWorld, chunkGenerator, random, new BlockBox(k, l, k + 15, l + 15), new ChunkPos(i, j));
 					bl = true;
 				}
 			}
@@ -101,7 +101,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 						boolean bl3 = n == -l || n == l;
 						if (bl2 || bl3) {
 							ChunkPos chunkPos = this.getStart(chunkGenerator, chunkRandom, j, k, m, n);
-							StructureStart structureStart = world.method_22342(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
+							StructureStart structureStart = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS).getStructureStart(this.getName());
 							if (structureStart != null && structureStart.hasChildren()) {
 								if (bl && structureStart.isInExistingChunk()) {
 									structureStart.incrementReferences();
@@ -131,13 +131,13 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 	private List<StructureStart> getStructureStarts(IWorld iWorld, int i, int j) {
 		List<StructureStart> list = Lists.<StructureStart>newArrayList();
-		Chunk chunk = iWorld.method_22342(i, j, ChunkStatus.STRUCTURE_REFERENCES);
+		Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.STRUCTURE_REFERENCES);
 		LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
 
 		while (longIterator.hasNext()) {
 			long l = longIterator.nextLong();
-			BlockViewWithStructures blockViewWithStructures = iWorld.method_22342(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
-			StructureStart structureStart = blockViewWithStructures.getStructureStart(this.getName());
+			StructureHolder structureHolder = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
+			StructureStart structureStart = structureHolder.getStructureStart(this.getName());
 			if (structureStart != null) {
 				list.add(structureStart);
 			}
@@ -159,6 +159,6 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	public abstract int getRadius();
 
 	public interface StructureStartFactory {
-		StructureStart create(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l);
+		StructureStart create(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l);
 	}
 }

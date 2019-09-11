@@ -33,7 +33,7 @@ public class TntBlock extends Block {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (world.isReceivingRedstonePower(blockPos)) {
 				primeTnt(world, blockPos);
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 			}
 		}
 	}
@@ -42,7 +42,7 @@ public class TntBlock extends Block {
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (world.isReceivingRedstonePower(blockPos)) {
 			primeTnt(world, blockPos);
-			world.clearBlockState(blockPos, false);
+			world.removeBlock(blockPos, false);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class TntBlock extends Block {
 			if (projectileEntity.isOnFire()) {
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				primeTnt(world, blockPos, entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null);
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 			}
 		}
 	}

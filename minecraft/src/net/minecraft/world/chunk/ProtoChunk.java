@@ -156,16 +156,16 @@ public class ProtoChunk implements Chunk {
 				if (this.status.isAtLeast(ChunkStatus.FEATURES)
 					&& blockState != blockState2
 					&& (
-						blockState.getLightSubtracted(this, blockPos) != blockState2.getLightSubtracted(this, blockPos)
+						blockState.getOpacity(this, blockPos) != blockState2.getOpacity(this, blockPos)
 							|| blockState.getLuminance() != blockState2.getLuminance()
 							|| blockState.hasSidedTransparency()
 							|| blockState2.hasSidedTransparency()
 					)) {
 					LightingProvider lightingProvider = this.getLightingProvider();
-					lightingProvider.enqueueLightUpdate(blockPos);
+					lightingProvider.checkBlock(blockPos);
 				}
 
-				EnumSet<Heightmap.Type> enumSet = this.getStatus().isSurfaceGenerated();
+				EnumSet<Heightmap.Type> enumSet = this.getStatus().getHeightmapTypes();
 				EnumSet<Heightmap.Type> enumSet2 = null;
 
 				for (Heightmap.Type type : enumSet) {

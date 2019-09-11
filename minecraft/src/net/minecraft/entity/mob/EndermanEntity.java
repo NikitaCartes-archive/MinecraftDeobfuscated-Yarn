@@ -72,7 +72,7 @@ public class EndermanEntity extends HostileEntity {
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
-		this.setPathNodeTypeWeight(PathNodeType.WATER, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 	}
 
 	@Override
@@ -400,7 +400,7 @@ public class EndermanEntity extends HostileEntity {
 			boolean bl = blockHitResult.getType() != HitResult.Type.MISS && blockHitResult.getBlockPos().equals(blockPos);
 			if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				this.enderman.setCarriedBlock(blockState);
-				world.clearBlockState(blockPos, false);
+				world.removeBlock(blockPos, false);
 			}
 		}
 	}

@@ -90,30 +90,30 @@ public class SpawnEggItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+			return TypedActionResult.method_22430(itemStack);
 		} else {
 			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
 			if (hitResult.getType() != HitResult.Type.BLOCK) {
-				return new TypedActionResult<>(ActionResult.PASS, itemStack);
+				return TypedActionResult.method_22430(itemStack);
 			} else {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
-					return new TypedActionResult<>(ActionResult.PASS, itemStack);
+					return TypedActionResult.method_22430(itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
 					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.SPAWN_EGG, false, false) == null) {
-						return new TypedActionResult<>(ActionResult.PASS, itemStack);
+						return TypedActionResult.method_22430(itemStack);
 					} else {
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.decrement(1);
 						}
 
 						playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-						return new TypedActionResult<>(ActionResult.SUCCESS, itemStack);
+						return TypedActionResult.method_22427(itemStack);
 					}
 				} else {
-					return new TypedActionResult<>(ActionResult.FAIL, itemStack);
+					return TypedActionResult.method_22431(itemStack);
 				}
 			}
 		}

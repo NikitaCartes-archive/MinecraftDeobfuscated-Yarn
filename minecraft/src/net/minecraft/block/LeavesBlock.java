@@ -37,7 +37,7 @@ public class LeavesBlock extends Block {
 	public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!(Boolean)blockState.get(PERSISTENT) && (Integer)blockState.get(DISTANCE) == 7) {
 			dropStacks(blockState, serverWorld, blockPos);
-			serverWorld.clearBlockState(blockPos, false);
+			serverWorld.removeBlock(blockPos, false);
 		}
 	}
 
@@ -47,7 +47,7 @@ public class LeavesBlock extends Block {
 	}
 
 	@Override
-	public int getLightSubtracted(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public int getOpacity(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return 1;
 	}
 

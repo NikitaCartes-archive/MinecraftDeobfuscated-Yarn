@@ -491,7 +491,7 @@ public class PandaEntity extends AnimalEntity {
 			);
 		this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0F, 1.0F);
 
-		for (PandaEntity pandaEntity : this.world.getEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
+		for (PandaEntity pandaEntity : this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
 			if (!pandaEntity.isBaby() && pandaEntity.onGround && !pandaEntity.isInsideWater() && pandaEntity.method_18442()) {
 				pandaEntity.jump();
 			}
@@ -524,19 +524,15 @@ public class PandaEntity extends AnimalEntity {
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
 		this.resetAttributes();
-		if (entityData instanceof PandaEntity.SpawnData) {
-			if (this.random.nextInt(5) == 0) {
-				this.setBreedingAge(-24000);
-			}
-		} else {
-			entityData = new PandaEntity.SpawnData();
+		if (entityData == null) {
+			entityData = new PassiveEntity$1();
+			((PassiveEntity$1)entityData).method_22433(0.2F);
 		}
 
-		return entityData;
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	public void initGenes(PandaEntity pandaEntity, @Nullable PandaEntity pandaEntity2) {
@@ -1089,11 +1085,6 @@ public class PandaEntity extends AnimalEntity {
 		@Override
 		public void start() {
 			this.panda.setSneezing(true);
-		}
-	}
-
-	static class SpawnData implements EntityData {
-		private SpawnData() {
 		}
 	}
 }

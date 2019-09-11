@@ -22,7 +22,7 @@ public class ChaseBoatGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		List<BoatEntity> list = this.mob.world.getEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
+		List<BoatEntity> list = this.mob.world.getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0));
 		boolean bl = false;
 
 		for (BoatEntity boatEntity : list) {
@@ -53,7 +53,7 @@ public class ChaseBoatGoal extends Goal {
 
 	@Override
 	public void start() {
-		for (BoatEntity boatEntity : this.mob.world.getEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
+		for (BoatEntity boatEntity : this.mob.world.getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
 			if (boatEntity.getPrimaryPassenger() != null && boatEntity.getPrimaryPassenger() instanceof LivingEntity) {
 				this.passenger = (LivingEntity)boatEntity.getPrimaryPassenger();
 				break;

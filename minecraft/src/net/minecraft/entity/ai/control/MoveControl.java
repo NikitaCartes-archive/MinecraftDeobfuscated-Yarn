@@ -74,7 +74,7 @@ public class MoveControl {
 			if (entityNavigation != null) {
 				PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
 				if (pathNodeMaker != null
-					&& pathNodeMaker.getPathNodeType(
+					&& pathNodeMaker.getNodeType(
 							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
 						)
 						!= PathNodeType.WALKABLE) {

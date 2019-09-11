@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -46,7 +46,7 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	private void method_20430(MobEntityWithAi mobEntityWithAi, ChunkSectionPos chunkSectionPos) {
 		BlockPos blockPos = chunkSectionPos.getCenterPos();
 		Optional<Vec3d> optional = Optional.ofNullable(
-			PathfindingUtil.method_6373(
+			TargetFinder.findTargetTowards(
 				mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
 			)
 		);
@@ -54,7 +54,7 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	}
 
 	private void method_20429(MobEntityWithAi mobEntityWithAi) {
-		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, this.field_19352, this.field_19353));
+		Optional<Vec3d> optional = Optional.ofNullable(TargetFinder.findGroundTarget(mobEntityWithAi, this.field_19352, this.field_19353));
 		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}
 }

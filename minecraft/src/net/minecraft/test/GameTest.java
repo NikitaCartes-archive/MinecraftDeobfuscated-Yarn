@@ -1,7 +1,11 @@
 package net.minecraft.test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.class_4516;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -16,6 +20,7 @@ public class GameTest {
 	private final Collection<TestListener> listeners = Lists.<TestListener>newArrayList();
 	private int ticksLeft;
 	private Runnable tickAction;
+	private Map<Runnable, Long> field_20691 = Maps.<Runnable, Long>newHashMap();
 	private boolean started = false;
 	private long startTime = -1L;
 	private boolean completed = false;
@@ -32,6 +37,21 @@ public class GameTest {
 
 	public void tick() {
 		if (!this.isCompleted()) {
+			Iterator<Entry<Runnable, Long>> iterator = this.field_20691.entrySet().iterator();
+
+			while (iterator.hasNext()) {
+				Entry<Runnable, Long> entry = (Entry<Runnable, Long>)iterator.next();
+				if ((Long)entry.getValue() <= this.world.getTime()) {
+					try {
+						((Runnable)entry.getKey()).run();
+					} catch (Exception var4) {
+						this.fail(var4);
+					}
+
+					iterator.remove();
+				}
+			}
+
 			this.ticksLeft--;
 			if (this.ticksLeft <= 0) {
 				if (this.tickAction == null) {

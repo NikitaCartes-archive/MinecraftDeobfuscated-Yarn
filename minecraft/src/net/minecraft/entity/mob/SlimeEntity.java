@@ -69,13 +69,19 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.dataTracker.startTracking(SLIME_SIZE, 1);
 	}
 
+	@Override
+	protected void initAttributes() {
+		super.initAttributes();
+		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
+	}
+
 	protected void setSize(int i, boolean bl) {
 		this.dataTracker.set(SLIME_SIZE, i);
 		this.setPosition(this.x, this.y, this.z);
 		this.calculateDimensions();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(i * i));
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)i));
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)i);
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)i);
 		if (bl) {
 			this.setHealth(this.getMaximumHealth());
 		}
@@ -281,7 +287,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 					&& blockPos.getY() < 70
 					&& random.nextFloat() < 0.5F
 					&& random.nextFloat() < iWorld.getMoonSize()
-					&& iWorld.method_22339(blockPos) <= random.nextInt(8)) {
+					&& iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
 					return method_20636(entityType, iWorld, spawnType, blockPos, random);
 				}
 

@@ -8,7 +8,7 @@ public class BlockHitResult extends HitResult {
 	private final Direction side;
 	private final BlockPos blockPos;
 	private final boolean missed;
-	private final boolean field_17591;
+	private final boolean insideBlock;
 
 	public static BlockHitResult createMissed(Vec3d vec3d, Direction direction, BlockPos blockPos) {
 		return new BlockHitResult(true, vec3d, direction, blockPos, false);
@@ -23,11 +23,11 @@ public class BlockHitResult extends HitResult {
 		this.missed = bl;
 		this.side = direction;
 		this.blockPos = blockPos;
-		this.field_17591 = bl2;
+		this.insideBlock = bl2;
 	}
 
 	public BlockHitResult withSide(Direction direction) {
-		return new BlockHitResult(this.missed, this.pos, direction, this.blockPos, this.field_17591);
+		return new BlockHitResult(this.missed, this.pos, direction, this.blockPos, this.insideBlock);
 	}
 
 	public BlockPos getBlockPos() {
@@ -43,7 +43,7 @@ public class BlockHitResult extends HitResult {
 		return this.missed ? HitResult.Type.MISS : HitResult.Type.BLOCK;
 	}
 
-	public boolean method_17781() {
-		return this.field_17591;
+	public boolean isInsideBlock() {
+		return this.insideBlock;
 	}
 }

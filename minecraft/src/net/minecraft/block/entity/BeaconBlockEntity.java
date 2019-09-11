@@ -114,7 +114,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		BeaconBlockEntity.BeamSegment beamSegment = this.field_19178.isEmpty()
 			? null
 			: (BeaconBlockEntity.BeamSegment)this.field_19178.get(this.field_19178.size() - 1);
-		int l = this.world.getLightLevel(Heightmap.Type.WORLD_SURFACE, i, k);
+		int l = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
 
 		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
 			BlockState blockState = this.world.getBlockState(blockPos);
@@ -135,7 +135,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					}
 				}
 			} else {
-				if (beamSegment == null || blockState.getLightSubtracted(this.world, blockPos) >= 15 && block != Blocks.BEDROCK) {
+				if (beamSegment == null || blockState.getOpacity(this.world, blockPos) >= 15 && block != Blocks.BEDROCK) {
 					this.field_19178.clear();
 					this.field_19179 = l;
 					break;
@@ -170,7 +170,9 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 					this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
 
 					for (ServerPlayerEntity serverPlayerEntity : this.world
-						.getEntities(ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
+						.getNonSpectatingEntities(
+							ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0)
+						)) {
 						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
 					}
 				} else if (bl && !bl2) {
@@ -208,9 +210,9 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	@Override
-	public void invalidate() {
+	public void markRemoved() {
 		this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
-		super.invalidate();
+		super.markRemoved();
 	}
 
 	private void applyPlayerEffects() {
@@ -223,7 +225,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 			int j = (9 + this.level * 2) * 20;
 			Box box = new Box(this.pos).expand(d).stretch(0.0, (double)this.world.getHeight(), 0.0);
-			List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
+			List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
 				playerEntity.addStatusEffect(new StatusEffectInstance(this.primary, j, i, true, true));

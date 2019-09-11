@@ -166,10 +166,10 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	private void readTag() {
-		if (this.tag != null && this.tag.hasUuid("OwnerUUID")) {
+		if (this.tag != null && this.tag.containsUuid("OwnerUUID")) {
 			UUID uUID = this.tag.getUuid("OwnerUUID");
 
-			for (LlamaEntity llamaEntity : this.world.getEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
+			for (LlamaEntity llamaEntity : this.world.getNonSpectatingEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
 				if (llamaEntity.getUuid().equals(uUID)) {
 					this.owner = llamaEntity;
 					break;

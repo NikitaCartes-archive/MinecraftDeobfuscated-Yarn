@@ -6,10 +6,10 @@ import com.mojang.realmsclient.dto.Ops;
 import com.mojang.realmsclient.dto.PlayerInfo;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.exception.RealmsServiceException;
+import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.util.RealmsTextureManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4359;
 import net.minecraft.realms.RealmListEntry;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsButton;
@@ -56,7 +56,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		this.column2_x = this.width() / 2 + 12;
 		this.setKeyboardHandlerSendRepeatsToGui(true);
 		this.buttonsAdd(
-			new RealmsButton(1, this.column2_x, class_4359.method_21072(1), this.column_width + 10, 20, getLocalizedString("mco.configure.world.buttons.invite")) {
+			new RealmsButton(1, this.column2_x, RealmsConstants.row(1), this.column_width + 10, 20, getLocalizedString("mco.configure.world.buttons.invite")) {
 				@Override
 				public void onPress() {
 					Realms.setScreen(new RealmsInviteScreen(RealmsPlayerScreen.this.lastScreen, RealmsPlayerScreen.this, RealmsPlayerScreen.this.serverData));
@@ -65,7 +65,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		);
 		this.buttonsAdd(
 			this.removeButton = new RealmsButton(
-				4, this.column2_x, class_4359.method_21072(7), this.column_width + 10, 20, getLocalizedString("mco.configure.world.invites.remove.tooltip")
+				4, this.column2_x, RealmsConstants.row(7), this.column_width + 10, 20, getLocalizedString("mco.configure.world.invites.remove.tooltip")
 			) {
 				@Override
 				public void onPress() {
@@ -75,7 +75,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		);
 		this.buttonsAdd(
 			this.opdeopButton = new RealmsButton(
-				5, this.column2_x, class_4359.method_21072(9), this.column_width + 10, 20, getLocalizedString("mco.configure.world.invites.ops.tooltip")
+				5, this.column2_x, RealmsConstants.row(9), this.column_width + 10, 20, getLocalizedString("mco.configure.world.invites.ops.tooltip")
 			) {
 				@Override
 				public void onPress() {
@@ -88,9 +88,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			}
 		);
 		this.buttonsAdd(
-			new RealmsButton(
-				0, this.column2_x + this.column_width / 2 + 2, class_4359.method_21072(12), this.column_width / 2 + 10 - 2, 20, getLocalizedString("gui.back")
-			) {
+			new RealmsButton(0, this.column2_x + this.column_width / 2 + 2, RealmsConstants.row(12), this.column_width / 2 + 10 - 2, 20, getLocalizedString("gui.back")) {
 				@Override
 				public void onPress() {
 					RealmsPlayerScreen.this.backButtonClicked();
@@ -219,7 +217,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			this.invitedObjectSelectionList.render(i, j, f);
 		}
 
-		int k = class_4359.method_21072(12) + 20;
+		int k = RealmsConstants.row(12) + 20;
 		RenderSystem.disableLighting();
 		RenderSystem.disableFog();
 		Tezzelator tezzelator = Tezzelator.instance;
@@ -238,10 +236,10 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		this.titleLabel.render(this);
 		if (this.serverData != null && this.serverData.players != null) {
 			this.drawString(
-				getLocalizedString("mco.configure.world.invited") + " (" + this.serverData.players.size() + ")", this.column1_x, class_4359.method_21072(0), 10526880
+				getLocalizedString("mco.configure.world.invited") + " (" + this.serverData.players.size() + ")", this.column1_x, RealmsConstants.row(0), 10526880
 			);
 		} else {
-			this.drawString(getLocalizedString("mco.configure.world.invited"), this.column1_x, class_4359.method_21072(0), 10526880);
+			this.drawString(getLocalizedString("mco.configure.world.invited"), this.column1_x, RealmsConstants.row(0), 10526880);
 		}
 
 		super.render(i, j, f);
@@ -263,7 +261,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	}
 
 	private void drawRemoveIcon(int i, int j, int k, int l) {
-		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < class_4359.method_21072(12) + 20 && l > class_4359.method_21072(1);
+		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < RealmsConstants.row(12) + 20 && l > RealmsConstants.row(1);
 		bind("realms:textures/gui/realms/cross_player_icon.png");
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.pushMatrix();
@@ -275,7 +273,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	}
 
 	private void drawOpped(int i, int j, int k, int l) {
-		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < class_4359.method_21072(12) + 20 && l > class_4359.method_21072(1);
+		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < RealmsConstants.row(12) + 20 && l > RealmsConstants.row(1);
 		bind("realms:textures/gui/realms/op_icon.png");
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.pushMatrix();
@@ -287,7 +285,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	}
 
 	private void drawNormal(int i, int j, int k, int l) {
-		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < class_4359.method_21072(12) + 20 && l > class_4359.method_21072(1);
+		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < RealmsConstants.row(12) + 20 && l > RealmsConstants.row(1);
 		bind("realms:textures/gui/realms/user_icon.png");
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.pushMatrix();
@@ -301,7 +299,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class InvitedObjectSelectionList extends RealmsObjectSelectionList {
 		public InvitedObjectSelectionList() {
-			super(RealmsPlayerScreen.this.column_width + 10, class_4359.method_21072(12) + 20, class_4359.method_21072(1), class_4359.method_21072(12) + 20, 13);
+			super(RealmsPlayerScreen.this.column_width + 10, RealmsConstants.row(12) + 20, RealmsConstants.row(1), RealmsConstants.row(12) + 20, 13);
 		}
 
 		public void addEntry(PlayerInfo playerInfo) {
@@ -420,7 +418,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 			RealmsPlayerScreen.this.drawRemoveIcon(RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, j + 2, k, l);
 			RealmsPlayerScreen.this.drawString(
-				RealmsScreen.getLocalizedString("mco.configure.world.activityfeed.disabled"), RealmsPlayerScreen.this.column2_x, class_4359.method_21072(5), 10526880
+				RealmsScreen.getLocalizedString("mco.configure.world.activityfeed.disabled"), RealmsPlayerScreen.this.column2_x, RealmsConstants.row(5), 10526880
 			);
 			RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);

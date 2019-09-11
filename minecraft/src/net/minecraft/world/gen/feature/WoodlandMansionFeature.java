@@ -12,9 +12,9 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -76,8 +76,8 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
-			super(structureFeature, i, j, mutableIntBoundingBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override
@@ -111,14 +111,14 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		}
 
 		@Override
-		public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			super.generateStructure(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
+		public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+			super.generateStructure(iWorld, chunkGenerator, random, blockBox, chunkPos);
 			int i = this.boundingBox.minY;
 
-			for (int j = mutableIntBoundingBox.minX; j <= mutableIntBoundingBox.maxX; j++) {
-				for (int k = mutableIntBoundingBox.minZ; k <= mutableIntBoundingBox.maxZ; k++) {
+			for (int j = blockBox.minX; j <= blockBox.maxX; j++) {
+				for (int k = blockBox.minZ; k <= blockBox.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(j, i, k);
-					if (!iWorld.method_22347(blockPos) && this.boundingBox.contains(blockPos)) {
+					if (!iWorld.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;
 
 						for (StructurePiece structurePiece : this.children) {
@@ -131,7 +131,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 						if (bl) {
 							for (int l = i - 1; l > 1; l--) {
 								BlockPos blockPos2 = new BlockPos(j, l, k);
-								if (!iWorld.method_22347(blockPos2) && !iWorld.getBlockState(blockPos2).getMaterial().isLiquid()) {
+								if (!iWorld.isAir(blockPos2) && !iWorld.getBlockState(blockPos2).getMaterial().isLiquid()) {
 									break;
 								}
 

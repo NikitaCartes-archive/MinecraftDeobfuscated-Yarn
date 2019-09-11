@@ -118,7 +118,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			for (int j = -1; j <= 1; j++) {
 				for (int k = -1; k <= 1; k++) {
 					BlockPos blockPos = this.pos.add(i, j, k);
-					if (!this.world.method_22351(blockPos)) {
+					if (!this.world.isWater(blockPos)) {
 						return false;
 					}
 				}
@@ -158,7 +158,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		Box box = new Box((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 			.expand((double)j)
 			.stretch(0.0, (double)this.world.getHeight(), 0.0);
-		List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, box);
+		List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
 				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {

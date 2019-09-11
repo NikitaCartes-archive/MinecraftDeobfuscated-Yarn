@@ -58,7 +58,7 @@ public class CuboidBlockIterator {
 		return this.z;
 	}
 
-	public int method_20789() {
+	public int getEdgeCoordinatesCount() {
 		int i = 0;
 		if (this.x == this.startX || this.x == this.endX) {
 			i++;

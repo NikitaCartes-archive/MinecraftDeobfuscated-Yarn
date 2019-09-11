@@ -55,7 +55,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.loot.LootTables;
 
 public class SheepEntity extends AnimalEntity {
-	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
+	public static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final Map<DyeColor, ItemConvertible> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
 		enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
 		enumMap.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
@@ -342,9 +342,8 @@ public class SheepEntity extends AnimalEntity {
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.setColor(generateDefaultColor(iWorld.getRandom()));
-		return entityData;
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	private DyeColor getChildColor(AnimalEntity animalEntity, AnimalEntity animalEntity2) {

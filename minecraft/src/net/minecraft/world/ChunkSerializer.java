@@ -81,7 +81,7 @@ public class ChunkSerializer {
 		ChunkManager chunkManager = serverWorld.method_14178();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
 		if (bl) {
-			lightingProvider.method_20601(chunkPos, true);
+			lightingProvider.setRetainData(chunkPos, true);
 		}
 
 		for (int j = 0; j < listTag.size(); j++) {
@@ -153,7 +153,7 @@ public class ChunkSerializer {
 		CompoundTag compoundTag4 = compoundTag2.getCompound("Heightmaps");
 		EnumSet<Heightmap.Type> enumSet = EnumSet.noneOf(Heightmap.Type.class);
 
-		for (Heightmap.Type type : chunk.getStatus().isSurfaceGenerated()) {
+		for (Heightmap.Type type : chunk.getStatus().getHeightmapTypes()) {
 			String string = type.getName();
 			if (compoundTag4.containsKey(string, 12)) {
 				chunk.setHeightmap(type, compoundTag4.getLongArray(string));
@@ -228,7 +228,7 @@ public class ChunkSerializer {
 		compoundTag2.putInt("zPos", chunkPos.z);
 		compoundTag2.putLong("LastUpdate", serverWorld.getTime());
 		compoundTag2.putLong("InhabitedTime", chunk.getInhabitedTime());
-		compoundTag2.putString("Status", chunk.getStatus().getName());
+		compoundTag2.putString("Status", chunk.getStatus().getId());
 		UpgradeData upgradeData = chunk.getUpgradeData();
 		if (!upgradeData.method_12349()) {
 			compoundTag2.put("UpgradeData", upgradeData.toTag());
@@ -245,8 +245,8 @@ public class ChunkSerializer {
 				.filter(chunkSectionx -> chunkSectionx != null && chunkSectionx.getYOffset() >> 4 == j)
 				.findFirst()
 				.orElse(WorldChunk.EMPTY_SECTION);
-			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
-			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getChunkLightArray(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray = lightingProvider.get(LightType.BLOCK).getLightArray(ChunkSectionPos.from(chunkPos, j));
+			ChunkNibbleArray chunkNibbleArray2 = lightingProvider.get(LightType.SKY).getLightArray(ChunkSectionPos.from(chunkPos, j));
 			if (chunkSection != WorldChunk.EMPTY_SECTION || chunkNibbleArray != null || chunkNibbleArray2 != null) {
 				CompoundTag compoundTag3 = new CompoundTag();
 				compoundTag3.putByte("Y", (byte)(j & 0xFF));
@@ -336,7 +336,7 @@ public class ChunkSerializer {
 		CompoundTag compoundTag3x = new CompoundTag();
 
 		for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
-			if (chunk.getStatus().isSurfaceGenerated().contains(entry.getKey())) {
+			if (chunk.getStatus().getHeightmapTypes().contains(entry.getKey())) {
 				compoundTag3x.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
 			}
 		}

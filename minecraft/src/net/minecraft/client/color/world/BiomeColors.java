@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.biome.Biome;
 
 @Environment(EnvType.CLIENT)
@@ -15,13 +15,13 @@ public class BiomeColors {
 	private static final BiomeColors.Provider WATER_COLOR = (biome, blockPos) -> biome.getWaterColor();
 	private static final BiomeColors.Provider WATER_FOG_COLOR = (biome, blockPos) -> biome.getWaterFogColor();
 
-	private static int getColor(ExtendedBlockView extendedBlockView, BlockPos blockPos, BiomeColors.Provider provider) {
+	private static int getColor(BlockRenderView blockRenderView, BlockPos blockPos, BiomeColors.Provider provider) {
 		int i = 0;
 		int j = 0;
 		int k = 0;
 		int l = MinecraftClient.getInstance().options.biomeBlendRadius;
 		if (l == 0) {
-			return provider.getColor(extendedBlockView.getBiome(blockPos), blockPos);
+			return provider.getColor(blockRenderView.getBiome(blockPos), blockPos);
 		} else {
 			int m = (l * 2 + 1) * (l * 2 + 1);
 			CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(
@@ -31,7 +31,7 @@ public class BiomeColors {
 
 			while (cuboidBlockIterator.step()) {
 				mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
-				int n = provider.getColor(extendedBlockView.getBiome(mutable), mutable);
+				int n = provider.getColor(blockRenderView.getBiome(mutable), mutable);
 				i += (n & 0xFF0000) >> 16;
 				j += (n & 0xFF00) >> 8;
 				k += n & 0xFF;
@@ -41,16 +41,16 @@ public class BiomeColors {
 		}
 	}
 
-	public static int getGrassColor(ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-		return getColor(extendedBlockView, blockPos, GRASS_COLOR);
+	public static int getGrassColor(BlockRenderView blockRenderView, BlockPos blockPos) {
+		return getColor(blockRenderView, blockPos, GRASS_COLOR);
 	}
 
-	public static int getFoliageColor(ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-		return getColor(extendedBlockView, blockPos, FOLIAGE_COLOR);
+	public static int getFoliageColor(BlockRenderView blockRenderView, BlockPos blockPos) {
+		return getColor(blockRenderView, blockPos, FOLIAGE_COLOR);
 	}
 
-	public static int getWaterColor(ExtendedBlockView extendedBlockView, BlockPos blockPos) {
-		return getColor(extendedBlockView, blockPos, WATER_COLOR);
+	public static int getWaterColor(BlockRenderView blockRenderView, BlockPos blockPos) {
+		return getColor(blockRenderView, blockPos, WATER_COLOR);
 	}
 
 	@Environment(EnvType.CLIENT)

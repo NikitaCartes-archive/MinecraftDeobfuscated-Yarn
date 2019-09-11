@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -515,7 +516,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (this.items != null) {
 			for (int i = 0; i < this.items.getInvSize(); i++) {
 				ItemStack itemStack = this.items.getInvStack(i);
-				if (!itemStack.isEmpty()) {
+				if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
 					this.dropStack(itemStack);
 				}
 			}
@@ -555,7 +556,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	protected void walkToParent() {
 		if (this.isBred() && this.isBaby() && !this.isEatingGrass()) {
 			LivingEntity livingEntity = this.world
-				.method_21726(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0));
+				.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0));
 			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
 				this.navigation.findPathTo(livingEntity, 0);
 			}
@@ -1011,11 +1012,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		if (this.random.nextInt(5) == 0) {
-			this.setBreedingAge(-24000);
+		if (entityData == null) {
+			entityData = new PassiveEntity$1();
+			((PassiveEntity$1)entityData).method_22433(0.2F);
 		}
 
-		return entityData;
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 }

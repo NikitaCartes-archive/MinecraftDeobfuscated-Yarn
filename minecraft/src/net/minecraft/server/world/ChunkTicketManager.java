@@ -26,7 +26,7 @@ import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Actor;
-import net.minecraft.util.ChunkPosLevelPropagator;
+import net.minecraft.util.ChunkPosDistanceLevelPropagator;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -66,7 +66,7 @@ public abstract class ChunkTicketManager {
 		while (objectIterator.hasNext()) {
 			Entry<ObjectSortedSet<ChunkTicket<?>>> entry = (Entry<ObjectSortedSet<ChunkTicket<?>>>)objectIterator.next();
 			if (((ObjectSortedSet)entry.getValue()).removeIf(chunkTicket -> chunkTicket.method_20627(this.location))) {
-				this.distanceFromTicketTracker.update(entry.getLongKey(), this.getLevel((ObjectSortedSet<ChunkTicket<?>>)entry.getValue()), false);
+				this.distanceFromTicketTracker.updateLevel(entry.getLongKey(), this.getLevel((ObjectSortedSet<ChunkTicket<?>>)entry.getValue()), false);
 			}
 
 			if (((ObjectSortedSet)entry.getValue()).isEmpty()) {
@@ -141,7 +141,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		if (chunkTicket.getLevel() < i) {
-			this.distanceFromTicketTracker.update(l, chunkTicket.getLevel(), true);
+			this.distanceFromTicketTracker.updateLevel(l, chunkTicket.getLevel(), true);
 		}
 	}
 
@@ -154,7 +154,7 @@ public abstract class ChunkTicketManager {
 			this.ticketsByPosition.remove(l);
 		}
 
-		this.distanceFromTicketTracker.update(l, this.getLevel(objectSortedSet), false);
+		this.distanceFromTicketTracker.updateLevel(l, this.getLevel(objectSortedSet), false);
 	}
 
 	public <T> void addTicketWithLevel(ChunkTicketType<T> chunkTicketType, ChunkPos chunkPos, int i, T object) {
@@ -191,8 +191,8 @@ public abstract class ChunkTicketManager {
 	public void handleChunkEnter(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
 		long l = chunkSectionPos.toChunkPos().toLong();
 		this.playersByChunkPos.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
-		this.distanceFromNearestPlayerTracker.update(l, 0, true);
-		this.nearbyChunkTicketUpdater.update(l, 0, true);
+		this.distanceFromNearestPlayerTracker.updateLevel(l, 0, true);
+		this.nearbyChunkTicketUpdater.updateLevel(l, 0, true);
 	}
 
 	public void handleChunkLeave(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
@@ -201,8 +201,8 @@ public abstract class ChunkTicketManager {
 		objectSet.remove(serverPlayerEntity);
 		if (objectSet.isEmpty()) {
 			this.playersByChunkPos.remove(l);
-			this.distanceFromNearestPlayerTracker.update(l, Integer.MAX_VALUE, false);
-			this.nearbyChunkTicketUpdater.update(l, Integer.MAX_VALUE, false);
+			this.distanceFromNearestPlayerTracker.updateLevel(l, Integer.MAX_VALUE, false);
+			this.nearbyChunkTicketUpdater.updateLevel(l, Integer.MAX_VALUE, false);
 		}
 	}
 
@@ -236,7 +236,7 @@ public abstract class ChunkTicketManager {
 		return this.levelUpdateListener.method_21680();
 	}
 
-	class DistanceFromNearestPlayerTracker extends ChunkPosLevelPropagator {
+	class DistanceFromNearestPlayerTracker extends ChunkPosDistanceLevelPropagator {
 		protected final Long2ByteMap distanceFromNearestPlayer = new Long2ByteOpenHashMap();
 		protected final int maxDistance;
 
@@ -277,7 +277,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		public void updateLevels() {
-			this.updateAllRecursively(Integer.MAX_VALUE);
+			this.applyPendingUpdates(Integer.MAX_VALUE);
 		}
 	}
 
@@ -365,7 +365,7 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	class class_4077 extends ChunkPosLevelPropagator {
+	class class_4077 extends ChunkPosDistanceLevelPropagator {
 		public class_4077() {
 			super(ThreadedAnvilChunkStorage.MAX_LEVEL + 2, 16, 256);
 		}
@@ -406,7 +406,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		public int method_18746(int i) {
-			return this.updateAllRecursively(i);
+			return this.applyPendingUpdates(i);
 		}
 	}
 }

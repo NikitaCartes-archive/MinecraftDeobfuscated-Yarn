@@ -8,9 +8,9 @@ import net.minecraft.util.math.BlockPos;
 public interface ModifiableWorld {
 	boolean setBlockState(BlockPos blockPos, BlockState blockState, int i);
 
-	boolean clearBlockState(BlockPos blockPos, boolean bl);
+	boolean removeBlock(BlockPos blockPos, boolean bl);
 
-	default boolean method_22352(BlockPos blockPos, boolean bl) {
+	default boolean breakBlock(BlockPos blockPos, boolean bl) {
 		return this.breakBlock(blockPos, bl, null);
 	}
 

@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class SpruceTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
@@ -19,9 +19,7 @@ public class SpruceTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public boolean generate(
-		Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, MutableIntBoundingBox mutableIntBoundingBox
-	) {
+	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
 		int i = random.nextInt(4) + 6;
 		int j = 1 + random.nextInt(2);
 		int k = i - j;
@@ -71,7 +69,7 @@ public class SpruceTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig>
 							if (Math.abs(s) != m || Math.abs(u) != m || m <= 0) {
 								BlockPos blockPos2 = new BlockPos(r, px, t);
 								if (isAirOrLeaves(modifiableTestableWorld, blockPos2) || isReplaceablePlant(modifiableTestableWorld, blockPos2)) {
-									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, mutableIntBoundingBox);
+									this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, blockBox);
 								}
 							}
 						}
@@ -92,7 +90,7 @@ public class SpruceTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig>
 
 				for (int px = 0; px < i - o; px++) {
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(px))) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos.up(px), LOG, mutableIntBoundingBox);
+						this.setBlockState(set, modifiableTestableWorld, blockPos.up(px), LOG, blockBox);
 					}
 				}
 

@@ -14,9 +14,9 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.loot.LootTables;
 
@@ -326,10 +326,10 @@ public class EndCityGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
+		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
 			if (string.startsWith("Chest")) {
 				BlockPos blockPos2 = blockPos.down();
-				if (mutableIntBoundingBox.contains(blockPos2)) {
+				if (blockBox.contains(blockPos2)) {
 					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.END_CITY_TREASURE_CHEST);
 				}
 			} else if (string.startsWith("Sentry")) {

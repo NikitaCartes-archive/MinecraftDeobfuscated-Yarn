@@ -852,7 +852,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	public void summonGolem(long l, int i) {
 		if (this.canSummonGolem(l)) {
 			Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
-			List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, box);
+			List<VillagerEntity> list = this.world.getNonSpectatingEntities(VillagerEntity.class, box);
 			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream()
 				.filter(villagerEntity -> villagerEntity.canSummonGolem(l))
 				.limit(5L)

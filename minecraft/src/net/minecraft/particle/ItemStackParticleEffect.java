@@ -38,7 +38,7 @@ public class ItemStackParticleEffect implements ParticleEffect {
 
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getItem(), this.stack.getTag()).method_9782();
+		return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getItem(), this.stack.getTag()).asString();
 	}
 
 	@Override

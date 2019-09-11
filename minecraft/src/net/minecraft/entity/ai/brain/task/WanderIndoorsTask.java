@@ -32,7 +32,7 @@ public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 		Collections.shuffle(list);
 		Optional<BlockPos> optional = list.stream()
 			.filter(blockPosx -> !serverWorld.isSkyVisible(blockPosx))
-			.filter(blockPosx -> serverWorld.doesBlockHaveSolidTopSurface(blockPosx, mobEntityWithAi))
+			.filter(blockPosx -> serverWorld.isTopSolid(blockPosx, mobEntityWithAi))
 			.filter(blockPosx -> serverWorld.doesNotCollide(mobEntityWithAi))
 			.findFirst();
 		optional.ifPresent(blockPosx -> mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPosx, this.speed, 0)));

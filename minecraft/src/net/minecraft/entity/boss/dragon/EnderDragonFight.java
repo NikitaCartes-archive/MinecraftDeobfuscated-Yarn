@@ -84,7 +84,7 @@ public class EnderDragonFight {
 	public EnderDragonFight(ServerWorld serverWorld, CompoundTag compoundTag) {
 		this.world = serverWorld;
 		if (compoundTag.containsKey("DragonKilled", 99)) {
-			if (compoundTag.hasUuid("DragonUUID")) {
+			if (compoundTag.containsUuid("DragonUUID")) {
 				this.dragonUuid = compoundTag.getUuid("DragonUUID");
 			}
 
@@ -341,7 +341,7 @@ public class EnderDragonFight {
 		this.endCrystalsAlive = 0;
 
 		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-			this.endCrystalsAlive = this.endCrystalsAlive + this.world.getEntities(EnderCrystalEntity.class, spike.getBoundingBox()).size();
+			this.endCrystalsAlive = this.endCrystalsAlive + this.world.getNonSpectatingEntities(EnderCrystalEntity.class, spike.getBoundingBox()).size();
 		}
 
 		LOGGER.debug("Found {} end crystals still alive", this.endCrystalsAlive);
@@ -466,7 +466,7 @@ public class EnderDragonFight {
 			BlockPos blockPos2 = blockPos.up(1);
 
 			for (Direction direction : Direction.Type.HORIZONTAL) {
-				List<EnderCrystalEntity> list2 = this.world.getEntities(EnderCrystalEntity.class, new Box(blockPos2.offset(direction, 2)));
+				List<EnderCrystalEntity> list2 = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, new Box(blockPos2.offset(direction, 2)));
 				if (list2.isEmpty()) {
 					return;
 				}
@@ -503,7 +503,7 @@ public class EnderDragonFight {
 
 	public void resetEndCrystals() {
 		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-			for (EnderCrystalEntity enderCrystalEntity : this.world.getEntities(EnderCrystalEntity.class, spike.getBoundingBox())) {
+			for (EnderCrystalEntity enderCrystalEntity : this.world.getNonSpectatingEntities(EnderCrystalEntity.class, spike.getBoundingBox())) {
 				enderCrystalEntity.setInvulnerable(false);
 				enderCrystalEntity.setBeamTarget(null);
 			}

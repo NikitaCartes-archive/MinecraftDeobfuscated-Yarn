@@ -40,8 +40,8 @@ public class ArmorStandItem extends Item {
 				} else {
 					ItemStack itemStack = itemUsageContext.getStack();
 					if (!world.isClient) {
-						world.clearBlockState(blockPos, false);
-						world.clearBlockState(blockPos2, false);
+						world.removeBlock(blockPos, false);
+						world.removeBlock(blockPos2, false);
 						ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, d + 0.5, e, f + 0.5);
 						float g = (float)MathHelper.floor((MathHelper.wrapDegrees(itemUsageContext.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
 						armorStandEntity.setPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0F);

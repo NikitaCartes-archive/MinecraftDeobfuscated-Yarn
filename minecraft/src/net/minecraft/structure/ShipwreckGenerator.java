@@ -8,9 +8,9 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -110,7 +110,7 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox) {
+		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
 			if ("map_chest".equals(string)) {
 				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_MAP_CHEST);
 			} else if ("treasure_chest".equals(string)) {
@@ -121,13 +121,13 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
 			int i = 256;
 			int j = 0;
 			BlockPos blockPos = this.pos.add(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1);
 
 			for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
-				int k = iWorld.getLightLevel(this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG, blockPos2.getX(), blockPos2.getZ());
+				int k = iWorld.getTopY(this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG, blockPos2.getX(), blockPos2.getZ());
 				j += k;
 				i = Math.min(i, k);
 			}
@@ -135,7 +135,7 @@ public class ShipwreckGenerator {
 			j /= this.structure.getSize().getX() * this.structure.getSize().getZ();
 			int l = this.grounded ? i - this.structure.getSize().getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), l, this.pos.getZ());
-			return super.generate(iWorld, chunkGenerator, random, mutableIntBoundingBox, chunkPos);
+			return super.generate(iWorld, chunkGenerator, random, blockBox, chunkPos);
 		}
 	}
 }
