@@ -99,7 +99,7 @@ Element {
     public void renderButton(int i, int j, float f) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         TextRenderer textRenderer = minecraftClient.textRenderer;
-        minecraftClient.getTextureManager().method_22813(WIDGETS_LOCATION);
+        minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.alpha);
         int k = this.getYImage(this.isHovered());
         RenderSystem.enableBlend();

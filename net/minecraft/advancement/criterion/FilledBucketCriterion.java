@@ -6,16 +6,16 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class FilledBucketCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("filled_bucket");
 
     @Override
@@ -29,7 +29,7 @@ extends class_4558<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
     }
 
     @Override

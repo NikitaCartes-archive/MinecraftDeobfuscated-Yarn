@@ -6,16 +6,16 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class RecipeUnlockedCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("recipe_unlocked");
 
     @Override
@@ -29,7 +29,7 @@ extends class_4558<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(recipe));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(recipe));
     }
 
     @Override

@@ -66,7 +66,7 @@ extends AbstractButtonWidget {
         }
         GuiLighting.enableForItems();
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        minecraftClient.getTextureManager().method_22813(BG_TEX);
+        minecraftClient.getTextureManager().bindTexture(BG_TEX);
         RenderSystem.disableLighting();
         int k = 29;
         if (!this.results.hasCraftableRecipes()) {

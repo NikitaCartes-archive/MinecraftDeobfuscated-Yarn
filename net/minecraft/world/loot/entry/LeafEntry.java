@@ -10,17 +10,17 @@ import com.google.gson.JsonSerializationContext;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.loot.FunctionConsumerBuilder;
 import net.minecraft.world.loot.LootChoice;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.entry.LootEntry;
 import net.minecraft.world.loot.function.LootFunction;
+import net.minecraft.world.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.world.loot.function.LootFunctions;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -38,8 +38,8 @@ extends LootEntry {
         }
     };
 
-    protected LeafEntry(int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
-        super(args);
+    protected LeafEntry(int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+        super(lootConditions);
         this.weight = i;
         this.quality = j;
         this.functions = lootFunctions;
@@ -87,18 +87,18 @@ extends LootEntry {
             }
         }
 
-        public final T method_441(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public final T method_441(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             int i = JsonHelper.getInt(jsonObject, "weight", 1);
             int j = JsonHelper.getInt(jsonObject, "quality", 0);
             LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
-            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, args, lootFunctions);
+            return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
         }
 
-        protected abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, int var3, int var4, class_4570[] var5, LootFunction[] var6);
+        protected abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, int var3, int var4, LootCondition[] var5, LootFunction[] var6);
 
         @Override
-        public /* synthetic */ LootEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_441(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ LootEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_441(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -127,12 +127,12 @@ extends LootEntry {
 
     @FunctionalInterface
     public static interface Factory {
-        public LeafEntry build(int var1, int var2, class_4570[] var3, LootFunction[] var4);
+        public LeafEntry build(int var1, int var2, LootCondition[] var3, LootFunction[] var4);
     }
 
     public static abstract class Builder<T extends Builder<T>>
     extends LootEntry.Builder<T>
-    implements FunctionConsumerBuilder<T> {
+    implements LootFunctionConsumingBuilder<T> {
         protected int weight = 1;
         protected int quality = 0;
         private final List<LootFunction> functions = Lists.newArrayList();

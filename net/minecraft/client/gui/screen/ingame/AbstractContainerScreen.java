@@ -209,7 +209,7 @@ implements ContainerProvider<T> {
         if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (string2 = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
             RenderSystem.disableLighting();
-            this.minecraft.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+            this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
             AbstractContainerScreen.blit(i, j, this.getBlitOffset(), 16, 16, sprite);
             RenderSystem.enableLighting();
             bl2 = true;

@@ -7,13 +7,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4558;
-import net.minecraft.class_4559;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,7 +25,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PlacedBlockCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("placed_block");
 
     @Override
@@ -35,15 +35,15 @@ extends class_4558<Conditions> {
 
     public Conditions method_9088(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         Block block = PlacedBlockCriterion.method_22492(jsonObject);
-        class_4559 lv = class_4559.method_22519(jsonObject.get("state"));
+        StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
         if (block != null) {
-            lv.method_22516(block.getStateFactory(), string -> {
+            statePredicate.check(block.getStateFactory(), string -> {
                 throw new JsonSyntaxException("Block " + block + " has no property " + string + ":");
             });
         }
-        LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject.get("location"));
+        LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
         ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
-        return new Conditions(block, lv, locationPredicate, itemPredicate);
+        return new Conditions(block, statePredicate, locationPredicate, itemPredicate);
     }
 
     @Nullable
@@ -57,7 +57,7 @@ extends class_4558<Conditions> {
 
     public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
         BlockState blockState = serverPlayerEntity.getServerWorld().getBlockState(blockPos);
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack));
     }
 
     @Override
@@ -68,27 +68,27 @@ extends class_4558<Conditions> {
     public static class Conditions
     extends AbstractCriterionConditions {
         private final Block block;
-        private final class_4559 state;
+        private final StatePredicate state;
         private final LocationPredicate location;
         private final ItemPredicate item;
 
-        public Conditions(@Nullable Block block, class_4559 arg, LocationPredicate locationPredicate, ItemPredicate itemPredicate) {
+        public Conditions(@Nullable Block block, StatePredicate statePredicate, LocationPredicate locationPredicate, ItemPredicate itemPredicate) {
             super(ID);
             this.block = block;
-            this.state = arg;
+            this.state = statePredicate;
             this.location = locationPredicate;
             this.item = itemPredicate;
         }
 
         public static Conditions block(Block block) {
-            return new Conditions(block, class_4559.field_20736, LocationPredicate.ANY, ItemPredicate.ANY);
+            return new Conditions(block, StatePredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
         }
 
         public boolean matches(BlockState blockState, BlockPos blockPos, ServerWorld serverWorld, ItemStack itemStack) {
             if (this.block != null && blockState.getBlock() != this.block) {
                 return false;
             }
-            if (!this.state.method_22514(blockState)) {
+            if (!this.state.test(blockState)) {
                 return false;
             }
             if (!this.location.test(serverWorld, blockPos.getX(), blockPos.getY(), blockPos.getZ())) {
@@ -103,8 +103,8 @@ extends class_4558<Conditions> {
             if (this.block != null) {
                 jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
             }
-            jsonObject.add("state", this.state.method_22513());
-            jsonObject.add("location", this.location.serialize());
+            jsonObject.add("state", this.state.toJson());
+            jsonObject.add("location", this.location.toJson());
             jsonObject.add("item", this.item.serialize());
             return jsonObject;
         }

@@ -9,9 +9,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +43,7 @@ implements Predicate<CachedBlockPosition> {
         }
         if (this.data != null) {
             BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-            return blockEntity != null && TagHelper.areTagsEqual(this.data, blockEntity.toTag(new CompoundTag()), true);
+            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.toTag(new CompoundTag()), true);
         }
         return true;
     }

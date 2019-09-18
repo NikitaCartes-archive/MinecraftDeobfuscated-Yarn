@@ -194,7 +194,7 @@ public class CommandManager {
             int n = this.dispatcher.execute(stringReader, serverCommandSource);
             return n;
         } catch (CommandException commandException) {
-            serverCommandSource.sendError(commandException.getMessageText());
+            serverCommandSource.sendError(commandException.getMessage());
             int n = 0;
             return n;
         } catch (CommandSyntaxException commandSyntaxException) {

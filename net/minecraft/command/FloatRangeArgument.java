@@ -7,8 +7,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.function.Function;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.NumberRange;
 import org.jetbrains.annotations.Nullable;
 
 public class FloatRangeArgument {

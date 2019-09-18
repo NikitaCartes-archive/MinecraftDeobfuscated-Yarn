@@ -19,11 +19,11 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -220,14 +220,14 @@ implements Tickable {
             Bee bee = new Bee(compoundTag2.getCompound("EntityData"), compoundTag2.getInt("TicksInHive"), compoundTag2.getInt("MinOccupationTicks"));
             this.bees.add(bee);
         }
-        this.flowerPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("FlowerPos"));
+        this.flowerPos = NbtHelper.toBlockPos(compoundTag.getCompound("FlowerPos"));
     }
 
     @Override
     public CompoundTag toTag(CompoundTag compoundTag) {
         super.toTag(compoundTag);
         compoundTag.put("Bees", this.getBees());
-        compoundTag.put("FlowerPos", TagHelper.serializeBlockPos(this.flowerPos));
+        compoundTag.put("FlowerPos", NbtHelper.fromBlockPos(this.flowerPos));
         return compoundTag;
     }
 

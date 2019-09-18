@@ -6,13 +6,13 @@ package net.minecraft.world.loot.condition;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class RandomChanceLootCondition
-implements class_4570 {
+implements LootCondition {
     private final float chance;
 
     private RandomChanceLootCondition(float f) {
@@ -23,7 +23,7 @@ implements class_4570 {
         return lootContext.getRandom().nextFloat() < this.chance;
     }
 
-    public static class_4570.Builder builder(float f) {
+    public static LootCondition.Builder builder(float f) {
         return () -> new RandomChanceLootCondition(f);
     }
 
@@ -33,7 +33,7 @@ implements class_4570 {
     }
 
     public static class Factory
-    extends class_4570.Factory<RandomChanceLootCondition> {
+    extends LootCondition.Factory<RandomChanceLootCondition> {
         protected Factory() {
             super(new Identifier("random_chance"), RandomChanceLootCondition.class);
         }
@@ -47,7 +47,7 @@ implements class_4570 {
         }
 
         @Override
-        public /* synthetic */ class_4570 fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return this.method_937(jsonObject, jsonDeserializationContext);
         }
     }

@@ -36,7 +36,7 @@ public interface Criterion<T extends CriterionConditions> {
             return this.conditions;
         }
 
-        public void apply(PlayerAdvancementTracker playerAdvancementTracker) {
+        public void grant(PlayerAdvancementTracker playerAdvancementTracker) {
             playerAdvancementTracker.grantCriterion(this.advancement, this.id);
         }
 

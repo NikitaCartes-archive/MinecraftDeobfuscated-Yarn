@@ -24,11 +24,11 @@ import java.util.function.Supplier;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NbtPathArgumentType
@@ -46,30 +46,30 @@ implements ArgumentType<NbtPath> {
     }
 
     public NbtPath method_9362(StringReader stringReader) throws CommandSyntaxException {
-        ArrayList<NbtPathNode> list = Lists.newArrayList();
+        ArrayList<PathNode> list = Lists.newArrayList();
         int i = stringReader.getCursor();
-        Object2IntOpenHashMap<NbtPathNode> object2IntMap = new Object2IntOpenHashMap<NbtPathNode>();
+        Object2IntOpenHashMap<PathNode> object2IntMap = new Object2IntOpenHashMap<PathNode>();
         boolean bl = true;
         while (stringReader.canRead() && stringReader.peek() != ' ') {
             char c;
-            NbtPathNode nbtPathNode = NbtPathArgumentType.parseNode(stringReader, bl);
-            list.add(nbtPathNode);
-            object2IntMap.put(nbtPathNode, stringReader.getCursor() - i);
+            PathNode pathNode = NbtPathArgumentType.parseNode(stringReader, bl);
+            list.add(pathNode);
+            object2IntMap.put(pathNode, stringReader.getCursor() - i);
             bl = false;
             if (!stringReader.canRead() || (c = stringReader.peek()) == ' ' || c == '[' || c == '{') continue;
             stringReader.expect('.');
         }
-        return new NbtPath(stringReader.getString().substring(i, stringReader.getCursor()), list.toArray(new NbtPathNode[0]), object2IntMap);
+        return new NbtPath(stringReader.getString().substring(i, stringReader.getCursor()), list.toArray(new PathNode[0]), object2IntMap);
     }
 
-    private static NbtPathNode parseNode(StringReader stringReader, boolean bl) throws CommandSyntaxException {
+    private static PathNode parseNode(StringReader stringReader, boolean bl) throws CommandSyntaxException {
         switch (stringReader.peek()) {
             case '{': {
                 if (!bl) {
                     throw INVALID_PATH_NODE_EXCEPTION.createWithContext(stringReader);
                 }
                 CompoundTag compoundTag = new StringNbtReader(stringReader).parseCompoundTag();
-                return new EqualCompoundNode(compoundTag);
+                return new FilteredRootNode(compoundTag);
             }
             case '[': {
                 stringReader.skip();
@@ -77,15 +77,15 @@ implements ArgumentType<NbtPath> {
                 if (i == '{') {
                     CompoundTag compoundTag2 = new StringNbtReader(stringReader).parseCompoundTag();
                     stringReader.expect(']');
-                    return new EqualListElementNode(compoundTag2);
+                    return new FilteredListElementNode(compoundTag2);
                 }
                 if (i == ']') {
                     stringReader.skip();
-                    return AllListElementsNode.INSTANCE;
+                    return AllListElementNode.INSTANCE;
                 }
                 int j = stringReader.readInt();
                 stringReader.expect(']');
-                return new ListIndexNode(j);
+                return new IndexedListElementNode(j);
             }
             case '\"': {
                 String string = stringReader.readString();
@@ -96,12 +96,12 @@ implements ArgumentType<NbtPath> {
         return NbtPathArgumentType.readCompoundChildNode(stringReader, string);
     }
 
-    private static NbtPathNode readCompoundChildNode(StringReader stringReader, String string) throws CommandSyntaxException {
+    private static PathNode readCompoundChildNode(StringReader stringReader, String string) throws CommandSyntaxException {
         if (stringReader.canRead() && stringReader.peek() == '{') {
             CompoundTag compoundTag = new StringNbtReader(stringReader).parseCompoundTag();
-            return new EqualCompundChildNode(string, compoundTag);
+            return new FilteredNamedNode(string, compoundTag);
         }
-        return new CompoundChildNode(string);
+        return new NamedNode(string);
     }
 
     private static String readName(StringReader stringReader) throws CommandSyntaxException {
@@ -124,8 +124,8 @@ implements ArgumentType<NbtPath> {
         return c != ' ' && c != '\"' && c != '[' && c != ']' && c != '.' && c != '{' && c != '}';
     }
 
-    private static Predicate<Tag> getEqualityPredicate(CompoundTag compoundTag) {
-        return tag -> TagHelper.areTagsEqual(compoundTag, tag, true);
+    private static Predicate<Tag> getPredicate(CompoundTag compoundTag) {
+        return tag -> NbtHelper.matches(compoundTag, tag, true);
     }
 
     @Override
@@ -133,52 +133,52 @@ implements ArgumentType<NbtPath> {
         return this.method_9362(stringReader);
     }
 
-    static class EqualCompoundNode
-    implements NbtPathNode {
-        private final Predicate<Tag> predicate;
+    static class FilteredRootNode
+    implements PathNode {
+        private final Predicate<Tag> matcher;
 
-        public EqualCompoundNode(CompoundTag compoundTag) {
-            this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
+        public FilteredRootNode(CompoundTag compoundTag) {
+            this.matcher = NbtPathArgumentType.getPredicate(compoundTag);
         }
 
         @Override
         public void get(Tag tag, List<Tag> list) {
-            if (tag instanceof CompoundTag && this.predicate.test(tag)) {
+            if (tag instanceof CompoundTag && this.matcher.test(tag)) {
                 list.add(tag);
             }
         }
 
         @Override
-        public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+        public void getOrInit(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
             this.get(tag, list);
         }
 
         @Override
-        public Tag createParent() {
+        public Tag init() {
             return new CompoundTag();
         }
 
         @Override
-        public int put(Tag tag, Supplier<Tag> supplier) {
+        public int set(Tag tag, Supplier<Tag> supplier) {
             return 0;
         }
 
         @Override
-        public int remove(Tag tag) {
+        public int clear(Tag tag) {
             return 0;
         }
     }
 
-    static class EqualCompundChildNode
-    implements NbtPathNode {
+    static class FilteredNamedNode
+    implements PathNode {
         private final String name;
-        private final CompoundTag tag;
+        private final CompoundTag filter;
         private final Predicate<Tag> predicate;
 
-        public EqualCompundChildNode(String string, CompoundTag compoundTag) {
+        public FilteredNamedNode(String string, CompoundTag compoundTag) {
             this.name = string;
-            this.tag = compoundTag;
-            this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
+            this.filter = compoundTag;
+            this.predicate = NbtPathArgumentType.getPredicate(compoundTag);
         }
 
         @Override
@@ -190,12 +190,12 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+        public void getOrInit(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
             if (tag instanceof CompoundTag) {
                 CompoundTag compoundTag = (CompoundTag)tag;
                 Tag tag2 = compoundTag.getTag(this.name);
                 if (tag2 == null) {
-                    tag2 = this.tag.method_10553();
+                    tag2 = this.filter.method_10553();
                     compoundTag.put(this.name, tag2);
                     list.add(tag2);
                 } else if (this.predicate.test(tag2)) {
@@ -205,12 +205,12 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public Tag createParent() {
+        public Tag init() {
             return new CompoundTag();
         }
 
         @Override
-        public int put(Tag tag, Supplier<Tag> supplier) {
+        public int set(Tag tag, Supplier<Tag> supplier) {
             Tag tag3;
             CompoundTag compoundTag;
             Tag tag2;
@@ -222,7 +222,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public int remove(Tag tag) {
+        public int clear(Tag tag) {
             CompoundTag compoundTag;
             Tag tag2;
             if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).getTag(this.name))) {
@@ -233,11 +233,11 @@ implements ArgumentType<NbtPath> {
         }
     }
 
-    static class AllListElementsNode
-    implements NbtPathNode {
-        public static final AllListElementsNode INSTANCE = new AllListElementsNode();
+    static class AllListElementNode
+    implements PathNode {
+        public static final AllListElementNode INSTANCE = new AllListElementNode();
 
-        private AllListElementsNode() {
+        private AllListElementNode() {
         }
 
         @Override
@@ -248,7 +248,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+        public void getOrInit(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
             if (tag instanceof AbstractListTag) {
                 AbstractListTag abstractListTag = (AbstractListTag)tag;
                 if (abstractListTag.isEmpty()) {
@@ -263,12 +263,12 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public Tag createParent() {
+        public Tag init() {
             return new ListTag();
         }
 
         @Override
-        public int put(Tag tag, Supplier<Tag> supplier) {
+        public int set(Tag tag, Supplier<Tag> supplier) {
             if (tag instanceof AbstractListTag) {
                 AbstractListTag abstractListTag = (AbstractListTag)tag;
                 int i = abstractListTag.size();
@@ -294,7 +294,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public int remove(Tag tag) {
+        public int clear(Tag tag) {
             AbstractListTag abstractListTag;
             int i;
             if (tag instanceof AbstractListTag && (i = (abstractListTag = (AbstractListTag)tag).size()) > 0) {
@@ -305,14 +305,14 @@ implements ArgumentType<NbtPath> {
         }
     }
 
-    static class EqualListElementNode
-    implements NbtPathNode {
-        private final CompoundTag tag;
+    static class FilteredListElementNode
+    implements PathNode {
+        private final CompoundTag filter;
         private final Predicate<Tag> predicate;
 
-        public EqualListElementNode(CompoundTag compoundTag) {
-            this.tag = compoundTag;
-            this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
+        public FilteredListElementNode(CompoundTag compoundTag) {
+            this.filter = compoundTag;
+            this.predicate = NbtPathArgumentType.getPredicate(compoundTag);
         }
 
         @Override
@@ -324,7 +324,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public void putIfAbsent(Tag tag2, Supplier<Tag> supplier, List<Tag> list) {
+        public void getOrInit(Tag tag2, Supplier<Tag> supplier, List<Tag> list) {
             MutableBoolean mutableBoolean = new MutableBoolean();
             if (tag2 instanceof ListTag) {
                 ListTag listTag = (ListTag)tag2;
@@ -333,7 +333,7 @@ implements ArgumentType<NbtPath> {
                     mutableBoolean.setTrue();
                 });
                 if (mutableBoolean.isFalse()) {
-                    CompoundTag compoundTag = this.tag.method_10553();
+                    CompoundTag compoundTag = this.filter.method_10553();
                     listTag.add(compoundTag);
                     list.add(compoundTag);
                 }
@@ -341,12 +341,12 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public Tag createParent() {
+        public Tag init() {
             return new ListTag();
         }
 
         @Override
-        public int put(Tag tag, Supplier<Tag> supplier) {
+        public int set(Tag tag, Supplier<Tag> supplier) {
             int i = 0;
             if (tag instanceof ListTag) {
                 ListTag listTag = (ListTag)tag;
@@ -367,7 +367,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public int remove(Tag tag) {
+        public int clear(Tag tag) {
             int i = 0;
             if (tag instanceof ListTag) {
                 ListTag listTag = (ListTag)tag;
@@ -381,11 +381,11 @@ implements ArgumentType<NbtPath> {
         }
     }
 
-    static class ListIndexNode
-    implements NbtPathNode {
+    static class IndexedListElementNode
+    implements PathNode {
         private final int index;
 
-        public ListIndexNode(int i) {
+        public IndexedListElementNode(int i) {
             this.index = i;
         }
 
@@ -403,17 +403,17 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+        public void getOrInit(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
             this.get(tag, list);
         }
 
         @Override
-        public Tag createParent() {
+        public Tag init() {
             return new ListTag();
         }
 
         @Override
-        public int put(Tag tag, Supplier<Tag> supplier) {
+        public int set(Tag tag, Supplier<Tag> supplier) {
             if (tag instanceof AbstractListTag) {
                 int j;
                 AbstractListTag abstractListTag = (AbstractListTag)tag;
@@ -431,7 +431,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public int remove(Tag tag) {
+        public int clear(Tag tag) {
             if (tag instanceof AbstractListTag) {
                 int j;
                 AbstractListTag abstractListTag = (AbstractListTag)tag;
@@ -446,11 +446,11 @@ implements ArgumentType<NbtPath> {
         }
     }
 
-    static class CompoundChildNode
-    implements NbtPathNode {
+    static class NamedNode
+    implements PathNode {
         private final String name;
 
-        public CompoundChildNode(String string) {
+        public NamedNode(String string) {
             this.name = string;
         }
 
@@ -463,7 +463,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+        public void getOrInit(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
             if (tag instanceof CompoundTag) {
                 Tag tag2;
                 CompoundTag compoundTag = (CompoundTag)tag;
@@ -478,12 +478,12 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public Tag createParent() {
+        public Tag init() {
             return new CompoundTag();
         }
 
         @Override
-        public int put(Tag tag, Supplier<Tag> supplier) {
+        public int set(Tag tag, Supplier<Tag> supplier) {
             if (tag instanceof CompoundTag) {
                 Tag tag3;
                 CompoundTag compoundTag = (CompoundTag)tag;
@@ -496,7 +496,7 @@ implements ArgumentType<NbtPath> {
         }
 
         @Override
-        public int remove(Tag tag) {
+        public int clear(Tag tag) {
             CompoundTag compoundTag;
             if (tag instanceof CompoundTag && (compoundTag = (CompoundTag)tag).containsKey(this.name)) {
                 compoundTag.remove(this.name);
@@ -506,26 +506,26 @@ implements ArgumentType<NbtPath> {
         }
     }
 
-    static interface NbtPathNode {
+    static interface PathNode {
         public void get(Tag var1, List<Tag> var2);
 
-        public void putIfAbsent(Tag var1, Supplier<Tag> var2, List<Tag> var3);
+        public void getOrInit(Tag var1, Supplier<Tag> var2, List<Tag> var3);
 
-        public Tag createParent();
+        public Tag init();
 
-        public int put(Tag var1, Supplier<Tag> var2);
+        public int set(Tag var1, Supplier<Tag> var2);
 
-        public int remove(Tag var1);
+        public int clear(Tag var1);
 
         default public List<Tag> get(List<Tag> list) {
-            return this.get(list, this::get);
+            return this.process(list, this::get);
         }
 
-        default public List<Tag> putIfAbsent(List<Tag> list2, Supplier<Tag> supplier) {
-            return this.get(list2, (Tag tag, List<Tag> list) -> this.putIfAbsent((Tag)tag, supplier, (List<Tag>)list));
+        default public List<Tag> getOrInit(List<Tag> list2, Supplier<Tag> supplier) {
+            return this.process(list2, (tag, list) -> this.getOrInit((Tag)tag, supplier, (List<Tag>)list));
         }
 
-        default public List<Tag> get(List<Tag> list, BiConsumer<Tag, List<Tag>> biConsumer) {
+        default public List<Tag> process(List<Tag> list, BiConsumer<Tag, List<Tag>> biConsumer) {
             ArrayList<Tag> list2 = Lists.newArrayList();
             for (Tag tag : list) {
                 biConsumer.accept(tag, list2);
@@ -536,48 +536,48 @@ implements ArgumentType<NbtPath> {
 
     public static class NbtPath {
         private final String string;
-        private final Object2IntMap<NbtPathNode> nodeEndIndices;
-        private final NbtPathNode[] nodes;
+        private final Object2IntMap<PathNode> nodeEndIndices;
+        private final PathNode[] nodes;
 
-        public NbtPath(String string, NbtPathNode[] nbtPathNodes, Object2IntMap<NbtPathNode> object2IntMap) {
+        public NbtPath(String string, PathNode[] pathNodes, Object2IntMap<PathNode> object2IntMap) {
             this.string = string;
-            this.nodes = nbtPathNodes;
+            this.nodes = pathNodes;
             this.nodeEndIndices = object2IntMap;
         }
 
         public List<Tag> get(Tag tag) throws CommandSyntaxException {
             List<Tag> list = Collections.singletonList(tag);
-            for (NbtPathNode nbtPathNode : this.nodes) {
-                if (!(list = nbtPathNode.get(list)).isEmpty()) continue;
-                throw this.createNothingFoundException(nbtPathNode);
+            for (PathNode pathNode : this.nodes) {
+                if (!(list = pathNode.get(list)).isEmpty()) continue;
+                throw this.createNothingFoundException(pathNode);
             }
             return list;
         }
 
         public int count(Tag tag) {
             List<Tag> list = Collections.singletonList(tag);
-            for (NbtPathNode nbtPathNode : this.nodes) {
-                if (!(list = nbtPathNode.get(list)).isEmpty()) continue;
+            for (PathNode pathNode : this.nodes) {
+                if (!(list = pathNode.get(list)).isEmpty()) continue;
                 return 0;
             }
             return list.size();
         }
 
-        private List<Tag> getParents(Tag tag) throws CommandSyntaxException {
+        private List<Tag> getTerminals(Tag tag) throws CommandSyntaxException {
             List<Tag> list = Collections.singletonList(tag);
             for (int i = 0; i < this.nodes.length - 1; ++i) {
-                NbtPathNode nbtPathNode = this.nodes[i];
+                PathNode pathNode = this.nodes[i];
                 int j = i + 1;
-                if (!(list = nbtPathNode.putIfAbsent(list, this.nodes[j]::createParent)).isEmpty()) continue;
-                throw this.createNothingFoundException(nbtPathNode);
+                if (!(list = pathNode.getOrInit(list, this.nodes[j]::init)).isEmpty()) continue;
+                throw this.createNothingFoundException(pathNode);
             }
             return list;
         }
 
-        public List<Tag> putIfAbsent(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
-            List<Tag> list = this.getParents(tag);
-            NbtPathNode nbtPathNode = this.nodes[this.nodes.length - 1];
-            return nbtPathNode.putIfAbsent(list, supplier);
+        public List<Tag> getOrInit(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
+            List<Tag> list = this.getTerminals(tag);
+            PathNode pathNode = this.nodes[this.nodes.length - 1];
+            return pathNode.getOrInit(list, supplier);
         }
 
         private static int forEach(List<Tag> list, Function<Tag, Integer> function) {
@@ -585,9 +585,9 @@ implements ArgumentType<NbtPath> {
         }
 
         public int put(Tag tag2, Supplier<Tag> supplier) throws CommandSyntaxException {
-            List<Tag> list = this.getParents(tag2);
-            NbtPathNode nbtPathNode = this.nodes[this.nodes.length - 1];
-            return NbtPath.forEach(list, tag -> nbtPathNode.put((Tag)tag, supplier));
+            List<Tag> list = this.getTerminals(tag2);
+            PathNode pathNode = this.nodes[this.nodes.length - 1];
+            return NbtPath.forEach(list, tag -> pathNode.set((Tag)tag, supplier));
         }
 
         public int remove(Tag tag) {
@@ -595,12 +595,12 @@ implements ArgumentType<NbtPath> {
             for (int i = 0; i < this.nodes.length - 1; ++i) {
                 list = this.nodes[i].get(list);
             }
-            NbtPathNode nbtPathNode = this.nodes[this.nodes.length - 1];
-            return NbtPath.forEach(list, nbtPathNode::remove);
+            PathNode pathNode = this.nodes[this.nodes.length - 1];
+            return NbtPath.forEach(list, pathNode::clear);
         }
 
-        private CommandSyntaxException createNothingFoundException(NbtPathNode nbtPathNode) {
-            int i = this.nodeEndIndices.getInt(nbtPathNode);
+        private CommandSyntaxException createNothingFoundException(PathNode pathNode) {
+            int i = this.nodeEndIndices.getInt(pathNode);
             return NOTHING_FOUND_EXCEPTION.create(this.string.substring(0, i));
         }
 

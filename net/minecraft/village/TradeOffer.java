@@ -5,7 +5,7 @@ package net.minecraft.village;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.TagHelper;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class TradeOffer {
@@ -177,7 +177,7 @@ public class TradeOffer {
         if (itemStack3.getItem().isDamageable()) {
             itemStack3.setDamage(itemStack3.getDamage());
         }
-        return ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2) && (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
+        return ItemStack.areItemsEqualIgnoreDamage(itemStack3, itemStack2) && (!itemStack2.hasTag() || itemStack3.hasTag() && NbtHelper.matches(itemStack2.getTag(), itemStack3.getTag(), false));
     }
 
     public boolean depleteBuyItems(ItemStack itemStack, ItemStack itemStack2) {

@@ -36,8 +36,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(value=EnvType.CLIENT)
@@ -66,9 +66,9 @@ public class ItemDynamicRenderer {
         } else if (item == Items.SHIELD) {
             if (itemStack.getSubTag("BlockEntityTag") != null) {
                 this.renderBanner.deserialize(itemStack, ShieldItem.getColor(itemStack));
-                MinecraftClient.getInstance().getTextureManager().method_22813(TextureCache.SHIELD.get(this.renderBanner.getPatternCacheKey(), this.renderBanner.getPatterns(), this.renderBanner.getPatternColors()));
+                MinecraftClient.getInstance().getTextureManager().bindTexture(TextureCache.SHIELD.get(this.renderBanner.getPatternCacheKey(), this.renderBanner.getPatterns(), this.renderBanner.getPatternColors()));
             } else {
-                MinecraftClient.getInstance().getTextureManager().method_22813(TextureCache.DEFAULT_SHIELD);
+                MinecraftClient.getInstance().getTextureManager().bindTexture(TextureCache.DEFAULT_SHIELD);
             }
             RenderSystem.pushMatrix();
             RenderSystem.scalef(1.0f, -1.0f, -1.0f);
@@ -82,12 +82,12 @@ public class ItemDynamicRenderer {
             if (itemStack.hasTag()) {
                 CompoundTag compoundTag = itemStack.getTag();
                 if (compoundTag.containsKey("SkullOwner", 10)) {
-                    gameProfile = TagHelper.deserializeProfile(compoundTag.getCompound("SkullOwner"));
+                    gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
                 } else if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
                     gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
                     gameProfile = SkullBlockEntity.loadProperties(gameProfile);
                     compoundTag.remove("SkullOwner");
-                    compoundTag.put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
+                    compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
                 }
             }
             if (SkullBlockEntityRenderer.INSTANCE != null) {
@@ -98,7 +98,7 @@ public class ItemDynamicRenderer {
                 RenderSystem.popMatrix();
             }
         } else if (item == Items.TRIDENT) {
-            MinecraftClient.getInstance().getTextureManager().method_22813(TridentEntityModel.TEXTURE);
+            MinecraftClient.getInstance().getTextureManager().bindTexture(TridentEntityModel.TEXTURE);
             RenderSystem.pushMatrix();
             RenderSystem.scalef(1.0f, -1.0f, -1.0f);
             this.modelTrident.renderItem();
@@ -126,7 +126,7 @@ public class ItemDynamicRenderer {
 
     private void renderEnchantmentGlint(Runnable runnable) {
         RenderSystem.color3f(0.5019608f, 0.2509804f, 0.8f);
-        MinecraftClient.getInstance().getTextureManager().method_22813(ItemRenderer.ENCHANTMENT_GLINT_TEX);
+        MinecraftClient.getInstance().getTextureManager().bindTexture(ItemRenderer.ENCHANTMENT_GLINT_TEX);
         ItemRenderer.renderGlint(MinecraftClient.getInstance().getTextureManager(), runnable, 1);
     }
 }

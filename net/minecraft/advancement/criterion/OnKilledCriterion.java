@@ -6,10 +6,10 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.class_4558;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
@@ -18,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class OnKilledCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private final Identifier id;
 
     public OnKilledCriterion(Identifier identifier) {
@@ -31,11 +31,11 @@ extends class_4558<Conditions> {
     }
 
     public Conditions method_8989(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return new Conditions(this.id, EntityPredicate.deserialize(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow")));
+        return new Conditions(this.id, EntityPredicate.fromJson(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow")));
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.test(serverPlayerEntity, entity, damageSource));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.test(serverPlayerEntity, entity, damageSource));
     }
 
     @Override

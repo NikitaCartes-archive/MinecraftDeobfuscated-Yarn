@@ -63,10 +63,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4565;
-import net.minecraft.class_4567;
 import net.minecraft.client.network.packet.DifficultyS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
+import net.minecraft.command.DataCommandStorage;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -143,6 +142,7 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.loot.LootManager;
+import net.minecraft.world.loot.condition.LootConditionManager;
 import net.minecraft.world.updater.WorldUpdater;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -157,7 +157,7 @@ AutoCloseable,
 Runnable {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final File USER_CACHE_FILE = new File("usercache.json");
-    private static final CompletableFuture<Unit> field_20279 = CompletableFuture.completedFuture(Unit.INSTANCE);
+    private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
     public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo("North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT).setBonusChest();
     private final LevelStorage levelStorage;
     private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
@@ -227,10 +227,10 @@ Runnable {
     private final RegistryTagManager tagManager = new RegistryTagManager();
     private final ServerScoreboard scoreboard = new ServerScoreboard(this);
     @Nullable
-    private class_4565 field_20850;
+    private DataCommandStorage dataCommandStorage;
     private final BossBarManager bossBarManager = new BossBarManager(this);
-    private final class_4567 field_20851 = new class_4567();
-    private final LootManager lootManager = new LootManager(this.field_20851);
+    private final LootConditionManager predicateManager = new LootConditionManager();
+    private final LootManager lootManager = new LootManager(this.predicateManager);
     private final ServerAdvancementLoader advancementManager = new ServerAdvancementLoader();
     private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
     private final MetricsData metricsData = new MetricsData();
@@ -256,7 +256,7 @@ Runnable {
         this.levelStorage = new LevelStorage(file.toPath(), file.toPath().resolve("../backups"), dataFixer);
         this.dataFixer = dataFixer;
         this.dataManager.registerListener(this.tagManager);
-        this.dataManager.registerListener(this.field_20851);
+        this.dataManager.registerListener(this.predicateManager);
         this.dataManager.registerListener(this.recipeManager);
         this.dataManager.registerListener(this.lootManager);
         this.dataManager.registerListener(this.commandFunctionManager);
@@ -377,7 +377,7 @@ Runnable {
         this.worlds.put(DimensionType.OVERWORLD, serverWorld);
         PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
         this.initScoreboard(persistentStateManager);
-        this.field_20850 = new class_4565(persistentStateManager);
+        this.dataCommandStorage = new DataCommandStorage(persistentStateManager);
         serverWorld.getWorldBorder().load(levelProperties);
         ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
         if (!levelProperties.isInitialized()) {
@@ -457,7 +457,7 @@ Runnable {
         this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
         this.method_16208();
         for (DimensionType dimensionType : DimensionType.getAll()) {
-            ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().method_20786(ForcedChunkState::new, "chunks");
+            ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().get(ForcedChunkState::new, "chunks");
             if (forcedChunkState == null) continue;
             ServerWorld serverWorld2 = this.getWorld(dimensionType);
             LongIterator longIterator = forcedChunkState.getChunks().iterator();
@@ -1344,7 +1344,7 @@ Runnable {
         this.dataPackContainerManager.setEnabled(list);
         ArrayList<ResourcePack> list2 = Lists.newArrayList();
         this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> list2.add(resourcePackContainer.createResourcePack()));
-        CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, field_20279);
+        CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, COMPLETED_UNIT_FUTURE);
         this.executeTasks(completableFuture::isDone);
         try {
             completableFuture.get();
@@ -1415,19 +1415,19 @@ Runnable {
         return this.scoreboard;
     }
 
-    public class_4565 method_22827() {
-        if (this.field_20850 == null) {
+    public DataCommandStorage getDataCommandStorage() {
+        if (this.dataCommandStorage == null) {
             throw new NullPointerException("Called before server init");
         }
-        return this.field_20850;
+        return this.dataCommandStorage;
     }
 
     public LootManager getLootManager() {
         return this.lootManager;
     }
 
-    public class_4567 method_22828() {
-        return this.field_20851;
+    public LootConditionManager getPredicateManager() {
+        return this.predicateManager;
     }
 
     public GameRules getGameRules() {

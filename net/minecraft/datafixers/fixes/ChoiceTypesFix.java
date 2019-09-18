@@ -9,12 +9,12 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TaggedChoice;
 
-public class FixChoiceTypes
+public class ChoiceTypesFix
 extends DataFix {
     private final String name;
     private final DSL.TypeReference types;
 
-    public FixChoiceTypes(Schema schema, String string, DSL.TypeReference typeReference) {
+    public ChoiceTypesFix(Schema schema, String string, DSL.TypeReference typeReference) {
         super(schema, true);
         this.name = string;
         this.types = typeReference;

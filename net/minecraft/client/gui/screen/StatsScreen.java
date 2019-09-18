@@ -142,7 +142,7 @@ implements StatsListener {
 
     private void renderIcon(int i, int j, int k, int l) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().method_22813(STATS_ICON_LOCATION);
+        this.minecraft.getTextureManager().bindTexture(STATS_ICON_LOCATION);
         StatsScreen.blit(i, j, this.getBlitOffset(), k, l, 18, 18, 128, 128);
     }
 

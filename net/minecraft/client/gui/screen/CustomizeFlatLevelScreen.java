@@ -223,7 +223,7 @@ extends Screen {
 
             private void method_19373(int i, int j) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                SuperflatLayersListWidget.this.minecraft.getTextureManager().method_22813(DrawableHelper.STATS_ICON_LOCATION);
+                SuperflatLayersListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
                 DrawableHelper.blit(i, j, CustomizeFlatLevelScreen.this.getBlitOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }
         }

@@ -8,8 +8,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.context.LootContextAware;
 import net.minecraft.world.loot.context.LootContextParameter;
-import net.minecraft.world.loot.context.ParameterConsumer;
 
 public class LootContextType {
     private final Set<LootContextParameter<?>> required;
@@ -32,8 +32,8 @@ public class LootContextType {
         return "[" + Joiner.on(", ").join(this.allowed.stream().map(lootContextParameter -> (this.required.contains(lootContextParameter) ? "!" : "") + lootContextParameter.getIdentifier()).iterator()) + "]";
     }
 
-    public void check(LootTableReporter lootTableReporter, ParameterConsumer parameterConsumer) {
-        Set<LootContextParameter<?>> set = parameterConsumer.getRequiredParameters();
+    public void check(LootTableReporter lootTableReporter, LootContextAware lootContextAware) {
+        Set<LootContextParameter<?>> set = lootContextAware.getRequiredParameters();
         Sets.SetView<LootContextParameter<?>> set2 = Sets.difference(set, this.allowed);
         if (!set2.isEmpty()) {
             lootTableReporter.report("Parameters " + set2 + " are not provided in this context");

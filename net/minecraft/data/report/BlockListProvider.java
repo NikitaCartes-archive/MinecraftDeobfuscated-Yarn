@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
@@ -35,10 +35,10 @@ implements DataProvider {
         for (Block block : Registry.BLOCK) {
             Identifier identifier = Registry.BLOCK.getId(block);
             JsonObject jsonObject2 = new JsonObject();
-            StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
-            if (!stateFactory.getProperties().isEmpty()) {
+            StateManager<Block, BlockState> stateManager = block.getStateFactory();
+            if (!stateManager.getProperties().isEmpty()) {
                 JsonObject jsonObject3 = new JsonObject();
-                for (Property property : stateFactory.getProperties()) {
+                for (Property property : stateManager.getProperties()) {
                     JsonArray jsonArray = new JsonArray();
                     for (Comparable comparable : property.getValues()) {
                         jsonArray.add(SystemUtil.getValueAsString(property, comparable));
@@ -48,10 +48,10 @@ implements DataProvider {
                 jsonObject2.add("properties", jsonObject3);
             }
             JsonArray jsonArray2 = new JsonArray();
-            for (BlockState blockState : stateFactory.getStates()) {
+            for (BlockState blockState : stateManager.getStates()) {
                 JsonObject jsonObject4 = new JsonObject();
                 JsonObject jsonObject5 = new JsonObject();
-                for (Property<?> property2 : stateFactory.getProperties()) {
+                for (Property<?> property2 : stateManager.getProperties()) {
                     jsonObject5.addProperty(property2.getName(), SystemUtil.getValueAsString(property2, blockState.get(property2)));
                 }
                 if (jsonObject5.size() > 0) {

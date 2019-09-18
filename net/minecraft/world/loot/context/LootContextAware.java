@@ -8,13 +8,13 @@ import java.util.Set;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.context.LootContextParameter;
 
-public interface ParameterConsumer {
+public interface LootContextAware {
     default public Set<LootContextParameter<?>> getRequiredParameters() {
         return ImmutableSet.of();
     }
 
     default public void check(LootTableReporter lootTableReporter) {
-        lootTableReporter.method_22567(this);
+        lootTableReporter.checkContext(this);
     }
 }
 

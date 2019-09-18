@@ -53,7 +53,7 @@ public class CubeMapRenderer {
             RenderSystem.rotatef(f, 1.0f, 0.0f, 0.0f);
             RenderSystem.rotatef(g, 0.0f, 1.0f, 0.0f);
             for (int n = 0; n < 6; ++n) {
-                minecraftClient.getTextureManager().method_22813(this.faces[n]);
+                minecraftClient.getTextureManager().bindTexture(this.faces[n]);
                 bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
                 int o = Math.round(255.0f * h) / (j + 1);
                 if (n == 0) {

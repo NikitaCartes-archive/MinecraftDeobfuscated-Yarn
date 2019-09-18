@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -111,9 +111,9 @@ extends Task<VillagerEntity> {
         }
         VillagerProfession villagerProfession = villagerEntity.getVillagerData().getProfession();
         if (GIFTS.containsKey(villagerProfession)) {
-            LootSupplier lootSupplier = villagerEntity.world.getServer().getLootManager().getSupplier(GIFTS.get(villagerProfession));
+            LootTable lootTable = villagerEntity.world.getServer().getLootManager().getSupplier(GIFTS.get(villagerProfession));
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world).put(LootContextParameters.POSITION, new BlockPos(villagerEntity)).put(LootContextParameters.THIS_ENTITY, villagerEntity).setRandom(villagerEntity.getRand());
-            return lootSupplier.getDrops(builder.build(LootContextTypes.GIFT));
+            return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
         }
         return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
     }

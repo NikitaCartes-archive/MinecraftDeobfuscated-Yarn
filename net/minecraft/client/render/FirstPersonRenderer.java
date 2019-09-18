@@ -128,7 +128,7 @@ public class FirstPersonRenderer {
     }
 
     private void renderArm(Arm arm) {
-        this.client.getTextureManager().method_22813(this.client.player.getSkinTexture());
+        this.client.getTextureManager().bindTexture(this.client.player.getSkinTexture());
         Object entityRenderer = this.renderManager.getRenderer(this.client.player);
         PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)entityRenderer;
         RenderSystem.pushMatrix();
@@ -188,7 +188,7 @@ public class FirstPersonRenderer {
         RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
         RenderSystem.scalef(0.38f, 0.38f, 0.38f);
         RenderSystem.disableLighting();
-        this.client.getTextureManager().method_22813(MAP_BACKGROUND_TEX);
+        this.client.getTextureManager().bindTexture(MAP_BACKGROUND_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         RenderSystem.translatef(-0.5f, -0.5f, 0.0f);
@@ -220,7 +220,7 @@ public class FirstPersonRenderer {
         RenderSystem.rotatef(h * n * 70.0f, 0.0f, 1.0f, 0.0f);
         RenderSystem.rotatef(h * m * -20.0f, 0.0f, 0.0f, 1.0f);
         ClientPlayerEntity abstractClientPlayerEntity = this.client.player;
-        this.client.getTextureManager().method_22813(abstractClientPlayerEntity.getSkinTexture());
+        this.client.getTextureManager().bindTexture(abstractClientPlayerEntity.getSkinTexture());
         RenderSystem.translatef(h * -1.0f, 3.6f, 3.5f);
         RenderSystem.rotatef(h * 120.0f, 0.0f, 0.0f, 1.0f);
         RenderSystem.rotatef(200.0f, 1.0f, 0.0f, 0.0f);
@@ -484,7 +484,7 @@ public class FirstPersonRenderer {
     }
 
     private void renderBlock(Sprite sprite) {
-        this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         float f = 0.1f;
@@ -510,7 +510,7 @@ public class FirstPersonRenderer {
     }
 
     private void renderWaterOverlay(float f) {
-        this.client.getTextureManager().method_22813(UNDERWATER_TEX);
+        this.client.getTextureManager().bindTexture(UNDERWATER_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         float g = this.client.player.getBrightnessAtEyes();
@@ -549,7 +549,7 @@ public class FirstPersonRenderer {
         for (int i = 0; i < 2; ++i) {
             RenderSystem.pushMatrix();
             Sprite sprite = this.client.getSpriteAtlas().getSprite(ModelLoader.FIRE_1);
-            this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+            this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
             float g = sprite.getMinU();
             float h = sprite.getMaxU();
             float j = sprite.getMinV();

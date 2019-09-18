@@ -84,9 +84,9 @@ extends DrawableHelper {
         RenderSystem.depthFunc(515);
         Identifier identifier = this.display.getBackground();
         if (identifier != null) {
-            this.client.getTextureManager().method_22813(identifier);
+            this.client.getTextureManager().bindTexture(identifier);
         } else {
-            this.client.getTextureManager().method_22813(TextureManager.MISSING_IDENTIFIER);
+            this.client.getTextureManager().bindTexture(TextureManager.MISSING_IDENTIFIER);
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int i = MathHelper.floor(this.panX);

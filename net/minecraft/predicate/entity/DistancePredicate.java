@@ -6,8 +6,8 @@ package net.minecraft.predicate.entity;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,13 +39,13 @@ public class DistancePredicate {
         float j = (float)(d - g);
         float k = (float)(e - h);
         float l = (float)(f - i);
-        if (!(this.x.matches(MathHelper.abs(j)) && this.y.matches(MathHelper.abs(k)) && this.z.matches(MathHelper.abs(l)))) {
+        if (!(this.x.test(MathHelper.abs(j)) && this.y.test(MathHelper.abs(k)) && this.z.test(MathHelper.abs(l)))) {
             return false;
         }
-        if (!this.horizontal.matchesSquared(j * j + l * l)) {
+        if (!this.horizontal.testSqrt(j * j + l * l)) {
             return false;
         }
-        return this.absolute.matchesSquared(j * j + k * k + l * l);
+        return this.absolute.testSqrt(j * j + k * k + l * l);
     }
 
     public static DistancePredicate deserialize(@Nullable JsonElement jsonElement) {
@@ -66,11 +66,11 @@ public class DistancePredicate {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("x", this.x.serialize());
-        jsonObject.add("y", this.y.serialize());
-        jsonObject.add("z", this.z.serialize());
-        jsonObject.add("horizontal", this.horizontal.serialize());
-        jsonObject.add("absolute", this.absolute.serialize());
+        jsonObject.add("x", this.x.toJson());
+        jsonObject.add("y", this.y.toJson());
+        jsonObject.add("z", this.z.toJson());
+        jsonObject.add("horizontal", this.horizontal.toJson());
+        jsonObject.add("absolute", this.absolute.toJson());
         return jsonObject;
     }
 }

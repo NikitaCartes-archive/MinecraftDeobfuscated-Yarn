@@ -7,11 +7,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import org.jetbrains.annotations.Nullable;
 
 public class DamagePredicate {
@@ -42,10 +42,10 @@ public class DamagePredicate {
         if (this == ANY) {
             return true;
         }
-        if (!this.dealt.matches(f)) {
+        if (!this.dealt.test(f)) {
             return false;
         }
-        if (!this.taken.matches(g)) {
+        if (!this.taken.test(g)) {
             return false;
         }
         if (!this.sourceEntity.test(serverPlayerEntity, damageSource.getAttacker())) {
@@ -65,7 +65,7 @@ public class DamagePredicate {
         NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("dealt"));
         NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("taken"));
         Boolean boolean_ = jsonObject.has("blocked") ? Boolean.valueOf(JsonHelper.getBoolean(jsonObject, "blocked")) : null;
-        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("source_entity"));
+        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("source_entity"));
         DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.deserialize(jsonObject.get("type"));
         return new DamagePredicate(floatRange, floatRange2, entityPredicate, boolean_, damageSourcePredicate);
     }
@@ -75,8 +75,8 @@ public class DamagePredicate {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("dealt", this.dealt.serialize());
-        jsonObject.add("taken", this.taken.serialize());
+        jsonObject.add("dealt", this.dealt.toJson());
+        jsonObject.add("taken", this.taken.toJson());
         jsonObject.add("source_entity", this.sourceEntity.serialize());
         jsonObject.add("type", this.type.serialize());
         if (this.blocked != null) {

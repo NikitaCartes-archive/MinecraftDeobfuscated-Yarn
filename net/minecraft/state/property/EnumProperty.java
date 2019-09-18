@@ -39,7 +39,7 @@ extends AbstractProperty<T> {
     }
 
     @Override
-    public Optional<T> getValue(String string) {
+    public Optional<T> parse(String string) {
         return Optional.ofNullable(this.byName.get(string));
     }
 

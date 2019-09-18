@@ -32,10 +32,10 @@ extends AbstractContainerScreen<T> {
     @Override
     protected void init() {
         super.init();
-        this.method_2476();
+        this.applyStatusEffectOffset();
     }
 
-    protected void method_2476() {
+    protected void applyStatusEffectOffset() {
         if (this.minecraft.player.getStatusEffects().isEmpty()) {
             this.left = (this.width - this.containerWidth) / 2;
             this.offsetGuiForEffects = false;
@@ -72,7 +72,7 @@ extends AbstractContainerScreen<T> {
     }
 
     private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
-        this.minecraft.getTextureManager().method_22813(BACKGROUND_TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
         int k = this.top;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -82,7 +82,7 @@ extends AbstractContainerScreen<T> {
     }
 
     private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
-        this.minecraft.getTextureManager().method_22813(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+        this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
         StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.getStatusEffectSpriteManager();
         int k = this.top;
         for (StatusEffectInstance statusEffectInstance : iterable) {

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.datafixer.fixes;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -13,9 +13,9 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import net.minecraft.datafixers.TypeReferences;
 
-public class class_4542
+public class PoiRebuildFix
 extends DataFix {
-    public class_4542(Schema schema, boolean bl) {
+    public PoiRebuildFix(Schema schema, boolean bl) {
         super(schema, bl);
     }
 
@@ -25,7 +25,7 @@ extends DataFix {
         if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.POI_CHUNK))) {
             throw new IllegalStateException("Poi type is not what was expected.");
         }
-        return this.fixTypeEverywhere("POI rebuild", type, dynamicOps -> pair -> pair.mapSecond(class_4542::method_22376));
+        return this.fixTypeEverywhere("POI rebuild", type, dynamicOps -> pair -> pair.mapSecond(PoiRebuildFix::method_22376));
     }
 
     private static <T> Dynamic<T> method_22376(Dynamic<T> dynamic2) {

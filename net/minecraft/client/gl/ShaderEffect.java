@@ -169,7 +169,7 @@ implements AutoCloseable {
                                 }
                             }
                             IOUtils.closeQuietly((Closeable)resource);
-                            textureManager.method_22813(identifier);
+                            textureManager.bindTexture(identifier);
                             Texture texture = textureManager.getTexture(identifier);
                             int j = JsonHelper.getInt(jsonObject2, "width");
                             int k = JsonHelper.getInt(jsonObject2, "height");

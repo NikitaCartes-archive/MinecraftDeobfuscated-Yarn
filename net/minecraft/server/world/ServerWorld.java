@@ -1046,7 +1046,7 @@ extends World {
     @Override
     @Nullable
     public MapState getMapState(String string) {
-        return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().method_20786(() -> new MapState(string), string);
+        return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().get(() -> new MapState(string), string);
     }
 
     @Override
@@ -1068,7 +1068,7 @@ extends World {
     }
 
     public LongSet getForcedChunks() {
-        ForcedChunkState forcedChunkState = this.getPersistentStateManager().method_20786(ForcedChunkState::new, "chunks");
+        ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::new, "chunks");
         return forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET;
     }
 

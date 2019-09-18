@@ -22,13 +22,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TagHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPredicateArgumentType
@@ -106,7 +106,7 @@ implements ArgumentType<BlockPredicate> {
                 if (property == null) {
                     return false;
                 }
-                Comparable comparable = property.getValue(entry.getValue()).orElse(null);
+                Comparable comparable = property.parse(entry.getValue()).orElse(null);
                 if (comparable == null) {
                     return false;
                 }
@@ -115,7 +115,7 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && TagHelper.areTagsEqual(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
             }
             return true;
         }
@@ -150,7 +150,7 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && TagHelper.areTagsEqual(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
             }
             return true;
         }

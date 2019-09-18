@@ -6,11 +6,11 @@ package net.minecraft.world.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.LootTableRange;
 import net.minecraft.world.loot.LootTableRanges;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
 
@@ -18,8 +18,8 @@ public class SetCountLootFunction
 extends ConditionalLootFunction {
     private final LootTableRange countRange;
 
-    private SetCountLootFunction(class_4570[] args, LootTableRange lootTableRange) {
-        super(args);
+    private SetCountLootFunction(LootCondition[] lootConditions, LootTableRange lootTableRange) {
+        super(lootConditions);
         this.countRange = lootTableRange;
     }
 
@@ -30,7 +30,7 @@ extends ConditionalLootFunction {
     }
 
     public static ConditionalLootFunction.Builder<?> builder(LootTableRange lootTableRange) {
-        return SetCountLootFunction.builder((class_4570[] args) -> new SetCountLootFunction((class_4570[])args, lootTableRange));
+        return SetCountLootFunction.builder((LootCondition[] lootConditions) -> new SetCountLootFunction((LootCondition[])lootConditions, lootTableRange));
     }
 
     public static class Factory
@@ -41,17 +41,17 @@ extends ConditionalLootFunction {
 
         public void method_623(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.method_529(jsonObject, setCountLootFunction, jsonSerializationContext);
-            jsonObject.add("count", LootTableRanges.serialize(setCountLootFunction.countRange, jsonSerializationContext));
+            jsonObject.add("count", LootTableRanges.toJson(setCountLootFunction.countRange, jsonSerializationContext));
         }
 
-        public SetCountLootFunction method_622(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            LootTableRange lootTableRange = LootTableRanges.deserialize(jsonObject.get("count"), jsonDeserializationContext);
-            return new SetCountLootFunction(args, lootTableRange);
+        public SetCountLootFunction method_622(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            LootTableRange lootTableRange = LootTableRanges.fromJson(jsonObject.get("count"), jsonDeserializationContext);
+            return new SetCountLootFunction(lootConditions, lootTableRange);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_622(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_622(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

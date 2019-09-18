@@ -64,7 +64,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -136,9 +136,9 @@ public class ModelLoader {
     public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = SystemUtil.consume(JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> {
         jsonUnbakedModel.id = "block entity marker";
     });
-    private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder(Blocks.AIR).add(BooleanProperty.of("map")).build(BlockState::new);
+    private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder(Blocks.AIR).add(BooleanProperty.of("map")).build(BlockState::new);
     private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
-    private static final Map<Identifier, StateFactory<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY);
+    private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY);
     private final ResourceManager resourceManager;
     private final SpriteAtlasTexture spriteAtlas;
     private final BlockColors field_20272;
@@ -165,7 +165,7 @@ public class ModelLoader {
             throw new RuntimeException(iOException);
         }
         profiler.swap("static_definitions");
-        STATIC_DEFINITIONS.forEach((identifier, stateFactory) -> stateFactory.getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(identifier, blockState))));
+        STATIC_DEFINITIONS.forEach((identifier, stateManager) -> stateManager.getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(identifier, blockState))));
         profiler.swap("blocks");
         for (Block block : Registry.BLOCK) {
             block.getStateFactory().getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(blockState)));
@@ -204,13 +204,13 @@ public class ModelLoader {
         profiler.pop();
     }
 
-    private static Predicate<BlockState> stateKeyToPredicate(StateFactory<Block, BlockState> stateFactory, String string) {
+    private static Predicate<BlockState> stateKeyToPredicate(StateManager<Block, BlockState> stateManager, String string) {
         HashMap<Property<?>, ?> map = Maps.newHashMap();
         for (String string2 : COMMA_SPLITTER.split(string)) {
             Iterator<String> iterator = KEY_VALUE_SPLITTER.split(string2).iterator();
             if (!iterator.hasNext()) continue;
             String string3 = iterator.next();
-            Property<?> property = stateFactory.getProperty(string3);
+            Property<?> property = stateManager.getProperty(string3);
             if (property != null && iterator.hasNext()) {
                 String string4 = iterator.next();
                 Object comparable = ModelLoader.getPropertyValue(property, string4);
@@ -223,7 +223,7 @@ public class ModelLoader {
             if (string3.isEmpty()) continue;
             throw new RuntimeException("Unknown blockstate property: '" + string3 + "'");
         }
-        Block block = stateFactory.getBaseObject();
+        Block block = stateManager.getOwner();
         return blockState -> {
             if (blockState == null || block != blockState.getBlock()) {
                 return false;
@@ -238,7 +238,7 @@ public class ModelLoader {
 
     @Nullable
     static <T extends Comparable<T>> T getPropertyValue(Property<T> property, String string) {
-        return (T)((Comparable)property.getValue(string).orElse(null));
+        return (T)((Comparable)property.parse(string).orElse(null));
     }
 
     /*
@@ -284,10 +284,10 @@ public class ModelLoader {
             this.unbakedModels.put(identifier2, jsonUnbakedModel);
         } else {
             Identifier identifier2 = new Identifier(identifier.getNamespace(), identifier.getPath());
-            StateFactory stateFactory = Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2)).orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
-            this.variantMapDeserializationContext.setStateFactory(stateFactory);
-            ImmutableList<Property<?>> list = ImmutableList.copyOf(this.field_20272.getProperties((Block)stateFactory.getBaseObject()));
-            ImmutableList immutableList = stateFactory.getStates();
+            StateManager stateManager = Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2)).orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
+            this.variantMapDeserializationContext.setStateFactory(stateManager);
+            ImmutableList<Property<?>> list = ImmutableList.copyOf(this.field_20272.getProperties((Block)stateManager.getOwner()));
+            ImmutableList immutableList = stateManager.getStates();
             HashMap<ModelIdentifier, BlockState> map = Maps.newHashMap();
             immutableList.forEach(blockState -> map.put(BlockModels.getModelId(identifier2, blockState), (BlockState)blockState));
             HashMap map2 = Maps.newHashMap();
@@ -349,7 +349,7 @@ public class ModelLoader {
                     }
                     modelVariantMap.getVariantMap().forEach((string, weightedUnbakedModel) -> {
                         try {
-                            immutableList.stream().filter(ModelLoader.stateKeyToPredicate(stateFactory, string)).forEach(blockState -> {
+                            immutableList.stream().filter(ModelLoader.stateKeyToPredicate(stateManager, string)).forEach(blockState -> {
                                 Pair<WeightedUnbakedModel, Supplier<class_4455>> pair2 = map4.put(blockState, Pair.of(weightedUnbakedModel, () -> class_4455.method_21608(blockState, weightedUnbakedModel, list)));
                                 if (pair2 != null && pair2.getFirst() != multipartUnbakedModel) {
                                     map4.put(blockState, pair);
@@ -514,8 +514,8 @@ public class ModelLoader {
         }
 
         public static class_4455 method_21607(BlockState blockState, MultipartUnbakedModel multipartUnbakedModel, Collection<Property<?>> collection) {
-            StateFactory<Block, BlockState> stateFactory = blockState.getBlock().getStateFactory();
-            List list = multipartUnbakedModel.getComponents().stream().filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateFactory).test(blockState)).map(MultipartModelComponent::getModel).collect(ImmutableList.toImmutableList());
+            StateManager<Block, BlockState> stateManager = blockState.getBlock().getStateFactory();
+            List list = multipartUnbakedModel.getComponents().stream().filter(multipartModelComponent -> multipartModelComponent.getPredicate(stateManager).test(blockState)).map(MultipartModelComponent::getModel).collect(ImmutableList.toImmutableList());
             List<Object> list2 = class_4455.method_21609(blockState, collection);
             return new class_4455(list, list2);
         }

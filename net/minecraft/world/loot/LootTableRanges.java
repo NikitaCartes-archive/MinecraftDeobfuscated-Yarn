@@ -21,7 +21,7 @@ import net.minecraft.world.loot.UniformLootTableRange;
 public class LootTableRanges {
     private static final Map<Identifier, Class<? extends LootTableRange>> types = Maps.newHashMap();
 
-    public static LootTableRange deserialize(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public static LootTableRange fromJson(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         if (jsonElement.isJsonPrimitive()) {
             return (LootTableRange)jsonDeserializationContext.deserialize(jsonElement, (Type)((Object)ConstantLootTableRange.class));
         }
@@ -34,7 +34,7 @@ public class LootTableRanges {
         return (LootTableRange)jsonDeserializationContext.deserialize(jsonObject, class_);
     }
 
-    public static JsonElement serialize(LootTableRange lootTableRange, JsonSerializationContext jsonSerializationContext) {
+    public static JsonElement toJson(LootTableRange lootTableRange, JsonSerializationContext jsonSerializationContext) {
         JsonElement jsonElement = jsonSerializationContext.serialize(lootTableRange);
         if (jsonElement.isJsonObject()) {
             jsonElement.getAsJsonObject().addProperty("type", lootTableRange.getType().toString());

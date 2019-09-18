@@ -18,7 +18,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.TagHelper;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
@@ -48,7 +48,7 @@ extends HostileEntity {
     public void writeCustomDataToTag(CompoundTag compoundTag) {
         super.writeCustomDataToTag(compoundTag);
         if (this.patrolTarget != null) {
-            compoundTag.put("PatrolTarget", TagHelper.serializeBlockPos(this.patrolTarget));
+            compoundTag.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
         }
         compoundTag.putBoolean("PatrolLeader", this.patrolLeader);
         compoundTag.putBoolean("Patrolling", this.patrolling);
@@ -58,7 +58,7 @@ extends HostileEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         if (compoundTag.containsKey("PatrolTarget")) {
-            this.patrolTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("PatrolTarget"));
+            this.patrolTarget = NbtHelper.toBlockPos(compoundTag.getCompound("PatrolTarget"));
         }
         this.patrolLeader = compoundTag.getBoolean("PatrolLeader");
         this.patrolling = compoundTag.getBoolean("Patrolling");

@@ -8,18 +8,18 @@ import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockStatePredicate
 implements Predicate<BlockState> {
     public static final Predicate<BlockState> ANY = blockState -> true;
-    private final StateFactory<Block, BlockState> factory;
+    private final StateManager<Block, BlockState> factory;
     private final Map<Property<?>, Predicate<Object>> propertyTests = Maps.newHashMap();
 
-    private BlockStatePredicate(StateFactory<Block, BlockState> stateFactory) {
-        this.factory = stateFactory;
+    private BlockStatePredicate(StateManager<Block, BlockState> stateManager) {
+        this.factory = stateManager;
     }
 
     public static BlockStatePredicate forBlock(Block block) {
@@ -27,7 +27,7 @@ implements Predicate<BlockState> {
     }
 
     public boolean method_11760(@Nullable BlockState blockState) {
-        if (blockState == null || !blockState.getBlock().equals(this.factory.getBaseObject())) {
+        if (blockState == null || !blockState.getBlock().equals(this.factory.getOwner())) {
             return false;
         }
         if (this.propertyTests.isEmpty()) {

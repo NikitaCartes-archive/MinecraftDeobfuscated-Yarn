@@ -16,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import net.minecraft.class_4570;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.UniformLootTableRange;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
 import org.jetbrains.annotations.Nullable;
@@ -31,8 +31,8 @@ public class SetAttributesLootFunction
 extends ConditionalLootFunction {
     private final List<Attribute> attributes;
 
-    private SetAttributesLootFunction(class_4570[] args, List<Attribute> list) {
-        super(args);
+    private SetAttributesLootFunction(LootCondition[] lootConditions, List<Attribute> list) {
+        super(lootConditions);
         this.attributes = ImmutableList.copyOf(list);
     }
 
@@ -168,7 +168,7 @@ extends ConditionalLootFunction {
             jsonObject.add("modifiers", jsonArray);
         }
 
-        public SetAttributesLootFunction method_617(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public SetAttributesLootFunction method_617(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "modifiers");
             ArrayList<Attribute> list = Lists.newArrayListWithExpectedSize(jsonArray.size());
             for (JsonElement jsonElement : jsonArray) {
@@ -177,12 +177,12 @@ extends ConditionalLootFunction {
             if (list.isEmpty()) {
                 throw new JsonSyntaxException("Invalid attribute modifiers array; cannot be empty");
             }
-            return new SetAttributesLootFunction(args, list);
+            return new SetAttributesLootFunction(lootConditions, list);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_617(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_617(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

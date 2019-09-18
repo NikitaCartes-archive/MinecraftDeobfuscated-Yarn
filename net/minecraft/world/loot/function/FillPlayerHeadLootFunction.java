@@ -9,15 +9,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.authlib.GameProfile;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.TagHelper;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
@@ -26,22 +26,22 @@ public class FillPlayerHeadLootFunction
 extends ConditionalLootFunction {
     private final LootContext.EntityTarget entity;
 
-    public FillPlayerHeadLootFunction(class_4570[] args, LootContext.EntityTarget entityTarget) {
-        super(args);
+    public FillPlayerHeadLootFunction(LootCondition[] lootConditions, LootContext.EntityTarget entityTarget) {
+        super(lootConditions);
         this.entity = entityTarget;
     }
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return ImmutableSet.of(this.entity.getIdentifier());
+        return ImmutableSet.of(this.entity.getParameter());
     }
 
     @Override
     public ItemStack process(ItemStack itemStack, LootContext lootContext) {
         Entity entity;
-        if (itemStack.getItem() == Items.PLAYER_HEAD && (entity = lootContext.get(this.entity.getIdentifier())) instanceof PlayerEntity) {
+        if (itemStack.getItem() == Items.PLAYER_HEAD && (entity = lootContext.get(this.entity.getParameter())) instanceof PlayerEntity) {
             GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-            itemStack.getOrCreateTag().put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
+            itemStack.getOrCreateTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
         }
         return itemStack;
     }
@@ -57,14 +57,14 @@ extends ConditionalLootFunction {
             jsonObject.add("entity", jsonSerializationContext.serialize((Object)fillPlayerHeadLootFunction.entity));
         }
 
-        public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class);
-            return new FillPlayerHeadLootFunction(args, entityTarget);
+            return new FillPlayerHeadLootFunction(lootConditions, entityTarget);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_15958(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_15958(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

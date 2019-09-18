@@ -37,7 +37,7 @@ extends DrawableHelper {
             int k = i / 2 - 91;
             int l = j;
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().method_22813(BAR_TEX);
+            this.client.getTextureManager().bindTexture(BAR_TEX);
             this.renderBossBar(k, l, clientBossBar);
             String string = clientBossBar.getName().asFormattedString();
             int m = this.client.textRenderer.getStringWidth(string);

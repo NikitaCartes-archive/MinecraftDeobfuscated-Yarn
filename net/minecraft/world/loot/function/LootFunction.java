@@ -11,10 +11,10 @@ import java.util.function.Consumer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.ParameterConsumer;
+import net.minecraft.world.loot.context.LootContextAware;
 
 public interface LootFunction
-extends ParameterConsumer,
+extends LootContextAware,
 BiFunction<ItemStack, LootContext, ItemStack> {
     public static Consumer<ItemStack> apply(BiFunction<ItemStack, LootContext, ItemStack> biFunction, Consumer<ItemStack> consumer, LootContext lootContext) {
         return itemStack -> consumer.accept((ItemStack)biFunction.apply((ItemStack)itemStack, lootContext));

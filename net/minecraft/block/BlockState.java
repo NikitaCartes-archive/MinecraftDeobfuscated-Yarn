@@ -32,9 +32,9 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.AbstractPropertyContainer;
-import net.minecraft.state.PropertyContainer;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.AbstractState;
+import net.minecraft.state.State;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.BlockMirror;
@@ -56,8 +56,8 @@ import net.minecraft.world.loot.context.LootContext;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockState
-extends AbstractPropertyContainer<Block, BlockState>
-implements PropertyContainer<BlockState> {
+extends AbstractState<Block, BlockState>
+implements State<BlockState> {
     @Nullable
     private ShapeCache shapeCache;
     private final int luminance;
@@ -371,7 +371,7 @@ implements PropertyContainer<BlockState> {
 
     public static <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps, BlockState blockState) {
         ImmutableMap<Property<?>, Comparable<?>> immutableMap = blockState.getEntries();
-        Object object = immutableMap.isEmpty() ? dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()))) : dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()), dynamicOps.createString("Properties"), dynamicOps.createMap(immutableMap.entrySet().stream().map(entry -> Pair.of(dynamicOps.createString(((Property)entry.getKey()).getName()), dynamicOps.createString(PropertyContainer.getValueAsString((Property)entry.getKey(), (Comparable)entry.getValue())))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)))));
+        Object object = immutableMap.isEmpty() ? dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()))) : dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.BLOCK.getId(blockState.getBlock()).toString()), dynamicOps.createString("Properties"), dynamicOps.createMap(immutableMap.entrySet().stream().map(entry -> Pair.of(dynamicOps.createString(((Property)entry.getKey()).getName()), dynamicOps.createString(State.nameValue((Property)entry.getKey(), (Comparable)entry.getValue())))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)))));
         return new Dynamic<T>(dynamicOps, object);
     }
 
@@ -379,12 +379,12 @@ implements PropertyContainer<BlockState> {
         Block block = Registry.BLOCK.get(new Identifier(dynamic2.getElement("Name").flatMap(dynamic2.getOps()::getStringValue).orElse("minecraft:air")));
         Map<String, String> map = dynamic2.get("Properties").asMap(dynamic -> dynamic.asString(""), dynamic -> dynamic.asString(""));
         BlockState blockState = block.getDefaultState();
-        StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+        StateManager<Block, BlockState> stateManager = block.getStateFactory();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             String string = entry.getKey();
-            Property<?> property = stateFactory.getProperty(string);
+            Property<?> property = stateManager.getProperty(string);
             if (property == null) continue;
-            blockState = PropertyContainer.deserialize(blockState, property, string, dynamic2.toString(), entry.getValue());
+            blockState = State.tryRead(blockState, property, string, dynamic2.toString(), entry.getValue());
         }
         return blockState;
     }

@@ -11,9 +11,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WallStandingBlockItem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class SkullItem
@@ -46,7 +46,7 @@ extends WallStandingBlockItem {
         if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
             GameProfile gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
             gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-            compoundTag.put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
+            compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
             return true;
         }
         return false;

@@ -10,7 +10,6 @@ import com.google.gson.JsonSerializationContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Set;
 import java.util.function.UnaryOperator;
-import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
@@ -18,6 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
@@ -32,20 +32,20 @@ extends ConditionalLootFunction {
     @Nullable
     private final LootContext.EntityTarget entity;
 
-    private SetNameLootFunction(class_4570[] args, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
-        super(args);
+    private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
+        super(lootConditions);
         this.name = text;
         this.entity = entityTarget;
     }
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
+        return this.entity != null ? ImmutableSet.of(this.entity.getParameter()) : ImmutableSet.of();
     }
 
     public static UnaryOperator<Text> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
         Entity entity;
-        if (entityTarget != null && (entity = lootContext.get(entityTarget.getIdentifier())) != null) {
+        if (entityTarget != null && (entity = lootContext.get(entityTarget.getParameter())) != null) {
             ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
             return text -> {
                 try {
@@ -83,15 +83,15 @@ extends ConditionalLootFunction {
             }
         }
 
-        public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Text text = Text.Serializer.fromJson(jsonObject.get("name"));
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-            return new SetNameLootFunction(args, text, entityTarget);
+            return new SetNameLootFunction(lootConditions, text, entityTarget);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_629(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_629(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

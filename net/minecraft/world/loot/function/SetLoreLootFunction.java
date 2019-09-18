@@ -13,7 +13,6 @@ import com.google.gson.JsonSerializationContext;
 import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,6 +20,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
@@ -34,8 +34,8 @@ extends ConditionalLootFunction {
     @Nullable
     private final LootContext.EntityTarget entity;
 
-    public SetLoreLootFunction(class_4570[] args, boolean bl, List<Text> list, @Nullable LootContext.EntityTarget entityTarget) {
-        super(args);
+    public SetLoreLootFunction(LootCondition[] lootConditions, boolean bl, List<Text> list, @Nullable LootContext.EntityTarget entityTarget) {
+        super(lootConditions);
         this.replace = bl;
         this.lore = ImmutableList.copyOf(list);
         this.entity = entityTarget;
@@ -43,7 +43,7 @@ extends ConditionalLootFunction {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
+        return this.entity != null ? ImmutableSet.of(this.entity.getParameter()) : ImmutableSet.of();
     }
 
     @Override
@@ -109,16 +109,16 @@ extends ConditionalLootFunction {
             }
         }
 
-        public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
             List list = Streams.stream(JsonHelper.getArray(jsonObject, "lore")).map(Text.Serializer::fromJson).collect(ImmutableList.toImmutableList());
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-            return new SetLoreLootFunction(args, bl, list, entityTarget);
+            return new SetLoreLootFunction(lootConditions, bl, list, entityTarget);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_15968(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_15968(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

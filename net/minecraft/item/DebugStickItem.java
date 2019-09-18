@@ -15,7 +15,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -64,8 +64,8 @@ extends Item {
             return;
         }
         Block block = blockState.getBlock();
-        StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
-        Collection<Property<?>> collection = stateFactory.getProperties();
+        StateManager<Block, BlockState> stateManager = block.getStateFactory();
+        Collection<Property<?>> collection = stateManager.getProperties();
         String string = Registry.BLOCK.getId(block).toString();
         if (collection.isEmpty()) {
             DebugStickItem.sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".empty", string));
@@ -73,7 +73,7 @@ extends Item {
         }
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("DebugProperty");
         String string2 = compoundTag.getString(string);
-        Property<?> property = stateFactory.getProperty(string2);
+        Property<?> property = stateManager.getProperty(string2);
         if (bl) {
             if (property == null) {
                 property = collection.iterator().next();
@@ -102,7 +102,7 @@ extends Item {
     }
 
     private static <T extends Comparable<T>> String getValueString(BlockState blockState, Property<T> property) {
-        return property.getName(blockState.get(property));
+        return property.name(blockState.get(property));
     }
 }
 

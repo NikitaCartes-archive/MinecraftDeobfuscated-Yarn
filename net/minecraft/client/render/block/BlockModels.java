@@ -72,7 +72,7 @@ public class BlockModels {
     }
 
     private static <T extends Comparable<T>> String propertyValueToString(Property<T> property, Comparable<?> comparable) {
-        return property.getName(comparable);
+        return property.name(comparable);
     }
 }
 

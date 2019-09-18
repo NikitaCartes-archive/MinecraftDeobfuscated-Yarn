@@ -70,6 +70,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -79,7 +80,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -331,7 +331,7 @@ extends AnimalEntity {
         ListTag listTag = new ListTag();
         for (UUID uUID : list) {
             if (uUID == null) continue;
-            listTag.add(TagHelper.serializeUuid(uUID));
+            listTag.add(NbtHelper.fromUuid(uUID));
         }
         compoundTag.put("TrustedUUIDs", listTag);
         compoundTag.putBoolean("Sleeping", this.isSleeping());
@@ -345,7 +345,7 @@ extends AnimalEntity {
         super.readCustomDataFromTag(compoundTag);
         ListTag listTag = compoundTag.getList("TrustedUUIDs", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            this.addTrustedUuid(TagHelper.deserializeUuid(listTag.getCompoundTag(i)));
+            this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompoundTag(i)));
         }
         this.setSleeping(compoundTag.getBoolean("Sleeping"));
         this.setType(Type.byName(compoundTag.getString("Type")));

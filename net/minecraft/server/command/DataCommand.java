@@ -20,10 +20,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import net.minecraft.class_4580;
 import net.minecraft.command.BlockDataObject;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.EntityDataObject;
+import net.minecraft.command.StorageDataObject;
 import net.minecraft.command.arguments.NbtCompoundTagArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.command.arguments.NbtTagArgumentType;
@@ -46,9 +46,9 @@ public class DataCommand {
     private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.expected_list", object));
     private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.expected_object", object));
     private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.invalid_index", object));
-    public static final List<Function<String, ObjectType>> OBJECT_TYPES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786, class_4580.field_20855);
-    public static final List<ObjectType> TARGET_OBJECT_TYPES = OBJECT_TYPES.stream().map(function -> (ObjectType)function.apply("target")).collect(ImmutableList.toImmutableList());
-    public static final List<ObjectType> SOURCE_OBJECT_TYPES = OBJECT_TYPES.stream().map(function -> (ObjectType)function.apply("source")).collect(ImmutableList.toImmutableList());
+    public static final List<Function<String, ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(EntityDataObject.TYPE_FACTORY, BlockDataObject.TYPE_FACTORY, StorageDataObject.TYPE_FACTORY);
+    public static final List<ObjectType> TARGET_OBJECT_TYPES = OBJECT_TYPE_FACTORIES.stream().map(function -> (ObjectType)function.apply("target")).collect(ImmutableList.toImmutableList());
+    public static final List<ObjectType> SOURCE_OBJECT_TYPES = OBJECT_TYPE_FACTORIES.stream().map(function -> (ObjectType)function.apply("source")).collect(ImmutableList.toImmutableList());
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("data").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
@@ -57,7 +57,7 @@ public class DataCommand {
                 int i = IntegerArgumentType.getInteger(commandContext, "index");
                 return DataCommand.executeInsert(i, compoundTag, nbtPath, list);
             }))))).then(CommandManager.literal("prepend").then(modifyArgumentCreator.create((commandContext, compoundTag, nbtPath, list) -> DataCommand.executeInsert(0, compoundTag, nbtPath, list))))).then(CommandManager.literal("append").then(modifyArgumentCreator.create((commandContext, compoundTag, nbtPath, list) -> DataCommand.executeInsert(-1, compoundTag, nbtPath, list))))).then(CommandManager.literal("set").then(modifyArgumentCreator.create((commandContext, compoundTag, nbtPath, list) -> nbtPath.put(compoundTag, ((Tag)Iterables.getLast(list))::copy))))).then(CommandManager.literal("merge").then(modifyArgumentCreator.create((commandContext, compoundTag, nbtPath, list) -> {
-                List<Tag> collection = nbtPath.putIfAbsent(compoundTag, CompoundTag::new);
+                List<Tag> collection = nbtPath.getOrInit(compoundTag, CompoundTag::new);
                 int i = 0;
                 for (Tag tag : collection) {
                     if (!(tag instanceof CompoundTag)) {
@@ -80,7 +80,7 @@ public class DataCommand {
     }
 
     private static int executeInsert(int i, CompoundTag compoundTag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-        List<Tag> collection = nbtPath.putIfAbsent(compoundTag, ListTag::new);
+        List<Tag> collection = nbtPath.getOrInit(compoundTag, ListTag::new);
         int j = 0;
         for (Tag tag : collection) {
             if (!(tag instanceof AbstractListTag)) {
@@ -138,7 +138,7 @@ public class DataCommand {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         dataCommandObject.setTag(compoundTag);
-        commandContext.getSource().sendFeedback(dataCommandObject.getModifiedFeedback(), true);
+        commandContext.getSource().sendFeedback(dataCommandObject.feedbackModify(), true);
         return i;
     }
 
@@ -149,7 +149,7 @@ public class DataCommand {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         dataCommandObject.setTag(compoundTag);
-        serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
+        serverCommandSource.sendFeedback(dataCommandObject.feedbackModify(), true);
         return i;
     }
 
@@ -177,7 +177,7 @@ public class DataCommand {
         } else {
             throw GET_UNKNOWN_EXCEPTION.create(nbtPath.toString());
         }
-        serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(tag), false);
+        serverCommandSource.sendFeedback(dataCommandObject.feedbackQuery(tag), false);
         return i;
     }
 
@@ -187,12 +187,12 @@ public class DataCommand {
             throw GET_INVALID_EXCEPTION.create(nbtPath.toString());
         }
         int i = MathHelper.floor(((AbstractNumberTag)tag).getDouble() * d);
-        serverCommandSource.sendFeedback(dataCommandObject.getGetFeedback(nbtPath, d, i), false);
+        serverCommandSource.sendFeedback(dataCommandObject.feedbackGet(nbtPath, d, i), false);
         return i;
     }
 
     private static int executeGet(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject) throws CommandSyntaxException {
-        serverCommandSource.sendFeedback(dataCommandObject.getQueryFeedback(dataCommandObject.getTag()), false);
+        serverCommandSource.sendFeedback(dataCommandObject.feedbackQuery(dataCommandObject.getTag()), false);
         return 1;
     }
 
@@ -203,7 +203,7 @@ public class DataCommand {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         dataCommandObject.setTag(compoundTag3);
-        serverCommandSource.sendFeedback(dataCommandObject.getModifiedFeedback(), true);
+        serverCommandSource.sendFeedback(dataCommandObject.feedbackModify(), true);
         return 1;
     }
 

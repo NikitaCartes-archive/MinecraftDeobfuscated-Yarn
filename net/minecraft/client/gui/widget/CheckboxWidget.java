@@ -36,7 +36,7 @@ extends AbstractPressableButtonWidget {
     @Override
     public void renderButton(int i, int j, float f) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        minecraftClient.getTextureManager().method_22813(TEXTURE);
+        minecraftClient.getTextureManager().bindTexture(TEXTURE);
         RenderSystem.enableDepthTest();
         TextRenderer textRenderer = minecraftClient.textRenderer;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.alpha);

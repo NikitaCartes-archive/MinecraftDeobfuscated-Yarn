@@ -9,8 +9,8 @@ import java.util.function.Predicate;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +31,7 @@ implements Predicate<ItemStack> {
     }
 
     public boolean method_9783(ItemStack itemStack) {
-        return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.tag, itemStack.getTag(), true);
+        return itemStack.getItem() == this.item && NbtHelper.matches(this.tag, itemStack.getTag(), true);
     }
 
     public ItemStack createStack(int i, boolean bl) throws CommandSyntaxException {

@@ -5,14 +5,14 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class TickCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     public static final Identifier ID = new Identifier("tick");
 
     @Override
@@ -25,7 +25,7 @@ extends class_4558<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity) {
-        this.method_22511(serverPlayerEntity.getAdvancementManager());
+        this.grant(serverPlayerEntity.getAdvancementManager());
     }
 
     @Override

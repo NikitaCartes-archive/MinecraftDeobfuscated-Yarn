@@ -7,9 +7,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -18,7 +18,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class BrewedPotionCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("brewed_potion");
 
     @Override
@@ -36,7 +36,7 @@ extends class_4558<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, Potion potion) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(potion));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(potion));
     }
 
     @Override

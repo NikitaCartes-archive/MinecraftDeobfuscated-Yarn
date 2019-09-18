@@ -40,7 +40,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -357,8 +357,8 @@ extends Entity {
             i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
         } else if (this.field_7173 > 0) {
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this)).put(LootContextParameters.TOOL, itemStack).setRandom(this.random).setLuck((float)this.lureLevel + this.owner.getLuck());
-            LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.FISHING_GAMEPLAY);
-            List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.FISHING));
+            LootTable lootTable = this.world.getServer().getLootManager().getSupplier(LootTables.FISHING_GAMEPLAY);
+            List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
             Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, list);
             for (ItemStack itemStack2 : list) {
                 ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, itemStack2);

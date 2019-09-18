@@ -27,6 +27,7 @@ import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stat;
@@ -34,7 +35,6 @@ import net.minecraft.stat.StatHandler;
 import net.minecraft.stat.StatType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -94,7 +94,7 @@ extends StatHandler {
             if (!compoundTag.containsKey("DataVersion", 99)) {
                 compoundTag.putInt("DataVersion", 1343);
             }
-            if ((compoundTag = TagHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"))).containsKey("stats", 10)) {
+            if ((compoundTag = NbtHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"))).containsKey("stats", 10)) {
                 CompoundTag compoundTag2 = compoundTag.getCompound("stats");
                 for (String string2 : compoundTag2.getKeys()) {
                     if (!compoundTag2.containsKey(string2, 10)) continue;

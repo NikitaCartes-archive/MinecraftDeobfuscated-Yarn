@@ -5,8 +5,8 @@ package net.minecraft.world.loot.entry;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.minecraft.class_4570;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.entry.CombinedEntry;
 import net.minecraft.world.loot.entry.EntryCombiner;
 import net.minecraft.world.loot.entry.LootEntry;
@@ -14,8 +14,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class AlternativeEntry
 extends CombinedEntry {
-    AlternativeEntry(LootEntry[] lootEntrys, class_4570[] args) {
-        super(lootEntrys, args);
+    AlternativeEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
+        super(lootEntrys, lootConditions);
     }
 
     @Override

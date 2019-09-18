@@ -61,7 +61,7 @@ implements AutoCloseable {
         RenderSystem.scalef(0.00390625f, 0.00390625f, 0.00390625f);
         RenderSystem.translatef(8.0f, 8.0f, 8.0f);
         RenderSystem.matrixMode(5888);
-        this.client.getTextureManager().method_22813(this.textureIdentifier);
+        this.client.getTextureManager().bindTexture(this.textureIdentifier);
         RenderSystem.texParameter(3553, 10241, 9729);
         RenderSystem.texParameter(3553, 10240, 9729);
         RenderSystem.texParameter(3553, 10242, 10496);

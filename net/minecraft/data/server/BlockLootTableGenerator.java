@@ -37,31 +37,30 @@ import net.minecraft.block.TntBlock;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.class_4559;
-import net.minecraft.class_4570;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.BoundedIntUnaryOperator;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.loot.BinomialLootTableRange;
-import net.minecraft.world.loot.ConditionConsumerBuilder;
 import net.minecraft.world.loot.ConstantLootTableRange;
-import net.minecraft.world.loot.FunctionConsumerBuilder;
 import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTableRange;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.UniformLootTableRange;
 import net.minecraft.world.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.world.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.world.loot.condition.MatchToolLootCondition;
 import net.minecraft.world.loot.condition.RandomChanceLootCondition;
 import net.minecraft.world.loot.condition.SurvivesExplosionLootCondition;
@@ -79,140 +78,141 @@ import net.minecraft.world.loot.function.CopyStateFunction;
 import net.minecraft.world.loot.function.ExplosionDecayLootFunction;
 import net.minecraft.world.loot.function.LimitCountLootFunction;
 import net.minecraft.world.loot.function.LootFunction;
+import net.minecraft.world.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.world.loot.function.SetContentsLootFunction;
 import net.minecraft.world.loot.function.SetCountLootFunction;
 
 public class BlockLootTableGenerator
-implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-    private static final class_4570.Builder field_11336 = MatchToolLootCondition.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))));
-    private static final class_4570.Builder field_11337 = field_11336.invert();
-    private static final class_4570.Builder field_11343 = MatchToolLootCondition.builder(ItemPredicate.Builder.create().item(Items.SHEARS));
-    private static final class_4570.Builder field_11342 = field_11343.withCondition(field_11336);
-    private static final class_4570.Builder field_11341 = field_11342.invert();
+implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
+    private static final LootCondition.Builder field_11336 = MatchToolLootCondition.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))));
+    private static final LootCondition.Builder field_11337 = field_11336.invert();
+    private static final LootCondition.Builder field_11343 = MatchToolLootCondition.builder(ItemPredicate.Builder.create().item(Items.SHEARS));
+    private static final LootCondition.Builder field_11342 = field_11343.withCondition(field_11336);
+    private static final LootCondition.Builder field_11341 = field_11342.invert();
     private static final Set<Item> field_11340 = Stream.of(Blocks.DRAGON_EGG, Blocks.BEACON, Blocks.CONDUIT, Blocks.SKELETON_SKULL, Blocks.WITHER_SKELETON_SKULL, Blocks.PLAYER_HEAD, Blocks.ZOMBIE_HEAD, Blocks.CREEPER_HEAD, Blocks.DRAGON_HEAD, Blocks.SHULKER_BOX, Blocks.BLACK_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX, Blocks.BROWN_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX, Blocks.LIGHT_GRAY_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.WHITE_SHULKER_BOX, Blocks.YELLOW_SHULKER_BOX).map(ItemConvertible::asItem).collect(ImmutableSet.toImmutableSet());
     private static final float[] field_11339 = new float[]{0.05f, 0.0625f, 0.083333336f, 0.1f};
     private static final float[] field_11338 = new float[]{0.025f, 0.027777778f, 0.03125f, 0.041666668f, 0.1f};
-    private final Map<Identifier, LootSupplier.Builder> field_16493 = Maps.newHashMap();
+    private final Map<Identifier, LootTable.Builder> field_16493 = Maps.newHashMap();
 
-    private static <T> T method_10393(ItemConvertible itemConvertible, FunctionConsumerBuilder<T> functionConsumerBuilder) {
+    private static <T> T method_10393(ItemConvertible itemConvertible, LootFunctionConsumingBuilder<T> lootFunctionConsumingBuilder) {
         if (!field_11340.contains(itemConvertible.asItem())) {
-            return functionConsumerBuilder.withFunction(ExplosionDecayLootFunction.builder());
+            return lootFunctionConsumingBuilder.withFunction(ExplosionDecayLootFunction.builder());
         }
-        return functionConsumerBuilder.getThis();
+        return lootFunctionConsumingBuilder.getThis();
     }
 
-    private static <T> T method_10392(ItemConvertible itemConvertible, ConditionConsumerBuilder<T> conditionConsumerBuilder) {
+    private static <T> T method_10392(ItemConvertible itemConvertible, LootConditionConsumingBuilder<T> lootConditionConsumingBuilder) {
         if (!field_11340.contains(itemConvertible.asItem())) {
-            return conditionConsumerBuilder.withCondition(SurvivesExplosionLootCondition.builder());
+            return lootConditionConsumingBuilder.withCondition(SurvivesExplosionLootCondition.builder());
         }
-        return conditionConsumerBuilder.getThis();
+        return lootConditionConsumingBuilder.getThis();
     }
 
-    private static LootSupplier.Builder method_10394(ItemConvertible itemConvertible) {
-        return LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(itemConvertible, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible))));
+    private static LootTable.Builder method_10394(ItemConvertible itemConvertible) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10392(itemConvertible, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible))));
     }
 
-    private static LootSupplier.Builder method_10381(Block block, class_4570.Builder builder, LootEntry.Builder<?> builder2) {
-        return LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(((LeafEntry.Builder)ItemEntry.builder(block).method_421(builder)).withChild(builder2)));
+    private static LootTable.Builder method_10381(Block block, LootCondition.Builder builder, LootEntry.Builder<?> builder2) {
+        return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(((LeafEntry.Builder)ItemEntry.builder(block).method_421(builder)).withChild(builder2)));
     }
 
-    private static LootSupplier.Builder method_10397(Block block, LootEntry.Builder<?> builder) {
+    private static LootTable.Builder method_10397(Block block, LootEntry.Builder<?> builder) {
         return BlockLootTableGenerator.method_10381(block, field_11336, builder);
     }
 
-    private static LootSupplier.Builder method_10380(Block block, LootEntry.Builder<?> builder) {
+    private static LootTable.Builder method_10380(Block block, LootEntry.Builder<?> builder) {
         return BlockLootTableGenerator.method_10381(block, field_11343, builder);
     }
 
-    private static LootSupplier.Builder method_10388(Block block, LootEntry.Builder<?> builder) {
+    private static LootTable.Builder method_10388(Block block, LootEntry.Builder<?> builder) {
         return BlockLootTableGenerator.method_10381(block, field_11342, builder);
     }
 
-    private static LootSupplier.Builder method_10382(Block block, ItemConvertible itemConvertible) {
+    private static LootTable.Builder method_10382(Block block, ItemConvertible itemConvertible) {
         return BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(itemConvertible)));
     }
 
-    private static LootSupplier.Builder method_10384(ItemConvertible itemConvertible, LootTableRange lootTableRange) {
-        return LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(itemConvertible, ItemEntry.builder(itemConvertible).method_438(SetCountLootFunction.builder(lootTableRange)))));
+    private static LootTable.Builder method_10384(ItemConvertible itemConvertible, LootTableRange lootTableRange) {
+        return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(itemConvertible, ItemEntry.builder(itemConvertible).method_438(SetCountLootFunction.builder(lootTableRange)))));
     }
 
-    private static LootSupplier.Builder method_10386(Block block, ItemConvertible itemConvertible, LootTableRange lootTableRange) {
+    private static LootTable.Builder method_10386(Block block, ItemConvertible itemConvertible, LootTableRange lootTableRange) {
         return BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(itemConvertible).method_438(SetCountLootFunction.builder(lootTableRange))));
     }
 
-    private static LootSupplier.Builder method_10373(ItemConvertible itemConvertible) {
-        return LootSupplier.builder().withPool(LootPool.builder().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible)));
+    private static LootTable.Builder method_10373(ItemConvertible itemConvertible) {
+        return LootTable.builder().withPool(LootPool.builder().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible)));
     }
 
-    private static LootSupplier.Builder method_10389(ItemConvertible itemConvertible) {
-        return LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(Blocks.FLOWER_POT, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Blocks.FLOWER_POT)))).withPool(BlockLootTableGenerator.method_10392(itemConvertible, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible))));
+    private static LootTable.Builder method_10389(ItemConvertible itemConvertible) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10392(Blocks.FLOWER_POT, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Blocks.FLOWER_POT)))).withPool(BlockLootTableGenerator.method_10392(itemConvertible, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible))));
     }
 
-    private static LootSupplier.Builder method_10383(Block block) {
-        return LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(block).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(2)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22525(SlabBlock.TYPE, SlabType.DOUBLE)))))));
+    private static LootTable.Builder method_10383(Block block) {
+        return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(block).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(2)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SlabBlock.TYPE, SlabType.DOUBLE)))))));
     }
 
-    private static <T extends Comparable<T> & StringIdentifiable> LootSupplier.Builder method_10375(Block block, Property<T> property, T comparable) {
-        return LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22525(property, comparable))))));
+    private static <T extends Comparable<T> & StringIdentifiable> LootTable.Builder method_10375(Block block, Property<T> property, T comparable) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(property, comparable))))));
     }
 
-    private static LootSupplier.Builder method_10396(Block block) {
-        return LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY)))));
+    private static LootTable.Builder method_10396(Block block) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY)))));
     }
 
-    private static LootSupplier.Builder method_16876(Block block) {
-        return LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Lock", "BlockEntityTag.Lock").withOperation("LootTable", "BlockEntityTag.LootTable").withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed"))).method_438(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS))))));
+    private static LootTable.Builder method_16876(Block block) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Lock", "BlockEntityTag.Lock").withOperation("LootTable", "BlockEntityTag.LootTable").withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed"))).method_438(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS))))));
     }
 
-    private static LootSupplier.Builder method_16877(Block block) {
-        return LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Patterns", "BlockEntityTag.Patterns")))));
+    private static LootTable.Builder method_16877(Block block) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Patterns", "BlockEntityTag.Patterns")))));
     }
 
-    private static LootSupplier.Builder method_22142(Block block) {
-        return LootSupplier.builder().withPool(LootPool.builder().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(block).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).method_438(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))));
+    private static LootTable.Builder method_22142(Block block) {
+        return LootTable.builder().withPool(LootPool.builder().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(block).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).method_438(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))));
     }
 
-    private static LootSupplier.Builder method_22143(Block block) {
-        return LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(((LootEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).method_421(field_11336)).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).method_438(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))).withChild(ItemEntry.builder(block))));
+    private static LootTable.Builder method_22143(Block block) {
+        return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(((LootEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).method_421(field_11336)).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).method_438(CopyStateFunction.getBuilder(block).method_21898(BeeHiveBlock.HONEY_LEVEL))).withChild(ItemEntry.builder(block))));
     }
 
-    private static LootSupplier.Builder method_10377(Block block, Item item) {
+    private static LootTable.Builder method_10377(Block block, Item item) {
         return BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(item).method_438(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))));
     }
 
-    private static LootSupplier.Builder method_10385(Block block, ItemConvertible itemConvertible) {
+    private static LootTable.Builder method_10385(Block block, ItemConvertible itemConvertible) {
         return BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ((LeafEntry.Builder)ItemEntry.builder(itemConvertible).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-6.0f, 2.0f)))).method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMin(0)))));
     }
 
-    private static LootSupplier.Builder method_10371(Block block) {
+    private static LootTable.Builder method_10371(Block block) {
         return BlockLootTableGenerator.method_10380(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ((LeafEntry.Builder)ItemEntry.builder(Items.WHEAT_SEEDS).method_421(RandomChanceLootCondition.builder(0.125f))).method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE, 2))));
     }
 
-    private static LootSupplier.Builder method_10387(Block block, Item item) {
-        return LootSupplier.builder().withPool(BlockLootTableGenerator.method_10393(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(item).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.06666667f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 0))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.13333334f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 1))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.2f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 2))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.26666668f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 3))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.33333334f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 4))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.4f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 5))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.46666667f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 6))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(StemBlock.AGE, 7)))))));
+    private static LootTable.Builder method_10387(Block block, Item item) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10393(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(item).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.06666667f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, false))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.13333334f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, true))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.2f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 2))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.26666668f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 3))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.33333334f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 4))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.4f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 5))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.46666667f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 6))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 7)))))));
     }
 
-    private static LootSupplier.Builder method_10372(ItemConvertible itemConvertible) {
-        return LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemConvertible)));
+    private static LootTable.Builder method_10372(ItemConvertible itemConvertible) {
+        return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemConvertible)));
     }
 
-    private static LootSupplier.Builder method_10390(Block block, Block block2, float ... fs) {
+    private static LootTable.Builder method_10390(Block block, Block block2, float ... fs) {
         return BlockLootTableGenerator.method_10388(block, ((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(block2))).method_421(TableBonusLootCondition.builder(Enchantments.FORTUNE, fs))).withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11341).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(Items.STICK).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0f, 2.0f))))).method_421(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.02f, 0.022222223f, 0.025f, 0.033333335f, 0.1f))));
     }
 
-    private static LootSupplier.Builder method_10378(Block block, Block block2, float ... fs) {
+    private static LootTable.Builder method_10378(Block block, Block block2, float ... fs) {
         return BlockLootTableGenerator.method_10390(block, block2, fs).withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11341).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(Items.APPLE))).method_421(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.005f, 0.0055555557f, 0.00625f, 0.008333334f, 0.025f))));
     }
 
-    private static LootSupplier.Builder method_10391(Block block, Item item, Item item2, class_4570.Builder builder) {
-        return BlockLootTableGenerator.method_10393(block, LootSupplier.builder().withPool(LootPool.builder().withEntry(((LeafEntry.Builder)ItemEntry.builder(item).method_421(builder)).withChild(ItemEntry.builder(item2)))).withPool(LootPool.builder().method_356(builder).withEntry((LootEntry.Builder<?>)ItemEntry.builder(item2).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3)))));
+    private static LootTable.Builder method_10391(Block block, Item item, Item item2, LootCondition.Builder builder) {
+        return BlockLootTableGenerator.method_10393(block, LootTable.builder().withPool(LootPool.builder().withEntry(((LeafEntry.Builder)ItemEntry.builder(item).method_421(builder)).withChild(ItemEntry.builder(item2)))).withPool(LootPool.builder().method_356(builder).withEntry((LootEntry.Builder<?>)ItemEntry.builder(item2).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3)))));
     }
 
-    public static LootSupplier.Builder method_10395() {
-        return LootSupplier.builder();
+    public static LootTable.Builder method_10395() {
+        return LootTable.builder();
     }
 
-    public void method_10379(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
+    public void method_10379(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
         this.method_16329(Blocks.GRANITE);
         this.method_16329(Blocks.POLISHED_GRANITE);
         this.method_16329(Blocks.DIORITE);
@@ -662,10 +662,10 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         this.method_16293(Blocks.SUNFLOWER, block -> BlockLootTableGenerator.method_10375(block, TallPlantBlock.HALF, DoubleBlockHalf.LOWER));
         this.method_16293(Blocks.PEONY, block -> BlockLootTableGenerator.method_10375(block, TallPlantBlock.HALF, DoubleBlockHalf.LOWER));
         this.method_16293(Blocks.ROSE_BUSH, block -> BlockLootTableGenerator.method_10375(block, TallPlantBlock.HALF, DoubleBlockHalf.LOWER));
-        this.method_16258(Blocks.TNT, LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(Blocks.TNT, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Blocks.TNT).method_421(BlockStatePropertyLootCondition.builder(Blocks.TNT).method_22584(class_4559.class_4560.method_22523().method_22527(TntBlock.UNSTABLE, false)))))));
-        this.method_16293(Blocks.COCOA, block -> LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(Items.COCOA_BEANS).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(3)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(CocoaBlock.AGE, 2))))))));
-        this.method_16293(Blocks.SEA_PICKLE, block -> LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(Blocks.SEA_PICKLE, ((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(2)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SeaPickleBlock.PICKLES, 2))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(3)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SeaPickleBlock.PICKLES, 3))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(4)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SeaPickleBlock.PICKLES, 4))))))));
-        this.method_16293(Blocks.COMPOSTER, block -> LootSupplier.builder().withPool(LootPool.builder().withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(Items.COMPOSTER)))).withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.BONE_MEAL)).method_356(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(ComposterBlock.LEVEL, 8)))));
+        this.method_16258(Blocks.TNT, LootTable.builder().withPool(BlockLootTableGenerator.method_10392(Blocks.TNT, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Blocks.TNT).method_421(BlockStatePropertyLootCondition.builder(Blocks.TNT).method_22584(StatePredicate.Builder.create().exactMatch(TntBlock.UNSTABLE, false)))))));
+        this.method_16293(Blocks.COCOA, block -> LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(Items.COCOA_BEANS).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(3)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(CocoaBlock.AGE, 2))))))));
+        this.method_16293(Blocks.SEA_PICKLE, block -> LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(Blocks.SEA_PICKLE, ((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(2)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 2))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(3)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 3))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootTableRange.create(4)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 4))))))));
+        this.method_16293(Blocks.COMPOSTER, block -> LootTable.builder().withPool(LootPool.builder().withEntry((LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ItemEntry.builder(Items.COMPOSTER)))).withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.BONE_MEAL)).method_356(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))));
         this.method_16293(Blocks.BEACON, BlockLootTableGenerator::method_10396);
         this.method_16293(Blocks.BREWING_STAND, BlockLootTableGenerator::method_10396);
         this.method_16293(Blocks.CHEST, BlockLootTableGenerator::method_10396);
@@ -719,7 +719,7 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         this.method_16293(Blocks.RED_BANNER, BlockLootTableGenerator::method_16877);
         this.method_16293(Blocks.WHITE_BANNER, BlockLootTableGenerator::method_16877);
         this.method_16293(Blocks.YELLOW_BANNER, BlockLootTableGenerator::method_16877);
-        this.method_16293(Blocks.PLAYER_HEAD, block -> LootSupplier.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Owner", "SkullOwner"))))));
+        this.method_16293(Blocks.PLAYER_HEAD, block -> LootTable.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Owner", "SkullOwner"))))));
         this.method_16293(Blocks.BEE_NEST, BlockLootTableGenerator::method_22142);
         this.method_16293(Blocks.BEE_HIVE, BlockLootTableGenerator::method_22143);
         this.method_16293(Blocks.BIRCH_LEAVES, block -> BlockLootTableGenerator.method_10390(block, Blocks.BIRCH_SAPLING, field_11339));
@@ -728,15 +728,15 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         this.method_16293(Blocks.SPRUCE_LEAVES, block -> BlockLootTableGenerator.method_10390(block, Blocks.SPRUCE_SAPLING, field_11339));
         this.method_16293(Blocks.OAK_LEAVES, block -> BlockLootTableGenerator.method_10378(block, Blocks.OAK_SAPLING, field_11339));
         this.method_16293(Blocks.DARK_OAK_LEAVES, block -> BlockLootTableGenerator.method_10378(block, Blocks.DARK_OAK_SAPLING, field_11339));
-        BlockStatePropertyLootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.BEETROOTS).method_22584(class_4559.class_4560.method_22523().method_22524(BeetrootsBlock.AGE, 3));
+        BlockStatePropertyLootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.BEETROOTS).method_22584(StatePredicate.Builder.create().exactMatch(BeetrootsBlock.AGE, 3));
         this.method_16258(Blocks.BEETROOTS, BlockLootTableGenerator.method_10391(Blocks.BEETROOTS, Items.BEETROOT, Items.BEETROOT_SEEDS, builder));
-        BlockStatePropertyLootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(Blocks.WHEAT).method_22584(class_4559.class_4560.method_22523().method_22524(CropBlock.AGE, 7));
+        BlockStatePropertyLootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(Blocks.WHEAT).method_22584(StatePredicate.Builder.create().exactMatch(CropBlock.AGE, 7));
         this.method_16258(Blocks.WHEAT, BlockLootTableGenerator.method_10391(Blocks.WHEAT, Items.WHEAT, Items.WHEAT_SEEDS, builder2));
-        BlockStatePropertyLootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(Blocks.CARROTS).method_22584(class_4559.class_4560.method_22523().method_22524(CarrotsBlock.AGE, 7));
-        this.method_16258(Blocks.CARROTS, BlockLootTableGenerator.method_10393(Blocks.CARROTS, LootSupplier.builder().withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.CARROT))).withPool(LootPool.builder().method_356(builder3).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Items.CARROT).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3))))));
-        BlockStatePropertyLootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES).method_22584(class_4559.class_4560.method_22523().method_22524(PotatoesBlock.AGE, 7));
-        this.method_16258(Blocks.POTATOES, BlockLootTableGenerator.method_10393(Blocks.POTATOES, LootSupplier.builder().withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.POTATO))).withPool(LootPool.builder().method_356(builder4).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Items.POTATO).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3)))).withPool(LootPool.builder().method_356(builder4).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Items.POISONOUS_POTATO).method_421(RandomChanceLootCondition.builder(0.02f))))));
-        this.method_16293(Blocks.SWEET_BERRY_BUSH, block -> BlockLootTableGenerator.method_10393(block, LootSupplier.builder().withPool(LootPool.builder().method_356(BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).method_22584(class_4559.class_4560.method_22523().method_22524(SweetBerryBushBlock.AGE, 3))).withEntry(ItemEntry.builder(Items.SWEET_BERRIES)).method_353(SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 3.0f))).method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))).withPool(LootPool.builder().method_356(BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).method_22584(class_4559.class_4560.method_22523().method_22524(SweetBerryBushBlock.AGE, 2))).withEntry(ItemEntry.builder(Items.SWEET_BERRIES)).method_353(SetCountLootFunction.builder(UniformLootTableRange.between(1.0f, 2.0f))).method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE)))));
+        BlockStatePropertyLootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(Blocks.CARROTS).method_22584(StatePredicate.Builder.create().exactMatch(CarrotsBlock.AGE, 7));
+        this.method_16258(Blocks.CARROTS, BlockLootTableGenerator.method_10393(Blocks.CARROTS, LootTable.builder().withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.CARROT))).withPool(LootPool.builder().method_356(builder3).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Items.CARROT).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3))))));
+        BlockStatePropertyLootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES).method_22584(StatePredicate.Builder.create().exactMatch(PotatoesBlock.AGE, 7));
+        this.method_16258(Blocks.POTATOES, BlockLootTableGenerator.method_10393(Blocks.POTATOES, LootTable.builder().withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.POTATO))).withPool(LootPool.builder().method_356(builder4).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Items.POTATO).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3)))).withPool(LootPool.builder().method_356(builder4).withEntry((LootEntry.Builder<?>)ItemEntry.builder(Items.POISONOUS_POTATO).method_421(RandomChanceLootCondition.builder(0.02f))))));
+        this.method_16293(Blocks.SWEET_BERRY_BUSH, block -> BlockLootTableGenerator.method_10393(block, LootTable.builder().withPool(LootPool.builder().method_356(BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).method_22584(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 3))).withEntry(ItemEntry.builder(Items.SWEET_BERRIES)).method_353(SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 3.0f))).method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))).withPool(LootPool.builder().method_356(BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).method_22584(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 2))).withEntry(ItemEntry.builder(Items.SWEET_BERRIES)).method_353(SetCountLootFunction.builder(UniformLootTableRange.between(1.0f, 2.0f))).method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE)))));
         this.method_16293(Blocks.BROWN_MUSHROOM_BLOCK, block -> BlockLootTableGenerator.method_10385(block, Blocks.BROWN_MUSHROOM));
         this.method_16293(Blocks.RED_MUSHROOM_BLOCK, block -> BlockLootTableGenerator.method_10385(block, Blocks.RED_MUSHROOM));
         this.method_16293(Blocks.COAL_ORE, block -> BlockLootTableGenerator.method_10377(block, Items.COAL));
@@ -749,19 +749,19 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         this.method_16293(Blocks.SEAGRASS, BlockLootTableGenerator::method_10372);
         this.method_16293(Blocks.VINE, BlockLootTableGenerator::method_10372);
         this.method_16258(Blocks.TALL_SEAGRASS, BlockLootTableGenerator.method_10372(Blocks.SEAGRASS));
-        this.method_16293(Blocks.LARGE_FERN, block -> BlockLootTableGenerator.method_10380(Blocks.FERN, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22525(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)))).method_421(RandomChanceLootCondition.builder(0.125f))));
-        this.method_16258(Blocks.TALL_GRASS, BlockLootTableGenerator.method_10380(Blocks.GRASS, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(Blocks.TALL_GRASS, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(Blocks.TALL_GRASS).method_22584(class_4559.class_4560.method_22523().method_22525(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)))).method_421(RandomChanceLootCondition.builder(0.125f))));
+        this.method_16293(Blocks.LARGE_FERN, block -> BlockLootTableGenerator.method_10380(Blocks.FERN, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)))).method_421(RandomChanceLootCondition.builder(0.125f))));
+        this.method_16258(Blocks.TALL_GRASS, BlockLootTableGenerator.method_10380(Blocks.GRASS, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(Blocks.TALL_GRASS, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(Blocks.TALL_GRASS).method_22584(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)))).method_421(RandomChanceLootCondition.builder(0.125f))));
         this.method_16293(Blocks.MELON_STEM, block -> BlockLootTableGenerator.method_10387(block, Items.MELON_SEEDS));
         this.method_16293(Blocks.PUMPKIN_STEM, block -> BlockLootTableGenerator.method_10387(block, Items.PUMPKIN_SEEDS));
-        this.method_16293(Blocks.CHORUS_FLOWER, block -> LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(block))).method_421(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS)))));
+        this.method_16293(Blocks.CHORUS_FLOWER, block -> LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(block))).method_421(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS)))));
         this.method_16293(Blocks.FERN, BlockLootTableGenerator::method_10371);
         this.method_16293(Blocks.GRASS, BlockLootTableGenerator::method_10371);
         this.method_16293(Blocks.GLOWSTONE, block -> BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(Items.GLOWSTONE_DUST).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 4.0f)))).method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))).method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 4))))));
         this.method_16293(Blocks.MELON, block -> BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(Items.MELON_SLICE).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(3.0f, 7.0f)))).method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))).method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMax(9))))));
         this.method_16293(Blocks.REDSTONE_ORE, block -> BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ((LeafEntry.Builder)ItemEntry.builder(Items.REDSTONE).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(4.0f, 5.0f)))).method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE)))));
         this.method_16293(Blocks.SEA_LANTERN, block -> BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10393(block, ((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(Items.PRISMARINE_CRYSTALS).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 3.0f)))).method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))).method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 5))))));
-        this.method_16293(Blocks.NETHER_WART, block -> LootSupplier.builder().withPool(BlockLootTableGenerator.method_10393(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.NETHER_WART).method_438((LootFunction.Builder)SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 4.0f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(NetherWartBlock.AGE, 3))))).method_438((LootFunction.Builder)ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(NetherWartBlock.AGE, 3))))))));
-        this.method_16293(Blocks.SNOW, block -> LootSupplier.builder().withPool(LootPool.builder().method_356(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS)).withEntry(AlternativeEntry.builder(new LootEntry.Builder[]{AlternativeEntry.builder(new LootEntry.Builder[]{ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 1))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 2)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 3)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 4)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 5)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 6)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 7)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7))), ItemEntry.builder(Items.SNOWBALL).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(8)))}).method_421(field_11337), AlternativeEntry.builder(new LootEntry.Builder[]{ItemEntry.builder(Blocks.SNOW).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 1))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 2))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 3))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 4))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 5))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 6))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(class_4559.class_4560.method_22523().method_22524(SnowBlock.LAYERS, 7))), ItemEntry.builder(Blocks.SNOW_BLOCK)})}))));
+        this.method_16293(Blocks.NETHER_WART, block -> LootTable.builder().withPool(BlockLootTableGenerator.method_10393(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.NETHER_WART).method_438((LootFunction.Builder)SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 4.0f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3))))).method_438((LootFunction.Builder)ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(NetherWartBlock.AGE, 3))))))));
+        this.method_16293(Blocks.SNOW, block -> LootTable.builder().withPool(LootPool.builder().method_356(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS)).withEntry(AlternativeEntry.builder(new LootEntry.Builder[]{AlternativeEntry.builder(new LootEntry.Builder[]{ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, true))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7)))).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7))), ItemEntry.builder(Items.SNOWBALL).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(8)))}).method_421(field_11337), AlternativeEntry.builder(new LootEntry.Builder[]{ItemEntry.builder(Blocks.SNOW).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, true))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7)))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7))), ItemEntry.builder(Blocks.SNOW_BLOCK)})}))));
         this.method_16293(Blocks.GRAVEL, block -> BlockLootTableGenerator.method_10397(block, BlockLootTableGenerator.method_10392(block, ((LeafEntry.Builder)ItemEntry.builder(Items.FLINT).method_421(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1f, 0.14285715f, 0.25f, 1.0f))).withChild(ItemEntry.builder(block)))));
         this.method_16293(Blocks.CAMPFIRE, block -> BlockLootTableGenerator.method_10397(block, (LootEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(Items.CHARCOAL).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2))))));
         this.method_16262(Blocks.GLASS);
@@ -838,7 +838,7 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         for (Block block2 : Registry.BLOCK) {
             Identifier identifier = block2.getDropTableId();
             if (identifier == LootTables.EMPTY || !set.add(identifier)) continue;
-            LootSupplier.Builder builder5 = this.field_16493.remove(identifier);
+            LootTable.Builder builder5 = this.field_16493.remove(identifier);
             if (builder5 == null) {
                 throw new IllegalStateException(String.format("Missing loottable '%s' for '%s'", identifier, Registry.BLOCK.getId(block2)));
             }
@@ -869,11 +869,11 @@ implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
         this.method_16256(block, block);
     }
 
-    private void method_16293(Block block, Function<Block, LootSupplier.Builder> function) {
+    private void method_16293(Block block, Function<Block, LootTable.Builder> function) {
         this.method_16258(block, function.apply(block));
     }
 
-    private void method_16258(Block block, LootSupplier.Builder builder) {
+    private void method_16258(Block block, LootTable.Builder builder) {
         this.field_16493.put(block.getDropTableId(), builder);
     }
 

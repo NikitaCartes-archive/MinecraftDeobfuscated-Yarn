@@ -15,12 +15,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.state.PropertyContainer;
+import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractPropertyContainer<O, S>
-implements PropertyContainer<S> {
+public abstract class AbstractState<O, S>
+implements State<S> {
     private static final Function<Map.Entry<Property<?>, Comparable<?>>, String> PROPERTY_MAP_PRINTER = new Function<Map.Entry<Property<?>, Comparable<?>>, String>(){
 
         public String method_11576(@Nullable Map.Entry<Property<?>, Comparable<?>> entry) {
@@ -28,11 +28,11 @@ implements PropertyContainer<S> {
                 return "<NULL>";
             }
             Property<?> property = entry.getKey();
-            return property.getName() + "=" + this.valueToString(property, entry.getValue());
+            return property.getName() + "=" + this.nameValue(property, entry.getValue());
         }
 
-        private <T extends Comparable<T>> String valueToString(Property<T> property, Comparable<?> comparable) {
-            return property.getName(comparable);
+        private <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> comparable) {
+            return property.name(comparable);
         }
 
         @Override
@@ -45,14 +45,14 @@ implements PropertyContainer<S> {
     private final int hashCode;
     private Table<Property<?>, Comparable<?>, S> withTable;
 
-    protected AbstractPropertyContainer(O object, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
+    protected AbstractState(O object, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
         this.owner = object;
         this.entries = immutableMap;
         this.hashCode = immutableMap.hashCode();
     }
 
     public <T extends Comparable<T>> S cycle(Property<T> property) {
-        return this.with(property, (Comparable)AbstractPropertyContainer.getNext(property.getValues(), this.get(property)));
+        return this.with(property, (Comparable)AbstractState.getNext(property.getValues(), this.get(property)));
     }
 
     protected static <T> T getNext(Collection<T> collection, T object) {
@@ -92,7 +92,7 @@ implements PropertyContainer<S> {
         if (comparable == null) {
             throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
         }
-        return (T)((Comparable)property.getValueType().cast(comparable));
+        return (T)((Comparable)property.getType().cast(comparable));
     }
 
     @Override

@@ -44,7 +44,7 @@ extends AbstractContainerScreen<CartographyTableContainer> {
         MapState mapState;
         this.renderBackground();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().method_22813(TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(TEXTURE);
         int k = this.left;
         int l = this.top;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -83,7 +83,7 @@ extends AbstractContainerScreen<CartographyTableContainer> {
         } else if (bl) {
             this.blit(i + 67 + 16, j + 13, this.containerWidth, 132, 50, 66);
             this.drawMap(mapState, i + 86, j + 16, 0.34f);
-            this.minecraft.getTextureManager().method_22813(TEXTURE);
+            this.minecraft.getTextureManager().bindTexture(TEXTURE);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0.0f, 0.0f, 1.0f);
             this.blit(i + 67, j + 13 + 16, this.containerWidth, 132, 50, 66);
@@ -92,7 +92,7 @@ extends AbstractContainerScreen<CartographyTableContainer> {
         } else if (bl3) {
             this.blit(i + 67, j + 13, this.containerWidth, 0, 66, 66);
             this.drawMap(mapState, i + 71, j + 17, 0.45f);
-            this.minecraft.getTextureManager().method_22813(TEXTURE);
+            this.minecraft.getTextureManager().bindTexture(TEXTURE);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0.0f, 0.0f, 1.0f);
             this.blit(i + 66, j + 12, 0, this.containerHeight, 66, 66);

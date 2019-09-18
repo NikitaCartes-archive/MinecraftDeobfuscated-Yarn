@@ -41,7 +41,7 @@ extends AbstractButtonWidget {
 
     @Override
     protected void renderBg(MinecraftClient minecraftClient, int i, int j) {
-        minecraftClient.getTextureManager().method_22813(WIDGETS_LOCATION);
+        minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int k = (this.isHovered() ? 2 : 1) * 20;
         this.blit(this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + k, 4, 20);

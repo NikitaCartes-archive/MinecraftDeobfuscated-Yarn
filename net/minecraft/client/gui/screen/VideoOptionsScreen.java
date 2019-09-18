@@ -48,7 +48,7 @@ extends Screen {
     public void removed() {
         if (this.options.mipmapLevels != this.mipmapLevels) {
             this.minecraft.getSpriteAtlas().setMipLevel(this.options.mipmapLevels);
-            this.minecraft.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+            this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
             this.minecraft.getSpriteAtlas().setFilter(false, this.options.mipmapLevels > 0);
             this.minecraft.reloadResourcesConcurrently();
         }

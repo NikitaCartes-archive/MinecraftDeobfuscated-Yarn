@@ -13,14 +13,14 @@ import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -32,8 +32,8 @@ extends ConditionalLootFunction {
     private final Block block;
     private final Set<Property<?>> properties;
 
-    private CopyStateFunction(class_4570[] args, Block block, Set<Property<?>> set) {
-        super(args);
+    private CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> set) {
+        super(lootConditions);
         this.block = block;
         this.properties = set;
     }
@@ -66,7 +66,7 @@ extends ConditionalLootFunction {
 
     private static <T extends Comparable<T>> String method_21893(BlockState blockState, Property<T> property) {
         T comparable = blockState.get(property);
-        return property.getName(comparable);
+        return property.name(comparable);
     }
 
     public static class Factory
@@ -83,21 +83,21 @@ extends ConditionalLootFunction {
             jsonObject.add("properties", jsonArray);
         }
 
-        public CopyStateFunction method_21900(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public CopyStateFunction method_21900(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
             Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
-            StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+            StateManager<Block, BlockState> stateManager = block.getStateFactory();
             HashSet set = Sets.newHashSet();
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "properties", null);
             if (jsonArray != null) {
-                jsonArray.forEach(jsonElement -> set.add(stateFactory.getProperty(JsonHelper.asString(jsonElement, "property"))));
+                jsonArray.forEach(jsonElement -> set.add(stateManager.getProperty(JsonHelper.asString(jsonElement, "property"))));
             }
-            return new CopyStateFunction(args, block, set);
+            return new CopyStateFunction(lootConditions, block, set);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_21900(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_21900(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 

@@ -15,8 +15,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.ChatUtil;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.UserCache;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +47,7 @@ implements Tickable {
         super.toTag(compoundTag);
         if (this.owner != null) {
             CompoundTag compoundTag2 = new CompoundTag();
-            TagHelper.serializeProfile(compoundTag2, this.owner);
+            NbtHelper.fromGameProfile(compoundTag2, this.owner);
             compoundTag.put("Owner", compoundTag2);
         }
         return compoundTag;
@@ -58,7 +58,7 @@ implements Tickable {
         String string;
         super.fromTag(compoundTag);
         if (compoundTag.containsKey("Owner", 10)) {
-            this.setOwnerAndType(TagHelper.deserializeProfile(compoundTag.getCompound("Owner")));
+            this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("Owner")));
         } else if (compoundTag.containsKey("ExtraType", 8) && !ChatUtil.isEmpty(string = compoundTag.getString("ExtraType"))) {
             this.setOwnerAndType(new GameProfile(null, string));
         }

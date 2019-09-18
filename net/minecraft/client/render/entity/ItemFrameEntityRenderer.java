@@ -48,7 +48,7 @@ extends EntityRenderer<ItemFrameEntity> {
         RenderSystem.translated(i + 0.5, j + 0.5, k + 0.5);
         RenderSystem.rotatef(itemFrameEntity.pitch, 1.0f, 0.0f, 0.0f);
         RenderSystem.rotatef(180.0f - itemFrameEntity.yaw, 0.0f, 1.0f, 0.0f);
-        this.renderManager.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.renderManager.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
         BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
         ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
@@ -96,7 +96,7 @@ extends EntityRenderer<ItemFrameEntity> {
         RenderSystem.rotatef((float)i * 360.0f / 8.0f, 0.0f, 0.0f, 1.0f);
         if (bl) {
             RenderSystem.disableLighting();
-            this.renderManager.textureManager.method_22813(MAP_BACKGROUND_TEX);
+            this.renderManager.textureManager.bindTexture(MAP_BACKGROUND_TEX);
             RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
             float f = 0.0078125f;
             RenderSystem.scalef(0.0078125f, 0.0078125f, 0.0078125f);

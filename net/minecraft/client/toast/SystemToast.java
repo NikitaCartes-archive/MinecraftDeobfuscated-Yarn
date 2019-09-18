@@ -32,7 +32,7 @@ implements Toast {
             this.startTime = l;
             this.justUpdated = false;
         }
-        toastManager.getGame().getTextureManager().method_22813(TOASTS_TEX);
+        toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         toastManager.blit(0, 0, 0, 64, 160, 32);
         if (this.description == null) {

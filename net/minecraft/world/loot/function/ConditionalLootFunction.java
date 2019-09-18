@@ -10,12 +10,12 @@ import com.google.gson.JsonSerializationContext;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.ConditionConsumerBuilder;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.LootFunction;
@@ -23,12 +23,12 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class ConditionalLootFunction
 implements LootFunction {
-    protected final class_4570[] conditions;
+    protected final LootCondition[] conditions;
     private final Predicate<LootContext> predicate;
 
-    protected ConditionalLootFunction(class_4570[] args) {
-        this.conditions = args;
-        this.predicate = LootConditions.joinAnd(args);
+    protected ConditionalLootFunction(LootCondition[] lootConditions) {
+        this.conditions = lootConditions;
+        this.predicate = LootConditions.joinAnd(lootConditions);
     }
 
     public final ItemStack method_521(ItemStack itemStack, LootContext lootContext) {
@@ -45,7 +45,7 @@ implements LootFunction {
         }
     }
 
-    protected static Builder<?> builder(Function<class_4570[], LootFunction> function) {
+    protected static Builder<?> builder(Function<LootCondition[], LootFunction> function) {
         return new Joiner(function);
     }
 
@@ -67,11 +67,11 @@ implements LootFunction {
         }
 
         public final T method_528(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            class_4570[] lvs = JsonHelper.deserialize(jsonObject, "conditions", new class_4570[0], jsonDeserializationContext, class_4570[].class);
-            return this.fromJson(jsonObject, jsonDeserializationContext, lvs);
+            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
         }
 
-        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, class_4570[] var3);
+        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
 
         @Override
         public /* synthetic */ LootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -81,9 +81,9 @@ implements LootFunction {
 
     static final class Joiner
     extends Builder<Joiner> {
-        private final Function<class_4570[], LootFunction> joiner;
+        private final Function<LootCondition[], LootFunction> joiner;
 
-        public Joiner(Function<class_4570[], LootFunction> function) {
+        public Joiner(Function<LootCondition[], LootFunction> function) {
             this.joiner = function;
         }
 
@@ -104,10 +104,10 @@ implements LootFunction {
 
     public static abstract class Builder<T extends Builder<T>>
     implements LootFunction.Builder,
-    ConditionConsumerBuilder<T> {
-        private final List<class_4570> conditionList = Lists.newArrayList();
+    LootConditionConsumingBuilder<T> {
+        private final List<LootCondition> conditionList = Lists.newArrayList();
 
-        public T method_524(class_4570.Builder builder) {
+        public T method_524(LootCondition.Builder builder) {
             this.conditionList.add(builder.build());
             return this.getThisBuilder();
         }
@@ -118,8 +118,8 @@ implements LootFunction {
 
         protected abstract T getThisBuilder();
 
-        protected class_4570[] getConditions() {
-            return this.conditionList.toArray(new class_4570[0]);
+        protected LootCondition[] getConditions() {
+            return this.conditionList.toArray(new LootCondition[0]);
         }
 
         @Override
@@ -128,7 +128,7 @@ implements LootFunction {
         }
 
         @Override
-        public /* synthetic */ Object withCondition(class_4570.Builder builder) {
+        public /* synthetic */ Object withCondition(LootCondition.Builder builder) {
             return this.method_524(builder);
         }
     }

@@ -1,0 +1,71 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.world.loot.condition;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import net.minecraft.resource.JsonDataLoader;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.loot.BinomialLootTableRange;
+import net.minecraft.world.loot.ConstantLootTableRange;
+import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.UniformLootTableRange;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.condition.LootConditions;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextTypes;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
+public class LootConditionManager
+extends JsonDataLoader {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)UniformLootTableRange.class), new UniformLootTableRange.Serializer()).registerTypeAdapter((Type)((Object)BinomialLootTableRange.class), new BinomialLootTableRange.Serializer()).registerTypeAdapter((Type)((Object)ConstantLootTableRange.class), new ConstantLootTableRange.Serializer()).registerTypeHierarchyAdapter(LootCondition.class, new LootConditions.Factory()).registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer()).create();
+    private Map<Identifier, LootCondition> conditions = ImmutableMap.of();
+
+    public LootConditionManager() {
+        super(GSON, "predicates");
+    }
+
+    @Nullable
+    public LootCondition get(Identifier identifier) {
+        return this.conditions.get(identifier);
+    }
+
+    public LootCondition get(Identifier identifier, LootCondition lootCondition) {
+        return this.conditions.getOrDefault(identifier, lootCondition);
+    }
+
+    protected void method_22563(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
+        ImmutableMap.Builder builder = ImmutableMap.builder();
+        map.forEach((identifier, jsonObject) -> {
+            try {
+                LootCondition lootCondition = GSON.fromJson((JsonElement)jsonObject, LootCondition.class);
+                builder.put(identifier, lootCondition);
+            } catch (Exception exception) {
+                LOGGER.error("Couldn't parse loot table {}", identifier, (Object)exception);
+            }
+        });
+        ImmutableMap<Identifier, LootCondition> map2 = builder.build();
+        LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, map2::get, identifier -> null);
+        map2.forEach((identifier, lootCondition) -> lootCondition.check(lootTableReporter.withCondition("{" + identifier + "}", (Identifier)identifier)));
+        lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
+        this.conditions = map2;
+    }
+
+    public Set<Identifier> getIds() {
+        return Collections.unmodifiableSet(this.conditions.keySet());
+    }
+}
+

@@ -10,22 +10,22 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Iterator;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 
 public class InventoryChangedCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("inventory_changed");
 
     @Override
@@ -43,7 +43,7 @@ extends class_4558<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
     }
 
     @Override
@@ -83,9 +83,9 @@ extends class_4558<Conditions> {
             JsonObject jsonObject = new JsonObject();
             if (!(this.occupied.isDummy() && this.full.isDummy() && this.empty.isDummy())) {
                 JsonObject jsonObject2 = new JsonObject();
-                jsonObject2.add("occupied", this.occupied.serialize());
-                jsonObject2.add("full", this.full.serialize());
-                jsonObject2.add("empty", this.empty.serialize());
+                jsonObject2.add("occupied", this.occupied.toJson());
+                jsonObject2.add("full", this.full.toJson());
+                jsonObject2.add("empty", this.empty.toJson());
                 jsonObject.add("slots", jsonObject2);
             }
             if (this.items.length > 0) {

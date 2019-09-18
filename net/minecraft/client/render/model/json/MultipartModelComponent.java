@@ -25,7 +25,7 @@ import net.minecraft.client.render.model.json.MultipartModelSelector;
 import net.minecraft.client.render.model.json.OrMultipartModelSelector;
 import net.minecraft.client.render.model.json.SimpleMultipartModelSelector;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.JsonHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -48,8 +48,8 @@ public class MultipartModelComponent {
         return this.model;
     }
 
-    public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
-        return this.selector.getPredicate(stateFactory);
+    public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
+        return this.selector.getPredicate(stateManager);
     }
 
     public boolean equals(Object object) {

@@ -22,7 +22,7 @@ import net.minecraft.class_4538;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -53,7 +53,7 @@ extends Fluid {
     private final Map<FluidState, VoxelShape> shapeCache = Maps.newIdentityHashMap();
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
+    protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
         builder.add(FALLING);
     }
 

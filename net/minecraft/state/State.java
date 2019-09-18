@@ -9,7 +9,7 @@ import net.minecraft.state.property.Property;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public interface PropertyContainer<C> {
+public interface State<C> {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public <T extends Comparable<T>> T get(Property<T> var1);
@@ -18,17 +18,17 @@ public interface PropertyContainer<C> {
 
     public ImmutableMap<Property<?>, Comparable<?>> getEntries();
 
-    public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Comparable<?> comparable) {
-        return property.getName(comparable);
+    public static <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> comparable) {
+        return property.name(comparable);
     }
 
-    public static <S extends PropertyContainer<S>, T extends Comparable<T>> S deserialize(S propertyContainer, Property<T> property, String string, String string2, String string3) {
-        Optional<T> optional = property.getValue(string3);
+    public static <S extends State<S>, T extends Comparable<T>> S tryRead(S state, Property<T> property, String string, String string2, String string3) {
+        Optional<T> optional = property.parse(string3);
         if (optional.isPresent()) {
-            return (S)((PropertyContainer)propertyContainer.with(property, (Comparable)((Comparable)optional.get())));
+            return (S)((State)state.with(property, (Comparable)((Comparable)optional.get())));
         }
         LOGGER.warn("Unable to read property: {} with value: {} for input: {}", (Object)string, (Object)string3, (Object)string2);
-        return propertyContainer;
+        return state;
     }
 }
 

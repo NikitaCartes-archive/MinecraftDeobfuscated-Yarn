@@ -272,7 +272,7 @@ SynchronousResourceReloadListener {
                             tessellator.draw();
                         }
                         n = 0;
-                        this.client.getTextureManager().method_22813(field_20797);
+                        this.client.getTextureManager().bindTexture(field_20797);
                         bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
                     }
                     z = -((double)(this.ticks + q * q * 3121 + q * 45238971 + p * p * 418711 + p * 13761 & 0x1F) + (double)f) / 32.0 * (3.0 + random.nextDouble());
@@ -295,7 +295,7 @@ SynchronousResourceReloadListener {
                         tessellator.draw();
                     }
                     n = 1;
-                    this.client.getTextureManager().method_22813(field_20798);
+                    this.client.getTextureManager().bindTexture(field_20798);
                     bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
                 }
                 z = -((float)(this.ticks & 0x1FF) + f) / 512.0f;
@@ -399,7 +399,7 @@ SynchronousResourceReloadListener {
 
     @Override
     public void apply(ResourceManager resourceManager) {
-        this.textureManager.method_22813(FORCEFIELD_TEX);
+        this.textureManager.bindTexture(FORCEFIELD_TEX);
         RenderSystem.texParameter(3553, 10242, 10497);
         RenderSystem.texParameter(3553, 10243, 10497);
         RenderSystem.bindTexture(0);
@@ -822,14 +822,14 @@ SynchronousResourceReloadListener {
         this.updateChunks(l);
         profiler.swap("terrain");
         RenderSystem.pushMatrix();
-        this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         RenderSystem.enableCull();
         RenderSystem.shadeModel(7425);
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         GuiLighting.disable();
         this.renderLayer(BlockRenderLayer.field_9178, camera, lightmapTextureManager);
-        this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.renderLayer(BlockRenderLayer.CUTOUT_MIPPED, camera, lightmapTextureManager);
         this.renderLayer(BlockRenderLayer.field_9174, camera, lightmapTextureManager);
         RenderSystem.popMatrix();
@@ -934,7 +934,7 @@ SynchronousResourceReloadListener {
         BlockRenderLayer.field_20799.method_22724();
         GuiLighting.disable();
         profiler.swap("destroyProgress");
-        this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         RenderSystem.pushMatrix();
         this.field_20796.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
         this.field_20796.disableColor();
@@ -973,7 +973,7 @@ SynchronousResourceReloadListener {
                 int n = partiallyBrokenBlockEntry.getStage();
                 Sprite sprite = this.destroyStages.get(n);
                 BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
-                blockRenderManager.tesselateDamage(blockState2, blockPos, sprite, this.world);
+                blockRenderManager.tesselateDamage(this.field_20796, blockState2, blockPos, sprite, this.world);
             }
             this.field_20796.setOffset(0.0, 0.0, 0.0);
         }
@@ -1016,7 +1016,7 @@ SynchronousResourceReloadListener {
         this.method_22714(lightmapTextureManager, camera, f);
         RenderSystem.depthMask(true);
         this.renderWorldBorder(camera, f);
-        this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         BackgroundRenderer.applyFog(camera, 0, h, bl2);
         RenderSystem.shadeModel(7425);
         profiler.swap("translucent");
@@ -1100,7 +1100,7 @@ SynchronousResourceReloadListener {
         RenderSystem.defaultBlendFunc();
         GuiLighting.disable();
         RenderSystem.depthMask(false);
-        this.textureManager.method_22813(END_SKY_TEX);
+        this.textureManager.bindTexture(END_SKY_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         for (int i = 0; i < 6; ++i) {
@@ -1202,7 +1202,7 @@ SynchronousResourceReloadListener {
         RenderSystem.rotatef(-90.0f, 0.0f, 1.0f, 0.0f);
         RenderSystem.rotatef(this.world.getSkyAngle(f) * 360.0f, 1.0f, 0.0f, 0.0f);
         k = 30.0f;
-        this.textureManager.method_22813(SUN_TEX);
+        this.textureManager.bindTexture(SUN_TEX);
         bufferBuilder.begin(7, VertexFormats.POSITION_UV);
         bufferBuilder.vertex(-k, 100.0, -k).texture(0.0, 0.0).next();
         bufferBuilder.vertex(k, 100.0, -k).texture(1.0, 0.0).next();
@@ -1210,7 +1210,7 @@ SynchronousResourceReloadListener {
         bufferBuilder.vertex(-k, 100.0, k).texture(0.0, 1.0).next();
         tessellator.draw();
         k = 20.0f;
-        this.textureManager.method_22813(MOON_PHASES_TEX);
+        this.textureManager.bindTexture(MOON_PHASES_TEX);
         int r = this.world.getMoonPhase();
         m = r % 4;
         n = r / 4 % 2;
@@ -1301,7 +1301,7 @@ SynchronousResourceReloadListener {
             bufferBuilder.end();
             this.cloudsBuffer.set(bufferBuilder);
         }
-        this.textureManager.method_22813(CLOUDS_TEX);
+        this.textureManager.bindTexture(CLOUDS_TEX);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(12.0f, 1.0f, 12.0f);
         RenderSystem.translatef(-o, p, -q);
@@ -1449,7 +1449,7 @@ SynchronousResourceReloadListener {
         double i = camera.getPos().z;
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
-        this.textureManager.method_22813(FORCEFIELD_TEX);
+        this.textureManager.bindTexture(FORCEFIELD_TEX);
         RenderSystem.depthMask(false);
         RenderSystem.pushMatrix();
         int j = worldBorder.getStage().getColor();

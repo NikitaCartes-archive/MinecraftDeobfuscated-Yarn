@@ -13,11 +13,11 @@ import java.util.Objects;
 import java.util.function.Function;
 import net.minecraft.datafixers.TypeReferences;
 
-public abstract class FixItemName
+public abstract class ItemNameFix
 extends DataFix {
     private final String name;
 
-    public FixItemName(Schema schema, String string) {
+    public ItemNameFix(Schema schema, String string) {
         super(schema, false);
         this.name = string;
     }
@@ -34,7 +34,7 @@ extends DataFix {
     protected abstract String rename(String var1);
 
     public static DataFix create(Schema schema, String string, final Function<String, String> function) {
-        return new FixItemName(schema, string){
+        return new ItemNameFix(schema, string){
 
             @Override
             protected String rename(String string) {

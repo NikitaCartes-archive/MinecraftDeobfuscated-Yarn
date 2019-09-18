@@ -217,7 +217,7 @@ WindowEventHandler {
     public static final boolean IS_SYSTEM_MAC;
     public static final Identifier DEFAULT_TEXT_RENDERER_ID;
     public static final Identifier ALT_TEXT_RENDERER_ID;
-    private static final CompletableFuture<Unit> voidFuture;
+    private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE;
     private final File resourcePackDir;
     private final PropertyMap sessionPropertyMap;
     private final TextureManager textureManager;
@@ -417,7 +417,7 @@ WindowEventHandler {
         this.spriteAtlas = new SpriteAtlasTexture("textures");
         this.spriteAtlas.setMipLevel(this.options.mipmapLevels);
         this.textureManager.registerTextureUpdateable(SpriteAtlasTexture.BLOCK_ATLAS_TEX, this.spriteAtlas);
-        this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.spriteAtlas.setFilter(false, this.options.mipmapLevels > 0);
         this.blockColorMap = BlockColors.create();
         this.itemColorMap = ItemColors.create(this.blockColorMap);
@@ -458,7 +458,7 @@ WindowEventHandler {
             this.openScreen(new TitleScreen(true));
         }
         SplashScreen.init(this);
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture), () -> {
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE), () -> {
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
@@ -596,7 +596,7 @@ WindowEventHandler {
         }
         this.resourcePackContainerManager.callCreators();
         List<ResourcePack> list = this.resourcePackContainerManager.getEnabledContainers().stream().map(ResourcePackContainer::createResourcePack).collect(Collectors.toList());
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture, list), () -> {
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), () -> {
             this.languageManager.reloadResources(list);
             this.worldRenderer.reload();
             completableFuture.complete(null);
@@ -1936,7 +1936,7 @@ WindowEventHandler {
         IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.OSX;
         DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
-        voidFuture = CompletableFuture.completedFuture(Unit.INSTANCE);
+        COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
         memoryReservedForCrash = new byte[0xA00000];
     }
 }

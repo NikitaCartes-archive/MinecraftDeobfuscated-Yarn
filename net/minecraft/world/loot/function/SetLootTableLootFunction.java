@@ -6,13 +6,13 @@ package net.minecraft.world.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
 
@@ -21,8 +21,8 @@ extends ConditionalLootFunction {
     private final Identifier id;
     private final long seed;
 
-    private SetLootTableLootFunction(class_4570[] args, Identifier identifier, long l) {
-        super(args);
+    private SetLootTableLootFunction(LootCondition[] lootConditions, Identifier identifier, long l) {
+        super(lootConditions);
         this.id = identifier;
         this.seed = l;
     }
@@ -43,16 +43,16 @@ extends ConditionalLootFunction {
 
     @Override
     public void check(LootTableReporter lootTableReporter) {
-        if (lootTableReporter.method_22570(this.id)) {
+        if (lootTableReporter.hasSupplier(this.id)) {
             lootTableReporter.report("Table " + this.id + " is recursively called");
             return;
         }
         super.check(lootTableReporter);
-        LootSupplier lootSupplier = lootTableReporter.method_22574(this.id);
-        if (lootSupplier == null) {
+        LootTable lootTable = lootTableReporter.getSupplier(this.id);
+        if (lootTable == null) {
             lootTableReporter.report("Unknown loot table called " + this.id);
         } else {
-            lootSupplier.check(lootTableReporter.method_22569("->{" + this.id + "}", this.id));
+            lootTable.check(lootTableReporter.withSupplier("->{" + this.id + "}", this.id));
         }
     }
 
@@ -70,15 +70,15 @@ extends ConditionalLootFunction {
             }
         }
 
-        public SetLootTableLootFunction method_627(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public SetLootTableLootFunction method_627(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
             long l = JsonHelper.getLong(jsonObject, "seed", 0L);
-            return new SetLootTableLootFunction(args, identifier, l);
+            return new SetLootTableLootFunction(lootConditions, identifier, l);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_627(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_627(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

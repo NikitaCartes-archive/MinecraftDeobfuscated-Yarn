@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
-import net.minecraft.datafixers.fixes.FixChoiceTypes;
+import net.minecraft.datafixers.fixes.ChoiceTypesFix;
 import net.minecraft.datafixers.fixes.LeavesFix;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +52,7 @@ extends DataFix {
         }
         Type type6 = ((List.ListType)type5).getElement();
         OpticFinder opticFinder4 = DSL.typeFinder(type6);
-        return TypeRewriteRule.seq(new FixChoiceTypes(this.getOutputSchema(), "AddTrappedChestFix", TypeReferences.BLOCK_ENTITY).makeRule(), this.fixTypeEverywhereTyped("Trapped Chest fix", type4, typed2 -> typed2.updateTyped(opticFinder2, typed -> {
+        return TypeRewriteRule.seq(new ChoiceTypesFix(this.getOutputSchema(), "AddTrappedChestFix", TypeReferences.BLOCK_ENTITY).makeRule(), this.fixTypeEverywhereTyped("Trapped Chest fix", type4, typed2 -> typed2.updateTyped(opticFinder2, typed -> {
             Optional optional = typed.getOptionalTyped(opticFinder3);
             if (!optional.isPresent()) {
                 return typed;

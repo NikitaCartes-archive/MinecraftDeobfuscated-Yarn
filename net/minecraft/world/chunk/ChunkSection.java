@@ -9,8 +9,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.TagHelper;
 import net.minecraft.world.chunk.IdListPalette;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PalettedContainer;
@@ -34,7 +34,7 @@ public class ChunkSection {
         this.nonEmptyBlockCount = s;
         this.randomTickableBlockCount = t;
         this.nonEmptyFluidCount = u;
-        this.container = new PalettedContainer<BlockState>(palette, Block.STATE_IDS, TagHelper::deserializeBlockState, TagHelper::serializeBlockState, Blocks.AIR.getDefaultState());
+        this.container = new PalettedContainer<BlockState>(palette, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
     }
 
     public BlockState getBlockState(int i, int j, int k) {

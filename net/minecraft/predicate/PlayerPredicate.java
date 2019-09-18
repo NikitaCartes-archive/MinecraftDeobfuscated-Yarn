@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.predicate;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
@@ -20,6 +20,7 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.entity.Entity;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerRecipeBook;
@@ -28,23 +29,22 @@ import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
-public class class_4553 {
-    public static final class_4553 field_20722 = new class_4557().method_22507();
-    private final NumberRange.IntRange field_20723;
-    private final GameMode field_20724;
-    private final Map<Stat<?>, NumberRange.IntRange> field_20725;
-    private final Object2BooleanMap<Identifier> field_20726;
-    private final Map<Identifier, class_4556> field_20727;
+public class PlayerPredicate {
+    public static final PlayerPredicate ANY = new Builder().build();
+    private final NumberRange.IntRange experienceLevel;
+    private final GameMode gamemode;
+    private final Map<Stat<?>, NumberRange.IntRange> stats;
+    private final Object2BooleanMap<Identifier> recipes;
+    private final Map<Identifier, AdvancementPredicate> advancements;
 
-    private static class_4556 method_22503(JsonElement jsonElement) {
+    private static AdvancementPredicate criterionFromJson(JsonElement jsonElement) {
         if (jsonElement.isJsonPrimitive()) {
             boolean bl = jsonElement.getAsBoolean();
-            return new class_4555(bl);
+            return new CompletedAdvancementPredicate(bl);
         }
         Object2BooleanOpenHashMap<String> object2BooleanMap = new Object2BooleanOpenHashMap<String>();
         JsonObject jsonObject = JsonHelper.asObject(jsonElement, "criterion data");
@@ -52,46 +52,46 @@ public class class_4553 {
             boolean bl = JsonHelper.asBoolean((JsonElement)entry.getValue(), "criterion test");
             object2BooleanMap.put((String)entry.getKey(), bl);
         });
-        return new class_4554(object2BooleanMap);
+        return new AdvancementCriteriaPredicate(object2BooleanMap);
     }
 
-    private class_4553(NumberRange.IntRange intRange, GameMode gameMode, Map<Stat<?>, NumberRange.IntRange> map, Object2BooleanMap<Identifier> object2BooleanMap, Map<Identifier, class_4556> map2) {
-        this.field_20723 = intRange;
-        this.field_20724 = gameMode;
-        this.field_20725 = map;
-        this.field_20726 = object2BooleanMap;
-        this.field_20727 = map2;
+    private PlayerPredicate(NumberRange.IntRange intRange, GameMode gameMode, Map<Stat<?>, NumberRange.IntRange> map, Object2BooleanMap<Identifier> object2BooleanMap, Map<Identifier, AdvancementPredicate> map2) {
+        this.experienceLevel = intRange;
+        this.gamemode = gameMode;
+        this.stats = map;
+        this.recipes = object2BooleanMap;
+        this.advancements = map2;
     }
 
-    public boolean method_22497(Entity entity) {
-        if (this == field_20722) {
+    public boolean test(Entity entity) {
+        if (this == ANY) {
             return true;
         }
         if (!(entity instanceof ServerPlayerEntity)) {
             return false;
         }
         ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-        if (!this.field_20723.test(serverPlayerEntity.experienceLevel)) {
+        if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
             return false;
         }
-        if (this.field_20724 != GameMode.NOT_SET && this.field_20724 != serverPlayerEntity.interactionManager.getGameMode()) {
+        if (this.gamemode != GameMode.NOT_SET && this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
             return false;
         }
         ServerStatHandler statHandler = serverPlayerEntity.getStatHandler();
-        for (Map.Entry<Stat<?>, NumberRange.IntRange> entry : this.field_20725.entrySet()) {
+        for (Map.Entry<Stat<?>, NumberRange.IntRange> entry : this.stats.entrySet()) {
             int n = statHandler.getStat(entry.getKey());
             if (entry.getValue().test(n)) continue;
             return false;
         }
         ServerRecipeBook recipeBook = serverPlayerEntity.getRecipeBook();
-        for (Object2BooleanMap.Entry entry : this.field_20726.object2BooleanEntrySet()) {
-            if (recipeBook.method_22845((Identifier)entry.getKey()) == entry.getBooleanValue()) continue;
+        for (Object2BooleanMap.Entry entry : this.recipes.object2BooleanEntrySet()) {
+            if (recipeBook.contains((Identifier)entry.getKey()) == entry.getBooleanValue()) continue;
             return false;
         }
-        if (!this.field_20727.isEmpty()) {
+        if (!this.advancements.isEmpty()) {
             PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementManager();
             ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementManager();
-            for (Map.Entry<Identifier, class_4556> entry3 : this.field_20727.entrySet()) {
+            for (Map.Entry<Identifier, AdvancementPredicate> entry3 : this.advancements.entrySet()) {
                 Advancement advancement = serverAdvancementLoader.get(entry3.getKey());
                 if (advancement != null && entry3.getValue().test(playerAdvancementTracker.getProgress(advancement))) continue;
                 return false;
@@ -100,9 +100,9 @@ public class class_4553 {
         return true;
     }
 
-    public static class_4553 method_22499(@Nullable JsonElement jsonElement) {
+    public static PlayerPredicate fromJson(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
-            return field_20722;
+            return ANY;
         }
         JsonObject jsonObject = JsonHelper.asObject(jsonElement, "player");
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
@@ -119,7 +119,7 @@ public class class_4553 {
                     throw new JsonParseException("Invalid stat type: " + identifier);
                 }
                 Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject2, "stat"));
-                Stat<?> stat = class_4553.method_22496(statType, identifier2);
+                Stat<?> stat = PlayerPredicate.getStat(statType, identifier2);
                 NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject2.get("value"));
                 map.put(stat, intRange2);
             }
@@ -131,17 +131,17 @@ public class class_4553 {
             boolean bl = JsonHelper.asBoolean((JsonElement)entry.getValue(), "recipe present");
             object2BooleanMap.put(identifier3, bl);
         }
-        HashMap<Identifier, class_4556> map2 = Maps.newHashMap();
+        HashMap<Identifier, AdvancementPredicate> map2 = Maps.newHashMap();
         JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "advancements", new JsonObject());
         for (Map.Entry<String, JsonElement> entry2 : jsonObject2.entrySet()) {
             Identifier identifier4 = new Identifier(entry2.getKey());
-            class_4556 lv = class_4553.method_22503(entry2.getValue());
-            map2.put(identifier4, lv);
+            AdvancementPredicate advancementPredicate = PlayerPredicate.criterionFromJson(entry2.getValue());
+            map2.put(identifier4, advancementPredicate);
         }
-        return new class_4553(intRange, gameMode, map, object2BooleanMap, map2);
+        return new PlayerPredicate(intRange, gameMode, map, object2BooleanMap, map2);
     }
 
-    private static <T> Stat<T> method_22496(StatType<T> statType, Identifier identifier) {
+    private static <T> Stat<T> getStat(StatType<T> statType, Identifier identifier) {
         Registry<T> registry = statType.getRegistry();
         T object = registry.get(identifier);
         if (object == null) {
@@ -150,73 +150,73 @@ public class class_4553 {
         return statType.getOrCreateStat(object);
     }
 
-    private static <T> Identifier method_22495(Stat<T> stat) {
+    private static <T> Identifier getStatId(Stat<T> stat) {
         return stat.getType().getRegistry().getId(stat.getValue());
     }
 
-    public JsonElement method_22494() {
+    public JsonElement toJson() {
         JsonObject jsonObject2;
-        if (this == field_20722) {
+        if (this == ANY) {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("level", this.field_20723.serialize());
-        if (this.field_20724 != GameMode.NOT_SET) {
-            jsonObject.addProperty("gamemode", this.field_20724.getName());
+        jsonObject.add("level", this.experienceLevel.toJson());
+        if (this.gamemode != GameMode.NOT_SET) {
+            jsonObject.addProperty("gamemode", this.gamemode.getName());
         }
-        if (!this.field_20725.isEmpty()) {
+        if (!this.stats.isEmpty()) {
             JsonArray jsonArray = new JsonArray();
-            this.field_20725.forEach((stat, intRange) -> {
+            this.stats.forEach((stat, intRange) -> {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("type", Registry.STAT_TYPE.getId(stat.getType()).toString());
-                jsonObject.addProperty("stat", class_4553.method_22495(stat).toString());
-                jsonObject.add("value", intRange.serialize());
+                jsonObject.addProperty("stat", PlayerPredicate.getStatId(stat).toString());
+                jsonObject.add("value", intRange.toJson());
                 jsonArray.add(jsonObject);
             });
             jsonObject.add("stats", jsonArray);
         }
-        if (!this.field_20726.isEmpty()) {
+        if (!this.recipes.isEmpty()) {
             jsonObject2 = new JsonObject();
-            this.field_20726.forEach((identifier, boolean_) -> jsonObject2.addProperty(identifier.toString(), (Boolean)boolean_));
+            this.recipes.forEach((identifier, boolean_) -> jsonObject2.addProperty(identifier.toString(), (Boolean)boolean_));
             jsonObject.add("recipes", jsonObject2);
         }
-        if (!this.field_20727.isEmpty()) {
+        if (!this.advancements.isEmpty()) {
             jsonObject2 = new JsonObject();
-            this.field_20727.forEach((identifier, arg) -> jsonObject2.add(identifier.toString(), arg.method_22506()));
+            this.advancements.forEach((identifier, advancementPredicate) -> jsonObject2.add(identifier.toString(), advancementPredicate.toJson()));
             jsonObject.add("advancements", jsonObject2);
         }
         return jsonObject;
     }
 
-    public static class class_4557 {
-        private NumberRange.IntRange field_20730 = NumberRange.IntRange.ANY;
-        private GameMode field_20731 = GameMode.NOT_SET;
-        private final Map<Stat<?>, NumberRange.IntRange> field_20732 = Maps.newHashMap();
-        private final Object2BooleanMap<Identifier> field_20733 = new Object2BooleanOpenHashMap<Identifier>();
-        private final Map<Identifier, class_4556> field_20734 = Maps.newHashMap();
+    public static class Builder {
+        private NumberRange.IntRange experienceLevel = NumberRange.IntRange.ANY;
+        private GameMode gamemode = GameMode.NOT_SET;
+        private final Map<Stat<?>, NumberRange.IntRange> stats = Maps.newHashMap();
+        private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<Identifier>();
+        private final Map<Identifier, AdvancementPredicate> advancements = Maps.newHashMap();
 
-        public class_4553 method_22507() {
-            return new class_4553(this.field_20730, this.field_20731, this.field_20732, this.field_20733, this.field_20734);
+        public PlayerPredicate build() {
+            return new PlayerPredicate(this.experienceLevel, this.gamemode, this.stats, this.recipes, this.advancements);
         }
     }
 
-    static class class_4554
-    implements class_4556 {
-        private final Object2BooleanMap<String> field_20728;
+    static class AdvancementCriteriaPredicate
+    implements AdvancementPredicate {
+        private final Object2BooleanMap<String> criteria;
 
-        public class_4554(Object2BooleanMap<String> object2BooleanMap) {
-            this.field_20728 = object2BooleanMap;
+        public AdvancementCriteriaPredicate(Object2BooleanMap<String> object2BooleanMap) {
+            this.criteria = object2BooleanMap;
         }
 
         @Override
-        public JsonElement method_22506() {
+        public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            this.field_20728.forEach(jsonObject::addProperty);
+            this.criteria.forEach(jsonObject::addProperty);
             return jsonObject;
         }
 
         public boolean method_22504(AdvancementProgress advancementProgress) {
-            for (Object2BooleanMap.Entry entry : this.field_20728.object2BooleanEntrySet()) {
+            for (Object2BooleanMap.Entry entry : this.criteria.object2BooleanEntrySet()) {
                 CriterionProgress criterionProgress = advancementProgress.getCriterionProgress((String)entry.getKey());
                 if (criterionProgress != null && criterionProgress.isObtained() == entry.getBooleanValue()) continue;
                 return false;
@@ -230,21 +230,21 @@ public class class_4553 {
         }
     }
 
-    static class class_4555
-    implements class_4556 {
-        private final boolean field_20729;
+    static class CompletedAdvancementPredicate
+    implements AdvancementPredicate {
+        private final boolean done;
 
-        public class_4555(boolean bl) {
-            this.field_20729 = bl;
+        public CompletedAdvancementPredicate(boolean bl) {
+            this.done = bl;
         }
 
         @Override
-        public JsonElement method_22506() {
-            return new JsonPrimitive(this.field_20729);
+        public JsonElement toJson() {
+            return new JsonPrimitive(this.done);
         }
 
         public boolean method_22505(AdvancementProgress advancementProgress) {
-            return advancementProgress.isDone() == this.field_20729;
+            return advancementProgress.isDone() == this.done;
         }
 
         @Override
@@ -253,9 +253,9 @@ public class class_4553 {
         }
     }
 
-    static interface class_4556
+    static interface AdvancementPredicate
     extends Predicate<AdvancementProgress> {
-        public JsonElement method_22506();
+        public JsonElement toJson();
     }
 }
 

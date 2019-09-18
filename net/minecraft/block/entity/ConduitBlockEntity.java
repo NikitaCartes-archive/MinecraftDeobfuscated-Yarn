@@ -22,11 +22,11 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -60,14 +60,14 @@ implements Tickable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.targetUuid = compoundTag.containsKey("target_uuid") ? TagHelper.deserializeUuid(compoundTag.getCompound("target_uuid")) : null;
+        this.targetUuid = compoundTag.containsKey("target_uuid") ? NbtHelper.toUuid(compoundTag.getCompound("target_uuid")) : null;
     }
 
     @Override
     public CompoundTag toTag(CompoundTag compoundTag) {
         super.toTag(compoundTag);
         if (this.targetEntity != null) {
-            compoundTag.put("target_uuid", TagHelper.serializeUuid(this.targetEntity.getUuid()));
+            compoundTag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
         }
         return compoundTag;
     }

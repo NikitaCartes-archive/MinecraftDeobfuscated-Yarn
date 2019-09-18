@@ -15,13 +15,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextType;
@@ -31,19 +31,19 @@ public class LootContext {
     private final Random random;
     private final float luck;
     private final ServerWorld world;
-    private final Function<Identifier, LootSupplier> manager;
-    private final Set<LootSupplier> suppliers = Sets.newLinkedHashSet();
-    private final Function<Identifier, class_4570> field_20750;
-    private final Set<class_4570> field_20751 = Sets.newLinkedHashSet();
+    private final Function<Identifier, LootTable> supplierGetter;
+    private final Set<LootTable> suppliers = Sets.newLinkedHashSet();
+    private final Function<Identifier, LootCondition> conditionGetter;
+    private final Set<LootCondition> conditions = Sets.newLinkedHashSet();
     private final Map<LootContextParameter<?>, Object> parameters;
     private final Map<Identifier, Dropper> drops;
 
-    private LootContext(Random random, float f, ServerWorld serverWorld, Function<Identifier, LootSupplier> function, Function<Identifier, class_4570> function2, Map<LootContextParameter<?>, Object> map, Map<Identifier, Dropper> map2) {
+    private LootContext(Random random, float f, ServerWorld serverWorld, Function<Identifier, LootTable> function, Function<Identifier, LootCondition> function2, Map<LootContextParameter<?>, Object> map, Map<Identifier, Dropper> map2) {
         this.random = random;
         this.luck = f;
         this.world = serverWorld;
-        this.manager = function;
-        this.field_20750 = function2;
+        this.supplierGetter = function;
+        this.conditionGetter = function2;
         this.parameters = ImmutableMap.copyOf(map);
         this.drops = ImmutableMap.copyOf(map2);
     }
@@ -64,28 +64,28 @@ public class LootContext {
         return (T)this.parameters.get(lootContextParameter);
     }
 
-    public boolean addDrop(LootSupplier lootSupplier) {
-        return this.suppliers.add(lootSupplier);
+    public boolean addDrop(LootTable lootTable) {
+        return this.suppliers.add(lootTable);
     }
 
-    public void removeDrop(LootSupplier lootSupplier) {
-        this.suppliers.remove(lootSupplier);
+    public void removeDrop(LootTable lootTable) {
+        this.suppliers.remove(lootTable);
     }
 
-    public boolean method_22555(class_4570 arg) {
-        return this.field_20751.add(arg);
+    public boolean addCondition(LootCondition lootCondition) {
+        return this.conditions.add(lootCondition);
     }
 
-    public void method_22557(class_4570 arg) {
-        this.field_20751.remove(arg);
+    public void removeCondition(LootCondition lootCondition) {
+        this.conditions.remove(lootCondition);
     }
 
-    public LootSupplier method_22556(Identifier identifier) {
-        return this.manager.apply(identifier);
+    public LootTable getSupplier(Identifier identifier) {
+        return this.supplierGetter.apply(identifier);
     }
 
-    public class_4570 method_22558(Identifier identifier) {
-        return this.field_20750.apply(identifier);
+    public LootCondition getCondition(Identifier identifier) {
+        return this.conditionGetter.apply(identifier);
     }
 
     public Random getRandom() {
@@ -107,15 +107,15 @@ public class LootContext {
         KILLER_PLAYER("killer_player", LootContextParameters.LAST_DAMAGE_PLAYER);
 
         private final String type;
-        private final LootContextParameter<? extends Entity> identifier;
+        private final LootContextParameter<? extends Entity> parameter;
 
         private EntityTarget(String string2, LootContextParameter<? extends Entity> lootContextParameter) {
             this.type = string2;
-            this.identifier = lootContextParameter;
+            this.parameter = lootContextParameter;
         }
 
-        public LootContextParameter<? extends Entity> getIdentifier() {
-            return this.identifier;
+        public LootContextParameter<? extends Entity> getParameter() {
+            return this.parameter;
         }
 
         public static EntityTarget fromString(String string) {
@@ -234,7 +234,7 @@ public class LootContext {
                 random = new Random();
             }
             MinecraftServer minecraftServer = this.world.getServer();
-            return new LootContext(random, this.luck, this.world, minecraftServer.getLootManager()::getSupplier, minecraftServer.method_22828()::method_22564, this.parameters, this.drops);
+            return new LootContext(random, this.luck, this.world, minecraftServer.getLootManager()::getSupplier, minecraftServer.getPredicateManager()::get, this.parameters, this.drops);
         }
     }
 

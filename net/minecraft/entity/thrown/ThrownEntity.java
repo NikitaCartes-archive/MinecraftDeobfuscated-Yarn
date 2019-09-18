@@ -14,10 +14,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
@@ -186,7 +186,7 @@ implements Projectile {
         compoundTag.putByte("shake", (byte)this.shake);
         compoundTag.putByte("inGround", (byte)(this.inGround ? 1 : 0));
         if (this.ownerUuid != null) {
-            compoundTag.put("owner", TagHelper.serializeUuid(this.ownerUuid));
+            compoundTag.put("owner", NbtHelper.fromUuid(this.ownerUuid));
         }
     }
 
@@ -199,7 +199,7 @@ implements Projectile {
         this.inGround = compoundTag.getByte("inGround") == 1;
         this.owner = null;
         if (compoundTag.containsKey("owner", 10)) {
-            this.ownerUuid = TagHelper.deserializeUuid(compoundTag.getCompound("owner"));
+            this.ownerUuid = NbtHelper.toUuid(compoundTag.getCompound("owner"));
         }
     }
 

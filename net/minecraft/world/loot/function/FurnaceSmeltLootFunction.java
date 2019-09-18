@@ -6,12 +6,12 @@ package net.minecraft.world.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import java.util.Optional;
-import net.minecraft.class_4570;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
 import org.apache.logging.log4j.LogManager;
@@ -21,8 +21,8 @@ public class FurnaceSmeltLootFunction
 extends ConditionalLootFunction {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private FurnaceSmeltLootFunction(class_4570[] args) {
-        super(args);
+    private FurnaceSmeltLootFunction(LootCondition[] lootConditions) {
+        super(lootConditions);
     }
 
     @Override
@@ -51,13 +51,13 @@ extends ConditionalLootFunction {
             super(new Identifier("furnace_smelt"), FurnaceSmeltLootFunction.class);
         }
 
-        public FurnaceSmeltLootFunction method_726(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return new FurnaceSmeltLootFunction(args);
+        public FurnaceSmeltLootFunction method_726(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return new FurnaceSmeltLootFunction(lootConditions);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_726(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_726(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 }

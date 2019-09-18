@@ -7,16 +7,16 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Collection;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ChanneledLightningCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("channeled_lightning");
 
     @Override
@@ -25,12 +25,12 @@ extends class_4558<Conditions> {
     }
 
     public Conditions method_8801(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
+        EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
         return new Conditions(entityPredicates);
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, collection));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, collection));
     }
 
     @Override

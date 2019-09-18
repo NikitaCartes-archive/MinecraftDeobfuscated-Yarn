@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4570;
 import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -30,6 +29,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -43,8 +43,8 @@ extends ConditionalLootFunction {
     private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::entityToTag;
     private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.toTag(new CompoundTag());
 
-    private CopyNbtLootFunction(class_4570[] args, Source source, List<Operation> list) {
-        super(args);
+    private CopyNbtLootFunction(LootCondition[] lootConditions, Source source, List<Operation> list) {
+        super(lootConditions);
         this.source = source;
         this.operations = ImmutableList.copyOf(list);
     }
@@ -97,7 +97,7 @@ extends ConditionalLootFunction {
             jsonObject.add("ops", jsonArray);
         }
 
-        public CopyNbtLootFunction method_16871(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public CopyNbtLootFunction method_16871(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Source source = Source.get(JsonHelper.getString(jsonObject, "source"));
             ArrayList<Operation> list = Lists.newArrayList();
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "ops");
@@ -105,12 +105,12 @@ extends ConditionalLootFunction {
                 JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "op");
                 list.add(Operation.fromJson(jsonObject2));
             }
-            return new CopyNbtLootFunction(args, source, list);
+            return new CopyNbtLootFunction(lootConditions, source, list);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_16871(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_16871(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 
@@ -155,7 +155,7 @@ extends ConditionalLootFunction {
 
             @Override
             public void merge(Tag tag2, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-                List<Tag> list2 = nbtPath.putIfAbsent(tag2, ListTag::new);
+                List<Tag> list2 = nbtPath.getOrInit(tag2, ListTag::new);
                 list2.forEach(tag -> {
                     if (tag instanceof ListTag) {
                         list.forEach(tag2 -> ((ListTag)tag).add(tag2.copy()));
@@ -168,7 +168,7 @@ extends ConditionalLootFunction {
 
             @Override
             public void merge(Tag tag2, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-                List<Tag> list2 = nbtPath.putIfAbsent(tag2, CompoundTag::new);
+                List<Tag> list2 = nbtPath.getOrInit(tag2, CompoundTag::new);
                 list2.forEach(tag -> {
                     if (tag instanceof CompoundTag) {
                         list.forEach(tag2 -> {

@@ -6,17 +6,17 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.class_4558;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 
 public class LocationArrivalCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private final Identifier id;
 
     public LocationArrivalCriterion(Identifier identifier) {
@@ -29,12 +29,12 @@ extends class_4558<Conditions> {
     }
 
     public Conditions method_9026(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject);
+        LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject);
         return new Conditions(this.id, locationPredicate);
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z));
     }
 
     @Override
@@ -69,7 +69,7 @@ extends class_4558<Conditions> {
 
         @Override
         public JsonElement toJson() {
-            return this.location.serialize();
+            return this.location.toJson();
         }
     }
 }

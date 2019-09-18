@@ -62,14 +62,14 @@ extends AbstractInventoryScreen<CreativeContainer> {
     private static final BasicInventory inventory = new BasicInventory(45);
     private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
     private float scrollPosition;
-    private boolean field_2892;
+    private boolean scrolling;
     private TextFieldWidget searchBox;
     private List<Slot> slots;
     private Slot deleteItemSlot;
-    private CreativeInventoryListener field_2891;
-    private boolean field_2888;
-    private boolean field_2887;
-    private final Map<Identifier, Tag<Item>> field_16201 = Maps.newTreeMap();
+    private CreativeInventoryListener listener;
+    private boolean ignoreTypedCharacter;
+    private boolean lastClickOutsideBounds;
+    private final Map<Identifier, Tag<Item>> searchResultTags = Maps.newTreeMap();
 
     public CreativeInventoryScreen(PlayerEntity playerEntity) {
         super(new CreativeContainer(playerEntity), playerEntity.inventory, new LiteralText(""));
@@ -90,7 +90,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
 
     @Override
     protected void onMouseClick(@Nullable Slot slot, int i, int j, SlotActionType slotActionType) {
-        if (this.method_2470(slot)) {
+        if (this.isCreativeInventorySlot(slot)) {
             this.searchBox.setCursorToEnd();
             this.searchBox.setSelectionEnd(0);
         }
@@ -198,7 +198,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
             }
         } else {
             PlayerInventory playerInventory = this.minecraft.player.inventory;
-            if (!playerInventory.getCursorStack().isEmpty() && this.field_2887) {
+            if (!playerInventory.getCursorStack().isEmpty() && this.lastClickOutsideBounds) {
                 if (j == 0) {
                     this.minecraft.player.dropItem(playerInventory.getCursorStack(), true);
                     this.minecraft.interactionManager.dropCreativeStack(playerInventory.getCursorStack());
@@ -213,14 +213,14 @@ extends AbstractInventoryScreen<CreativeContainer> {
         }
     }
 
-    private boolean method_2470(@Nullable Slot slot) {
+    private boolean isCreativeInventorySlot(@Nullable Slot slot) {
         return slot != null && slot.inventory == inventory;
     }
 
     @Override
-    protected void method_2476() {
+    protected void applyStatusEffectOffset() {
         int i = this.left;
-        super.method_2476();
+        super.applyStatusEffectOffset();
         if (this.searchBox != null && this.left != i) {
             this.searchBox.setX(this.left + 82);
         }
@@ -240,9 +240,9 @@ extends AbstractInventoryScreen<CreativeContainer> {
             int i = selectedTab;
             selectedTab = -1;
             this.setSelectedTab(ItemGroup.GROUPS[i]);
-            this.minecraft.player.playerContainer.removeListener(this.field_2891);
-            this.field_2891 = new CreativeInventoryListener(this.minecraft);
-            this.minecraft.player.playerContainer.addListener(this.field_2891);
+            this.minecraft.player.playerContainer.removeListener(this.listener);
+            this.listener = new CreativeInventoryListener(this.minecraft);
+            this.minecraft.player.playerContainer.addListener(this.listener);
         } else {
             this.minecraft.openScreen(new InventoryScreen(this.minecraft.player));
         }
@@ -254,7 +254,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         this.init(minecraftClient, i, j);
         this.searchBox.setText(string);
         if (!this.searchBox.getText().isEmpty()) {
-            this.method_2464();
+            this.search();
         }
     }
 
@@ -262,14 +262,14 @@ extends AbstractInventoryScreen<CreativeContainer> {
     public void removed() {
         super.removed();
         if (this.minecraft.player != null && this.minecraft.player.inventory != null) {
-            this.minecraft.player.playerContainer.removeListener(this.field_2891);
+            this.minecraft.player.playerContainer.removeListener(this.listener);
         }
         this.minecraft.keyboard.enableRepeatEvents(false);
     }
 
     @Override
     public boolean charTyped(char c, int i) {
-        if (this.field_2888) {
+        if (this.ignoreTypedCharacter) {
             return false;
         }
         if (selectedTab != ItemGroup.SEARCH.getIndex()) {
@@ -278,7 +278,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         String string = this.searchBox.getText();
         if (this.searchBox.charTyped(c, i)) {
             if (!Objects.equals(string, this.searchBox.getText())) {
-                this.method_2464();
+                this.search();
             }
             return true;
         }
@@ -288,24 +288,24 @@ extends AbstractInventoryScreen<CreativeContainer> {
     @Override
     public boolean keyPressed(int i, int j, int k) {
         boolean bl;
-        this.field_2888 = false;
+        this.ignoreTypedCharacter = false;
         if (selectedTab != ItemGroup.SEARCH.getIndex()) {
             if (this.minecraft.options.keyChat.matchesKey(i, j)) {
-                this.field_2888 = true;
+                this.ignoreTypedCharacter = true;
                 this.setSelectedTab(ItemGroup.SEARCH);
                 return true;
             }
             return super.keyPressed(i, j, k);
         }
-        boolean bl2 = bl = !this.method_2470(this.focusedSlot) || this.focusedSlot != null && this.focusedSlot.hasStack();
+        boolean bl2 = bl = !this.isCreativeInventorySlot(this.focusedSlot) || this.focusedSlot != null && this.focusedSlot.hasStack();
         if (bl && this.handleHotbarKeyPressed(i, j)) {
-            this.field_2888 = true;
+            this.ignoreTypedCharacter = true;
             return true;
         }
         String string = this.searchBox.getText();
         if (this.searchBox.keyPressed(i, j, k)) {
             if (!Objects.equals(string, this.searchBox.getText())) {
-                this.method_2464();
+                this.search();
             }
             return true;
         }
@@ -317,13 +317,13 @@ extends AbstractInventoryScreen<CreativeContainer> {
 
     @Override
     public boolean keyReleased(int i, int j, int k) {
-        this.field_2888 = false;
+        this.ignoreTypedCharacter = false;
         return super.keyReleased(i, j, k);
     }
 
-    private void method_2464() {
+    private void search() {
         ((CreativeContainer)this.container).itemList.clear();
-        this.field_16201.clear();
+        this.searchResultTags.clear();
         String string = this.searchBox.getText();
         if (string.isEmpty()) {
             for (Item item : Registry.ITEM) {
@@ -334,17 +334,17 @@ extends AbstractInventoryScreen<CreativeContainer> {
             if (string.startsWith("#")) {
                 string = string.substring(1);
                 searchable = this.minecraft.getSearchableContainer(SearchManager.ITEM_TAG);
-                this.method_15871(string);
+                this.searchForTags(string);
             } else {
                 searchable = this.minecraft.getSearchableContainer(SearchManager.ITEM_TOOLTIP);
             }
             ((CreativeContainer)this.container).itemList.addAll(searchable.findAll(string.toLowerCase(Locale.ROOT)));
         }
         this.scrollPosition = 0.0f;
-        ((CreativeContainer)this.container).method_2473(0.0f);
+        ((CreativeContainer)this.container).scrollItems(0.0f);
     }
 
-    private void method_15871(String string) {
+    private void searchForTags(String string) {
         Predicate<Identifier> predicate;
         int i = string.indexOf(58);
         if (i == -1) {
@@ -355,7 +355,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
             predicate = identifier -> identifier.getNamespace().contains(string2) && identifier.getPath().contains(string3);
         }
         TagContainer<Item> tagContainer = ItemTags.getContainer();
-        tagContainer.getKeys().stream().filter(predicate).forEach(identifier -> this.field_16201.put((Identifier)identifier, tagContainer.get((Identifier)identifier)));
+        tagContainer.getKeys().stream().filter(predicate).forEach(identifier -> this.searchResultTags.put((Identifier)identifier, tagContainer.get((Identifier)identifier)));
     }
 
     @Override
@@ -376,8 +376,8 @@ extends AbstractInventoryScreen<CreativeContainer> {
                 if (!this.isClickInTab(itemGroup, f, g)) continue;
                 return true;
             }
-            if (selectedTab != ItemGroup.INVENTORY.getIndex() && this.method_2467(d, e)) {
-                this.field_2892 = this.doRenderScrollBar();
+            if (selectedTab != ItemGroup.INVENTORY.getIndex() && this.isClickInScrollbar(d, e)) {
+                this.scrolling = this.hasScrollbar();
                 return true;
             }
         }
@@ -389,7 +389,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         if (i == 0) {
             double f = d - (double)this.left;
             double g = e - (double)this.top;
-            this.field_2892 = false;
+            this.scrolling = false;
             for (ItemGroup itemGroup : ItemGroup.GROUPS) {
                 if (!this.isClickInTab(itemGroup, f, g)) continue;
                 this.setSelectedTab(itemGroup);
@@ -399,8 +399,8 @@ extends AbstractInventoryScreen<CreativeContainer> {
         return super.mouseReleased(d, e, i);
     }
 
-    private boolean doRenderScrollBar() {
-        return selectedTab != ItemGroup.INVENTORY.getIndex() && ItemGroup.GROUPS[selectedTab].hasScrollbar() && ((CreativeContainer)this.container).method_2474();
+    private boolean hasScrollbar() {
+        return selectedTab != ItemGroup.INVENTORY.getIndex() && ItemGroup.GROUPS[selectedTab].hasScrollbar() && ((CreativeContainer)this.container).shouldShowScrollbar();
     }
 
     private void setSelectedTab(ItemGroup itemGroup) {
@@ -485,7 +485,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                 if (i != itemGroup.getIndex()) {
                     this.searchBox.setText("");
                 }
-                this.method_2464();
+                this.search();
             } else {
                 this.searchBox.setVisible(false);
                 this.searchBox.setFocusUnlocked(true);
@@ -494,29 +494,29 @@ extends AbstractInventoryScreen<CreativeContainer> {
             }
         }
         this.scrollPosition = 0.0f;
-        ((CreativeContainer)this.container).method_2473(0.0f);
+        ((CreativeContainer)this.container).scrollItems(0.0f);
     }
 
     @Override
     public boolean mouseScrolled(double d, double e, double f) {
-        if (!this.doRenderScrollBar()) {
+        if (!this.hasScrollbar()) {
             return false;
         }
         int i = (((CreativeContainer)this.container).itemList.size() + 9 - 1) / 9 - 5;
         this.scrollPosition = (float)((double)this.scrollPosition - f / (double)i);
         this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
-        ((CreativeContainer)this.container).method_2473(this.scrollPosition);
+        ((CreativeContainer)this.container).scrollItems(this.scrollPosition);
         return true;
     }
 
     @Override
     protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
         boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-        this.field_2887 = bl && !this.isClickInTab(ItemGroup.GROUPS[selectedTab], d, e);
-        return this.field_2887;
+        this.lastClickOutsideBounds = bl && !this.isClickInTab(ItemGroup.GROUPS[selectedTab], d, e);
+        return this.lastClickOutsideBounds;
     }
 
-    protected boolean method_2467(double d, double e) {
+    protected boolean isClickInScrollbar(double d, double e) {
         int i = this.left;
         int j = this.top;
         int k = i + 175;
@@ -528,12 +528,12 @@ extends AbstractInventoryScreen<CreativeContainer> {
 
     @Override
     public boolean mouseDragged(double d, double e, int i, double f, double g) {
-        if (this.field_2892) {
+        if (this.scrolling) {
             int j = this.top + 18;
             int k = j + 112;
             this.scrollPosition = ((float)e - (float)j - 7.5f) / ((float)(k - j) - 15.0f);
             this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
-            ((CreativeContainer)this.container).method_2473(this.scrollPosition);
+            ((CreativeContainer)this.container).scrollItems(this.scrollPosition);
             return true;
         }
         return super.mouseDragged(d, e, i, f, g);
@@ -544,7 +544,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         this.renderBackground();
         super.render(i, j, f);
         for (ItemGroup itemGroup : ItemGroup.GROUPS) {
-            if (this.method_2471(itemGroup, i, j)) break;
+            if (this.renderTabTooltipIfHovered(itemGroup, i, j)) break;
         }
         if (this.deleteItemSlot != null && selectedTab == ItemGroup.INVENTORY.getIndex() && this.isPointWithinBounds(this.deleteItemSlot.xPosition, this.deleteItemSlot.yPosition, 16, 16, i, j)) {
             this.renderTooltip(I18n.translate("inventory.binSlot", new Object[0]), i, j);
@@ -573,7 +573,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
                     break;
                 }
             }
-            this.field_16201.forEach((identifier, tag) -> {
+            this.searchResultTags.forEach((identifier, tag) -> {
                 if (tag.contains(item)) {
                     list2.add(1, "" + (Object)((Object)Formatting.BOLD) + (Object)((Object)Formatting.DARK_PURPLE) + "#" + identifier);
                 }
@@ -600,22 +600,22 @@ extends AbstractInventoryScreen<CreativeContainer> {
         GuiLighting.enableForItems();
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-            this.minecraft.getTextureManager().method_22813(TEXTURE);
+            this.minecraft.getTextureManager().bindTexture(TEXTURE);
             if (itemGroup2.getIndex() == selectedTab) continue;
-            this.method_2468(itemGroup2);
+            this.renderTabIcon(itemGroup2);
         }
-        this.minecraft.getTextureManager().method_22813(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
+        this.minecraft.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
         this.blit(this.left, this.top, 0, 0, this.containerWidth, this.containerHeight);
         this.searchBox.render(i, j, f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int k = this.left + 175;
         int l = this.top + 18;
         int m = l + 112;
-        this.minecraft.getTextureManager().method_22813(TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(TEXTURE);
         if (itemGroup.hasScrollbar()) {
-            this.blit(k, l + (int)((float)(m - l - 17) * this.scrollPosition), 232 + (this.doRenderScrollBar() ? 0 : 12), 0, 12, 15);
+            this.blit(k, l + (int)((float)(m - l - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
         }
-        this.method_2468(itemGroup);
+        this.renderTabIcon(itemGroup);
         if (itemGroup == ItemGroup.INVENTORY) {
             InventoryScreen.drawEntity(this.left + 88, this.top + 45, 20, this.left + 88 - i, this.top + 45 - 30 - j, this.minecraft.player);
         }
@@ -634,7 +634,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         return d >= (double)j && d <= (double)(j + 28) && e >= (double)k && e <= (double)(k + 32);
     }
 
-    protected boolean method_2471(ItemGroup itemGroup, int i, int j) {
+    protected boolean renderTabTooltipIfHovered(ItemGroup itemGroup, int i, int j) {
         int k = itemGroup.getColumn();
         int l = 28 * k;
         int m = 0;
@@ -651,7 +651,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         return false;
     }
 
-    protected void method_2468(ItemGroup itemGroup) {
+    protected void renderTabIcon(ItemGroup itemGroup) {
         boolean bl = itemGroup.getIndex() == selectedTab;
         boolean bl2 = itemGroup.isTopRow();
         int i = itemGroup.getColumn();
@@ -689,7 +689,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         this.setBlitOffset(0);
     }
 
-    public int method_2469() {
+    public int getSelectedTab() {
         return selectedTab;
     }
 
@@ -716,9 +716,9 @@ extends AbstractInventoryScreen<CreativeContainer> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_482
+    static class LockableSlot
     extends Slot {
-        public class_482(Inventory inventory, int i, int j, int k) {
+        public LockableSlot(Inventory inventory, int i, int j, int k) {
             super(inventory, i, j, k);
         }
 
@@ -815,13 +815,13 @@ extends AbstractInventoryScreen<CreativeContainer> {
             PlayerInventory playerInventory = playerEntity.inventory;
             for (i = 0; i < 5; ++i) {
                 for (int j = 0; j < 9; ++j) {
-                    this.addSlot(new class_482(inventory, i * 9 + j, 9 + j * 18, 18 + i * 18));
+                    this.addSlot(new LockableSlot(inventory, i * 9 + j, 9 + j * 18, 18 + i * 18));
                 }
             }
             for (i = 0; i < 9; ++i) {
                 this.addSlot(new Slot(playerInventory, i, 9 + i * 18, 112));
             }
-            this.method_2473(0.0f);
+            this.scrollItems(0.0f);
         }
 
         @Override
@@ -829,7 +829,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
             return true;
         }
 
-        public void method_2473(float f) {
+        public void scrollItems(float f) {
             int i = (this.itemList.size() + 9 - 1) / 9 - 5;
             int j = (int)((double)(f * (float)i) + 0.5);
             if (j < 0) {
@@ -847,7 +847,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
             }
         }
 
-        public boolean method_2474() {
+        public boolean shouldShowScrollbar() {
             return this.itemList.size() > 45;
         }
 

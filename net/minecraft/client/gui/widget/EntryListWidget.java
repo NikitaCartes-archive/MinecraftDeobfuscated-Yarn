@@ -170,7 +170,7 @@ implements Drawable {
         RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        this.minecraft.getTextureManager().method_22813(DrawableHelper.BACKGROUND_LOCATION);
+        this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float g = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
@@ -430,7 +430,7 @@ implements Drawable {
     protected void renderHoleBackground(int i, int j, int k, int l) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        this.minecraft.getTextureManager().method_22813(DrawableHelper.BACKGROUND_LOCATION);
+        this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);

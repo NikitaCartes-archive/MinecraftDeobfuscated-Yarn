@@ -26,7 +26,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.TagHelper;
+import net.minecraft.nbt.NbtHelper;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(value=EnvType.CLIENT)
@@ -69,10 +69,10 @@ extends FeatureRenderer<T, M> {
                 String string;
                 CompoundTag compoundTag = itemStack.getTag();
                 if (compoundTag.containsKey("SkullOwner", 10)) {
-                    gameProfile = TagHelper.deserializeProfile(compoundTag.getCompound("SkullOwner"));
+                    gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
                 } else if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(string = compoundTag.getString("SkullOwner"))) {
                     gameProfile = SkullBlockEntity.loadProperties(new GameProfile(null, string));
-                    compoundTag.put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
+                    compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
                 }
             }
             SkullBlockEntityRenderer.INSTANCE.render(-0.5f, 0.0f, -0.5f, null, 180.0f, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, -1, f);

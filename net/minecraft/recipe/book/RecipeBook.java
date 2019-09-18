@@ -51,7 +51,7 @@ public class RecipeBook {
         return this.recipes.contains(recipe.getId());
     }
 
-    public boolean method_22845(Identifier identifier) {
+    public boolean contains(Identifier identifier) {
         return this.recipes.contains(identifier);
     }
 

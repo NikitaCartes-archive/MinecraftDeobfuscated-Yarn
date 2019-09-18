@@ -7,12 +7,12 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4558;
-import net.minecraft.class_4559;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -20,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class EnterBlockCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("enter_block");
 
     @Override
@@ -30,13 +30,13 @@ extends class_4558<Conditions> {
 
     public Conditions method_8883(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         Block block = EnterBlockCriterion.method_22466(jsonObject);
-        class_4559 lv = class_4559.method_22519(jsonObject.get("state"));
+        StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
         if (block != null) {
-            lv.method_22516(block.getStateFactory(), string -> {
+            statePredicate.check(block.getStateFactory(), string -> {
                 throw new JsonSyntaxException("Block " + block + " has no property " + string);
             });
         }
-        return new Conditions(block, lv);
+        return new Conditions(block, statePredicate);
     }
 
     @Nullable
@@ -49,7 +49,7 @@ extends class_4558<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState));
     }
 
     @Override
@@ -60,16 +60,16 @@ extends class_4558<Conditions> {
     public static class Conditions
     extends AbstractCriterionConditions {
         private final Block block;
-        private final class_4559 state;
+        private final StatePredicate state;
 
-        public Conditions(@Nullable Block block, class_4559 arg) {
+        public Conditions(@Nullable Block block, StatePredicate statePredicate) {
             super(ID);
             this.block = block;
-            this.state = arg;
+            this.state = statePredicate;
         }
 
         public static Conditions block(Block block) {
-            return new Conditions(block, class_4559.field_20736);
+            return new Conditions(block, StatePredicate.ANY);
         }
 
         @Override
@@ -78,7 +78,7 @@ extends class_4558<Conditions> {
             if (this.block != null) {
                 jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
             }
-            jsonObject.add("state", this.state.method_22513());
+            jsonObject.add("state", this.state.toJson());
             return jsonObject;
         }
 
@@ -86,7 +86,7 @@ extends class_4558<Conditions> {
             if (this.block != null && blockState.getBlock() != this.block) {
                 return false;
             }
-            return this.state.method_22514(blockState);
+            return this.state.test(blockState);
         }
     }
 }

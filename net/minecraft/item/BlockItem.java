@@ -25,7 +25,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -112,9 +112,9 @@ extends Item {
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
             CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
-            StateFactory<Block, BlockState> stateFactory = blockState2.getBlock().getStateFactory();
+            StateManager<Block, BlockState> stateManager = blockState2.getBlock().getStateFactory();
             for (String string : compoundTag2.getKeys()) {
-                Property<?> property = stateFactory.getProperty(string);
+                Property<?> property = stateManager.getProperty(string);
                 if (property == null) continue;
                 String string2 = compoundTag2.getTag(string).asString();
                 blockState2 = BlockItem.with(blockState2, property, string2);
@@ -127,7 +127,7 @@ extends Item {
     }
 
     private static <T extends Comparable<T>> BlockState with(BlockState blockState, Property<T> property, String string) {
-        return property.getValue(string).map(comparable -> (BlockState)blockState.with(property, comparable)).orElse(blockState);
+        return property.parse(string).map(comparable -> (BlockState)blockState.with(property, comparable)).orElse(blockState);
     }
 
     protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {

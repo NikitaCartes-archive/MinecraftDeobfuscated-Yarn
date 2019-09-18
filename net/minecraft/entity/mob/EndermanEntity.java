@@ -42,12 +42,12 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -148,7 +148,7 @@ extends HostileEntity {
         super.writeCustomDataToTag(compoundTag);
         BlockState blockState = this.getCarriedBlock();
         if (blockState != null) {
-            compoundTag.put("carriedBlockState", TagHelper.serializeBlockState(blockState));
+            compoundTag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
         }
     }
 
@@ -156,7 +156,7 @@ extends HostileEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         BlockState blockState = null;
-        if (compoundTag.containsKey("carriedBlockState", 10) && (blockState = TagHelper.deserializeBlockState(compoundTag.getCompound("carriedBlockState"))).isAir()) {
+        if (compoundTag.containsKey("carriedBlockState", 10) && (blockState = NbtHelper.toBlockState(compoundTag.getCompound("carriedBlockState"))).isAir()) {
             blockState = null;
         }
         this.setCarriedBlock(blockState);

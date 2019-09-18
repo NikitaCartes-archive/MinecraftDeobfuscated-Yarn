@@ -40,7 +40,7 @@ extends Screen {
     public void renderBackground() {
         super.renderBackground();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().method_22813(DEMO_BG);
+        this.minecraft.getTextureManager().bindTexture(DEMO_BG);
         int i = (this.width - 248) / 2;
         int j = (this.height - 166) / 2;
         this.blit(i, j, 0, 0, 248, 166);

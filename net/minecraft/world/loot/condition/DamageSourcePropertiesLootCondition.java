@@ -8,18 +8,18 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
 public class DamageSourcePropertiesLootCondition
-implements class_4570 {
+implements LootCondition {
     private final DamageSourcePredicate predicate;
 
     private DamageSourcePropertiesLootCondition(DamageSourcePredicate damageSourcePredicate) {
@@ -37,7 +37,7 @@ implements class_4570 {
         return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), damageSource);
     }
 
-    public static class_4570.Builder builder(DamageSourcePredicate.Builder builder) {
+    public static LootCondition.Builder builder(DamageSourcePredicate.Builder builder) {
         return () -> new DamageSourcePropertiesLootCondition(builder.build());
     }
 
@@ -47,7 +47,7 @@ implements class_4570 {
     }
 
     public static class Factory
-    extends class_4570.Factory<DamageSourcePropertiesLootCondition> {
+    extends LootCondition.Factory<DamageSourcePropertiesLootCondition> {
         protected Factory() {
             super(new Identifier("damage_source_properties"), DamageSourcePropertiesLootCondition.class);
         }
@@ -62,7 +62,7 @@ implements class_4570 {
         }
 
         @Override
-        public /* synthetic */ class_4570 fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return this.method_839(jsonObject, jsonDeserializationContext);
         }
     }

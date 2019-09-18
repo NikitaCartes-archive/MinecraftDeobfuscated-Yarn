@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.predicate;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -10,9 +10,9 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4559;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
@@ -22,47 +22,47 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
-public class class_4550 {
-    public static final class_4550 field_20692 = new class_4550(null, null, class_4559.field_20736, NbtPredicate.ANY);
+public class BlockPredicate {
+    public static final BlockPredicate ANY = new BlockPredicate(null, null, StatePredicate.ANY, NbtPredicate.ANY);
     @Nullable
-    private final Tag<Block> field_20693;
+    private final Tag<Block> tag;
     @Nullable
-    private final Block field_20694;
-    private final class_4559 field_20695;
-    private final NbtPredicate field_20696;
+    private final Block block;
+    private final StatePredicate state;
+    private final NbtPredicate nbt;
 
-    public class_4550(@Nullable Tag<Block> tag, @Nullable Block block, class_4559 arg, NbtPredicate nbtPredicate) {
-        this.field_20693 = tag;
-        this.field_20694 = block;
-        this.field_20695 = arg;
-        this.field_20696 = nbtPredicate;
+    public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Block block, StatePredicate statePredicate, NbtPredicate nbtPredicate) {
+        this.tag = tag;
+        this.block = block;
+        this.state = statePredicate;
+        this.nbt = nbtPredicate;
     }
 
-    public boolean method_22454(ServerWorld serverWorld, BlockPos blockPos) {
+    public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
         BlockEntity blockEntity;
-        if (this == field_20692) {
+        if (this == ANY) {
             return true;
         }
         BlockState blockState = serverWorld.getBlockState(blockPos);
         Block block = blockState.getBlock();
-        if (this.field_20693 != null && !this.field_20693.contains(block)) {
+        if (this.tag != null && !this.tag.contains(block)) {
             return false;
         }
-        if (this.field_20694 != null && block != this.field_20694) {
+        if (this.block != null && block != this.block) {
             return false;
         }
-        if (!this.field_20695.method_22514(blockState)) {
+        if (!this.state.test(blockState)) {
             return false;
         }
-        return this.field_20696 == NbtPredicate.ANY || (blockEntity = serverWorld.getBlockEntity(blockPos)) != null && this.field_20696.test(blockEntity.toTag(new CompoundTag()));
+        return this.nbt == NbtPredicate.ANY || (blockEntity = serverWorld.getBlockEntity(blockPos)) != null && this.nbt.test(blockEntity.toTag(new CompoundTag()));
     }
 
-    public static class_4550 method_22453(@Nullable JsonElement jsonElement) {
+    public static BlockPredicate fromJson(@Nullable JsonElement jsonElement) {
         if (jsonElement == null || jsonElement.isJsonNull()) {
-            return field_20692;
+            return ANY;
         }
         JsonObject jsonObject = JsonHelper.asObject(jsonElement, "block");
-        NbtPredicate nbtPredicate = NbtPredicate.deserialize(jsonObject.get("nbt"));
+        NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
         Block block = null;
         if (jsonObject.has("block")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
@@ -76,23 +76,23 @@ public class class_4550 {
                 throw new JsonSyntaxException("Unknown block tag '" + identifier2 + "'");
             }
         }
-        class_4559 lv = class_4559.method_22519(jsonObject.get("state"));
-        return new class_4550(tag, block, lv, nbtPredicate);
+        StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
+        return new BlockPredicate(tag, block, statePredicate, nbtPredicate);
     }
 
-    public JsonElement method_22452() {
-        if (this == field_20692) {
+    public JsonElement toJson() {
+        if (this == ANY) {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        if (this.field_20694 != null) {
-            jsonObject.addProperty("block", Registry.BLOCK.getId(this.field_20694).toString());
+        if (this.block != null) {
+            jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
         }
-        if (this.field_20693 != null) {
-            jsonObject.addProperty("tag", this.field_20693.getId().toString());
+        if (this.tag != null) {
+            jsonObject.addProperty("tag", this.tag.getId().toString());
         }
-        jsonObject.add("nbt", this.field_20696.serialize());
-        jsonObject.add("state", this.field_20695.method_22513());
+        jsonObject.add("nbt", this.nbt.toJson());
+        jsonObject.add("state", this.state.toJson());
         return jsonObject;
     }
 }

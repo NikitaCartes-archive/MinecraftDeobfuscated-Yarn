@@ -220,7 +220,7 @@ RecipeGridAligner<Ingredient> {
         RenderSystem.disableLighting();
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 100.0f);
-        this.client.getTextureManager().method_22813(TEXTURE);
+        this.client.getTextureManager().bindTexture(TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int k = (this.parentWidth - 147) / 2 - this.leftOffset;
         int l = (this.parentHeight - 166) / 2;

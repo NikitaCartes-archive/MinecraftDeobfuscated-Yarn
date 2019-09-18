@@ -35,7 +35,7 @@ implements Toast {
         if (this.recipes.isEmpty()) {
             return Toast.Visibility.HIDE;
         }
-        toastManager.getGame().getTextureManager().method_22813(TOASTS_TEX);
+        toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         toastManager.blit(0, 0, 0, 32, 160, 32);
         toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title", new Object[0]), 30.0f, 7.0f, -11534256);

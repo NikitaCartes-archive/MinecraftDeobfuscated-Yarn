@@ -67,7 +67,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -531,9 +531,9 @@ extends TameableEntity {
             mutable.set(this.cat);
             this.cat.teleport(mutable.getX() + random.nextInt(11) - 5, mutable.getY() + random.nextInt(5) - 2, mutable.getZ() + random.nextInt(11) - 5, false);
             mutable.set(this.cat);
-            LootSupplier lootSupplier = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+            LootTable lootTable = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).put(LootContextParameters.POSITION, mutable).put(LootContextParameters.THIS_ENTITY, this.cat).setRandom(random);
-            List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.GIFT));
+            List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.GIFT));
             for (ItemStack itemStack : list) {
                 this.cat.world.spawnEntity(new ItemEntity(this.cat.world, (float)mutable.getX() - MathHelper.sin(this.cat.bodyYaw * ((float)Math.PI / 180)), mutable.getY(), (float)mutable.getZ() + MathHelper.cos(this.cat.bodyYaw * ((float)Math.PI / 180)), itemStack));
             }

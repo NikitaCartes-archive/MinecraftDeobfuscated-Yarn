@@ -9,14 +9,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
 public class SurvivesExplosionLootCondition
-implements class_4570 {
+implements LootCondition {
     private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
 
     private SurvivesExplosionLootCondition() {
@@ -37,7 +37,7 @@ implements class_4570 {
         return true;
     }
 
-    public static class_4570.Builder builder() {
+    public static LootCondition.Builder builder() {
         return () -> INSTANCE;
     }
 
@@ -47,7 +47,7 @@ implements class_4570 {
     }
 
     public static class Factory
-    extends class_4570.Factory<SurvivesExplosionLootCondition> {
+    extends LootCondition.Factory<SurvivesExplosionLootCondition> {
         protected Factory() {
             super(new Identifier("survives_explosion"), SurvivesExplosionLootCondition.class);
         }
@@ -60,7 +60,7 @@ implements class_4570 {
         }
 
         @Override
-        public /* synthetic */ class_4570 fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return this.method_873(jsonObject, jsonDeserializationContext);
         }
     }

@@ -7,9 +7,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Collection;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -19,7 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier ID = new Identifier("fishing_rod_hooked");
 
     @Override
@@ -29,13 +29,13 @@ extends class_4558<Conditions> {
 
     public Conditions method_8941(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("rod"));
-        EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
+        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
         ItemPredicate itemPredicate2 = ItemPredicate.deserialize(jsonObject.get("item"));
         return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection));
     }
 
     @Override

@@ -19,6 +19,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -28,7 +29,6 @@ import net.minecraft.structure.Structure;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.TagHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -121,7 +121,7 @@ implements SynchronousResourceReloadListener {
             compoundTag.putInt("DataVersion", 500);
         }
         Structure structure = new Structure();
-        structure.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+        structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
         return structure;
     }
 

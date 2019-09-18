@@ -8,16 +8,16 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
 public class MatchToolLootCondition
-implements class_4570 {
+implements LootCondition {
     private final ItemPredicate predicate;
 
     public MatchToolLootCondition(ItemPredicate itemPredicate) {
@@ -34,7 +34,7 @@ implements class_4570 {
         return itemStack != null && this.predicate.test(itemStack);
     }
 
-    public static class_4570.Builder builder(ItemPredicate.Builder builder) {
+    public static LootCondition.Builder builder(ItemPredicate.Builder builder) {
         return () -> new MatchToolLootCondition(builder.build());
     }
 
@@ -44,7 +44,7 @@ implements class_4570 {
     }
 
     public static class Factory
-    extends class_4570.Factory<MatchToolLootCondition> {
+    extends LootCondition.Factory<MatchToolLootCondition> {
         protected Factory() {
             super(new Identifier("match_tool"), MatchToolLootCondition.class);
         }
@@ -59,7 +59,7 @@ implements class_4570 {
         }
 
         @Override
-        public /* synthetic */ class_4570 fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return this.method_949(jsonObject, jsonDeserializationContext);
         }
     }

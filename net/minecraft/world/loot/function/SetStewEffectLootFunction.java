@@ -16,7 +16,6 @@ import com.google.gson.JsonSyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import net.minecraft.class_4570;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -25,6 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.loot.UniformLootTableRange;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
 import net.minecraft.world.loot.function.LootFunction;
@@ -33,8 +33,8 @@ public class SetStewEffectLootFunction
 extends ConditionalLootFunction {
     private final Map<StatusEffect, UniformLootTableRange> effects;
 
-    private SetStewEffectLootFunction(class_4570[] args, Map<StatusEffect, UniformLootTableRange> map) {
-        super(args);
+    private SetStewEffectLootFunction(LootCondition[] lootConditions, Map<StatusEffect, UniformLootTableRange> map) {
+        super(lootConditions);
         this.effects = ImmutableMap.copyOf(map);
     }
 
@@ -83,7 +83,7 @@ extends ConditionalLootFunction {
             }
         }
 
-        public SetStewEffectLootFunction method_641(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+        public SetStewEffectLootFunction method_641(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             HashMap<StatusEffect, UniformLootTableRange> map = Maps.newHashMap();
             if (jsonObject.has("effects")) {
                 JsonArray jsonArray = JsonHelper.getArray(jsonObject, "effects");
@@ -94,12 +94,12 @@ extends ConditionalLootFunction {
                     map.put(statusEffect, uniformLootTableRange);
                 }
             }
-            return new SetStewEffectLootFunction(args, map);
+            return new SetStewEffectLootFunction(lootConditions, map);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-            return this.method_641(jsonObject, jsonDeserializationContext, args);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+            return this.method_641(jsonObject, jsonDeserializationContext, lootConditions);
         }
     }
 

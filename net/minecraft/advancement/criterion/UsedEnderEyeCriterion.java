@@ -5,16 +5,16 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.class_4558;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion
-extends class_4558<Conditions> {
+extends AbstractCriterion<Conditions> {
     private static final Identifier id = new Identifier("used_ender_eye");
 
     @Override
@@ -31,7 +31,7 @@ extends class_4558<Conditions> {
         double d = serverPlayerEntity.x - (double)blockPos.getX();
         double e = serverPlayerEntity.z - (double)blockPos.getZ();
         double f = d * d + e * e;
-        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(f));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(f));
     }
 
     @Override
@@ -49,7 +49,7 @@ extends class_4558<Conditions> {
         }
 
         public boolean matches(double d) {
-            return this.distance.matchesSquared(d);
+            return this.distance.testSqrt(d);
         }
     }
 }

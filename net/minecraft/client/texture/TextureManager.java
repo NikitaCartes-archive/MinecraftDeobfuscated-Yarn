@@ -51,15 +51,15 @@ ResourceReloadListener {
         this.resourceContainer = resourceManager;
     }
 
-    public void method_22813(Identifier identifier) {
+    public void bindTexture(Identifier identifier) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> this.bindTexture(identifier));
+            RenderSystem.recordRenderCall(() -> this.bindTextureInner(identifier));
         } else {
-            this.bindTexture(identifier);
+            this.bindTextureInner(identifier);
         }
     }
 
-    private void bindTexture(Identifier identifier) {
+    private void bindTextureInner(Identifier identifier) {
         Texture texture = this.textures.get(identifier);
         if (texture == null) {
             texture = new ResourceTexture(identifier);

@@ -6,6 +6,7 @@ package com.mojang.blaze3d.systems;
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderCall;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -15,7 +16,6 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4573;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.math.MathHelper;
@@ -28,7 +28,7 @@ import org.lwjgl.glfw.GLFWErrorCallbackI;
 @Environment(value=EnvType.CLIENT)
 public class RenderSystem {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ConcurrentLinkedQueue<class_4573> recordingQueue = Queues.newConcurrentLinkedQueue();
+    private static final ConcurrentLinkedQueue<RenderCall> recordingQueue = Queues.newConcurrentLinkedQueue();
     private static final Tessellator RENDER_THREAD_TESSELATOR = new Tessellator();
     private static final float DEFAULTALPHACUTOFF = 0.1f;
     private static boolean isReplayingQueue;
@@ -609,8 +609,8 @@ public class RenderSystem {
     public static void pollEvents() {
     }
 
-    public static void recordRenderCall(class_4573 arg) {
-        recordingQueue.add(arg);
+    public static void recordRenderCall(RenderCall renderCall) {
+        recordingQueue.add(renderCall);
     }
 
     public static void glClientActiveTexture(int i) {
@@ -674,8 +674,8 @@ public class RenderSystem {
         GLFW.glfwPollEvents();
         isReplayingQueue = true;
         while (!recordingQueue.isEmpty()) {
-            class_4573 lv = recordingQueue.poll();
-            lv.execute();
+            RenderCall renderCall = recordingQueue.poll();
+            renderCall.execute();
         }
         isReplayingQueue = false;
         Tessellator.getInstance().getBufferBuilder().clear();
