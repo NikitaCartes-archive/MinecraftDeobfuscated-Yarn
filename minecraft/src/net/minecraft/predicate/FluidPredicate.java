@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.predicate;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -15,35 +15,35 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
-public class class_4551 {
-	public static final class_4551 field_20708 = new class_4551(null, null, class_4559.field_20736);
+public class FluidPredicate {
+	public static final FluidPredicate ANY = new FluidPredicate(null, null, StatePredicate.ANY);
 	@Nullable
-	private final Tag<Fluid> field_20709;
+	private final Tag<Fluid> tag;
 	@Nullable
-	private final Fluid field_20710;
-	private final class_4559 field_20711;
+	private final Fluid fluid;
+	private final StatePredicate state;
 
-	public class_4551(@Nullable Tag<Fluid> tag, @Nullable Fluid fluid, class_4559 arg) {
-		this.field_20709 = tag;
-		this.field_20710 = fluid;
-		this.field_20711 = arg;
+	public FluidPredicate(@Nullable Tag<Fluid> tag, @Nullable Fluid fluid, StatePredicate statePredicate) {
+		this.tag = tag;
+		this.fluid = fluid;
+		this.state = statePredicate;
 	}
 
-	public boolean method_22475(ServerWorld serverWorld, BlockPos blockPos) {
-		if (this == field_20708) {
+	public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
+		if (this == ANY) {
 			return true;
 		} else {
 			FluidState fluidState = serverWorld.getFluidState(blockPos);
 			Fluid fluid = fluidState.getFluid();
-			if (this.field_20709 != null && !this.field_20709.contains(fluid)) {
+			if (this.tag != null && !this.tag.contains(fluid)) {
 				return false;
 			} else {
-				return this.field_20710 != null && fluid != this.field_20710 ? false : this.field_20711.method_22518(fluidState);
+				return this.fluid != null && fluid != this.fluid ? false : this.state.test(fluidState);
 			}
 		}
 	}
 
-	public static class_4551 method_22474(@Nullable JsonElement jsonElement) {
+	public static FluidPredicate fromJson(@Nullable JsonElement jsonElement) {
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "fluid");
 			Fluid fluid = null;
@@ -55,33 +55,33 @@ public class class_4551 {
 			Tag<Fluid> tag = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tag = FluidTags.method_22448().get(identifier2);
+				tag = FluidTags.getContainer().get(identifier2);
 				if (tag == null) {
 					throw new JsonSyntaxException("Unknown fluid tag '" + identifier2 + "'");
 				}
 			}
 
-			class_4559 lv = class_4559.method_22519(jsonObject.get("state"));
-			return new class_4551(tag, fluid, lv);
+			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
+			return new FluidPredicate(tag, fluid, statePredicate);
 		} else {
-			return field_20708;
+			return ANY;
 		}
 	}
 
-	public JsonElement method_22473() {
-		if (this == field_20708) {
+	public JsonElement toJson() {
+		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			if (this.field_20710 != null) {
-				jsonObject.addProperty("fluid", Registry.FLUID.getId(this.field_20710).toString());
+			if (this.fluid != null) {
+				jsonObject.addProperty("fluid", Registry.FLUID.getId(this.fluid).toString());
 			}
 
-			if (this.field_20709 != null) {
-				jsonObject.addProperty("tag", this.field_20709.getId().toString());
+			if (this.tag != null) {
+				jsonObject.addProperty("tag", this.tag.getId().toString());
 			}
 
-			jsonObject.add("state", this.field_20711.method_22513());
+			jsonObject.add("state", this.state.toJson());
 			return jsonObject;
 		}
 	}

@@ -3,7 +3,6 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -11,7 +10,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class NetherTravelCriterion extends class_4558<NetherTravelCriterion.Conditions> {
+public class NetherTravelCriterion extends AbstractCriterion<NetherTravelCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("nether_travel");
 
 	@Override
@@ -20,14 +19,14 @@ public class NetherTravelCriterion extends class_4558<NetherTravelCriterion.Cond
 	}
 
 	public NetherTravelCriterion.Conditions method_9078(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject.get("entered"));
-		LocationPredicate locationPredicate2 = LocationPredicate.deserialize(jsonObject.get("exited"));
+		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("entered"));
+		LocationPredicate locationPredicate2 = LocationPredicate.fromJson(jsonObject.get("exited"));
 		DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
 		return new NetherTravelCriterion.Conditions(locationPredicate, locationPredicate2, distancePredicate);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
-		this.method_22510(
+		this.test(
 			serverPlayerEntity.getAdvancementManager(),
 			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z)
 		);
@@ -60,8 +59,8 @@ public class NetherTravelCriterion extends class_4558<NetherTravelCriterion.Cond
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("entered", this.entered.serialize());
-			jsonObject.add("exited", this.exited.serialize());
+			jsonObject.add("entered", this.entered.toJson());
+			jsonObject.add("exited", this.exited.toJson());
 			jsonObject.add("distance", this.distance.serialize());
 			return jsonObject;
 		}

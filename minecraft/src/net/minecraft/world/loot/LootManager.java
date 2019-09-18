@@ -8,13 +8,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.class_4567;
-import net.minecraft.class_4570;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.BoundedIntUnaryOperator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.condition.LootConditionManager;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextTypes;
@@ -33,26 +33,26 @@ public class LootManager extends JsonDataLoader {
 		.registerTypeAdapter(ConstantLootTableRange.class, new ConstantLootTableRange.Serializer())
 		.registerTypeAdapter(BoundedIntUnaryOperator.class, new BoundedIntUnaryOperator.Serializer())
 		.registerTypeAdapter(LootPool.class, new LootPool.Serializer())
-		.registerTypeAdapter(LootSupplier.class, new LootSupplier.Serializer())
+		.registerTypeAdapter(LootTable.class, new LootTable.Serializer())
 		.registerTypeHierarchyAdapter(LootEntry.class, new LootEntries.Serializer())
 		.registerTypeHierarchyAdapter(LootFunction.class, new LootFunctions.Factory())
-		.registerTypeHierarchyAdapter(class_4570.class, new LootConditions.Factory())
+		.registerTypeHierarchyAdapter(LootCondition.class, new LootConditions.Factory())
 		.registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer())
 		.create();
-	private Map<Identifier, LootSupplier> suppliers = ImmutableMap.of();
-	private final class_4567 field_20752;
+	private Map<Identifier, LootTable> suppliers = ImmutableMap.of();
+	private final LootConditionManager conditionManager;
 
-	public LootManager(class_4567 arg) {
+	public LootManager(LootConditionManager lootConditionManager) {
 		super(GSON, "loot_tables");
-		this.field_20752 = arg;
+		this.conditionManager = lootConditionManager;
 	}
 
-	public LootSupplier getSupplier(Identifier identifier) {
-		return (LootSupplier)this.suppliers.getOrDefault(identifier, LootSupplier.EMPTY);
+	public LootTable getSupplier(Identifier identifier) {
+		return (LootTable)this.suppliers.getOrDefault(identifier, LootTable.EMPTY);
 	}
 
 	protected void method_20712(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
-		Builder<Identifier, LootSupplier> builder = ImmutableMap.builder();
+		Builder<Identifier, LootTable> builder = ImmutableMap.builder();
 		JsonObject jsonObject = (JsonObject)map.remove(LootTables.EMPTY);
 		if (jsonObject != null) {
 			LOGGER.warn("Datapack tried to redefine {} loot table, ignoring", LootTables.EMPTY);
@@ -60,26 +60,26 @@ public class LootManager extends JsonDataLoader {
 
 		map.forEach((identifier, jsonObjectx) -> {
 			try {
-				LootSupplier lootSupplier = GSON.fromJson(jsonObjectx, LootSupplier.class);
-				builder.put(identifier, lootSupplier);
+				LootTable lootTable = GSON.fromJson(jsonObjectx, LootTable.class);
+				builder.put(identifier, lootTable);
 			} catch (Exception var4x) {
 				LOGGER.error("Couldn't parse loot table {}", identifier, var4x);
 			}
 		});
-		builder.put(LootTables.EMPTY, LootSupplier.EMPTY);
-		ImmutableMap<Identifier, LootSupplier> immutableMap = builder.build();
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.field_20752::method_22564, immutableMap::get);
-		immutableMap.forEach((identifier, lootSupplier) -> check(lootTableReporter, identifier, lootSupplier));
+		builder.put(LootTables.EMPTY, LootTable.EMPTY);
+		ImmutableMap<Identifier, LootTable> immutableMap = builder.build();
+		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.conditionManager::get, immutableMap::get);
+		immutableMap.forEach((identifier, lootTable) -> check(lootTableReporter, identifier, lootTable));
 		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
 		this.suppliers = immutableMap;
 	}
 
-	public static void check(LootTableReporter lootTableReporter, Identifier identifier, LootSupplier lootSupplier) {
-		lootSupplier.check(lootTableReporter.method_22568(lootSupplier.getType()).method_22569("{" + identifier + "}", identifier));
+	public static void check(LootTableReporter lootTableReporter, Identifier identifier, LootTable lootTable) {
+		lootTable.check(lootTableReporter.withContextType(lootTable.getType()).withSupplier("{" + identifier + "}", identifier));
 	}
 
-	public static JsonElement toJson(LootSupplier lootSupplier) {
-		return GSON.toJsonTree(lootSupplier);
+	public static JsonElement toJson(LootTable lootTable) {
+		return GSON.toJsonTree(lootTable);
 	}
 
 	public Set<Identifier> getSupplierNames() {

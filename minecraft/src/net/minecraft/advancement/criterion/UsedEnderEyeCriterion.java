@@ -2,13 +2,12 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 
-public class UsedEnderEyeCriterion extends class_4558<UsedEnderEyeCriterion.Conditions> {
+public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriterion.Conditions> {
 	private static final Identifier id = new Identifier("used_ender_eye");
 
 	@Override
@@ -25,7 +24,7 @@ public class UsedEnderEyeCriterion extends class_4558<UsedEnderEyeCriterion.Cond
 		double d = serverPlayerEntity.x - (double)blockPos.getX();
 		double e = serverPlayerEntity.z - (double)blockPos.getZ();
 		double f = d * d + e * e;
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(f));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(f));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -37,7 +36,7 @@ public class UsedEnderEyeCriterion extends class_4558<UsedEnderEyeCriterion.Cond
 		}
 
 		public boolean matches(double d) {
-			return this.distance.matchesSquared(d);
+			return this.distance.testSqrt(d);
 		}
 	}
 }

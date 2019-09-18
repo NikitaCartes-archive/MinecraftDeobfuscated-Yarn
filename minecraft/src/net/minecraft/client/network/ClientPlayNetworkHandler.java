@@ -1140,7 +1140,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			boolean bl = false;
 			if (this.client.currentScreen instanceof CreativeInventoryScreen) {
 				CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.currentScreen;
-				bl = creativeInventoryScreen.method_2469() != ItemGroup.INVENTORY.getIndex();
+				bl = creativeInventoryScreen.getSelectedTab() != ItemGroup.INVENTORY.getIndex();
 			}
 
 			if (guiSlotUpdateS2CPacket.getId() == 0 && guiSlotUpdateS2CPacket.getSlot() >= 36 && i < 45) {

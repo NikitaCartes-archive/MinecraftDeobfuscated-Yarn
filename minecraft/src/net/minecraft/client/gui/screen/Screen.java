@@ -359,7 +359,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		RenderSystem.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.minecraft.getTextureManager().method_22813(BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);

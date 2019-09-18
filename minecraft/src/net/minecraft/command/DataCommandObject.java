@@ -11,9 +11,9 @@ public interface DataCommandObject {
 
 	CompoundTag getTag() throws CommandSyntaxException;
 
-	Text getModifiedFeedback();
+	Text feedbackModify();
 
-	Text getQueryFeedback(Tag tag);
+	Text feedbackQuery(Tag tag);
 
-	Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i);
+	Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double d, int i);
 }

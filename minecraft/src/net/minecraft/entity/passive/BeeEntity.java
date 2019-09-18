@@ -50,6 +50,7 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -59,7 +60,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -116,8 +116,8 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.put("HivePos", TagHelper.serializeBlockPos(this.hivePos));
-		compoundTag.put("FlowerPos", TagHelper.serializeBlockPos(this.flowerPos));
+		compoundTag.put("HivePos", NbtHelper.fromBlockPos(this.hivePos));
+		compoundTag.put("FlowerPos", NbtHelper.fromBlockPos(this.flowerPos));
 		compoundTag.putBoolean("HasNectar", this.hasNectar());
 		compoundTag.putBoolean("HasStung", this.hasStung());
 		compoundTag.putInt("TicksSincePollination", this.ticksSincePollination);
@@ -133,8 +133,8 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.hivePos = TagHelper.deserializeBlockPos(compoundTag.getCompound("HivePos"));
-		this.flowerPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("FlowerPos"));
+		this.hivePos = NbtHelper.toBlockPos(compoundTag.getCompound("HivePos"));
+		this.flowerPos = NbtHelper.toBlockPos(compoundTag.getCompound("FlowerPos"));
 		super.readCustomDataFromTag(compoundTag);
 		this.setHasNectar(compoundTag.getBoolean("HasNectar"));
 		this.setHasStung(compoundTag.getBoolean("HasStung"));

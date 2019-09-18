@@ -161,222 +161,223 @@ import org.apache.logging.log4j.LogManager;
 
 public enum NetworkState {
 	HANDSHAKING(
-		-1, method_22308().method_22315(NetworkSide.SERVERBOUND, new NetworkState.class_4532().method_22313(HandshakeC2SPacket.class, HandshakeC2SPacket::new))
+		-1,
+		createPacketHandlerInitializer().setup(NetworkSide.SERVERBOUND, new NetworkState.PacketHandler().register(HandshakeC2SPacket.class, HandshakeC2SPacket::new))
 	),
 	PLAY(
 		0,
-		method_22308()
-			.method_22315(
+		createPacketHandlerInitializer()
+			.setup(
 				NetworkSide.CLIENTBOUND,
-				new NetworkState.class_4532()
-					.method_22313(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
-					.method_22313(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
-					.method_22313(EntitySpawnGlobalS2CPacket.class, EntitySpawnGlobalS2CPacket::new)
-					.method_22313(MobSpawnS2CPacket.class, MobSpawnS2CPacket::new)
-					.method_22313(PaintingSpawnS2CPacket.class, PaintingSpawnS2CPacket::new)
-					.method_22313(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
-					.method_22313(EntityAnimationS2CPacket.class, EntityAnimationS2CPacket::new)
-					.method_22313(StatisticsS2CPacket.class, StatisticsS2CPacket::new)
-					.method_22313(PlayerActionResponseS2CPacket.class, PlayerActionResponseS2CPacket::new)
-					.method_22313(BlockBreakingProgressS2CPacket.class, BlockBreakingProgressS2CPacket::new)
-					.method_22313(BlockEntityUpdateS2CPacket.class, BlockEntityUpdateS2CPacket::new)
-					.method_22313(BlockActionS2CPacket.class, BlockActionS2CPacket::new)
-					.method_22313(BlockUpdateS2CPacket.class, BlockUpdateS2CPacket::new)
-					.method_22313(BossBarS2CPacket.class, BossBarS2CPacket::new)
-					.method_22313(DifficultyS2CPacket.class, DifficultyS2CPacket::new)
-					.method_22313(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
-					.method_22313(ChunkDeltaUpdateS2CPacket.class, ChunkDeltaUpdateS2CPacket::new)
-					.method_22313(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
-					.method_22313(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)
-					.method_22313(ConfirmGuiActionS2CPacket.class, ConfirmGuiActionS2CPacket::new)
-					.method_22313(GuiCloseS2CPacket.class, GuiCloseS2CPacket::new)
-					.method_22313(InventoryS2CPacket.class, InventoryS2CPacket::new)
-					.method_22313(GuiUpdateS2CPacket.class, GuiUpdateS2CPacket::new)
-					.method_22313(GuiSlotUpdateS2CPacket.class, GuiSlotUpdateS2CPacket::new)
-					.method_22313(CooldownUpdateS2CPacket.class, CooldownUpdateS2CPacket::new)
-					.method_22313(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
-					.method_22313(PlaySoundIdS2CPacket.class, PlaySoundIdS2CPacket::new)
-					.method_22313(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
-					.method_22313(EntityStatusS2CPacket.class, EntityStatusS2CPacket::new)
-					.method_22313(ExplosionS2CPacket.class, ExplosionS2CPacket::new)
-					.method_22313(UnloadChunkS2CPacket.class, UnloadChunkS2CPacket::new)
-					.method_22313(GameStateChangeS2CPacket.class, GameStateChangeS2CPacket::new)
-					.method_22313(GuiOpenS2CPacket.class, GuiOpenS2CPacket::new)
-					.method_22313(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
-					.method_22313(ChunkDataS2CPacket.class, ChunkDataS2CPacket::new)
-					.method_22313(WorldEventS2CPacket.class, WorldEventS2CPacket::new)
-					.method_22313(ParticleS2CPacket.class, ParticleS2CPacket::new)
-					.method_22313(LightUpdateS2CPacket.class, LightUpdateS2CPacket::new)
-					.method_22313(GameJoinS2CPacket.class, GameJoinS2CPacket::new)
-					.method_22313(MapUpdateS2CPacket.class, MapUpdateS2CPacket::new)
-					.method_22313(SetTradeOffersPacket.class, SetTradeOffersPacket::new)
-					.method_22313(EntityS2CPacket.MoveRelative.class, EntityS2CPacket.MoveRelative::new)
-					.method_22313(EntityS2CPacket.RotateAndMoveRelative.class, EntityS2CPacket.RotateAndMoveRelative::new)
-					.method_22313(EntityS2CPacket.Rotate.class, EntityS2CPacket.Rotate::new)
-					.method_22313(EntityS2CPacket.class, EntityS2CPacket::new)
-					.method_22313(VehicleMoveS2CPacket.class, VehicleMoveS2CPacket::new)
-					.method_22313(OpenWrittenBookS2CPacket.class, OpenWrittenBookS2CPacket::new)
-					.method_22313(OpenContainerPacket.class, OpenContainerPacket::new)
-					.method_22313(SignEditorOpenS2CPacket.class, SignEditorOpenS2CPacket::new)
-					.method_22313(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
-					.method_22313(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
-					.method_22313(CombatEventS2CPacket.class, CombatEventS2CPacket::new)
-					.method_22313(PlayerListS2CPacket.class, PlayerListS2CPacket::new)
-					.method_22313(LookAtS2CPacket.class, LookAtS2CPacket::new)
-					.method_22313(PlayerPositionLookS2CPacket.class, PlayerPositionLookS2CPacket::new)
-					.method_22313(UnlockRecipesS2CPacket.class, UnlockRecipesS2CPacket::new)
-					.method_22313(EntitiesDestroyS2CPacket.class, EntitiesDestroyS2CPacket::new)
-					.method_22313(RemoveEntityEffectS2CPacket.class, RemoveEntityEffectS2CPacket::new)
-					.method_22313(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
-					.method_22313(PlayerRespawnS2CPacket.class, PlayerRespawnS2CPacket::new)
-					.method_22313(EntitySetHeadYawS2CPacket.class, EntitySetHeadYawS2CPacket::new)
-					.method_22313(SelectAdvancementTabS2CPacket.class, SelectAdvancementTabS2CPacket::new)
-					.method_22313(WorldBorderS2CPacket.class, WorldBorderS2CPacket::new)
-					.method_22313(SetCameraEntityS2CPacket.class, SetCameraEntityS2CPacket::new)
-					.method_22313(HeldItemChangeS2CPacket.class, HeldItemChangeS2CPacket::new)
-					.method_22313(ChunkRenderDistanceCenterS2CPacket.class, ChunkRenderDistanceCenterS2CPacket::new)
-					.method_22313(ChunkLoadDistanceS2CPacket.class, ChunkLoadDistanceS2CPacket::new)
-					.method_22313(ScoreboardDisplayS2CPacket.class, ScoreboardDisplayS2CPacket::new)
-					.method_22313(EntityTrackerUpdateS2CPacket.class, EntityTrackerUpdateS2CPacket::new)
-					.method_22313(EntityAttachS2CPacket.class, EntityAttachS2CPacket::new)
-					.method_22313(EntityVelocityUpdateS2CPacket.class, EntityVelocityUpdateS2CPacket::new)
-					.method_22313(EntityEquipmentUpdateS2CPacket.class, EntityEquipmentUpdateS2CPacket::new)
-					.method_22313(ExperienceBarUpdateS2CPacket.class, ExperienceBarUpdateS2CPacket::new)
-					.method_22313(HealthUpdateS2CPacket.class, HealthUpdateS2CPacket::new)
-					.method_22313(ScoreboardObjectiveUpdateS2CPacket.class, ScoreboardObjectiveUpdateS2CPacket::new)
-					.method_22313(EntityPassengersSetS2CPacket.class, EntityPassengersSetS2CPacket::new)
-					.method_22313(TeamS2CPacket.class, TeamS2CPacket::new)
-					.method_22313(ScoreboardPlayerUpdateS2CPacket.class, ScoreboardPlayerUpdateS2CPacket::new)
-					.method_22313(PlayerSpawnPositionS2CPacket.class, PlayerSpawnPositionS2CPacket::new)
-					.method_22313(WorldTimeUpdateS2CPacket.class, WorldTimeUpdateS2CPacket::new)
-					.method_22313(TitleS2CPacket.class, TitleS2CPacket::new)
-					.method_22313(PlaySoundFromEntityS2CPacket.class, PlaySoundFromEntityS2CPacket::new)
-					.method_22313(PlaySoundS2CPacket.class, PlaySoundS2CPacket::new)
-					.method_22313(StopSoundS2CPacket.class, StopSoundS2CPacket::new)
-					.method_22313(PlayerListHeaderS2CPacket.class, PlayerListHeaderS2CPacket::new)
-					.method_22313(TagQueryResponseS2CPacket.class, TagQueryResponseS2CPacket::new)
-					.method_22313(ItemPickupAnimationS2CPacket.class, ItemPickupAnimationS2CPacket::new)
-					.method_22313(EntityPositionS2CPacket.class, EntityPositionS2CPacket::new)
-					.method_22313(AdvancementUpdateS2CPacket.class, AdvancementUpdateS2CPacket::new)
-					.method_22313(EntityAttributesS2CPacket.class, EntityAttributesS2CPacket::new)
-					.method_22313(EntityPotionEffectS2CPacket.class, EntityPotionEffectS2CPacket::new)
-					.method_22313(SynchronizeRecipesS2CPacket.class, SynchronizeRecipesS2CPacket::new)
-					.method_22313(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)
+				new NetworkState.PacketHandler()
+					.register(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
+					.register(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
+					.register(EntitySpawnGlobalS2CPacket.class, EntitySpawnGlobalS2CPacket::new)
+					.register(MobSpawnS2CPacket.class, MobSpawnS2CPacket::new)
+					.register(PaintingSpawnS2CPacket.class, PaintingSpawnS2CPacket::new)
+					.register(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
+					.register(EntityAnimationS2CPacket.class, EntityAnimationS2CPacket::new)
+					.register(StatisticsS2CPacket.class, StatisticsS2CPacket::new)
+					.register(PlayerActionResponseS2CPacket.class, PlayerActionResponseS2CPacket::new)
+					.register(BlockBreakingProgressS2CPacket.class, BlockBreakingProgressS2CPacket::new)
+					.register(BlockEntityUpdateS2CPacket.class, BlockEntityUpdateS2CPacket::new)
+					.register(BlockActionS2CPacket.class, BlockActionS2CPacket::new)
+					.register(BlockUpdateS2CPacket.class, BlockUpdateS2CPacket::new)
+					.register(BossBarS2CPacket.class, BossBarS2CPacket::new)
+					.register(DifficultyS2CPacket.class, DifficultyS2CPacket::new)
+					.register(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
+					.register(ChunkDeltaUpdateS2CPacket.class, ChunkDeltaUpdateS2CPacket::new)
+					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
+					.register(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)
+					.register(ConfirmGuiActionS2CPacket.class, ConfirmGuiActionS2CPacket::new)
+					.register(GuiCloseS2CPacket.class, GuiCloseS2CPacket::new)
+					.register(InventoryS2CPacket.class, InventoryS2CPacket::new)
+					.register(GuiUpdateS2CPacket.class, GuiUpdateS2CPacket::new)
+					.register(GuiSlotUpdateS2CPacket.class, GuiSlotUpdateS2CPacket::new)
+					.register(CooldownUpdateS2CPacket.class, CooldownUpdateS2CPacket::new)
+					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
+					.register(PlaySoundIdS2CPacket.class, PlaySoundIdS2CPacket::new)
+					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
+					.register(EntityStatusS2CPacket.class, EntityStatusS2CPacket::new)
+					.register(ExplosionS2CPacket.class, ExplosionS2CPacket::new)
+					.register(UnloadChunkS2CPacket.class, UnloadChunkS2CPacket::new)
+					.register(GameStateChangeS2CPacket.class, GameStateChangeS2CPacket::new)
+					.register(GuiOpenS2CPacket.class, GuiOpenS2CPacket::new)
+					.register(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
+					.register(ChunkDataS2CPacket.class, ChunkDataS2CPacket::new)
+					.register(WorldEventS2CPacket.class, WorldEventS2CPacket::new)
+					.register(ParticleS2CPacket.class, ParticleS2CPacket::new)
+					.register(LightUpdateS2CPacket.class, LightUpdateS2CPacket::new)
+					.register(GameJoinS2CPacket.class, GameJoinS2CPacket::new)
+					.register(MapUpdateS2CPacket.class, MapUpdateS2CPacket::new)
+					.register(SetTradeOffersPacket.class, SetTradeOffersPacket::new)
+					.register(EntityS2CPacket.MoveRelative.class, EntityS2CPacket.MoveRelative::new)
+					.register(EntityS2CPacket.RotateAndMoveRelative.class, EntityS2CPacket.RotateAndMoveRelative::new)
+					.register(EntityS2CPacket.Rotate.class, EntityS2CPacket.Rotate::new)
+					.register(EntityS2CPacket.class, EntityS2CPacket::new)
+					.register(VehicleMoveS2CPacket.class, VehicleMoveS2CPacket::new)
+					.register(OpenWrittenBookS2CPacket.class, OpenWrittenBookS2CPacket::new)
+					.register(OpenContainerPacket.class, OpenContainerPacket::new)
+					.register(SignEditorOpenS2CPacket.class, SignEditorOpenS2CPacket::new)
+					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
+					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
+					.register(CombatEventS2CPacket.class, CombatEventS2CPacket::new)
+					.register(PlayerListS2CPacket.class, PlayerListS2CPacket::new)
+					.register(LookAtS2CPacket.class, LookAtS2CPacket::new)
+					.register(PlayerPositionLookS2CPacket.class, PlayerPositionLookS2CPacket::new)
+					.register(UnlockRecipesS2CPacket.class, UnlockRecipesS2CPacket::new)
+					.register(EntitiesDestroyS2CPacket.class, EntitiesDestroyS2CPacket::new)
+					.register(RemoveEntityEffectS2CPacket.class, RemoveEntityEffectS2CPacket::new)
+					.register(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
+					.register(PlayerRespawnS2CPacket.class, PlayerRespawnS2CPacket::new)
+					.register(EntitySetHeadYawS2CPacket.class, EntitySetHeadYawS2CPacket::new)
+					.register(SelectAdvancementTabS2CPacket.class, SelectAdvancementTabS2CPacket::new)
+					.register(WorldBorderS2CPacket.class, WorldBorderS2CPacket::new)
+					.register(SetCameraEntityS2CPacket.class, SetCameraEntityS2CPacket::new)
+					.register(HeldItemChangeS2CPacket.class, HeldItemChangeS2CPacket::new)
+					.register(ChunkRenderDistanceCenterS2CPacket.class, ChunkRenderDistanceCenterS2CPacket::new)
+					.register(ChunkLoadDistanceS2CPacket.class, ChunkLoadDistanceS2CPacket::new)
+					.register(ScoreboardDisplayS2CPacket.class, ScoreboardDisplayS2CPacket::new)
+					.register(EntityTrackerUpdateS2CPacket.class, EntityTrackerUpdateS2CPacket::new)
+					.register(EntityAttachS2CPacket.class, EntityAttachS2CPacket::new)
+					.register(EntityVelocityUpdateS2CPacket.class, EntityVelocityUpdateS2CPacket::new)
+					.register(EntityEquipmentUpdateS2CPacket.class, EntityEquipmentUpdateS2CPacket::new)
+					.register(ExperienceBarUpdateS2CPacket.class, ExperienceBarUpdateS2CPacket::new)
+					.register(HealthUpdateS2CPacket.class, HealthUpdateS2CPacket::new)
+					.register(ScoreboardObjectiveUpdateS2CPacket.class, ScoreboardObjectiveUpdateS2CPacket::new)
+					.register(EntityPassengersSetS2CPacket.class, EntityPassengersSetS2CPacket::new)
+					.register(TeamS2CPacket.class, TeamS2CPacket::new)
+					.register(ScoreboardPlayerUpdateS2CPacket.class, ScoreboardPlayerUpdateS2CPacket::new)
+					.register(PlayerSpawnPositionS2CPacket.class, PlayerSpawnPositionS2CPacket::new)
+					.register(WorldTimeUpdateS2CPacket.class, WorldTimeUpdateS2CPacket::new)
+					.register(TitleS2CPacket.class, TitleS2CPacket::new)
+					.register(PlaySoundFromEntityS2CPacket.class, PlaySoundFromEntityS2CPacket::new)
+					.register(PlaySoundS2CPacket.class, PlaySoundS2CPacket::new)
+					.register(StopSoundS2CPacket.class, StopSoundS2CPacket::new)
+					.register(PlayerListHeaderS2CPacket.class, PlayerListHeaderS2CPacket::new)
+					.register(TagQueryResponseS2CPacket.class, TagQueryResponseS2CPacket::new)
+					.register(ItemPickupAnimationS2CPacket.class, ItemPickupAnimationS2CPacket::new)
+					.register(EntityPositionS2CPacket.class, EntityPositionS2CPacket::new)
+					.register(AdvancementUpdateS2CPacket.class, AdvancementUpdateS2CPacket::new)
+					.register(EntityAttributesS2CPacket.class, EntityAttributesS2CPacket::new)
+					.register(EntityPotionEffectS2CPacket.class, EntityPotionEffectS2CPacket::new)
+					.register(SynchronizeRecipesS2CPacket.class, SynchronizeRecipesS2CPacket::new)
+					.register(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)
 			)
-			.method_22315(
+			.setup(
 				NetworkSide.SERVERBOUND,
-				new NetworkState.class_4532()
-					.method_22313(TeleportConfirmC2SPacket.class, TeleportConfirmC2SPacket::new)
-					.method_22313(QueryBlockNbtC2SPacket.class, QueryBlockNbtC2SPacket::new)
-					.method_22313(UpdateDifficultyC2SPacket.class, UpdateDifficultyC2SPacket::new)
-					.method_22313(ChatMessageC2SPacket.class, ChatMessageC2SPacket::new)
-					.method_22313(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
-					.method_22313(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)
-					.method_22313(RequestCommandCompletionsC2SPacket.class, RequestCommandCompletionsC2SPacket::new)
-					.method_22313(GuiActionConfirmC2SPacket.class, GuiActionConfirmC2SPacket::new)
-					.method_22313(ButtonClickC2SPacket.class, ButtonClickC2SPacket::new)
-					.method_22313(ClickWindowC2SPacket.class, ClickWindowC2SPacket::new)
-					.method_22313(GuiCloseC2SPacket.class, GuiCloseC2SPacket::new)
-					.method_22313(CustomPayloadC2SPacket.class, CustomPayloadC2SPacket::new)
-					.method_22313(BookUpdateC2SPacket.class, BookUpdateC2SPacket::new)
-					.method_22313(QueryEntityNbtC2SPacket.class, QueryEntityNbtC2SPacket::new)
-					.method_22313(PlayerInteractEntityC2SPacket.class, PlayerInteractEntityC2SPacket::new)
-					.method_22313(KeepAliveC2SPacket.class, KeepAliveC2SPacket::new)
-					.method_22313(UpdateDifficultyLockC2SPacket.class, UpdateDifficultyLockC2SPacket::new)
-					.method_22313(PlayerMoveC2SPacket.PositionOnly.class, PlayerMoveC2SPacket.PositionOnly::new)
-					.method_22313(PlayerMoveC2SPacket.Both.class, PlayerMoveC2SPacket.Both::new)
-					.method_22313(PlayerMoveC2SPacket.LookOnly.class, PlayerMoveC2SPacket.LookOnly::new)
-					.method_22313(PlayerMoveC2SPacket.class, PlayerMoveC2SPacket::new)
-					.method_22313(VehicleMoveC2SPacket.class, VehicleMoveC2SPacket::new)
-					.method_22313(BoatPaddleStateC2SPacket.class, BoatPaddleStateC2SPacket::new)
-					.method_22313(PickFromInventoryC2SPacket.class, PickFromInventoryC2SPacket::new)
-					.method_22313(CraftRequestC2SPacket.class, CraftRequestC2SPacket::new)
-					.method_22313(UpdatePlayerAbilitiesC2SPacket.class, UpdatePlayerAbilitiesC2SPacket::new)
-					.method_22313(PlayerActionC2SPacket.class, PlayerActionC2SPacket::new)
-					.method_22313(ClientCommandC2SPacket.class, ClientCommandC2SPacket::new)
-					.method_22313(PlayerInputC2SPacket.class, PlayerInputC2SPacket::new)
-					.method_22313(RecipeBookDataC2SPacket.class, RecipeBookDataC2SPacket::new)
-					.method_22313(RenameItemC2SPacket.class, RenameItemC2SPacket::new)
-					.method_22313(ResourcePackStatusC2SPacket.class, ResourcePackStatusC2SPacket::new)
-					.method_22313(AdvancementTabC2SPacket.class, AdvancementTabC2SPacket::new)
-					.method_22313(SelectVillagerTradeC2SPacket.class, SelectVillagerTradeC2SPacket::new)
-					.method_22313(UpdateBeaconC2SPacket.class, UpdateBeaconC2SPacket::new)
-					.method_22313(UpdateSelectedSlotC2SPacket.class, UpdateSelectedSlotC2SPacket::new)
-					.method_22313(UpdateCommandBlockC2SPacket.class, UpdateCommandBlockC2SPacket::new)
-					.method_22313(UpdateCommandBlockMinecartC2SPacket.class, UpdateCommandBlockMinecartC2SPacket::new)
-					.method_22313(CreativeInventoryActionC2SPacket.class, CreativeInventoryActionC2SPacket::new)
-					.method_22313(UpdateJigsawC2SPacket.class, UpdateJigsawC2SPacket::new)
-					.method_22313(UpdateStructureBlockC2SPacket.class, UpdateStructureBlockC2SPacket::new)
-					.method_22313(UpdateSignC2SPacket.class, UpdateSignC2SPacket::new)
-					.method_22313(HandSwingC2SPacket.class, HandSwingC2SPacket::new)
-					.method_22313(SpectatorTeleportC2SPacket.class, SpectatorTeleportC2SPacket::new)
-					.method_22313(PlayerInteractBlockC2SPacket.class, PlayerInteractBlockC2SPacket::new)
-					.method_22313(PlayerInteractItemC2SPacket.class, PlayerInteractItemC2SPacket::new)
+				new NetworkState.PacketHandler()
+					.register(TeleportConfirmC2SPacket.class, TeleportConfirmC2SPacket::new)
+					.register(QueryBlockNbtC2SPacket.class, QueryBlockNbtC2SPacket::new)
+					.register(UpdateDifficultyC2SPacket.class, UpdateDifficultyC2SPacket::new)
+					.register(ChatMessageC2SPacket.class, ChatMessageC2SPacket::new)
+					.register(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
+					.register(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)
+					.register(RequestCommandCompletionsC2SPacket.class, RequestCommandCompletionsC2SPacket::new)
+					.register(GuiActionConfirmC2SPacket.class, GuiActionConfirmC2SPacket::new)
+					.register(ButtonClickC2SPacket.class, ButtonClickC2SPacket::new)
+					.register(ClickWindowC2SPacket.class, ClickWindowC2SPacket::new)
+					.register(GuiCloseC2SPacket.class, GuiCloseC2SPacket::new)
+					.register(CustomPayloadC2SPacket.class, CustomPayloadC2SPacket::new)
+					.register(BookUpdateC2SPacket.class, BookUpdateC2SPacket::new)
+					.register(QueryEntityNbtC2SPacket.class, QueryEntityNbtC2SPacket::new)
+					.register(PlayerInteractEntityC2SPacket.class, PlayerInteractEntityC2SPacket::new)
+					.register(KeepAliveC2SPacket.class, KeepAliveC2SPacket::new)
+					.register(UpdateDifficultyLockC2SPacket.class, UpdateDifficultyLockC2SPacket::new)
+					.register(PlayerMoveC2SPacket.PositionOnly.class, PlayerMoveC2SPacket.PositionOnly::new)
+					.register(PlayerMoveC2SPacket.Both.class, PlayerMoveC2SPacket.Both::new)
+					.register(PlayerMoveC2SPacket.LookOnly.class, PlayerMoveC2SPacket.LookOnly::new)
+					.register(PlayerMoveC2SPacket.class, PlayerMoveC2SPacket::new)
+					.register(VehicleMoveC2SPacket.class, VehicleMoveC2SPacket::new)
+					.register(BoatPaddleStateC2SPacket.class, BoatPaddleStateC2SPacket::new)
+					.register(PickFromInventoryC2SPacket.class, PickFromInventoryC2SPacket::new)
+					.register(CraftRequestC2SPacket.class, CraftRequestC2SPacket::new)
+					.register(UpdatePlayerAbilitiesC2SPacket.class, UpdatePlayerAbilitiesC2SPacket::new)
+					.register(PlayerActionC2SPacket.class, PlayerActionC2SPacket::new)
+					.register(ClientCommandC2SPacket.class, ClientCommandC2SPacket::new)
+					.register(PlayerInputC2SPacket.class, PlayerInputC2SPacket::new)
+					.register(RecipeBookDataC2SPacket.class, RecipeBookDataC2SPacket::new)
+					.register(RenameItemC2SPacket.class, RenameItemC2SPacket::new)
+					.register(ResourcePackStatusC2SPacket.class, ResourcePackStatusC2SPacket::new)
+					.register(AdvancementTabC2SPacket.class, AdvancementTabC2SPacket::new)
+					.register(SelectVillagerTradeC2SPacket.class, SelectVillagerTradeC2SPacket::new)
+					.register(UpdateBeaconC2SPacket.class, UpdateBeaconC2SPacket::new)
+					.register(UpdateSelectedSlotC2SPacket.class, UpdateSelectedSlotC2SPacket::new)
+					.register(UpdateCommandBlockC2SPacket.class, UpdateCommandBlockC2SPacket::new)
+					.register(UpdateCommandBlockMinecartC2SPacket.class, UpdateCommandBlockMinecartC2SPacket::new)
+					.register(CreativeInventoryActionC2SPacket.class, CreativeInventoryActionC2SPacket::new)
+					.register(UpdateJigsawC2SPacket.class, UpdateJigsawC2SPacket::new)
+					.register(UpdateStructureBlockC2SPacket.class, UpdateStructureBlockC2SPacket::new)
+					.register(UpdateSignC2SPacket.class, UpdateSignC2SPacket::new)
+					.register(HandSwingC2SPacket.class, HandSwingC2SPacket::new)
+					.register(SpectatorTeleportC2SPacket.class, SpectatorTeleportC2SPacket::new)
+					.register(PlayerInteractBlockC2SPacket.class, PlayerInteractBlockC2SPacket::new)
+					.register(PlayerInteractItemC2SPacket.class, PlayerInteractItemC2SPacket::new)
 			)
 	),
 	STATUS(
 		1,
-		method_22308()
-			.method_22315(
+		createPacketHandlerInitializer()
+			.setup(
 				NetworkSide.SERVERBOUND,
-				new NetworkState.class_4532()
-					.method_22313(QueryRequestC2SPacket.class, QueryRequestC2SPacket::new)
-					.method_22313(QueryPingC2SPacket.class, QueryPingC2SPacket::new)
+				new NetworkState.PacketHandler()
+					.register(QueryRequestC2SPacket.class, QueryRequestC2SPacket::new)
+					.register(QueryPingC2SPacket.class, QueryPingC2SPacket::new)
 			)
-			.method_22315(
+			.setup(
 				NetworkSide.CLIENTBOUND,
-				new NetworkState.class_4532()
-					.method_22313(QueryResponseS2CPacket.class, QueryResponseS2CPacket::new)
-					.method_22313(QueryPongS2CPacket.class, QueryPongS2CPacket::new)
+				new NetworkState.PacketHandler()
+					.register(QueryResponseS2CPacket.class, QueryResponseS2CPacket::new)
+					.register(QueryPongS2CPacket.class, QueryPongS2CPacket::new)
 			)
 	),
 	LOGIN(
 		2,
-		method_22308()
-			.method_22315(
+		createPacketHandlerInitializer()
+			.setup(
 				NetworkSide.CLIENTBOUND,
-				new NetworkState.class_4532()
-					.method_22313(LoginDisconnectS2CPacket.class, LoginDisconnectS2CPacket::new)
-					.method_22313(LoginHelloS2CPacket.class, LoginHelloS2CPacket::new)
-					.method_22313(LoginSuccessS2CPacket.class, LoginSuccessS2CPacket::new)
-					.method_22313(LoginCompressionS2CPacket.class, LoginCompressionS2CPacket::new)
-					.method_22313(LoginQueryRequestS2CPacket.class, LoginQueryRequestS2CPacket::new)
+				new NetworkState.PacketHandler()
+					.register(LoginDisconnectS2CPacket.class, LoginDisconnectS2CPacket::new)
+					.register(LoginHelloS2CPacket.class, LoginHelloS2CPacket::new)
+					.register(LoginSuccessS2CPacket.class, LoginSuccessS2CPacket::new)
+					.register(LoginCompressionS2CPacket.class, LoginCompressionS2CPacket::new)
+					.register(LoginQueryRequestS2CPacket.class, LoginQueryRequestS2CPacket::new)
 			)
-			.method_22315(
+			.setup(
 				NetworkSide.SERVERBOUND,
-				new NetworkState.class_4532()
-					.method_22313(LoginHelloC2SPacket.class, LoginHelloC2SPacket::new)
-					.method_22313(LoginKeyC2SPacket.class, LoginKeyC2SPacket::new)
-					.method_22313(LoginQueryResponseC2SPacket.class, LoginQueryResponseC2SPacket::new)
+				new NetworkState.PacketHandler()
+					.register(LoginHelloC2SPacket.class, LoginHelloC2SPacket::new)
+					.register(LoginKeyC2SPacket.class, LoginKeyC2SPacket::new)
+					.register(LoginQueryResponseC2SPacket.class, LoginQueryResponseC2SPacket::new)
 			)
 	);
 
 	private static final NetworkState[] STATES = new NetworkState[4];
 	private static final Map<Class<? extends Packet<?>>, NetworkState> HANDLER_STATE_MAP = Maps.<Class<? extends Packet<?>>, NetworkState>newHashMap();
-	private final int field_20594;
-	private final Map<NetworkSide, ? extends NetworkState.class_4532<?>> field_20595;
+	private final int stateId;
+	private final Map<NetworkSide, ? extends NetworkState.PacketHandler<?>> packetHandlers;
 
-	private static NetworkState.class_4533 method_22308() {
-		return new NetworkState.class_4533();
+	private static NetworkState.PacketHandlerInitializer createPacketHandlerInitializer() {
+		return new NetworkState.PacketHandlerInitializer();
 	}
 
-	private NetworkState(int j, NetworkState.class_4533 arg) {
-		this.field_20594 = j;
-		this.field_20595 = arg.field_20598;
+	private NetworkState(int j, NetworkState.PacketHandlerInitializer packetHandlerInitializer) {
+		this.stateId = j;
+		this.packetHandlers = packetHandlerInitializer.packetHandlers;
 	}
 
 	@Nullable
 	public Integer getPacketId(NetworkSide networkSide, Packet<?> packet) {
-		return ((NetworkState.class_4532)this.field_20595.get(networkSide)).method_22312(packet.getClass());
+		return ((NetworkState.PacketHandler)this.packetHandlers.get(networkSide)).getId(packet.getClass());
 	}
 
 	@Nullable
 	public Packet<?> getPacketHandler(NetworkSide networkSide, int i) {
-		return ((NetworkState.class_4532)this.field_20595.get(networkSide)).method_22310(i);
+		return ((NetworkState.PacketHandler)this.packetHandlers.get(networkSide)).createPacket(i);
 	}
 
 	public int getId() {
-		return this.field_20594;
+		return this.stateId;
 	}
 
 	@Nullable
@@ -396,9 +397,9 @@ public enum NetworkState {
 			}
 
 			STATES[i - -1] = networkState;
-			networkState.field_20595
+			networkState.packetHandlers
 				.forEach(
-					(networkSide, arg) -> arg.method_22309()
+					(networkSide, packetHandler) -> packetHandler.getPacketTypes()
 							.forEach(
 								class_ -> {
 									if (HANDLER_STATE_MAP.containsKey(class_) && HANDLER_STATE_MAP.get(class_) != networkState) {
@@ -414,53 +415,53 @@ public enum NetworkState {
 		}
 	}
 
-	static class class_4532<T extends PacketListener> {
-		private final Object2IntMap<Class<? extends Packet<T>>> field_20596 = SystemUtil.consume(
+	static class PacketHandler<T extends PacketListener> {
+		private final Object2IntMap<Class<? extends Packet<T>>> packetIds = SystemUtil.consume(
 			new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 		);
-		private final List<Supplier<? extends Packet<T>>> field_20597 = Lists.<Supplier<? extends Packet<T>>>newArrayList();
+		private final List<Supplier<? extends Packet<T>>> packetFactories = Lists.<Supplier<? extends Packet<T>>>newArrayList();
 
-		private class_4532() {
+		private PacketHandler() {
 		}
 
-		public <P extends Packet<T>> NetworkState.class_4532<T> method_22313(Class<P> class_, Supplier<P> supplier) {
-			int i = this.field_20597.size();
-			int j = this.field_20596.put(class_, i);
+		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> class_, Supplier<P> supplier) {
+			int i = this.packetFactories.size();
+			int j = this.packetIds.put(class_, i);
 			if (j != -1) {
 				String string = "Packet " + class_ + " is already registered to ID " + j;
 				LogManager.getLogger().fatal(string);
 				throw new IllegalArgumentException(string);
 			} else {
-				this.field_20597.add(supplier);
+				this.packetFactories.add(supplier);
 				return this;
 			}
 		}
 
 		@Nullable
-		public Integer method_22312(Class<?> class_) {
-			int i = this.field_20596.getInt(class_);
+		public Integer getId(Class<?> class_) {
+			int i = this.packetIds.getInt(class_);
 			return i == -1 ? null : i;
 		}
 
 		@Nullable
-		public Packet<?> method_22310(int i) {
-			Supplier<? extends Packet<T>> supplier = (Supplier<? extends Packet<T>>)this.field_20597.get(i);
+		public Packet<?> createPacket(int i) {
+			Supplier<? extends Packet<T>> supplier = (Supplier<? extends Packet<T>>)this.packetFactories.get(i);
 			return supplier != null ? (Packet)supplier.get() : null;
 		}
 
-		public Iterable<Class<? extends Packet<?>>> method_22309() {
-			return Iterables.unmodifiableIterable(this.field_20596.keySet());
+		public Iterable<Class<? extends Packet<?>>> getPacketTypes() {
+			return Iterables.unmodifiableIterable(this.packetIds.keySet());
 		}
 	}
 
-	static class class_4533 {
-		private final Map<NetworkSide, NetworkState.class_4532<?>> field_20598 = Maps.newEnumMap(NetworkSide.class);
+	static class PacketHandlerInitializer {
+		private final Map<NetworkSide, NetworkState.PacketHandler<?>> packetHandlers = Maps.newEnumMap(NetworkSide.class);
 
-		private class_4533() {
+		private PacketHandlerInitializer() {
 		}
 
-		public <T extends PacketListener> NetworkState.class_4533 method_22315(NetworkSide networkSide, NetworkState.class_4532<T> arg) {
-			this.field_20598.put(networkSide, arg);
+		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide networkSide, NetworkState.PacketHandler<T> packetHandler) {
+			this.packetHandlers.put(networkSide, packetHandler);
 			return this;
 		}
 	}

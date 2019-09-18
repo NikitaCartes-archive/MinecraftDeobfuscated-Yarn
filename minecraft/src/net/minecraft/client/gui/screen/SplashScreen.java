@@ -73,7 +73,7 @@ public class SplashScreen extends Overlay {
 
 		int n = (this.client.method_22683().getScaledWidth() - 256) / 2;
 		int p = (this.client.method_22683().getScaledHeight() - 256) / 2;
-		this.client.getTextureManager().method_22813(LOGO);
+		this.client.getTextureManager().bindTexture(LOGO);
 		RenderSystem.enableBlend();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, o);
 		this.blit(n, p, 0, 0, 256, 256);

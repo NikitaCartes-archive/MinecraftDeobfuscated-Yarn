@@ -22,7 +22,7 @@ import net.minecraft.text.TranslatableText;
 
 public class EntityDataObject implements DataCommandObject {
 	private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.entity.invalid"));
-	public static final Function<String, DataCommand.ObjectType> field_13800 = string -> new DataCommand.ObjectType() {
+	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
 				return new EntityDataObject(EntityArgumentType.getEntity(commandContext, string));
@@ -39,40 +39,40 @@ public class EntityDataObject implements DataCommandObject {
 				);
 			}
 		};
-	private final Entity field_13801;
+	private final Entity entity;
 
 	public EntityDataObject(Entity entity) {
-		this.field_13801 = entity;
+		this.entity = entity;
 	}
 
 	@Override
 	public void setTag(CompoundTag compoundTag) throws CommandSyntaxException {
-		if (this.field_13801 instanceof PlayerEntity) {
+		if (this.entity instanceof PlayerEntity) {
 			throw INVALID_ENTITY_EXCEPTION.create();
 		} else {
-			UUID uUID = this.field_13801.getUuid();
-			this.field_13801.fromTag(compoundTag);
-			this.field_13801.setUuid(uUID);
+			UUID uUID = this.entity.getUuid();
+			this.entity.fromTag(compoundTag);
+			this.entity.setUuid(uUID);
 		}
 	}
 
 	@Override
 	public CompoundTag getTag() {
-		return NbtPredicate.entityToTag(this.field_13801);
+		return NbtPredicate.entityToTag(this.entity);
 	}
 
 	@Override
-	public Text getModifiedFeedback() {
-		return new TranslatableText("commands.data.entity.modified", this.field_13801.getDisplayName());
+	public Text feedbackModify() {
+		return new TranslatableText("commands.data.entity.modified", this.entity.getDisplayName());
 	}
 
 	@Override
-	public Text getQueryFeedback(Tag tag) {
-		return new TranslatableText("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toText());
+	public Text feedbackQuery(Tag tag) {
+		return new TranslatableText("commands.data.entity.query", this.entity.getDisplayName(), tag.toText());
 	}
 
 	@Override
-	public Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
-		return new TranslatableText("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
+	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+		return new TranslatableText("commands.data.entity.get", nbtPath, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

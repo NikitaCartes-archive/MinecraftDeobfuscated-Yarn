@@ -35,7 +35,7 @@ public class BrewingStandScreen extends AbstractContainerScreen<BrewingStandCont
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().method_22813(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);

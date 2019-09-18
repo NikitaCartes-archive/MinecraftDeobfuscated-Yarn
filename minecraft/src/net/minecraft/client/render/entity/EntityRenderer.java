@@ -97,7 +97,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public void bindTexture(Identifier identifier) {
-		this.renderManager.textureManager.method_22813(identifier);
+		this.renderManager.textureManager.bindTexture(identifier);
 	}
 
 	private void renderEntityOnFire(Entity entity, double d, double e, double f, float g) {
@@ -154,7 +154,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	private void renderShadow(Entity entity, double d, double e, double f, float g, float h) {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
-		this.renderManager.textureManager.method_22813(SHADOW_TEX);
+		this.renderManager.textureManager.bindTexture(SHADOW_TEX);
 		class_4538 lv = this.getWorld();
 		RenderSystem.depthMask(false);
 		float i = this.field_4673;

@@ -3,7 +3,6 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.DamagePredicate;
@@ -11,7 +10,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class PlayerHurtEntityCriterion extends class_4558<PlayerHurtEntityCriterion.Conditions> {
+public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntityCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("player_hurt_entity");
 
 	@Override
@@ -21,12 +20,12 @@ public class PlayerHurtEntityCriterion extends class_4558<PlayerHurtEntityCriter
 
 	public PlayerHurtEntityCriterion.Conditions method_9098(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
-		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
+		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
 		return new PlayerHurtEntityCriterion.Conditions(damagePredicate, entityPredicate);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, entity, damageSource, f, g, bl));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, entity, damageSource, f, g, bl));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

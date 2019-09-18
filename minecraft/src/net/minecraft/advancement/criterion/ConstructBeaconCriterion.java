@@ -3,13 +3,12 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 
-public class ConstructBeaconCriterion extends class_4558<ConstructBeaconCriterion.Conditions> {
+public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("construct_beacon");
 
 	@Override
@@ -23,7 +22,7 @@ public class ConstructBeaconCriterion extends class_4558<ConstructBeaconCriterio
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(beaconBlockEntity));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(beaconBlockEntity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -45,7 +44,7 @@ public class ConstructBeaconCriterion extends class_4558<ConstructBeaconCriterio
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("level", this.level.serialize());
+			jsonObject.add("level", this.level.toJson());
 			return jsonObject;
 		}
 	}

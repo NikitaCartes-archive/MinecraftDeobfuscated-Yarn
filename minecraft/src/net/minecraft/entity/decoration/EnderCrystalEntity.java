@@ -15,8 +15,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
@@ -68,7 +68,7 @@ public class EnderCrystalEntity extends Entity {
 	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		if (this.getBeamTarget() != null) {
-			compoundTag.put("BeamTarget", TagHelper.serializeBlockPos(this.getBeamTarget()));
+			compoundTag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
 
 		compoundTag.putBoolean("ShowBottom", this.getShowBottom());
@@ -77,7 +77,7 @@ public class EnderCrystalEntity extends Entity {
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("BeamTarget", 10)) {
-			this.setBeamTarget(TagHelper.deserializeBlockPos(compoundTag.getCompound("BeamTarget")));
+			this.setBeamTarget(NbtHelper.toBlockPos(compoundTag.getCompound("BeamTarget")));
 		}
 
 		if (compoundTag.containsKey("ShowBottom", 1)) {

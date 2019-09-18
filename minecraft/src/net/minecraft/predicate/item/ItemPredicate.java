@@ -20,11 +20,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 
 public class ItemPredicate {
@@ -121,7 +121,7 @@ public class ItemPredicate {
 			if (jsonObject.has("data")) {
 				throw new JsonParseException("Disallowed data tag found");
 			} else {
-				NbtPredicate nbtPredicate = NbtPredicate.deserialize(jsonObject.get("nbt"));
+				NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
 				Item item = null;
 				if (jsonObject.has("item")) {
 					Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
@@ -165,9 +165,9 @@ public class ItemPredicate {
 				jsonObject.addProperty("tag", this.tag.getId().toString());
 			}
 
-			jsonObject.add("count", this.count.serialize());
-			jsonObject.add("durability", this.durability.serialize());
-			jsonObject.add("nbt", this.nbt.serialize());
+			jsonObject.add("count", this.count.toJson());
+			jsonObject.add("durability", this.durability.toJson());
+			jsonObject.add("nbt", this.nbt.toJson());
 			if (this.enchantments.length > 0) {
 				JsonArray jsonArray = new JsonArray();
 

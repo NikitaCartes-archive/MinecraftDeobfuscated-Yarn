@@ -7,23 +7,23 @@ import com.google.gson.JsonSerializationContext;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.ConditionConsumerBuilder;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class ConditionalLootFunction implements LootFunction {
-	protected final class_4570[] conditions;
+	protected final LootCondition[] conditions;
 	private final Predicate<LootContext> predicate;
 
-	protected ConditionalLootFunction(class_4570[] args) {
-		this.conditions = args;
-		this.predicate = LootConditions.joinAnd(args);
+	protected ConditionalLootFunction(LootCondition[] lootConditions) {
+		this.conditions = lootConditions;
+		this.predicate = LootConditions.joinAnd(lootConditions);
 	}
 
 	public final ItemStack method_521(ItemStack itemStack, LootContext lootContext) {
@@ -41,14 +41,14 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		}
 	}
 
-	protected static ConditionalLootFunction.Builder<?> builder(Function<class_4570[], LootFunction> function) {
+	protected static ConditionalLootFunction.Builder<?> builder(Function<LootCondition[], LootFunction> function) {
 		return new ConditionalLootFunction.Joiner(function);
 	}
 
-	public abstract static class Builder<T extends ConditionalLootFunction.Builder<T>> implements LootFunction.Builder, ConditionConsumerBuilder<T> {
-		private final List<class_4570> conditionList = Lists.<class_4570>newArrayList();
+	public abstract static class Builder<T extends ConditionalLootFunction.Builder<T>> implements LootFunction.Builder, LootConditionConsumingBuilder<T> {
+		private final List<LootCondition> conditionList = Lists.<LootCondition>newArrayList();
 
-		public T method_524(class_4570.Builder builder) {
+		public T method_524(LootCondition.Builder builder) {
 			this.conditionList.add(builder.build());
 			return this.getThisBuilder();
 		}
@@ -59,8 +59,8 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 		protected abstract T getThisBuilder();
 
-		protected class_4570[] getConditions() {
-			return (class_4570[])this.conditionList.toArray(new class_4570[0]);
+		protected LootCondition[] getConditions() {
+			return (LootCondition[])this.conditionList.toArray(new LootCondition[0]);
 		}
 	}
 
@@ -76,17 +76,17 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		}
 
 		public final T method_528(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			class_4570[] lvs = JsonHelper.deserialize(jsonObject, "conditions", new class_4570[0], jsonDeserializationContext, class_4570[].class);
-			return this.fromJson(jsonObject, jsonDeserializationContext, lvs);
+			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
+			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
 		}
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args);
+		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
 	}
 
 	static final class Joiner extends ConditionalLootFunction.Builder<ConditionalLootFunction.Joiner> {
-		private final Function<class_4570[], LootFunction> joiner;
+		private final Function<LootCondition[], LootFunction> joiner;
 
-		public Joiner(Function<class_4570[], LootFunction> function) {
+		public Joiner(Function<LootCondition[], LootFunction> function) {
 			this.joiner = function;
 		}
 

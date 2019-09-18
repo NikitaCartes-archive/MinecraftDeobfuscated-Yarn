@@ -162,7 +162,7 @@ public class InGameHud extends DrawableHelper {
 
 		if (!this.client.options.hudHidden) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().method_22813(GUI_ICONS_LOCATION);
+			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
 			RenderSystem.enableBlend();
 			RenderSystem.enableAlphaTest();
 			this.renderCrosshair();
@@ -171,7 +171,7 @@ public class InGameHud extends DrawableHelper {
 			this.bossBarHud.render();
 			this.client.getProfiler().pop();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().method_22813(GUI_ICONS_LOCATION);
+			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
 			if (this.client.interactionManager.hasStatusBars()) {
 				this.renderStatusBars();
 			}
@@ -405,7 +405,7 @@ public class InGameHud extends DrawableHelper {
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
-			this.client.getTextureManager().method_22813(AbstractContainerScreen.BACKGROUND_TEXTURE);
+			this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
 
 			for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -449,7 +449,7 @@ public class InGameHud extends DrawableHelper {
 				}
 			}
 
-			this.client.getTextureManager().method_22813(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+			this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
 			list.forEach(Runnable::run);
 		}
 	}
@@ -458,7 +458,7 @@ public class InGameHud extends DrawableHelper {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().method_22813(WIDGETS_TEX);
+			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
 			ItemStack itemStack = playerEntity.getOffHandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
 			int i = this.scaledWidth / 2;
@@ -506,7 +506,7 @@ public class InGameHud extends DrawableHelper {
 						o = i - 91 - 22;
 					}
 
-					this.client.getTextureManager().method_22813(DrawableHelper.GUI_ICONS_LOCATION);
+					this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
 					int p = (int)(g * 19.0F);
 					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					this.blit(o, n, 0, 94, 18, 18);
@@ -522,7 +522,7 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderMountJumpBar(int i) {
 		this.client.getProfiler().push("jumpBar");
-		this.client.getTextureManager().method_22813(DrawableHelper.GUI_ICONS_LOCATION);
+		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
 		float f = this.client.player.method_3151();
 		int j = 182;
 		int k = (int)(f * 183.0F);
@@ -537,7 +537,7 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderExperienceBar(int i) {
 		this.client.getProfiler().push("expBar");
-		this.client.getTextureManager().method_22813(DrawableHelper.GUI_ICONS_LOCATION);
+		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
 		int j = this.client.player.getNextLevelExperience();
 		if (j > 0) {
 			int k = 182;
@@ -919,7 +919,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableAlphaTest();
-		this.client.getTextureManager().method_22813(PUMPKIN_BLUR);
+		this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
@@ -965,7 +965,7 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.color4f(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0F);
 		}
 
-		this.client.getTextureManager().method_22813(VIGNETTE_TEX);
+		this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
@@ -992,7 +992,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
-		this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
 		float g = sprite.getMinU();
 		float h = sprite.getMinV();

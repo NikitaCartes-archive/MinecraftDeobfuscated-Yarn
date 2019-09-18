@@ -129,10 +129,10 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		GuiLighting.disable();
-		this.minecraft.getTextureManager().method_22813(WINDOW_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
 		this.blit(i, j, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {
-			this.minecraft.getTextureManager().method_22813(TABS_TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
 				advancementTab.drawBackground(i, j, advancementTab == this.selectedTab);

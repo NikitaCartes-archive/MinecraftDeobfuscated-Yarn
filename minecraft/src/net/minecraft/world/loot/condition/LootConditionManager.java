@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world.loot.condition;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -17,54 +17,53 @@ import net.minecraft.world.loot.BinomialLootTableRange;
 import net.minecraft.world.loot.ConstantLootTableRange;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.UniformLootTableRange;
-import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class class_4567 extends JsonDataLoader {
-	private static final Logger field_20753 = LogManager.getLogger();
-	private static final Gson field_20754 = new GsonBuilder()
+public class LootConditionManager extends JsonDataLoader {
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(UniformLootTableRange.class, new UniformLootTableRange.Serializer())
 		.registerTypeAdapter(BinomialLootTableRange.class, new BinomialLootTableRange.Serializer())
 		.registerTypeAdapter(ConstantLootTableRange.class, new ConstantLootTableRange.Serializer())
-		.registerTypeHierarchyAdapter(class_4570.class, new LootConditions.Factory())
+		.registerTypeHierarchyAdapter(LootCondition.class, new LootConditions.Factory())
 		.registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer())
 		.create();
-	private Map<Identifier, class_4570> field_20755 = ImmutableMap.of();
+	private Map<Identifier, LootCondition> conditions = ImmutableMap.of();
 
-	public class_4567() {
-		super(field_20754, "predicates");
+	public LootConditionManager() {
+		super(GSON, "predicates");
 	}
 
 	@Nullable
-	public class_4570 method_22564(Identifier identifier) {
-		return (class_4570)this.field_20755.get(identifier);
+	public LootCondition get(Identifier identifier) {
+		return (LootCondition)this.conditions.get(identifier);
 	}
 
-	public class_4570 method_22565(Identifier identifier, class_4570 arg) {
-		return (class_4570)this.field_20755.getOrDefault(identifier, arg);
+	public LootCondition get(Identifier identifier, LootCondition lootCondition) {
+		return (LootCondition)this.conditions.getOrDefault(identifier, lootCondition);
 	}
 
 	protected void method_22563(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
-		Builder<Identifier, class_4570> builder = ImmutableMap.builder();
+		Builder<Identifier, LootCondition> builder = ImmutableMap.builder();
 		map.forEach((identifier, jsonObject) -> {
 			try {
-				class_4570 lv = field_20754.fromJson(jsonObject, class_4570.class);
-				builder.put(identifier, lv);
+				LootCondition lootCondition = GSON.fromJson(jsonObject, LootCondition.class);
+				builder.put(identifier, lootCondition);
 			} catch (Exception var4x) {
-				field_20753.error("Couldn't parse loot table {}", identifier, var4x);
+				LOGGER.error("Couldn't parse loot table {}", identifier, var4x);
 			}
 		});
-		Map<Identifier, class_4570> map2 = builder.build();
+		Map<Identifier, LootCondition> map2 = builder.build();
 		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, map2::get, identifier -> null);
-		map2.forEach((identifier, arg) -> arg.check(lootTableReporter.method_22571("{" + identifier + "}", identifier)));
-		lootTableReporter.getMessages().forEach((string, string2) -> field_20753.warn("Found validation problem in " + string + ": " + string2));
-		this.field_20755 = map2;
+		map2.forEach((identifier, lootCondition) -> lootCondition.check(lootTableReporter.withCondition("{" + identifier + "}", identifier)));
+		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
+		this.conditions = map2;
 	}
 
-	public Set<Identifier> method_22559() {
-		return Collections.unmodifiableSet(this.field_20755.keySet());
+	public Set<Identifier> getIds() {
+		return Collections.unmodifiableSet(this.conditions.keySet());
 	}
 }

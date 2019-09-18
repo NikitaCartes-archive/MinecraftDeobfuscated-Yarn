@@ -140,7 +140,7 @@ public class CommandManager {
 		try {
 			return this.dispatcher.execute(stringReader, serverCommandSource);
 		} catch (CommandException var13) {
-			serverCommandSource.sendError(var13.getMessageText());
+			serverCommandSource.sendError(var13.getMessage());
 			return 0;
 		} catch (CommandSyntaxException var14) {
 			serverCommandSource.sendError(Texts.toText(var14.getRawMessage()));

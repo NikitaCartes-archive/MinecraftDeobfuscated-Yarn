@@ -20,7 +20,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.MultipartUnbakedModel;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
@@ -94,14 +94,14 @@ public class ModelVariantMap {
 			.registerTypeAdapter(MultipartUnbakedModel.class, new MultipartUnbakedModel.Deserializer(this))
 			.registerTypeAdapter(MultipartModelComponent.class, new MultipartModelComponent.Deserializer())
 			.create();
-		private StateFactory<Block, BlockState> stateFactory;
+		private StateManager<Block, BlockState> stateFactory;
 
-		public StateFactory<Block, BlockState> getStateFactory() {
+		public StateManager<Block, BlockState> getStateFactory() {
 			return this.stateFactory;
 		}
 
-		public void setStateFactory(StateFactory<Block, BlockState> stateFactory) {
-			this.stateFactory = stateFactory;
+		public void setStateFactory(StateManager<Block, BlockState> stateManager) {
+			this.stateFactory = stateManager;
 		}
 	}
 

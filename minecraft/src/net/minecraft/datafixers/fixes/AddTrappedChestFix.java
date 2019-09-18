@@ -47,7 +47,7 @@ public class AddTrappedChestFix extends DataFix {
 				Type<?> type6 = ((ListType)type5).getElement();
 				OpticFinder<?> opticFinder4 = DSL.typeFinder(type6);
 				return TypeRewriteRule.seq(
-					new FixChoiceTypes(this.getOutputSchema(), "AddTrappedChestFix", TypeReferences.BLOCK_ENTITY).makeRule(),
+					new ChoiceTypesFix(this.getOutputSchema(), "AddTrappedChestFix", TypeReferences.BLOCK_ENTITY).makeRule(),
 					this.fixTypeEverywhereTyped("Trapped Chest fix", type4, typed -> typed.updateTyped(opticFinder2, typedx -> {
 							Optional<? extends Typed<?>> optional = typedx.getOptionalTyped(opticFinder3);
 							if (!optional.isPresent()) {

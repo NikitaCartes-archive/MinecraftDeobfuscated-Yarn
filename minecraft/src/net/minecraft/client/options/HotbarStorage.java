@@ -7,8 +7,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.util.TagHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,7 +40,7 @@ public class HotbarStorage {
 				compoundTag.putInt("DataVersion", 1343);
 			}
 
-			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.HOTBAR, compoundTag, compoundTag.getInt("DataVersion"));
+			compoundTag = NbtHelper.update(this.dataFixer, DataFixTypes.HOTBAR, compoundTag, compoundTag.getInt("DataVersion"));
 
 			for (int i = 0; i < 9; i++) {
 				this.entries[i].fromListTag(compoundTag.getList(String.valueOf(i), 10));

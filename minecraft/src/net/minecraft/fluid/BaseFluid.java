@@ -16,7 +16,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -45,7 +45,7 @@ public abstract class BaseFluid extends Fluid {
 	private final Map<FluidState, VoxelShape> shapeCache = Maps.<FluidState, VoxelShape>newIdentityHashMap();
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
+	protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
 		builder.add(FALLING);
 	}
 

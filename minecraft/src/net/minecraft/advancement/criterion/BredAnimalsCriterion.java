@@ -4,14 +4,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javax.annotation.Nullable;
-import net.minecraft.class_4558;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class BredAnimalsCriterion extends class_4558<BredAnimalsCriterion.Conditions> {
+public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("bred_animals");
 
 	@Override
@@ -20,18 +19,16 @@ public class BredAnimalsCriterion extends class_4558<BredAnimalsCriterion.Condit
 	}
 
 	public BredAnimalsCriterion.Conditions method_854(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("parent"));
-		EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("partner"));
-		EntityPredicate entityPredicate3 = EntityPredicate.deserialize(jsonObject.get("child"));
+		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("parent"));
+		EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("partner"));
+		EntityPredicate entityPredicate3 = EntityPredicate.fromJson(jsonObject.get("child"));
 		return new BredAnimalsCriterion.Conditions(entityPredicate, entityPredicate2, entityPredicate3);
 	}
 
 	public void handle(
 		ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity
 	) {
-		this.method_22510(
-			serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity)
-		);
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

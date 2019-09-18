@@ -28,13 +28,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOffer;
@@ -150,7 +150,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("DespawnDelay", this.despawnDelay);
 		if (this.wanderTarget != null) {
-			compoundTag.put("WanderTarget", TagHelper.serializeBlockPos(this.wanderTarget));
+			compoundTag.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
 		}
 	}
 
@@ -162,7 +162,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		}
 
 		if (compoundTag.containsKey("WanderTarget")) {
-			this.wanderTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("WanderTarget"));
+			this.wanderTarget = NbtHelper.toBlockPos(compoundTag.getCompound("WanderTarget"));
 		}
 
 		this.setBreedingAge(Math.max(0, this.getBreedingAge()));

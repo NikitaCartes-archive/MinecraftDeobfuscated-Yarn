@@ -2,7 +2,6 @@ package net.minecraft.data.server;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import net.minecraft.class_4570;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -12,10 +11,11 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.loot.ConstantLootTableRange;
 import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.UniformLootTableRange;
 import net.minecraft.world.loot.condition.LocationCheckLootCondition;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.entry.ItemEntry;
 import net.minecraft.world.loot.entry.LootTableEntry;
 import net.minecraft.world.loot.function.EnchantWithLevelsLootFunction;
@@ -23,23 +23,23 @@ import net.minecraft.world.loot.function.SetCountLootFunction;
 import net.minecraft.world.loot.function.SetDamageLootFunction;
 import net.minecraft.world.loot.function.SetNbtLootFunction;
 
-public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-	public static final class_4570.Builder field_11346 = LocationCheckLootCondition.builder(LocationPredicate.Builder.method_22484().biome(Biomes.JUNGLE));
-	public static final class_4570.Builder field_11347 = LocationCheckLootCondition.builder(LocationPredicate.Builder.method_22484().biome(Biomes.JUNGLE_HILLS));
-	public static final class_4570.Builder field_11350 = LocationCheckLootCondition.builder(LocationPredicate.Builder.method_22484().biome(Biomes.JUNGLE_EDGE));
-	public static final class_4570.Builder field_11349 = LocationCheckLootCondition.builder(LocationPredicate.Builder.method_22484().biome(Biomes.BAMBOO_JUNGLE));
-	public static final class_4570.Builder field_11348 = LocationCheckLootCondition.builder(LocationPredicate.Builder.method_22484().biome(Biomes.MODIFIED_JUNGLE));
-	public static final class_4570.Builder field_11351 = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.method_22484().biome(Biomes.MODIFIED_JUNGLE_EDGE)
+public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
+	public static final LootCondition.Builder field_11346 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.JUNGLE));
+	public static final LootCondition.Builder field_11347 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.JUNGLE_HILLS));
+	public static final LootCondition.Builder field_11350 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.JUNGLE_EDGE));
+	public static final LootCondition.Builder field_11349 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.BAMBOO_JUNGLE));
+	public static final LootCondition.Builder field_11348 = LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(Biomes.MODIFIED_JUNGLE));
+	public static final LootCondition.Builder field_11351 = LocationCheckLootCondition.builder(
+		LocationPredicate.Builder.create().biome(Biomes.MODIFIED_JUNGLE_EDGE)
 	);
-	public static final class_4570.Builder field_11352 = LocationCheckLootCondition.builder(
-		LocationPredicate.Builder.method_22484().biome(Biomes.BAMBOO_JUNGLE_HILLS)
+	public static final LootCondition.Builder field_11352 = LocationCheckLootCondition.builder(
+		LocationPredicate.Builder.create().biome(Biomes.BAMBOO_JUNGLE_HILLS)
 	);
 
-	public void method_10405(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
+	public void method_10405(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
 		biConsumer.accept(
 			LootTables.FISHING_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -50,7 +50,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 		);
 		biConsumer.accept(
 			LootTables.FISHING_FISH_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withEntry(ItemEntry.builder(Items.COD).setWeight(60))
@@ -61,7 +61,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 		);
 		biConsumer.accept(
 			LootTables.FISHING_JUNK_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withEntry(ItemEntry.builder(Items.LEATHER_BOOTS).setWeight(10).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
@@ -95,7 +95,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 		);
 		biConsumer.accept(
 			LootTables.FISHING_TREASURE_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withEntry(ItemEntry.builder(Blocks.LILY_PAD))

@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import net.minecraft.class_4570;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -24,7 +23,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -38,13 +39,12 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
@@ -352,7 +352,7 @@ public class EntitySelectorOptions {
 						}
 					}
 
-					return TagHelper.areTagsEqual(compoundTag, compoundTag2, true) != bl;
+					return NbtHelper.matches(compoundTag, compoundTag2, true) != bl;
 				});
 			}, entitySelectorReader -> true, new TranslatableText("argument.entity.options.nbt.description"));
 			putOption("scores", entitySelectorReader -> {
@@ -496,12 +496,12 @@ public class EntitySelectorOptions {
 								return false;
 							} else {
 								ServerWorld serverWorld = (ServerWorld)entity.world;
-								class_4570 lv = serverWorld.getServer().method_22828().method_22565(identifier, class_4570.field_20766);
+								LootCondition lootCondition = serverWorld.getServer().getPredicateManager().get(identifier, LootCondition.ALWAYS_FALSE);
 								LootContext lootContext = new LootContext.Builder(serverWorld)
 									.put(LootContextParameters.THIS_ENTITY, entity)
 									.put(LootContextParameters.POSITION, new BlockPos(entity))
 									.build(LootContextTypes.SELECTOR);
-								return bl ^ lv.test(lootContext);
+								return bl ^ lootCondition.test(lootContext);
 							}
 						}
 					);

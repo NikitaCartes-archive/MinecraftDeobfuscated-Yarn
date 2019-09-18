@@ -30,7 +30,7 @@ public class BossBarHud extends DrawableHelper {
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
 				int k = i / 2 - 91;
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.client.getTextureManager().method_22813(BAR_TEX);
+				this.client.getTextureManager().bindTexture(BAR_TEX);
 				this.renderBossBar(k, j, clientBossBar);
 				String string = clientBossBar.getName().asFormattedString();
 				int m = this.client.textRenderer.getStringWidth(string);

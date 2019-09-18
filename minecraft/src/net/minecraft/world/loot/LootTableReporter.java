@@ -8,22 +8,22 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.context.LootContextAware;
 import net.minecraft.world.loot.context.LootContextType;
-import net.minecraft.world.loot.context.ParameterConsumer;
 
 public class LootTableReporter {
 	private final Multimap<String, String> messages;
 	private final Supplier<String> nameFactory;
-	private final LootContextType field_20756;
-	private final Function<Identifier, class_4570> field_20757;
-	private final Set<Identifier> field_20758;
-	private final Function<Identifier, LootSupplier> field_20759;
-	private final Set<Identifier> field_20760;
+	private final LootContextType contextType;
+	private final Function<Identifier, LootCondition> conditionGetter;
+	private final Set<Identifier> conditions;
+	private final Function<Identifier, LootTable> supplierGetter;
+	private final Set<Identifier> suppliers;
 	private String name;
 
-	public LootTableReporter(LootContextType lootContextType, Function<Identifier, class_4570> function, Function<Identifier, LootSupplier> function2) {
+	public LootTableReporter(LootContextType lootContextType, Function<Identifier, LootCondition> function, Function<Identifier, LootTable> function2) {
 		this(HashMultimap.create(), () -> "", lootContextType, function, ImmutableSet.of(), function2, ImmutableSet.of());
 	}
 
@@ -31,18 +31,18 @@ public class LootTableReporter {
 		Multimap<String, String> multimap,
 		Supplier<String> supplier,
 		LootContextType lootContextType,
-		Function<Identifier, class_4570> function,
+		Function<Identifier, LootCondition> function,
 		Set<Identifier> set,
-		Function<Identifier, LootSupplier> function2,
+		Function<Identifier, LootTable> function2,
 		Set<Identifier> set2
 	) {
 		this.messages = multimap;
 		this.nameFactory = supplier;
-		this.field_20756 = lootContextType;
-		this.field_20757 = function;
-		this.field_20758 = set;
-		this.field_20759 = function2;
-		this.field_20760 = set2;
+		this.contextType = lootContextType;
+		this.conditionGetter = function;
+		this.conditions = set;
+		this.supplierGetter = function2;
+		this.suppliers = set2;
 	}
 
 	private String getContext() {
@@ -59,51 +59,51 @@ public class LootTableReporter {
 
 	public LootTableReporter makeChild(String string) {
 		return new LootTableReporter(
-			this.messages, () -> this.getContext() + string, this.field_20756, this.field_20757, this.field_20758, this.field_20759, this.field_20760
+			this.messages, () -> this.getContext() + string, this.contextType, this.conditionGetter, this.conditions, this.supplierGetter, this.suppliers
 		);
 	}
 
-	public LootTableReporter method_22569(String string, Identifier identifier) {
-		ImmutableSet<Identifier> immutableSet = ImmutableSet.<Identifier>builder().addAll(this.field_20760).add(identifier).build();
+	public LootTableReporter withSupplier(String string, Identifier identifier) {
+		ImmutableSet<Identifier> immutableSet = ImmutableSet.<Identifier>builder().addAll(this.suppliers).add(identifier).build();
 		return new LootTableReporter(
-			this.messages, () -> this.getContext() + string, this.field_20756, this.field_20757, this.field_20758, this.field_20759, immutableSet
+			this.messages, () -> this.getContext() + string, this.contextType, this.conditionGetter, this.conditions, this.supplierGetter, immutableSet
 		);
 	}
 
-	public LootTableReporter method_22571(String string, Identifier identifier) {
-		ImmutableSet<Identifier> immutableSet = ImmutableSet.<Identifier>builder().addAll(this.field_20758).add(identifier).build();
+	public LootTableReporter withCondition(String string, Identifier identifier) {
+		ImmutableSet<Identifier> immutableSet = ImmutableSet.<Identifier>builder().addAll(this.conditions).add(identifier).build();
 		return new LootTableReporter(
-			this.messages, () -> this.getContext() + string, this.field_20756, this.field_20757, immutableSet, this.field_20759, this.field_20760
+			this.messages, () -> this.getContext() + string, this.contextType, this.conditionGetter, immutableSet, this.supplierGetter, this.suppliers
 		);
 	}
 
-	public boolean method_22570(Identifier identifier) {
-		return this.field_20760.contains(identifier);
+	public boolean hasSupplier(Identifier identifier) {
+		return this.suppliers.contains(identifier);
 	}
 
-	public boolean method_22572(Identifier identifier) {
-		return this.field_20758.contains(identifier);
+	public boolean hasCondition(Identifier identifier) {
+		return this.conditions.contains(identifier);
 	}
 
 	public Multimap<String, String> getMessages() {
 		return ImmutableMultimap.copyOf(this.messages);
 	}
 
-	public void method_22567(ParameterConsumer parameterConsumer) {
-		this.field_20756.check(this, parameterConsumer);
+	public void checkContext(LootContextAware lootContextAware) {
+		this.contextType.check(this, lootContextAware);
 	}
 
 	@Nullable
-	public LootSupplier method_22574(Identifier identifier) {
-		return (LootSupplier)this.field_20759.apply(identifier);
+	public LootTable getSupplier(Identifier identifier) {
+		return (LootTable)this.supplierGetter.apply(identifier);
 	}
 
 	@Nullable
-	public class_4570 method_22576(Identifier identifier) {
-		return (class_4570)this.field_20757.apply(identifier);
+	public LootCondition getCondition(Identifier identifier) {
+		return (LootCondition)this.conditionGetter.apply(identifier);
 	}
 
-	public LootTableReporter method_22568(LootContextType lootContextType) {
-		return new LootTableReporter(this.messages, this.nameFactory, lootContextType, this.field_20757, this.field_20758, this.field_20759, this.field_20760);
+	public LootTableReporter withContextType(LootContextType lootContextType) {
+		return new LootTableReporter(this.messages, this.nameFactory, lootContextType, this.conditionGetter, this.conditions, this.supplierGetter, this.suppliers);
 	}
 }

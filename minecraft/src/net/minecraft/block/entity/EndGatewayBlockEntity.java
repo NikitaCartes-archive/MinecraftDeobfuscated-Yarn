@@ -11,8 +11,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -48,7 +48,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		super.toTag(compoundTag);
 		compoundTag.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
-			compoundTag.put("ExitPortal", TagHelper.serializeBlockPos(this.exitPortalPos));
+			compoundTag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
 		}
 
 		if (this.exactTeleport) {
@@ -63,7 +63,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		super.fromTag(compoundTag);
 		this.age = compoundTag.getLong("Age");
 		if (compoundTag.containsKey("ExitPortal", 10)) {
-			this.exitPortalPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("ExitPortal"));
+			this.exitPortalPos = NbtHelper.toBlockPos(compoundTag.getCompound("ExitPortal"));
 		}
 
 		this.exactTeleport = compoundTag.getBoolean("ExactTeleport");

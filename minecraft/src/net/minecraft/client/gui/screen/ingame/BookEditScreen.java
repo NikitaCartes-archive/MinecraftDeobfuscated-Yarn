@@ -464,7 +464,7 @@ public class BookEditScreen extends Screen {
 		this.renderBackground();
 		this.setFocused(null);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().method_22813(BookScreen.BOOK_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(BookScreen.BOOK_TEXTURE);
 		int k = (this.width - 192) / 2;
 		int l = 2;
 		this.blit(k, 2, 0, 0, 192, 192);

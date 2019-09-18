@@ -8,11 +8,11 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.types.templates.TaggedChoice.TaggedChoiceType;
 import com.mojang.datafixers.util.Pair;
 
-public class FixChoiceTypes extends DataFix {
+public class ChoiceTypesFix extends DataFix {
 	private final String name;
 	private final TypeReference types;
 
-	public FixChoiceTypes(Schema schema, String string, TypeReference typeReference) {
+	public ChoiceTypesFix(Schema schema, String string, TypeReference typeReference) {
 		super(schema, true);
 		this.name = string;
 		this.types = typeReference;

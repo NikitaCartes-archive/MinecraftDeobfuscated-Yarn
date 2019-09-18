@@ -3,7 +3,6 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -11,7 +10,7 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class VillagerTradeCriterion extends class_4558<VillagerTradeCriterion.Conditions> {
+public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("villager_trade");
 
 	@Override
@@ -20,13 +19,13 @@ public class VillagerTradeCriterion extends class_4558<VillagerTradeCriterion.Co
 	}
 
 	public VillagerTradeCriterion.Conditions method_9148(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("villager"));
+		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("villager"));
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
 		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, abstractTraderEntity, itemStack));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, abstractTraderEntity, itemStack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

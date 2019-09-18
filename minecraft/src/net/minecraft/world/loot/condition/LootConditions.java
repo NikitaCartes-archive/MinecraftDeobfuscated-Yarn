@@ -12,17 +12,14 @@ import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.class_4568;
-import net.minecraft.class_4570;
-import net.minecraft.class_4571;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class LootConditions {
-	private static final Map<Identifier, class_4570.Factory<?>> byId = Maps.<Identifier, class_4570.Factory<?>>newHashMap();
-	private static final Map<Class<? extends class_4570>, class_4570.Factory<?>> byClass = Maps.<Class<? extends class_4570>, class_4570.Factory<?>>newHashMap();
+	private static final Map<Identifier, LootCondition.Factory<?>> byId = Maps.<Identifier, LootCondition.Factory<?>>newHashMap();
+	private static final Map<Class<? extends LootCondition>, LootCondition.Factory<?>> byClass = Maps.<Class<? extends LootCondition>, LootCondition.Factory<?>>newHashMap();
 
-	public static <T extends class_4570> void register(class_4570.Factory<? extends T> factory) {
+	public static <T extends LootCondition> void register(LootCondition.Factory<? extends T> factory) {
 		Identifier identifier = factory.getId();
 		Class<T> class_ = (Class<T>)factory.getConditionClass();
 		if (byId.containsKey(identifier)) {
@@ -35,8 +32,8 @@ public class LootConditions {
 		}
 	}
 
-	public static class_4570.Factory<?> get(Identifier identifier) {
-		class_4570.Factory<?> factory = (class_4570.Factory<?>)byId.get(identifier);
+	public static LootCondition.Factory<?> get(Identifier identifier) {
+		LootCondition.Factory<?> factory = (LootCondition.Factory<?>)byId.get(identifier);
 		if (factory == null) {
 			throw new IllegalArgumentException("Unknown loot item condition '" + identifier + "'");
 		} else {
@@ -44,10 +41,10 @@ public class LootConditions {
 		}
 	}
 
-	public static <T extends class_4570> class_4570.Factory<T> getFactory(T arg) {
-		class_4570.Factory<T> factory = (class_4570.Factory<T>)byClass.get(arg.getClass());
+	public static <T extends LootCondition> LootCondition.Factory<T> getFactory(T lootCondition) {
+		LootCondition.Factory<T> factory = (LootCondition.Factory<T>)byClass.get(lootCondition.getClass());
 		if (factory == null) {
-			throw new IllegalArgumentException("Unknown loot item condition " + arg);
+			throw new IllegalArgumentException("Unknown loot item condition " + lootCondition);
 		} else {
 			return factory;
 		}
@@ -110,16 +107,16 @@ public class LootConditions {
 		register(new DamageSourcePropertiesLootCondition.Factory());
 		register(new LocationCheckLootCondition.Factory());
 		register(new WeatherCheckLootCondition.Factory());
-		register(new class_4568.class_4569());
-		register(new class_4571.class_4572());
+		register(new ReferenceLootCondition.Factory());
+		register(new TimeCheckLootCondition.Factory());
 	}
 
-	public static class Factory implements JsonDeserializer<class_4570>, JsonSerializer<class_4570> {
-		public class_4570 method_930(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	public static class Factory implements JsonDeserializer<LootCondition>, JsonSerializer<LootCondition> {
+		public LootCondition method_930(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "condition");
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "condition"));
 
-			class_4570.Factory<?> factory;
+			LootCondition.Factory<?> factory;
 			try {
 				factory = LootConditions.get(identifier);
 			} catch (IllegalArgumentException var8) {
@@ -129,11 +126,11 @@ public class LootConditions {
 			return factory.fromJson(jsonObject, jsonDeserializationContext);
 		}
 
-		public JsonElement method_931(class_4570 arg, Type type, JsonSerializationContext jsonSerializationContext) {
-			class_4570.Factory<class_4570> factory = LootConditions.getFactory(arg);
+		public JsonElement method_931(LootCondition lootCondition, Type type, JsonSerializationContext jsonSerializationContext) {
+			LootCondition.Factory<LootCondition> factory = LootConditions.getFactory(lootCondition);
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("condition", factory.getId().toString());
-			factory.toJson(jsonObject, arg, jsonSerializationContext);
+			factory.toJson(jsonObject, lootCondition, jsonSerializationContext);
 			return jsonObject;
 		}
 	}

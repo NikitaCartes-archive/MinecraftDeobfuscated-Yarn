@@ -8,7 +8,7 @@ import net.minecraft.container.GrindstoneContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -169,7 +169,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACING, FACE);
 	}
 

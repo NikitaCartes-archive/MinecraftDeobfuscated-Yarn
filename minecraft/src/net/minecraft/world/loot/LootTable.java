@@ -24,21 +24,22 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextType;
 import net.minecraft.world.loot.context.LootContextTypes;
 import net.minecraft.world.loot.function.LootFunction;
+import net.minecraft.world.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.world.loot.function.LootFunctions;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LootSupplier {
+public class LootTable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final LootSupplier EMPTY = new LootSupplier(LootContextTypes.EMPTY, new LootPool[0], new LootFunction[0]);
+	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, new LootPool[0], new LootFunction[0]);
 	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
 	private final LootContextType type;
 	private final LootPool[] pools;
 	private final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
-	private LootSupplier(LootContextType lootContextType, LootPool[] lootPools, LootFunction[] lootFunctions) {
+	private LootTable(LootContextType lootContextType, LootPool[] lootPools, LootFunction[] lootFunctions) {
 		this.type = lootContextType;
 		this.pools = lootPools;
 		this.functions = lootFunctions;
@@ -168,41 +169,41 @@ public class LootSupplier {
 		return list;
 	}
 
-	public static LootSupplier.Builder builder() {
-		return new LootSupplier.Builder();
+	public static LootTable.Builder builder() {
+		return new LootTable.Builder();
 	}
 
-	public static class Builder implements FunctionConsumerBuilder<LootSupplier.Builder> {
+	public static class Builder implements LootFunctionConsumingBuilder<LootTable.Builder> {
 		private final List<LootPool> pools = Lists.<LootPool>newArrayList();
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
-		private LootContextType type = LootSupplier.GENERIC;
+		private LootContextType type = LootTable.GENERIC;
 
-		public LootSupplier.Builder withPool(LootPool.Builder builder) {
+		public LootTable.Builder withPool(LootPool.Builder builder) {
 			this.pools.add(builder.build());
 			return this;
 		}
 
-		public LootSupplier.Builder withType(LootContextType lootContextType) {
+		public LootTable.Builder withType(LootContextType lootContextType) {
 			this.type = lootContextType;
 			return this;
 		}
 
-		public LootSupplier.Builder method_335(LootFunction.Builder builder) {
+		public LootTable.Builder method_335(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this;
 		}
 
-		public LootSupplier.Builder method_337() {
+		public LootTable.Builder method_337() {
 			return this;
 		}
 
-		public LootSupplier create() {
-			return new LootSupplier(this.type, (LootPool[])this.pools.toArray(new LootPool[0]), (LootFunction[])this.functions.toArray(new LootFunction[0]));
+		public LootTable create() {
+			return new LootTable(this.type, (LootPool[])this.pools.toArray(new LootPool[0]), (LootFunction[])this.functions.toArray(new LootFunction[0]));
 		}
 	}
 
-	public static class Serializer implements JsonDeserializer<LootSupplier>, JsonSerializer<LootSupplier> {
-		public LootSupplier method_340(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	public static class Serializer implements JsonDeserializer<LootTable>, JsonSerializer<LootTable> {
+		public LootTable method_340(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot table");
 			LootPool[] lootPools = JsonHelper.deserialize(jsonObject, "pools", new LootPool[0], jsonDeserializationContext, LootPool[].class);
 			LootContextType lootContextType = null;
@@ -212,26 +213,26 @@ public class LootSupplier {
 			}
 
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
-			return new LootSupplier(lootContextType != null ? lootContextType : LootContextTypes.GENERIC, lootPools, lootFunctions);
+			return new LootTable(lootContextType != null ? lootContextType : LootContextTypes.GENERIC, lootPools, lootFunctions);
 		}
 
-		public JsonElement method_339(LootSupplier lootSupplier, Type type, JsonSerializationContext jsonSerializationContext) {
+		public JsonElement method_339(LootTable lootTable, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
-			if (lootSupplier.type != LootSupplier.GENERIC) {
-				Identifier identifier = LootContextTypes.getId(lootSupplier.type);
+			if (lootTable.type != LootTable.GENERIC) {
+				Identifier identifier = LootContextTypes.getId(lootTable.type);
 				if (identifier != null) {
 					jsonObject.addProperty("type", identifier.toString());
 				} else {
-					LootSupplier.LOGGER.warn("Failed to find id for param set " + lootSupplier.type);
+					LootTable.LOGGER.warn("Failed to find id for param set " + lootTable.type);
 				}
 			}
 
-			if (lootSupplier.pools.length > 0) {
-				jsonObject.add("pools", jsonSerializationContext.serialize(lootSupplier.pools));
+			if (lootTable.pools.length > 0) {
+				jsonObject.add("pools", jsonSerializationContext.serialize(lootTable.pools));
 			}
 
-			if (!ArrayUtils.isEmpty((Object[])lootSupplier.functions)) {
-				jsonObject.add("functions", jsonSerializationContext.serialize(lootSupplier.functions));
+			if (!ArrayUtils.isEmpty((Object[])lootTable.functions)) {
+				jsonObject.add("functions", jsonSerializationContext.serialize(lootTable.functions));
 			}
 
 			return jsonObject;

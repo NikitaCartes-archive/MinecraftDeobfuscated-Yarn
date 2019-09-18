@@ -211,7 +211,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			if (string2 != null) {
 				Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
 				RenderSystem.disableLighting();
-				this.minecraft.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+				this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 				blit(i, j, this.getBlitOffset(), 16, 16, sprite);
 				RenderSystem.enableLighting();
 				bl2 = true;

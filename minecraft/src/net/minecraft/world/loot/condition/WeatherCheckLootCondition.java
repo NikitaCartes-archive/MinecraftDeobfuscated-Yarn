@@ -4,13 +4,12 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import javax.annotation.Nullable;
-import net.minecraft.class_4570;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.context.LootContext;
 
-public class WeatherCheckLootCondition implements class_4570 {
+public class WeatherCheckLootCondition implements LootCondition {
 	@Nullable
 	private final Boolean raining;
 	@Nullable
@@ -26,7 +25,7 @@ public class WeatherCheckLootCondition implements class_4570 {
 		return this.raining != null && this.raining != serverWorld.isRaining() ? false : this.thundering == null || this.thundering == serverWorld.isThundering();
 	}
 
-	public static class Factory extends class_4570.Factory<WeatherCheckLootCondition> {
+	public static class Factory extends LootCondition.Factory<WeatherCheckLootCondition> {
 		public Factory() {
 			super(new Identifier("weather_check"), WeatherCheckLootCondition.class);
 		}

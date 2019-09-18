@@ -7,19 +7,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Iterator;
 import java.util.List;
-import net.minecraft.class_4558;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 
-public class InventoryChangedCriterion extends class_4558<InventoryChangedCriterion.Conditions> {
+public class InventoryChangedCriterion extends AbstractCriterion<InventoryChangedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("inventory_changed");
 
 	@Override
@@ -37,7 +36,7 @@ public class InventoryChangedCriterion extends class_4558<InventoryChangedCriter
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -82,9 +81,9 @@ public class InventoryChangedCriterion extends class_4558<InventoryChangedCriter
 			JsonObject jsonObject = new JsonObject();
 			if (!this.occupied.isDummy() || !this.full.isDummy() || !this.empty.isDummy()) {
 				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.add("occupied", this.occupied.serialize());
-				jsonObject2.add("full", this.full.serialize());
-				jsonObject2.add("empty", this.empty.serialize());
+				jsonObject2.add("occupied", this.occupied.toJson());
+				jsonObject2.add("full", this.full.toJson());
+				jsonObject2.add("empty", this.empty.toJson());
 				jsonObject.add("slots", jsonObject2);
 			}
 

@@ -1,10 +1,10 @@
 package net.minecraft.world.loot.entry;
 
-import net.minecraft.class_4570;
+import net.minecraft.world.loot.condition.LootCondition;
 
 public class GroupEntry extends CombinedEntry {
-	GroupEntry(LootEntry[] lootEntrys, class_4570[] args) {
-		super(lootEntrys, args);
+	GroupEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
+		super(lootEntrys, lootConditions);
 	}
 
 	@Override

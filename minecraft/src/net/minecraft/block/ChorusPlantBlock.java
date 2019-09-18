@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.class_4538;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -93,7 +93,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN);
 	}
 

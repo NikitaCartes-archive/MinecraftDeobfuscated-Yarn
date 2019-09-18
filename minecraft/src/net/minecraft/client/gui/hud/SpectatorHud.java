@@ -62,7 +62,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
-		this.client.getTextureManager().method_22813(WIDGETS_TEX);
+		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
 		this.blit(i - 91, j, 0, 0, 182, 22);
 		if (spectatorMenuState.getSelectedSlot() >= 0) {
 			this.blit(i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
@@ -80,7 +80,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	}
 
 	private void renderSpectatorCommand(int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
-		this.client.getTextureManager().method_22813(SPECTATOR_TEX);
+		this.client.getTextureManager().bindTexture(SPECTATOR_TEX);
 		if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
 			int k = (int)(g * 255.0F);
 			RenderSystem.pushMatrix();

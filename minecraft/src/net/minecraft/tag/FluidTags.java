@@ -16,7 +16,7 @@ public class FluidTags {
 		latestVersion++;
 	}
 
-	public static TagContainer<Fluid> method_22448() {
+	public static TagContainer<Fluid> getContainer() {
 		return container;
 	}
 

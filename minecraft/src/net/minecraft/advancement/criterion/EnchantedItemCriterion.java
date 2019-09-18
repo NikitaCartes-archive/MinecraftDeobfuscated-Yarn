@@ -3,14 +3,13 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 
-public class EnchantedItemCriterion extends class_4558<EnchantedItemCriterion.Conditions> {
+public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("enchanted_item");
 
 	@Override
@@ -25,7 +24,7 @@ public class EnchantedItemCriterion extends class_4558<EnchantedItemCriterion.Co
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack, i));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack, i));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -50,7 +49,7 @@ public class EnchantedItemCriterion extends class_4558<EnchantedItemCriterion.Co
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
-			jsonObject.add("levels", this.levels.serialize());
+			jsonObject.add("levels", this.levels.toJson());
 			return jsonObject;
 		}
 	}

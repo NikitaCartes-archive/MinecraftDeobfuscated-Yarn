@@ -22,8 +22,6 @@ import java.util.OptionalInt;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.IntFunction;
-import net.minecraft.class_4567;
-import net.minecraft.class_4570;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -52,15 +50,17 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.condition.LootConditionManager;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
@@ -80,8 +80,8 @@ public class ExecuteCommand {
 			resultConsumer2.onCommandComplete(commandContext, bl, i);
 		};
 	private static final SuggestionProvider<ServerCommandSource> field_20852 = (commandContext, suggestionsBuilder) -> {
-		class_4567 lv = commandContext.getSource().getMinecraftServer().method_22828();
-		return CommandSource.suggestIdentifiers(lv.method_22559(), suggestionsBuilder);
+		LootConditionManager lootConditionManager = commandContext.getSource().getMinecraftServer().getPredicateManager();
+		return CommandSource.suggestIdentifiers(lootConditionManager.getIds(), suggestionsBuilder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -542,7 +542,7 @@ public class ExecuteCommand {
 							commandNode,
 							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(field_20852),
 							bl,
-							commandContext -> method_22829(commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "predicate"))
+							commandContext -> testLootCondition(commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "predicate"))
 						)
 					)
 			);
@@ -618,14 +618,14 @@ public class ExecuteCommand {
 		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : intRange.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
 	}
 
-	private static boolean method_22829(ServerCommandSource serverCommandSource, Identifier identifier) {
+	private static boolean testLootCondition(ServerCommandSource serverCommandSource, Identifier identifier) {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
-		class_4567 lv = serverWorld.getServer().method_22828();
-		class_4570 lv2 = lv.method_22565(identifier, class_4570.field_20766);
+		LootConditionManager lootConditionManager = serverWorld.getServer().getPredicateManager();
+		LootCondition lootCondition = lootConditionManager.get(identifier, LootCondition.ALWAYS_FALSE);
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
 			.put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()))
 			.putNullable(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
-		return lv2.test(builder.build(LootContextTypes.COMMAND));
+		return lootCondition.test(builder.build(LootContextTypes.COMMAND));
 	}
 
 	private static Collection<ServerCommandSource> getSourceOrEmptyForConditionFork(CommandContext<ServerCommandSource> commandContext, boolean bl, boolean bl2) {

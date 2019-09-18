@@ -8,9 +8,9 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.registry.Registry;
 
 public class EnchantmentPredicate {
@@ -61,7 +61,7 @@ public class EnchantmentPredicate {
 				jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(this.enchantment).toString());
 			}
 
-			jsonObject.add("levels", this.levels.serialize());
+			jsonObject.add("levels", this.levels.toJson());
 			return jsonObject;
 		}
 	}

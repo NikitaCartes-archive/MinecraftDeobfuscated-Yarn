@@ -308,7 +308,7 @@ public class PresetsScreen extends Screen {
 
 			private void method_2198(int i, int j) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatPresetsListWidget.this.minecraft.getTextureManager().method_22813(DrawableHelper.STATS_ICON_LOCATION);
+				SuperflatPresetsListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
 				DrawableHelper.blit(i, j, PresetsScreen.this.getBlitOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}

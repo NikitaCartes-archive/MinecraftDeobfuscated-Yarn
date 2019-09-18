@@ -7,23 +7,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.class_4570;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.entry.LootEntry;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
 	private final List<LootEntry> entries;
 
-	private SetContentsLootFunction(class_4570[] args, List<LootEntry> list) {
-		super(args);
+	private SetContentsLootFunction(LootCondition[] lootConditions, List<LootEntry> list) {
+		super(lootConditions);
 		this.entries = ImmutableList.copyOf(list);
 	}
 
@@ -33,8 +33,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			return itemStack;
 		} else {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-			this.entries
-				.forEach(lootEntry -> lootEntry.expand(lootContext, lootChoice -> lootChoice.drop(LootSupplier.limitedConsumer(defaultedList::add), lootContext)));
+			this.entries.forEach(lootEntry -> lootEntry.expand(lootContext, lootChoice -> lootChoice.drop(LootTable.limitedConsumer(defaultedList::add), lootContext)));
 			CompoundTag compoundTag = new CompoundTag();
 			Inventories.toTag(compoundTag, defaultedList);
 			CompoundTag compoundTag2 = itemStack.getOrCreateTag();
@@ -84,9 +83,9 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
 		}
 
-		public SetContentsLootFunction method_605(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+		public SetContentsLootFunction method_605(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootEntry[].class);
-			return new SetContentsLootFunction(args, Arrays.asList(lootEntrys));
+			return new SetContentsLootFunction(lootConditions, Arrays.asList(lootEntrys));
 		}
 	}
 }

@@ -26,9 +26,9 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.AbstractPropertyContainer;
-import net.minecraft.state.PropertyContainer;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.AbstractState;
+import net.minecraft.state.State;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.BlockMirror;
@@ -48,7 +48,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.loot.context.LootContext;
 
-public class BlockState extends AbstractPropertyContainer<Block, BlockState> implements PropertyContainer<BlockState> {
+public class BlockState extends AbstractState<Block, BlockState> implements State<BlockState> {
 	@Nullable
 	private BlockState.ShapeCache shapeCache;
 	private final int luminance;
@@ -357,7 +357,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 							.map(
 								entry -> Pair.of(
 										dynamicOps.createString(((Property)entry.getKey()).getName()),
-										dynamicOps.createString(PropertyContainer.getValueAsString((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
+										dynamicOps.createString(State.nameValue((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
 									)
 							)
 							.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
@@ -373,13 +373,13 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		Block block = Registry.BLOCK.get(new Identifier((String)dynamic.getElement("Name").flatMap(dynamic.getOps()::getStringValue).orElse("minecraft:air")));
 		Map<String, String> map = dynamic.get("Properties").asMap(dynamicx -> dynamicx.asString(""), dynamicx -> dynamicx.asString(""));
 		BlockState blockState = block.getDefaultState();
-		StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+		StateManager<Block, BlockState> stateManager = block.getStateFactory();
 
 		for (Entry<String, String> entry : map.entrySet()) {
 			String string = (String)entry.getKey();
-			Property<?> property = stateFactory.getProperty(string);
+			Property<?> property = stateManager.getProperty(string);
 			if (property != null) {
-				blockState = PropertyContainer.deserialize(blockState, property, string, dynamic.toString(), (String)entry.getValue());
+				blockState = State.tryRead(blockState, property, string, dynamic.toString(), (String)entry.getValue());
 			}
 		}
 

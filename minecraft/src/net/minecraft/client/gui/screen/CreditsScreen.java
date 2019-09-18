@@ -124,7 +124,7 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void renderBackground(int i, int j, float f) {
-		this.minecraft.getTextureManager().method_22813(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		int k = this.width;
 		float g = -this.time * 0.5F * this.speed;
 		float h = (float)this.height - this.time * 0.5F * this.speed;
@@ -168,12 +168,12 @@ public class CreditsScreen extends Screen {
 		float g = -this.time * this.speed;
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef(0.0F, g, 0.0F);
-		this.minecraft.getTextureManager().method_22813(MINECRAFT_TITLE_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableAlphaTest();
 		this.blit(l, m, 0, 0, 155, 44);
 		this.blit(l + 155, m, 0, 45, 155, 44);
-		this.minecraft.getTextureManager().method_22813(EDITION_TITLE_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
 		blit(l + 88, m + 37, 0.0F, 0.0F, 98, 14, 128, 16);
 		RenderSystem.disableAlphaTest();
 		int n = m + 100;
@@ -200,7 +200,7 @@ public class CreditsScreen extends Screen {
 		}
 
 		RenderSystem.popMatrix();
-		this.minecraft.getTextureManager().method_22813(VIGNETTE_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR);
 		int o = this.width;

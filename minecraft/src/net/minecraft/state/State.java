@@ -6,7 +6,7 @@ import net.minecraft.state.property.Property;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public interface PropertyContainer<C> {
+public interface State<C> {
 	Logger LOGGER = LogManager.getLogger();
 
 	<T extends Comparable<T>> T get(Property<T> property);
@@ -15,19 +15,17 @@ public interface PropertyContainer<C> {
 
 	ImmutableMap<Property<?>, Comparable<?>> getEntries();
 
-	static <T extends Comparable<T>> String getValueAsString(Property<T> property, Comparable<?> comparable) {
-		return property.getName((T)comparable);
+	static <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> comparable) {
+		return property.name((T)comparable);
 	}
 
-	static <S extends PropertyContainer<S>, T extends Comparable<T>> S deserialize(
-		S propertyContainer, Property<T> property, String string, String string2, String string3
-	) {
-		Optional<T> optional = property.getValue(string3);
+	static <S extends State<S>, T extends Comparable<T>> S tryRead(S state, Property<T> property, String string, String string2, String string3) {
+		Optional<T> optional = property.parse(string3);
 		if (optional.isPresent()) {
-			return propertyContainer.with(property, (Comparable)optional.get());
+			return state.with(property, (Comparable)optional.get());
 		} else {
 			LOGGER.warn("Unable to read property: {} with value: {} for input: {}", string, string3, string2);
-			return propertyContainer;
+			return state;
 		}
 	}
 }

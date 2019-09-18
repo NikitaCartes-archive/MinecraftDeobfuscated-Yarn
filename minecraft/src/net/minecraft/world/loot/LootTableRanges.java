@@ -13,7 +13,7 @@ import net.minecraft.util.JsonHelper;
 public class LootTableRanges {
 	private static final Map<Identifier, Class<? extends LootTableRange>> types = Maps.<Identifier, Class<? extends LootTableRange>>newHashMap();
 
-	public static LootTableRange deserialize(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+	public static LootTableRange fromJson(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 		if (jsonElement.isJsonPrimitive()) {
 			return jsonDeserializationContext.deserialize(jsonElement, ConstantLootTableRange.class);
 		} else {
@@ -28,7 +28,7 @@ public class LootTableRanges {
 		}
 	}
 
-	public static JsonElement serialize(LootTableRange lootTableRange, JsonSerializationContext jsonSerializationContext) {
+	public static JsonElement toJson(LootTableRange lootTableRange, JsonSerializationContext jsonSerializationContext) {
 		JsonElement jsonElement = jsonSerializationContext.serialize(lootTableRange);
 		if (jsonElement.isJsonObject()) {
 			jsonElement.getAsJsonObject().addProperty("type", lootTableRange.getType().toString());

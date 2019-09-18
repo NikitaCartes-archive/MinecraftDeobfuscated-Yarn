@@ -13,7 +13,6 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
-import net.minecraft.class_4570;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -22,13 +21,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.loot.UniformLootTableRange;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	private final Map<StatusEffect, UniformLootTableRange> effects;
 
-	private SetStewEffectLootFunction(class_4570[] args, Map<StatusEffect, UniformLootTableRange> map) {
-		super(args);
+	private SetStewEffectLootFunction(LootCondition[] lootConditions, Map<StatusEffect, UniformLootTableRange> map) {
+		super(lootConditions);
 		this.effects = ImmutableMap.copyOf(map);
 	}
 
@@ -99,7 +99,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public SetStewEffectLootFunction method_641(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+		public SetStewEffectLootFunction method_641(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Map<StatusEffect, UniformLootTableRange> map = Maps.<StatusEffect, UniformLootTableRange>newHashMap();
 			if (jsonObject.has("effects")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "effects")) {
@@ -114,7 +114,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 				}
 			}
 
-			return new SetStewEffectLootFunction(args, map);
+			return new SetStewEffectLootFunction(lootConditions, map);
 		}
 	}
 }

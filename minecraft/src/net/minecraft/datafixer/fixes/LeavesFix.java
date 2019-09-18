@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixer.fixes;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import net.minecraft.datafixers.TypeReferences;
 
-public class class_4541 extends DataFix {
-	public class_4541(Schema schema, boolean bl) {
+public class LeavesFix extends DataFix {
+	public LeavesFix(Schema schema, boolean bl) {
 		super(schema, bl);
 	}
 

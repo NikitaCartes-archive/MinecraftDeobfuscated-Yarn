@@ -13,20 +13,20 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_4570;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.UniformLootTableRange;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class SetAttributesLootFunction extends ConditionalLootFunction {
 	private final List<SetAttributesLootFunction.Attribute> attributes;
 
-	private SetAttributesLootFunction(class_4570[] args, List<SetAttributesLootFunction.Attribute> list) {
-		super(args);
+	private SetAttributesLootFunction(LootCondition[] lootConditions, List<SetAttributesLootFunction.Attribute> list) {
+		super(lootConditions);
 		this.attributes = ImmutableList.copyOf(list);
 	}
 
@@ -182,7 +182,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			jsonObject.add("modifiers", jsonArray);
 		}
 
-		public SetAttributesLootFunction method_617(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+		public SetAttributesLootFunction method_617(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "modifiers");
 			List<SetAttributesLootFunction.Attribute> list = Lists.<SetAttributesLootFunction.Attribute>newArrayListWithExpectedSize(jsonArray.size());
 
@@ -193,7 +193,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			if (list.isEmpty()) {
 				throw new JsonSyntaxException("Invalid attribute modifiers array; cannot be empty");
 			} else {
-				return new SetAttributesLootFunction(args, list);
+				return new SetAttributesLootFunction(lootConditions, list);
 			}
 		}
 	}

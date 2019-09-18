@@ -6,13 +6,13 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.MathHelper;
 
 public class CommandBossBar extends ServerBossBar {
@@ -146,7 +146,7 @@ public class CommandBossBar extends ServerBossBar {
 		ListTag listTag = new ListTag();
 
 		for (UUID uUID : this.playerUuids) {
-			listTag.add(TagHelper.serializeUuid(uUID));
+			listTag.add(NbtHelper.fromUuid(uUID));
 		}
 
 		compoundTag.put("Players", listTag);
@@ -166,7 +166,7 @@ public class CommandBossBar extends ServerBossBar {
 		ListTag listTag = compoundTag.getList("Players", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			commandBossBar.addPlayer(TagHelper.deserializeUuid(listTag.getCompoundTag(i)));
+			commandBossBar.addPlayer(NbtHelper.toUuid(listTag.getCompoundTag(i)));
 		}
 
 		return commandBossBar;

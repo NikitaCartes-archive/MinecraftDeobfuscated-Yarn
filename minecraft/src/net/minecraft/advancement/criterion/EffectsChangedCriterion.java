@@ -3,13 +3,12 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class EffectsChangedCriterion extends class_4558<EffectsChangedCriterion.Conditions> {
+public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("effects_changed");
 
 	@Override
@@ -23,7 +22,7 @@ public class EffectsChangedCriterion extends class_4558<EffectsChangedCriterion.
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

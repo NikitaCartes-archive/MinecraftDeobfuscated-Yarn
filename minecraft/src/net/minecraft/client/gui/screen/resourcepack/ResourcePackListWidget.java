@@ -118,7 +118,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 			String string = this.getDisplayName();
 			String string2 = this.getDescription();
 			if (this.method_20151() && (this.client.options.touchscreen || bl)) {
-				this.client.getTextureManager().method_22813(ResourcePackListWidget.RESOURCE_PACKS_LOCATION);
+				this.client.getTextureManager().bindTexture(ResourcePackListWidget.RESOURCE_PACKS_LOCATION);
 				DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				int p = n - k;

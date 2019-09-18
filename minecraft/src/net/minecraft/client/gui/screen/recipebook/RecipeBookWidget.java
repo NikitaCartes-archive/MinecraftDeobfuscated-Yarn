@@ -228,7 +228,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			RenderSystem.disableLighting();
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 100.0F);
-			this.client.getTextureManager().method_22813(TEXTURE);
+			this.client.getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int l = (this.parentHeight - 166) / 2;

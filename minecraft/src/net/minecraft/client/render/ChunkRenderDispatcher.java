@@ -15,7 +15,7 @@ public class ChunkRenderDispatcher {
 	protected int sizeY;
 	protected int sizeX;
 	protected int sizeZ;
-	public ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer[] renderers;
+	public ChunkBatcher.ChunkRenderer[] renderers;
 
 	public ChunkRenderDispatcher(ChunkBatcher chunkBatcher, World world, int i, WorldRenderer worldRenderer) {
 		this.renderer = worldRenderer;
@@ -26,13 +26,13 @@ public class ChunkRenderDispatcher {
 
 	protected void createChunks(ChunkBatcher chunkBatcher) {
 		int i = this.sizeX * this.sizeY * this.sizeZ;
-		this.renderers = new ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer[i];
+		this.renderers = new ChunkBatcher.ChunkRenderer[i];
 
 		for (int j = 0; j < this.sizeX; j++) {
 			for (int k = 0; k < this.sizeY; k++) {
 				for (int l = 0; l < this.sizeZ; l++) {
 					int m = this.getChunkIndex(j, k, l);
-					this.renderers[m] = chunkBatcher.new net/minecraft/client/render/chunk/ChunkRenderer();
+					this.renderers[m] = chunkBatcher.new ChunkRenderer();
 					this.renderers[m].setOrigin(j * 16, k * 16, l * 16);
 				}
 			}
@@ -40,7 +40,7 @@ public class ChunkRenderDispatcher {
 	}
 
 	public void delete() {
-		for (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer : this.renderers) {
+		for (ChunkBatcher.ChunkRenderer chunkRenderer : this.renderers) {
 			chunkRenderer.delete();
 		}
 	}
@@ -69,7 +69,7 @@ public class ChunkRenderDispatcher {
 
 				for (int p = 0; p < this.sizeY; p++) {
 					int q = p * 16;
-					ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, p, n)];
+					ChunkBatcher.ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, p, n)];
 					chunkRenderer.setOrigin(m, q, o);
 				}
 			}
@@ -90,12 +90,12 @@ public class ChunkRenderDispatcher {
 		int l = Math.floorMod(i, this.sizeX);
 		int m = Math.floorMod(j, this.sizeY);
 		int n = Math.floorMod(k, this.sizeZ);
-		ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, m, n)];
+		ChunkBatcher.ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, m, n)];
 		chunkRenderer.scheduleRebuild(bl);
 	}
 
 	@Nullable
-	protected ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer getChunkRenderer(BlockPos blockPos) {
+	protected ChunkBatcher.ChunkRenderer getChunkRenderer(BlockPos blockPos) {
 		int i = MathHelper.floorDiv(blockPos.getX(), 16);
 		int j = MathHelper.floorDiv(blockPos.getY(), 16);
 		int k = MathHelper.floorDiv(blockPos.getZ(), 16);

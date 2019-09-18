@@ -18,7 +18,7 @@ public abstract class AbstractProperty<T extends Comparable<T>> implements Prope
 	}
 
 	@Override
-	public Class<T> getValueType() {
+	public Class<T> getType() {
 		return this.type;
 	}
 

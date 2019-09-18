@@ -117,7 +117,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.depthFunc(514);
 		RenderSystem.disableLighting();
 		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
-		textureManager.method_22813(ENCHANTMENT_GLINT_TEX);
+		textureManager.bindTexture(ENCHANTMENT_GLINT_TEX);
 		RenderSystem.matrixMode(5890);
 		RenderSystem.pushMatrix();
 		RenderSystem.scalef((float)i, (float)i, (float)i);
@@ -138,7 +138,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.enableLighting();
 		RenderSystem.depthFunc(515);
 		RenderSystem.depthMask(true);
-		textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 	}
 
 	private void postNormalQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad) {
@@ -217,7 +217,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	protected void renderItem(ItemStack itemStack, BakedModel bakedModel, ModelTransformation.Type type, boolean bl) {
 		if (!itemStack.isEmpty()) {
-			this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableRescaleNormal();
@@ -236,7 +236,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			RenderSystem.popMatrix();
 			RenderSystem.disableRescaleNormal();
 			RenderSystem.disableBlend();
-			this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 		}
 	}
@@ -251,7 +251,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	protected void renderGuiItemModel(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
 		RenderSystem.pushMatrix();
-		this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableAlphaTest();
@@ -266,7 +266,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableLighting();
 		RenderSystem.popMatrix();
-		this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
 	}
 

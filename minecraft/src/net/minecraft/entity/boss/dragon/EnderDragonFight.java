@@ -29,6 +29,7 @@ import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.predicate.block.BlockPredicate;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -36,7 +37,6 @@ import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -95,7 +95,7 @@ public class EnderDragonFight {
 			}
 
 			if (compoundTag.containsKey("ExitPortalLocation", 10)) {
-				this.exitPortalLocation = TagHelper.deserializeBlockPos(compoundTag.getCompound("ExitPortalLocation"));
+				this.exitPortalLocation = NbtHelper.toBlockPos(compoundTag.getCompound("ExitPortalLocation"));
 			}
 		} else {
 			this.dragonKilled = true;
@@ -132,7 +132,7 @@ public class EnderDragonFight {
 		compoundTag.putBoolean("DragonKilled", this.dragonKilled);
 		compoundTag.putBoolean("PreviouslyKilled", this.previouslyKilled);
 		if (this.exitPortalLocation != null) {
-			compoundTag.put("ExitPortalLocation", TagHelper.serializeBlockPos(this.exitPortalLocation));
+			compoundTag.put("ExitPortalLocation", NbtHelper.fromBlockPos(this.exitPortalLocation));
 		}
 
 		ListTag listTag = new ListTag();

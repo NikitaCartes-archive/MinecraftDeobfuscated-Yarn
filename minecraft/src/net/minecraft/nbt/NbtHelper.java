@@ -1,4 +1,4 @@
-package net.minecraft.util;
+package net.minecraft.nbt;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
@@ -15,22 +15,21 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.datafixers.NbtOps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.state.PropertyContainer;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.State;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class TagHelper {
+public final class NbtHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Nullable
-	public static GameProfile deserializeProfile(CompoundTag compoundTag) {
+	public static GameProfile toGameProfile(CompoundTag compoundTag) {
 		String string = null;
 		String string2 = null;
 		if (compoundTag.containsKey("Name", 8)) {
@@ -74,7 +73,7 @@ public final class TagHelper {
 		}
 	}
 
-	public static CompoundTag serializeProfile(CompoundTag compoundTag, GameProfile gameProfile) {
+	public static CompoundTag fromGameProfile(CompoundTag compoundTag, GameProfile gameProfile) {
 		if (!ChatUtil.isEmpty(gameProfile.getName())) {
 			compoundTag.putString("Name", gameProfile.getName());
 		}
@@ -109,7 +108,7 @@ public final class TagHelper {
 	}
 
 	@VisibleForTesting
-	public static boolean areTagsEqual(@Nullable Tag tag, @Nullable Tag tag2, boolean bl) {
+	public static boolean matches(@Nullable Tag tag, @Nullable Tag tag2, boolean bl) {
 		if (tag == tag2) {
 			return true;
 		} else if (tag == null) {
@@ -124,7 +123,7 @@ public final class TagHelper {
 
 			for (String string : compoundTag.getKeys()) {
 				Tag tag3 = compoundTag.getTag(string);
-				if (!areTagsEqual(tag3, compoundTag2.getTag(string), bl)) {
+				if (!matches(tag3, compoundTag2.getTag(string), bl)) {
 					return false;
 				}
 			}
@@ -141,7 +140,7 @@ public final class TagHelper {
 					boolean bl2 = false;
 
 					for (int j = 0; j < listTag2.size(); j++) {
-						if (areTagsEqual(tag4, listTag2.method_10534(j), bl)) {
+						if (matches(tag4, listTag2.method_10534(j), bl)) {
 							bl2 = true;
 							break;
 						}
@@ -159,22 +158,22 @@ public final class TagHelper {
 		}
 	}
 
-	public static CompoundTag serializeUuid(UUID uUID) {
+	public static CompoundTag fromUuid(UUID uUID) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putLong("M", uUID.getMostSignificantBits());
 		compoundTag.putLong("L", uUID.getLeastSignificantBits());
 		return compoundTag;
 	}
 
-	public static UUID deserializeUuid(CompoundTag compoundTag) {
+	public static UUID toUuid(CompoundTag compoundTag) {
 		return new UUID(compoundTag.getLong("M"), compoundTag.getLong("L"));
 	}
 
-	public static BlockPos deserializeBlockPos(CompoundTag compoundTag) {
+	public static BlockPos toBlockPos(CompoundTag compoundTag) {
 		return new BlockPos(compoundTag.getInt("X"), compoundTag.getInt("Y"), compoundTag.getInt("Z"));
 	}
 
-	public static CompoundTag serializeBlockPos(BlockPos blockPos) {
+	public static CompoundTag fromBlockPos(BlockPos blockPos) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putInt("X", blockPos.getX());
 		compoundTag.putInt("Y", blockPos.getY());
@@ -182,7 +181,7 @@ public final class TagHelper {
 		return compoundTag;
 	}
 
-	public static BlockState deserializeBlockState(CompoundTag compoundTag) {
+	public static BlockState toBlockState(CompoundTag compoundTag) {
 		if (!compoundTag.containsKey("Name", 8)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
@@ -190,10 +189,10 @@ public final class TagHelper {
 			BlockState blockState = block.getDefaultState();
 			if (compoundTag.containsKey("Properties", 10)) {
 				CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
-				StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+				StateManager<Block, BlockState> stateManager = block.getStateFactory();
 
 				for (String string : compoundTag2.getKeys()) {
-					Property<?> property = stateFactory.getProperty(string);
+					Property<?> property = stateManager.getProperty(string);
 					if (property != null) {
 						blockState = withProperty(blockState, property, string, compoundTag2, compoundTag);
 					}
@@ -204,19 +203,19 @@ public final class TagHelper {
 		}
 	}
 
-	private static <S extends PropertyContainer<S>, T extends Comparable<T>> S withProperty(
-		S propertyContainer, Property<T> property, String string, CompoundTag compoundTag, CompoundTag compoundTag2
+	private static <S extends State<S>, T extends Comparable<T>> S withProperty(
+		S state, Property<T> property, String string, CompoundTag compoundTag, CompoundTag compoundTag2
 	) {
-		Optional<T> optional = property.getValue(compoundTag.getString(string));
+		Optional<T> optional = property.parse(compoundTag.getString(string));
 		if (optional.isPresent()) {
-			return propertyContainer.with(property, (Comparable)optional.get());
+			return state.with(property, (Comparable)optional.get());
 		} else {
 			LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", string, compoundTag.getString(string), compoundTag2.toString());
-			return propertyContainer;
+			return state;
 		}
 	}
 
-	public static CompoundTag serializeBlockState(BlockState blockState) {
+	public static CompoundTag fromBlockState(BlockState blockState) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", Registry.BLOCK.getId(blockState.getBlock()).toString());
 		ImmutableMap<Property<?>, Comparable<?>> immutableMap = blockState.getEntries();
@@ -225,7 +224,7 @@ public final class TagHelper {
 
 			for (Entry<Property<?>, Comparable<?>> entry : immutableMap.entrySet()) {
 				Property<?> property = (Property<?>)entry.getKey();
-				compoundTag2.putString(property.getName(), getPropertyValueAsString(property, (Comparable<?>)entry.getValue()));
+				compoundTag2.putString(property.getName(), nameValue(property, (Comparable<?>)entry.getValue()));
 			}
 
 			compoundTag.put("Properties", compoundTag2);
@@ -234,8 +233,8 @@ public final class TagHelper {
 		return compoundTag;
 	}
 
-	private static <T extends Comparable<T>> String getPropertyValueAsString(Property<T> property, Comparable<?> comparable) {
-		return property.getName((T)comparable);
+	private static <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> comparable) {
+		return property.name((T)comparable);
 	}
 
 	public static CompoundTag update(DataFixer dataFixer, DataFixTypes dataFixTypes, CompoundTag compoundTag, int i) {

@@ -39,7 +39,7 @@ public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M
 			for (int n = 0; n < m; n++) {
 				RenderSystem.pushMatrix();
 				ModelPart modelPart = this.getModel().method_22697(random);
-				ModelPart.net/minecraft/client/model/Cuboid cuboid = modelPart.method_22700(random);
+				ModelPart.Cuboid cuboid = modelPart.method_22700(random);
 				modelPart.applyTransform(0.0625F);
 				float o = random.nextFloat();
 				float p = random.nextFloat();

@@ -22,12 +22,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.IdList;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -567,7 +567,7 @@ public class Structure {
 				ListTag listTag2 = new ListTag();
 
 				for (BlockState blockState : lv) {
-					listTag2.add(TagHelper.serializeBlockState(blockState));
+					listTag2.add(NbtHelper.fromBlockState(blockState));
 				}
 
 				compoundTag.put("palette", listTag2);
@@ -578,7 +578,7 @@ public class Structure {
 					ListTag listTag3 = new ListTag();
 
 					for (BlockState blockState2 : lv3) {
-						listTag3.add(TagHelper.serializeBlockState(blockState2));
+						listTag3.add(NbtHelper.fromBlockState(blockState2));
 					}
 
 					listTag2.add(listTag3);
@@ -645,7 +645,7 @@ public class Structure {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 
 		for (int i = 0; i < listTag.size(); i++) {
-			lv.method_15186(TagHelper.deserializeBlockState(listTag.getCompoundTag(i)), i);
+			lv.method_15186(NbtHelper.toBlockState(listTag.getCompoundTag(i)), i);
 		}
 
 		for (int i = 0; i < listTag2.size(); i++) {

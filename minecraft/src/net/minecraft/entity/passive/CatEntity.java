@@ -58,7 +58,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -562,13 +562,13 @@ public class CatEntity extends TameableEntity {
 					false
 				);
 			mutable.set(this.cat);
-			LootSupplier lootSupplier = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+			LootTable lootTable = this.cat.world.getServer().getLootManager().getSupplier(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
 				.put(LootContextParameters.POSITION, mutable)
 				.put(LootContextParameters.THIS_ENTITY, this.cat)
 				.setRandom(random);
 
-			for (ItemStack itemStack : lootSupplier.getDrops(builder.build(LootContextTypes.GIFT))) {
+			for (ItemStack itemStack : lootTable.getDrops(builder.build(LootContextTypes.GIFT))) {
 				this.cat
 					.world
 					.spawnEntity(

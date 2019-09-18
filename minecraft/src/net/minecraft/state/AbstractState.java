@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.state.property.Property;
 
-public abstract class AbstractPropertyContainer<O, S> implements PropertyContainer<S> {
+public abstract class AbstractState<O, S> implements State<S> {
 	private static final Function<Entry<Property<?>, Comparable<?>>, String> PROPERTY_MAP_PRINTER = new Function<Entry<Property<?>, Comparable<?>>, String>() {
 		public String method_11576(@Nullable Entry<Property<?>, Comparable<?>> entry) {
 			if (entry == null) {
 				return "<NULL>";
 			} else {
 				Property<?> property = (Property<?>)entry.getKey();
-				return property.getName() + "=" + this.valueToString(property, (Comparable<?>)entry.getValue());
+				return property.getName() + "=" + this.nameValue(property, (Comparable<?>)entry.getValue());
 			}
 		}
 
-		private <T extends Comparable<T>> String valueToString(Property<T> property, Comparable<?> comparable) {
-			return property.getName((T)comparable);
+		private <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> comparable) {
+			return property.name((T)comparable);
 		}
 	};
 	protected final O owner;
@@ -35,7 +35,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 	private final int hashCode;
 	private Table<Property<?>, Comparable<?>, S> withTable;
 
-	protected AbstractPropertyContainer(O object, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
+	protected AbstractState(O object, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
 		this.owner = object;
 		this.entries = immutableMap;
 		this.hashCode = immutableMap.hashCode();
@@ -87,7 +87,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
 		} else {
-			return (T)property.getValueType().cast(comparable);
+			return (T)property.getType().cast(comparable);
 		}
 	}
 

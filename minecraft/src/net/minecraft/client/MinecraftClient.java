@@ -206,7 +206,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	public static final boolean IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.OSX;
 	public static final Identifier DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
-	private static final CompletableFuture<Unit> voidFuture = CompletableFuture.completedFuture(Unit.INSTANCE);
+	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private final File resourcePackDir;
 	private final PropertyMap sessionPropertyMap;
 	private final TextureManager textureManager;
@@ -433,7 +433,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.spriteAtlas = new SpriteAtlasTexture("textures");
 			this.spriteAtlas.setMipLevel(this.options.mipmapLevels);
 			this.textureManager.registerTextureUpdateable(SpriteAtlasTexture.BLOCK_ATLAS_TEX, this.spriteAtlas);
-			this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			this.spriteAtlas.setFilter(false, this.options.mipmapLevels > 0);
 			this.blockColorMap = BlockColors.create();
 			this.itemColorMap = ItemColors.create(this.blockColorMap);
@@ -476,11 +476,13 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			}
 
 			SplashScreen.init(this);
-			this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture), () -> {
-				if (SharedConstants.isDevelopment) {
-					this.checkGameData();
-				}
-			}, false));
+			this.setOverlay(
+				new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE), () -> {
+					if (SharedConstants.isDevelopment) {
+						this.checkGameData();
+					}
+				}, false)
+			);
 		}
 	}
 
@@ -642,11 +644,13 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 					.stream()
 					.map(ResourcePackContainer::createResourcePack)
 					.collect(Collectors.toList());
-				this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture, list), () -> {
-					this.languageManager.reloadResources(list);
-					this.worldRenderer.reload();
-					completableFuture.complete(null);
-				}, true));
+				this.setOverlay(
+					new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), () -> {
+						this.languageManager.reloadResources(list);
+						this.worldRenderer.reload();
+						completableFuture.complete(null);
+					}, true)
+				);
 				return completableFuture;
 			}
 		}

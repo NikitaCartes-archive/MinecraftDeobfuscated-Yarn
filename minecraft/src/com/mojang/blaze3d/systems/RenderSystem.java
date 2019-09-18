@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4573;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.math.MathHelper;
@@ -25,7 +24,7 @@ import org.lwjgl.glfw.GLFWErrorCallbackI;
 @Environment(EnvType.CLIENT)
 public class RenderSystem {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final ConcurrentLinkedQueue<class_4573> recordingQueue = Queues.newConcurrentLinkedQueue();
+	private static final ConcurrentLinkedQueue<RenderCall> recordingQueue = Queues.newConcurrentLinkedQueue();
 	private static final Tessellator RENDER_THREAD_TESSELATOR = new Tessellator();
 	private static final float DEFAULTALPHACUTOFF = 0.1F;
 	private static boolean isReplayingQueue;
@@ -609,8 +608,8 @@ public class RenderSystem {
 	public static void pollEvents() {
 	}
 
-	public static void recordRenderCall(class_4573 arg) {
-		recordingQueue.add(arg);
+	public static void recordRenderCall(RenderCall renderCall) {
+		recordingQueue.add(renderCall);
 	}
 
 	public static void glClientActiveTexture(int i) {
@@ -678,8 +677,8 @@ public class RenderSystem {
 		isReplayingQueue = true;
 
 		while (!recordingQueue.isEmpty()) {
-			class_4573 lv = (class_4573)recordingQueue.poll();
-			lv.execute();
+			RenderCall renderCall = (RenderCall)recordingQueue.poll();
+			renderCall.execute();
 		}
 
 		isReplayingQueue = false;

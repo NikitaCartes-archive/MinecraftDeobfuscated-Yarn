@@ -27,7 +27,7 @@ public class SystemToast implements Toast {
 			this.justUpdated = false;
 		}
 
-		toastManager.getGame().getTextureManager().method_22813(TOASTS_TEX);
+		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 		toastManager.blit(0, 0, 0, 64, 160, 32);
 		if (this.description == null) {

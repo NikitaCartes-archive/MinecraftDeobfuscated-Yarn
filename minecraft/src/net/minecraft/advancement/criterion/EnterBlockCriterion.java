@@ -5,16 +5,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
-import net.minecraft.class_4558;
-import net.minecraft.class_4559;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-public class EnterBlockCriterion extends class_4558<EnterBlockCriterion.Conditions> {
+public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("enter_block");
 
 	@Override
@@ -24,14 +23,14 @@ public class EnterBlockCriterion extends class_4558<EnterBlockCriterion.Conditio
 
 	public EnterBlockCriterion.Conditions method_8883(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Block block = method_22466(jsonObject);
-		class_4559 lv = class_4559.method_22519(jsonObject.get("state"));
+		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
-			lv.method_22516(block.getStateFactory(), string -> {
+			statePredicate.check(block.getStateFactory(), string -> {
 				throw new JsonSyntaxException("Block " + block + " has no property " + string);
 			});
 		}
 
-		return new EnterBlockCriterion.Conditions(block, lv);
+		return new EnterBlockCriterion.Conditions(block, statePredicate);
 	}
 
 	@Nullable
@@ -45,21 +44,21 @@ public class EnterBlockCriterion extends class_4558<EnterBlockCriterion.Conditio
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Block block;
-		private final class_4559 state;
+		private final StatePredicate state;
 
-		public Conditions(@Nullable Block block, class_4559 arg) {
+		public Conditions(@Nullable Block block, StatePredicate statePredicate) {
 			super(EnterBlockCriterion.ID);
 			this.block = block;
-			this.state = arg;
+			this.state = statePredicate;
 		}
 
 		public static EnterBlockCriterion.Conditions block(Block block) {
-			return new EnterBlockCriterion.Conditions(block, class_4559.field_20736);
+			return new EnterBlockCriterion.Conditions(block, StatePredicate.ANY);
 		}
 
 		@Override
@@ -69,12 +68,12 @@ public class EnterBlockCriterion extends class_4558<EnterBlockCriterion.Conditio
 				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
 			}
 
-			jsonObject.add("state", this.state.method_22513());
+			jsonObject.add("state", this.state.toJson());
 			return jsonObject;
 		}
 
 		public boolean matches(BlockState blockState) {
-			return this.block != null && blockState.getBlock() != this.block ? false : this.state.method_22514(blockState);
+			return this.block != null && blockState.getBlock() != this.block ? false : this.state.test(blockState);
 		}
 	}
 }

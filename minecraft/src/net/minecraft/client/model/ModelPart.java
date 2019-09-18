@@ -39,7 +39,7 @@ public class ModelPart {
 	private ByteBuffer compiled;
 	public boolean mirror;
 	public boolean visible = true;
-	private final List<ModelPart.net/minecraft/client/model/Cuboid> cuboids = Lists.<ModelPart.net/minecraft/client/model/Cuboid>newArrayList();
+	private final List<ModelPart.Cuboid> cuboids = Lists.<ModelPart.Cuboid>newArrayList();
 	private final List<ModelPart> children = Lists.<ModelPart>newArrayList();
 
 	public ModelPart(Model model) {
@@ -80,45 +80,27 @@ public class ModelPart {
 		this.setTextureOffset(m, n);
 		this.cuboids
 			.add(
-				new ModelPart.net/minecraft/client/model/Cuboid(
-					this.textureOffsetU, this.textureOffsetV, f, g, h, (float)i, (float)j, (float)k, l, this.mirror, this.textureWidth, this.textureHeight
-				)
+				new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, (float)i, (float)j, (float)k, l, this.mirror, this.textureWidth, this.textureHeight)
 			);
 		return this;
 	}
 
 	public ModelPart addCuboid(float f, float g, float h, float i, float j, float k) {
-		this.cuboids
-			.add(
-				new ModelPart.net/minecraft/client/model/Cuboid(
-					this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, this.mirror, this.textureWidth, this.textureHeight
-				)
-			);
+		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, this.mirror, this.textureWidth, this.textureHeight));
 		return this;
 	}
 
 	public ModelPart addCuboid(float f, float g, float h, float i, float j, float k, boolean bl) {
-		this.cuboids
-			.add(
-				new ModelPart.net/minecraft/client/model/Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, bl, this.textureWidth, this.textureHeight)
-			);
+		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, bl, this.textureWidth, this.textureHeight));
 		return this;
 	}
 
 	public void addCuboid(float f, float g, float h, float i, float j, float k, float l) {
-		this.cuboids
-			.add(
-				new ModelPart.net/minecraft/client/model/Cuboid(
-					this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, this.mirror, this.textureWidth, this.textureHeight
-				)
-			);
+		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, this.mirror, this.textureWidth, this.textureHeight));
 	}
 
 	public void addCuboid(float f, float g, float h, float i, float j, float k, float l, boolean bl) {
-		this.cuboids
-			.add(
-				new ModelPart.net/minecraft/client/model/Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, bl, this.textureWidth, this.textureHeight)
-			);
+		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, bl, this.textureWidth, this.textureHeight));
 	}
 
 	public void setRotationPoint(float f, float g, float h) {
@@ -223,8 +205,8 @@ public class ModelPart {
 		Matrix4f matrix4f = bufferBuilder.method_22631();
 		VertexFormat vertexFormat = bufferBuilder.getVertexFormat();
 
-		for (ModelPart.net/minecraft/client/model/Cuboid cuboid : this.cuboids) {
-			for (ModelPart.net/minecraft/client/model/Quad quad : cuboid.polygons) {
+		for (ModelPart.Cuboid cuboid : this.cuboids) {
+			for (ModelPart.Quad quad : cuboid.polygons) {
 				Vec3d vec3d = quad.vertices[1].pos.reverseSubtract(quad.vertices[0].pos);
 				Vec3d vec3d2 = quad.vertices[1].pos.reverseSubtract(quad.vertices[2].pos);
 				Vec3d vec3d3 = vec3d2.crossProduct(vec3d).normalize();
@@ -233,7 +215,7 @@ public class ModelPart {
 				float n = (float)vec3d3.z;
 
 				for (int o = 0; o < 4; o++) {
-					ModelPart.net/minecraft/client/model/Vertex vertex = quad.vertices[o];
+					ModelPart.Vertex vertex = quad.vertices[o];
 					Vector4f vector4f = new Vector4f((float)vertex.pos.x * f, (float)vertex.pos.y * f, (float)vertex.pos.z * f, 1.0F);
 					vector4f.method_22674(matrix4f);
 					bufferBuilder.vertex((double)vector4f.getX(), (double)vector4f.getY(), (double)vector4f.getZ());
@@ -264,13 +246,13 @@ public class ModelPart {
 		return this;
 	}
 
-	public ModelPart.net/minecraft/client/model/Cuboid method_22700(Random random) {
-		return (ModelPart.net/minecraft/client/model/Cuboid)this.cuboids.get(random.nextInt(this.cuboids.size()));
+	public ModelPart.Cuboid method_22700(Random random) {
+		return (ModelPart.Cuboid)this.cuboids.get(random.nextInt(this.cuboids.size()));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class net/minecraft/client/model/Cuboid {
-		private final ModelPart.net/minecraft/client/model/Quad[] polygons;
+	public static class Cuboid {
+		private final ModelPart.Quad[] polygons;
 		public final float xMin;
 		public final float yMin;
 		public final float zMin;
@@ -278,16 +260,14 @@ public class ModelPart {
 		public final float yMax;
 		public final float zMax;
 
-		public net_minecraft_client_model_Cuboid/* $VF was: net/minecraft/client/model/Cuboid*/(
-			int i, int j, float f, float g, float h, float k, float l, float m, float n, boolean bl, float o, float p
-		) {
+		public Cuboid(int i, int j, float f, float g, float h, float k, float l, float m, float n, boolean bl, float o, float p) {
 			this.xMin = f;
 			this.yMin = g;
 			this.zMin = h;
 			this.xMax = f + k;
 			this.yMax = g + l;
 			this.zMax = h + m;
-			this.polygons = new ModelPart.net/minecraft/client/model/Quad[6];
+			this.polygons = new ModelPart.Quad[6];
 			float q = f + k;
 			float r = g + l;
 			float s = h + m;
@@ -303,46 +283,34 @@ public class ModelPart {
 				f = t;
 			}
 
-			ModelPart.net/minecraft/client/model/Vertex vertex = new ModelPart.net/minecraft/client/model/Vertex(f, g, h, 0.0F, 0.0F);
-			ModelPart.net/minecraft/client/model/Vertex vertex2 = new ModelPart.net/minecraft/client/model/Vertex(q, g, h, 0.0F, 8.0F);
-			ModelPart.net/minecraft/client/model/Vertex vertex3 = new ModelPart.net/minecraft/client/model/Vertex(q, r, h, 8.0F, 8.0F);
-			ModelPart.net/minecraft/client/model/Vertex vertex4 = new ModelPart.net/minecraft/client/model/Vertex(f, r, h, 8.0F, 0.0F);
-			ModelPart.net/minecraft/client/model/Vertex vertex5 = new ModelPart.net/minecraft/client/model/Vertex(f, g, s, 0.0F, 0.0F);
-			ModelPart.net/minecraft/client/model/Vertex vertex6 = new ModelPart.net/minecraft/client/model/Vertex(q, g, s, 0.0F, 8.0F);
-			ModelPart.net/minecraft/client/model/Vertex vertex7 = new ModelPart.net/minecraft/client/model/Vertex(q, r, s, 8.0F, 8.0F);
-			ModelPart.net/minecraft/client/model/Vertex vertex8 = new ModelPart.net/minecraft/client/model/Vertex(f, r, s, 8.0F, 0.0F);
-			this.polygons[0] = new ModelPart.net/minecraft/client/model/Quad(
-				new ModelPart.net/minecraft/client/model/Vertex[]{vertex6, vertex2, vertex3, vertex7},
-				(float)i + m + k,
-				(float)j + m,
-				(float)i + m + k + m,
-				(float)j + m + l,
-				o,
-				p
+			ModelPart.Vertex vertex = new ModelPart.Vertex(f, g, h, 0.0F, 0.0F);
+			ModelPart.Vertex vertex2 = new ModelPart.Vertex(q, g, h, 0.0F, 8.0F);
+			ModelPart.Vertex vertex3 = new ModelPart.Vertex(q, r, h, 8.0F, 8.0F);
+			ModelPart.Vertex vertex4 = new ModelPart.Vertex(f, r, h, 8.0F, 0.0F);
+			ModelPart.Vertex vertex5 = new ModelPart.Vertex(f, g, s, 0.0F, 0.0F);
+			ModelPart.Vertex vertex6 = new ModelPart.Vertex(q, g, s, 0.0F, 8.0F);
+			ModelPart.Vertex vertex7 = new ModelPart.Vertex(q, r, s, 8.0F, 8.0F);
+			ModelPart.Vertex vertex8 = new ModelPart.Vertex(f, r, s, 8.0F, 0.0F);
+			this.polygons[0] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, (float)i + m + k, (float)j + m, (float)i + m + k + m, (float)j + m + l, o, p
 			);
-			this.polygons[1] = new ModelPart.net/minecraft/client/model/Quad(
-				new ModelPart.net/minecraft/client/model/Vertex[]{vertex, vertex5, vertex8, vertex4}, (float)i, (float)j + m, (float)i + m, (float)j + m + l, o, p
+			this.polygons[1] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, (float)i, (float)j + m, (float)i + m, (float)j + m + l, o, p
 			);
-			this.polygons[2] = new ModelPart.net/minecraft/client/model/Quad(
-				new ModelPart.net/minecraft/client/model/Vertex[]{vertex6, vertex5, vertex, vertex2}, (float)i + m, (float)j, (float)i + m + k, (float)j + m, o, p
+			this.polygons[2] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, (float)i + m, (float)j, (float)i + m + k, (float)j + m, o, p
 			);
-			this.polygons[3] = new ModelPart.net/minecraft/client/model/Quad(
-				new ModelPart.net/minecraft/client/model/Vertex[]{vertex3, vertex4, vertex8, vertex7}, (float)i + m + k, (float)j + m, (float)i + m + k + k, (float)j, o, p
+			this.polygons[3] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, (float)i + m + k, (float)j + m, (float)i + m + k + k, (float)j, o, p
 			);
-			this.polygons[4] = new ModelPart.net/minecraft/client/model/Quad(
-				new ModelPart.net/minecraft/client/model/Vertex[]{vertex2, vertex, vertex4, vertex3}, (float)i + m, (float)j + m, (float)i + m + k, (float)j + m + l, o, p
+			this.polygons[4] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, (float)i + m, (float)j + m, (float)i + m + k, (float)j + m + l, o, p
 			);
-			this.polygons[5] = new ModelPart.net/minecraft/client/model/Quad(
-				new ModelPart.net/minecraft/client/model/Vertex[]{vertex5, vertex6, vertex7, vertex8},
-				(float)i + m + k + m,
-				(float)j + m,
-				(float)i + m + k + m + k,
-				(float)j + m + l,
-				o,
-				p
+			this.polygons[5] = new ModelPart.Quad(
+				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, (float)i + m + k + m, (float)j + m, (float)i + m + k + m + k, (float)j + m + l, o, p
 			);
 			if (bl) {
-				for (ModelPart.net/minecraft/client/model/Quad quad : this.polygons) {
+				for (ModelPart.Quad quad : this.polygons) {
 					quad.flip();
 				}
 			}
@@ -350,16 +318,14 @@ public class ModelPart {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class net/minecraft/client/model/Quad {
-		public ModelPart.net/minecraft/client/model/Vertex[] vertices;
+	static class Quad {
+		public ModelPart.Vertex[] vertices;
 
-		public net_minecraft_client_model_Quad/* $VF was: net/minecraft/client/model/Quad*/(ModelPart.net/minecraft/client/model/Vertex[] vertexs) {
+		public Quad(ModelPart.Vertex[] vertexs) {
 			this.vertices = vertexs;
 		}
 
-		public net_minecraft_client_model_Quad/* $VF was: net/minecraft/client/model/Quad*/(
-			ModelPart.net/minecraft/client/model/Vertex[] vertexs, float f, float g, float h, float i, float j, float k
-		) {
+		public Quad(ModelPart.Vertex[] vertexs, float f, float g, float h, float i, float j, float k) {
 			this(vertexs);
 			float l = 0.0F / j;
 			float m = 0.0F / k;
@@ -370,7 +336,7 @@ public class ModelPart {
 		}
 
 		public void flip() {
-			ModelPart.net/minecraft/client/model/Vertex[] vertexs = new ModelPart.net/minecraft/client/model/Vertex[this.vertices.length];
+			ModelPart.Vertex[] vertexs = new ModelPart.Vertex[this.vertices.length];
 
 			for (int i = 0; i < this.vertices.length; i++) {
 				vertexs[i] = this.vertices[this.vertices.length - i - 1];
@@ -381,20 +347,20 @@ public class ModelPart {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class net/minecraft/client/model/Vertex {
+	static class Vertex {
 		public final Vec3d pos;
 		public final float u;
 		public final float v;
 
-		public net_minecraft_client_model_Vertex/* $VF was: net/minecraft/client/model/Vertex*/(float f, float g, float h, float i, float j) {
+		public Vertex(float f, float g, float h, float i, float j) {
 			this(new Vec3d((double)f, (double)g, (double)h), i, j);
 		}
 
-		public ModelPart.net/minecraft/client/model/Vertex remap(float f, float g) {
-			return new ModelPart.net/minecraft/client/model/Vertex(this.pos, f, g);
+		public ModelPart.Vertex remap(float f, float g) {
+			return new ModelPart.Vertex(this.pos, f, g);
 		}
 
-		public net_minecraft_client_model_Vertex/* $VF was: net/minecraft/client/model/Vertex*/(Vec3d vec3d, float f, float g) {
+		public Vertex(Vec3d vec3d, float f, float g) {
 			this.pos = vec3d;
 			this.u = f;
 			this.v = g;

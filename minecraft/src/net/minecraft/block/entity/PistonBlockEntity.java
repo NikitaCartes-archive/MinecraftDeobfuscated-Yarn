@@ -13,8 +13,8 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -313,7 +313,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		this.pushedBlock = TagHelper.deserializeBlockState(compoundTag.getCompound("blockState"));
+		this.pushedBlock = NbtHelper.toBlockState(compoundTag.getCompound("blockState"));
 		this.facing = Direction.byId(compoundTag.getInt("facing"));
 		this.progress = compoundTag.getFloat("progress");
 		this.lastProgress = this.progress;
@@ -324,7 +324,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	@Override
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
-		compoundTag.put("blockState", TagHelper.serializeBlockState(this.pushedBlock));
+		compoundTag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
 		compoundTag.putInt("facing", this.facing.getId());
 		compoundTag.putFloat("progress", this.lastProgress);
 		compoundTag.putBoolean("extending", this.extending);

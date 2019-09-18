@@ -1,4 +1,4 @@
-package net.minecraft.util;
+package net.minecraft.predicate;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.JsonHelper;
 
 public abstract class NumberRange<T extends Number> {
 	public static final SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(new TranslatableText("argument.range.empty"));
@@ -39,7 +40,7 @@ public abstract class NumberRange<T extends Number> {
 		return this.min == null && this.max == null;
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		if (this.isDummy()) {
 			return JsonNull.INSTANCE;
 		} else if (this.min != null && this.min.equals(this.max)) {
@@ -76,7 +77,7 @@ public abstract class NumberRange<T extends Number> {
 
 	protected static <T extends Number, R extends NumberRange<T>> R parse(
 		StringReader stringReader,
-		NumberRange.class_2098<T, R> arg,
+		NumberRange.CommandFactory<T, R> commandFactory,
 		Function<String, T> function,
 		Supplier<DynamicCommandExceptionType> supplier,
 		Function<T, T> function2
@@ -87,12 +88,12 @@ public abstract class NumberRange<T extends Number> {
 			int i = stringReader.getCursor();
 
 			try {
-				T number = (T)applyIfNonNull(fromStringReader(stringReader, function, supplier), function2);
+				T number = (T)map(fromStringReader(stringReader, function, supplier), function2);
 				T number2;
 				if (stringReader.canRead(2) && stringReader.peek() == '.' && stringReader.peek(1) == '.') {
 					stringReader.skip();
 					stringReader.skip();
-					number2 = (T)applyIfNonNull(fromStringReader(stringReader, function, supplier), function2);
+					number2 = (T)map(fromStringReader(stringReader, function, supplier), function2);
 					if (number == null && number2 == null) {
 						throw EXCEPTION_EMPTY.createWithContext(stringReader);
 					}
@@ -103,7 +104,7 @@ public abstract class NumberRange<T extends Number> {
 				if (number == null && number2 == null) {
 					throw EXCEPTION_EMPTY.createWithContext(stringReader);
 				} else {
-					return arg.create(stringReader, number, number2);
+					return commandFactory.create(stringReader, number, number2);
 				}
 			} catch (CommandSyntaxException var8) {
 				stringReader.setCursor(i);
@@ -142,8 +143,13 @@ public abstract class NumberRange<T extends Number> {
 	}
 
 	@Nullable
-	private static <T> T applyIfNonNull(@Nullable T object, Function<T, T> function) {
+	private static <T> T map(@Nullable T object, Function<T, T> function) {
 		return (T)(object == null ? null : function.apply(object));
+	}
+
+	@FunctionalInterface
+	public interface CommandFactory<T extends Number, R extends NumberRange<T>> {
+		R create(StringReader stringReader, @Nullable T number, @Nullable T number2) throws CommandSyntaxException;
 	}
 
 	@FunctionalInterface
@@ -153,8 +159,8 @@ public abstract class NumberRange<T extends Number> {
 
 	public static class FloatRange extends NumberRange<Float> {
 		public static final NumberRange.FloatRange ANY = new NumberRange.FloatRange(null, null);
-		private final Double minSquared;
-		private final Double maxSquared;
+		private final Double squaredMin;
+		private final Double squaredMax;
 
 		private static NumberRange.FloatRange create(StringReader stringReader, @Nullable Float float_, @Nullable Float float2) throws CommandSyntaxException {
 			if (float_ != null && float2 != null && float_ > float2) {
@@ -165,26 +171,26 @@ public abstract class NumberRange<T extends Number> {
 		}
 
 		@Nullable
-		private static Double squared(@Nullable Float float_) {
+		private static Double square(@Nullable Float float_) {
 			return float_ == null ? null : float_.doubleValue() * float_.doubleValue();
 		}
 
 		private FloatRange(@Nullable Float float_, @Nullable Float float2) {
 			super(float_, float2);
-			this.minSquared = squared(float_);
-			this.maxSquared = squared(float2);
+			this.squaredMin = square(float_);
+			this.squaredMax = square(float2);
 		}
 
 		public static NumberRange.FloatRange atLeast(float f) {
 			return new NumberRange.FloatRange(f, null);
 		}
 
-		public boolean matches(float f) {
+		public boolean test(float f) {
 			return this.min != null && this.min > f ? false : this.max == null || !(this.max < f);
 		}
 
-		public boolean matchesSquared(double d) {
-			return this.minSquared != null && this.minSquared > d ? false : this.maxSquared == null || !(this.maxSquared < d);
+		public boolean testSqrt(double d) {
+			return this.squaredMin != null && this.squaredMin > d ? false : this.squaredMax == null || !(this.squaredMax < d);
 		}
 
 		public static NumberRange.FloatRange fromJson(@Nullable JsonElement jsonElement) {
@@ -247,10 +253,5 @@ public abstract class NumberRange<T extends Number> {
 		public static NumberRange.IntRange fromStringReader(StringReader stringReader, Function<Integer, Integer> function) throws CommandSyntaxException {
 			return parse(stringReader, NumberRange.IntRange::parse, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, function);
 		}
-	}
-
-	@FunctionalInterface
-	public interface class_2098<T extends Number, R extends NumberRange<T>> {
-		R create(StringReader stringReader, @Nullable T number, @Nullable T number2) throws CommandSyntaxException;
 	}
 }

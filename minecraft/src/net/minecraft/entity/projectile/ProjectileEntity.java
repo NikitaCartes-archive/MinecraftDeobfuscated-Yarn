@@ -29,6 +29,7 @@ import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -36,7 +37,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -473,7 +473,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		compoundTag.putShort("life", (short)this.life);
 		if (this.inBlockState != null) {
-			compoundTag.put("inBlockState", TagHelper.serializeBlockState(this.inBlockState));
+			compoundTag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
 		}
 
 		compoundTag.putByte("shake", (byte)this.shake);
@@ -494,7 +494,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		this.life = compoundTag.getShort("life");
 		if (compoundTag.containsKey("inBlockState", 10)) {
-			this.inBlockState = TagHelper.deserializeBlockState(compoundTag.getCompound("inBlockState"));
+			this.inBlockState = NbtHelper.toBlockState(compoundTag.getCompound("inBlockState"));
 		}
 
 		this.shake = compoundTag.getByte("shake") & 255;

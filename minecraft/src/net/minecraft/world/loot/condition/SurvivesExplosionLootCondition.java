@@ -6,13 +6,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
-public class SurvivesExplosionLootCondition implements class_4570 {
+public class SurvivesExplosionLootCondition implements LootCondition {
 	private static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
 
 	private SurvivesExplosionLootCondition() {
@@ -34,11 +33,11 @@ public class SurvivesExplosionLootCondition implements class_4570 {
 		}
 	}
 
-	public static class_4570.Builder builder() {
+	public static LootCondition.Builder builder() {
 		return () -> INSTANCE;
 	}
 
-	public static class Factory extends class_4570.Factory<SurvivesExplosionLootCondition> {
+	public static class Factory extends LootCondition.Factory<SurvivesExplosionLootCondition> {
 		protected Factory() {
 			super(new Identifier("survives_explosion"), SurvivesExplosionLootCondition.class);
 		}

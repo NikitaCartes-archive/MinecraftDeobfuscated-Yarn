@@ -1,6 +1,7 @@
 package net.minecraft;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderCall;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import net.fabricmc.api.EnvType;
@@ -8,7 +9,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class class_4491 {
-	private final List<ConcurrentLinkedQueue<class_4573>> field_20453 = ImmutableList.of(
+	private final List<ConcurrentLinkedQueue<RenderCall>> field_20453 = ImmutableList.of(
 		new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue()
 	);
 	private volatile int field_20454;

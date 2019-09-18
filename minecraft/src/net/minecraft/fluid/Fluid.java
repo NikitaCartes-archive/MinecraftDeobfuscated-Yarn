@@ -8,7 +8,7 @@ import net.minecraft.class_4538;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.IdList;
 import net.minecraft.util.math.BlockPos;
@@ -20,20 +20,20 @@ import net.minecraft.world.World;
 
 public abstract class Fluid {
 	public static final IdList<FluidState> STATE_IDS = new IdList<>();
-	protected final StateFactory<Fluid, FluidState> stateFactory;
+	protected final StateManager<Fluid, FluidState> stateFactory;
 	private FluidState defaultState;
 
 	protected Fluid() {
-		StateFactory.Builder<Fluid, FluidState> builder = new StateFactory.Builder<>(this);
+		StateManager.Builder<Fluid, FluidState> builder = new StateManager.Builder<>(this);
 		this.appendProperties(builder);
 		this.stateFactory = builder.build(FluidStateImpl::new);
 		this.setDefaultState(this.stateFactory.getDefaultState());
 	}
 
-	protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
+	protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
 	}
 
-	public StateFactory<Fluid, FluidState> getStateFactory() {
+	public StateManager<Fluid, FluidState> getStateFactory() {
 		return this.stateFactory;
 	}
 

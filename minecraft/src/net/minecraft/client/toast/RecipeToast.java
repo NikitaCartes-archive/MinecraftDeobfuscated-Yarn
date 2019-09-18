@@ -30,7 +30,7 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			toastManager.getGame().getTextureManager().method_22813(TOASTS_TEX);
+			toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 			toastManager.blit(0, 0, 0, 32, 160, 32);
 			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);

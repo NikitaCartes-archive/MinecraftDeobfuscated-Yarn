@@ -232,7 +232,7 @@ public class TitleScreen extends Screen {
 		int k = 274;
 		int l = this.width / 2 - 137;
 		int m = 30;
-		this.minecraft.getTextureManager().method_22813(PANORAMA_OVERLAY);
+		this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0F, 1.0F)) : 1.0F);
@@ -240,7 +240,7 @@ public class TitleScreen extends Screen {
 		float h = this.doBackgroundFade ? MathHelper.clamp(g - 1.0F, 0.0F, 1.0F) : 1.0F;
 		int n = MathHelper.ceil(h * 255.0F) << 24;
 		if ((n & -67108864) != 0) {
-			this.minecraft.getTextureManager().method_22813(MINECRAFT_TITLE_TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, h);
 			if (this.field_17776) {
 				this.blit(l + 0, 30, 0, 0, 99, 44);
@@ -253,7 +253,7 @@ public class TitleScreen extends Screen {
 				this.blit(l + 155, 30, 0, 45, 155, 44);
 			}
 
-			this.minecraft.getTextureManager().method_22813(EDITION_TITLE_TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
 			blit(l + 88, 67, 0.0F, 0.0F, 98, 14, 128, 16);
 			if (this.splashText != null) {
 				RenderSystem.pushMatrix();

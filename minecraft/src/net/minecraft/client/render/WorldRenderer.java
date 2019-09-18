@@ -117,7 +117,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private final EntityRenderDispatcher entityRenderDispatcher;
 	private final BackgroundRenderer chunkRendererList;
 	private ClientWorld world;
-	private Set<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> chunkRenderers = Sets.<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer>newLinkedHashSet();
+	private Set<ChunkBatcher.ChunkRenderer> chunkRenderers = Sets.<ChunkBatcher.ChunkRenderer>newLinkedHashSet();
 	private List<WorldRenderer.ChunkInfo> chunkInfos = Lists.<WorldRenderer.ChunkInfo>newArrayListWithCapacity(69696);
 	private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
 	private ChunkRenderDispatcher chunkRenderDispatcher;
@@ -255,7 +255,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 									}
 
 									n = 0;
-									this.client.getTextureManager().method_22813(field_20797);
+									this.client.getTextureManager().bindTexture(field_20797);
 									bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 								}
 
@@ -295,7 +295,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 									}
 
 									n = 1;
-									this.client.getTextureManager().method_22813(field_20798);
+									this.client.getTextureManager().bindTexture(field_20798);
 									bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 								}
 
@@ -442,7 +442,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	@Override
 	public void apply(ResourceManager resourceManager) {
-		this.textureManager.method_22813(FORCEFIELD_TEX);
+		this.textureManager.bindTexture(FORCEFIELD_TEX);
 		RenderSystem.texParameter(3553, 10242, 10497);
 		RenderSystem.texParameter(3553, 10243, 10497);
 		RenderSystem.bindTexture(0);
@@ -734,7 +734,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.client.getProfiler().swap("culling");
 		BlockPos blockPos = camera.getBlockPos();
-		ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = this.chunkRenderDispatcher.getChunkRenderer(blockPos);
+		ChunkBatcher.ChunkRenderer chunkRenderer = this.chunkRenderDispatcher.getChunkRenderer(blockPos);
 		BlockPos blockPos2 = new BlockPos(
 			MathHelper.floor(camera.getPos().x / 16.0) * 16, MathHelper.floor(camera.getPos().y / 16.0) * 16, MathHelper.floor(camera.getPos().z / 16.0) * 16
 		);
@@ -789,8 +789,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (int k = -this.renderDistance; k <= this.renderDistance; k++) {
 					for (int l = -this.renderDistance; l <= this.renderDistance; l++) {
-						ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer2 = this.chunkRenderDispatcher
-							.getChunkRenderer(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
+						ChunkBatcher.ChunkRenderer chunkRenderer2 = this.chunkRenderDispatcher.getChunkRenderer(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
 						if (chunkRenderer2 != null && visibleRegion.intersects(chunkRenderer2.boundingBox)) {
 							chunkRenderer2.method_3671(i);
 							queue.add(new WorldRenderer.ChunkInfo(chunkRenderer2, null, 0));
@@ -803,12 +802,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			while (!queue.isEmpty()) {
 				WorldRenderer.ChunkInfo chunkInfo2 = (WorldRenderer.ChunkInfo)queue.poll();
-				ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
+				ChunkBatcher.ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
 				Direction direction2 = chunkInfo2.field_4125;
 				this.chunkInfos.add(chunkInfo2);
 
 				for (Direction direction3 : DIRECTIONS) {
-					ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer4 = this.getAdjacentChunkRenderer(blockPos2, chunkRenderer3, direction3);
+					ChunkBatcher.ChunkRenderer chunkRenderer4 = this.getAdjacentChunkRenderer(blockPos2, chunkRenderer3, direction3);
 					if ((!bl3 || !chunkInfo2.method_3298(direction3.getOpposite()))
 						&& (!bl3 || direction2 == null || chunkRenderer3.getData().isVisibleThrough(direction2.getOpposite(), direction3))
 						&& chunkRenderer4 != null
@@ -832,11 +831,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.client.getProfiler().swap("rebuildNear");
-		Set<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> set2 = this.chunkRenderers;
-		this.chunkRenderers = Sets.<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer>newLinkedHashSet();
+		Set<ChunkBatcher.ChunkRenderer> set2 = this.chunkRenderers;
+		this.chunkRenderers = Sets.<ChunkBatcher.ChunkRenderer>newLinkedHashSet();
 
 		for (WorldRenderer.ChunkInfo chunkInfo2 : this.chunkInfos) {
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
+			ChunkBatcher.ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
 			if (chunkRenderer3.shouldRebuild() || set2.contains(chunkRenderer3)) {
 				this.terrainUpdateNecessary = true;
 				BlockPos blockPos3 = chunkRenderer3.getOrigin().add(8, 8, 8);
@@ -871,9 +870,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	@Nullable
-	private ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer getAdjacentChunkRenderer(
-		BlockPos blockPos, ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer, Direction direction
-	) {
+	private ChunkBatcher.ChunkRenderer getAdjacentChunkRenderer(BlockPos blockPos, ChunkBatcher.ChunkRenderer chunkRenderer, Direction direction) {
 		BlockPos blockPos2 = chunkRenderer.getNeighborPosition(direction);
 		if (MathHelper.abs(blockPos.getX() - blockPos2.getX()) > this.renderDistance * 16) {
 			return null;
@@ -924,14 +921,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.updateChunks(l);
 		profiler.swap("terrain");
 		RenderSystem.pushMatrix();
-		this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		RenderSystem.enableCull();
 		RenderSystem.shadeModel(7425);
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();
 		GuiLighting.disable();
 		this.renderLayer(BlockRenderLayer.field_9178, camera, lightmapTextureManager);
-		this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		this.renderLayer(BlockRenderLayer.CUTOUT_MIPPED, camera, lightmapTextureManager);
 		this.renderLayer(BlockRenderLayer.field_9174, camera, lightmapTextureManager);
 		RenderSystem.popMatrix();
@@ -1055,7 +1052,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		BlockRenderLayer.field_20799.method_22724();
 		GuiLighting.disable();
 		profiler.swap("destroyProgress");
-		this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		RenderSystem.pushMatrix();
 		this.field_20796.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
 		this.field_20796.disableColor();
@@ -1101,7 +1098,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 							int n = partiallyBrokenBlockEntryx.getStage();
 							Sprite sprite = (Sprite)this.destroyStages.get(n);
 							BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
-							blockRenderManager.tesselateDamage(blockState2, blockPos, sprite, this.world);
+							blockRenderManager.tesselateDamage(this.field_20796, blockState2, blockPos, sprite, this.world);
 						}
 					}
 				}
@@ -1151,7 +1148,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.method_22714(lightmapTextureManager, camera, f);
 		RenderSystem.depthMask(true);
 		this.renderWorldBorder(camera, f);
-		this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		BackgroundRenderer.applyFog(camera, 0, h, bl2);
 		RenderSystem.shadeModel(7425);
 		profiler.swap("translucent");
@@ -1186,10 +1183,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.client.getProfiler().push("filterempty");
-		List<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> list = Lists.<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer>newArrayList();
+		List<ChunkBatcher.ChunkRenderer> list = Lists.<ChunkBatcher.ChunkRenderer>newArrayList();
 
 		for (WorldRenderer.ChunkInfo chunkInfo2 : blockRenderLayer == BlockRenderLayer.field_9179 ? Lists.reverse(this.chunkInfos) : this.chunkInfos) {
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = chunkInfo2.renderer;
+			ChunkBatcher.ChunkRenderer chunkRenderer = chunkInfo2.renderer;
 			if (!chunkRenderer.getData().isEmpty(blockRenderLayer)) {
 				list.add(chunkRenderer);
 			}
@@ -1202,7 +1199,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		double h = camera.getPos().getY();
 		double j = camera.getPos().getZ();
 
-		for (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer2 : list) {
+		for (ChunkBatcher.ChunkRenderer chunkRenderer2 : list) {
 			GlBuffer glBuffer = chunkRenderer2.getGlBuffer(blockRenderLayer);
 			RenderSystem.pushMatrix();
 			BlockPos blockPos = chunkRenderer2.getOrigin();
@@ -1245,7 +1242,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		RenderSystem.defaultBlendFunc();
 		GuiLighting.disable();
 		RenderSystem.depthMask(false);
-		this.textureManager.method_22813(END_SKY_TEX);
+		this.textureManager.bindTexture(END_SKY_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 
@@ -1348,7 +1345,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 			RenderSystem.rotatef(this.world.getSkyAngle(f) * 360.0F, 1.0F, 0.0F, 0.0F);
 			float k = 30.0F;
-			this.textureManager.method_22813(SUN_TEX);
+			this.textureManager.bindTexture(SUN_TEX);
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex((double)(-k), 100.0, (double)(-k)).texture(0.0, 0.0).next();
 			bufferBuilder.vertex((double)k, 100.0, (double)(-k)).texture(1.0, 0.0).next();
@@ -1356,7 +1353,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			bufferBuilder.vertex((double)(-k), 100.0, (double)k).texture(0.0, 1.0).next();
 			tessellator.draw();
 			k = 20.0F;
-			this.textureManager.method_22813(MOON_PHASES_TEX);
+			this.textureManager.bindTexture(MOON_PHASES_TEX);
 			int r = this.world.getMoonPhase();
 			int m = r % 4;
 			int n = r / 4 % 2;
@@ -1456,7 +1453,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.cloudsBuffer.set(bufferBuilder);
 			}
 
-			this.textureManager.method_22813(CLOUDS_TEX);
+			this.textureManager.bindTexture(CLOUDS_TEX);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(12.0F, 1.0F, 12.0F);
 			RenderSystem.translatef(-o, p, -q);
@@ -1691,10 +1688,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private void updateChunks(long l) {
 		this.terrainUpdateNecessary = this.terrainUpdateNecessary | this.chunkBatcher.method_22761();
 		if (!this.chunkRenderers.isEmpty()) {
-			Iterator<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> iterator = this.chunkRenderers.iterator();
+			Iterator<ChunkBatcher.ChunkRenderer> iterator = this.chunkRenderers.iterator();
 
 			while (iterator.hasNext()) {
-				ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer)iterator.next();
+				ChunkBatcher.ChunkRenderer chunkRenderer = (ChunkBatcher.ChunkRenderer)iterator.next();
 				if (chunkRenderer.shouldRebuildOnClientThread()) {
 					this.chunkBatcher.rebuildSync(chunkRenderer);
 				} else {
@@ -1729,7 +1726,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.blendFuncSeparate(
 				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
-			this.textureManager.method_22813(FORCEFIELD_TEX);
+			this.textureManager.bindTexture(FORCEFIELD_TEX);
 			RenderSystem.depthMask(false);
 			RenderSystem.pushMatrix();
 			int j = worldBorder.getStage().getColor();
@@ -2447,12 +2444,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	@Environment(EnvType.CLIENT)
 	class ChunkInfo {
-		private final ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer renderer;
+		private final ChunkBatcher.ChunkRenderer renderer;
 		private final Direction field_4125;
 		private byte field_4126;
 		private final int field_4122;
 
-		private ChunkInfo(ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer, @Nullable Direction direction, int i) {
+		private ChunkInfo(ChunkBatcher.ChunkRenderer chunkRenderer, @Nullable Direction direction, int i) {
 			this.renderer = chunkRenderer;
 			this.field_4125 = direction;
 			this.field_4122 = i;

@@ -13,7 +13,7 @@ import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -287,7 +287,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(SHAPE, POWERED);
 	}
 }

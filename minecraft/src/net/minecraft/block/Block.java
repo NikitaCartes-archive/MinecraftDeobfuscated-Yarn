@@ -36,7 +36,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
@@ -64,7 +64,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -96,7 +96,7 @@ public class Block implements ItemConvertible {
 	protected final Material material;
 	protected final MaterialColor materialColor;
 	private final float slipperiness;
-	protected final StateFactory<Block, BlockState> stateFactory;
+	protected final StateManager<Block, BlockState> stateFactory;
 	private BlockState defaultState;
 	protected final boolean collidable;
 	private final boolean dynamicBounds;
@@ -240,7 +240,7 @@ public class Block implements ItemConvertible {
 	}
 
 	public Block(Block.Settings settings) {
-		StateFactory.Builder<Block, BlockState> builder = new StateFactory.Builder<>(this);
+		StateManager.Builder<Block, BlockState> builder = new StateManager.Builder<>(this);
 		this.appendProperties(builder);
 		this.material = settings.material;
 		this.materialColor = settings.materialColor;
@@ -519,8 +519,8 @@ public class Block implements ItemConvertible {
 		} else {
 			LootContext lootContext = builder.put(LootContextParameters.BLOCK_STATE, blockState).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContext.getWorld();
-			LootSupplier lootSupplier = serverWorld.getServer().getLootManager().getSupplier(identifier);
-			return lootSupplier.getDrops(lootContext);
+			LootTable lootTable = serverWorld.getServer().getLootManager().getSupplier(identifier);
+			return lootTable.getDrops(lootContext);
 		}
 	}
 
@@ -746,10 +746,10 @@ public class Block implements ItemConvertible {
 		return 0;
 	}
 
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 	}
 
-	public StateFactory<Block, BlockState> getStateFactory() {
+	public StateManager<Block, BlockState> getStateFactory() {
 		return this.stateFactory;
 	}
 

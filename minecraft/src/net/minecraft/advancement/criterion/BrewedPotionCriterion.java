@@ -5,14 +5,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
-import net.minecraft.class_4558;
 import net.minecraft.potion.Potion;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
-public class BrewedPotionCriterion extends class_4558<BrewedPotionCriterion.Conditions> {
+public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("brewed_potion");
 
 	@Override
@@ -31,7 +30,7 @@ public class BrewedPotionCriterion extends class_4558<BrewedPotionCriterion.Cond
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, Potion potion) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(potion));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(potion));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

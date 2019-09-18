@@ -3,15 +3,15 @@ package net.minecraft.world.loot.entry;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import java.util.function.Consumer;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.LootFunction;
 
 public class EmptyEntry extends LeafEntry {
-	private EmptyEntry(int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
-		super(i, j, args, lootFunctions);
+	private EmptyEntry(int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+		super(i, j, lootConditions, lootFunctions);
 	}
 
 	@Override
@@ -28,9 +28,9 @@ public class EmptyEntry extends LeafEntry {
 		}
 
 		protected EmptyEntry method_402(
-			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, class_4570[] args, LootFunction[] lootFunctions
+			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
-			return new EmptyEntry(i, j, args, lootFunctions);
+			return new EmptyEntry(i, j, lootConditions, lootFunctions);
 		}
 	}
 }

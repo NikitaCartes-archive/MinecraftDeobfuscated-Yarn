@@ -8,18 +8,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.world.loot.ConstantLootTableRange;
 import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.UniformLootTableRange;
 import net.minecraft.world.loot.entry.ItemEntry;
 import net.minecraft.world.loot.function.SetCountLootFunction;
 import net.minecraft.world.loot.function.SetNbtLootFunction;
 
-public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-	public void method_20187(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
+public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
+	public void method_20187(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
 		biConsumer.accept(
 			LootTables.CAT_MORNING_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -34,7 +34,7 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -46,7 +46,7 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -59,12 +59,12 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.MAP)).withEntry(ItemEntry.builder(Items.PAPER)))
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_CLERIC_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -74,7 +74,7 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_FARMER_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -85,12 +85,12 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.COD)).withEntry(ItemEntry.builder(Items.SALMON)))
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_FLETCHER_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -168,19 +168,19 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_LEATHERWORKER_GIFT_GAMEPLAY,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.LEATHER)))
+			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.LEATHER)))
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_LIBRARIAN_GIFT_GAMEPLAY,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.BOOK)))
+			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.BOOK)))
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_MASON_GIFT_GAMEPLAY,
-			LootSupplier.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.CLAY)))
+			LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.CLAY)))
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_SHEPHERD_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -204,7 +204,7 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -216,7 +216,7 @@ public class GiftLootTableGenerator implements Consumer<BiConsumer<Identifier, L
 		);
 		biConsumer.accept(
 			LootTables.HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))

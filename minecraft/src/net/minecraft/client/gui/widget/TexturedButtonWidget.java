@@ -43,7 +43,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 	@Override
 	public void renderButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().method_22813(this.texture);
+		minecraftClient.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
 		int k = this.v;
 		if (this.isHovered()) {

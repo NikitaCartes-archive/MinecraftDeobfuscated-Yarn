@@ -3,14 +3,13 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class UsedTotemCriterion extends class_4558<UsedTotemCriterion.Conditions> {
+public class UsedTotemCriterion extends AbstractCriterion<UsedTotemCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("used_totem");
 
 	@Override
@@ -24,7 +23,7 @@ public class UsedTotemCriterion extends class_4558<UsedTotemCriterion.Conditions
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
