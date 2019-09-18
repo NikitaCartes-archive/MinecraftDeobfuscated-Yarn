@@ -113,11 +113,6 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl) {
 			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);

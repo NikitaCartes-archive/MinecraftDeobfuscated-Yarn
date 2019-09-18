@@ -1,5 +1,6 @@
 package net.minecraft.client.texture;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.io.IOException;
@@ -119,22 +120,24 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	private static void setTextureClamp(boolean bl) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		if (bl) {
-			RenderSystem.texParameter(3553, 10242, 10496);
-			RenderSystem.texParameter(3553, 10243, 10496);
+			GlStateManager.texParameter(3553, 10242, 10496);
+			GlStateManager.texParameter(3553, 10243, 10496);
 		} else {
-			RenderSystem.texParameter(3553, 10242, 10497);
-			RenderSystem.texParameter(3553, 10243, 10497);
+			GlStateManager.texParameter(3553, 10242, 10497);
+			GlStateManager.texParameter(3553, 10243, 10497);
 		}
 	}
 
 	private static void setTextureFilter(boolean bl, boolean bl2) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		if (bl) {
-			RenderSystem.texParameter(3553, 10241, bl2 ? 9987 : 9729);
-			RenderSystem.texParameter(3553, 10240, 9729);
+			GlStateManager.texParameter(3553, 10241, bl2 ? 9987 : 9729);
+			GlStateManager.texParameter(3553, 10240, 9729);
 		} else {
-			RenderSystem.texParameter(3553, 10241, bl2 ? 9986 : 9728);
-			RenderSystem.texParameter(3553, 10240, 9728);
+			GlStateManager.texParameter(3553, 10241, bl2 ? 9986 : 9728);
+			GlStateManager.texParameter(3553, 10240, 9728);
 		}
 	}
 
@@ -267,33 +270,46 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void upload(int i, int j, int k, boolean bl) {
-		this.upload(i, j, k, 0, 0, this.width, this.height, bl);
+		this.upload(i, j, k, 0, 0, this.width, this.height, false, bl);
 	}
 
-	public void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl) {
-		this.upload(i, j, k, l, m, n, o, false, false, bl);
+	public void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2) {
+		this.method_22619(i, j, k, l, m, n, o, false, false, bl, bl2);
 	}
 
-	public void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3) {
+	public void method_22619(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+		if (!RenderSystem.isOnRenderThreadOrInit()) {
+			RenderSystem.recordRenderCall(() -> this.upload(i, j, k, l, m, n, o, bl, bl2, bl3, bl4));
+		} else {
+			this.upload(i, j, k, l, m, n, o, bl, bl2, bl3, bl4);
+		}
+	}
+
+	private void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		this.checkAllocated();
 		setTextureFilter(bl, bl3);
 		setTextureClamp(bl2);
 		if (n == this.getWidth()) {
-			RenderSystem.pixelStore(3314, 0);
+			GlStateManager.pixelStore(3314, 0);
 		} else {
-			RenderSystem.pixelStore(3314, this.getWidth());
+			GlStateManager.pixelStore(3314, this.getWidth());
 		}
 
-		RenderSystem.pixelStore(3316, l);
-		RenderSystem.pixelStore(3315, m);
+		GlStateManager.pixelStore(3316, l);
+		GlStateManager.pixelStore(3315, m);
 		this.format.setUnpackAlignment();
-		RenderSystem.texSubImage2D(3553, i, j, k, n, o, this.format.getPixelDataFormat(), 5121, this.pointer);
+		GlStateManager.texSubImage2D(3553, i, j, k, n, o, this.format.getPixelDataFormat(), 5121, this.pointer);
+		if (bl4) {
+			this.close();
+		}
 	}
 
 	public void loadFromTextureImage(int i, boolean bl) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		this.checkAllocated();
 		this.format.setPackAlignment();
-		RenderSystem.getTexImage(3553, i, this.format.getPixelDataFormat(), 5121, this.pointer);
+		GlStateManager.getTexImage(3553, i, this.format.getPixelDataFormat(), 5121, this.pointer);
 		if (bl && this.format.hasAlphaChannel()) {
 			for (int j = 0; j < this.getHeight(); j++) {
 				for (int k = 0; k < this.getWidth(); k++) {
@@ -491,11 +507,13 @@ public final class NativeImage implements AutoCloseable {
 		}
 
 		public void setPackAlignment() {
-			RenderSystem.pixelStore(3333, this.getChannelCount());
+			RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+			GlStateManager.pixelStore(3333, this.getChannelCount());
 		}
 
 		public void setUnpackAlignment() {
-			RenderSystem.pixelStore(3317, this.getChannelCount());
+			RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
+			GlStateManager.pixelStore(3317, this.getChannelCount());
 		}
 
 		public int getPixelDataFormat() {

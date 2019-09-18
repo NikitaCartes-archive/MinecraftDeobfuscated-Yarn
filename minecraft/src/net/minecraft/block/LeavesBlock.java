@@ -21,7 +21,6 @@ import net.minecraft.world.World;
 public class LeavesBlock extends Block {
 	public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
 	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
-	protected static boolean fancy;
 
 	public LeavesBlock(Block.Settings settings) {
 		super(settings);
@@ -102,21 +101,6 @@ public class LeavesBlock extends Block {
 				}
 			}
 		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static void setRenderingMode(boolean bl) {
-		fancy = bl;
-	}
-
-	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return false;
-	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return fancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
 	}
 
 	@Override

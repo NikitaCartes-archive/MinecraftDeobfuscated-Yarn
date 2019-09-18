@@ -249,11 +249,6 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}

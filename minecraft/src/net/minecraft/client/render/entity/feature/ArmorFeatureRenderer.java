@@ -8,8 +8,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
@@ -93,8 +92,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	) {
 		float m = (float)entity.age + h;
 		consumer.accept(SKIN);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-		gameRenderer.setFogBlack(true);
+		BackgroundRenderer.setFogBlack(true);
 		RenderSystem.enableBlend();
 		RenderSystem.depthFunc(514);
 		RenderSystem.depthMask(false);
@@ -124,7 +122,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		RenderSystem.depthMask(true);
 		RenderSystem.depthFunc(515);
 		RenderSystem.disableBlend();
-		gameRenderer.setFogBlack(false);
+		BackgroundRenderer.setFogBlack(false);
 	}
 
 	private Identifier getArmorTexture(ArmorItem armorItem, boolean bl) {

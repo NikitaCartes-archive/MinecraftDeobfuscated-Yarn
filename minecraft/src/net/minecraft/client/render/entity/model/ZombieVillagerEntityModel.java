@@ -18,43 +18,43 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 		super(f, 0.0F, 64, bl ? 32 : 64);
 		if (bl) {
 			this.head = new ModelPart(this, 0, 0);
-			this.head.addCuboid(-4.0F, -10.0F, -4.0F, 8, 8, 8, f);
+			this.head.addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, f);
 			this.body = new ModelPart(this, 16, 16);
-			this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, f + 0.1F);
+			this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f + 0.1F);
 			this.rightLeg = new ModelPart(this, 0, 16);
 			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
-			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f + 0.1F);
+			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.1F);
 			this.leftLeg = new ModelPart(this, 0, 16);
 			this.leftLeg.mirror = true;
 			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
-			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f + 0.1F);
+			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.1F);
 		} else {
 			this.head = new ModelPart(this, 0, 0);
-			this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8, 10, 8, f);
-			this.head.setTextureOffset(24, 0).addCuboid(-1.0F, -3.0F, -6.0F, 2, 4, 2, f);
+			this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, f);
+			this.head.setTextureOffset(24, 0).addCuboid(-1.0F, -3.0F, -6.0F, 2.0F, 4.0F, 2.0F, f);
 			this.headwear = new ModelPart(this, 32, 0);
-			this.headwear.addCuboid(-4.0F, -10.0F, -4.0F, 8, 10, 8, f + 0.5F);
+			this.headwear.addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, f + 0.5F);
 			this.hat = new ModelPart(this);
-			this.hat.setTextureOffset(30, 47).addCuboid(-8.0F, -8.0F, -6.0F, 16, 16, 1, f);
+			this.hat.setTextureOffset(30, 47).addCuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F, f);
 			this.hat.pitch = (float) (-Math.PI / 2);
 			this.headwear.addChild(this.hat);
 			this.body = new ModelPart(this, 16, 20);
-			this.body.addCuboid(-4.0F, 0.0F, -3.0F, 8, 12, 6, f);
-			this.body.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8, 18, 6, f + 0.05F);
+			this.body.addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F, f);
+			this.body.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, f + 0.05F);
 			this.rightArm = new ModelPart(this, 44, 22);
-			this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, f);
+			this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 			this.rightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 			this.leftArm = new ModelPart(this, 44, 22);
 			this.leftArm.mirror = true;
-			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
+			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 			this.leftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			this.rightLeg = new ModelPart(this, 0, 22);
 			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
-			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 			this.leftLeg = new ModelPart(this, 0, 22);
 			this.leftLeg.mirror = true;
 			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
-			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		}
 	}
 

@@ -1,15 +1,16 @@
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class Tessellator {
 	private final BufferBuilder buffer;
-	private final BufferRenderer renderer = new BufferRenderer();
-	private static final Tessellator INSTANCE = new Tessellator(2097152);
+	private static final Tessellator INSTANCE = new Tessellator();
 
 	public static Tessellator getInstance() {
+		RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
 		return INSTANCE;
 	}
 
@@ -17,9 +18,13 @@ public class Tessellator {
 		this.buffer = new BufferBuilder(i);
 	}
 
+	public Tessellator() {
+		this(2097152);
+	}
+
 	public void draw() {
 		this.buffer.end();
-		this.renderer.draw(this.buffer);
+		BufferRenderer.draw(this.buffer);
 	}
 
 	public BufferBuilder getBufferBuilder() {

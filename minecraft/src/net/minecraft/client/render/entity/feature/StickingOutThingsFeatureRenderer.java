@@ -4,17 +4,16 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
+public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends FeatureRenderer<T, M> {
 	public StickingOutThingsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
 		super(livingEntityRenderer);
 	}
@@ -39,8 +38,8 @@ public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M
 
 			for (int n = 0; n < m; n++) {
 				RenderSystem.pushMatrix();
-				ModelPart modelPart = this.getModel().getRandomCuboid(random);
-				Cuboid cuboid = (Cuboid)modelPart.cuboids.get(random.nextInt(modelPart.cuboids.size()));
+				ModelPart modelPart = this.getModel().method_22697(random);
+				ModelPart.net/minecraft/client/model/Cuboid cuboid = modelPart.method_22700(random);
 				modelPart.applyTransform(0.0625F);
 				float o = random.nextFloat();
 				float p = random.nextFloat();

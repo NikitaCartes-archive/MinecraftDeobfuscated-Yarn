@@ -100,6 +100,7 @@ public class Block implements ItemConvertible {
 	private BlockState defaultState;
 	protected final boolean collidable;
 	private final boolean dynamicBounds;
+	private final boolean field_20720;
 	@Nullable
 	private Identifier dropTableId;
 	@Nullable
@@ -252,6 +253,7 @@ public class Block implements ItemConvertible {
 		this.slipperiness = settings.slipperiness;
 		this.dynamicBounds = settings.dynamicBounds;
 		this.dropTableId = settings.dropTableId;
+		this.field_20720 = settings.field_20721;
 		this.stateFactory = builder.build(BlockState::new);
 		this.setDefaultState(this.stateFactory.getDefaultState());
 	}
@@ -363,8 +365,8 @@ public class Block implements ItemConvertible {
 	}
 
 	@Deprecated
-	public boolean isOpaque(BlockState blockState) {
-		return this.collidable && this.getRenderLayer() == BlockRenderLayer.SOLID;
+	public final boolean isOpaque(BlockState blockState) {
+		return this.field_20720;
 	}
 
 	@Deprecated
@@ -601,10 +603,6 @@ public class Block implements ItemConvertible {
 	}
 
 	public void onDestroyedByExplosion(World world, BlockPos blockPos, Explosion explosion) {
-	}
-
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.SOLID;
 	}
 
 	@Deprecated
@@ -861,6 +859,7 @@ public class Block implements ItemConvertible {
 		private boolean randomTicks;
 		private float slipperiness = 0.6F;
 		private Identifier dropTableId;
+		private boolean field_20721 = true;
 		private boolean dynamicBounds;
 
 		private Settings(Material material, MaterialColor materialColor) {
@@ -892,11 +891,18 @@ public class Block implements ItemConvertible {
 			settings.soundGroup = block.soundGroup;
 			settings.slipperiness = block.getSlipperiness();
 			settings.dynamicBounds = block.dynamicBounds;
+			settings.field_20721 = block.field_20720;
 			return settings;
 		}
 
 		public Block.Settings noCollision() {
 			this.collidable = false;
+			this.field_20721 = false;
+			return this;
+		}
+
+		public Block.Settings method_22488() {
+			this.field_20721 = false;
 			return this;
 		}
 

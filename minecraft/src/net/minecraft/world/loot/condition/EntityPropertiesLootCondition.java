@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.util.Identifier;
@@ -15,7 +16,7 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
-public class EntityPropertiesLootCondition implements LootCondition {
+public class EntityPropertiesLootCondition implements class_4570 {
 	private final EntityPredicate predicate;
 	private final LootContext.EntityTarget entity;
 
@@ -32,18 +33,18 @@ public class EntityPropertiesLootCondition implements LootCondition {
 	public boolean method_914(LootContext lootContext) {
 		Entity entity = lootContext.get(this.entity.getIdentifier());
 		BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-		return blockPos != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), entity);
+		return this.predicate.test(lootContext.getWorld(), blockPos != null ? new Vec3d(blockPos) : null, entity);
 	}
 
-	public static LootCondition.Builder create(LootContext.EntityTarget entityTarget) {
+	public static class_4570.Builder create(LootContext.EntityTarget entityTarget) {
 		return builder(entityTarget, EntityPredicate.Builder.create());
 	}
 
-	public static LootCondition.Builder builder(LootContext.EntityTarget entityTarget, EntityPredicate.Builder builder) {
+	public static class_4570.Builder builder(LootContext.EntityTarget entityTarget, EntityPredicate.Builder builder) {
 		return () -> new EntityPropertiesLootCondition(builder.build(), entityTarget);
 	}
 
-	public static class Factory extends LootCondition.Factory<EntityPropertiesLootCondition> {
+	public static class Factory extends class_4570.Factory<EntityPropertiesLootCondition> {
 		protected Factory() {
 			super(new Identifier("entity_properties"), EntityPropertiesLootCondition.class);
 		}

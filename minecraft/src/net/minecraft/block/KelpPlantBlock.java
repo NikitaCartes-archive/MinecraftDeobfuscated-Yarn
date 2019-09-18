@@ -23,11 +23,6 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	public FluidState getFluidState(BlockState blockState) {
 		return Fluids.WATER.getStill(false);
 	}

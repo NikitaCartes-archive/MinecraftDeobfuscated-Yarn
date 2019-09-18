@@ -3,8 +3,7 @@ package net.minecraft.client.render;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.chunk.ChunkRenderer;
-import net.minecraft.client.render.chunk.ChunkRendererFactory;
+import net.minecraft.client.render.chunk.ChunkBatcher;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -16,24 +15,24 @@ public class ChunkRenderDispatcher {
 	protected int sizeY;
 	protected int sizeX;
 	protected int sizeZ;
-	public ChunkRenderer[] renderers;
+	public ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer[] renderers;
 
-	public ChunkRenderDispatcher(World world, int i, WorldRenderer worldRenderer, ChunkRendererFactory chunkRendererFactory) {
+	public ChunkRenderDispatcher(ChunkBatcher chunkBatcher, World world, int i, WorldRenderer worldRenderer) {
 		this.renderer = worldRenderer;
 		this.world = world;
 		this.method_3325(i);
-		this.createChunks(chunkRendererFactory);
+		this.createChunks(chunkBatcher);
 	}
 
-	protected void createChunks(ChunkRendererFactory chunkRendererFactory) {
+	protected void createChunks(ChunkBatcher chunkBatcher) {
 		int i = this.sizeX * this.sizeY * this.sizeZ;
-		this.renderers = new ChunkRenderer[i];
+		this.renderers = new ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer[i];
 
 		for (int j = 0; j < this.sizeX; j++) {
 			for (int k = 0; k < this.sizeY; k++) {
 				for (int l = 0; l < this.sizeZ; l++) {
 					int m = this.getChunkIndex(j, k, l);
-					this.renderers[m] = chunkRendererFactory.create(this.world, this.renderer);
+					this.renderers[m] = chunkBatcher.new net/minecraft/client/render/chunk/ChunkRenderer();
 					this.renderers[m].setOrigin(j * 16, k * 16, l * 16);
 				}
 			}
@@ -41,7 +40,7 @@ public class ChunkRenderDispatcher {
 	}
 
 	public void delete() {
-		for (ChunkRenderer chunkRenderer : this.renderers) {
+		for (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer : this.renderers) {
 			chunkRenderer.delete();
 		}
 	}
@@ -70,7 +69,7 @@ public class ChunkRenderDispatcher {
 
 				for (int p = 0; p < this.sizeY; p++) {
 					int q = p * 16;
-					ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, p, n)];
+					ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, p, n)];
 					chunkRenderer.setOrigin(m, q, o);
 				}
 			}
@@ -91,12 +90,12 @@ public class ChunkRenderDispatcher {
 		int l = Math.floorMod(i, this.sizeX);
 		int m = Math.floorMod(j, this.sizeY);
 		int n = Math.floorMod(k, this.sizeZ);
-		ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, m, n)];
+		ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = this.renderers[this.getChunkIndex(l, m, n)];
 		chunkRenderer.scheduleRebuild(bl);
 	}
 
 	@Nullable
-	protected ChunkRenderer getChunkRenderer(BlockPos blockPos) {
+	protected ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer getChunkRenderer(BlockPos blockPos) {
 		int i = MathHelper.floorDiv(blockPos.getX(), 16);
 		int j = MathHelper.floorDiv(blockPos.getY(), 16);
 		int k = MathHelper.floorDiv(blockPos.getZ(), 16);

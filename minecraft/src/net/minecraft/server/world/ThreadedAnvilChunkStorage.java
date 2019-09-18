@@ -17,6 +17,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,8 +35,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
@@ -198,29 +197,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			ChunkHolder chunkHolder = this.getChunkHolder(l);
 			return chunkHolder == null ? LevelPrioritizedQueue.LEVEL_COUNT - 1 : Math.min(chunkHolder.getCompletedLevel(), LevelPrioritizedQueue.LEVEL_COUNT - 1);
 		};
-	}
-
-	@Environment(EnvType.CLIENT)
-	public String getDebugString(ChunkPos chunkPos) {
-		ChunkHolder chunkHolder = this.getChunkHolder(chunkPos.toLong());
-		if (chunkHolder == null) {
-			return "null";
-		} else {
-			String string = chunkHolder.getLevel() + "\n";
-			ChunkStatus chunkStatus = chunkHolder.getCompletedStatus();
-			Chunk chunk = chunkHolder.getCompletedChunk();
-			if (chunkStatus != null) {
-				string = string + "St: §" + chunkStatus.getIndex() + chunkStatus + '§' + "r\n";
-			}
-
-			if (chunk != null) {
-				string = string + "Ch: §" + chunk.getStatus().getIndex() + chunk.getStatus() + '§' + "r\n";
-			}
-
-			ChunkHolder.LevelType levelType = chunkHolder.getLevelType();
-			string = string + "§" + levelType.ordinal() + levelType;
-			return string + '§' + "r";
-		}
 	}
 
 	private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> createChunkRegionFuture(ChunkPos chunkPos, int i, IntFunction<ChunkStatus> intFunction) {
@@ -965,8 +941,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			entityTracker.entry.method_18756();
 		}
 
-		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
-			entityTracker.updateCameraPosition(list);
+		if (!list.isEmpty()) {
+			for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
+				entityTracker.updateCameraPosition(list);
+			}
 		}
 	}
 
@@ -1082,7 +1060,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		public void updateCameraPosition(ServerPlayerEntity serverPlayerEntity) {
 			if (serverPlayerEntity != this.entity) {
 				Vec3d vec3d = new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z).subtract(this.entry.method_18759());
-				int i = Math.min(this.maxDistance, (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
+				int i = Math.min(this.method_22844(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
 				boolean bl = vec3d.x >= (double)(-i)
 					&& vec3d.x <= (double)i
 					&& vec3d.z >= (double)(-i)
@@ -1105,6 +1083,20 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					this.entry.stopTracking(serverPlayerEntity);
 				}
 			}
+		}
+
+		private int method_22844() {
+			Collection<Entity> collection = this.entity.getPassengersDeep();
+			int i = this.maxDistance;
+
+			for (Entity entity : collection) {
+				int j = entity.getType().getMaxTrackDistance() * 16;
+				if (j > i) {
+					i = j;
+				}
+			}
+
+			return i;
 		}
 
 		public void updateCameraPosition(List<ServerPlayerEntity> list) {

@@ -248,10 +248,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		return vector3f2;
 	}
 
-	public BasicInventory getInventory() {
-		return this.inventory;
-	}
-
 	@Override
 	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
@@ -309,17 +305,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	@Override
-	public boolean cannotDespawn() {
-		return super.cannotDespawn() && this.getInventory().isInvEmpty();
-	}
-
-	@Override
 	public SoundEvent getCelebratingSound() {
 		return SoundEvents.ENTITY_PILLAGER_CELEBRATE;
-	}
-
-	@Override
-	public boolean canImmediatelyDespawn(double d) {
-		return super.canImmediatelyDespawn(d) && this.getInventory().isInvEmpty();
 	}
 }

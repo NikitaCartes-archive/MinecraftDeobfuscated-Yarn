@@ -203,9 +203,9 @@ public class BlockModelRenderer {
 		float k = -32.0F;
 
 		for (int l = 0; l < 4; l++) {
-			float m = Float.intBitsToFloat(is[l * 7]);
-			float n = Float.intBitsToFloat(is[l * 7 + 1]);
-			float o = Float.intBitsToFloat(is[l * 7 + 2]);
+			float m = Float.intBitsToFloat(is[l * 8]);
+			float n = Float.intBitsToFloat(is[l * 8 + 1]);
+			float o = Float.intBitsToFloat(is[l * 8 + 2]);
 			f = Math.min(f, m);
 			g = Math.min(g, n);
 			h = Math.min(h, o);

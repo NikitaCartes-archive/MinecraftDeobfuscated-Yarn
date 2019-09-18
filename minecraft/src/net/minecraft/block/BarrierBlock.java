@@ -21,11 +21,6 @@ public class BarrierBlock extends Block {
 		return BlockRenderType.INVISIBLE;
 	}
 
-	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return false;
-	}
-
 	@Environment(EnvType.CLIENT)
 	@Override
 	public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {

@@ -4,20 +4,18 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
-import java.util.function.Function;
+import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
-import net.minecraft.world.loot.context.LootContextType;
 
-public class InvertedLootCondition implements LootCondition {
-	private final LootCondition term;
+public class InvertedLootCondition implements class_4570 {
+	private final class_4570 term;
 
-	private InvertedLootCondition(LootCondition lootCondition) {
-		this.term = lootCondition;
+	private InvertedLootCondition(class_4570 arg) {
+		this.term = arg;
 	}
 
 	public final boolean method_888(LootContext lootContext) {
@@ -30,17 +28,17 @@ public class InvertedLootCondition implements LootCondition {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		LootCondition.super.check(lootTableReporter, function, set, lootContextType);
-		this.term.check(lootTableReporter, function, set, lootContextType);
+	public void check(LootTableReporter lootTableReporter) {
+		class_4570.super.check(lootTableReporter);
+		this.term.check(lootTableReporter);
 	}
 
-	public static LootCondition.Builder builder(LootCondition.Builder builder) {
+	public static class_4570.Builder builder(class_4570.Builder builder) {
 		InvertedLootCondition invertedLootCondition = new InvertedLootCondition(builder.build());
 		return () -> invertedLootCondition;
 	}
 
-	public static class Factory extends LootCondition.Factory<InvertedLootCondition> {
+	public static class Factory extends class_4570.Factory<InvertedLootCondition> {
 		public Factory() {
 			super(new Identifier("inverted"), InvertedLootCondition.class);
 		}
@@ -50,8 +48,8 @@ public class InvertedLootCondition implements LootCondition {
 		}
 
 		public InvertedLootCondition method_891(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			LootCondition lootCondition = JsonHelper.deserialize(jsonObject, "term", jsonDeserializationContext, LootCondition.class);
-			return new InvertedLootCondition(lootCondition);
+			class_4570 lv = JsonHelper.deserialize(jsonObject, "term", jsonDeserializationContext, class_4570.class);
+			return new InvertedLootCondition(lv);
 		}
 	}
 }

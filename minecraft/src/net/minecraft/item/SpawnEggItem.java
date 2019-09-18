@@ -128,6 +128,7 @@ public class SpawnEggItem extends Item {
 		return i == 0 ? this.primaryColor : this.secondaryColor;
 	}
 
+	@Nullable
 	@Environment(EnvType.CLIENT)
 	public static SpawnEggItem forEntity(@Nullable EntityType<?> entityType) {
 		return (SpawnEggItem)SPAWN_EGGS.get(entityType);

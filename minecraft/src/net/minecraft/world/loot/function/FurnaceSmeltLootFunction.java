@@ -3,12 +3,12 @@ package net.minecraft.world.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import java.util.Optional;
+import net.minecraft.class_4570;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +16,8 @@ import org.apache.logging.log4j.Logger;
 public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private FurnaceSmeltLootFunction(LootCondition[] lootConditions) {
-		super(lootConditions);
+	private FurnaceSmeltLootFunction(class_4570[] args) {
+		super(args);
 	}
 
 	@Override
@@ -51,8 +51,8 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 			super(new Identifier("furnace_smelt"), FurnaceSmeltLootFunction.class);
 		}
 
-		public FurnaceSmeltLootFunction method_726(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			return new FurnaceSmeltLootFunction(lootConditions);
+		public FurnaceSmeltLootFunction method_726(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+			return new FurnaceSmeltLootFunction(args);
 		}
 	}
 }

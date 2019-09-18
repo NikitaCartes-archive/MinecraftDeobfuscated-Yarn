@@ -3,6 +3,7 @@ package net.minecraft.client.render.block.entity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +14,7 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlockEntity> {
-	public void method_17581(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_17581(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
 		Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
 		DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
 

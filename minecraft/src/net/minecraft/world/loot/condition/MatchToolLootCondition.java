@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.Identifier;
@@ -12,7 +13,7 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
-public class MatchToolLootCondition implements LootCondition {
+public class MatchToolLootCondition implements class_4570 {
 	private final ItemPredicate predicate;
 
 	public MatchToolLootCondition(ItemPredicate itemPredicate) {
@@ -29,11 +30,11 @@ public class MatchToolLootCondition implements LootCondition {
 		return itemStack != null && this.predicate.test(itemStack);
 	}
 
-	public static LootCondition.Builder builder(ItemPredicate.Builder builder) {
+	public static class_4570.Builder builder(ItemPredicate.Builder builder) {
 		return () -> new MatchToolLootCondition(builder.build());
 	}
 
-	public static class Factory extends LootCondition.Factory<MatchToolLootCondition> {
+	public static class Factory extends class_4570.Factory<MatchToolLootCondition> {
 		protected Factory() {
 			super(new Identifier("match_tool"), MatchToolLootCondition.class);
 		}

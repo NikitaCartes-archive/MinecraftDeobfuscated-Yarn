@@ -145,21 +145,20 @@ public class TrueTypeFont implements Font {
 
 		@Override
 		public void upload(int i, int j) {
-			try (NativeImage nativeImage = new NativeImage(NativeImage.Format.LUMINANCE, this.width, this.height, false)) {
-				nativeImage.makeGlyphBitmapSubpixel(
-					TrueTypeFont.this.info,
-					this.glyphIndex,
-					this.width,
-					this.height,
-					TrueTypeFont.this.scaleFactor,
-					TrueTypeFont.this.scaleFactor,
-					TrueTypeFont.this.shiftX,
-					TrueTypeFont.this.shiftY,
-					0,
-					0
-				);
-				nativeImage.upload(0, i, j, 0, 0, this.width, this.height, false);
-			}
+			NativeImage nativeImage = new NativeImage(NativeImage.Format.LUMINANCE, this.width, this.height, false);
+			nativeImage.makeGlyphBitmapSubpixel(
+				TrueTypeFont.this.info,
+				this.glyphIndex,
+				this.width,
+				this.height,
+				TrueTypeFont.this.scaleFactor,
+				TrueTypeFont.this.scaleFactor,
+				TrueTypeFont.this.shiftX,
+				TrueTypeFont.this.shiftY,
+				0,
+				0
+			);
+			nativeImage.upload(0, i, j, 0, 0, this.width, this.height, false, true);
 		}
 
 		@Override

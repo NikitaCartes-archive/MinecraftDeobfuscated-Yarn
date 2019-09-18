@@ -16,7 +16,7 @@ public class GhastEntityModel<T extends Entity> extends EntityModel<T> {
 	public GhastEntityModel() {
 		int i = -16;
 		this.field_3373 = new ModelPart(this, 0, 0);
-		this.field_3373.addCuboid(-8.0F, -8.0F, -8.0F, 16, 16, 16);
+		this.field_3373.addCuboid(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F);
 		this.field_3373.rotationPointY += 8.0F;
 		Random random = new Random(1660L);
 
@@ -25,7 +25,7 @@ public class GhastEntityModel<T extends Entity> extends EntityModel<T> {
 			float f = (((float)(j % 3) - (float)(j / 3 % 2) * 0.5F + 0.25F) / 2.0F * 2.0F - 1.0F) * 5.0F;
 			float g = ((float)(j / 3) / 2.0F * 2.0F - 1.0F) * 5.0F;
 			int k = random.nextInt(7) + 8;
-			this.field_3372[j].addCuboid(-1.0F, 0.0F, -1.0F, 2, k, 2);
+			this.field_3372[j].addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, (float)k, 2.0F);
 			this.field_3372[j].rotationPointX = f;
 			this.field_3372[j].rotationPointZ = g;
 			this.field_3372[j].rotationPointY = 15.0F;

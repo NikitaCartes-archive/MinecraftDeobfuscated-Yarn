@@ -10,7 +10,7 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 
 	public SkullOverlayEntityModel() {
 		super(0, 0, 64, 64);
-		this.field_3377.addCuboid(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.25F);
+		this.field_3377.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.25F);
 		this.field_3377.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 

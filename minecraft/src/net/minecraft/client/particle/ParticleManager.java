@@ -390,7 +390,7 @@ public class ParticleManager implements ResourceReloadListener {
 
 		RenderSystem.depthMask(true);
 		RenderSystem.disableBlend();
-		RenderSystem.alphaFunc(516, 0.1F);
+		RenderSystem.defaultAlphaFunc();
 	}
 
 	public void setWorld(@Nullable World world) {

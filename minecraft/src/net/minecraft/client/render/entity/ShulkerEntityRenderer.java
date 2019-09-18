@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.client.render.entity.feature.ShulkerSomethingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
+import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -14,25 +15,11 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-	public static final Identifier SKIN = new Identifier("textures/entity/shulker/shulker.png");
-	public static final Identifier[] SKIN_COLOR = new Identifier[]{
-		new Identifier("textures/entity/shulker/shulker_white.png"),
-		new Identifier("textures/entity/shulker/shulker_orange.png"),
-		new Identifier("textures/entity/shulker/shulker_magenta.png"),
-		new Identifier("textures/entity/shulker/shulker_light_blue.png"),
-		new Identifier("textures/entity/shulker/shulker_yellow.png"),
-		new Identifier("textures/entity/shulker/shulker_lime.png"),
-		new Identifier("textures/entity/shulker/shulker_pink.png"),
-		new Identifier("textures/entity/shulker/shulker_gray.png"),
-		new Identifier("textures/entity/shulker/shulker_light_gray.png"),
-		new Identifier("textures/entity/shulker/shulker_cyan.png"),
-		new Identifier("textures/entity/shulker/shulker_purple.png"),
-		new Identifier("textures/entity/shulker/shulker_blue.png"),
-		new Identifier("textures/entity/shulker/shulker_brown.png"),
-		new Identifier("textures/entity/shulker/shulker_green.png"),
-		new Identifier("textures/entity/shulker/shulker_red.png"),
-		new Identifier("textures/entity/shulker/shulker_black.png")
-	};
+	public static final Identifier SKIN = new Identifier("textures/" + ModelLoader.field_20845.getPath() + ".png");
+	public static final Identifier[] SKIN_COLOR = (Identifier[])ModelLoader.field_20846
+		.stream()
+		.map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png"))
+		.toArray(Identifier[]::new);
 
 	public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ShulkerEntityModel<>(), 0.0F);

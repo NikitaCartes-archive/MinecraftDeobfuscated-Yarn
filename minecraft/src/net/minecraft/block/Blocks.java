@@ -176,28 +176,30 @@ public class Blocks {
 		"stripped_dark_oak_wood", new PillarBlock(Block.Settings.of(Material.WOOD, MaterialColor.BROWN).strength(2.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block OAK_LEAVES = register(
-		"oak_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS))
+		"oak_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS).method_22488())
 	);
 	public static final Block SPRUCE_LEAVES = register(
-		"spruce_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS))
+		"spruce_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS).method_22488())
 	);
 	public static final Block BIRCH_LEAVES = register(
-		"birch_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS))
+		"birch_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS).method_22488())
 	);
 	public static final Block JUNGLE_LEAVES = register(
-		"jungle_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS))
+		"jungle_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS).method_22488())
 	);
 	public static final Block ACACIA_LEAVES = register(
-		"acacia_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS))
+		"acacia_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS).method_22488())
 	);
 	public static final Block DARK_OAK_LEAVES = register(
-		"dark_oak_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS))
+		"dark_oak_leaves", new LeavesBlock(Block.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(BlockSoundGroup.GRASS).method_22488())
 	);
 	public static final Block SPONGE = register("sponge", new SpongeBlock(Block.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS)));
 	public static final Block WET_SPONGE = register(
 		"wet_sponge", new WetSpongeBlock(Block.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS))
 	);
-	public static final Block GLASS = register("glass", new GlassBlock(Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS)));
+	public static final Block GLASS = register(
+		"glass", new GlassBlock(Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
+	);
 	public static final Block LAPIS_ORE = register("lapis_ore", new OreBlock(Block.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
 	public static final Block LAPIS_BLOCK = register("lapis_block", new Block(Block.Settings.of(Material.METAL, MaterialColor.LAPIS).strength(3.0F, 3.0F)));
 	public static final Block DISPENSER = register("dispenser", new DispenserBlock(Block.Settings.of(Material.STONE).strength(3.5F)));
@@ -206,52 +208,52 @@ public class Blocks {
 	public static final Block CUT_SANDSTONE = register("cut_sandstone", new Block(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(0.8F)));
 	public static final Block NOTE_BLOCK = register("note_block", new NoteBlock(Block.Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).strength(0.8F)));
 	public static final Block WHITE_BED = register(
-		"white_bed", new BedBlock(DyeColor.WHITE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"white_bed", new BedBlock(DyeColor.WHITE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block ORANGE_BED = register(
-		"orange_bed", new BedBlock(DyeColor.ORANGE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"orange_bed", new BedBlock(DyeColor.ORANGE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block MAGENTA_BED = register(
-		"magenta_bed", new BedBlock(DyeColor.MAGENTA, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"magenta_bed", new BedBlock(DyeColor.MAGENTA, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block LIGHT_BLUE_BED = register(
-		"light_blue_bed", new BedBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"light_blue_bed", new BedBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block YELLOW_BED = register(
-		"yellow_bed", new BedBlock(DyeColor.YELLOW, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"yellow_bed", new BedBlock(DyeColor.YELLOW, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block LIME_BED = register(
-		"lime_bed", new BedBlock(DyeColor.LIME, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"lime_bed", new BedBlock(DyeColor.LIME, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block PINK_BED = register(
-		"pink_bed", new BedBlock(DyeColor.PINK, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"pink_bed", new BedBlock(DyeColor.PINK, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block GRAY_BED = register(
-		"gray_bed", new BedBlock(DyeColor.GRAY, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"gray_bed", new BedBlock(DyeColor.GRAY, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block LIGHT_GRAY_BED = register(
-		"light_gray_bed", new BedBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"light_gray_bed", new BedBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block CYAN_BED = register(
-		"cyan_bed", new BedBlock(DyeColor.CYAN, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"cyan_bed", new BedBlock(DyeColor.CYAN, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block PURPLE_BED = register(
-		"purple_bed", new BedBlock(DyeColor.PURPLE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"purple_bed", new BedBlock(DyeColor.PURPLE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block BLUE_BED = register(
-		"blue_bed", new BedBlock(DyeColor.BLUE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"blue_bed", new BedBlock(DyeColor.BLUE, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block BROWN_BED = register(
-		"brown_bed", new BedBlock(DyeColor.BROWN, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"brown_bed", new BedBlock(DyeColor.BROWN, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block GREEN_BED = register(
-		"green_bed", new BedBlock(DyeColor.GREEN, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"green_bed", new BedBlock(DyeColor.GREEN, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block RED_BED = register(
-		"red_bed", new BedBlock(DyeColor.RED, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"red_bed", new BedBlock(DyeColor.RED, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block BLACK_BED = register(
-		"black_bed", new BedBlock(DyeColor.BLACK, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F))
+		"black_bed", new BedBlock(DyeColor.BLACK, Block.Settings.of(Material.WOOL).sounds(BlockSoundGroup.WOOD).strength(0.2F).method_22488())
 	);
 	public static final Block POWERED_RAIL = register(
 		"powered_rail", new PoweredRailBlock(Block.Settings.of(Material.PART).noCollision().strength(0.7F).sounds(BlockSoundGroup.METAL))
@@ -328,7 +330,7 @@ public class Blocks {
 		"black_wool", new Block(Block.Settings.of(Material.WOOL, MaterialColor.BLACK).strength(0.8F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block MOVING_PISTON = register(
-		"moving_piston", new PistonExtensionBlock(Block.Settings.of(Material.PISTON).strength(-1.0F).hasDynamicBounds().dropsNothing())
+		"moving_piston", new PistonExtensionBlock(Block.Settings.of(Material.PISTON).strength(-1.0F).hasDynamicBounds().dropsNothing().method_22488())
 	);
 	public static final Block DANDELION = register(
 		"dandelion", new FlowerBlock(StatusEffects.SATURATION, 7, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
@@ -407,7 +409,9 @@ public class Blocks {
 				.dropsNothing()
 		)
 	);
-	public static final Block SPAWNER = register("spawner", new SpawnerBlock(Block.Settings.of(Material.STONE).strength(5.0F).sounds(BlockSoundGroup.METAL)));
+	public static final Block SPAWNER = register(
+		"spawner", new SpawnerBlock(Block.Settings.of(Material.STONE).strength(5.0F).sounds(BlockSoundGroup.METAL).method_22488())
+	);
 	public static final Block OAK_STAIRS = register("oak_stairs", new StairsBlock(OAK_PLANKS.getDefaultState(), Block.Settings.copy(OAK_PLANKS)));
 	public static final Block CHEST = register("chest", new ChestBlock(Block.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block REDSTONE_WIRE = register("redstone_wire", new RedstoneWireBlock(Block.Settings.of(Material.PART).noCollision().breakInstantly()));
@@ -444,9 +448,11 @@ public class Blocks {
 		"dark_oak_sign", new SignBlock(Block.Settings.of(Material.WOOD, DARK_OAK_LOG.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block OAK_DOOR = register(
-		"oak_door", new DoorBlock(Block.Settings.of(Material.WOOD, OAK_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"oak_door", new DoorBlock(Block.Settings.of(Material.WOOD, OAK_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
-	public static final Block LADDER = register("ladder", new LadderBlock(Block.Settings.of(Material.PART).strength(0.4F).sounds(BlockSoundGroup.LADDER)));
+	public static final Block LADDER = register(
+		"ladder", new LadderBlock(Block.Settings.of(Material.PART).strength(0.4F).sounds(BlockSoundGroup.LADDER).method_22488())
+	);
 	public static final Block RAIL = register("rail", new RailBlock(Block.Settings.of(Material.PART).noCollision().strength(0.7F).sounds(BlockSoundGroup.METAL)));
 	public static final Block COBBLESTONE_STAIRS = register("cobblestone_stairs", new StairsBlock(COBBLESTONE.getDefaultState(), Block.Settings.copy(COBBLESTONE)));
 	public static final Block OAK_WALL_SIGN = register(
@@ -479,7 +485,7 @@ public class Blocks {
 		"stone_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.MOBS, Block.Settings.of(Material.STONE).noCollision().strength(0.5F))
 	);
 	public static final Block IRON_DOOR = register(
-		"iron_door", new DoorBlock(Block.Settings.of(Material.METAL, MaterialColor.IRON).strength(5.0F).sounds(BlockSoundGroup.METAL))
+		"iron_door", new DoorBlock(Block.Settings.of(Material.METAL, MaterialColor.IRON).strength(5.0F).sounds(BlockSoundGroup.METAL).method_22488())
 	);
 	public static final Block OAK_PRESSURE_PLATE = register(
 		"oak_pressure_plate",
@@ -538,7 +544,7 @@ public class Blocks {
 	public static final Block STONE_BUTTON = register("stone_button", new StoneButtonBlock(Block.Settings.of(Material.PART).noCollision().strength(0.5F)));
 	public static final Block SNOW = register("snow", new SnowBlock(Block.Settings.of(Material.SNOW).ticksRandomly().strength(0.1F).sounds(BlockSoundGroup.SNOW)));
 	public static final Block ICE = register(
-		"ice", new IceBlock(Block.Settings.of(Material.ICE).slipperiness(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
+		"ice", new IceBlock(Block.Settings.of(Material.ICE).slipperiness(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block SNOW_BLOCK = register("snow_block", new Block(Block.Settings.of(Material.SNOW_BLOCK).strength(0.2F).sounds(BlockSoundGroup.SNOW)));
 	public static final Block CACTUS = register(
@@ -576,76 +582,86 @@ public class Blocks {
 	public static final Block CAKE = register("cake", new CakeBlock(Block.Settings.of(Material.CAKE).strength(0.5F).sounds(BlockSoundGroup.WOOL)));
 	public static final Block REPEATER = register("repeater", new RepeaterBlock(Block.Settings.of(Material.PART).breakInstantly().sounds(BlockSoundGroup.WOOD)));
 	public static final Block WHITE_STAINED_GLASS = register(
-		"white_stained_glass", new StainedGlassBlock(DyeColor.WHITE, Block.Settings.of(Material.GLASS, DyeColor.WHITE).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"white_stained_glass",
+		new StainedGlassBlock(DyeColor.WHITE, Block.Settings.of(Material.GLASS, DyeColor.WHITE).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block ORANGE_STAINED_GLASS = register(
 		"orange_stained_glass",
-		new StainedGlassBlock(DyeColor.ORANGE, Block.Settings.of(Material.GLASS, DyeColor.ORANGE).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassBlock(DyeColor.ORANGE, Block.Settings.of(Material.GLASS, DyeColor.ORANGE).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block MAGENTA_STAINED_GLASS = register(
 		"magenta_stained_glass",
-		new StainedGlassBlock(DyeColor.MAGENTA, Block.Settings.of(Material.GLASS, DyeColor.MAGENTA).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassBlock(DyeColor.MAGENTA, Block.Settings.of(Material.GLASS, DyeColor.MAGENTA).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block LIGHT_BLUE_STAINED_GLASS = register(
 		"light_blue_stained_glass",
-		new StainedGlassBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.GLASS, DyeColor.LIGHT_BLUE).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.GLASS, DyeColor.LIGHT_BLUE).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block YELLOW_STAINED_GLASS = register(
 		"yellow_stained_glass",
-		new StainedGlassBlock(DyeColor.YELLOW, Block.Settings.of(Material.GLASS, DyeColor.YELLOW).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassBlock(DyeColor.YELLOW, Block.Settings.of(Material.GLASS, DyeColor.YELLOW).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block LIME_STAINED_GLASS = register(
-		"lime_stained_glass", new StainedGlassBlock(DyeColor.LIME, Block.Settings.of(Material.GLASS, DyeColor.LIME).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"lime_stained_glass",
+		new StainedGlassBlock(DyeColor.LIME, Block.Settings.of(Material.GLASS, DyeColor.LIME).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block PINK_STAINED_GLASS = register(
-		"pink_stained_glass", new StainedGlassBlock(DyeColor.PINK, Block.Settings.of(Material.GLASS, DyeColor.PINK).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"pink_stained_glass",
+		new StainedGlassBlock(DyeColor.PINK, Block.Settings.of(Material.GLASS, DyeColor.PINK).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block GRAY_STAINED_GLASS = register(
-		"gray_stained_glass", new StainedGlassBlock(DyeColor.GRAY, Block.Settings.of(Material.GLASS, DyeColor.GRAY).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"gray_stained_glass",
+		new StainedGlassBlock(DyeColor.GRAY, Block.Settings.of(Material.GLASS, DyeColor.GRAY).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block LIGHT_GRAY_STAINED_GLASS = register(
 		"light_gray_stained_glass",
-		new StainedGlassBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.GLASS, DyeColor.LIGHT_GRAY).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.GLASS, DyeColor.LIGHT_GRAY).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block CYAN_STAINED_GLASS = register(
-		"cyan_stained_glass", new StainedGlassBlock(DyeColor.CYAN, Block.Settings.of(Material.GLASS, DyeColor.CYAN).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"cyan_stained_glass",
+		new StainedGlassBlock(DyeColor.CYAN, Block.Settings.of(Material.GLASS, DyeColor.CYAN).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block PURPLE_STAINED_GLASS = register(
 		"purple_stained_glass",
-		new StainedGlassBlock(DyeColor.PURPLE, Block.Settings.of(Material.GLASS, DyeColor.PURPLE).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassBlock(DyeColor.PURPLE, Block.Settings.of(Material.GLASS, DyeColor.PURPLE).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block BLUE_STAINED_GLASS = register(
-		"blue_stained_glass", new StainedGlassBlock(DyeColor.BLUE, Block.Settings.of(Material.GLASS, DyeColor.BLUE).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"blue_stained_glass",
+		new StainedGlassBlock(DyeColor.BLUE, Block.Settings.of(Material.GLASS, DyeColor.BLUE).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block BROWN_STAINED_GLASS = register(
-		"brown_stained_glass", new StainedGlassBlock(DyeColor.BROWN, Block.Settings.of(Material.GLASS, DyeColor.BROWN).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"brown_stained_glass",
+		new StainedGlassBlock(DyeColor.BROWN, Block.Settings.of(Material.GLASS, DyeColor.BROWN).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block GREEN_STAINED_GLASS = register(
-		"green_stained_glass", new StainedGlassBlock(DyeColor.GREEN, Block.Settings.of(Material.GLASS, DyeColor.GREEN).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"green_stained_glass",
+		new StainedGlassBlock(DyeColor.GREEN, Block.Settings.of(Material.GLASS, DyeColor.GREEN).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block RED_STAINED_GLASS = register(
-		"red_stained_glass", new StainedGlassBlock(DyeColor.RED, Block.Settings.of(Material.GLASS, DyeColor.RED).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"red_stained_glass",
+		new StainedGlassBlock(DyeColor.RED, Block.Settings.of(Material.GLASS, DyeColor.RED).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block BLACK_STAINED_GLASS = register(
-		"black_stained_glass", new StainedGlassBlock(DyeColor.BLACK, Block.Settings.of(Material.GLASS, DyeColor.BLACK).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"black_stained_glass",
+		new StainedGlassBlock(DyeColor.BLACK, Block.Settings.of(Material.GLASS, DyeColor.BLACK).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block OAK_TRAPDOOR = register(
-		"oak_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.WOOD).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"oak_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.WOOD).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block SPRUCE_TRAPDOOR = register(
-		"spruce_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"spruce_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block BIRCH_TRAPDOOR = register(
-		"birch_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.SAND).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"birch_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.SAND).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block JUNGLE_TRAPDOOR = register(
-		"jungle_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.DIRT).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"jungle_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.DIRT).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block ACACIA_TRAPDOOR = register(
-		"acacia_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.ORANGE).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"acacia_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.ORANGE).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block DARK_OAK_TRAPDOOR = register(
-		"dark_oak_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.BROWN).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"dark_oak_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.WOOD, MaterialColor.BROWN).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block STONE_BRICKS = register("stone_bricks", new Block(Block.Settings.of(Material.STONE).strength(1.5F, 6.0F)));
 	public static final Block MOSSY_STONE_BRICKS = register("mossy_stone_bricks", new Block(Block.Settings.of(Material.STONE).strength(1.5F, 6.0F)));
@@ -677,9 +693,11 @@ public class Blocks {
 		"mushroom_stem", new MushroomBlock(Block.Settings.of(Material.WOOD, MaterialColor.WEB).strength(0.2F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block IRON_BARS = register(
-		"iron_bars", new PaneBlock(Block.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL))
+		"iron_bars", new PaneBlock(Block.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).method_22488())
 	);
-	public static final Block GLASS_PANE = register("glass_pane", new PaneBlock(Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS)));
+	public static final Block GLASS_PANE = register(
+		"glass_pane", new PaneBlock(Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
+	);
 	public static final Block MELON = register(
 		"melon", new MelonBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.LIME).strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
@@ -711,7 +729,9 @@ public class Blocks {
 	public static final Block MYCELIUM = register(
 		"mycelium", new MyceliumBlock(Block.Settings.of(Material.ORGANIC, MaterialColor.PURPLE).ticksRandomly().strength(0.6F).sounds(BlockSoundGroup.GRASS))
 	);
-	public static final Block LILY_PAD = register("lily_pad", new LilyPadBlock(Block.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.GRASS)));
+	public static final Block LILY_PAD = register(
+		"lily_pad", new LilyPadBlock(Block.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.GRASS).method_22488())
+	);
 	public static final Block NETHER_BRICKS = register("nether_bricks", new Block(Block.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F)));
 	public static final Block NETHER_BRICK_FENCE = register(
 		"nether_brick_fence", new FenceBlock(Block.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F))
@@ -725,8 +745,12 @@ public class Blocks {
 	public static final Block ENCHANTING_TABLE = register(
 		"enchanting_table", new EnchantingTableBlock(Block.Settings.of(Material.STONE, MaterialColor.RED).strength(5.0F, 1200.0F))
 	);
-	public static final Block BREWING_STAND = register("brewing_stand", new BrewingStandBlock(Block.Settings.of(Material.METAL).strength(0.5F).lightLevel(1)));
-	public static final Block CAULDRON = register("cauldron", new CauldronBlock(Block.Settings.of(Material.METAL, MaterialColor.STONE).strength(2.0F)));
+	public static final Block BREWING_STAND = register(
+		"brewing_stand", new BrewingStandBlock(Block.Settings.of(Material.METAL).strength(0.5F).lightLevel(1).method_22488())
+	);
+	public static final Block CAULDRON = register(
+		"cauldron", new CauldronBlock(Block.Settings.of(Material.METAL, MaterialColor.STONE).strength(2.0F).method_22488())
+	);
 	public static final Block END_PORTAL = register(
 		"end_portal",
 		new EndPortalBlock(Block.Settings.of(Material.PORTAL, MaterialColor.BLACK).noCollision().lightLevel(15).strength(-1.0F, 3600000.0F).dropsNothing())
@@ -739,13 +763,13 @@ public class Blocks {
 	);
 	public static final Block END_STONE = register("end_stone", new Block(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(3.0F, 9.0F)));
 	public static final Block DRAGON_EGG = register(
-		"dragon_egg", new DragonEggBlock(Block.Settings.of(Material.EGG, MaterialColor.BLACK).strength(3.0F, 9.0F).lightLevel(1))
+		"dragon_egg", new DragonEggBlock(Block.Settings.of(Material.EGG, MaterialColor.BLACK).strength(3.0F, 9.0F).lightLevel(1).method_22488())
 	);
 	public static final Block REDSTONE_LAMP = register(
 		"redstone_lamp", new RedstoneLampBlock(Block.Settings.of(Material.REDSTONE_LAMP).lightLevel(15).strength(0.3F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block COCOA = register(
-		"cocoa", new CocoaBlock(Block.Settings.of(Material.PLANT).ticksRandomly().strength(0.2F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		"cocoa", new CocoaBlock(Block.Settings.of(Material.PLANT).ticksRandomly().strength(0.2F, 3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block SANDSTONE_STAIRS = register("sandstone_stairs", new StairsBlock(SANDSTONE.getDefaultState(), Block.Settings.copy(SANDSTONE)));
 	public static final Block EMERALD_ORE = register("emerald_ore", new OreBlock(Block.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
@@ -761,64 +785,80 @@ public class Blocks {
 	public static final Block COMMAND_BLOCK = register(
 		"command_block", new CommandBlock(Block.Settings.of(Material.METAL, MaterialColor.BROWN).strength(-1.0F, 3600000.0F).dropsNothing())
 	);
-	public static final Block BEACON = register("beacon", new BeaconBlock(Block.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).lightLevel(15)));
+	public static final Block BEACON = register(
+		"beacon", new BeaconBlock(Block.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).lightLevel(15).method_22488())
+	);
 	public static final Block COBBLESTONE_WALL = register("cobblestone_wall", new WallBlock(Block.Settings.copy(COBBLESTONE)));
 	public static final Block MOSSY_COBBLESTONE_WALL = register("mossy_cobblestone_wall", new WallBlock(Block.Settings.copy(COBBLESTONE)));
-	public static final Block FLOWER_POT = register("flower_pot", new FlowerPotBlock(AIR, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block FLOWER_POT = register("flower_pot", new FlowerPotBlock(AIR, Block.Settings.of(Material.PART).breakInstantly().method_22488()));
 	public static final Block POTTED_OAK_SAPLING = register(
-		"potted_oak_sapling", new FlowerPotBlock(OAK_SAPLING, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_oak_sapling", new FlowerPotBlock(OAK_SAPLING, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_SPRUCE_SAPLING = register(
-		"potted_spruce_sapling", new FlowerPotBlock(SPRUCE_SAPLING, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_spruce_sapling", new FlowerPotBlock(SPRUCE_SAPLING, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_BIRCH_SAPLING = register(
-		"potted_birch_sapling", new FlowerPotBlock(BIRCH_SAPLING, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_birch_sapling", new FlowerPotBlock(BIRCH_SAPLING, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_JUNGLE_SAPLING = register(
-		"potted_jungle_sapling", new FlowerPotBlock(JUNGLE_SAPLING, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_jungle_sapling", new FlowerPotBlock(JUNGLE_SAPLING, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_ACACIA_SAPLING = register(
-		"potted_acacia_sapling", new FlowerPotBlock(ACACIA_SAPLING, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_acacia_sapling", new FlowerPotBlock(ACACIA_SAPLING, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_DARK_OAK_SAPLING = register(
-		"potted_dark_oak_sapling", new FlowerPotBlock(DARK_OAK_SAPLING, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_dark_oak_sapling", new FlowerPotBlock(DARK_OAK_SAPLING, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
-	public static final Block POTTED_FERN = register("potted_fern", new FlowerPotBlock(FERN, Block.Settings.of(Material.PART).breakInstantly()));
-	public static final Block POTTED_DANDELION = register("potted_dandelion", new FlowerPotBlock(DANDELION, Block.Settings.of(Material.PART).breakInstantly()));
-	public static final Block POTTED_POPPY = register("potted_poppy", new FlowerPotBlock(POPPY, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block POTTED_FERN = register("potted_fern", new FlowerPotBlock(FERN, Block.Settings.of(Material.PART).breakInstantly().method_22488()));
+	public static final Block POTTED_DANDELION = register(
+		"potted_dandelion", new FlowerPotBlock(DANDELION, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
+	public static final Block POTTED_POPPY = register("potted_poppy", new FlowerPotBlock(POPPY, Block.Settings.of(Material.PART).breakInstantly().method_22488()));
 	public static final Block POTTED_BLUE_ORCHID = register(
-		"potted_blue_orchid", new FlowerPotBlock(BLUE_ORCHID, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_blue_orchid", new FlowerPotBlock(BLUE_ORCHID, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
-	public static final Block POTTED_ALLIUM = register("potted_allium", new FlowerPotBlock(ALLIUM, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block POTTED_ALLIUM = register(
+		"potted_allium", new FlowerPotBlock(ALLIUM, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
 	public static final Block POTTED_AZURE_BLUET = register(
-		"potted_azure_bluet", new FlowerPotBlock(AZURE_BLUET, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_azure_bluet", new FlowerPotBlock(AZURE_BLUET, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
-	public static final Block POTTED_RED_TULIP = register("potted_red_tulip", new FlowerPotBlock(RED_TULIP, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block POTTED_RED_TULIP = register(
+		"potted_red_tulip", new FlowerPotBlock(RED_TULIP, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
 	public static final Block POTTED_ORANGE_TULIP = register(
-		"potted_orange_tulip", new FlowerPotBlock(ORANGE_TULIP, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_orange_tulip", new FlowerPotBlock(ORANGE_TULIP, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_WHITE_TULIP = register(
-		"potted_white_tulip", new FlowerPotBlock(WHITE_TULIP, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_white_tulip", new FlowerPotBlock(WHITE_TULIP, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
-	public static final Block POTTED_PINK_TULIP = register("potted_pink_tulip", new FlowerPotBlock(PINK_TULIP, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block POTTED_PINK_TULIP = register(
+		"potted_pink_tulip", new FlowerPotBlock(PINK_TULIP, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
 	public static final Block POTTED_OXEYE_DAISY = register(
-		"potted_oxeye_daisy", new FlowerPotBlock(OXEYE_DAISY, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_oxeye_daisy", new FlowerPotBlock(OXEYE_DAISY, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
-	public static final Block POTTED_CORNFLOWER = register("potted_cornflower", new FlowerPotBlock(CORNFLOWER, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block POTTED_CORNFLOWER = register(
+		"potted_cornflower", new FlowerPotBlock(CORNFLOWER, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
 	public static final Block POTTED_LILY_OF_THE_VALLEY = register(
-		"potted_lily_of_the_valley", new FlowerPotBlock(LILY_OF_THE_VALLEY, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_lily_of_the_valley", new FlowerPotBlock(LILY_OF_THE_VALLEY, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_WITHER_ROSE = register(
-		"potted_wither_rose", new FlowerPotBlock(WITHER_ROSE, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_wither_rose", new FlowerPotBlock(WITHER_ROSE, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_RED_MUSHROOM = register(
-		"potted_red_mushroom", new FlowerPotBlock(RED_MUSHROOM, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_red_mushroom", new FlowerPotBlock(RED_MUSHROOM, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
 	public static final Block POTTED_BROWN_MUSHROOM = register(
-		"potted_brown_mushroom", new FlowerPotBlock(BROWN_MUSHROOM, Block.Settings.of(Material.PART).breakInstantly())
+		"potted_brown_mushroom", new FlowerPotBlock(BROWN_MUSHROOM, Block.Settings.of(Material.PART).breakInstantly().method_22488())
 	);
-	public static final Block POTTED_DEAD_BUSH = register("potted_dead_bush", new FlowerPotBlock(DEAD_BUSH, Block.Settings.of(Material.PART).breakInstantly()));
-	public static final Block POTTED_CACTUS = register("potted_cactus", new FlowerPotBlock(CACTUS, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block POTTED_DEAD_BUSH = register(
+		"potted_dead_bush", new FlowerPotBlock(DEAD_BUSH, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
+	public static final Block POTTED_CACTUS = register(
+		"potted_cactus", new FlowerPotBlock(CACTUS, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
 	public static final Block CARROTS = register(
 		"carrots", new CarrotsBlock(Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP))
 	);
@@ -902,7 +942,7 @@ public class Blocks {
 		"nether_quartz_ore", new OreBlock(Block.Settings.of(Material.STONE, MaterialColor.NETHER).strength(3.0F, 3.0F))
 	);
 	public static final Block HOPPER = register(
-		"hopper", new HopperBlock(Block.Settings.of(Material.METAL, MaterialColor.STONE).strength(3.0F, 4.8F).sounds(BlockSoundGroup.METAL))
+		"hopper", new HopperBlock(Block.Settings.of(Material.METAL, MaterialColor.STONE).strength(3.0F, 4.8F).sounds(BlockSoundGroup.METAL).method_22488())
 	);
 	public static final Block QUARTZ_BLOCK = register("quartz_block", new Block(Block.Settings.of(Material.STONE, MaterialColor.QUARTZ).strength(0.8F)));
 	public static final Block CHISELED_QUARTZ_BLOCK = register(
@@ -963,65 +1003,81 @@ public class Blocks {
 		"black_terracotta", new Block(Block.Settings.of(Material.STONE, MaterialColor.BLACK_TERRACOTTA).strength(1.25F, 4.2F))
 	);
 	public static final Block WHITE_STAINED_GLASS_PANE = register(
-		"white_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.WHITE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"white_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.WHITE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block ORANGE_STAINED_GLASS_PANE = register(
-		"orange_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.ORANGE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"orange_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.ORANGE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block MAGENTA_STAINED_GLASS_PANE = register(
-		"magenta_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.MAGENTA, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"magenta_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.MAGENTA, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block LIGHT_BLUE_STAINED_GLASS_PANE = register(
 		"light_blue_stained_glass_pane",
-		new StainedGlassPaneBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassPaneBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block YELLOW_STAINED_GLASS_PANE = register(
-		"yellow_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.YELLOW, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"yellow_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.YELLOW, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block LIME_STAINED_GLASS_PANE = register(
-		"lime_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.LIME, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"lime_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.LIME, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block PINK_STAINED_GLASS_PANE = register(
-		"pink_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.PINK, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"pink_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.PINK, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block GRAY_STAINED_GLASS_PANE = register(
-		"gray_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.GRAY, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"gray_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.GRAY, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block LIGHT_GRAY_STAINED_GLASS_PANE = register(
 		"light_gray_stained_glass_pane",
-		new StainedGlassPaneBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		new StainedGlassPaneBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block CYAN_STAINED_GLASS_PANE = register(
-		"cyan_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.CYAN, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"cyan_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.CYAN, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block PURPLE_STAINED_GLASS_PANE = register(
-		"purple_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.PURPLE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"purple_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.PURPLE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block BLUE_STAINED_GLASS_PANE = register(
-		"blue_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.BLUE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"blue_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.BLUE, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block BROWN_STAINED_GLASS_PANE = register(
-		"brown_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.BROWN, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"brown_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.BROWN, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block GREEN_STAINED_GLASS_PANE = register(
-		"green_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.GREEN, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"green_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.GREEN, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block RED_STAINED_GLASS_PANE = register(
-		"red_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.RED, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"red_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.RED, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block BLACK_STAINED_GLASS_PANE = register(
-		"black_stained_glass_pane", new StainedGlassPaneBlock(DyeColor.BLACK, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS))
+		"black_stained_glass_pane",
+		new StainedGlassPaneBlock(DyeColor.BLACK, Block.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block ACACIA_STAIRS = register("acacia_stairs", new StairsBlock(ACACIA_PLANKS.getDefaultState(), Block.Settings.copy(ACACIA_PLANKS)));
 	public static final Block DARK_OAK_STAIRS = register(
 		"dark_oak_stairs", new StairsBlock(DARK_OAK_PLANKS.getDefaultState(), Block.Settings.copy(DARK_OAK_PLANKS))
 	);
 	public static final Block SLIME_BLOCK = register(
-		"slime_block", new SlimeBlock(Block.Settings.of(Material.CLAY, MaterialColor.GRASS).slipperiness(0.8F).sounds(BlockSoundGroup.SLIME))
+		"slime_block", new SlimeBlock(Block.Settings.of(Material.CLAY, MaterialColor.GRASS).slipperiness(0.8F).sounds(BlockSoundGroup.SLIME).method_22488())
 	);
-	public static final Block BARRIER = register("barrier", new BarrierBlock(Block.Settings.of(Material.BARRIER).strength(-1.0F, 3600000.8F).dropsNothing()));
+	public static final Block BARRIER = register(
+		"barrier", new BarrierBlock(Block.Settings.of(Material.BARRIER).strength(-1.0F, 3600000.8F).dropsNothing().method_22488())
+	);
 	public static final Block IRON_TRAPDOOR = register(
-		"iron_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.METAL).strength(5.0F).sounds(BlockSoundGroup.METAL))
+		"iron_trapdoor", new TrapdoorBlock(Block.Settings.of(Material.METAL).strength(5.0F).sounds(BlockSoundGroup.METAL).method_22488())
 	);
 	public static final Block PRISMARINE = register("prismarine", new Block(Block.Settings.of(Material.STONE, MaterialColor.CYAN).strength(1.5F, 6.0F)));
 	public static final Block PRISMARINE_BRICKS = register(
@@ -1337,30 +1393,31 @@ public class Blocks {
 		"dark_oak_fence", new FenceBlock(Block.Settings.of(Material.WOOD, DARK_OAK_PLANKS.materialColor).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block SPRUCE_DOOR = register(
-		"spruce_door", new DoorBlock(Block.Settings.of(Material.WOOD, SPRUCE_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"spruce_door", new DoorBlock(Block.Settings.of(Material.WOOD, SPRUCE_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block BIRCH_DOOR = register(
-		"birch_door", new DoorBlock(Block.Settings.of(Material.WOOD, BIRCH_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"birch_door", new DoorBlock(Block.Settings.of(Material.WOOD, BIRCH_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block JUNGLE_DOOR = register(
-		"jungle_door", new DoorBlock(Block.Settings.of(Material.WOOD, JUNGLE_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"jungle_door", new DoorBlock(Block.Settings.of(Material.WOOD, JUNGLE_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block ACACIA_DOOR = register(
-		"acacia_door", new DoorBlock(Block.Settings.of(Material.WOOD, ACACIA_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"acacia_door", new DoorBlock(Block.Settings.of(Material.WOOD, ACACIA_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block DARK_OAK_DOOR = register(
-		"dark_oak_door", new DoorBlock(Block.Settings.of(Material.WOOD, DARK_OAK_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD))
+		"dark_oak_door", new DoorBlock(Block.Settings.of(Material.WOOD, DARK_OAK_PLANKS.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block END_ROD = register(
-		"end_rod", new EndRodBlock(Block.Settings.of(Material.PART).breakInstantly().lightLevel(14).sounds(BlockSoundGroup.WOOD))
+		"end_rod", new EndRodBlock(Block.Settings.of(Material.PART).breakInstantly().lightLevel(14).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block CHORUS_PLANT = register(
-		"chorus_plant", new ChorusPlantBlock(Block.Settings.of(Material.PLANT, MaterialColor.PURPLE).strength(0.4F).sounds(BlockSoundGroup.WOOD))
+		"chorus_plant", new ChorusPlantBlock(Block.Settings.of(Material.PLANT, MaterialColor.PURPLE).strength(0.4F).sounds(BlockSoundGroup.WOOD).method_22488())
 	);
 	public static final Block CHORUS_FLOWER = register(
 		"chorus_flower",
 		new ChorusFlowerBlock(
-			(ChorusPlantBlock)CHORUS_PLANT, Block.Settings.of(Material.PLANT, MaterialColor.PURPLE).ticksRandomly().strength(0.4F).sounds(BlockSoundGroup.WOOD)
+			(ChorusPlantBlock)CHORUS_PLANT,
+			Block.Settings.of(Material.PLANT, MaterialColor.PURPLE).ticksRandomly().strength(0.4F).sounds(BlockSoundGroup.WOOD).method_22488()
 		)
 	);
 	public static final Block PURPUR_BLOCK = register("purpur_block", new Block(Block.Settings.of(Material.STONE, MaterialColor.MAGENTA).strength(1.5F, 6.0F)));
@@ -1386,7 +1443,8 @@ public class Blocks {
 		"chain_command_block", new CommandBlock(Block.Settings.of(Material.METAL, MaterialColor.GREEN).strength(-1.0F, 3600000.0F).dropsNothing())
 	);
 	public static final Block FROSTED_ICE = register(
-		"frosted_ice", new FrostedIceBlock(Block.Settings.of(Material.ICE).slipperiness(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS))
+		"frosted_ice",
+		new FrostedIceBlock(Block.Settings.of(Material.ICE).slipperiness(0.98F).ticksRandomly().strength(0.5F).sounds(BlockSoundGroup.GLASS).method_22488())
 	);
 	public static final Block MAGMA_BLOCK = register(
 		"magma_block", new MagmaBlock(Block.Settings.of(Material.STONE, MaterialColor.NETHER).lightLevel(3).ticksRandomly().strength(0.5F))
@@ -1403,59 +1461,73 @@ public class Blocks {
 	);
 	public static final Block OBSERVER = register("observer", new ObserverBlock(Block.Settings.of(Material.STONE).strength(3.0F)));
 	public static final Block SHULKER_BOX = register(
-		"shulker_box", new ShulkerBoxBlock(null, Block.Settings.of(Material.SHULKER_BOX).strength(2.0F).hasDynamicBounds())
+		"shulker_box", new ShulkerBoxBlock(null, Block.Settings.of(Material.SHULKER_BOX).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block WHITE_SHULKER_BOX = register(
-		"white_shulker_box", new ShulkerBoxBlock(DyeColor.WHITE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE).strength(2.0F).hasDynamicBounds())
+		"white_shulker_box",
+		new ShulkerBoxBlock(DyeColor.WHITE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block ORANGE_SHULKER_BOX = register(
-		"orange_shulker_box", new ShulkerBoxBlock(DyeColor.ORANGE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.ORANGE).strength(2.0F).hasDynamicBounds())
+		"orange_shulker_box",
+		new ShulkerBoxBlock(DyeColor.ORANGE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.ORANGE).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block MAGENTA_SHULKER_BOX = register(
 		"magenta_shulker_box",
-		new ShulkerBoxBlock(DyeColor.MAGENTA, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.MAGENTA).strength(2.0F).hasDynamicBounds())
+		new ShulkerBoxBlock(DyeColor.MAGENTA, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.MAGENTA).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block LIGHT_BLUE_SHULKER_BOX = register(
 		"light_blue_shulker_box",
-		new ShulkerBoxBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_BLUE).strength(2.0F).hasDynamicBounds())
+		new ShulkerBoxBlock(DyeColor.LIGHT_BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_BLUE).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block YELLOW_SHULKER_BOX = register(
-		"yellow_shulker_box", new ShulkerBoxBlock(DyeColor.YELLOW, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.YELLOW).strength(2.0F).hasDynamicBounds())
+		"yellow_shulker_box",
+		new ShulkerBoxBlock(DyeColor.YELLOW, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.YELLOW).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block LIME_SHULKER_BOX = register(
-		"lime_shulker_box", new ShulkerBoxBlock(DyeColor.LIME, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIME).strength(2.0F).hasDynamicBounds())
+		"lime_shulker_box",
+		new ShulkerBoxBlock(DyeColor.LIME, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIME).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block PINK_SHULKER_BOX = register(
-		"pink_shulker_box", new ShulkerBoxBlock(DyeColor.PINK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PINK).strength(2.0F).hasDynamicBounds())
+		"pink_shulker_box",
+		new ShulkerBoxBlock(DyeColor.PINK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PINK).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block GRAY_SHULKER_BOX = register(
-		"gray_shulker_box", new ShulkerBoxBlock(DyeColor.GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GRAY).strength(2.0F).hasDynamicBounds())
+		"gray_shulker_box",
+		new ShulkerBoxBlock(DyeColor.GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GRAY).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block LIGHT_GRAY_SHULKER_BOX = register(
 		"light_gray_shulker_box",
-		new ShulkerBoxBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_GRAY).strength(2.0F).hasDynamicBounds())
+		new ShulkerBoxBlock(DyeColor.LIGHT_GRAY, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_GRAY).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block CYAN_SHULKER_BOX = register(
-		"cyan_shulker_box", new ShulkerBoxBlock(DyeColor.CYAN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.CYAN).strength(2.0F).hasDynamicBounds())
+		"cyan_shulker_box",
+		new ShulkerBoxBlock(DyeColor.CYAN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.CYAN).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block PURPLE_SHULKER_BOX = register(
 		"purple_shulker_box",
-		new ShulkerBoxBlock(DyeColor.PURPLE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PURPLE_TERRACOTTA).strength(2.0F).hasDynamicBounds())
+		new ShulkerBoxBlock(
+			DyeColor.PURPLE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.PURPLE_TERRACOTTA).strength(2.0F).hasDynamicBounds().method_22488()
+		)
 	);
 	public static final Block BLUE_SHULKER_BOX = register(
-		"blue_shulker_box", new ShulkerBoxBlock(DyeColor.BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLUE).strength(2.0F).hasDynamicBounds())
+		"blue_shulker_box",
+		new ShulkerBoxBlock(DyeColor.BLUE, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLUE).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block BROWN_SHULKER_BOX = register(
-		"brown_shulker_box", new ShulkerBoxBlock(DyeColor.BROWN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BROWN).strength(2.0F).hasDynamicBounds())
+		"brown_shulker_box",
+		new ShulkerBoxBlock(DyeColor.BROWN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BROWN).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block GREEN_SHULKER_BOX = register(
-		"green_shulker_box", new ShulkerBoxBlock(DyeColor.GREEN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GREEN).strength(2.0F).hasDynamicBounds())
+		"green_shulker_box",
+		new ShulkerBoxBlock(DyeColor.GREEN, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.GREEN).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block RED_SHULKER_BOX = register(
-		"red_shulker_box", new ShulkerBoxBlock(DyeColor.RED, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.RED).strength(2.0F).hasDynamicBounds())
+		"red_shulker_box",
+		new ShulkerBoxBlock(DyeColor.RED, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.RED).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block BLACK_SHULKER_BOX = register(
-		"black_shulker_box", new ShulkerBoxBlock(DyeColor.BLACK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK).strength(2.0F).hasDynamicBounds())
+		"black_shulker_box",
+		new ShulkerBoxBlock(DyeColor.BLACK, Block.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK).strength(2.0F).hasDynamicBounds().method_22488())
 	);
 	public static final Block WHITE_GLAZED_TERRACOTTA = register(
 		"white_glazed_terracotta", new GlazedTerracottaBlock(Block.Settings.of(Material.STONE, DyeColor.WHITE).strength(1.4F))
@@ -1594,7 +1666,8 @@ public class Blocks {
 		"dried_kelp_block", new Block(Block.Settings.of(Material.ORGANIC, MaterialColor.GREEN).strength(0.5F, 2.5F).sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block TURTLE_EGG = register(
-		"turtle_egg", new TurtleEggBlock(Block.Settings.of(Material.EGG, MaterialColor.SAND).strength(0.5F).sounds(BlockSoundGroup.METAL).ticksRandomly())
+		"turtle_egg",
+		new TurtleEggBlock(Block.Settings.of(Material.EGG, MaterialColor.SAND).strength(0.5F).sounds(BlockSoundGroup.METAL).ticksRandomly().method_22488())
 	);
 	public static final Block DEAD_TUBE_CORAL_BLOCK = register(
 		"dead_tube_coral_block", new Block(Block.Settings.of(Material.STONE, MaterialColor.GRAY).strength(1.5F, 6.0F))
@@ -1785,13 +1858,14 @@ public class Blocks {
 		)
 	);
 	public static final Block SEA_PICKLE = register(
-		"sea_pickle", new SeaPickleBlock(Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.GREEN).lightLevel(3).sounds(BlockSoundGroup.SLIME))
+		"sea_pickle",
+		new SeaPickleBlock(Block.Settings.of(Material.UNDERWATER_PLANT, MaterialColor.GREEN).lightLevel(3).sounds(BlockSoundGroup.SLIME).method_22488())
 	);
 	public static final Block BLUE_ICE = register(
 		"blue_ice", new TransparentBlock(Block.Settings.of(Material.PACKED_ICE).strength(2.8F).slipperiness(0.989F).sounds(BlockSoundGroup.GLASS))
 	);
 	public static final Block CONDUIT = register(
-		"conduit", new ConduitBlock(Block.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).lightLevel(15))
+		"conduit", new ConduitBlock(Block.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0F).lightLevel(15).method_22488())
 	);
 	public static final Block BAMBOO_SAPLING = register(
 		"bamboo_sapling",
@@ -1801,9 +1875,13 @@ public class Blocks {
 	);
 	public static final Block BAMBOO = register(
 		"bamboo",
-		new BambooBlock(Block.Settings.of(Material.BAMBOO, MaterialColor.FOLIAGE).ticksRandomly().breakInstantly().strength(1.0F).sounds(BlockSoundGroup.BAMBOO))
+		new BambooBlock(
+			Block.Settings.of(Material.BAMBOO, MaterialColor.FOLIAGE).ticksRandomly().breakInstantly().strength(1.0F).sounds(BlockSoundGroup.BAMBOO).method_22488()
+		)
 	);
-	public static final Block POTTED_BAMBOO = register("potted_bamboo", new FlowerPotBlock(BAMBOO, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block POTTED_BAMBOO = register(
+		"potted_bamboo", new FlowerPotBlock(BAMBOO, Block.Settings.of(Material.PART).breakInstantly().method_22488())
+	);
 	public static final Block VOID_AIR = register("void_air", new AirBlock(Block.Settings.of(Material.AIR).noCollision().dropsNothing()));
 	public static final Block CAVE_AIR = register("cave_air", new AirBlock(Block.Settings.of(Material.AIR).noCollision().dropsNothing()));
 	public static final Block BUBBLE_COLUMN = register(
@@ -1894,11 +1972,13 @@ public class Blocks {
 		"bell", new BellBlock(Block.Settings.of(Material.METAL, MaterialColor.GOLD).strength(5.0F).sounds(BlockSoundGroup.ANVIL))
 	);
 	public static final Block LANTERN = register(
-		"lantern", new LanternBlock(Block.Settings.of(Material.METAL).strength(3.5F).sounds(BlockSoundGroup.LANTERN).lightLevel(15))
+		"lantern", new LanternBlock(Block.Settings.of(Material.METAL).strength(3.5F).sounds(BlockSoundGroup.LANTERN).lightLevel(15).method_22488())
 	);
 	public static final Block CAMPFIRE = register(
 		"campfire",
-		new CampfireBlock(Block.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(2.0F).sounds(BlockSoundGroup.WOOD).lightLevel(15).ticksRandomly())
+		new CampfireBlock(
+			Block.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(2.0F).sounds(BlockSoundGroup.WOOD).lightLevel(15).ticksRandomly().method_22488()
+		)
 	);
 	public static final Block SWEET_BERRY_BUSH = register(
 		"sweet_berry_bush", new SweetBerryBushBlock(Block.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH))

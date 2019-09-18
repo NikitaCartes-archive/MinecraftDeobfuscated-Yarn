@@ -371,7 +371,11 @@ public class BoatEntity extends Entity {
 	}
 
 	private void method_7555() {
-		if (this.field_7708 > 0 && !this.isLogicalSideForUpdatingMovement()) {
+		if (this.isLogicalSideForUpdatingMovement()) {
+			this.field_7708 = 0;
+		}
+
+		if (this.field_7708 > 0) {
 			double d = this.x + (this.field_7686 - this.x) / (double)this.field_7708;
 			double e = this.y + (this.field_7700 - this.y) / (double)this.field_7708;
 			double f = this.z + (this.field_7685 - this.z) / (double)this.field_7708;

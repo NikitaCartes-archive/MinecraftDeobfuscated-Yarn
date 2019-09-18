@@ -27,25 +27,25 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends EntityModel
 		int j = 128;
 		this.field_3415 = new ModelPart(this).setTextureSize(128, 128);
 		this.field_3415.setRotationPoint(0.0F, 0.0F + g, -2.0F);
-		this.field_3415.setTextureOffset(0, 0).addCuboid(-4.0F, -12.0F, -5.5F, 8, 10, 8, f);
-		this.field_3415.setTextureOffset(24, 0).addCuboid(-1.0F, -5.0F, -7.5F, 2, 4, 2, f);
+		this.field_3415.setTextureOffset(0, 0).addCuboid(-4.0F, -12.0F, -5.5F, 8.0F, 10.0F, 8.0F, f);
+		this.field_3415.setTextureOffset(24, 0).addCuboid(-1.0F, -5.0F, -7.5F, 2.0F, 4.0F, 2.0F, f);
 		this.field_3413 = new ModelPart(this).setTextureSize(128, 128);
 		this.field_3413.setRotationPoint(0.0F, 0.0F + g, 0.0F);
-		this.field_3413.setTextureOffset(0, 40).addCuboid(-9.0F, -2.0F, -6.0F, 18, 12, 11, f);
-		this.field_3413.setTextureOffset(0, 70).addCuboid(-4.5F, 10.0F, -3.0F, 9, 5, 6, f + 0.5F);
+		this.field_3413.setTextureOffset(0, 40).addCuboid(-9.0F, -2.0F, -6.0F, 18.0F, 12.0F, 11.0F, f);
+		this.field_3413.setTextureOffset(0, 70).addCuboid(-4.5F, 10.0F, -3.0F, 9.0F, 5.0F, 6.0F, f + 0.5F);
 		this.field_3414 = new ModelPart(this).setTextureSize(128, 128);
 		this.field_3414.setRotationPoint(0.0F, -7.0F, 0.0F);
-		this.field_3414.setTextureOffset(60, 21).addCuboid(-13.0F, -2.5F, -3.0F, 4, 30, 6, f);
+		this.field_3414.setTextureOffset(60, 21).addCuboid(-13.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F, f);
 		this.field_3412 = new ModelPart(this).setTextureSize(128, 128);
 		this.field_3412.setRotationPoint(0.0F, -7.0F, 0.0F);
-		this.field_3412.setTextureOffset(60, 58).addCuboid(9.0F, -2.5F, -3.0F, 4, 30, 6, f);
+		this.field_3412.setTextureOffset(60, 58).addCuboid(9.0F, -2.5F, -3.0F, 4.0F, 30.0F, 6.0F, f);
 		this.field_3411 = new ModelPart(this, 0, 22).setTextureSize(128, 128);
 		this.field_3411.setRotationPoint(-4.0F, 18.0F + g, 0.0F);
-		this.field_3411.setTextureOffset(37, 0).addCuboid(-3.5F, -3.0F, -3.0F, 6, 16, 5, f);
+		this.field_3411.setTextureOffset(37, 0).addCuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, f);
 		this.field_3416 = new ModelPart(this, 0, 22).setTextureSize(128, 128);
 		this.field_3416.mirror = true;
 		this.field_3416.setTextureOffset(60, 0).setRotationPoint(5.0F, 18.0F + g, 0.0F);
-		this.field_3416.addCuboid(-3.5F, -3.0F, -3.0F, 6, 16, 5, f);
+		this.field_3416.addCuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, f);
 	}
 
 	public void method_17096(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {

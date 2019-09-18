@@ -6,10 +6,10 @@ import java.nio.FloatBuffer;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.EndPortalBlockEntity;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.GlAllocationUtils;
@@ -18,7 +18,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
-public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalBlockEntity> {
+public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extends BlockEntityRenderer<T> {
 	private static final Identifier SKY_TEX = new Identifier("textures/environment/end_sky.png");
 	private static final Identifier PORTAL_TEX = new Identifier("textures/entity/end_portal.png");
 	private static final Random RANDOM = new Random(31100L);
@@ -26,7 +26,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 	private static final FloatBuffer field_4404 = GlAllocationUtils.allocateFloatBuffer(16);
 	private final FloatBuffer field_4403 = GlAllocationUtils.allocateFloatBuffer(16);
 
-	public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3591(T endPortalBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
 		RenderSystem.disableLighting();
 		RANDOM.setSeed(31100L);
 		RenderSystem.getMatrix(2982, field_4408);
@@ -35,7 +35,6 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 		int j = this.method_3592(h);
 		float k = this.method_3594();
 		boolean bl = false;
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 
 		for (int l = 0; l < j; l++) {
 			RenderSystem.pushMatrix();
@@ -50,7 +49,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			if (l >= 1) {
 				this.bindTexture(PORTAL_TEX);
 				bl = true;
-				gameRenderer.setFogBlack(true);
+				BackgroundRenderer.setFogBlack(true);
 			}
 
 			if (l == 1) {
@@ -139,7 +138,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 		RenderSystem.disableTexGen(GlStateManager.TexCoord.R);
 		RenderSystem.enableLighting();
 		if (bl) {
-			gameRenderer.setFogBlack(false);
+			BackgroundRenderer.setFogBlack(false);
 		}
 	}
 

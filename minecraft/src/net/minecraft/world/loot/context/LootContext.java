@@ -11,30 +11,41 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.LootManager;
 import net.minecraft.world.loot.LootSupplier;
 
 public class LootContext {
 	private final Random random;
 	private final float luck;
 	private final ServerWorld world;
-	private final LootManager manager;
+	private final Function<Identifier, LootSupplier> manager;
 	private final Set<LootSupplier> suppliers = Sets.<LootSupplier>newLinkedHashSet();
+	private final Function<Identifier, class_4570> field_20750;
+	private final Set<class_4570> field_20751 = Sets.<class_4570>newLinkedHashSet();
 	private final Map<LootContextParameter<?>, Object> parameters;
 	private final Map<Identifier, LootContext.Dropper> drops;
 
 	private LootContext(
-		Random random, float f, ServerWorld serverWorld, LootManager lootManager, Map<LootContextParameter<?>, Object> map, Map<Identifier, LootContext.Dropper> map2
+		Random random,
+		float f,
+		ServerWorld serverWorld,
+		Function<Identifier, LootSupplier> function,
+		Function<Identifier, class_4570> function2,
+		Map<LootContextParameter<?>, Object> map,
+		Map<Identifier, LootContext.Dropper> map2
 	) {
 		this.random = random;
 		this.luck = f;
 		this.world = serverWorld;
-		this.manager = lootManager;
+		this.manager = function;
+		this.field_20750 = function2;
 		this.parameters = ImmutableMap.copyOf(map);
 		this.drops = ImmutableMap.copyOf(map2);
 	}
@@ -63,8 +74,20 @@ public class LootContext {
 		this.suppliers.remove(lootSupplier);
 	}
 
-	public LootManager getLootManager() {
-		return this.manager;
+	public boolean method_22555(class_4570 arg) {
+		return this.field_20751.add(arg);
+	}
+
+	public void method_22557(class_4570 arg) {
+		this.field_20751.remove(arg);
+	}
+
+	public LootSupplier method_22556(Identifier identifier) {
+		return (LootSupplier)this.manager.apply(identifier);
+	}
+
+	public class_4570 method_22558(Identifier identifier) {
+		return (class_4570)this.field_20750.apply(identifier);
 	}
 
 	public Random getRandom() {
@@ -174,7 +197,10 @@ public class LootContext {
 						random = new Random();
 					}
 
-					return new LootContext(random, this.luck, this.world, this.world.getServer().getLootManager(), this.parameters, this.drops);
+					MinecraftServer minecraftServer = this.world.getServer();
+					return new LootContext(
+						random, this.luck, this.world, minecraftServer.getLootManager()::getSupplier, minecraftServer.method_22828()::method_22564, this.parameters, this.drops
+					);
 				}
 			}
 		}

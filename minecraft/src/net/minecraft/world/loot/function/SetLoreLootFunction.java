@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
+import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -18,7 +19,6 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 
@@ -28,8 +28,8 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	@Nullable
 	private final LootContext.EntityTarget entity;
 
-	public SetLoreLootFunction(LootCondition[] lootConditions, boolean bl, List<Text> list, @Nullable LootContext.EntityTarget entityTarget) {
-		super(lootConditions);
+	public SetLoreLootFunction(class_4570[] args, boolean bl, List<Text> list, @Nullable LootContext.EntityTarget entityTarget) {
+		super(args);
 		this.replace = bl;
 		this.lore = ImmutableList.copyOf(list);
 		this.entity = entityTarget;
@@ -112,13 +112,13 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetLoreLootFunction method_15968(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
 			boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
 			List<Text> list = (List<Text>)Streams.stream(JsonHelper.getArray(jsonObject, "lore"))
 				.map(Text.Serializer::fromJson)
 				.collect(ImmutableList.toImmutableList());
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new SetLoreLootFunction(lootConditions, bl, list, entityTarget);
+			return new SetLoreLootFunction(args, bl, list, entityTarget);
 		}
 	}
 }

@@ -102,13 +102,11 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	public void renderButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
-		minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
+		minecraftClient.getTextureManager().method_22813(WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
 		int k = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-		);
+		RenderSystem.defaultBlendFunc();
 		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 		this.blit(this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
 		this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);

@@ -161,7 +161,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				n = this.height - o - 6;
 			}
 
-			this.blitOffset = 300;
+			this.setBlitOffset(300);
 			this.itemRenderer.zOffset = 300.0F;
 			int p = -267386864;
 			this.fillGradient(m - 3, n - 4, m + k + 3, n - 3, -267386864, -267386864);
@@ -186,7 +186,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				n += 10;
 			}
 
-			this.blitOffset = 0;
+			this.setBlitOffset(0);
 			this.itemRenderer.zOffset = 0.0F;
 			RenderSystem.enableLighting();
 			RenderSystem.enableDepthTest();
@@ -359,7 +359,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		RenderSystem.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().method_22813(BACKGROUND_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
@@ -392,20 +392,20 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public static boolean hasControlDown() {
 		return MinecraftClient.IS_SYSTEM_MAC
-			? InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 343)
-				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 347)
-			: InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 341)
-				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 345);
+			? InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 343)
+				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 347)
+			: InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 341)
+				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 345);
 	}
 
 	public static boolean hasShiftDown() {
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 340)
-			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 344);
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340)
+			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344);
 	}
 
 	public static boolean hasAltDown() {
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 342)
-			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 346);
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 342)
+			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 346);
 	}
 
 	public static boolean isCut(int i) {

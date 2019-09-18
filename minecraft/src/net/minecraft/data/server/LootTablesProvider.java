@@ -52,13 +52,13 @@ public class LootTablesProvider implements DataProvider {
 					throw new IllegalStateException("Duplicate loot table " + identifierx);
 				}
 			}));
-		LootTableReporter lootTableReporter = new LootTableReporter();
+		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, identifierx -> null, map::get);
 
 		for (Identifier identifier : Sets.difference(LootTables.getAll(), map.keySet())) {
 			lootTableReporter.report("Missing built-in table: " + identifier);
 		}
 
-		map.forEach((identifierx, lootSupplier) -> LootManager.check(lootTableReporter, identifierx, lootSupplier, map::get));
+		map.forEach((identifierx, lootSupplier) -> LootManager.check(lootTableReporter, identifierx, lootSupplier));
 		Multimap<String, String> multimap = lootTableReporter.getMessages();
 		if (!multimap.isEmpty()) {
 			multimap.forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));

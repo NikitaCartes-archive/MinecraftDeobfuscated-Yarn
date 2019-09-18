@@ -1,6 +1,7 @@
 package net.minecraft.client.render;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -155,5 +156,28 @@ public class VertexFormat {
 		int i = this.elements.hashCode();
 		i = 31 * i + this.offsets.hashCode();
 		return 31 * i + this.size;
+	}
+
+	public void method_22649(long l) {
+		if (!RenderSystem.isOnRenderThread()) {
+			RenderSystem.recordRenderCall(() -> this.method_22649(l));
+		} else {
+			int i = this.getVertexSize();
+			List<VertexFormatElement> list = this.getElements();
+
+			for (int j = 0; j < list.size(); j++) {
+				((VertexFormatElement)list.get(j)).method_22652(l + (long)this.getElementOffset(j), i);
+			}
+		}
+	}
+
+	public void method_22651() {
+		if (!RenderSystem.isOnRenderThread()) {
+			RenderSystem.recordRenderCall(this::method_22651);
+		} else {
+			for (VertexFormatElement vertexFormatElement : this.getElements()) {
+				vertexFormatElement.method_22653();
+			}
+		}
 	}
 }

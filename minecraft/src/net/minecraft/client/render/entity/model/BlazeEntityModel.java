@@ -14,11 +14,11 @@ public class BlazeEntityModel<T extends Entity> extends EntityModel<T> {
 	public BlazeEntityModel() {
 		for (int i = 0; i < this.rods.length; i++) {
 			this.rods[i] = new ModelPart(this, 0, 16);
-			this.rods[i].addCuboid(0.0F, 0.0F, 0.0F, 2, 8, 2);
+			this.rods[i].addCuboid(0.0F, 0.0F, 0.0F, 2.0F, 8.0F, 2.0F);
 		}
 
 		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-4.0F, -4.0F, -4.0F, 8, 8, 8);
+		this.head.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
 	}
 
 	@Override

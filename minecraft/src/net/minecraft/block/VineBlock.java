@@ -306,11 +306,6 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(UP, NORTH, EAST, SOUTH, WEST);
 	}

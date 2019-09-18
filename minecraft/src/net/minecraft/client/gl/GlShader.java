@@ -2,6 +2,7 @@ package net.minecraft.client.gl;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -24,11 +25,13 @@ public class GlShader {
 	}
 
 	public void attachTo(GlProgram glProgram) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		this.refCount++;
 		GlStateManager.attachShader(glProgram.getProgramRef(), this.shaderRef);
 	}
 
 	public void release() {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		this.refCount--;
 		if (this.refCount <= 0) {
 			GlStateManager.deleteShader(this.shaderRef);
@@ -41,6 +44,7 @@ public class GlShader {
 	}
 
 	public static GlShader createFromResource(GlShader.Type type, String string, InputStream inputStream) throws IOException {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		String string2 = TextureUtil.readResourceAsString(inputStream);
 		if (string2 == null) {
 			throw new IOException("Could not load program " + type.getName());

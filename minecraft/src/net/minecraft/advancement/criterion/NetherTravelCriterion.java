@@ -1,15 +1,9 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.class_4558;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,44 +11,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Conditions> {
+public class NetherTravelCriterion extends class_4558<NetherTravelCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("nether_travel");
-	private final Map<PlayerAdvancementTracker, NetherTravelCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, NetherTravelCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
 		return ID;
-	}
-
-	@Override
-	public void beginTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer
-	) {
-		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(playerAdvancementTracker);
-		if (handler == null) {
-			handler = new NetherTravelCriterion.Handler(playerAdvancementTracker);
-			this.handlers.put(playerAdvancementTracker, handler);
-		}
-
-		handler.addCondition(conditionsContainer);
-	}
-
-	@Override
-	public void endTrackingCondition(
-		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer
-	) {
-		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(playerAdvancementTracker);
-		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
-			if (handler.isEmpty()) {
-				this.handlers.remove(playerAdvancementTracker);
-			}
-		}
-	}
-
-	@Override
-	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public NetherTravelCriterion.Conditions method_9078(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -65,10 +27,10 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
-		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
-		if (handler != null) {
-			handler.handle(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
-		}
+		this.method_22510(
+			serverPlayerEntity.getAdvancementManager(),
+			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z)
+		);
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -102,47 +64,6 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 			jsonObject.add("exited", this.exited.serialize());
 			jsonObject.add("distance", this.distance.serialize());
 			return jsonObject;
-		}
-	}
-
-	static class Handler {
-		private final PlayerAdvancementTracker manager;
-		private final Set<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>>newHashSet();
-
-		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
-		}
-
-		public boolean isEmpty() {
-			return this.conditions.isEmpty();
-		}
-
-		public void addCondition(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer) {
-			this.conditions.add(conditionsContainer);
-		}
-
-		public void removeCondition(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer) {
-			this.conditions.remove(conditionsContainer);
-		}
-
-		public void handle(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
-			List<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>> list = null;
-
-			for (Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverWorld, vec3d, d, e, f)) {
-					if (list == null) {
-						list = Lists.<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>>newArrayList();
-					}
-
-					list.add(conditionsContainer);
-				}
-			}
-
-			if (list != null) {
-				for (Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
-				}
-			}
 		}
 	}
 }

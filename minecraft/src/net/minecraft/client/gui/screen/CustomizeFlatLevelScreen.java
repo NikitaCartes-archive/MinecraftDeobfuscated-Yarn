@@ -248,8 +248,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 			private void method_19373(int i, int j) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatLayersListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
-				DrawableHelper.blit(i, j, CustomizeFlatLevelScreen.this.blitOffset, 0.0F, 0.0F, 18, 18, 128, 128);
+				SuperflatLayersListWidget.this.minecraft.getTextureManager().method_22813(DrawableHelper.STATS_ICON_LOCATION);
+				DrawableHelper.blit(i, j, CustomizeFlatLevelScreen.this.getBlitOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

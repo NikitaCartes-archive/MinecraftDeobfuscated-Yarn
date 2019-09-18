@@ -1,11 +1,11 @@
 package net.minecraft.client.render.block.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
@@ -26,8 +26,8 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.crash.CrashException;
@@ -101,43 +101,55 @@ public class BlockEntityRenderDispatcher {
 		this.hitResult = hitResult;
 	}
 
-	public void render(BlockEntity blockEntity, float f, int i) {
+	public void renderEntity(BlockEntity blockEntity, float f, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder) {
+		this.render(blockEntity, f, -1, blockRenderLayer, bufferBuilder);
+	}
+
+	public void method_22743(BlockEntity blockEntity, float f, int i, BufferBuilder bufferBuilder) {
+		this.render(blockEntity, f, i, BlockRenderLayer.field_20800, bufferBuilder);
+	}
+
+	private void render(BlockEntity blockEntity, float f, int i, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder) {
 		if (blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z)
 			< blockEntity.getSquaredRenderDistance()) {
-			GuiLighting.enable();
-			int j = this.world.getLightmapIndex(blockEntity.getPos());
-			int k = j % 65536;
-			int l = j / 65536;
-			RenderSystem.glMultiTexCoord2f(33985, (float)k, (float)l);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			BlockPos blockPos = blockEntity.getPos();
-			this.renderEntity(
-				blockEntity, (double)blockPos.getX() - renderOffsetX, (double)blockPos.getY() - renderOffsetY, (double)blockPos.getZ() - renderOffsetZ, f, i, false
-			);
+			BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
+			if (blockEntityRenderer != null) {
+				if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
+					BlockPos blockPos = blockEntity.getPos();
+					renderEntity(
+						blockEntity,
+						() -> blockEntityRenderer.method_22747(
+								blockEntity,
+								(double)blockPos.getX() - renderOffsetX,
+								(double)blockPos.getY() - renderOffsetY,
+								(double)blockPos.getZ() - renderOffsetZ,
+								f,
+								i,
+								bufferBuilder,
+								blockRenderLayer,
+								blockPos
+							)
+					);
+				}
+			}
 		}
 	}
 
-	public void renderEntity(BlockEntity blockEntity, double d, double e, double f, float g) {
-		this.renderEntity(blockEntity, d, e, f, g, -1, false);
-	}
-
 	public void renderEntity(BlockEntity blockEntity) {
-		this.renderEntity(blockEntity, 0.0, 0.0, 0.0, 0.0F, -1, true);
-	}
-
-	public void renderEntity(BlockEntity blockEntity, double d, double e, double f, float g, int i, boolean bl) {
 		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer != null) {
-			try {
-				if (bl || blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
-					blockEntityRenderer.render(blockEntity, d, e, f, g, i);
-				}
-			} catch (Throwable var15) {
-				CrashReport crashReport = CrashReport.create(var15, "Rendering Block Entity");
-				CrashReportSection crashReportSection = crashReport.addElement("Block Entity Details");
-				blockEntity.populateCrashReport(crashReportSection);
-				throw new CrashException(crashReport);
-			}
+			renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0F, -1, BlockRenderLayer.field_20799));
+		}
+	}
+
+	private static void renderEntity(BlockEntity blockEntity, Runnable runnable) {
+		try {
+			runnable.run();
+		} catch (Throwable var5) {
+			CrashReport crashReport = CrashReport.create(var5, "Rendering Block Entity");
+			CrashReportSection crashReportSection = crashReport.addElement("Block Entity Details");
+			blockEntity.populateCrashReport(crashReportSection);
+			throw new CrashException(crashReport);
 		}
 	}
 

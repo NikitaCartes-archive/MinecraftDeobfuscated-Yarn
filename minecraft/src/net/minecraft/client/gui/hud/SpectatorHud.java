@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.hud;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -47,13 +46,13 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			if (g <= 0.0F) {
 				this.spectatorMenu.close();
 			} else {
-				int i = this.client.window.getScaledWidth() / 2;
-				int j = this.blitOffset;
-				this.blitOffset = -90;
-				int k = MathHelper.floor((float)this.client.window.getScaledHeight() - 22.0F * g);
+				int i = this.client.method_22683().getScaledWidth() / 2;
+				int j = this.getBlitOffset();
+				this.setBlitOffset(-90);
+				int k = MathHelper.floor((float)this.client.method_22683().getScaledHeight() - 22.0F * g);
 				SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
 				this.renderSpectatorMenu(g, i, k, spectatorMenuState);
-				this.blitOffset = j;
+				this.setBlitOffset(j);
 			}
 		}
 	}
@@ -61,11 +60,9 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	protected void renderSpectatorMenu(float f, int i, int j, SpectatorMenuState spectatorMenuState) {
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-		);
+		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
-		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+		this.client.getTextureManager().method_22813(WIDGETS_TEX);
 		this.blit(i - 91, j, 0, 0, 182, 22);
 		if (spectatorMenuState.getSelectedSlot() >= 0) {
 			this.blit(i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
@@ -74,7 +71,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		GuiLighting.enableForItems();
 
 		for (int k = 0; k < 9; k++) {
-			this.renderSpectatorCommand(k, this.client.window.getScaledWidth() / 2 - 90 + k * 20 + 2, (float)(j + 3), f, spectatorMenuState.getCommand(k));
+			this.renderSpectatorCommand(k, this.client.method_22683().getScaledWidth() / 2 - 90 + k * 20 + 2, (float)(j + 3), f, spectatorMenuState.getCommand(k));
 		}
 
 		GuiLighting.disable();
@@ -83,7 +80,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	}
 
 	private void renderSpectatorCommand(int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
-		this.client.getTextureManager().bindTexture(SPECTATOR_TEX);
+		this.client.getTextureManager().method_22813(SPECTATOR_TEX);
 		if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
 			int k = (int)(g * 255.0F);
 			RenderSystem.pushMatrix();
@@ -109,13 +106,11 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				? this.spectatorMenu.getCurrentGroup().getPrompt().asFormattedString()
 				: spectatorMenuCommand.getName().asFormattedString();
 			if (string != null) {
-				int j = (this.client.window.getScaledWidth() - this.client.textRenderer.getStringWidth(string)) / 2;
-				int k = this.client.window.getScaledHeight() - 35;
+				int j = (this.client.method_22683().getScaledWidth() - this.client.textRenderer.getStringWidth(string)) / 2;
+				int k = this.client.method_22683().getScaledHeight() - 35;
 				RenderSystem.pushMatrix();
 				RenderSystem.enableBlend();
-				RenderSystem.blendFuncSeparate(
-					GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-				);
+				RenderSystem.defaultBlendFunc();
 				this.client.textRenderer.drawWithShadow(string, (float)j, (float)k, 16777215 + (i << 24));
 				RenderSystem.disableBlend();
 				RenderSystem.popMatrix();

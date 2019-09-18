@@ -24,9 +24,4 @@ public class StainedGlassPaneBlock extends PaneBlock implements ColoredBlock {
 	public DyeColor getColor() {
 		return this.color;
 	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
-	}
 }

@@ -2,18 +2,13 @@ package net.minecraft.world.loot.entry;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.class_4570;
 import net.minecraft.world.loot.LootTableReporter;
-import net.minecraft.world.loot.condition.LootCondition;
-import net.minecraft.world.loot.context.LootContextType;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class AlternativeEntry extends CombinedEntry {
-	AlternativeEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
-		super(lootEntrys, lootConditions);
+	AlternativeEntry(LootEntry[] lootEntrys, class_4570[] args) {
+		super(lootEntrys, args);
 	}
 
 	@Override
@@ -39,8 +34,8 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		super.check(lootTableReporter, function, set, lootContextType);
+	public void check(LootTableReporter lootTableReporter) {
+		super.check(lootTableReporter);
 
 		for (int i = 0; i < this.children.length - 1; i++) {
 			if (ArrayUtils.isEmpty((Object[])this.children[i].conditions)) {

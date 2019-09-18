@@ -20,7 +20,10 @@ public class SilverfishEntityModel<T extends Entity> extends EntityModel<T> {
 
 		for (int i = 0; i < this.field_3560.length; i++) {
 			this.field_3560[i] = new ModelPart(this, field_3559[i][0], field_3559[i][1]);
-			this.field_3560[i].addCuboid((float)field_3558[i][0] * -0.5F, 0.0F, (float)field_3558[i][2] * -0.5F, field_3558[i][0], field_3558[i][1], field_3558[i][2]);
+			this.field_3560[i]
+				.addCuboid(
+					(float)field_3558[i][0] * -0.5F, 0.0F, (float)field_3558[i][2] * -0.5F, (float)field_3558[i][0], (float)field_3558[i][1], (float)field_3558[i][2]
+				);
 			this.field_3560[i].setRotationPoint(0.0F, (float)(24 - field_3558[i][1]), f);
 			this.field_3561[i] = f;
 			if (i < this.field_3560.length - 1) {
@@ -30,13 +33,13 @@ public class SilverfishEntityModel<T extends Entity> extends EntityModel<T> {
 
 		this.field_3557 = new ModelPart[3];
 		this.field_3557[0] = new ModelPart(this, 20, 0);
-		this.field_3557[0].addCuboid(-5.0F, 0.0F, (float)field_3558[2][2] * -0.5F, 10, 8, field_3558[2][2]);
+		this.field_3557[0].addCuboid(-5.0F, 0.0F, (float)field_3558[2][2] * -0.5F, 10.0F, 8.0F, (float)field_3558[2][2]);
 		this.field_3557[0].setRotationPoint(0.0F, 16.0F, this.field_3561[2]);
 		this.field_3557[1] = new ModelPart(this, 20, 11);
-		this.field_3557[1].addCuboid(-3.0F, 0.0F, (float)field_3558[4][2] * -0.5F, 6, 4, field_3558[4][2]);
+		this.field_3557[1].addCuboid(-3.0F, 0.0F, (float)field_3558[4][2] * -0.5F, 6.0F, 4.0F, (float)field_3558[4][2]);
 		this.field_3557[1].setRotationPoint(0.0F, 20.0F, this.field_3561[4]);
 		this.field_3557[2] = new ModelPart(this, 20, 18);
-		this.field_3557[2].addCuboid(-3.0F, 0.0F, (float)field_3558[4][2] * -0.5F, 6, 5, field_3558[1][2]);
+		this.field_3557[2].addCuboid(-3.0F, 0.0F, (float)field_3558[4][2] * -0.5F, 6.0F, 5.0F, (float)field_3558[1][2]);
 		this.field_3557[2].setRotationPoint(0.0F, 19.0F, this.field_3561[1]);
 	}
 

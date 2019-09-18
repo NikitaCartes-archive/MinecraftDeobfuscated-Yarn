@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class class_4491 {
-	private final List<ConcurrentLinkedQueue<Object>> field_20453 = ImmutableList.of(
+	private final List<ConcurrentLinkedQueue<class_4573>> field_20453 = ImmutableList.of(
 		new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue(), new ConcurrentLinkedQueue()
 	);
 	private volatile int field_20454;

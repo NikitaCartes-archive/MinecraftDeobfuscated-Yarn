@@ -29,7 +29,7 @@ public class ToastManager extends DrawableHelper {
 
 			for (int i = 0; i < this.visibleEntries.length; i++) {
 				ToastManager.Entry<?> entry = this.visibleEntries[i];
-				if (entry != null && entry.draw(this.client.window.getScaledWidth(), i)) {
+				if (entry != null && entry.draw(this.client.method_22683().getScaledWidth(), i)) {
 					this.visibleEntries[i] = null;
 				}
 

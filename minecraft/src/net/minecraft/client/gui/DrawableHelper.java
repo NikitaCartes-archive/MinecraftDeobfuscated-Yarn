@@ -1,6 +1,5 @@
 package net.minecraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,7 +15,7 @@ public abstract class DrawableHelper {
 	public static final Identifier BACKGROUND_LOCATION = new Identifier("textures/gui/options_background.png");
 	public static final Identifier STATS_ICON_LOCATION = new Identifier("textures/gui/container/stats_icons.png");
 	public static final Identifier GUI_ICONS_LOCATION = new Identifier("textures/gui/icons.png");
-	protected int blitOffset;
+	private int blitOffset;
 
 	protected void hLine(int i, int j, int k, int l) {
 		if (j < i) {
@@ -59,9 +58,7 @@ public abstract class DrawableHelper {
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-		);
+		RenderSystem.defaultBlendFunc();
 		RenderSystem.color4f(g, h, o, f);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
@@ -85,9 +82,7 @@ public abstract class DrawableHelper {
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.disableAlphaTest();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-		);
+		RenderSystem.defaultBlendFunc();
 		RenderSystem.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -148,5 +143,13 @@ public abstract class DrawableHelper {
 		bufferBuilder.vertex((double)j, (double)k, (double)m).texture((double)g, (double)h).next();
 		bufferBuilder.vertex((double)i, (double)k, (double)m).texture((double)f, (double)h).next();
 		tessellator.draw();
+	}
+
+	public int getBlitOffset() {
+		return this.blitOffset;
+	}
+
+	public void setBlitOffset(int i) {
+		this.blitOffset = i;
 	}
 }

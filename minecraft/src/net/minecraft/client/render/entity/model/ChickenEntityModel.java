@@ -21,28 +21,28 @@ public class ChickenEntityModel<T extends Entity> extends EntityModel<T> {
 	public ChickenEntityModel() {
 		int i = 16;
 		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-2.0F, -6.0F, -2.0F, 4, 6, 3, 0.0F);
+		this.head.addCuboid(-2.0F, -6.0F, -2.0F, 4.0F, 6.0F, 3.0F, 0.0F);
 		this.head.setRotationPoint(0.0F, 15.0F, -4.0F);
 		this.beak = new ModelPart(this, 14, 0);
-		this.beak.addCuboid(-2.0F, -4.0F, -4.0F, 4, 2, 2, 0.0F);
+		this.beak.addCuboid(-2.0F, -4.0F, -4.0F, 4.0F, 2.0F, 2.0F, 0.0F);
 		this.beak.setRotationPoint(0.0F, 15.0F, -4.0F);
 		this.wattle = new ModelPart(this, 14, 4);
-		this.wattle.addCuboid(-1.0F, -2.0F, -3.0F, 2, 2, 2, 0.0F);
+		this.wattle.addCuboid(-1.0F, -2.0F, -3.0F, 2.0F, 2.0F, 2.0F, 0.0F);
 		this.wattle.setRotationPoint(0.0F, 15.0F, -4.0F);
 		this.body = new ModelPart(this, 0, 9);
-		this.body.addCuboid(-3.0F, -4.0F, -3.0F, 6, 8, 6, 0.0F);
+		this.body.addCuboid(-3.0F, -4.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F);
 		this.body.setRotationPoint(0.0F, 16.0F, 0.0F);
 		this.leftLeg = new ModelPart(this, 26, 0);
-		this.leftLeg.addCuboid(-1.0F, 0.0F, -3.0F, 3, 5, 3);
+		this.leftLeg.addCuboid(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F);
 		this.leftLeg.setRotationPoint(-2.0F, 19.0F, 1.0F);
 		this.rightLeg = new ModelPart(this, 26, 0);
-		this.rightLeg.addCuboid(-1.0F, 0.0F, -3.0F, 3, 5, 3);
+		this.rightLeg.addCuboid(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F);
 		this.rightLeg.setRotationPoint(1.0F, 19.0F, 1.0F);
 		this.leftWing = new ModelPart(this, 24, 13);
-		this.leftWing.addCuboid(0.0F, 0.0F, -3.0F, 1, 4, 6);
+		this.leftWing.addCuboid(0.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F);
 		this.leftWing.setRotationPoint(-4.0F, 13.0F, 0.0F);
 		this.rightWing = new ModelPart(this, 24, 13);
-		this.rightWing.addCuboid(-1.0F, 0.0F, -3.0F, 1, 4, 6);
+		this.rightWing.addCuboid(-1.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F);
 		this.rightWing.setRotationPoint(4.0F, 13.0F, 0.0F);
 	}
 

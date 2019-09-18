@@ -63,18 +63,8 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return true;
-	}
-
-	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.MODEL;
-	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

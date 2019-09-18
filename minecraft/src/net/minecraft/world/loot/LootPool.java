@@ -11,19 +11,15 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextType;
 import net.minecraft.world.loot.entry.LootEntry;
 import net.minecraft.world.loot.function.LootFunction;
 import net.minecraft.world.loot.function.LootFunctions;
@@ -32,7 +28,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 public class LootPool {
 	private final LootEntry[] entries;
-	private final LootCondition[] conditions;
+	private final class_4570[] conditions;
 	private final Predicate<LootContext> predicate;
 	private final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> javaFunctions;
@@ -40,15 +36,11 @@ public class LootPool {
 	private final UniformLootTableRange bonusRollsRange;
 
 	private LootPool(
-		LootEntry[] lootEntrys,
-		LootCondition[] lootConditions,
-		LootFunction[] lootFunctions,
-		LootTableRange lootTableRange,
-		UniformLootTableRange uniformLootTableRange
+		LootEntry[] lootEntrys, class_4570[] args, LootFunction[] lootFunctions, LootTableRange lootTableRange, UniformLootTableRange uniformLootTableRange
 	) {
 		this.entries = lootEntrys;
-		this.conditions = lootConditions;
-		this.predicate = LootConditions.joinAnd(lootConditions);
+		this.conditions = args;
+		this.predicate = LootConditions.joinAnd(args);
 		this.functions = lootFunctions;
 		this.javaFunctions = LootFunctions.join(lootFunctions);
 		this.rollsRange = lootTableRange;
@@ -100,17 +92,17 @@ public class LootPool {
 		}
 	}
 
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+	public void check(LootTableReporter lootTableReporter) {
 		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"), function, set, lootContextType);
+			this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"));
 		}
 
 		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"), function, set, lootContextType);
+			this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"));
 		}
 
 		for (int i = 0; i < this.entries.length; i++) {
-			this.entries[i].check(lootTableReporter.makeChild(".entries[" + i + "]"), function, set, lootContextType);
+			this.entries[i].check(lootTableReporter.makeChild(".entries[" + i + "]"));
 		}
 	}
 
@@ -120,7 +112,7 @@ public class LootPool {
 
 	public static class Builder implements FunctionConsumerBuilder<LootPool.Builder>, ConditionConsumerBuilder<LootPool.Builder> {
 		private final List<LootEntry> entries = Lists.<LootEntry>newArrayList();
-		private final List<LootCondition> conditions = Lists.<LootCondition>newArrayList();
+		private final List<class_4570> conditions = Lists.<class_4570>newArrayList();
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
 		private LootTableRange rollsRange = new UniformLootTableRange(1.0F);
 		private UniformLootTableRange bonusRollsRange = new UniformLootTableRange(0.0F, 0.0F);
@@ -139,7 +131,7 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder method_356(LootCondition.Builder builder) {
+		public LootPool.Builder method_356(class_4570.Builder builder) {
 			this.conditions.add(builder.build());
 			return this;
 		}
@@ -155,7 +147,7 @@ public class LootPool {
 			} else {
 				return new LootPool(
 					(LootEntry[])this.entries.toArray(new LootEntry[0]),
-					(LootCondition[])this.conditions.toArray(new LootCondition[0]),
+					(class_4570[])this.conditions.toArray(new class_4570[0]),
 					(LootFunction[])this.functions.toArray(new LootFunction[0]),
 					this.rollsRange,
 					this.bonusRollsRange
@@ -168,13 +160,13 @@ public class LootPool {
 		public LootPool method_358(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "loot pool");
 			LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootEntry[].class);
-			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
+			class_4570[] lvs = JsonHelper.deserialize(jsonObject, "conditions", new class_4570[0], jsonDeserializationContext, class_4570[].class);
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
 			LootTableRange lootTableRange = LootTableRanges.deserialize(jsonObject.get("rolls"), jsonDeserializationContext);
 			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(
 				jsonObject, "bonus_rolls", new UniformLootTableRange(0.0F, 0.0F), jsonDeserializationContext, UniformLootTableRange.class
 			);
-			return new LootPool(lootEntrys, lootConditions, lootFunctions, lootTableRange, uniformLootTableRange);
+			return new LootPool(lootEntrys, lvs, lootFunctions, lootTableRange, uniformLootTableRange);
 		}
 
 		public JsonElement method_357(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {

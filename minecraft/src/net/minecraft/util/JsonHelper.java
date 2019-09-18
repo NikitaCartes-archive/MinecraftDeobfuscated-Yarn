@@ -142,6 +142,14 @@ public class JsonHelper {
 		}
 	}
 
+	public static long method_22449(JsonObject jsonObject, String string) {
+		if (jsonObject.has(string)) {
+			return asLong(jsonObject.get(string), string);
+		} else {
+			throw new JsonSyntaxException("Missing " + string + ", expected to find a Long");
+		}
+	}
+
 	public static long getLong(JsonObject jsonObject, String string, long l) {
 		return jsonObject.has(string) ? asLong(jsonObject.get(string), string) : l;
 	}
@@ -214,6 +222,7 @@ public class JsonHelper {
 		}
 	}
 
+	@Nullable
 	public static JsonArray getArray(JsonObject jsonObject, String string, @Nullable JsonArray jsonArray) {
 		return jsonObject.has(string) ? asArray(jsonObject.get(string), string) : jsonArray;
 	}

@@ -149,11 +149,6 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		return BlockRenderType.MODEL;
 	}
 
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {

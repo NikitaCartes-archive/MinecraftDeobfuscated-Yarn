@@ -13,11 +13,6 @@ public class SlimeBlock extends TransparentBlock {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
-	}
-
-	@Override
 	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
 		if (entity.method_21750()) {
 			super.onLandedUpon(world, blockPos, entity, f);

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.state.PropertyContainer;
@@ -94,11 +93,6 @@ public interface FluidState extends PropertyContainer<FluidState> {
 	@Environment(EnvType.CLIENT)
 	default ParticleEffect getParticle() {
 		return this.getFluid().getParticle();
-	}
-
-	@Environment(EnvType.CLIENT)
-	default BlockRenderLayer getRenderLayer() {
-		return this.getFluid().getRenderLayer();
 	}
 
 	default boolean matches(Tag<Fluid> tag) {

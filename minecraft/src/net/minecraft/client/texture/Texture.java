@@ -1,5 +1,6 @@
 package net.minecraft.client.texture;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -19,7 +20,11 @@ public interface Texture {
 	int getGlId();
 
 	default void bindTexture() {
-		RenderSystem.bindTexture(this.getGlId());
+		if (!RenderSystem.isOnRenderThreadOrInit()) {
+			RenderSystem.recordRenderCall(() -> GlStateManager.bindTexture(this.getGlId()));
+		} else {
+			GlStateManager.bindTexture(this.getGlId());
+		}
 	}
 
 	default void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {

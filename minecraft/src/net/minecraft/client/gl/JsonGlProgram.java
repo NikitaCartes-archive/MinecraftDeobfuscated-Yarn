@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -218,19 +219,21 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	}
 
 	public void disable() {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GlProgramManager.useProgram(0);
 		activeProgramRef = -1;
 		activeProgram = null;
 
 		for (int i = 0; i < this.samplerShaderLocs.size(); i++) {
 			if (this.samplerBinds.get(this.samplerNames.get(i)) != null) {
-				RenderSystem.activeTexture(33984 + i);
-				RenderSystem.bindTexture(0);
+				GlStateManager.activeTexture(33984 + i);
+				GlStateManager.bindTexture(0);
 			}
 		}
 	}
 
 	public void enable() {
+		RenderSystem.assertThread(RenderSystem::isOnGameThread);
 		this.uniformStateDirty = false;
 		activeProgram = this;
 		this.blendState.enable();
@@ -278,15 +281,18 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 	@Nullable
 	public GlUniform getUniformByName(String string) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		return (GlUniform)this.uniformByName.get(string);
 	}
 
 	public Uniform getUniformByNameOrDummy(String string) {
+		RenderSystem.assertThread(RenderSystem::isOnGameThread);
 		GlUniform glUniform = this.getUniformByName(string);
 		return (Uniform)(glUniform == null ? dummyUniform : glUniform);
 	}
 
 	private void finalizeUniformsAndSamplers() {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		int i = 0;
 
 		for (int j = 0; i < this.samplerNames.size(); j++) {

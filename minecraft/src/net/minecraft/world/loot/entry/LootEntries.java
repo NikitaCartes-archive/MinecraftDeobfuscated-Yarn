@@ -10,9 +10,9 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.Map;
+import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.condition.LootCondition;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class LootEntries {
@@ -43,8 +43,8 @@ public class LootEntries {
 			if (serializer == null) {
 				throw new JsonParseException("Unknown item type: " + identifier);
 			} else {
-				LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
-				return serializer.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+				class_4570[] lvs = JsonHelper.deserialize(jsonObject, "conditions", new class_4570[0], jsonDeserializationContext, class_4570[].class);
+				return serializer.fromJson(jsonObject, jsonDeserializationContext, lvs);
 			}
 		}
 

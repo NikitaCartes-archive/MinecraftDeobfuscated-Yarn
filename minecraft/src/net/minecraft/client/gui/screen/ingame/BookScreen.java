@@ -151,7 +151,7 @@ public class BookScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
+		this.minecraft.getTextureManager().method_22813(BOOK_TEXTURE);
 		int k = (this.width - 192) / 2;
 		int l = 2;
 		this.blit(k, 2, 0, 0, 192, 192);

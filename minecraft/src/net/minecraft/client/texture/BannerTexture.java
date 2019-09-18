@@ -32,17 +32,15 @@ public class BannerTexture extends AbstractTexture {
 			Resource resource = resourceManager.getResource(this.filename);
 			Throwable var3 = null;
 
-			try (
-				NativeImage nativeImage = NativeImage.read(resource.getInputStream());
+			try (NativeImage nativeImage = NativeImage.read(resource.getInputStream())) {
 				NativeImage nativeImage2 = new NativeImage(nativeImage.getWidth(), nativeImage.getHeight(), false);
-			) {
 				nativeImage2.copyFrom(nativeImage);
 
 				for (int i = 0; i < 17 && i < this.patternNames.size() && i < this.dyes.size(); i++) {
 					String string = (String)this.patternNames.get(i);
 					if (string != null) {
 						Resource resource2 = resourceManager.getResource(new Identifier(string));
-						Throwable var11 = null;
+						Throwable var10 = null;
 
 						try (NativeImage nativeImage3 = NativeImage.read(resource2.getInputStream())) {
 							int j = ((DyeColor)this.dyes.get(i)).getColorSwapped();
@@ -59,16 +57,16 @@ public class BannerTexture extends AbstractTexture {
 									}
 								}
 							}
-						} catch (Throwable var142) {
-							var11 = var142;
-							throw var142;
+						} catch (Throwable var103) {
+							var10 = var103;
+							throw var103;
 						} finally {
 							if (resource2 != null) {
-								if (var11 != null) {
+								if (var10 != null) {
 									try {
 										resource2.close();
-									} catch (Throwable var138) {
-										var11.addSuppressed(var138);
+									} catch (Throwable var99) {
+										var10.addSuppressed(var99);
 									}
 								} else {
 									resource2.close();
@@ -78,28 +76,36 @@ public class BannerTexture extends AbstractTexture {
 					}
 				}
 
-				TextureUtil.prepareImage(this.getGlId(), nativeImage2.getWidth(), nativeImage2.getHeight());
-				RenderSystem.pixelTransfer(3357, Float.MAX_VALUE);
-				nativeImage2.upload(0, 0, 0, false);
-				RenderSystem.pixelTransfer(3357, 0.0F);
-			} catch (Throwable var148) {
-				var3 = var148;
-				throw var148;
+				if (!RenderSystem.isOnRenderThreadOrInit()) {
+					RenderSystem.recordRenderCall(() -> this.method_22803(nativeImage2));
+				} else {
+					this.method_22803(nativeImage2);
+				}
+			} catch (Throwable var107) {
+				var3 = var107;
+				throw var107;
 			} finally {
 				if (resource != null) {
 					if (var3 != null) {
 						try {
 							resource.close();
-						} catch (Throwable var135) {
-							var3.addSuppressed(var135);
+						} catch (Throwable var97) {
+							var3.addSuppressed(var97);
 						}
 					} else {
 						resource.close();
 					}
 				}
 			}
-		} catch (IOException var150) {
-			LOGGER.error("Couldn't load layered color mask image", (Throwable)var150);
+		} catch (IOException var109) {
+			LOGGER.error("Couldn't load layered color mask image", (Throwable)var109);
 		}
+	}
+
+	private void method_22803(NativeImage nativeImage) {
+		TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+		RenderSystem.pixelTransfer(3357, Float.MAX_VALUE);
+		nativeImage.upload(0, 0, 0, true);
+		RenderSystem.pixelTransfer(3357, 0.0F);
 	}
 }

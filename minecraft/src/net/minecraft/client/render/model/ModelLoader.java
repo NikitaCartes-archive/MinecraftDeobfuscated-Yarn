@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,8 +36,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.block.BlockModels;
+import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.BellBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.ConduitBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRenderer;
 import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelVariantMap;
@@ -64,38 +72,66 @@ public class ModelLoader {
 	public static final Identifier LAVA_FLOW = new Identifier("block/lava_flow");
 	public static final Identifier WATER_FLOW = new Identifier("block/water_flow");
 	public static final Identifier WATER_OVERLAY = new Identifier("block/water_overlay");
-	public static final Identifier DESTROY_STAGE_0 = new Identifier("block/destroy_stage_0");
-	public static final Identifier DESTROY_STAGE_1 = new Identifier("block/destroy_stage_1");
-	public static final Identifier DESTROY_STAGE_2 = new Identifier("block/destroy_stage_2");
-	public static final Identifier DESTROY_STAGE_3 = new Identifier("block/destroy_stage_3");
-	public static final Identifier DESTROY_STAGE_4 = new Identifier("block/destroy_stage_4");
-	public static final Identifier DESTROY_STAGE_5 = new Identifier("block/destroy_stage_5");
-	public static final Identifier DESTROY_STAGE_6 = new Identifier("block/destroy_stage_6");
-	public static final Identifier DESTROY_STAGE_7 = new Identifier("block/destroy_stage_7");
-	public static final Identifier DESTROY_STAGE_8 = new Identifier("block/destroy_stage_8");
-	public static final Identifier DESTROY_STAGE_9 = new Identifier("block/destroy_stage_9");
-	private static final Set<Identifier> DEFAULT_TEXTURES = Sets.<Identifier>newHashSet(
-		WATER_FLOW,
-		LAVA_FLOW,
-		WATER_OVERLAY,
-		FIRE_0,
-		FIRE_1,
-		DESTROY_STAGE_0,
-		DESTROY_STAGE_1,
-		DESTROY_STAGE_2,
-		DESTROY_STAGE_3,
-		DESTROY_STAGE_4,
-		DESTROY_STAGE_5,
-		DESTROY_STAGE_6,
-		DESTROY_STAGE_7,
-		DESTROY_STAGE_8,
-		DESTROY_STAGE_9,
-		new Identifier("item/empty_armor_slot_helmet"),
-		new Identifier("item/empty_armor_slot_chestplate"),
-		new Identifier("item/empty_armor_slot_leggings"),
-		new Identifier("item/empty_armor_slot_boots"),
-		new Identifier("item/empty_armor_slot_shield")
+	public static final Identifier field_20845 = new Identifier("entity/shulker/shulker");
+	public static final List<Identifier> field_20846 = ImmutableList.of(
+		new Identifier("entity/shulker/shulker_white"),
+		new Identifier("entity/shulker/shulker_orange"),
+		new Identifier("entity/shulker/shulker_magenta"),
+		new Identifier("entity/shulker/shulker_light_blue"),
+		new Identifier("entity/shulker/shulker_yellow"),
+		new Identifier("entity/shulker/shulker_lime"),
+		new Identifier("entity/shulker/shulker_pink"),
+		new Identifier("entity/shulker/shulker_gray"),
+		new Identifier("entity/shulker/shulker_light_gray"),
+		new Identifier("entity/shulker/shulker_cyan"),
+		new Identifier("entity/shulker/shulker_purple"),
+		new Identifier("entity/shulker/shulker_blue"),
+		new Identifier("entity/shulker/shulker_brown"),
+		new Identifier("entity/shulker/shulker_green"),
+		new Identifier("entity/shulker/shulker_red"),
+		new Identifier("entity/shulker/shulker_black")
 	);
+	public static final Identifier field_20847 = new Identifier("entity/banner_base");
+	public static final List<Identifier> field_20848 = (List<Identifier>)IntStream.range(0, 10)
+		.mapToObj(i -> new Identifier("block/destroy_stage_" + i))
+		.collect(Collectors.toList());
+	private static final Set<Identifier> DEFAULT_TEXTURES = SystemUtil.consume(Sets.<Identifier>newHashSet(), hashSet -> {
+		hashSet.add(WATER_FLOW);
+		hashSet.add(LAVA_FLOW);
+		hashSet.add(WATER_OVERLAY);
+		hashSet.add(FIRE_0);
+		hashSet.add(FIRE_1);
+		hashSet.add(BellBlockEntityRenderer.BELL_BODY_TEXTURE);
+		hashSet.addAll(Arrays.asList(BedBlockEntityRenderer.TEXTURES));
+		hashSet.add(ChestBlockEntityRenderer.TRAPPED_DOUBLE_TEX);
+		hashSet.add(ChestBlockEntityRenderer.CHRISTMAS_DOUBLE_TEX);
+		hashSet.add(ChestBlockEntityRenderer.NORMAL_DOUBLE_TEX);
+		hashSet.add(ChestBlockEntityRenderer.TRAPPED_TEX);
+		hashSet.add(ChestBlockEntityRenderer.CHRISTMAS_TEX);
+		hashSet.add(ChestBlockEntityRenderer.NORMAL_TEX);
+		hashSet.add(ChestBlockEntityRenderer.ENDER_TEX);
+		hashSet.add(ConduitBlockEntityRenderer.BASE_TEX);
+		hashSet.add(ConduitBlockEntityRenderer.CAGE_TEX);
+		hashSet.add(ConduitBlockEntityRenderer.WIND_TEX);
+		hashSet.add(ConduitBlockEntityRenderer.WIND_VERTICAL_TEX);
+		hashSet.add(ConduitBlockEntityRenderer.OPEN_EYE_TEX);
+		hashSet.add(ConduitBlockEntityRenderer.CLOSED_EYE_TEX);
+		hashSet.add(EnchantingTableBlockEntityRenderer.BOOK_TEX);
+		hashSet.add(field_20845);
+		hashSet.addAll(field_20846);
+		hashSet.add(field_20847);
+
+		for (BannerPattern bannerPattern : BannerPattern.values()) {
+			hashSet.add(bannerPattern.method_22536());
+		}
+
+		hashSet.addAll(field_20848);
+		hashSet.add(new Identifier("item/empty_armor_slot_helmet"));
+		hashSet.add(new Identifier("item/empty_armor_slot_chestplate"));
+		hashSet.add(new Identifier("item/empty_armor_slot_leggings"));
+		hashSet.add(new Identifier("item/empty_armor_slot_boots"));
+		hashSet.add(new Identifier("item/empty_armor_slot_shield"));
+	});
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
 	@VisibleForTesting

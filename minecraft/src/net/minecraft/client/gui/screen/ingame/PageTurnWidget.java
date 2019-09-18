@@ -23,7 +23,7 @@ public class PageTurnWidget extends ButtonWidget {
 	@Override
 	public void renderButton(int i, int j, float f) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		MinecraftClient.getInstance().getTextureManager().bindTexture(BookScreen.BOOK_TEXTURE);
+		MinecraftClient.getInstance().getTextureManager().method_22813(BookScreen.BOOK_TEXTURE);
 		int k = 0;
 		int l = 192;
 		if (this.isHovered()) {

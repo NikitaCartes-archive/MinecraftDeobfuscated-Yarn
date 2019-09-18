@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import net.minecraft.class_4559;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
@@ -4842,7 +4843,7 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private EnterBlockCriterion.Conditions method_10422(Block block) {
-		return new EnterBlockCriterion.Conditions(block, null);
+		return new EnterBlockCriterion.Conditions(block, class_4559.field_20736);
 	}
 
 	private InventoryChangedCriterion.Conditions method_10424(NumberRange.IntRange intRange, ItemConvertible itemConvertible) {

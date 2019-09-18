@@ -5,23 +5,20 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextType;
 
-public class AlternativeLootCondition implements LootCondition {
-	private final LootCondition[] terms;
+public class AlternativeLootCondition implements class_4570 {
+	private final class_4570[] terms;
 	private final Predicate<LootContext> predicate;
 
-	private AlternativeLootCondition(LootCondition[] lootConditions) {
-		this.terms = lootConditions;
-		this.predicate = LootConditions.joinOr(lootConditions);
+	private AlternativeLootCondition(class_4570[] args) {
+		this.terms = args;
+		this.predicate = LootConditions.joinOr(args);
 	}
 
 	public final boolean method_825(LootContext lootContext) {
@@ -29,40 +26,40 @@ public class AlternativeLootCondition implements LootCondition {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		LootCondition.super.check(lootTableReporter, function, set, lootContextType);
+	public void check(LootTableReporter lootTableReporter) {
+		class_4570.super.check(lootTableReporter);
 
 		for (int i = 0; i < this.terms.length; i++) {
-			this.terms[i].check(lootTableReporter.makeChild(".term[" + i + "]"), function, set, lootContextType);
+			this.terms[i].check(lootTableReporter.makeChild(".term[" + i + "]"));
 		}
 	}
 
-	public static AlternativeLootCondition.Builder builder(LootCondition.Builder... builders) {
+	public static AlternativeLootCondition.Builder builder(class_4570.Builder... builders) {
 		return new AlternativeLootCondition.Builder(builders);
 	}
 
-	public static class Builder implements LootCondition.Builder {
-		private final List<LootCondition> terms = Lists.<LootCondition>newArrayList();
+	public static class Builder implements class_4570.Builder {
+		private final List<class_4570> terms = Lists.<class_4570>newArrayList();
 
-		public Builder(LootCondition.Builder... builders) {
-			for (LootCondition.Builder builder : builders) {
+		public Builder(class_4570.Builder... builders) {
+			for (class_4570.Builder builder : builders) {
 				this.terms.add(builder.build());
 			}
 		}
 
 		@Override
-		public AlternativeLootCondition.Builder withCondition(LootCondition.Builder builder) {
+		public AlternativeLootCondition.Builder withCondition(class_4570.Builder builder) {
 			this.terms.add(builder.build());
 			return this;
 		}
 
 		@Override
-		public LootCondition build() {
-			return new AlternativeLootCondition((LootCondition[])this.terms.toArray(new LootCondition[0]));
+		public class_4570 build() {
+			return new AlternativeLootCondition((class_4570[])this.terms.toArray(new class_4570[0]));
 		}
 	}
 
-	public static class Factory extends LootCondition.Factory<AlternativeLootCondition> {
+	public static class Factory extends class_4570.Factory<AlternativeLootCondition> {
 		public Factory() {
 			super(new Identifier("alternative"), AlternativeLootCondition.class);
 		}
@@ -72,8 +69,8 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 
 		public AlternativeLootCondition method_829(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, LootCondition[].class);
-			return new AlternativeLootCondition(lootConditions);
+			class_4570[] lvs = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, class_4570[].class);
+			return new AlternativeLootCondition(lvs);
 		}
 	}
 }

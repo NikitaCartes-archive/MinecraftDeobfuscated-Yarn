@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import net.minecraft.class_4580;
 import net.minecraft.command.BlockDataObject;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.EntityDataObject;
@@ -50,7 +51,9 @@ public class DataCommand {
 	private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("commands.data.modify.invalid_index", object)
 	);
-	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786);
+	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPES = ImmutableList.of(
+		EntityDataObject.field_13800, BlockDataObject.field_13786, class_4580.field_20855
+	);
 	public static final List<DataCommand.ObjectType> TARGET_OBJECT_TYPES = (List<DataCommand.ObjectType>)OBJECT_TYPES.stream()
 		.map(function -> (DataCommand.ObjectType)function.apply("target"))
 		.collect(ImmutableList.toImmutableList());

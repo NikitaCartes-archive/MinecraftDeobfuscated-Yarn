@@ -195,7 +195,7 @@ public class ChatHud extends DrawableHelper {
 		} else {
 			double f = this.getChatScale();
 			double g = d - 2.0;
-			double h = (double)this.client.window.getScaledHeight() - e - 40.0;
+			double h = (double)this.client.method_22683().getScaledHeight() - e - 40.0;
 			g = (double)MathHelper.floor(g / f);
 			h = (double)MathHelper.floor(h / f);
 			if (!(g < 0.0) && !(h < 0.0)) {

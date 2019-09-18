@@ -23,17 +23,15 @@ public class PlayerListEntry {
 	private GameMode gameMode;
 	private int latency;
 	private boolean texturesLoaded;
+	@Nullable
 	private String model;
+	@Nullable
 	private Text displayName;
 	private int field_3738;
 	private int field_3736;
 	private long field_3737;
 	private long field_3747;
 	private long field_3746;
-
-	public PlayerListEntry(GameProfile gameProfile) {
-		this.profile = gameProfile;
-	}
 
 	public PlayerListEntry(PlayerListS2CPacket.Entry entry) {
 		this.profile = entry.getProfile();
@@ -46,6 +44,7 @@ public class PlayerListEntry {
 		return this.profile;
 	}
 
+	@Nullable
 	public GameMode getGameMode() {
 		return this.gameMode;
 	}
@@ -97,19 +96,12 @@ public class PlayerListEntry {
 			if (!this.texturesLoaded) {
 				this.texturesLoaded = true;
 				MinecraftClient.getInstance().getSkinProvider().loadSkin(this.profile, (type, identifier, minecraftProfileTexture) -> {
-					switch (type) {
-						case SKIN:
-							this.textures.put(Type.SKIN, identifier);
-							this.model = minecraftProfileTexture.getMetadata("model");
-							if (this.model == null) {
-								this.model = "default";
-							}
-							break;
-						case CAPE:
-							this.textures.put(Type.CAPE, identifier);
-							break;
-						case ELYTRA:
-							this.textures.put(Type.ELYTRA, identifier);
+					this.textures.put(type, identifier);
+					if (type == Type.SKIN) {
+						this.model = minecraftProfileTexture.getMetadata("model");
+						if (this.model == null) {
+							this.model = "default";
+						}
 					}
 				}, true);
 			}

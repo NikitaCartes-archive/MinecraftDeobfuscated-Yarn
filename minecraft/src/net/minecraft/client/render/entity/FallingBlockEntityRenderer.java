@@ -39,7 +39,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 					RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(fallingBlockEntity));
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
+				bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
 				BlockPos blockPos = new BlockPos(fallingBlockEntity.x, fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.z);
 				RenderSystem.translatef((float)(d - (double)blockPos.getX() - 0.5), (float)(e - (double)blockPos.getY()), (float)(f - (double)blockPos.getZ() - 0.5));
 				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();

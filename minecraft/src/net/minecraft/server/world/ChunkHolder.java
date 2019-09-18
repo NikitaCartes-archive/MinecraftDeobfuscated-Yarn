@@ -9,8 +9,6 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
@@ -105,20 +103,6 @@ public class ChunkHolder {
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = this.getTickingFuture();
 		Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)completableFuture.getNow(null);
 		return either == null ? null : (WorldChunk)either.left().orElse(null);
-	}
-
-	@Nullable
-	@Environment(EnvType.CLIENT)
-	public ChunkStatus getCompletedStatus() {
-		for (int i = CHUNK_STATUSES.size() - 1; i >= 0; i--) {
-			ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);
-			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = this.getFuture(chunkStatus);
-			if (((Either)completableFuture.getNow(UNLOADED_CHUNK)).left().isPresent()) {
-				return chunkStatus;
-			}
-		}
-
-		return null;
 	}
 
 	@Nullable
@@ -266,11 +250,6 @@ public class ChunkHolder {
 
 	private void updateFuture(CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> completableFuture) {
 		this.future = this.future.thenCombine(completableFuture, (chunk, either) -> either.map(chunkx -> chunkx, unloaded -> chunk));
-	}
-
-	@Environment(EnvType.CLIENT)
-	public ChunkHolder.LevelType getLevelType() {
-		return getLevelType(this.level);
 	}
 
 	public ChunkPos getPos() {

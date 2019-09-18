@@ -84,11 +84,6 @@ public class FlowerPotBlock extends Block {
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
 	public Block getContent() {
 		return this.content;
 	}

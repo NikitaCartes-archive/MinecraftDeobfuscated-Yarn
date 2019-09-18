@@ -16,9 +16,6 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class TextureCache {
-	public static final TextureCache.Manager BANNER = new TextureCache.Manager(
-		"banner_", new Identifier("textures/entity/banner_base.png"), "textures/entity/banner/"
-	);
 	public static final TextureCache.Manager SHIELD = new TextureCache.Manager(
 		"shield_", new Identifier("textures/entity/shield_base.png"), "textures/entity/shield/"
 	);

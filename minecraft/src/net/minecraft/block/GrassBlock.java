@@ -65,14 +65,4 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 			}
 		}
 	}
-
-	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return true;
-	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT_MIPPED;
-	}
 }

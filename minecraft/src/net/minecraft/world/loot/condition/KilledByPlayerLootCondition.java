@@ -5,12 +5,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
-public class KilledByPlayerLootCondition implements LootCondition {
+public class KilledByPlayerLootCondition implements class_4570 {
 	private static final KilledByPlayerLootCondition INSTANCE = new KilledByPlayerLootCondition();
 
 	private KilledByPlayerLootCondition() {
@@ -25,11 +26,11 @@ public class KilledByPlayerLootCondition implements LootCondition {
 		return lootContext.hasParameter(LootContextParameters.LAST_DAMAGE_PLAYER);
 	}
 
-	public static LootCondition.Builder builder() {
+	public static class_4570.Builder builder() {
 		return () -> INSTANCE;
 	}
 
-	public static class Factory extends LootCondition.Factory<KilledByPlayerLootCondition> {
+	public static class Factory extends class_4570.Factory<KilledByPlayerLootCondition> {
 		protected Factory() {
 			super(new Identifier("killed_by_player"), KilledByPlayerLootCondition.class);
 		}

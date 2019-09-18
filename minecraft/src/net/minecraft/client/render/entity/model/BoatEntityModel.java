@@ -25,15 +25,15 @@ public class BoatEntityModel extends EntityModel<BoatEntity> {
 		int k = 20;
 		int l = 4;
 		int m = 28;
-		this.body[0].addCuboid(-14.0F, -9.0F, -3.0F, 28, 16, 3, 0.0F);
+		this.body[0].addCuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
 		this.body[0].setRotationPoint(0.0F, 3.0F, 1.0F);
-		this.body[1].addCuboid(-13.0F, -7.0F, -1.0F, 18, 6, 2, 0.0F);
+		this.body[1].addCuboid(-13.0F, -7.0F, -1.0F, 18.0F, 6.0F, 2.0F, 0.0F);
 		this.body[1].setRotationPoint(-15.0F, 4.0F, 4.0F);
-		this.body[2].addCuboid(-8.0F, -7.0F, -1.0F, 16, 6, 2, 0.0F);
+		this.body[2].addCuboid(-8.0F, -7.0F, -1.0F, 16.0F, 6.0F, 2.0F, 0.0F);
 		this.body[2].setRotationPoint(15.0F, 4.0F, 0.0F);
-		this.body[3].addCuboid(-14.0F, -7.0F, -1.0F, 28, 6, 2, 0.0F);
+		this.body[3].addCuboid(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
 		this.body[3].setRotationPoint(0.0F, 4.0F, -9.0F);
-		this.body[4].addCuboid(-14.0F, -7.0F, -1.0F, 28, 6, 2, 0.0F);
+		this.body[4].addCuboid(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F, 0.0F);
 		this.body[4].setRotationPoint(0.0F, 4.0F, 9.0F);
 		this.body[0].pitch = (float) (Math.PI / 2);
 		this.body[1].yaw = (float) (Math.PI * 3.0 / 2.0);
@@ -47,7 +47,7 @@ public class BoatEntityModel extends EntityModel<BoatEntity> {
 		this.paddles[0].roll = (float) (Math.PI / 16);
 		this.paddles[1].roll = (float) (Math.PI / 16);
 		this.bottom = new ModelPart(this, 0, 0).setTextureSize(128, 64);
-		this.bottom.addCuboid(-14.0F, -9.0F, -3.0F, 28, 16, 3, 0.0F);
+		this.bottom.addCuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
 		this.bottom.setRotationPoint(0.0F, -3.0F, 1.0F);
 		this.bottom.pitch = (float) (Math.PI / 2);
 	}
@@ -77,8 +77,8 @@ public class BoatEntityModel extends EntityModel<BoatEntity> {
 		int j = 7;
 		int k = 6;
 		float f = -5.0F;
-		modelPart.addCuboid(-1.0F, 0.0F, -5.0F, 2, 2, 18);
-		modelPart.addCuboid(bl ? -1.001F : 0.001F, -3.0F, 8.0F, 1, 6, 7);
+		modelPart.addCuboid(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F);
+		modelPart.addCuboid(bl ? -1.001F : 0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F);
 		return modelPart;
 	}
 

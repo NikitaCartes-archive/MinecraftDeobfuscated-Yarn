@@ -39,6 +39,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	private ShulkerBoxBlockEntity.AnimationStage animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 	private float animationProgress;
 	private float prevAnimationProgress;
+	@Nullable
 	private DyeColor cachedColor;
 	private boolean cachedColorUpdateNeeded;
 
@@ -289,6 +290,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
 	}
 
+	@Nullable
 	@Environment(EnvType.CLIENT)
 	public DyeColor getColor() {
 		if (this.cachedColorUpdateNeeded) {

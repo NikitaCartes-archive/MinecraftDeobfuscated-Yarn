@@ -3,10 +3,17 @@ package net.minecraft.client.util.math;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
 public final class Vector3f {
+	public static Vector3f field_20702 = new Vector3f(-1.0F, 0.0F, 0.0F);
+	public static Vector3f field_20703 = new Vector3f(1.0F, 0.0F, 0.0F);
+	public static Vector3f field_20704 = new Vector3f(0.0F, -1.0F, 0.0F);
+	public static Vector3f field_20705 = new Vector3f(0.0F, 1.0F, 0.0F);
+	public static Vector3f field_20706 = new Vector3f(0.0F, 0.0F, -1.0F);
+	public static Vector3f field_20707 = new Vector3f(0.0F, 0.0F, 1.0F);
 	private final float[] components;
 
 	@Environment(EnvType.CLIENT)
@@ -18,7 +25,6 @@ public final class Vector3f {
 		this.components = new float[3];
 	}
 
-	@Environment(EnvType.CLIENT)
 	public Vector3f(float f, float g, float h) {
 		this.components = new float[]{f, g, h};
 	}
@@ -116,8 +122,10 @@ public final class Vector3f {
 			f += this.components[i] * this.components[i];
 		}
 
-		for (int i = 0; i < 3; i++) {
-			this.components[i] = this.components[i] / f;
+		float g = (float)MathHelper.fastInverseSqrt((double)f);
+
+		for (int j = 0; j < 3; j++) {
+			this.components[j] = this.components[j] * g;
 		}
 	}
 

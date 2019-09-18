@@ -15,10 +15,10 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 	public DrownedEntityModel(float f, float g, int i, int j) {
 		super(f, g, i, j);
 		this.rightArm = new ModelPart(this, 32, 48);
-		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, f);
+		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		this.rightArm.setRotationPoint(-5.0F, 2.0F + g, 0.0F);
 		this.rightLeg = new ModelPart(this, 16, 48);
-		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		this.rightLeg.setRotationPoint(-1.9F, 12.0F + g, 0.0F);
 	}
 

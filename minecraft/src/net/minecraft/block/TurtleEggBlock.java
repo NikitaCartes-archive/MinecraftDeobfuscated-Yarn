@@ -133,11 +133,6 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return blockState.get(EGGS) > 1 ? LARGE_SHAPE : SMALL_SHAPE;
 	}

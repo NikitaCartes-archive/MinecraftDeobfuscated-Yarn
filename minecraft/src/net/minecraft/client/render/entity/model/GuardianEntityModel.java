@@ -27,29 +27,29 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 		this.textureHeight = 64;
 		this.field_3380 = new ModelPart[12];
 		this.field_3379 = new ModelPart(this);
-		this.field_3379.setTextureOffset(0, 0).addCuboid(-6.0F, 10.0F, -8.0F, 12, 12, 16);
-		this.field_3379.setTextureOffset(0, 28).addCuboid(-8.0F, 10.0F, -6.0F, 2, 12, 12);
-		this.field_3379.setTextureOffset(0, 28).addCuboid(6.0F, 10.0F, -6.0F, 2, 12, 12, true);
-		this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0F, 8.0F, -6.0F, 12, 2, 12);
-		this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0F, 22.0F, -6.0F, 12, 2, 12);
+		this.field_3379.setTextureOffset(0, 0).addCuboid(-6.0F, 10.0F, -8.0F, 12.0F, 12.0F, 16.0F);
+		this.field_3379.setTextureOffset(0, 28).addCuboid(-8.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F);
+		this.field_3379.setTextureOffset(0, 28).addCuboid(6.0F, 10.0F, -6.0F, 2.0F, 12.0F, 12.0F, true);
+		this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0F, 8.0F, -6.0F, 12.0F, 2.0F, 12.0F);
+		this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0F, 22.0F, -6.0F, 12.0F, 2.0F, 12.0F);
 
 		for (int i = 0; i < this.field_3380.length; i++) {
 			this.field_3380[i] = new ModelPart(this, 0, 0);
-			this.field_3380[i].addCuboid(-1.0F, -4.5F, -1.0F, 2, 9, 2);
+			this.field_3380[i].addCuboid(-1.0F, -4.5F, -1.0F, 2.0F, 9.0F, 2.0F);
 			this.field_3379.addChild(this.field_3380[i]);
 		}
 
 		this.field_3381 = new ModelPart(this, 8, 0);
-		this.field_3381.addCuboid(-1.0F, 15.0F, 0.0F, 2, 2, 1);
+		this.field_3381.addCuboid(-1.0F, 15.0F, 0.0F, 2.0F, 2.0F, 1.0F);
 		this.field_3379.addChild(this.field_3381);
 		this.field_3378 = new ModelPart[3];
 		this.field_3378[0] = new ModelPart(this, 40, 0);
-		this.field_3378[0].addCuboid(-2.0F, 14.0F, 7.0F, 4, 4, 8);
+		this.field_3378[0].addCuboid(-2.0F, 14.0F, 7.0F, 4.0F, 4.0F, 8.0F);
 		this.field_3378[1] = new ModelPart(this, 0, 54);
-		this.field_3378[1].addCuboid(0.0F, 14.0F, 0.0F, 3, 3, 7);
+		this.field_3378[1].addCuboid(0.0F, 14.0F, 0.0F, 3.0F, 3.0F, 7.0F);
 		this.field_3378[2] = new ModelPart(this);
-		this.field_3378[2].setTextureOffset(41, 32).addCuboid(0.0F, 14.0F, 0.0F, 2, 2, 6);
-		this.field_3378[2].setTextureOffset(25, 19).addCuboid(1.0F, 10.5F, 3.0F, 1, 9, 9);
+		this.field_3378[2].setTextureOffset(41, 32).addCuboid(0.0F, 14.0F, 0.0F, 2.0F, 2.0F, 6.0F);
+		this.field_3378[2].setTextureOffset(25, 19).addCuboid(1.0F, 10.5F, 3.0F, 1.0F, 9.0F, 9.0F);
 		this.field_3379.addChild(this.field_3378[0]);
 		this.field_3378[0].addChild(this.field_3378[1]);
 		this.field_3378[1].addChild(this.field_3378[2]);

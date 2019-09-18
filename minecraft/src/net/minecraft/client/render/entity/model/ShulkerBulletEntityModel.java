@@ -13,9 +13,9 @@ public class ShulkerBulletEntityModel<T extends Entity> extends EntityModel<T> {
 		this.textureWidth = 64;
 		this.textureHeight = 32;
 		this.field_3556 = new ModelPart(this);
-		this.field_3556.setTextureOffset(0, 0).addCuboid(-4.0F, -4.0F, -1.0F, 8, 8, 2, 0.0F);
-		this.field_3556.setTextureOffset(0, 10).addCuboid(-1.0F, -4.0F, -4.0F, 2, 8, 8, 0.0F);
-		this.field_3556.setTextureOffset(20, 0).addCuboid(-4.0F, -1.0F, -4.0F, 8, 2, 8, 0.0F);
+		this.field_3556.setTextureOffset(0, 0).addCuboid(-4.0F, -4.0F, -1.0F, 8.0F, 8.0F, 2.0F, 0.0F);
+		this.field_3556.setTextureOffset(0, 10).addCuboid(-1.0F, -4.0F, -4.0F, 2.0F, 8.0F, 8.0F, 0.0F);
+		this.field_3556.setTextureOffset(20, 0).addCuboid(-4.0F, -1.0F, -4.0F, 8.0F, 2.0F, 8.0F, 0.0F);
 		this.field_3556.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 

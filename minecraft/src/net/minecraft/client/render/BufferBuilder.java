@@ -1,16 +1,24 @@
 package net.minecraft.client.render;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.primitives.Floats;
+import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Deque;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.Quaternion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,8 +27,11 @@ public class BufferBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private ByteBuffer bufByte;
 	private IntBuffer bufInt;
-	private ShortBuffer bufShort;
 	private FloatBuffer bufFloat;
+	private final List<BufferBuilder.class_4574> field_20774 = Lists.<BufferBuilder.class_4574>newArrayList();
+	private int field_20775 = 0;
+	private int field_20776 = 0;
+	private int field_20777 = 0;
 	private int vertexCount;
 	private VertexFormatElement currentElement;
 	private int currentElementId;
@@ -29,22 +40,25 @@ public class BufferBuilder {
 	private double offsetX;
 	private double offsetY;
 	private double offsetZ;
+	private final Deque<Matrix4f> field_20778 = SystemUtil.consume(Queues.<Matrix4f>newArrayDeque(), arrayDeque -> {
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.method_22668();
+		arrayDeque.add(matrix4f);
+	});
 	private VertexFormat format;
 	private boolean building;
 
 	public BufferBuilder(int i) {
 		this.bufByte = GlAllocationUtils.allocateByteBuffer(i * 4);
 		this.bufInt = this.bufByte.asIntBuffer();
-		this.bufShort = this.bufByte.asShortBuffer();
-		this.bufFloat = this.bufByte.asFloatBuffer();
+		this.bufFloat = this.bufByte.asFloatBuffer().asReadOnlyBuffer();
 	}
 
 	private void grow(int i) {
-		if (this.vertexCount * this.format.getVertexSize() + i > this.bufByte.capacity()) {
+		if (this.field_20776 + this.vertexCount * this.format.getVertexSize() + i > this.bufByte.capacity()) {
 			int j = this.bufByte.capacity();
 			int k = j + roundBufferSize(i);
 			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", j, k);
-			int l = this.bufInt.position();
 			ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(k);
 			this.bufByte.position(0);
 			byteBuffer.put(this.bufByte);
@@ -52,9 +66,6 @@ public class BufferBuilder {
 			this.bufByte = byteBuffer;
 			this.bufFloat = this.bufByte.asFloatBuffer().asReadOnlyBuffer();
 			this.bufInt = this.bufByte.asIntBuffer();
-			this.bufInt.position(l);
-			this.bufShort = this.bufByte.asShortBuffer();
-			this.bufShort.position(l << 1);
 		}
 	}
 
@@ -83,62 +94,62 @@ public class BufferBuilder {
 				(float)((double)g + this.offsetY),
 				(float)((double)h + this.offsetZ),
 				this.format.getVertexSizeInteger(),
-				j * this.format.getVertexSize()
+				this.field_20776 / 4 + j * this.format.getVertexSize()
 			);
 		}
 
-		Integer[] integers = new Integer[i];
+		int[] is = new int[i];
+		int k = 0;
 
-		for (int k = 0; k < integers.length; k++) {
-			integers[k] = k;
+		while (k < is.length) {
+			is[k] = k++;
 		}
 
-		Arrays.sort(integers, (integer, integer2) -> Floats.compare(fs[integer2], fs[integer]));
+		IntArrays.quickSort(is, (ix, j) -> Floats.compare(fs[j], fs[ix]));
 		BitSet bitSet = new BitSet();
-		int l = this.format.getVertexSize();
-		int[] is = new int[l];
+		int[] js = new int[this.format.getVertexSize()];
 
-		for (int m = bitSet.nextClearBit(0); m < integers.length; m = bitSet.nextClearBit(m + 1)) {
-			int n = integers[m];
-			if (n != m) {
-				this.bufInt.limit(n * l + l);
-				this.bufInt.position(n * l);
-				this.bufInt.get(is);
-				int o = n;
+		for (int l = bitSet.nextClearBit(0); l < is.length; l = bitSet.nextClearBit(l + 1)) {
+			int m = is[l];
+			if (m != l) {
+				this.method_22628(m);
+				this.bufInt.get(js);
+				int n = m;
 
-				for (int p = integers[n]; o != m; p = integers[p]) {
-					this.bufInt.limit(p * l + l);
-					this.bufInt.position(p * l);
+				for (int o = is[m]; n != l; o = is[o]) {
+					this.method_22628(o);
 					IntBuffer intBuffer = this.bufInt.slice();
-					this.bufInt.limit(o * l + l);
-					this.bufInt.position(o * l);
+					this.method_22628(n);
 					this.bufInt.put(intBuffer);
-					bitSet.set(o);
-					o = p;
+					bitSet.set(n);
+					n = o;
 				}
 
-				this.bufInt.limit(m * l + l);
-				this.bufInt.position(m * l);
-				this.bufInt.put(is);
+				this.method_22628(l);
+				this.bufInt.put(js);
 			}
 
-			bitSet.set(m);
+			bitSet.set(l);
 		}
 	}
 
+	private void method_22628(int i) {
+		int j = this.format.getVertexSizeInteger() * 4;
+		this.bufInt.limit(this.field_20776 / 4 + (i + 1) * j);
+		this.bufInt.position(this.field_20776 / 4 + i * j);
+	}
+
 	public BufferBuilder.State toBufferState() {
-		this.bufInt.rewind();
+		this.bufInt.position(this.field_20776 / 4);
 		int i = this.getCurrentSize();
 		this.bufInt.limit(i);
-		int[] is = new int[i];
+		int[] is = new int[this.vertexCount * this.format.getVertexSizeInteger()];
 		this.bufInt.get(is);
-		this.bufInt.limit(this.bufInt.capacity());
-		this.bufInt.position(i);
 		return new BufferBuilder.State(is, new VertexFormat(this.format));
 	}
 
 	private int getCurrentSize() {
-		return this.vertexCount * this.format.getVertexSizeInteger();
+		return this.field_20776 / 4 + this.vertexCount * this.format.getVertexSizeInteger();
 	}
 
 	private static float getDistanceSq(FloatBuffer floatBuffer, float f, float g, float h, int i, int j) {
@@ -161,17 +172,13 @@ public class BufferBuilder {
 	}
 
 	public void restoreState(BufferBuilder.State state) {
-		this.bufInt.clear();
+		this.vertexCount = 0;
 		this.grow(state.getRawBuffer().length * 4);
+		this.bufInt.limit(this.bufInt.capacity());
+		this.bufInt.position(this.field_20776 / 4);
 		this.bufInt.put(state.getRawBuffer());
 		this.vertexCount = state.getVertexCount();
 		this.format = new VertexFormat(state.getFormat());
-	}
-
-	public void clear() {
-		this.vertexCount = 0;
-		this.currentElement = null;
-		this.currentElementId = 0;
 	}
 
 	public void begin(int i, VertexFormat vertexFormat) {
@@ -179,7 +186,6 @@ public class BufferBuilder {
 			throw new IllegalStateException("Already building!");
 		} else {
 			this.building = true;
-			this.clear();
 			this.drawMode = i;
 			this.format = vertexFormat;
 			this.currentElement = vertexFormat.getElement(this.currentElementId);
@@ -188,8 +194,21 @@ public class BufferBuilder {
 		}
 	}
 
+	public void end() {
+		if (!this.building) {
+			throw new IllegalStateException("Not building!");
+		} else {
+			this.building = false;
+			this.field_20774.add(new BufferBuilder.class_4574(this.format, this.vertexCount, this.drawMode));
+			this.field_20776 = this.field_20776 + this.vertexCount * this.format.getVertexSize();
+			this.vertexCount = 0;
+			this.currentElement = null;
+			this.currentElementId = 0;
+		}
+	}
+
 	public BufferBuilder texture(double d, double e) {
-		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
+		int i = this.method_22633();
 		switch (this.currentElement.getFormat()) {
 			case FLOAT:
 				this.bufByte.putFloat(i, (float)d);
@@ -216,7 +235,7 @@ public class BufferBuilder {
 	}
 
 	public BufferBuilder texture(int i, int j) {
-		int k = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
+		int k = this.method_22633();
 		switch (this.currentElement.getFormat()) {
 			case FLOAT:
 				this.bufByte.putFloat(k, (float)i);
@@ -243,7 +262,7 @@ public class BufferBuilder {
 	}
 
 	public void brightness(int i, int j, int k, int l) {
-		int m = (this.vertexCount - 4) * this.format.getVertexSizeInteger() + this.format.getUvOffset(1) / 4;
+		int m = this.field_20776 / 4 + (this.vertexCount - 4) * this.format.getVertexSizeInteger() + this.format.getUvOffset(1) / 4;
 		int n = this.format.getVertexSize() >> 2;
 		this.bufInt.put(m, i);
 		this.bufInt.put(m + n, j);
@@ -253,7 +272,7 @@ public class BufferBuilder {
 
 	public void postPosition(double d, double e, double f) {
 		int i = this.format.getVertexSizeInteger();
-		int j = (this.vertexCount - 4) * i;
+		int j = this.field_20776 / 4 + (this.vertexCount - 4) * i;
 
 		for (int k = 0; k < 4; k++) {
 			int l = j + k * i;
@@ -266,7 +285,7 @@ public class BufferBuilder {
 	}
 
 	private int getColorIndex(int i) {
-		return ((this.vertexCount - i) * this.format.getVertexSize() + this.format.getColorOffset()) / 4;
+		return (this.field_20776 + (this.vertexCount - i) * this.format.getVertexSize() + this.format.getColorOffset()) / 4;
 	}
 
 	public void multiplyColor(float f, float g, float h, int i) {
@@ -334,9 +353,10 @@ public class BufferBuilder {
 
 	public BufferBuilder color(int i, int j, int k, int l) {
 		if (this.colorDisabled) {
+			this.nextElement();
 			return this;
 		} else {
-			int m = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
+			int m = this.method_22633();
 			switch (this.currentElement.getFormat()) {
 				case FLOAT:
 					this.bufByte.putFloat(m, (float)i / 255.0F);
@@ -378,8 +398,13 @@ public class BufferBuilder {
 		}
 	}
 
+	private int method_22633() {
+		return this.field_20776 + this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
+	}
+
 	public void putVertexData(int[] is) {
 		this.grow(is.length * 4 + this.format.getVertexSize());
+		this.bufInt.limit(this.bufInt.capacity());
 		this.bufInt.position(this.getCurrentSize());
 		this.bufInt.put(is);
 		this.vertexCount = this.vertexCount + is.length / this.format.getVertexSizeInteger();
@@ -391,7 +416,7 @@ public class BufferBuilder {
 	}
 
 	public BufferBuilder vertex(double d, double e, double f) {
-		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
+		int i = this.method_22633();
 		switch (this.currentElement.getFormat()) {
 			case FLOAT:
 				this.bufByte.putFloat(i, (float)(d + this.offsetX));
@@ -427,7 +452,7 @@ public class BufferBuilder {
 		int k = (byte)((int)(h * 127.0F)) & 255;
 		int l = i | j << 8 | k << 16;
 		int m = this.format.getVertexSize() >> 2;
-		int n = (this.vertexCount - 4) * m + this.format.getNormalOffset() / 4;
+		int n = this.field_20776 / 4 + (this.vertexCount - 4) * m + this.format.getNormalOffset() / 4;
 		this.bufInt.put(n, l);
 		this.bufInt.put(n + m, l);
 		this.bufInt.put(n + m * 2, l);
@@ -444,7 +469,7 @@ public class BufferBuilder {
 	}
 
 	public BufferBuilder normal(float f, float g, float h) {
-		int i = this.vertexCount * this.format.getVertexSize() + this.format.getElementOffset(this.currentElementId);
+		int i = this.method_22633();
 		switch (this.currentElement.getFormat()) {
 			case FLOAT:
 				this.bufByte.putFloat(i, f);
@@ -480,30 +505,46 @@ public class BufferBuilder {
 		this.offsetZ = f;
 	}
 
-	public void end() {
-		if (!this.building) {
-			throw new IllegalStateException("Not building!");
-		} else {
-			this.building = false;
-			this.bufByte.position(0);
-			this.bufByte.limit(this.getCurrentSize() * 4);
-		}
+	public void method_22626(double d, double e, double f) {
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.method_22668();
+		matrix4f.method_22671(new Vector3f((float)d, (float)e, (float)f));
+		this.method_22623(matrix4f);
 	}
 
-	public ByteBuffer getByteBuffer() {
-		return this.bufByte;
+	public void method_22627(float f, float g, float h) {
+		Matrix4f matrix4f = new Matrix4f();
+		matrix4f.method_22668();
+		matrix4f.set(0, 0, f);
+		matrix4f.set(1, 1, g);
+		matrix4f.set(2, 2, h);
+		this.method_22623(matrix4f);
+	}
+
+	public void method_22623(Matrix4f matrix4f) {
+		Matrix4f matrix4f2 = (Matrix4f)this.field_20778.getLast();
+		matrix4f2.method_22672(matrix4f);
+	}
+
+	public void method_22622(Quaternion quaternion) {
+		Matrix4f matrix4f = (Matrix4f)this.field_20778.getLast();
+		matrix4f.method_22670(quaternion);
+	}
+
+	public void method_22629() {
+		this.field_20778.addLast(((Matrix4f)this.field_20778.getLast()).method_22673());
+	}
+
+	public void method_22630() {
+		this.field_20778.removeLast();
+	}
+
+	public Matrix4f method_22631() {
+		return (Matrix4f)this.field_20778.getLast();
 	}
 
 	public VertexFormat getVertexFormat() {
 		return this.format;
-	}
-
-	public int getVertexCount() {
-		return this.vertexCount;
-	}
-
-	public int getDrawMode() {
-		return this.drawMode;
 	}
 
 	public void setQuadColor(int i) {
@@ -516,6 +557,32 @@ public class BufferBuilder {
 		for (int i = 0; i < 4; i++) {
 			this.setColor(f, g, h, i + 1);
 		}
+	}
+
+	public Pair<BufferBuilder.class_4574, ByteBuffer> method_22632() {
+		BufferBuilder.class_4574 lv = (BufferBuilder.class_4574)this.field_20774.get(this.field_20775++);
+		this.bufByte.position(this.field_20777);
+		this.field_20777 = this.field_20777 + lv.method_22635() * lv.method_22634().getVertexSize();
+		this.bufByte.limit(this.field_20777);
+		if (this.field_20775 == this.field_20774.size() && this.vertexCount == 0) {
+			this.clear();
+		}
+
+		ByteBuffer byteBuffer = this.bufByte.slice();
+		this.bufByte.position(0);
+		this.bufByte.limit(this.bufByte.capacity());
+		return Pair.of(lv, byteBuffer);
+	}
+
+	public void clear() {
+		if (this.field_20776 != this.field_20777) {
+			LOGGER.warn("Bytes mismatch " + this.field_20776 + " " + this.field_20777);
+		}
+
+		this.field_20776 = 0;
+		this.field_20777 = 0;
+		this.field_20774.clear();
+		this.field_20775 = 0;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -538,6 +605,31 @@ public class BufferBuilder {
 
 		public VertexFormat getFormat() {
 			return this.format;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static final class class_4574 {
+		private final VertexFormat field_20779;
+		private final int field_20780;
+		private final int field_20781;
+
+		private class_4574(VertexFormat vertexFormat, int i, int j) {
+			this.field_20779 = vertexFormat;
+			this.field_20780 = i;
+			this.field_20781 = j;
+		}
+
+		public VertexFormat method_22634() {
+			return this.field_20779;
+		}
+
+		public int method_22635() {
+			return this.field_20780;
+		}
+
+		public int method_22636() {
+			return this.field_20781;
 		}
 	}
 }

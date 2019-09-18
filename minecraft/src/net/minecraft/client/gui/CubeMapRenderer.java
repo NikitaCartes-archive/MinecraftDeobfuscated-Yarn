@@ -1,6 +1,5 @@
 package net.minecraft.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -31,7 +30,9 @@ public class CubeMapRenderer {
 		RenderSystem.pushMatrix();
 		RenderSystem.loadIdentity();
 		RenderSystem.multMatrix(
-			Matrix4f.method_4929(85.0, (float)minecraftClient.window.getFramebufferWidth() / (float)minecraftClient.window.getFramebufferHeight(), 0.05F, 10.0F)
+			Matrix4f.method_4929(
+				85.0, (float)minecraftClient.method_22683().getFramebufferWidth() / (float)minecraftClient.method_22683().getFramebufferHeight(), 0.05F, 10.0F
+			)
 		);
 		RenderSystem.matrixMode(5888);
 		RenderSystem.pushMatrix();
@@ -42,9 +43,7 @@ public class CubeMapRenderer {
 		RenderSystem.disableAlphaTest();
 		RenderSystem.disableCull();
 		RenderSystem.depthMask(false);
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-		);
+		RenderSystem.defaultBlendFunc();
 		int i = 2;
 
 		for (int j = 0; j < 4; j++) {
@@ -57,7 +56,7 @@ public class CubeMapRenderer {
 			RenderSystem.rotatef(g, 0.0F, 1.0F, 0.0F);
 
 			for (int n = 0; n < 6; n++) {
-				minecraftClient.getTextureManager().bindTexture(this.faces[n]);
+				minecraftClient.getTextureManager().method_22813(this.faces[n]);
 				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 				int o = Math.round(255.0F * h) / (j + 1);
 				if (n == 0) {

@@ -2,6 +2,7 @@ package net.minecraft.entity;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.Dynamic;
 import java.util.Collection;
@@ -971,7 +972,7 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			if (this instanceof ServerPlayerEntity) {
-				Criterions.ENTITY_HURT_PLAYER.handle((ServerPlayerEntity)this, damageSource, g, f, bl);
+				Criterions.ENTITY_HURT_PLAYER.method_22467((ServerPlayerEntity)this, damageSource, g, f, bl);
 				if (h > 0.0F && h < 3.4028235E37F) {
 					((ServerPlayerEntity)this).increaseStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(h * 10.0F));
 				}
@@ -1646,73 +1647,89 @@ public abstract class LivingEntity extends Entity {
 
 	public void onDismounted(Entity entity) {
 		if (!(entity instanceof BoatEntity) && !(entity instanceof HorseBaseEntity)) {
-			double k = entity.x;
-			double l = entity.getBoundingBox().minY + (double)entity.getHeight();
-			double e = entity.z;
+			double q = entity.x;
+			double r = entity.getBoundingBox().minY + (double)entity.getHeight();
+			double s = entity.z;
 			Direction direction = entity.getMovementDirection();
 			if (direction != null && direction.getAxis() != Direction.Axis.Y) {
 				Direction direction2 = direction.rotateYClockwise();
 				int[][] is = new int[][]{{0, 1}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}, {-1, 0}, {1, 0}, {0, 1}};
-				double m = Math.floor(this.x) + 0.5;
-				double n = Math.floor(this.z) + 0.5;
-				double o = this.getBoundingBox().maxX - this.getBoundingBox().minX;
-				double p = this.getBoundingBox().maxZ - this.getBoundingBox().minZ;
-				Box box = new Box(
-					m - o / 2.0, entity.getBoundingBox().minY, n - p / 2.0, m + o / 2.0, Math.floor(entity.getBoundingBox().minY) + (double)this.getHeight(), n + p / 2.0
+				double k = Math.floor(this.x) + 0.5;
+				double t = Math.floor(this.z) + 0.5;
+				double l = this.getBoundingBox().maxX - this.getBoundingBox().minX;
+				double m = this.getBoundingBox().maxZ - this.getBoundingBox().minZ;
+				Box box3 = new Box(
+					k - l / 2.0, entity.getBoundingBox().minY, t - m / 2.0, k + l / 2.0, Math.floor(entity.getBoundingBox().minY) + (double)this.getHeight(), t + m / 2.0
 				);
 
 				for (int[] js : is) {
-					double q = (double)(direction.getOffsetX() * js[0] + direction2.getOffsetX() * js[1]);
-					double r = (double)(direction.getOffsetZ() * js[0] + direction2.getOffsetZ() * js[1]);
-					double s = m + q;
-					double t = n + r;
-					Box box2 = box.offset(q, 0.0, r);
-					if (this.world.doesNotCollide(this, box2)) {
-						BlockPos blockPos = new BlockPos(s, this.y, t);
+					double u = (double)(direction.getOffsetX() * js[0] + direction2.getOffsetX() * js[1]);
+					double v = (double)(direction.getOffsetZ() * js[0] + direction2.getOffsetZ() * js[1]);
+					double w = k + u;
+					double x = t + v;
+					Box box4 = box3.offset(u, 0.0, v);
+					if (this.world.doesNotCollide(this, box4)) {
+						BlockPos blockPos = new BlockPos(w, this.y, x);
 						if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) {
-							this.requestTeleport(s, this.y + 1.0, t);
+							this.requestTeleport(w, this.y + 1.0, x);
 							return;
 						}
 
-						BlockPos blockPos2 = new BlockPos(s, this.y - 1.0, t);
+						BlockPos blockPos2 = new BlockPos(w, this.y - 1.0, x);
 						if (this.world.getBlockState(blockPos2).hasSolidTopSurface(this.world, blockPos2, this) || this.world.getFluidState(blockPos2).matches(FluidTags.WATER)) {
-							k = s;
-							l = this.y + 1.0;
-							e = t;
+							q = w;
+							r = this.y + 1.0;
+							s = x;
 						}
 					} else {
-						BlockPos blockPosx = new BlockPos(s, this.y + 1.0, t);
-						if (this.world.doesNotCollide(this, box2.offset(0.0, 1.0, 0.0)) && this.world.getBlockState(blockPosx).hasSolidTopSurface(this.world, blockPosx, this)) {
-							k = s;
-							l = this.y + 2.0;
-							e = t;
+						BlockPos blockPosx = new BlockPos(w, this.y + 1.0, x);
+						if (this.world.doesNotCollide(this, box4.offset(0.0, 1.0, 0.0)) && this.world.getBlockState(blockPosx).hasSolidTopSurface(this.world, blockPosx, this)) {
+							q = w;
+							r = this.y + 2.0;
+							s = x;
 						}
 					}
 				}
 			}
 
-			this.requestTeleport(k, l, e);
+			this.requestTeleport(q, r, s);
 		} else {
 			double d = (double)(this.getWidth() / 2.0F + entity.getWidth() / 2.0F) + 0.4;
+			Box box = entity.getBoundingBox();
 			float f;
+			double e;
+			int i;
 			if (entity instanceof BoatEntity) {
+				e = box.maxY;
+				i = 2;
 				f = 0.0F;
 			} else {
+				e = box.minY;
+				i = 3;
 				f = (float) (Math.PI / 2) * (float)(this.getMainArm() == Arm.RIGHT ? -1 : 1);
 			}
 
-			float g = -MathHelper.sin(-this.yaw * (float) (Math.PI / 180.0) - (float) Math.PI + f);
-			float h = -MathHelper.cos(-this.yaw * (float) (Math.PI / 180.0) - (float) Math.PI + f);
-			double e = Math.abs(g) > Math.abs(h) ? d / (double)Math.abs(g) : d / (double)Math.abs(h);
-			double i = this.x + (double)g * e;
-			double j = this.z + (double)h * e;
-			this.setPosition(i, entity.y + (double)entity.getHeight() + 0.001, j);
-			if (!this.world.doesNotCollide(this, this.getBoundingBox().union(entity.getBoundingBox()))) {
-				this.setPosition(i, entity.y + (double)entity.getHeight() + 1.001, j);
-				if (!this.world.doesNotCollide(this, this.getBoundingBox().union(entity.getBoundingBox()))) {
-					this.setPosition(entity.x, entity.y + (double)this.getHeight() + 0.001, entity.z);
+			float g = -this.yaw * (float) (Math.PI / 180.0) - (float) Math.PI + f;
+			float h = -MathHelper.sin(g);
+			float j = -MathHelper.cos(g);
+			double k = Math.abs(h) > Math.abs(j) ? d / (double)Math.abs(h) : d / (double)Math.abs(j);
+			Box box2 = this.getBoundingBox().offset(-this.x, -this.y, -this.z);
+			ImmutableSet<Entity> immutableSet = ImmutableSet.of(this, entity);
+			double l = this.x + (double)h * k;
+			double m = this.z + (double)j * k;
+			double n = 0.001;
+
+			for (int o = 0; o < i; o++) {
+				double p = e + n;
+				if (this.world.doesNotCollide(this, box2.offset(l, p, m), immutableSet)) {
+					this.setPosition(l, p, m);
+					return;
 				}
+
+				n++;
 			}
+
+			this.setPosition(entity.x, entity.y + (double)this.getHeight() + 0.001, entity.z);
 		}
 	}
 
@@ -2138,7 +2155,11 @@ public abstract class LivingEntity extends Entity {
 			this.jumpingCooldown--;
 		}
 
-		if (this.bodyTrackingIncrements > 0 && !this.isLogicalSideForUpdatingMovement()) {
+		if (this.isLogicalSideForUpdatingMovement()) {
+			this.bodyTrackingIncrements = 0;
+		}
+
+		if (this.bodyTrackingIncrements > 0) {
 			double d = this.x + (this.serverX - this.x) / (double)this.bodyTrackingIncrements;
 			double e = this.y + (this.serverY - this.y) / (double)this.bodyTrackingIncrements;
 			double f = this.z + (this.serverZ - this.z) / (double)this.bodyTrackingIncrements;

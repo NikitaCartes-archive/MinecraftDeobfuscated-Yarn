@@ -624,14 +624,21 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(entityS2CPacket, this, this.client);
 		Entity entity = entityS2CPacket.getEntity(this.world);
 		if (entity != null) {
-			entity.trackedX = entity.trackedX + (long)entityS2CPacket.getDeltaXShort();
-			entity.trackedY = entity.trackedY + (long)entityS2CPacket.getDeltaYShort();
-			entity.trackedZ = entity.trackedZ + (long)entityS2CPacket.getDeltaZShort();
-			Vec3d vec3d = EntityS2CPacket.decodePacketCoordinates(entity.trackedX, entity.trackedY, entity.trackedZ);
 			if (!entity.isLogicalSideForUpdatingMovement()) {
-				float f = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getYaw() * 360) / 256.0F : entity.yaw;
-				float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0F : entity.pitch;
-				entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
+				if (entityS2CPacket.method_22826()) {
+					entity.trackedX = entity.trackedX + (long)entityS2CPacket.getDeltaXShort();
+					entity.trackedY = entity.trackedY + (long)entityS2CPacket.getDeltaYShort();
+					entity.trackedZ = entity.trackedZ + (long)entityS2CPacket.getDeltaZShort();
+					Vec3d vec3d = EntityS2CPacket.decodePacketCoordinates(entity.trackedX, entity.trackedY, entity.trackedZ);
+					float f = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getYaw() * 360) / 256.0F : entity.yaw;
+					float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0F : entity.pitch;
+					entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
+				} else if (entityS2CPacket.hasRotation()) {
+					float h = (float)entityS2CPacket.getYaw();
+					float f = (float)entityS2CPacket.getPitch();
+					entity.updateTrackedPositionAndAngles(entity.x, entity.y, entity.z, h, f, 3, false);
+				}
+
 				entity.onGround = entityS2CPacket.isOnGround();
 			}
 		}

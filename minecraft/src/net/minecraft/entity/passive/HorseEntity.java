@@ -50,6 +50,7 @@ public class HorseEntity extends HorseBaseEntity {
 		"textures/entity/horse/horse_markings_blackdots.png"
 	};
 	private static final String[] HORSE_MARKING_TEX_ID = new String[]{"", "wo_", "wmo", "wdo", "bdo"};
+	@Nullable
 	private String textureLocation;
 	private final String[] textureLayers = new String[2];
 

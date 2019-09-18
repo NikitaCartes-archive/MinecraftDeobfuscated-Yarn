@@ -16,18 +16,22 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.EnderChestBlock;
-import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
@@ -42,10 +46,6 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBatcher;
 import net.minecraft.client.render.chunk.ChunkOcclusionGraphBuilder;
-import net.minecraft.client.render.chunk.ChunkRenderData;
-import net.minecraft.client.render.chunk.ChunkRenderer;
-import net.minecraft.client.render.chunk.ChunkRendererFactory;
-import net.minecraft.client.render.chunk.ChunkRendererList;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -53,13 +53,13 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -75,6 +75,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashCallable;
@@ -87,11 +88,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -106,30 +109,28 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private static final Identifier CLOUDS_TEX = new Identifier("textures/environment/clouds.png");
 	private static final Identifier END_SKY_TEX = new Identifier("textures/environment/end_sky.png");
 	private static final Identifier FORCEFIELD_TEX = new Identifier("textures/misc/forcefield.png");
+	private static final Identifier field_20797 = new Identifier("textures/environment/rain.png");
+	private static final Identifier field_20798 = new Identifier("textures/environment/snow.png");
 	public static final Direction[] DIRECTIONS = Direction.values();
 	private final MinecraftClient client;
 	private final TextureManager textureManager;
 	private final EntityRenderDispatcher entityRenderDispatcher;
+	private final BackgroundRenderer chunkRendererList;
 	private ClientWorld world;
-	private Set<ChunkRenderer> chunkRenderers = Sets.<ChunkRenderer>newLinkedHashSet();
+	private Set<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> chunkRenderers = Sets.<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer>newLinkedHashSet();
 	private List<WorldRenderer.ChunkInfo> chunkInfos = Lists.<WorldRenderer.ChunkInfo>newArrayListWithCapacity(69696);
 	private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
 	private ChunkRenderDispatcher chunkRenderDispatcher;
-	private int starsDisplayList = -1;
-	private int field_4117 = -1;
-	private int field_4067 = -1;
-	private final VertexFormat field_4100;
+	private final VertexFormat field_4100 = VertexFormats.POSITION;
 	private GlBuffer starsBuffer;
 	private GlBuffer field_4087;
 	private GlBuffer field_4102;
-	private final int field_4079 = 28;
 	private boolean cloudsDirty = true;
-	private int cloudsDisplayList = -1;
 	private GlBuffer cloudsBuffer;
 	private int ticks;
 	private final Map<Integer, PartiallyBrokenBlockEntry> partiallyBrokenBlocks = Maps.<Integer, PartiallyBrokenBlockEntry>newHashMap();
 	private final Map<BlockPos, SoundInstance> playingSongs = Maps.<BlockPos, SoundInstance>newHashMap();
-	private final Sprite[] destroyStages = new Sprite[10];
+	private final List<Sprite> destroyStages = (List<Sprite>)IntStream.range(0, 10).mapToObj(ix -> null).collect(Collectors.toList());
 	private GlFramebuffer entityOutlinesFramebuffer;
 	private ShaderEffect entityOutlineShader;
 	private double lastCameraChunkUpdateX = Double.MIN_VALUE;
@@ -149,33 +150,288 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private net.minecraft.util.math.Vec3d field_4072 = net.minecraft.util.math.Vec3d.ZERO;
 	private CloudRenderMode field_4080;
 	private ChunkBatcher chunkBatcher;
-	private final ChunkRendererList chunkRendererList;
+	private final VertexFormat field_20791 = VertexFormats.POSITION_COLOR_UV_NORMAL;
 	private int renderDistance = -1;
-	private int field_4076 = 2;
 	private int regularEntityCount;
 	private int blockEntityCount;
 	private boolean field_4066;
 	private Frustum forcedFrustum;
 	private final Vector4f[] field_4065 = new Vector4f[8];
 	private final Vec3d forcedFrustumPosition = new Vec3d(0.0, 0.0, 0.0);
-	private final ChunkRendererFactory chunkRendererFactory;
 	private double lastTranslucentSortX;
 	private double lastTranslucentSortY;
 	private double lastTranslucentSortZ;
 	private boolean terrainUpdateNecessary = true;
 	private boolean entityOutlinesUpdateNecessary;
+	private int field_20792;
+	private int field_20793;
+	private final float[] field_20794 = new float[1024];
+	private final float[] field_20795 = new float[1024];
+	private final BufferBuilder field_20796 = new BufferBuilder(BlockRenderLayer.field_20799.method_22722());
 
 	public WorldRenderer(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
 		this.entityRenderDispatcher = minecraftClient.getEntityRenderManager();
+		this.chunkRendererList = new BackgroundRenderer();
 		this.textureManager = minecraftClient.getTextureManager();
-		this.chunkRendererList = new ChunkRendererList();
-		this.chunkRendererFactory = ChunkRenderer::new;
-		this.field_4100 = new VertexFormat();
-		this.field_4100.add(new VertexFormatElement(0, VertexFormatElement.Format.FLOAT, VertexFormatElement.Type.POSITION, 3));
+
+		for (int i = 0; i < 32; i++) {
+			for (int j = 0; j < 32; j++) {
+				float f = (float)(j - 16);
+				float g = (float)(i - 16);
+				float h = MathHelper.sqrt(f * f + g * g);
+				this.field_20794[i << 5 | j] = -g / h;
+				this.field_20795[i << 5 | j] = f / h;
+			}
+		}
+
 		this.renderStars();
 		this.method_3277();
 		this.method_3265();
+	}
+
+	private void method_22714(LightmapTextureManager lightmapTextureManager, Camera camera, float f) {
+		float g = this.client.world.getRainGradient(f);
+		if (!(g <= 0.0F)) {
+			lightmapTextureManager.enable();
+			World world = this.client.world;
+			int i = MathHelper.floor(camera.getPos().x);
+			int j = MathHelper.floor(camera.getPos().y);
+			int k = MathHelper.floor(camera.getPos().z);
+			Tessellator tessellator = Tessellator.getInstance();
+			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			RenderSystem.disableCull();
+			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+			RenderSystem.defaultAlphaFunc();
+			double d = camera.getPos().x;
+			double e = camera.getPos().y;
+			double h = camera.getPos().z;
+			int l = MathHelper.floor(e);
+			int m = 5;
+			if (this.client.options.fancyGraphics) {
+				m = 10;
+			}
+
+			int n = -1;
+			float o = (float)this.ticks + f;
+			bufferBuilder.setOffset(-d, -e, -h);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (int p = k - m; p <= k + m; p++) {
+				for (int q = i - m; q <= i + m; q++) {
+					int r = (p - k + 16) * 32 + q - i + 16;
+					double s = (double)this.field_20794[r] * 0.5;
+					double t = (double)this.field_20795[r] * 0.5;
+					mutable.set(q, 0, p);
+					Biome biome = world.getBiome(mutable);
+					if (biome.getPrecipitation() != Biome.Precipitation.NONE) {
+						int u = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, mutable).getY();
+						int v = j - m;
+						int w = j + m;
+						if (v < u) {
+							v = u;
+						}
+
+						if (w < u) {
+							w = u;
+						}
+
+						int x = u;
+						if (u < l) {
+							x = l;
+						}
+
+						if (v != w) {
+							Random random = new Random((long)(q * q * 3121 + q * 45238971 ^ p * p * 418711 + p * 13761));
+							mutable.set(q, v, p);
+							float y = biome.getTemperature(mutable);
+							if (y >= 0.15F) {
+								if (n != 0) {
+									if (n >= 0) {
+										tessellator.draw();
+									}
+
+									n = 0;
+									this.client.getTextureManager().method_22813(field_20797);
+									bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+								}
+
+								double z = -((double)(this.ticks + q * q * 3121 + q * 45238971 + p * p * 418711 + p * 13761 & 31) + (double)f) / 32.0 * (3.0 + random.nextDouble());
+								double aa = (double)((float)q + 0.5F) - camera.getPos().x;
+								double ab = (double)((float)p + 0.5F) - camera.getPos().z;
+								float ac = MathHelper.sqrt(aa * aa + ab * ab) / (float)m;
+								float ad = ((1.0F - ac * ac) * 0.5F + 0.5F) * g;
+								mutable.set(q, x, p);
+								int ae = world.getLightmapIndex(mutable);
+								int af = ae >> 16 & 65535;
+								int ag = ae & 65535;
+								bufferBuilder.vertex((double)q - s + 0.5, (double)w, (double)p - t + 0.5)
+									.texture(0.0, (double)v * 0.25 + z)
+									.color(1.0F, 1.0F, 1.0F, ad)
+									.texture(af, ag)
+									.next();
+								bufferBuilder.vertex((double)q + s + 0.5, (double)w, (double)p + t + 0.5)
+									.texture(1.0, (double)v * 0.25 + z)
+									.color(1.0F, 1.0F, 1.0F, ad)
+									.texture(af, ag)
+									.next();
+								bufferBuilder.vertex((double)q + s + 0.5, (double)v, (double)p + t + 0.5)
+									.texture(1.0, (double)w * 0.25 + z)
+									.color(1.0F, 1.0F, 1.0F, ad)
+									.texture(af, ag)
+									.next();
+								bufferBuilder.vertex((double)q - s + 0.5, (double)v, (double)p - t + 0.5)
+									.texture(0.0, (double)w * 0.25 + z)
+									.color(1.0F, 1.0F, 1.0F, ad)
+									.texture(af, ag)
+									.next();
+							} else {
+								if (n != 1) {
+									if (n >= 0) {
+										tessellator.draw();
+									}
+
+									n = 1;
+									this.client.getTextureManager().method_22813(field_20798);
+									bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+								}
+
+								double z = (double)(-((float)(this.ticks & 511) + f) / 512.0F);
+								double aa = random.nextDouble() + (double)o * 0.01 * (double)((float)random.nextGaussian());
+								double ab = random.nextDouble() + (double)(o * (float)random.nextGaussian()) * 0.001;
+								double ah = (double)((float)q + 0.5F) - camera.getPos().x;
+								double ai = (double)((float)p + 0.5F) - camera.getPos().z;
+								float aj = MathHelper.sqrt(ah * ah + ai * ai) / (float)m;
+								float ak = ((1.0F - aj * aj) * 0.3F + 0.5F) * g;
+								mutable.set(q, x, p);
+								int al = (world.getLightmapIndex(mutable) * 3 + 15728880) / 4;
+								int am = al >> 16 & 65535;
+								int an = al & 65535;
+								bufferBuilder.vertex((double)q - s + 0.5, (double)w, (double)p - t + 0.5)
+									.texture(0.0 + aa, (double)v * 0.25 + z + ab)
+									.color(1.0F, 1.0F, 1.0F, ak)
+									.texture(am, an)
+									.next();
+								bufferBuilder.vertex((double)q + s + 0.5, (double)w, (double)p + t + 0.5)
+									.texture(1.0 + aa, (double)v * 0.25 + z + ab)
+									.color(1.0F, 1.0F, 1.0F, ak)
+									.texture(am, an)
+									.next();
+								bufferBuilder.vertex((double)q + s + 0.5, (double)v, (double)p + t + 0.5)
+									.texture(1.0 + aa, (double)w * 0.25 + z + ab)
+									.color(1.0F, 1.0F, 1.0F, ak)
+									.texture(am, an)
+									.next();
+								bufferBuilder.vertex((double)q - s + 0.5, (double)v, (double)p - t + 0.5)
+									.texture(0.0 + aa, (double)w * 0.25 + z + ab)
+									.color(1.0F, 1.0F, 1.0F, ak)
+									.texture(am, an)
+									.next();
+							}
+						}
+					}
+				}
+			}
+
+			if (n >= 0) {
+				tessellator.draw();
+			}
+
+			bufferBuilder.setOffset(0.0, 0.0, 0.0);
+			RenderSystem.enableCull();
+			RenderSystem.disableBlend();
+			RenderSystem.defaultAlphaFunc();
+			lightmapTextureManager.disable();
+		}
+	}
+
+	public void method_22713(Camera camera) {
+		float f = this.client.world.getRainGradient(1.0F);
+		if (!this.client.options.fancyGraphics) {
+			f /= 2.0F;
+		}
+
+		if (f != 0.0F) {
+			Random random = new Random((long)this.ticks * 312987231L);
+			class_4538 lv = this.client.world;
+			BlockPos blockPos = new BlockPos(camera.getPos());
+			int i = 10;
+			double d = 0.0;
+			double e = 0.0;
+			double g = 0.0;
+			int j = 0;
+			int k = (int)(100.0F * f * f);
+			if (this.client.options.particles == ParticlesOption.DECREASED) {
+				k >>= 1;
+			} else if (this.client.options.particles == ParticlesOption.MINIMAL) {
+				k = 0;
+			}
+
+			for (int l = 0; l < k; l++) {
+				BlockPos blockPos2 = lv.getTopPosition(
+					Heightmap.Type.MOTION_BLOCKING, blockPos.add(random.nextInt(10) - random.nextInt(10), 0, random.nextInt(10) - random.nextInt(10))
+				);
+				Biome biome = lv.getBiome(blockPos2);
+				BlockPos blockPos3 = blockPos2.down();
+				if (blockPos2.getY() <= blockPos.getY() + 10
+					&& blockPos2.getY() >= blockPos.getY() - 10
+					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
+					&& biome.getTemperature(blockPos2) >= 0.15F) {
+					double h = random.nextDouble();
+					double m = random.nextDouble();
+					BlockState blockState = lv.getBlockState(blockPos3);
+					FluidState fluidState = lv.getFluidState(blockPos2);
+					VoxelShape voxelShape = blockState.getCollisionShape(lv, blockPos3);
+					double n = voxelShape.method_1102(Direction.Axis.Y, h, m);
+					double o = (double)fluidState.getHeight(lv, blockPos2);
+					double p;
+					double q;
+					if (n >= o) {
+						p = n;
+						q = voxelShape.method_1093(Direction.Axis.Y, h, m);
+					} else {
+						p = 0.0;
+						q = 0.0;
+					}
+
+					if (p > -Double.MAX_VALUE) {
+						if (!fluidState.matches(FluidTags.LAVA)
+							&& blockState.getBlock() != Blocks.MAGMA_BLOCK
+							&& (blockState.getBlock() != Blocks.CAMPFIRE || !(Boolean)blockState.get(CampfireBlock.LIT))) {
+							if (random.nextInt(++j) == 0) {
+								d = (double)blockPos3.getX() + h;
+								e = (double)((float)blockPos3.getY() + 0.1F) + p - 1.0;
+								g = (double)blockPos3.getZ() + m;
+							}
+
+							this.client
+								.world
+								.addParticle(
+									ParticleTypes.RAIN, (double)blockPos3.getX() + h, (double)((float)blockPos3.getY() + 0.1F) + p, (double)blockPos3.getZ() + m, 0.0, 0.0, 0.0
+								);
+						} else {
+							this.client
+								.world
+								.addParticle(
+									ParticleTypes.SMOKE, (double)blockPos2.getX() + h, (double)((float)blockPos2.getY() + 0.1F) - q, (double)blockPos2.getZ() + m, 0.0, 0.0, 0.0
+								);
+						}
+					}
+				}
+			}
+
+			if (j > 0 && random.nextInt(3) < this.field_20793++) {
+				this.field_20793 = 0;
+				if (e > (double)(blockPos.getY() + 1) && lv.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor((float)blockPos.getY())) {
+					this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1F, 0.5F, false);
+				} else {
+					this.client.world.playSound(d, e, g, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2F, 1.0F, false);
+				}
+			}
+		}
 	}
 
 	public void close() {
@@ -186,7 +442,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	@Override
 	public void apply(ResourceManager resourceManager) {
-		this.textureManager.bindTexture(FORCEFIELD_TEX);
+		this.textureManager.method_22813(FORCEFIELD_TEX);
 		RenderSystem.texParameter(3553, 10242, 10497);
 		RenderSystem.texParameter(3553, 10243, 10497);
 		RenderSystem.bindTexture(0);
@@ -196,16 +452,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	private void loadDestroyStageTextures() {
 		SpriteAtlasTexture spriteAtlasTexture = this.client.getSpriteAtlas();
-		this.destroyStages[0] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_0);
-		this.destroyStages[1] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_1);
-		this.destroyStages[2] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_2);
-		this.destroyStages[3] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_3);
-		this.destroyStages[4] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_4);
-		this.destroyStages[5] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_5);
-		this.destroyStages[6] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_6);
-		this.destroyStages[7] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_7);
-		this.destroyStages[8] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_8);
-		this.destroyStages[9] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_9);
+
+		for (int i = 0; i < 10; i++) {
+			this.destroyStages.set(i, spriteAtlasTexture.getSprite((Identifier)ModelLoader.field_20848.get(i)));
+		}
 	}
 
 	public void loadEntityOutlineShader() {
@@ -217,7 +467,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		try {
 			this.entityOutlineShader = new ShaderEffect(this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier);
-			this.entityOutlineShader.setupDimensions(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
+			this.entityOutlineShader.setupDimensions(this.client.method_22683().getFramebufferWidth(), this.client.method_22683().getFramebufferHeight());
 			this.entityOutlinesFramebuffer = this.entityOutlineShader.getSecondaryTarget("final");
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to load shader: {}", identifier, var3);
@@ -236,7 +486,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.blendFuncSeparate(
 				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE
 			);
-			this.entityOutlinesFramebuffer.draw(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight(), false);
+			this.entityOutlinesFramebuffer.method_22594(this.client.method_22683().getFramebufferWidth(), this.client.method_22683().getFramebufferHeight(), false);
 			RenderSystem.disableBlend();
 		}
 	}
@@ -252,16 +502,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			this.field_4102.delete();
 		}
 
-		if (this.field_4067 >= 0) {
-			GlAllocationUtils.deleteSingletonList(this.field_4067);
-			this.field_4067 = -1;
-		}
-
 		this.field_4102 = new GlBuffer(this.field_4100);
 		this.method_3283(bufferBuilder, -16.0F, true);
 		bufferBuilder.end();
-		bufferBuilder.clear();
-		this.field_4102.set(bufferBuilder.getByteBuffer());
+		this.field_4102.set(bufferBuilder);
 	}
 
 	private void method_3277() {
@@ -271,16 +515,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			this.field_4087.delete();
 		}
 
-		if (this.field_4117 >= 0) {
-			GlAllocationUtils.deleteSingletonList(this.field_4117);
-			this.field_4117 = -1;
-		}
-
 		this.field_4087 = new GlBuffer(this.field_4100);
 		this.method_3283(bufferBuilder, 16.0F, false);
 		bufferBuilder.end();
-		bufferBuilder.clear();
-		this.field_4087.set(bufferBuilder.getByteBuffer());
+		this.field_4087.set(bufferBuilder);
 	}
 
 	private void method_3283(BufferBuilder bufferBuilder, float f, boolean bl) {
@@ -312,16 +550,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			this.starsBuffer.delete();
 		}
 
-		if (this.starsDisplayList >= 0) {
-			GlAllocationUtils.deleteSingletonList(this.starsDisplayList);
-			this.starsDisplayList = -1;
-		}
-
 		this.starsBuffer = new GlBuffer(this.field_4100);
 		this.renderStars(bufferBuilder);
 		bufferBuilder.end();
-		bufferBuilder.clear();
-		this.starsBuffer.set(bufferBuilder.getByteBuffer());
+		this.starsBuffer.set(bufferBuilder);
 	}
 
 	private void renderStars(BufferBuilder bufferBuilder) {
@@ -400,12 +632,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public void reload() {
 		if (this.world != null) {
 			if (this.chunkBatcher == null) {
-				this.chunkBatcher = new ChunkBatcher(this.client.is64Bit());
+				this.chunkBatcher = new ChunkBatcher(this.world, this, SystemUtil.getServerWorkerExecutor(), this.client.is64Bit());
+			} else {
+				this.chunkBatcher.method_22752(this.world);
 			}
 
 			this.terrainUpdateNecessary = true;
 			this.cloudsDirty = true;
-			LeavesBlock.setRenderingMode(this.client.options.fancyGraphics);
+			BlockRenderLayer.method_22719(this.client.options.fancyGraphics);
 			this.renderDistance = this.client.options.viewDistance;
 			if (this.chunkRenderDispatcher != null) {
 				this.chunkRenderDispatcher.delete();
@@ -416,15 +650,13 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.blockEntities.clear();
 			}
 
-			this.chunkRenderDispatcher = new ChunkRenderDispatcher(this.world, this.client.options.viewDistance, this, this.chunkRendererFactory);
+			this.chunkRenderDispatcher = new ChunkRenderDispatcher(this.chunkBatcher, this.world, this.client.options.viewDistance, this);
 			if (this.world != null) {
 				Entity entity = this.client.getCameraEntity();
 				if (entity != null) {
 					this.chunkRenderDispatcher.updateCameraPosition(entity.x, entity.z);
 				}
 			}
-
-			this.field_4076 = 2;
 		}
 	}
 
@@ -437,132 +669,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.scheduleTerrainUpdate();
 		if (this.entityOutlineShader != null) {
 			this.entityOutlineShader.setupDimensions(i, j);
-		}
-	}
-
-	public void method_21595(Camera camera) {
-		BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.hitResult);
-		this.entityRenderDispatcher.configure(this.world, this.client.textRenderer, camera, this.client.targetedEntity, this.client.options);
-	}
-
-	public void renderEntities(Camera camera, VisibleRegion visibleRegion, float f) {
-		if (this.field_4076 > 0) {
-			this.field_4076--;
-		} else {
-			double d = camera.getPos().x;
-			double e = camera.getPos().y;
-			double g = camera.getPos().z;
-			this.world.getProfiler().push("prepare");
-			this.regularEntityCount = 0;
-			this.blockEntityCount = 0;
-			double h = camera.getPos().x;
-			double i = camera.getPos().y;
-			double j = camera.getPos().z;
-			BlockEntityRenderDispatcher.renderOffsetX = h;
-			BlockEntityRenderDispatcher.renderOffsetY = i;
-			BlockEntityRenderDispatcher.renderOffsetZ = j;
-			this.entityRenderDispatcher.setRenderPosition(h, i, j);
-			this.client.gameRenderer.enableLightmap();
-			this.world.getProfiler().swap("entities");
-			List<Entity> list = Lists.<Entity>newArrayList();
-			List<Entity> list2 = Lists.<Entity>newArrayList();
-
-			for (Entity entity : this.world.getEntities()) {
-				if ((this.entityRenderDispatcher.shouldRender(entity, visibleRegion, d, e, g) || entity.hasPassengerDeep(this.client.player))
-					&& (
-						entity != camera.getFocusedEntity()
-							|| camera.isThirdPerson()
-							|| camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()
-					)) {
-					this.regularEntityCount++;
-					this.entityRenderDispatcher.render(entity, f, false);
-					if (entity.isGlowing() || entity instanceof PlayerEntity && this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed()) {
-						list.add(entity);
-					}
-
-					if (this.entityRenderDispatcher.hasSecondPass(entity)) {
-						list2.add(entity);
-					}
-				}
-			}
-
-			if (!list2.isEmpty()) {
-				for (Entity entityx : list2) {
-					this.entityRenderDispatcher.renderSecondPass(entityx, f);
-				}
-			}
-
-			if (this.canDrawEntityOutlines() && (!list.isEmpty() || this.entityOutlinesUpdateNecessary)) {
-				this.world.getProfiler().swap("entityOutlines");
-				this.entityOutlinesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
-				this.entityOutlinesUpdateNecessary = !list.isEmpty();
-				if (!list.isEmpty()) {
-					RenderSystem.depthFunc(519);
-					RenderSystem.disableFog();
-					this.entityOutlinesFramebuffer.beginWrite(false);
-					GuiLighting.disable();
-					this.entityRenderDispatcher.setRenderOutlines(true);
-
-					for (int k = 0; k < list.size(); k++) {
-						this.entityRenderDispatcher.render((Entity)list.get(k), f, false);
-					}
-
-					this.entityRenderDispatcher.setRenderOutlines(false);
-					GuiLighting.enable();
-					RenderSystem.depthMask(false);
-					this.entityOutlineShader.render(f);
-					RenderSystem.enableLighting();
-					RenderSystem.depthMask(true);
-					RenderSystem.enableFog();
-					RenderSystem.enableBlend();
-					RenderSystem.enableColorMaterial();
-					RenderSystem.depthFunc(515);
-					RenderSystem.enableDepthTest();
-					RenderSystem.enableAlphaTest();
-				}
-
-				this.client.getFramebuffer().beginWrite(false);
-			}
-
-			this.world.getProfiler().swap("blockentities");
-			GuiLighting.enable();
-
-			for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
-				List<BlockEntity> list3 = chunkInfo.renderer.getData().getBlockEntities();
-				if (!list3.isEmpty()) {
-					for (BlockEntity blockEntity : list3) {
-						BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, f, -1);
-					}
-				}
-			}
-
-			synchronized (this.blockEntities) {
-				for (BlockEntity blockEntity2 : this.blockEntities) {
-					BlockEntityRenderDispatcher.INSTANCE.render(blockEntity2, f, -1);
-				}
-			}
-
-			this.enableBlockOverlayRendering();
-
-			for (PartiallyBrokenBlockEntry partiallyBrokenBlockEntry : this.partiallyBrokenBlocks.values()) {
-				BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
-				BlockState blockState = this.world.getBlockState(blockPos);
-				if (blockState.getBlock().hasBlockEntity()) {
-					BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-					if (blockEntity instanceof ChestBlockEntity && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.LEFT) {
-						blockPos = blockPos.offset(((Direction)blockState.get(ChestBlock.FACING)).rotateYClockwise());
-						blockEntity = this.world.getBlockEntity(blockPos);
-					}
-
-					if (blockEntity != null && blockState.hasBlockEntityBreakingRender()) {
-						BlockEntityRenderDispatcher.INSTANCE.render(blockEntity, f, partiallyBrokenBlockEntry.getStage());
-					}
-				}
-			}
-
-			this.disableBlockOverlayRendering();
-			this.client.gameRenderer.disableLightmap();
-			this.client.getProfiler().pop();
 		}
 	}
 
@@ -583,8 +689,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		int i = 0;
 
 		for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
-			ChunkRenderData chunkRenderData = chunkInfo.renderer.data;
-			if (chunkRenderData != ChunkRenderData.EMPTY && !chunkRenderData.isEmpty()) {
+			if (!chunkInfo.renderer.getData().isEmpty()) {
 				i++;
 			}
 		}
@@ -596,7 +701,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		return "E: " + this.regularEntityCount + "/" + this.world.getRegularEntityCount() + ", B: " + this.blockEntityCount;
 	}
 
-	public void setUpTerrain(Camera camera, VisibleRegion visibleRegion, int i, boolean bl) {
+	private void setUpTerrain(Camera camera, VisibleRegion visibleRegion, int i, boolean bl) {
 		if (this.client.options.viewDistance != this.renderDistance) {
 			this.reload();
 		}
@@ -619,7 +724,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.world.getProfiler().swap("renderlistcamera");
-		this.chunkRendererList.setCameraPosition(camera.getPos().x, camera.getPos().y, camera.getPos().z);
 		this.chunkBatcher.setCameraPosition(camera.getPos());
 		this.world.getProfiler().swap("cull");
 		if (this.forcedFrustum != null) {
@@ -630,7 +734,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.client.getProfiler().swap("culling");
 		BlockPos blockPos = camera.getBlockPos();
-		ChunkRenderer chunkRenderer = this.chunkRenderDispatcher.getChunkRenderer(blockPos);
+		ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = this.chunkRenderDispatcher.getChunkRenderer(blockPos);
 		BlockPos blockPos2 = new BlockPos(
 			MathHelper.floor(camera.getPos().x / 16.0) * 16, MathHelper.floor(camera.getPos().y / 16.0) * 16, MathHelper.floor(camera.getPos().z / 16.0) * 16
 		);
@@ -685,7 +789,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (int k = -this.renderDistance; k <= this.renderDistance; k++) {
 					for (int l = -this.renderDistance; l <= this.renderDistance; l++) {
-						ChunkRenderer chunkRenderer2 = this.chunkRenderDispatcher.getChunkRenderer(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
+						ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer2 = this.chunkRenderDispatcher
+							.getChunkRenderer(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
 						if (chunkRenderer2 != null && visibleRegion.intersects(chunkRenderer2.boundingBox)) {
 							chunkRenderer2.method_3671(i);
 							queue.add(new WorldRenderer.ChunkInfo(chunkRenderer2, null, 0));
@@ -698,12 +803,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			while (!queue.isEmpty()) {
 				WorldRenderer.ChunkInfo chunkInfo2 = (WorldRenderer.ChunkInfo)queue.poll();
-				ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
+				ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
 				Direction direction2 = chunkInfo2.field_4125;
 				this.chunkInfos.add(chunkInfo2);
 
 				for (Direction direction3 : DIRECTIONS) {
-					ChunkRenderer chunkRenderer4 = this.getAdjacentChunkRenderer(blockPos2, chunkRenderer3, direction3);
+					ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer4 = this.getAdjacentChunkRenderer(blockPos2, chunkRenderer3, direction3);
 					if ((!bl3 || !chunkInfo2.method_3298(direction3.getOpposite()))
 						&& (!bl3 || direction2 == null || chunkRenderer3.getData().isVisibleThrough(direction2.getOpposite(), direction3))
 						&& chunkRenderer4 != null
@@ -727,11 +832,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.client.getProfiler().swap("rebuildNear");
-		Set<ChunkRenderer> set2 = this.chunkRenderers;
-		this.chunkRenderers = Sets.<ChunkRenderer>newLinkedHashSet();
+		Set<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> set2 = this.chunkRenderers;
+		this.chunkRenderers = Sets.<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer>newLinkedHashSet();
 
 		for (WorldRenderer.ChunkInfo chunkInfo2 : this.chunkInfos) {
-			ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
+			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer3 = chunkInfo2.renderer;
 			if (chunkRenderer3.shouldRebuild() || set2.contains(chunkRenderer3)) {
 				this.terrainUpdateNecessary = true;
 				BlockPos blockPos3 = chunkRenderer3.getOrigin().add(8, 8, 8);
@@ -766,7 +871,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	@Nullable
-	private ChunkRenderer getAdjacentChunkRenderer(BlockPos blockPos, ChunkRenderer chunkRenderer, Direction direction) {
+	private ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer getAdjacentChunkRenderer(
+		BlockPos blockPos, ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer, Direction direction
+	) {
 		BlockPos blockPos2 = chunkRenderer.getNeighborPosition(direction);
 		if (MathHelper.abs(blockPos.getX() - blockPos2.getX()) > this.renderDistance * 16) {
 			return null;
@@ -780,9 +887,284 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private void method_3275(double d, double e, double f) {
 	}
 
-	public int renderLayer(BlockRenderLayer blockRenderLayer, Camera camera) {
+	public void method_22710(float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager) {
+		Frustum frustum = GlMatrixFrustum.get();
+		BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.hitResult);
+		this.entityRenderDispatcher.configure(this.world, this.client.textRenderer, camera, this.client.targetedEntity, this.client.options);
+		Profiler profiler = this.world.getProfiler();
+		profiler.swap("light_updates");
+		this.client.world.method_2935().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, true, true);
+		profiler.swap("clear");
+		RenderSystem.viewport(0, 0, this.client.method_22683().getFramebufferWidth(), this.client.method_22683().getFramebufferHeight());
+		this.chunkRendererList.renderBackground(camera, f, this.client.world, this.client.options.viewDistance, gameRenderer.getSkyDarkness(f));
+		RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
+		profiler.swap("culling");
+		VisibleRegion visibleRegion = new FrustumWithOrigin(frustum);
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double g = camera.getPos().z;
+		visibleRegion.setOrigin(d, e, g);
+		float h = gameRenderer.getViewDistance();
+		boolean bl2 = this.client.world.dimension.shouldRenderFog(MathHelper.floor(d), MathHelper.floor(e))
+			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
+		if (this.client.options.viewDistance >= 4) {
+			BackgroundRenderer.applyFog(camera, -1, h, bl2);
+			profiler.swap("sky");
+			gameRenderer.method_22709(camera, f, true, false, 2.0F);
+			this.renderSky(f);
+			gameRenderer.method_22709(camera, f, true, false, MathHelper.SQUARE_ROOT_OF_TWO);
+		}
+
+		BackgroundRenderer.applyFog(camera, 0, h, bl2);
+		profiler.swap("prepareterrain");
+		BackgroundRenderer.applyFog(camera, 0, h, bl2);
+		profiler.swap("terrain_setup");
+		this.setUpTerrain(camera, visibleRegion, this.field_20792++, this.client.player.isSpectator());
+		profiler.swap("updatechunks");
+		this.updateChunks(l);
+		profiler.swap("terrain");
+		RenderSystem.pushMatrix();
+		this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		RenderSystem.enableCull();
+		RenderSystem.shadeModel(7425);
+		RenderSystem.depthMask(true);
+		RenderSystem.enableDepthTest();
 		GuiLighting.disable();
-		if (blockRenderLayer == BlockRenderLayer.TRANSLUCENT) {
+		this.renderLayer(BlockRenderLayer.field_9178, camera, lightmapTextureManager);
+		this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.renderLayer(BlockRenderLayer.CUTOUT_MIPPED, camera, lightmapTextureManager);
+		this.renderLayer(BlockRenderLayer.field_9174, camera, lightmapTextureManager);
+		RenderSystem.popMatrix();
+		profiler.swap("aboveClouds");
+		if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
+			profiler.swap("clouds");
+			gameRenderer.method_22709(camera, f, true, false, 4.0F);
+			BackgroundRenderer.applyFog(camera, 0, gameRenderer.getViewDistance(), bl2);
+			RenderSystem.disableCull();
+			RenderSystem.enableBlend();
+			RenderSystem.enableAlphaTest();
+			RenderSystem.enableDepthTest();
+			RenderSystem.defaultAlphaFunc();
+			RenderSystem.defaultBlendFunc();
+			this.renderClouds(f, d, e, g);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.disableAlphaTest();
+			RenderSystem.enableCull();
+			RenderSystem.disableBlend();
+			RenderSystem.disableFog();
+			gameRenderer.method_22709(camera, f, true, false, MathHelper.SQUARE_ROOT_OF_TWO);
+		}
+
+		RenderSystem.pushMatrix();
+		profiler.swap("entities");
+		profiler.push("prepare");
+		this.regularEntityCount = 0;
+		this.blockEntityCount = 0;
+		BlockEntityRenderDispatcher.renderOffsetX = d;
+		BlockEntityRenderDispatcher.renderOffsetY = e;
+		BlockEntityRenderDispatcher.renderOffsetZ = g;
+		this.entityRenderDispatcher.setRenderPosition(d, e, g);
+		RenderSystem.shadeModel(7424);
+		RenderSystem.defaultAlphaFunc();
+		GuiLighting.enable();
+		lightmapTextureManager.enable();
+		profiler.swap("entities");
+		List<Entity> list = Lists.<Entity>newArrayList();
+		List<Entity> list2 = Lists.<Entity>newArrayList();
+
+		for (Entity entity : this.world.getEntities()) {
+			if ((this.entityRenderDispatcher.shouldRender(entity, visibleRegion, d, e, g) || entity.hasPassengerDeep(this.client.player))
+				&& (
+					entity != camera.getFocusedEntity()
+						|| camera.isThirdPerson()
+						|| camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()
+				)) {
+				this.regularEntityCount++;
+				this.entityRenderDispatcher.render(entity, f, false);
+				if (entity.isGlowing() || entity instanceof PlayerEntity && this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed()) {
+					list.add(entity);
+				}
+
+				if (this.entityRenderDispatcher.hasSecondPass(entity)) {
+					list2.add(entity);
+				}
+			}
+		}
+
+		if (!list2.isEmpty()) {
+			for (Entity entityx : list2) {
+				this.entityRenderDispatcher.renderSecondPass(entityx, f);
+			}
+		}
+
+		if (this.canDrawEntityOutlines() && (!list.isEmpty() || this.entityOutlinesUpdateNecessary)) {
+			profiler.swap("entityOutlines");
+			this.entityOutlinesFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+			this.entityOutlinesUpdateNecessary = !list.isEmpty();
+			if (!list.isEmpty()) {
+				RenderSystem.depthFunc(519);
+				RenderSystem.disableFog();
+				GuiLighting.disable();
+				this.entityOutlinesFramebuffer.beginWrite(false);
+				this.entityRenderDispatcher.setRenderOutlines(true);
+
+				for (int i = 0; i < list.size(); i++) {
+					this.entityRenderDispatcher.render((Entity)list.get(i), f, false);
+				}
+
+				this.entityRenderDispatcher.setRenderOutlines(false);
+				GuiLighting.enable();
+				RenderSystem.depthMask(false);
+				this.entityOutlineShader.render(f);
+				RenderSystem.enableLighting();
+				RenderSystem.depthMask(true);
+				RenderSystem.enableFog();
+				RenderSystem.enableBlend();
+				RenderSystem.enableColorMaterial();
+				RenderSystem.depthFunc(515);
+				RenderSystem.enableDepthTest();
+				RenderSystem.enableAlphaTest();
+			}
+
+			this.client.getFramebuffer().beginWrite(false);
+		}
+
+		profiler.swap("blockentities");
+		GuiLighting.enable();
+		this.field_20796.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
+
+		for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
+			List<BlockEntity> list3 = chunkInfo.renderer.getData().getBlockEntities();
+			if (!list3.isEmpty()) {
+				for (BlockEntity blockEntity : list3) {
+					BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity, f, BlockRenderLayer.field_20799, this.field_20796);
+				}
+			}
+		}
+
+		synchronized (this.blockEntities) {
+			for (BlockEntity blockEntity2 : this.blockEntities) {
+				BlockEntityRenderDispatcher.INSTANCE.renderEntity(blockEntity2, f, BlockRenderLayer.field_20799, this.field_20796);
+			}
+		}
+
+		BlockRenderLayer.field_20799.method_22723();
+		GuiLighting.disable();
+		this.field_20796.end();
+		BufferRenderer.draw(this.field_20796);
+		BlockRenderLayer.field_20799.method_22724();
+		GuiLighting.disable();
+		profiler.swap("destroyProgress");
+		this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		RenderSystem.pushMatrix();
+		this.field_20796.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
+		this.field_20796.disableColor();
+
+		for (PartiallyBrokenBlockEntry partiallyBrokenBlockEntry : this.partiallyBrokenBlocks.values()) {
+			BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
+			BlockState blockState = this.world.getBlockState(blockPos);
+			if (blockState.getBlock().hasBlockEntity()) {
+				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+				if (blockEntity instanceof ChestBlockEntity && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.LEFT) {
+					blockPos = blockPos.offset(((Direction)blockState.get(ChestBlock.FACING)).rotateYClockwise());
+					blockEntity = this.world.getBlockEntity(blockPos);
+				}
+
+				if (blockEntity != null && blockState.hasBlockEntityBreakingRender()) {
+					BlockEntityRenderDispatcher.INSTANCE.method_22743(blockEntity, f, partiallyBrokenBlockEntry.getStage(), this.field_20796);
+				}
+			}
+		}
+
+		BlockRenderLayer.field_20800.method_22723();
+		lightmapTextureManager.disable();
+		if (!this.partiallyBrokenBlocks.isEmpty()) {
+			this.field_20796.setOffset(-d, -e, -g);
+			Iterator<PartiallyBrokenBlockEntry> iterator = this.partiallyBrokenBlocks.values().iterator();
+
+			while (iterator.hasNext()) {
+				PartiallyBrokenBlockEntry partiallyBrokenBlockEntryx = (PartiallyBrokenBlockEntry)iterator.next();
+				BlockPos blockPos = partiallyBrokenBlockEntryx.getPos();
+				Block block = this.world.getBlockState(blockPos).getBlock();
+				if (!(block instanceof ChestBlock)
+					&& !(block instanceof EnderChestBlock)
+					&& !(block instanceof AbstractSignBlock)
+					&& !(block instanceof AbstractSkullBlock)) {
+					double j = (double)blockPos.getX() - d;
+					double k = (double)blockPos.getY() - e;
+					double m = (double)blockPos.getZ() - g;
+					if (j * j + k * k + m * m > 1024.0) {
+						iterator.remove();
+					} else {
+						BlockState blockState2 = this.world.getBlockState(blockPos);
+						if (!blockState2.isAir()) {
+							int n = partiallyBrokenBlockEntryx.getStage();
+							Sprite sprite = (Sprite)this.destroyStages.get(n);
+							BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
+							blockRenderManager.tesselateDamage(blockState2, blockPos, sprite, this.world);
+						}
+					}
+				}
+			}
+
+			this.field_20796.setOffset(0.0, 0.0, 0.0);
+		}
+
+		BlockRenderLayer.field_20800.method_22723();
+		GuiLighting.disable();
+		if (BlockRenderLayer.field_20800 == BlockRenderLayer.field_9179) {
+			this.field_20796.sortQuads((float)d, (float)e, (float)g);
+		}
+
+		this.field_20796.end();
+		BufferRenderer.draw(this.field_20796);
+		BlockRenderLayer.field_20800.method_22724();
+		RenderSystem.popMatrix();
+		profiler.pop();
+		GuiLighting.disable();
+		lightmapTextureManager.disable();
+		RenderSystem.popMatrix();
+		if (bl && this.client.hitResult != null) {
+			RenderSystem.disableAlphaTest();
+			profiler.swap("outline");
+			RenderSystem.lineWidth(Math.max(2.5F, (float)this.client.method_22683().getFramebufferWidth() / 1920.0F * 2.5F));
+			RenderSystem.disableTexture();
+			RenderSystem.depthMask(false);
+			RenderSystem.matrixMode(5889);
+			RenderSystem.pushMatrix();
+			RenderSystem.scalef(1.0F, 1.0F, 0.999F);
+			this.method_22712(camera.getFocusedEntity(), this.client.hitResult, 0, d, e, g);
+			RenderSystem.popMatrix();
+			RenderSystem.matrixMode(5888);
+			RenderSystem.depthMask(true);
+			RenderSystem.enableTexture();
+			RenderSystem.enableAlphaTest();
+		}
+
+		lightmapTextureManager.enable();
+		BackgroundRenderer.applyFog(camera, 0, h, bl2);
+		profiler.swap("particles");
+		this.client.particleManager.renderParticles(camera, f);
+		lightmapTextureManager.disable();
+		RenderSystem.depthMask(false);
+		profiler.swap("weather");
+		this.method_22714(lightmapTextureManager, camera, f);
+		RenderSystem.depthMask(true);
+		this.renderWorldBorder(camera, f);
+		this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		BackgroundRenderer.applyFog(camera, 0, h, bl2);
+		RenderSystem.shadeModel(7425);
+		profiler.swap("translucent");
+		this.renderLayer(BlockRenderLayer.field_9179, camera, lightmapTextureManager);
+		RenderSystem.shadeModel(7424);
+		RenderSystem.depthMask(true);
+		RenderSystem.disableBlend();
+		RenderSystem.disableFog();
+	}
+
+	private void renderLayer(BlockRenderLayer blockRenderLayer, Camera camera, LightmapTextureManager lightmapTextureManager) {
+		blockRenderLayer.method_22723();
+		if (blockRenderLayer == BlockRenderLayer.field_9179) {
 			this.client.getProfiler().push("translucent_sort");
 			double d = camera.getPos().x - this.lastTranslucentSortX;
 			double e = camera.getPos().y - this.lastTranslucentSortY;
@@ -794,8 +1176,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				int i = 0;
 
 				for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
-					if (chunkInfo.renderer.data.isBufferInitialized(blockRenderLayer) && i++ < 15) {
-						this.chunkBatcher.resortTransparency(chunkInfo.renderer);
+					if (i < 15 && chunkInfo.renderer.method_22773(blockRenderLayer, this.chunkBatcher)) {
+						i++;
 					}
 				}
 			}
@@ -804,56 +1186,39 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.client.getProfiler().push("filterempty");
-		int j = 0;
-		boolean bl = blockRenderLayer == BlockRenderLayer.TRANSLUCENT;
-		int k = bl ? this.chunkInfos.size() - 1 : 0;
-		int l = bl ? -1 : this.chunkInfos.size();
-		int m = bl ? -1 : 1;
+		List<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> list = Lists.<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer>newArrayList();
 
-		for (int n = k; n != l; n += m) {
-			ChunkRenderer chunkRenderer = ((WorldRenderer.ChunkInfo)this.chunkInfos.get(n)).renderer;
+		for (WorldRenderer.ChunkInfo chunkInfo2 : blockRenderLayer == BlockRenderLayer.field_9179 ? Lists.reverse(this.chunkInfos) : this.chunkInfos) {
+			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = chunkInfo2.renderer;
 			if (!chunkRenderer.getData().isEmpty(blockRenderLayer)) {
-				j++;
-				this.chunkRendererList.add(chunkRenderer, blockRenderLayer);
+				list.add(chunkRenderer);
 			}
 		}
 
 		this.client.getProfiler().swap((Supplier<String>)(() -> "render_" + blockRenderLayer));
-		this.renderLayer(blockRenderLayer);
-		this.client.getProfiler().pop();
-		return j;
-	}
+		lightmapTextureManager.enable();
+		GuiLighting.disable();
+		double g = camera.getPos().getX();
+		double h = camera.getPos().getY();
+		double j = camera.getPos().getZ();
 
-	private void renderLayer(BlockRenderLayer blockRenderLayer) {
-		this.client.gameRenderer.enableLightmap();
-		RenderSystem.enableClientState(32884);
-		RenderSystem.glClientActiveTexture(33984);
-		RenderSystem.enableClientState(32888);
-		RenderSystem.glClientActiveTexture(33985);
-		RenderSystem.enableClientState(32888);
-		RenderSystem.glClientActiveTexture(33984);
-		RenderSystem.enableClientState(32886);
-		this.chunkRendererList.render(blockRenderLayer);
-
-		for (VertexFormatElement vertexFormatElement : VertexFormats.POSITION_COLOR_UV_LMAP.getElements()) {
-			VertexFormatElement.Type type = vertexFormatElement.getType();
-			int i = vertexFormatElement.getIndex();
-			switch (type) {
-				case POSITION:
-					RenderSystem.disableClientState(32884);
-					break;
-				case UV:
-					RenderSystem.glClientActiveTexture(33984 + i);
-					RenderSystem.disableClientState(32888);
-					RenderSystem.glClientActiveTexture(33984);
-					break;
-				case COLOR:
-					RenderSystem.disableClientState(32886);
-					RenderSystem.clearCurrentColor();
-			}
+		for (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer2 : list) {
+			GlBuffer glBuffer = chunkRenderer2.getGlBuffer(blockRenderLayer);
+			RenderSystem.pushMatrix();
+			BlockPos blockPos = chunkRenderer2.getOrigin();
+			RenderSystem.translated((double)blockPos.getX() - g, (double)blockPos.getY() - h, (double)blockPos.getZ() - j);
+			glBuffer.bind();
+			this.field_20791.method_22649(0L);
+			glBuffer.draw(7);
+			RenderSystem.popMatrix();
 		}
 
-		this.client.gameRenderer.disableLightmap();
+		GlBuffer.unbind();
+		RenderSystem.clearCurrentColor();
+		this.field_20791.method_22651();
+		lightmapTextureManager.disable();
+		this.client.getProfiler().pop();
+		blockRenderLayer.method_22724();
 	}
 
 	private void removeOutdatedPartiallyBrokenBlocks(Iterator<PartiallyBrokenBlockEntry> iterator) {
@@ -877,12 +1242,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		RenderSystem.disableFog();
 		RenderSystem.disableAlphaTest();
 		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-		);
+		RenderSystem.defaultBlendFunc();
 		GuiLighting.disable();
 		RenderSystem.depthMask(false);
-		this.textureManager.bindTexture(END_SKY_TEX);
+		this.textureManager.method_22813(END_SKY_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 
@@ -939,17 +1302,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.enableFog();
 			RenderSystem.color3f(g, h, i);
 			this.field_4087.bind();
-			RenderSystem.enableClientState(32884);
-			RenderSystem.vertexPointer(3, 5126, 12, 0);
+			this.field_4100.method_22649(0L);
 			this.field_4087.draw(7);
 			GlBuffer.unbind();
-			RenderSystem.disableClientState(32884);
+			this.field_4100.method_22651();
 			RenderSystem.disableFog();
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableBlend();
-			RenderSystem.blendFuncSeparate(
-				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-			);
+			RenderSystem.defaultBlendFunc();
 			GuiLighting.disable();
 			float[] fs = this.world.dimension.getBackgroundColor(this.world.getSkyAngle(f), f);
 			if (fs != null) {
@@ -988,7 +1348,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 			RenderSystem.rotatef(this.world.getSkyAngle(f) * 360.0F, 1.0F, 0.0F, 0.0F);
 			float k = 30.0F;
-			this.textureManager.bindTexture(SUN_TEX);
+			this.textureManager.method_22813(SUN_TEX);
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex((double)(-k), 100.0, (double)(-k)).texture(0.0, 0.0).next();
 			bufferBuilder.vertex((double)k, 100.0, (double)(-k)).texture(1.0, 0.0).next();
@@ -996,7 +1356,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			bufferBuilder.vertex((double)(-k), 100.0, (double)k).texture(0.0, 1.0).next();
 			tessellator.draw();
 			k = 20.0F;
-			this.textureManager.bindTexture(MOON_PHASES_TEX);
+			this.textureManager.method_22813(MOON_PHASES_TEX);
 			int r = this.world.getMoonPhase();
 			int m = r % 4;
 			int n = r / 4 % 2;
@@ -1015,11 +1375,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			if (t > 0.0F) {
 				RenderSystem.color4f(t, t, t, t);
 				this.starsBuffer.bind();
-				RenderSystem.enableClientState(32884);
-				RenderSystem.vertexPointer(3, 5126, 12, 0);
+				this.field_4100.method_22649(0L);
 				this.starsBuffer.draw(7);
 				GlBuffer.unbind();
-				RenderSystem.disableClientState(32884);
+				this.field_4100.method_22651();
 			}
 
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1034,11 +1393,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef(0.0F, 12.0F, 0.0F);
 				this.field_4102.bind();
-				RenderSystem.enableClientState(32884);
-				RenderSystem.vertexPointer(3, 5126, 12, 0);
+				this.field_4100.method_22649(0L);
 				this.field_4102.draw(7);
 				GlBuffer.unbind();
-				RenderSystem.disableClientState(32884);
+				this.field_4100.method_22651();
 				RenderSystem.popMatrix();
 			}
 
@@ -1048,10 +1406,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				RenderSystem.color3f(g, h, i);
 			}
 
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, -((float)(d - 16.0)), 0.0F);
-			RenderSystem.callList(this.field_4067);
-			RenderSystem.popMatrix();
 			RenderSystem.enableTexture();
 			RenderSystem.depthMask(true);
 		}
@@ -1096,38 +1450,19 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					this.cloudsBuffer.delete();
 				}
 
-				if (this.cloudsDisplayList >= 0) {
-					GlAllocationUtils.deleteSingletonList(this.cloudsDisplayList);
-					this.cloudsDisplayList = -1;
-				}
-
 				this.cloudsBuffer = new GlBuffer(VertexFormats.POSITION_UV_COLOR_NORMAL);
 				this.renderClouds(bufferBuilder, l, m, n, vec3d);
 				bufferBuilder.end();
-				bufferBuilder.clear();
-				this.cloudsBuffer.set(bufferBuilder.getByteBuffer());
+				this.cloudsBuffer.set(bufferBuilder);
 			}
 
-			RenderSystem.disableCull();
-			this.textureManager.bindTexture(CLOUDS_TEX);
-			RenderSystem.enableBlend();
-			RenderSystem.blendFuncSeparate(
-				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-			);
+			this.textureManager.method_22813(CLOUDS_TEX);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(12.0F, 1.0F, 12.0F);
 			RenderSystem.translatef(-o, p, -q);
 			if (this.cloudsBuffer != null) {
 				this.cloudsBuffer.bind();
-				RenderSystem.enableClientState(32884);
-				RenderSystem.enableClientState(32888);
-				RenderSystem.glClientActiveTexture(33984);
-				RenderSystem.enableClientState(32886);
-				RenderSystem.enableClientState(32885);
-				RenderSystem.vertexPointer(3, 5126, 28, 0);
-				RenderSystem.texCoordPointer(2, 5126, 28, 12);
-				RenderSystem.colorPointer(4, 5121, 28, 20);
-				RenderSystem.normalPointer(5120, 28, 24);
+				VertexFormats.POSITION_UV_COLOR_NORMAL.method_22649(0L);
 				int u = this.field_4080 == CloudRenderMode.FANCY ? 0 : 1;
 
 				for (int v = u; v < 2; v++) {
@@ -1141,29 +1476,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				}
 
 				GlBuffer.unbind();
-				RenderSystem.disableClientState(32884);
-				RenderSystem.disableClientState(32888);
-				RenderSystem.disableClientState(32886);
-				RenderSystem.disableClientState(32885);
-			} else if (this.cloudsDisplayList >= 0) {
-				int u = this.field_4080 == CloudRenderMode.FANCY ? 0 : 1;
-
-				for (int v = u; v < 2; v++) {
-					if (v == 0) {
-						RenderSystem.colorMask(false, false, false, false);
-					} else {
-						RenderSystem.colorMask(true, true, true, true);
-					}
-
-					RenderSystem.callList(this.cloudsDisplayList);
-				}
+				VertexFormats.POSITION_UV_COLOR_NORMAL.method_22651();
 			}
 
 			RenderSystem.popMatrix();
-			RenderSystem.clearCurrentColor();
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.disableBlend();
-			RenderSystem.enableCull();
 		}
 	}
 
@@ -1372,22 +1688,17 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void updateChunks(long l) {
-		this.terrainUpdateNecessary = this.terrainUpdateNecessary | this.chunkBatcher.runTasksSync(l);
+	private void updateChunks(long l) {
+		this.terrainUpdateNecessary = this.terrainUpdateNecessary | this.chunkBatcher.method_22761();
 		if (!this.chunkRenderers.isEmpty()) {
-			Iterator<ChunkRenderer> iterator = this.chunkRenderers.iterator();
+			Iterator<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer> iterator = this.chunkRenderers.iterator();
 
 			while (iterator.hasNext()) {
-				ChunkRenderer chunkRenderer = (ChunkRenderer)iterator.next();
-				boolean bl;
+				ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer = (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer)iterator.next();
 				if (chunkRenderer.shouldRebuildOnClientThread()) {
-					bl = this.chunkBatcher.rebuildSync(chunkRenderer);
+					this.chunkBatcher.rebuildSync(chunkRenderer);
 				} else {
-					bl = this.chunkBatcher.rebuild(chunkRenderer);
-				}
-
-				if (!bl) {
-					break;
+					chunkRenderer.method_22777(this.chunkBatcher);
 				}
 
 				chunkRenderer.unscheduleRebuild();
@@ -1400,7 +1711,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void renderWorldBorder(Camera camera, float f) {
+	private void renderWorldBorder(Camera camera, float f) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		WorldBorder worldBorder = this.world.getWorldBorder();
@@ -1418,7 +1729,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.blendFuncSeparate(
 				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
 			);
-			this.textureManager.bindTexture(FORCEFIELD_TEX);
+			this.textureManager.method_22813(FORCEFIELD_TEX);
 			RenderSystem.depthMask(false);
 			RenderSystem.pushMatrix();
 			int j = worldBorder.getStage().getColor();
@@ -1428,7 +1739,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.color4f(k, l, m, (float)e);
 			RenderSystem.polygonOffset(-3.0F, -3.0F);
 			RenderSystem.enablePolygonOffset();
-			RenderSystem.alphaFunc(516, 0.1F);
+			RenderSystem.defaultAlphaFunc();
 			RenderSystem.enableAlphaTest();
 			RenderSystem.disableCull();
 			float n = (float)(SystemUtil.getMeasuringTimeMs() % 3000L) / 3000.0F;
@@ -1510,91 +1821,13 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	private void enableBlockOverlayRendering() {
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.DST_COLOR, GlStateManager.class_4534.SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-		);
-		RenderSystem.enableBlend();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 0.5F);
-		RenderSystem.polygonOffset(-1.0F, -10.0F);
-		RenderSystem.enablePolygonOffset();
-		RenderSystem.alphaFunc(516, 0.1F);
-		RenderSystem.enableAlphaTest();
-		RenderSystem.pushMatrix();
-	}
-
-	private void disableBlockOverlayRendering() {
-		RenderSystem.disableAlphaTest();
-		RenderSystem.polygonOffset(0.0F, 0.0F);
-		RenderSystem.disablePolygonOffset();
-		RenderSystem.enableAlphaTest();
-		RenderSystem.depthMask(true);
-		RenderSystem.popMatrix();
-	}
-
-	public void renderPartiallyBrokenBlocks(Tessellator tessellator, BufferBuilder bufferBuilder, Camera camera) {
-		double d = camera.getPos().x;
-		double e = camera.getPos().y;
-		double f = camera.getPos().z;
-		if (!this.partiallyBrokenBlocks.isEmpty()) {
-			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			this.enableBlockOverlayRendering();
-			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
-			bufferBuilder.setOffset(-d, -e, -f);
-			bufferBuilder.disableColor();
-			Iterator<PartiallyBrokenBlockEntry> iterator = this.partiallyBrokenBlocks.values().iterator();
-
-			while (iterator.hasNext()) {
-				PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = (PartiallyBrokenBlockEntry)iterator.next();
-				BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
-				Block block = this.world.getBlockState(blockPos).getBlock();
-				if (!(block instanceof ChestBlock)
-					&& !(block instanceof EnderChestBlock)
-					&& !(block instanceof AbstractSignBlock)
-					&& !(block instanceof AbstractSkullBlock)) {
-					double g = (double)blockPos.getX() - d;
-					double h = (double)blockPos.getY() - e;
-					double i = (double)blockPos.getZ() - f;
-					if (g * g + h * h + i * i > 1024.0) {
-						iterator.remove();
-					} else {
-						BlockState blockState = this.world.getBlockState(blockPos);
-						if (!blockState.isAir()) {
-							int j = partiallyBrokenBlockEntry.getStage();
-							Sprite sprite = this.destroyStages[j];
-							BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
-							blockRenderManager.tesselateDamage(blockState, blockPos, sprite, this.world);
-						}
-					}
-				}
-			}
-
-			tessellator.draw();
-			bufferBuilder.setOffset(0.0, 0.0, 0.0);
-			this.disableBlockOverlayRendering();
-		}
-	}
-
-	public void drawHighlightedBlockOutline(Camera camera, HitResult hitResult, int i) {
+	private void method_22712(Entity entity, HitResult hitResult, int i, double d, double e, double f) {
 		if (i == 0 && hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
-				RenderSystem.enableBlend();
-				RenderSystem.blendFuncSeparate(
-					GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-				);
-				RenderSystem.lineWidth(Math.max(2.5F, (float)this.client.window.getFramebufferWidth() / 1920.0F * 2.5F));
-				RenderSystem.disableTexture();
-				RenderSystem.depthMask(false);
-				RenderSystem.matrixMode(5889);
-				RenderSystem.pushMatrix();
-				RenderSystem.scalef(1.0F, 1.0F, 0.999F);
-				double d = camera.getPos().x;
-				double e = camera.getPos().y;
-				double f = camera.getPos().z;
 				drawShapeOutline(
-					blockState.getOutlineShape(this.world, blockPos, EntityContext.of(camera.getFocusedEntity())),
+					blockState.getOutlineShape(this.world, blockPos, EntityContext.of(entity)),
 					(double)blockPos.getX() - d,
 					(double)blockPos.getY() - e,
 					(double)blockPos.getZ() - f,
@@ -1603,27 +1836,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					0.0F,
 					0.4F
 				);
-				RenderSystem.popMatrix();
-				RenderSystem.matrixMode(5888);
-				RenderSystem.depthMask(true);
-				RenderSystem.enableTexture();
-				RenderSystem.disableBlend();
 			}
-		}
-	}
-
-	public static void drawDebugShapeOutline(VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
-		List<Box> list = voxelShape.getBoundingBoxes();
-		int k = MathHelper.ceil((double)list.size() / 3.0);
-
-		for (int l = 0; l < list.size(); l++) {
-			Box box = (Box)list.get(l);
-			float m = ((float)l % (float)k + 1.0F) / (float)k;
-			float n = (float)(l / k);
-			float o = m * (float)(n == 0.0F ? 1 : 0);
-			float p = m * (float)(n == 1.0F ? 1 : 0);
-			float q = m * (float)(n == 2.0F ? 1 : 0);
-			drawShapeOutline(VoxelShapes.cuboid(box.offset(0.0, 0.0, 0.0)), d, e, f, o, p, q, 1.0F);
 		}
 	}
 
@@ -1636,10 +1849,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			bufferBuilder.vertex(n + d, o + e, p + f).color(g, h, i, j).next();
 		});
 		tessellator.draw();
-	}
-
-	public static void drawBoxOutline(Box box, float f, float g, float h, float i) {
-		drawBoxOutline(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, f, g, h, i);
 	}
 
 	public static void drawBoxOutline(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
@@ -1669,39 +1878,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		bufferBuilder.vertex(g, h, f).color(j, k, l, 0.0F).next();
 		bufferBuilder.vertex(g, e, f).color(j, k, l, m).next();
 		bufferBuilder.vertex(g, e, f).color(j, k, l, 0.0F).next();
-	}
-
-	public static void buildBox(BufferBuilder bufferBuilder, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
-		bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, e, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, h, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, h, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, h, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, e, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, e, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, e, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, h, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, e, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, e, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, e, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, e, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, h, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, h, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(d, h, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, f).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, i).color(j, k, l, m).next();
-		bufferBuilder.vertex(g, h, i).color(j, k, l, m).next();
 	}
 
 	public void updateBlock(BlockView blockView, BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
@@ -2271,12 +2447,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	@Environment(EnvType.CLIENT)
 	class ChunkInfo {
-		private final ChunkRenderer renderer;
+		private final ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer renderer;
 		private final Direction field_4125;
 		private byte field_4126;
 		private final int field_4122;
 
-		private ChunkInfo(ChunkRenderer chunkRenderer, @Nullable Direction direction, int i) {
+		private ChunkInfo(ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer, @Nullable Direction direction, int i) {
 			this.renderer = chunkRenderer;
 			this.field_4125 = direction;
 			this.field_4122 = i;

@@ -194,14 +194,4 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	protected abstract int getUpdateDelayInternal(BlockState blockState);
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return true;
-	}
 }

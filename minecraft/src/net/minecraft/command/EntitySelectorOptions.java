@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import net.minecraft.class_4570;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -31,6 +32,7 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
@@ -38,10 +40,14 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.TagHelper;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 
 public class EntitySelectorOptions {
 	private static final Map<String, EntitySelectorOptions.SelectorOption> options = Maps.<String, EntitySelectorOptions.SelectorOption>newHashMap();
@@ -479,6 +485,30 @@ public class EntitySelectorOptions {
 
 				entitySelectorReader.setSelectsAdvancements(true);
 			}, entitySelectorReader -> !entitySelectorReader.selectsAdvancements(), new TranslatableText("argument.entity.options.advancements.description"));
+			putOption(
+				"predicate",
+				entitySelectorReader -> {
+					boolean bl = entitySelectorReader.readNegationCharacter();
+					Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
+					entitySelectorReader.setPredicate(
+						entity -> {
+							if (!(entity.world instanceof ServerWorld)) {
+								return false;
+							} else {
+								ServerWorld serverWorld = (ServerWorld)entity.world;
+								class_4570 lv = serverWorld.getServer().method_22828().method_22565(identifier, class_4570.field_20766);
+								LootContext lootContext = new LootContext.Builder(serverWorld)
+									.put(LootContextParameters.THIS_ENTITY, entity)
+									.put(LootContextParameters.POSITION, new BlockPos(entity))
+									.build(LootContextTypes.SELECTOR);
+								return bl ^ lv.test(lootContext);
+							}
+						}
+					);
+				},
+				entitySelectorReader -> true,
+				new TranslatableText("argument.entity.options.predicate.description")
+			);
 		}
 	}
 

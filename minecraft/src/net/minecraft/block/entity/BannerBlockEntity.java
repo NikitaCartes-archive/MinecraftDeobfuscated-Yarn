@@ -26,6 +26,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private List<BannerPattern> patterns;
 	private List<DyeColor> patternColors;
 	private String patternCacheKey;
+	private boolean field_20743 = false;
 
 	public BannerBlockEntity() {
 		super(BlockEntityType.BANNER);
@@ -200,5 +201,15 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		}
 
 		return this.baseColor;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void method_22534(boolean bl) {
+		this.field_20743 = bl;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_22535() {
+		return this.field_20743;
 	}
 }

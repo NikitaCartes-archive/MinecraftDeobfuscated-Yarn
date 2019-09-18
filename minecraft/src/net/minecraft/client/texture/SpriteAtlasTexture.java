@@ -3,6 +3,7 @@ package net.minecraft.client.texture;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +14,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
@@ -47,7 +47,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 	public SpriteAtlasTexture(String string) {
 		this.atlasPath = string;
-		this.maxTextureSize = MinecraftClient.getMaxTextureSize();
+		this.maxTextureSize = RenderSystem.maxSupportedTextureSize();
 	}
 
 	@Override
@@ -270,7 +270,11 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 	@Override
 	public void tick() {
-		this.tickAnimatedSprites();
+		if (!RenderSystem.isOnRenderThread()) {
+			RenderSystem.recordRenderCall(this::tickAnimatedSprites);
+		} else {
+			this.tickAnimatedSprites();
+		}
 	}
 
 	public void setMipLevel(int i) {

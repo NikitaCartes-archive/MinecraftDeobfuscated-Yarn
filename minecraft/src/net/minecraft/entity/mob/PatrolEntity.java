@@ -140,17 +140,20 @@ public abstract class PatrolEntity extends HostileEntity {
 		private final T actor;
 		private final double leaderSpeed;
 		private final double fellowSpeed;
+		private long field_20701;
 
 		public PatrolGoal(T patrolEntity, double d, double e) {
 			this.actor = patrolEntity;
 			this.leaderSpeed = d;
 			this.fellowSpeed = e;
+			this.field_20701 = -1L;
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
 		@Override
 		public boolean canStart() {
-			return this.actor.isRaidCenterSet() && this.actor.getTarget() == null && !this.actor.hasPassengers() && this.actor.hasPatrolTarget();
+			boolean bl = this.actor.world.getTime() < this.field_20701;
+			return this.actor.isRaidCenterSet() && this.actor.getTarget() == null && !this.actor.hasPassengers() && this.actor.hasPatrolTarget() && !bl;
 		}
 
 		@Override
@@ -180,7 +183,9 @@ public abstract class PatrolEntity extends HostileEntity {
 					BlockPos blockPos = new BlockPos(vec3d4);
 					blockPos = this.actor.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
-						this.wander();
+						if (!this.wander()) {
+							this.field_20701 = this.actor.world.getTime() + 200L;
+						}
 					} else if (bl) {
 						for (PatrolEntity patrolEntity : list) {
 							patrolEntity.setPatrolTarget(blockPos);
@@ -196,12 +201,12 @@ public abstract class PatrolEntity extends HostileEntity {
 				.getEntities(PatrolEntity.class, this.actor.getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf(this.actor));
 		}
 
-		private void wander() {
+		private boolean wander() {
 			Random random = this.actor.getRand();
 			BlockPos blockPos = this.actor
 				.world
 				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-			this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
+			return this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}
 	}
 }

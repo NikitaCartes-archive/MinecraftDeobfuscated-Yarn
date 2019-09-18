@@ -72,7 +72,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		this.minecraft.getTextureManager().method_22813(TEXTURE);
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -80,7 +80,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		RenderSystem.matrixMode(5889);
 		RenderSystem.pushMatrix();
 		RenderSystem.loadIdentity();
-		int m = (int)this.minecraft.window.getScaleFactor();
+		int m = (int)this.minecraft.method_22683().getScaleFactor();
 		RenderSystem.viewport((this.width - 320) / 2 * m, (this.height - 240) / 2 * m, 320 * m, 240 * m);
 		RenderSystem.translatef(-0.34F, 0.23F, 0.0F);
 		RenderSystem.multMatrix(Matrix4f.method_4929(90.0, 1.3333334F, 9.0F, 80.0F));
@@ -93,7 +93,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		float h = 5.0F;
 		RenderSystem.scalef(5.0F, 5.0F, 5.0F);
 		RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BOOK_TEXURE);
+		this.minecraft.getTextureManager().method_22813(BOOK_TEXURE);
 		RenderSystem.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
 		float n = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
 		RenderSystem.translatef((1.0F - n) * 0.2F, (1.0F - n) * 0.1F, (1.0F - n) * 0.25F);
@@ -120,11 +120,12 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		}
 
 		RenderSystem.enableRescaleNormal();
-		bookModel.render(0.0F, o, p, n, 0.0F, 0.0625F);
+		bookModel.setPageAngles(0.0F, o, p, n);
+		bookModel.method_22693(0.0625F);
 		RenderSystem.disableRescaleNormal();
 		GuiLighting.disable();
 		RenderSystem.matrixMode(5889);
-		RenderSystem.viewport(0, 0, this.minecraft.window.getFramebufferWidth(), this.minecraft.window.getFramebufferHeight());
+		RenderSystem.viewport(0, 0, this.minecraft.method_22683().getFramebufferWidth(), this.minecraft.method_22683().getFramebufferHeight());
 		RenderSystem.popMatrix();
 		RenderSystem.matrixMode(5888);
 		RenderSystem.popMatrix();
@@ -136,8 +137,8 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		for (int r = 0; r < 3; r++) {
 			int s = k + 60;
 			int t = s + 20;
-			this.blitOffset = 0;
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
+			this.setBlitOffset(0);
+			this.minecraft.getTextureManager().method_22813(TEXTURE);
 			int u = this.container.enchantmentPower[r];
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			if (u == 0) {

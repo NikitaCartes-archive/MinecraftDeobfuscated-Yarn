@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4538;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -33,12 +32,6 @@ public abstract class LavaFluid extends BaseFluid {
 	@Override
 	public Fluid getStill() {
 		return Fluids.LAVA;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.SOLID;
 	}
 
 	@Override

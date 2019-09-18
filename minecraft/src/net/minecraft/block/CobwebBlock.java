@@ -14,9 +14,4 @@ public class CobwebBlock extends Block {
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		entity.slowMovement(blockState, new Vec3d(0.25, 0.05F, 0.25));
 	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
 }

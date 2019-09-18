@@ -104,7 +104,7 @@ public class MapRenderer implements AutoCloseable {
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			float f = 0.0F;
-			MapRenderer.this.textureManager.bindTexture(this.id);
+			MapRenderer.this.textureManager.method_22813(this.id);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
 				GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE
@@ -122,7 +122,7 @@ public class MapRenderer implements AutoCloseable {
 
 			for (MapIcon mapIcon : this.mapState.icons.values()) {
 				if (!bl || mapIcon.isAlwaysRendered()) {
-					MapRenderer.this.textureManager.bindTexture(MapRenderer.MAP_ICONS_TEXTURE);
+					MapRenderer.this.textureManager.method_22813(MapRenderer.MAP_ICONS_TEXTURE);
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F, -0.02F);
 					RenderSystem.rotatef((float)(mapIcon.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);

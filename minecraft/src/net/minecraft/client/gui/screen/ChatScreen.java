@@ -523,10 +523,14 @@ public class ChatScreen extends Screen {
 
 		public boolean mouseScrolled(double d) {
 			int i = (int)(
-				ChatScreen.this.minecraft.mouse.getX() * (double)ChatScreen.this.minecraft.window.getScaledWidth() / (double)ChatScreen.this.minecraft.window.getWidth()
+				ChatScreen.this.minecraft.mouse.getX()
+					* (double)ChatScreen.this.minecraft.method_22683().getScaledWidth()
+					/ (double)ChatScreen.this.minecraft.method_22683().getWidth()
 			);
 			int j = (int)(
-				ChatScreen.this.minecraft.mouse.getY() * (double)ChatScreen.this.minecraft.window.getScaledHeight() / (double)ChatScreen.this.minecraft.window.getHeight()
+				ChatScreen.this.minecraft.mouse.getY()
+					* (double)ChatScreen.this.minecraft.method_22683().getScaledHeight()
+					/ (double)ChatScreen.this.minecraft.method_22683().getHeight()
 			);
 			if (this.area.contains(i, j)) {
 				this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - d), 0, Math.max(this.suggestions.getList().size() - 10, 0));

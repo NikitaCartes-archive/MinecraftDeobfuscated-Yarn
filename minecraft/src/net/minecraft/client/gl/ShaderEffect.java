@@ -150,7 +150,7 @@ public class ShaderEffect implements AutoCloseable {
 								IOUtils.closeQuietly(resource);
 							}
 
-							textureManager.bindTexture(identifier);
+							textureManager.method_22813(identifier);
 							Texture texture = textureManager.getTexture(identifier);
 							int j = JsonHelper.getInt(jsonObject2, "width");
 							int k = JsonHelper.getInt(jsonObject2, "height");

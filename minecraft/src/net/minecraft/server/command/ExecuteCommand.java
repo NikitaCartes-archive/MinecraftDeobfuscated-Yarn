@@ -12,6 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
@@ -21,6 +22,8 @@ import java.util.OptionalInt;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.IntFunction;
+import net.minecraft.class_4567;
+import net.minecraft.class_4570;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -54,9 +57,13 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
+import net.minecraft.world.loot.context.LootContextTypes;
 
 public class ExecuteCommand {
 	private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
@@ -72,6 +79,10 @@ public class ExecuteCommand {
 			resultConsumer.onCommandComplete(commandContext, bl, i);
 			resultConsumer2.onCommandComplete(commandContext, bl, i);
 		};
+	private static final SuggestionProvider<ServerCommandSource> field_20852 = (commandContext, suggestionsBuilder) -> {
+		class_4567 lv = commandContext.getSource().getMinecraftServer().method_22828();
+		return CommandSource.suggestIdentifiers(lv.method_22559(), suggestionsBuilder);
+	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
@@ -523,6 +534,17 @@ public class ExecuteCommand {
 							)
 							.executes(getExistsConditionExecute(bl, commandContext -> EntityArgumentType.getOptionalEntities(commandContext, "entities").size()))
 					)
+			)
+			.then(
+				CommandManager.literal("predicate")
+					.then(
+						addConditionLogic(
+							commandNode,
+							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(field_20852),
+							bl,
+							commandContext -> method_22829(commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "predicate"))
+						)
+					)
 			);
 
 		for (DataCommand.ObjectType objectType : DataCommand.SOURCE_OBJECT_TYPES) {
@@ -594,6 +616,16 @@ public class ExecuteCommand {
 		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjective(commandContext, "targetObjective");
 		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
 		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : intRange.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
+	}
+
+	private static boolean method_22829(ServerCommandSource serverCommandSource, Identifier identifier) {
+		ServerWorld serverWorld = serverCommandSource.getWorld();
+		class_4567 lv = serverWorld.getServer().method_22828();
+		class_4570 lv2 = lv.method_22565(identifier, class_4570.field_20766);
+		LootContext.Builder builder = new LootContext.Builder(serverWorld)
+			.put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()))
+			.putNullable(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
+		return lv2.test(builder.build(LootContextTypes.COMMAND));
 	}
 
 	private static Collection<ServerCommandSource> getSourceOrEmptyForConditionFork(CommandContext<ServerCommandSource> commandContext, boolean bl, boolean bl2) {

@@ -129,7 +129,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 			GuiLighting.enableForItems();
 			RenderSystem.enableBlend();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(BG_TEX);
+			this.client.getTextureManager().method_22813(BG_TEX);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 170.0F);
 			int k = this.alternateButtons.size() <= 16 ? 4 : 5;
@@ -221,7 +221,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		public void renderButton(int i, int j, float f) {
 			GuiLighting.enableForItems();
 			RenderSystem.enableAlphaTest();
-			RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(RecipeAlternatesWidget.BG_TEX);
+			RecipeAlternatesWidget.this.client.getTextureManager().method_22813(RecipeAlternatesWidget.BG_TEX);
 			int k = 152;
 			if (!this.isCraftable) {
 				k += 26;

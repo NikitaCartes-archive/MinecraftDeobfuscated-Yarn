@@ -55,6 +55,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4565;
+import net.minecraft.class_4567;
 import net.minecraft.client.network.packet.DifficultyS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.datafixers.Schemas;
@@ -203,8 +205,11 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final RegistryTagManager tagManager = new RegistryTagManager();
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
+	@Nullable
+	private class_4565 field_20850;
 	private final BossBarManager bossBarManager = new BossBarManager(this);
-	private final LootManager lootManager = new LootManager();
+	private final class_4567 field_20851 = new class_4567();
+	private final LootManager lootManager = new LootManager(this.field_20851);
 	private final ServerAdvancementLoader advancementManager = new ServerAdvancementLoader();
 	private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
 	private final MetricsData metricsData = new MetricsData();
@@ -241,6 +246,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.levelStorage = new LevelStorage(file.toPath(), file.toPath().resolve("../backups"), dataFixer);
 		this.dataFixer = dataFixer;
 		this.dataManager.registerListener(this.tagManager);
+		this.dataManager.registerListener(this.field_20851);
 		this.dataManager.registerListener(this.recipeManager);
 		this.dataManager.registerListener(this.lootManager);
 		this.dataManager.registerListener(this.commandFunctionManager);
@@ -371,7 +377,9 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			this, this.workerExecutor, worldSaveHandler, levelProperties, DimensionType.OVERWORLD, this.profiler, worldGenerationProgressListener
 		);
 		this.worlds.put(DimensionType.OVERWORLD, serverWorld);
-		this.initScoreboard(serverWorld.getPersistentStateManager());
+		PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
+		this.initScoreboard(persistentStateManager);
+		this.field_20850 = new class_4565(persistentStateManager);
 		serverWorld.getWorldBorder().load(levelProperties);
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
 		if (!levelProperties.isInitialized()) {
@@ -382,12 +390,12 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 				}
 
 				levelProperties.setInitialized(true);
-			} catch (Throwable var11) {
-				CrashReport crashReport = CrashReport.create(var11, "Exception initializing level");
+			} catch (Throwable var12) {
+				CrashReport crashReport = CrashReport.create(var12, "Exception initializing level");
 
 				try {
 					serverWorld2.addDetailsToCrashReport(crashReport);
-				} catch (Throwable var10) {
+				} catch (Throwable var11) {
 				}
 
 				throw new CrashException(crashReport);
@@ -1510,8 +1518,20 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.scoreboard;
 	}
 
+	public class_4565 method_22827() {
+		if (this.field_20850 == null) {
+			throw new NullPointerException("Called before server init");
+		} else {
+			return this.field_20850;
+		}
+	}
+
 	public LootManager getLootManager() {
 		return this.lootManager;
+	}
+
+	public class_4567 method_22828() {
+		return this.field_20851;
 	}
 
 	public GameRules getGameRules() {
