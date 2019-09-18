@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Waterloggable;
@@ -60,11 +59,6 @@ implements Waterloggable {
     @Override
     public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return VoxelShapes.fullCube();
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

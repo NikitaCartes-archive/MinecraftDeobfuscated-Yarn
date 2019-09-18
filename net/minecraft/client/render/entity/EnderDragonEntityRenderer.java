@@ -56,7 +56,7 @@ extends MobEntityRenderer<EnderDragonEntity, DragonEntityModel> {
             RenderSystem.alphaFunc(516, l);
             this.bindTexture(EXPLOSION_TEX);
             ((DragonEntityModel)this.model).method_17137(enderDragonEntity, f, g, h, i, j, k);
-            RenderSystem.alphaFunc(516, 0.1f);
+            RenderSystem.defaultAlphaFunc();
             RenderSystem.depthFunc(514);
         }
         this.bindEntityTexture(enderDragonEntity);

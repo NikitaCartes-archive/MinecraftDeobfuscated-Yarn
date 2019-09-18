@@ -7,7 +7,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemPlacementContext;
@@ -28,7 +27,6 @@ public class LeavesBlock
 extends Block {
     public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
     public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
-    protected static boolean fancy;
 
     public LeavesBlock(Block.Settings settings) {
         super(settings);
@@ -108,21 +106,6 @@ extends Block {
         double e = (double)blockPos.getY() - 0.05;
         double f = (float)blockPos.getZ() + random.nextFloat();
         world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static void setRenderingMode(boolean bl) {
-        fancy = bl;
-    }
-
-    @Override
-    public boolean isOpaque(BlockState blockState) {
-        return false;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return fancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
     }
 
     @Override

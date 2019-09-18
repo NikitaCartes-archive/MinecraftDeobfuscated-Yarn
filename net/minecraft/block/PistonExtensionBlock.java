@@ -78,11 +78,6 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean isOpaque(BlockState blockState) {
-        return false;
-    }
-
-    @Override
     public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return false;
     }

@@ -16,7 +16,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ObserverBlock;
@@ -400,11 +399,6 @@ extends Block {
         float j = Math.max(0.0f, g * g * 0.7f - 0.5f);
         float k = Math.max(0.0f, g * g * 0.6f - 0.7f);
         world.addParticle(new DustParticleEffect(h, j, k, 1.0f), d, e, f, 0.0, 0.0, 0.0);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

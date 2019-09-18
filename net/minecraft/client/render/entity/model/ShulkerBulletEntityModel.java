@@ -18,9 +18,9 @@ extends EntityModel<T> {
         this.textureWidth = 64;
         this.textureHeight = 32;
         this.field_3556 = new ModelPart(this);
-        this.field_3556.setTextureOffset(0, 0).addCuboid(-4.0f, -4.0f, -1.0f, 8, 8, 2, 0.0f);
-        this.field_3556.setTextureOffset(0, 10).addCuboid(-1.0f, -4.0f, -4.0f, 2, 8, 8, 0.0f);
-        this.field_3556.setTextureOffset(20, 0).addCuboid(-4.0f, -1.0f, -4.0f, 8, 2, 8, 0.0f);
+        this.field_3556.setTextureOffset(0, 0).addCuboid(-4.0f, -4.0f, -1.0f, 8.0f, 8.0f, 2.0f, 0.0f);
+        this.field_3556.setTextureOffset(0, 10).addCuboid(-1.0f, -4.0f, -4.0f, 2.0f, 8.0f, 8.0f, 0.0f);
+        this.field_3556.setTextureOffset(20, 0).addCuboid(-4.0f, -1.0f, -4.0f, 8.0f, 2.0f, 8.0f, 0.0f);
         this.field_3556.setRotationPoint(0.0f, 0.0f, 0.0f);
     }
 

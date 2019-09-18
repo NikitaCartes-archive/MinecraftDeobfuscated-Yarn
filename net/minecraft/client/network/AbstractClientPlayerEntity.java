@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.texture.PlayerSkinTexture;
-import net.minecraft.client.texture.SkinRemappingImageFilter;
 import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -92,7 +91,7 @@ extends PlayerEntity {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         Texture texture = textureManager.getTexture(identifier);
         if (texture == null) {
-            texture = new PlayerSkinTexture(null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(string)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(string)), new SkinRemappingImageFilter());
+            texture = new PlayerSkinTexture(null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(string)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(string)), true, null);
             textureManager.registerTexture(identifier, texture);
         }
         return (PlayerSkinTexture)texture;

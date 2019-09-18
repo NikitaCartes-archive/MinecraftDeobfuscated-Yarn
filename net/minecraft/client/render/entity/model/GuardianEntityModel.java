@@ -32,27 +32,27 @@ extends EntityModel<GuardianEntity> {
         this.textureHeight = 64;
         this.field_3380 = new ModelPart[12];
         this.field_3379 = new ModelPart(this);
-        this.field_3379.setTextureOffset(0, 0).addCuboid(-6.0f, 10.0f, -8.0f, 12, 12, 16);
-        this.field_3379.setTextureOffset(0, 28).addCuboid(-8.0f, 10.0f, -6.0f, 2, 12, 12);
-        this.field_3379.setTextureOffset(0, 28).addCuboid(6.0f, 10.0f, -6.0f, 2, 12, 12, true);
-        this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0f, 8.0f, -6.0f, 12, 2, 12);
-        this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0f, 22.0f, -6.0f, 12, 2, 12);
+        this.field_3379.setTextureOffset(0, 0).addCuboid(-6.0f, 10.0f, -8.0f, 12.0f, 12.0f, 16.0f);
+        this.field_3379.setTextureOffset(0, 28).addCuboid(-8.0f, 10.0f, -6.0f, 2.0f, 12.0f, 12.0f);
+        this.field_3379.setTextureOffset(0, 28).addCuboid(6.0f, 10.0f, -6.0f, 2.0f, 12.0f, 12.0f, true);
+        this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0f, 8.0f, -6.0f, 12.0f, 2.0f, 12.0f);
+        this.field_3379.setTextureOffset(16, 40).addCuboid(-6.0f, 22.0f, -6.0f, 12.0f, 2.0f, 12.0f);
         for (int i = 0; i < this.field_3380.length; ++i) {
             this.field_3380[i] = new ModelPart(this, 0, 0);
-            this.field_3380[i].addCuboid(-1.0f, -4.5f, -1.0f, 2, 9, 2);
+            this.field_3380[i].addCuboid(-1.0f, -4.5f, -1.0f, 2.0f, 9.0f, 2.0f);
             this.field_3379.addChild(this.field_3380[i]);
         }
         this.field_3381 = new ModelPart(this, 8, 0);
-        this.field_3381.addCuboid(-1.0f, 15.0f, 0.0f, 2, 2, 1);
+        this.field_3381.addCuboid(-1.0f, 15.0f, 0.0f, 2.0f, 2.0f, 1.0f);
         this.field_3379.addChild(this.field_3381);
         this.field_3378 = new ModelPart[3];
         this.field_3378[0] = new ModelPart(this, 40, 0);
-        this.field_3378[0].addCuboid(-2.0f, 14.0f, 7.0f, 4, 4, 8);
+        this.field_3378[0].addCuboid(-2.0f, 14.0f, 7.0f, 4.0f, 4.0f, 8.0f);
         this.field_3378[1] = new ModelPart(this, 0, 54);
-        this.field_3378[1].addCuboid(0.0f, 14.0f, 0.0f, 3, 3, 7);
+        this.field_3378[1].addCuboid(0.0f, 14.0f, 0.0f, 3.0f, 3.0f, 7.0f);
         this.field_3378[2] = new ModelPart(this);
-        this.field_3378[2].setTextureOffset(41, 32).addCuboid(0.0f, 14.0f, 0.0f, 2, 2, 6);
-        this.field_3378[2].setTextureOffset(25, 19).addCuboid(1.0f, 10.5f, 3.0f, 1, 9, 9);
+        this.field_3378[2].setTextureOffset(41, 32).addCuboid(0.0f, 14.0f, 0.0f, 2.0f, 2.0f, 6.0f);
+        this.field_3378[2].setTextureOffset(25, 19).addCuboid(1.0f, 10.5f, 3.0f, 1.0f, 9.0f, 9.0f);
         this.field_3379.addChild(this.field_3378[0]);
         this.field_3378[0].addChild(this.field_3378[1]);
         this.field_3378[1].addChild(this.field_3378[2]);

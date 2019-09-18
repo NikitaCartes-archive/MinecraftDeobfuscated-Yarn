@@ -23,6 +23,7 @@ import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4559;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -867,7 +868,7 @@ implements DataProvider {
     }
 
     private EnterBlockCriterion.Conditions method_10422(Block block) {
-        return new EnterBlockCriterion.Conditions(block, null);
+        return new EnterBlockCriterion.Conditions(block, class_4559.field_20736);
     }
 
     private InventoryChangedCriterion.Conditions method_10424(NumberRange.IntRange intRange, ItemConvertible itemConvertible) {

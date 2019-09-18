@@ -15,9 +15,9 @@ extends Model {
     private final ModelPart signpost;
 
     public SignBlockEntityModel() {
-        this.field_3562.addCuboid(-12.0f, -14.0f, -1.0f, 24, 12, 2, 0.0f);
+        this.field_3562.addCuboid(-12.0f, -14.0f, -1.0f, 24.0f, 12.0f, 2.0f, 0.0f);
         this.signpost = new ModelPart(this, 0, 14);
-        this.signpost.addCuboid(-1.0f, -2.0f, -1.0f, 2, 14, 2, 0.0f);
+        this.signpost.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 14.0f, 2.0f, 0.0f);
     }
 
     public void render() {

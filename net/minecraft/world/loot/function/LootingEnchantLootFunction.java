@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -15,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.UniformLootTableRange;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -27,8 +27,8 @@ extends ConditionalLootFunction {
     private final UniformLootTableRange countRange;
     private final int limit;
 
-    private LootingEnchantLootFunction(LootCondition[] lootConditions, UniformLootTableRange uniformLootTableRange, int i) {
-        super(lootConditions);
+    private LootingEnchantLootFunction(class_4570[] args, UniformLootTableRange uniformLootTableRange, int i) {
+        super(args);
         this.countRange = uniformLootTableRange;
         this.limit = i;
     }
@@ -77,14 +77,14 @@ extends ConditionalLootFunction {
             }
         }
 
-        public LootingEnchantLootFunction method_554(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        public LootingEnchantLootFunction method_554(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
             int i = JsonHelper.getInt(jsonObject, "limit", 0);
-            return new LootingEnchantLootFunction(lootConditions, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, UniformLootTableRange.class), i);
+            return new LootingEnchantLootFunction(args, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, UniformLootTableRange.class), i);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_554(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+            return this.method_554(jsonObject, jsonDeserializationContext, args);
         }
     }
 

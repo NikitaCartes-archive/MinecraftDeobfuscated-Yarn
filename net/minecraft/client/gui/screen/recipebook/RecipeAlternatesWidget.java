@@ -129,7 +129,7 @@ Element {
         GuiLighting.enableForItems();
         RenderSystem.enableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(BG_TEX);
+        this.client.getTextureManager().method_22813(BG_TEX);
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 170.0f);
         int k = this.alternateButtons.size() <= 16 ? 4 : 5;
@@ -217,7 +217,7 @@ Element {
             int l;
             GuiLighting.enableForItems();
             RenderSystem.enableAlphaTest();
-            RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(BG_TEX);
+            RecipeAlternatesWidget.this.client.getTextureManager().method_22813(BG_TEX);
             int k = 152;
             if (!this.isCraftable) {
                 k += 26;

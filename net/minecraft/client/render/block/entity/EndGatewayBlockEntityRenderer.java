@@ -6,8 +6,8 @@ package net.minecraft.client.render.block.entity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
-import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.util.DyeColor;
@@ -16,15 +16,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class EndGatewayBlockEntityRenderer
-extends EndPortalBlockEntityRenderer {
+extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
     private static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/end_gateway_beam.png");
 
-    @Override
-    public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+    public void method_22751(EndGatewayBlockEntity endGatewayBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
         RenderSystem.disableFog();
-        EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)endPortalBlockEntity;
         if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
-            RenderSystem.alphaFunc(516, 0.1f);
+            RenderSystem.defaultAlphaFunc();
             this.bindTexture(BEAM_TEXTURE);
             float h = endGatewayBlockEntity.isRecentlyGenerated() ? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(g) : endGatewayBlockEntity.getCooldownBeamHeight(g);
             double j = endGatewayBlockEntity.isRecentlyGenerated() ? 256.0 - e : 50.0;
@@ -34,7 +32,7 @@ extends EndPortalBlockEntityRenderer {
             BeaconBlockEntityRenderer.renderLightBeam(d, e, f, g, h, endGatewayBlockEntity.getWorld().getTime(), 0, k, fs, 0.15, 0.175);
             BeaconBlockEntityRenderer.renderLightBeam(d, e, f, g, h, endGatewayBlockEntity.getWorld().getTime(), 0, -k, fs, 0.15, 0.175);
         }
-        super.method_3591(endPortalBlockEntity, d, e, f, g, i);
+        super.method_3591(endGatewayBlockEntity, d, e, f, g, i, blockRenderLayer);
         RenderSystem.enableFog();
     }
 

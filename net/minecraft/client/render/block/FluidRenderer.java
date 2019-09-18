@@ -157,15 +157,15 @@ public class FluidRenderer {
             aj = 1.0f * f;
             ak = 1.0f * g;
             al = 1.0f * h;
-            bufferBuilder.vertex(d + 0.0, e + (double)n, r + 0.0).color(aj, ak, al, 1.0f).texture(t, u).texture(ah, ai).next();
-            bufferBuilder.vertex(d + 0.0, e + (double)o, r + 1.0).color(aj, ak, al, 1.0f).texture(v, w).texture(ah, ai).next();
-            bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0f).texture(x, y).texture(ah, ai).next();
-            bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0f).texture(z, aa).texture(ah, ai).next();
+            bufferBuilder.vertex(d + 0.0, e + (double)n, r + 0.0).color(aj, ak, al, 1.0f).texture(t, u).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(d + 0.0, e + (double)o, r + 1.0).color(aj, ak, al, 1.0f).texture(v, w).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0f).texture(x, y).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0f).texture(z, aa).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
             if (fluidState.method_15756(blockRenderView, blockPos.up())) {
-                bufferBuilder.vertex(d + 0.0, e + (double)n, r + 0.0).color(aj, ak, al, 1.0f).texture(t, u).texture(ah, ai).next();
-                bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0f).texture(z, aa).texture(ah, ai).next();
-                bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0f).texture(x, y).texture(ah, ai).next();
-                bufferBuilder.vertex(d + 0.0, e + (double)o, r + 1.0).color(aj, ak, al, 1.0f).texture(v, w).texture(ah, ai).next();
+                bufferBuilder.vertex(d + 0.0, e + (double)n, r + 0.0).color(aj, ak, al, 1.0f).texture(t, u).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+                bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0f).texture(z, aa).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+                bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0f).texture(x, y).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+                bufferBuilder.vertex(d + 0.0, e + (double)o, r + 1.0).color(aj, ak, al, 1.0f).texture(v, w).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
             }
         }
         if (bl3) {
@@ -179,10 +179,10 @@ public class FluidRenderer {
             aa = 0.5f * f;
             float ap = 0.5f * g;
             af = 0.5f * h;
-            bufferBuilder.vertex(d, e, r + 1.0).color(aa, ap, af, 1.0f).texture(t, z).texture(an, ao).next();
-            bufferBuilder.vertex(d, e, r).color(aa, ap, af, 1.0f).texture(t, x).texture(an, ao).next();
-            bufferBuilder.vertex(d + 1.0, e, r).color(aa, ap, af, 1.0f).texture(v, x).texture(an, ao).next();
-            bufferBuilder.vertex(d + 1.0, e, r + 1.0).color(aa, ap, af, 1.0f).texture(v, z).texture(an, ao).next();
+            bufferBuilder.vertex(d, e, r + 1.0).color(aa, ap, af, 1.0f).texture(t, z).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(d, e, r).color(aa, ap, af, 1.0f).texture(t, x).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(d + 1.0, e, r).color(aa, ap, af, 1.0f).texture(v, x).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(d + 1.0, e, r + 1.0).color(aa, ap, af, 1.0f).texture(v, z).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
             bl82 = true;
         }
         for (int aq = 0; aq < 4; ++aq) {
@@ -249,15 +249,15 @@ public class FluidRenderer {
             float bb = 1.0f * ba * f;
             float bc = 1.0f * ba * g;
             float bd = 1.0f * ba * h;
-            bufferBuilder.vertex(ar, e + (double)v, at).color(bb, bc, bd, 1.0f).texture(av, aj).texture(ay, az).next();
-            bufferBuilder.vertex(as, e + (double)x, au).color(bb, bc, bd, 1.0f).texture(aw, ak).texture(ay, az).next();
-            bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0f).texture(aw, al).texture(ay, az).next();
-            bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0f).texture(av, al).texture(ay, az).next();
+            bufferBuilder.vertex(ar, e + (double)v, at).color(bb, bc, bd, 1.0f).texture(av, aj).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(as, e + (double)x, au).color(bb, bc, bd, 1.0f).texture(aw, ak).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0f).texture(aw, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0f).texture(av, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
             if (sprite2 == this.waterOverlaySprite) continue;
-            bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0f).texture(av, al).texture(ay, az).next();
-            bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0f).texture(aw, al).texture(ay, az).next();
-            bufferBuilder.vertex(as, e + (double)x, au).color(bb, bc, bd, 1.0f).texture(aw, ak).texture(ay, az).next();
-            bufferBuilder.vertex(ar, e + (double)v, at).color(bb, bc, bd, 1.0f).texture(av, aj).texture(ay, az).next();
+            bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0f).texture(av, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0f).texture(aw, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(as, e + (double)x, au).color(bb, bc, bd, 1.0f).texture(aw, ak).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(ar, e + (double)v, at).color(bb, bc, bd, 1.0f).texture(av, aj).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
         }
         return bl82;
     }

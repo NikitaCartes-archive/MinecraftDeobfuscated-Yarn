@@ -8,33 +8,29 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.ConditionConsumerBuilder;
-import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextType;
 import net.minecraft.world.loot.entry.AlternativeEntry;
 import net.minecraft.world.loot.entry.EntryCombiner;
 
 public abstract class LootEntry
 implements EntryCombiner {
-    protected final LootCondition[] conditions;
+    protected final class_4570[] conditions;
     private final Predicate<LootContext> conditionPredicate;
 
-    protected LootEntry(LootCondition[] lootConditions) {
-        this.conditions = lootConditions;
-        this.conditionPredicate = LootConditions.joinAnd(lootConditions);
+    protected LootEntry(class_4570[] args) {
+        this.conditions = args;
+        this.conditionPredicate = LootConditions.joinAnd(args);
     }
 
-    public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+    public void check(LootTableReporter lootTableReporter) {
         for (int i = 0; i < this.conditions.length; ++i) {
-            this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"), function, set, lootContextType);
+            this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"));
         }
     }
 
@@ -61,16 +57,16 @@ implements EntryCombiner {
 
         public abstract void toJson(JsonObject var1, T var2, JsonSerializationContext var3);
 
-        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
+        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, class_4570[] var3);
     }
 
     public static abstract class Builder<T extends Builder<T>>
     implements ConditionConsumerBuilder<T> {
-        private final List<LootCondition> children = Lists.newArrayList();
+        private final List<class_4570> children = Lists.newArrayList();
 
         protected abstract T getThisBuilder();
 
-        public T method_421(LootCondition.Builder builder) {
+        public T method_421(class_4570.Builder builder) {
             this.children.add(builder.build());
             return this.getThisBuilder();
         }
@@ -79,8 +75,8 @@ implements EntryCombiner {
             return this.getThisBuilder();
         }
 
-        protected LootCondition[] getConditions() {
-            return this.children.toArray(new LootCondition[0]);
+        protected class_4570[] getConditions() {
+            return this.children.toArray(new class_4570[0]);
         }
 
         public AlternativeEntry.Builder withChild(Builder<?> builder) {
@@ -95,7 +91,7 @@ implements EntryCombiner {
         }
 
         @Override
-        public /* synthetic */ Object withCondition(LootCondition.Builder builder) {
+        public /* synthetic */ Object withCondition(class_4570.Builder builder) {
             return this.method_421(builder);
         }
     }

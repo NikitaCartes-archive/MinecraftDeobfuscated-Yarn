@@ -6,7 +6,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -76,11 +75,6 @@ extends Block {
     }
 
     @Override
-    public boolean isOpaque(BlockState blockState) {
-        return true;
-    }
-
-    @Override
     public BlockState getStateForNeighborUpdate(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
         if (!blockState.canPlaceAt(iWorld, blockPos)) {
             iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
@@ -103,11 +97,6 @@ extends Block {
     @Override
     public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
         entity.damage(DamageSource.CACTUS, 1.0f);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

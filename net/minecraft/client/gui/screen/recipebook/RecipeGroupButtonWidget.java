@@ -56,7 +56,7 @@ extends ToggleButtonWidget {
             RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        minecraftClient.getTextureManager().bindTexture(this.texture);
+        minecraftClient.getTextureManager().method_22813(this.texture);
         RenderSystem.disableDepthTest();
         int k = this.u;
         int l = this.v;

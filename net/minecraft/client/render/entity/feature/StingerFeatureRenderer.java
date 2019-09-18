@@ -12,14 +12,14 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.StickingOutThingsFeatureRenderer;
-import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class StingerFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
+public class StingerFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
 extends StickingOutThingsFeatureRenderer<T, M> {
     private static final Identifier field_20529 = new Identifier("textures/entity/bee/bee_stinger.png");
 

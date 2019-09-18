@@ -15,14 +15,14 @@ extends QuadrupedEntityModel<T> {
     public CowEntityModel() {
         super(12, 0.0f);
         this.head = new ModelPart(this, 0, 0);
-        this.head.addCuboid(-4.0f, -4.0f, -6.0f, 8, 8, 6, 0.0f);
+        this.head.addCuboid(-4.0f, -4.0f, -6.0f, 8.0f, 8.0f, 6.0f, 0.0f);
         this.head.setRotationPoint(0.0f, 4.0f, -8.0f);
-        this.head.setTextureOffset(22, 0).addCuboid(-5.0f, -5.0f, -4.0f, 1, 3, 1, 0.0f);
-        this.head.setTextureOffset(22, 0).addCuboid(4.0f, -5.0f, -4.0f, 1, 3, 1, 0.0f);
+        this.head.setTextureOffset(22, 0).addCuboid(-5.0f, -5.0f, -4.0f, 1.0f, 3.0f, 1.0f, 0.0f);
+        this.head.setTextureOffset(22, 0).addCuboid(4.0f, -5.0f, -4.0f, 1.0f, 3.0f, 1.0f, 0.0f);
         this.body = new ModelPart(this, 18, 4);
-        this.body.addCuboid(-6.0f, -10.0f, -7.0f, 12, 18, 10, 0.0f);
+        this.body.addCuboid(-6.0f, -10.0f, -7.0f, 12.0f, 18.0f, 10.0f, 0.0f);
         this.body.setRotationPoint(0.0f, 5.0f, 2.0f);
-        this.body.setTextureOffset(52, 0).addCuboid(-2.0f, 2.0f, -8.0f, 4, 6, 1);
+        this.body.setTextureOffset(52, 0).addCuboid(-2.0f, 2.0f, -8.0f, 4.0f, 6.0f, 1.0f);
         this.leg1.rotationPointX -= 1.0f;
         this.leg2.rotationPointX += 1.0f;
         this.leg1.rotationPointZ += 0.0f;

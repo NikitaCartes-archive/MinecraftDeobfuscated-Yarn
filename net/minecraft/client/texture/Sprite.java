@@ -4,6 +4,7 @@
 package net.minecraft.client.texture;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -196,7 +197,7 @@ public class Sprite {
 
     private void upload(int i, int j, NativeImage[] nativeImages) {
         for (int k = 0; k < this.images.length; ++k) {
-            nativeImages[k].upload(k, this.x >> k, this.y >> k, i >> k, j >> k, this.width >> k, this.height >> k, this.images.length > 1);
+            nativeImages[k].upload(k, this.x >> k, this.y >> k, i >> k, j >> k, this.width >> k, this.height >> k, this.images.length > 1, false);
         }
     }
 
@@ -269,7 +270,11 @@ public class Sprite {
                 this.upload(k);
             }
         } else if (this.animationMetadata.shouldInterpolate()) {
-            this.interpolateFrames();
+            if (!RenderSystem.isOnRenderThread()) {
+                RenderSystem.recordRenderCall(this::interpolateFrames);
+            } else {
+                this.interpolateFrames();
+            }
         }
     }
 

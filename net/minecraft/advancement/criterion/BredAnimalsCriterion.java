@@ -3,19 +3,12 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.class_4558;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -24,39 +17,12 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class BredAnimalsCriterion
-implements Criterion<Conditions> {
+extends class_4558<Conditions> {
     private static final Identifier ID = new Identifier("bred_animals");
-    private final Map<PlayerAdvancementTracker, Handler> handlers = Maps.newHashMap();
 
     @Override
     public Identifier getId() {
         return ID;
-    }
-
-    @Override
-    public void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.handlers.get(playerAdvancementTracker);
-        if (handler == null) {
-            handler = new Handler(playerAdvancementTracker);
-            this.handlers.put(playerAdvancementTracker, handler);
-        }
-        handler.addCondition(conditionsContainer);
-    }
-
-    @Override
-    public void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.handlers.get(playerAdvancementTracker);
-        if (handler != null) {
-            handler.removeCondition(conditionsContainer);
-            if (handler.isEmpty()) {
-                this.handlers.remove(playerAdvancementTracker);
-            }
-        }
-    }
-
-    @Override
-    public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-        this.handlers.remove(playerAdvancementTracker);
     }
 
     public Conditions method_854(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -67,52 +33,12 @@ implements Criterion<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
-        if (handler != null) {
-            handler.handle(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity);
-        }
+        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity));
     }
 
     @Override
     public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
         return this.method_854(jsonObject, jsonDeserializationContext);
-    }
-
-    static class Handler {
-        private final PlayerAdvancementTracker manager;
-        private final Set<Criterion.ConditionsContainer<Conditions>> conditions = Sets.newHashSet();
-
-        public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-            this.manager = playerAdvancementTracker;
-        }
-
-        public boolean isEmpty() {
-            return this.conditions.isEmpty();
-        }
-
-        public void addCondition(Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-            this.conditions.add(conditionsContainer);
-        }
-
-        public void removeCondition(Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-            this.conditions.remove(conditionsContainer);
-        }
-
-        public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
-            ArrayList<Criterion.ConditionsContainer<Conditions>> list = null;
-            for (Criterion.ConditionsContainer<Conditions> conditionsContainer : this.conditions) {
-                if (!conditionsContainer.getConditions().matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity)) continue;
-                if (list == null) {
-                    list = Lists.newArrayList();
-                }
-                list.add(conditionsContainer);
-            }
-            if (list != null) {
-                for (Criterion.ConditionsContainer<Conditions> conditionsContainer : list) {
-                    conditionsContainer.apply(this.manager);
-                }
-            }
-        }
     }
 
     public static class Conditions

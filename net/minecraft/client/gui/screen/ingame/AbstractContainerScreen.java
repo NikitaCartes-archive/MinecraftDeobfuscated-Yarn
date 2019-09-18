@@ -161,11 +161,11 @@ implements ContainerProvider<T> {
 
     private void drawItem(ItemStack itemStack, int i, int j, String string) {
         RenderSystem.translatef(0.0f, 0.0f, 32.0f);
-        this.blitOffset = 200;
+        this.setBlitOffset(200);
         this.itemRenderer.zOffset = 200.0f;
         this.itemRenderer.renderGuiItem(itemStack, i, j);
         this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i, j - (this.touchDragStack.isEmpty() ? 0 : 8), string);
-        this.blitOffset = 0;
+        this.setBlitOffset(0);
         this.itemRenderer.zOffset = 0.0f;
     }
 
@@ -204,13 +204,13 @@ implements ContainerProvider<T> {
                 this.calculateOffset();
             }
         }
-        this.blitOffset = 100;
+        this.setBlitOffset(100);
         this.itemRenderer.zOffset = 100.0f;
         if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (string2 = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
             RenderSystem.disableLighting();
-            this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-            AbstractContainerScreen.blit(i, j, this.blitOffset, 16, 16, sprite);
+            this.minecraft.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+            AbstractContainerScreen.blit(i, j, this.getBlitOffset(), 16, 16, sprite);
             RenderSystem.enableLighting();
             bl2 = true;
         }
@@ -223,7 +223,7 @@ implements ContainerProvider<T> {
             this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i, j, string);
         }
         this.itemRenderer.zOffset = 0.0f;
-        this.blitOffset = 0;
+        this.setBlitOffset(0);
     }
 
     private void calculateOffset() {
@@ -297,7 +297,7 @@ implements ContainerProvider<T> {
                         if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
                             this.onMouseClick(slot, m, i, SlotActionType.CLONE);
                         } else {
-                            boolean bl3 = m != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 344));
+                            boolean bl3 = m != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344));
                             SlotActionType slotActionType = SlotActionType.PICKUP;
                             if (bl3) {
                                 this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
@@ -443,7 +443,7 @@ implements ContainerProvider<T> {
                     this.onMouseClick(slot, l, i, SlotActionType.CLONE);
                 } else {
                     boolean bl2;
-                    boolean bl3 = bl2 = l != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 344));
+                    boolean bl3 = bl2 = l != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344));
                     if (bl2) {
                         this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
                     }

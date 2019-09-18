@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
@@ -106,11 +105,6 @@ implements Fertilizable {
     @Override
     public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
         serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, blockState.get(AGE) + 1), 2);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

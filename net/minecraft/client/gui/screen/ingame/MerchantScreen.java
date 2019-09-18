@@ -86,10 +86,10 @@ extends AbstractContainerScreen<MerchantContainer> {
     @Override
     protected void drawBackground(float f, int i, int j) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().bindTexture(TEXTURE);
+        this.minecraft.getTextureManager().method_22813(TEXTURE);
         int k = (this.width - this.containerWidth) / 2;
         int l = (this.height - this.containerHeight) / 2;
-        MerchantScreen.blit(k, l, this.blitOffset, 0.0f, 0.0f, this.containerWidth, this.containerHeight, 256, 512);
+        MerchantScreen.blit(k, l, this.getBlitOffset(), 0.0f, 0.0f, this.containerWidth, this.containerHeight, 256, 512);
         TraderOfferList traderOfferList = ((MerchantContainer)this.container).getRecipes();
         if (!traderOfferList.isEmpty()) {
             int m = this.field_19161;
@@ -98,22 +98,22 @@ extends AbstractContainerScreen<MerchantContainer> {
             }
             TradeOffer tradeOffer = (TradeOffer)traderOfferList.get(m);
             if (tradeOffer.isDisabled()) {
-                this.minecraft.getTextureManager().bindTexture(TEXTURE);
+                this.minecraft.getTextureManager().method_22813(TEXTURE);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.disableLighting();
-                MerchantScreen.blit(this.left + 83 + 99, this.top + 35, this.blitOffset, 311.0f, 0.0f, 28, 21, 256, 512);
+                MerchantScreen.blit(this.left + 83 + 99, this.top + 35, this.getBlitOffset(), 311.0f, 0.0f, 28, 21, 256, 512);
             }
         }
     }
 
     private void method_19413(int i, int j, TradeOffer tradeOffer) {
-        this.minecraft.getTextureManager().bindTexture(TEXTURE);
+        this.minecraft.getTextureManager().method_22813(TEXTURE);
         int k = ((MerchantContainer)this.container).getLevelProgress();
         int l = ((MerchantContainer)this.container).getExperience();
         if (k >= 5) {
             return;
         }
-        MerchantScreen.blit(i + 136, j + 16, this.blitOffset, 0.0f, 186.0f, 102, 5, 256, 512);
+        MerchantScreen.blit(i + 136, j + 16, this.getBlitOffset(), 0.0f, 186.0f, 102, 5, 256, 512);
         int m = VillagerData.getLowerLevelExperience(k);
         if (l < m || !VillagerData.canLevelUp(k)) {
             return;
@@ -121,11 +121,11 @@ extends AbstractContainerScreen<MerchantContainer> {
         int n = 100;
         float f = 100 / (VillagerData.getUpperLevelExperience(k) - m);
         int o = MathHelper.floor(f * (float)(l - m));
-        MerchantScreen.blit(i + 136, j + 16, this.blitOffset, 0.0f, 191.0f, o + 1, 5, 256, 512);
+        MerchantScreen.blit(i + 136, j + 16, this.getBlitOffset(), 0.0f, 191.0f, o + 1, 5, 256, 512);
         int p = ((MerchantContainer)this.container).getTraderRewardedExperience();
         if (p > 0) {
             int q = Math.min(MathHelper.floor((float)p * f), 100 - o);
-            MerchantScreen.blit(i + 136 + o + 1, j + 16 + 1, this.blitOffset, 2.0f, 182.0f, q, 3, 256, 512);
+            MerchantScreen.blit(i + 136 + o + 1, j + 16 + 1, this.getBlitOffset(), 2.0f, 182.0f, q, 3, 256, 512);
         }
     }
 
@@ -140,9 +140,9 @@ extends AbstractContainerScreen<MerchantContainer> {
             if (this.field_19163 == k - 1) {
                 o = 113;
             }
-            MerchantScreen.blit(i + 94, j + 18 + o, this.blitOffset, 0.0f, 199.0f, 6, 27, 256, 512);
+            MerchantScreen.blit(i + 94, j + 18 + o, this.getBlitOffset(), 0.0f, 199.0f, 6, 27, 256, 512);
         } else {
-            MerchantScreen.blit(i + 94, j + 18, this.blitOffset, 6.0f, 199.0f, 6, 27, 256, 512);
+            MerchantScreen.blit(i + 94, j + 18, this.getBlitOffset(), 6.0f, 199.0f, 6, 27, 256, 512);
         }
         GuiLighting.enableForItems();
     }
@@ -163,7 +163,7 @@ extends AbstractContainerScreen<MerchantContainer> {
             RenderSystem.enableRescaleNormal();
             RenderSystem.enableColorMaterial();
             RenderSystem.enableLighting();
-            this.minecraft.getTextureManager().bindTexture(TEXTURE);
+            this.minecraft.getTextureManager().method_22813(TEXTURE);
             this.method_20221(k, l, traderOfferList);
             int o = 0;
             for (TradeOffer tradeOffer2 : traderOfferList) {
@@ -215,11 +215,11 @@ extends AbstractContainerScreen<MerchantContainer> {
     private void method_20223(TradeOffer tradeOffer, int i, int j) {
         GuiLighting.disable();
         RenderSystem.enableBlend();
-        this.minecraft.getTextureManager().bindTexture(TEXTURE);
+        this.minecraft.getTextureManager().method_22813(TEXTURE);
         if (tradeOffer.isDisabled()) {
-            MerchantScreen.blit(i + 5 + 35 + 20, j + 3, this.blitOffset, 25.0f, 171.0f, 10, 9, 256, 512);
+            MerchantScreen.blit(i + 5 + 35 + 20, j + 3, this.getBlitOffset(), 25.0f, 171.0f, 10, 9, 256, 512);
         } else {
-            MerchantScreen.blit(i + 5 + 35 + 20, j + 3, this.blitOffset, 15.0f, 171.0f, 10, 9, 256, 512);
+            MerchantScreen.blit(i + 5 + 35 + 20, j + 3, this.getBlitOffset(), 15.0f, 171.0f, 10, 9, 256, 512);
         }
         GuiLighting.enableForItems();
     }
@@ -231,12 +231,12 @@ extends AbstractContainerScreen<MerchantContainer> {
         } else {
             this.itemRenderer.renderGuiItemOverlay(this.font, itemStack2, i, j, itemStack2.getCount() == 1 ? "1" : null);
             this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i + 14, j, itemStack.getCount() == 1 ? "1" : null);
-            this.minecraft.getTextureManager().bindTexture(TEXTURE);
-            this.blitOffset += 300;
+            this.minecraft.getTextureManager().method_22813(TEXTURE);
+            this.setBlitOffset(this.getBlitOffset() + 300);
             GuiLighting.disable();
-            MerchantScreen.blit(i + 7, j + 12, this.blitOffset, 0.0f, 176.0f, 9, 2, 256, 512);
+            MerchantScreen.blit(i + 7, j + 12, this.getBlitOffset(), 0.0f, 176.0f, 9, 2, 256, 512);
             GuiLighting.enableForItems();
-            this.blitOffset -= 300;
+            this.setBlitOffset(this.getBlitOffset() - 300);
         }
     }
 

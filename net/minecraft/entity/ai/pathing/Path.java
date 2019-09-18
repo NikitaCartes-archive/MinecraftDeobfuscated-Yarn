@@ -121,16 +121,6 @@ public class Path {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public PathNode[] method_43() {
-        return this.field_57;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public PathNode[] method_37() {
-        return this.field_55;
-    }
-
-    @Environment(value=EnvType.CLIENT)
     public static Path fromBuffer(PacketByteBuf packetByteBuf) {
         boolean bl = packetByteBuf.readBoolean();
         int i = packetByteBuf.readInt();

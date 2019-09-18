@@ -9,10 +9,10 @@ import java.nio.FloatBuffer;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.EndPortalBlockEntity;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -22,8 +22,8 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
 
 @Environment(value=EnvType.CLIENT)
-public class EndPortalBlockEntityRenderer
-extends BlockEntityRenderer<EndPortalBlockEntity> {
+public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity>
+extends BlockEntityRenderer<T> {
     private static final Identifier SKY_TEX = new Identifier("textures/environment/end_sky.png");
     private static final Identifier PORTAL_TEX = new Identifier("textures/entity/end_portal.png");
     private static final Random RANDOM = new Random(31100L);
@@ -31,7 +31,7 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
     private static final FloatBuffer field_4404 = GlAllocationUtils.allocateFloatBuffer(16);
     private final FloatBuffer field_4403 = GlAllocationUtils.allocateFloatBuffer(16);
 
-    public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
+    public void method_3591(T endPortalBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
         RenderSystem.disableLighting();
         RANDOM.setSeed(31100L);
         RenderSystem.getMatrix(2982, field_4408);
@@ -40,7 +40,6 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
         int j = this.method_3592(h);
         float k = this.method_3594();
         boolean bl = false;
-        GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
         for (int l = 0; l < j; ++l) {
             RenderSystem.pushMatrix();
             float m = 2.0f / (float)(18 - l);
@@ -53,7 +52,7 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
             if (l >= 1) {
                 this.bindTexture(PORTAL_TEX);
                 bl = true;
-                gameRenderer.setFogBlack(true);
+                BackgroundRenderer.setFogBlack(true);
             }
             if (l == 1) {
                 RenderSystem.enableBlend();
@@ -86,37 +85,37 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
             float o = (RANDOM.nextFloat() * 0.5f + 0.1f) * m;
             float p = (RANDOM.nextFloat() * 0.5f + 0.4f) * m;
             float q = (RANDOM.nextFloat() * 0.5f + 0.5f) * m;
-            if (endPortalBlockEntity.shouldDrawSide(Direction.SOUTH)) {
+            if (((EndPortalBlockEntity)endPortalBlockEntity).shouldDrawSide(Direction.SOUTH)) {
                 bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0f).next();
             }
-            if (endPortalBlockEntity.shouldDrawSide(Direction.NORTH)) {
+            if (((EndPortalBlockEntity)endPortalBlockEntity).shouldDrawSide(Direction.NORTH)) {
                 bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0f).next();
             }
-            if (endPortalBlockEntity.shouldDrawSide(Direction.EAST)) {
+            if (((EndPortalBlockEntity)endPortalBlockEntity).shouldDrawSide(Direction.EAST)) {
                 bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0f).next();
             }
-            if (endPortalBlockEntity.shouldDrawSide(Direction.WEST)) {
+            if (((EndPortalBlockEntity)endPortalBlockEntity).shouldDrawSide(Direction.WEST)) {
                 bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0f).next();
             }
-            if (endPortalBlockEntity.shouldDrawSide(Direction.DOWN)) {
+            if (((EndPortalBlockEntity)endPortalBlockEntity).shouldDrawSide(Direction.DOWN)) {
                 bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0f).next();
             }
-            if (endPortalBlockEntity.shouldDrawSide(Direction.UP)) {
+            if (((EndPortalBlockEntity)endPortalBlockEntity).shouldDrawSide(Direction.UP)) {
                 bufferBuilder.vertex(d, e + (double)k, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e + (double)k, f + 1.0).color(o, p, q, 1.0f).next();
                 bufferBuilder.vertex(d + 1.0, e + (double)k, f).color(o, p, q, 1.0f).next();
@@ -133,7 +132,7 @@ extends BlockEntityRenderer<EndPortalBlockEntity> {
         RenderSystem.disableTexGen(GlStateManager.TexCoord.R);
         RenderSystem.enableLighting();
         if (bl) {
-            gameRenderer.setFogBlack(false);
+            BackgroundRenderer.setFogBlack(false);
         }
     }
 

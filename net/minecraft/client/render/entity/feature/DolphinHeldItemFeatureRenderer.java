@@ -49,7 +49,7 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         Item item = itemStack.getItem();
         Block block = Block.getBlockFromItem(item);
         RenderSystem.pushMatrix();
-        boolean bl2 = bl = this.field_4847.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
+        boolean bl2 = bl = this.field_4847.hasDepthInGui(itemStack) && BlockRenderLayer.method_22715(block.getDefaultState()) == BlockRenderLayer.field_9179;
         if (bl) {
             RenderSystem.depthMask(false);
         }

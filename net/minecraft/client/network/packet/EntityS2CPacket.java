@@ -24,6 +24,7 @@ implements Packet<ClientPlayPacketListener> {
     protected byte pitch;
     protected boolean onGround;
     protected boolean rotate;
+    protected boolean field_20849;
 
     public static long encodePacketCoordinate(double d) {
         return MathHelper.lfloor(d * 4096.0);
@@ -94,6 +95,11 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public boolean method_22826() {
+        return this.field_20849;
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public boolean isOnGround() {
         return this.onGround;
     }
@@ -132,6 +138,7 @@ implements Packet<ClientPlayPacketListener> {
     public static class MoveRelative
     extends EntityS2CPacket {
         public MoveRelative() {
+            this.field_20849 = true;
         }
 
         public MoveRelative(int i, short s, short t, short u, boolean bl) {
@@ -140,6 +147,7 @@ implements Packet<ClientPlayPacketListener> {
             this.deltaY = t;
             this.deltaZ = u;
             this.onGround = bl;
+            this.field_20849 = true;
         }
 
         @Override
@@ -165,6 +173,7 @@ implements Packet<ClientPlayPacketListener> {
     extends EntityS2CPacket {
         public RotateAndMoveRelative() {
             this.rotate = true;
+            this.field_20849 = true;
         }
 
         public RotateAndMoveRelative(int i, short s, short t, short u, byte b, byte c, boolean bl) {
@@ -176,6 +185,7 @@ implements Packet<ClientPlayPacketListener> {
             this.pitch = c;
             this.onGround = bl;
             this.rotate = true;
+            this.field_20849 = true;
         }
 
         @Override

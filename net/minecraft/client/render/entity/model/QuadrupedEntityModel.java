@@ -24,22 +24,22 @@ extends EntityModel<T> {
     protected float field_3537 = 4.0f;
 
     public QuadrupedEntityModel(int i, float f) {
-        this.head.addCuboid(-4.0f, -4.0f, -8.0f, 8, 8, 8, f);
+        this.head.addCuboid(-4.0f, -4.0f, -8.0f, 8.0f, 8.0f, 8.0f, f);
         this.head.setRotationPoint(0.0f, 18 - i, -6.0f);
         this.body = new ModelPart(this, 28, 8);
-        this.body.addCuboid(-5.0f, -10.0f, -7.0f, 10, 16, 8, f);
+        this.body.addCuboid(-5.0f, -10.0f, -7.0f, 10.0f, 16.0f, 8.0f, f);
         this.body.setRotationPoint(0.0f, 17 - i, 2.0f);
         this.leg1 = new ModelPart(this, 0, 16);
-        this.leg1.addCuboid(-2.0f, 0.0f, -2.0f, 4, i, 4, f);
+        this.leg1.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, (float)i, 4.0f, f);
         this.leg1.setRotationPoint(-3.0f, 24 - i, 7.0f);
         this.leg2 = new ModelPart(this, 0, 16);
-        this.leg2.addCuboid(-2.0f, 0.0f, -2.0f, 4, i, 4, f);
+        this.leg2.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, (float)i, 4.0f, f);
         this.leg2.setRotationPoint(3.0f, 24 - i, 7.0f);
         this.leg3 = new ModelPart(this, 0, 16);
-        this.leg3.addCuboid(-2.0f, 0.0f, -2.0f, 4, i, 4, f);
+        this.leg3.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, (float)i, 4.0f, f);
         this.leg3.setRotationPoint(-3.0f, 24 - i, -5.0f);
         this.leg4 = new ModelPart(this, 0, 16);
-        this.leg4.addCuboid(-2.0f, 0.0f, -2.0f, 4, i, 4, f);
+        this.leg4.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, (float)i, 4.0f, f);
         this.leg4.setRotationPoint(3.0f, 24 - i, -5.0f);
     }
 

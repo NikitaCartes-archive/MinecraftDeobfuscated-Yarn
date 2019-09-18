@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import net.minecraft.class_4553;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
@@ -17,6 +18,7 @@ import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityTypePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.Tag;
@@ -26,7 +28,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityPredicate {
-    public static final EntityPredicate ANY = new EntityPredicate(EntityTypePredicate.ANY, DistancePredicate.ANY, LocationPredicate.ANY, EntityEffectPredicate.EMPTY, NbtPredicate.ANY, EntityFlagsPredicate.ANY, EntityEquipmentPredicate.ANY, null);
+    public static final EntityPredicate ANY = new EntityPredicate(EntityTypePredicate.ANY, DistancePredicate.ANY, LocationPredicate.ANY, EntityEffectPredicate.EMPTY, NbtPredicate.ANY, EntityFlagsPredicate.ANY, EntityEquipmentPredicate.ANY, class_4553.field_20722, null, null);
     public static final EntityPredicate[] EMPTY = new EntityPredicate[0];
     private final EntityTypePredicate type;
     private final DistancePredicate distance;
@@ -35,9 +37,13 @@ public class EntityPredicate {
     private final NbtPredicate nbt;
     private final EntityFlagsPredicate flags;
     private final EntityEquipmentPredicate equipment;
+    private final class_4553 field_20697;
+    @Nullable
+    private final String field_20698;
+    @Nullable
     private final Identifier catType;
 
-    private EntityPredicate(EntityTypePredicate entityTypePredicate, DistancePredicate distancePredicate, LocationPredicate locationPredicate, EntityEffectPredicate entityEffectPredicate, NbtPredicate nbtPredicate, EntityFlagsPredicate entityFlagsPredicate, EntityEquipmentPredicate entityEquipmentPredicate, @Nullable Identifier identifier) {
+    private EntityPredicate(EntityTypePredicate entityTypePredicate, DistancePredicate distancePredicate, LocationPredicate locationPredicate, EntityEffectPredicate entityEffectPredicate, NbtPredicate nbtPredicate, EntityFlagsPredicate entityFlagsPredicate, EntityEquipmentPredicate entityEquipmentPredicate, class_4553 arg, @Nullable String string, @Nullable Identifier identifier) {
         this.type = entityTypePredicate;
         this.distance = distancePredicate;
         this.location = locationPredicate;
@@ -45,6 +51,8 @@ public class EntityPredicate {
         this.nbt = nbtPredicate;
         this.flags = entityFlagsPredicate;
         this.equipment = entityEquipmentPredicate;
+        this.field_20697 = arg;
+        this.field_20698 = string;
         this.catType = identifier;
     }
 
@@ -52,7 +60,8 @@ public class EntityPredicate {
         return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), entity);
     }
 
-    public boolean test(ServerWorld serverWorld, Vec3d vec3d, @Nullable Entity entity) {
+    public boolean test(ServerWorld serverWorld, @Nullable Vec3d vec3d, @Nullable Entity entity) {
+        AbstractTeam abstractTeam;
         if (this == ANY) {
             return true;
         }
@@ -62,7 +71,7 @@ public class EntityPredicate {
         if (!this.type.matches(entity.getType())) {
             return false;
         }
-        if (!this.distance.test(vec3d.x, vec3d.y, vec3d.z, entity.x, entity.y, entity.z)) {
+        if (vec3d == null ? this.distance != DistancePredicate.ANY : !this.distance.test(vec3d.x, vec3d.y, vec3d.z, entity.x, entity.y, entity.z)) {
             return false;
         }
         if (!this.location.test(serverWorld, entity.x, entity.y, entity.z)) {
@@ -80,6 +89,12 @@ public class EntityPredicate {
         if (!this.equipment.test(entity)) {
             return false;
         }
+        if (!this.field_20697.method_22497(entity)) {
+            return false;
+        }
+        if (!(this.field_20698 == null || (abstractTeam = entity.getScoreboardTeam()) != null && this.field_20698.equals(abstractTeam.getName()))) {
+            return false;
+        }
         return this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).getTexture().equals(this.catType);
     }
 
@@ -95,8 +110,10 @@ public class EntityPredicate {
         NbtPredicate nbtPredicate = NbtPredicate.deserialize(jsonObject.get("nbt"));
         EntityFlagsPredicate entityFlagsPredicate = EntityFlagsPredicate.deserialize(jsonObject.get("flags"));
         EntityEquipmentPredicate entityEquipmentPredicate = EntityEquipmentPredicate.deserialize(jsonObject.get("equipment"));
+        class_4553 lv = class_4553.method_22499(jsonObject.get("player"));
+        String string = JsonHelper.getString(jsonObject, "team", null);
         Identifier identifier = jsonObject.has("catType") ? new Identifier(JsonHelper.getString(jsonObject, "catType")) : null;
-        return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).catType(identifier).build();
+        return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).method_22469(lv).method_22470(string).catType(identifier).build();
     }
 
     public static EntityPredicate[] deserializeAll(@Nullable JsonElement jsonElement) {
@@ -123,6 +140,8 @@ public class EntityPredicate {
         jsonObject.add("nbt", this.nbt.serialize());
         jsonObject.add("flags", this.flags.serialize());
         jsonObject.add("equipment", this.equipment.serialize());
+        jsonObject.add("player", this.field_20697.method_22494());
+        jsonObject.addProperty("team", this.field_20698);
         if (this.catType != null) {
             jsonObject.addProperty("catType", this.catType.toString());
         }
@@ -150,7 +169,8 @@ public class EntityPredicate {
         private NbtPredicate nbt = NbtPredicate.ANY;
         private EntityFlagsPredicate flags = EntityFlagsPredicate.ANY;
         private EntityEquipmentPredicate equipment = EntityEquipmentPredicate.ANY;
-        @Nullable
+        private class_4553 field_20699 = class_4553.field_20722;
+        private String field_20700;
         private Identifier catType;
 
         public static Builder create() {
@@ -207,13 +227,23 @@ public class EntityPredicate {
             return this;
         }
 
+        public Builder method_22469(class_4553 arg) {
+            this.field_20699 = arg;
+            return this;
+        }
+
+        public Builder method_22470(@Nullable String string) {
+            this.field_20700 = string;
+            return this;
+        }
+
         public Builder catType(@Nullable Identifier identifier) {
             this.catType = identifier;
             return this;
         }
 
         public EntityPredicate build() {
-            return new EntityPredicate(this.type, this.distance, this.location, this.effects, this.nbt, this.flags, this.equipment, this.catType);
+            return new EntityPredicate(this.type, this.distance, this.location, this.effects, this.nbt, this.flags, this.equipment, this.field_20699, this.field_20700, this.catType);
         }
     }
 }

@@ -4,8 +4,6 @@
 package net.minecraft.world.chunk.light;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -196,12 +194,6 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
                 super.resetLevel(l);
             }
         }
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public String getSectionDebugString(long l) {
-        return super.getSectionDebugString(l) + (((SkyLightStorage)this.lightStorage).isAboveTopmostLightArray(l) ? "*" : "");
     }
 }
 

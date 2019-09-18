@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.client.block.ColoredBlock;
@@ -24,11 +23,6 @@ implements ColoredBlock {
     @Override
     public DyeColor getColor() {
         return this.color;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
     }
 }
 

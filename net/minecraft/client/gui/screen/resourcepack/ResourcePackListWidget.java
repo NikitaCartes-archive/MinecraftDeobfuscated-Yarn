@@ -115,7 +115,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             String string = this.getDisplayName();
             String string2 = this.getDescription();
             if (this.method_20151() && (this.client.options.touchscreen || bl)) {
-                this.client.getTextureManager().bindTexture(RESOURCE_PACKS_LOCATION);
+                this.client.getTextureManager().method_22813(RESOURCE_PACKS_LOCATION);
                 DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 p = n - k;

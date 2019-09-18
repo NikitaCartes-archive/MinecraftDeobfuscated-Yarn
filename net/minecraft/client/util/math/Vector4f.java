@@ -6,6 +6,7 @@ package net.minecraft.client.util.math;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Quaternion;
 
@@ -63,6 +64,17 @@ public class Vector4f {
         this.components[1] = g;
         this.components[2] = h;
         this.components[3] = i;
+    }
+
+    public void method_22674(Matrix4f matrix4f) {
+        float[] fs = Arrays.copyOf(this.components, 4);
+        for (int i = 0; i < 4; ++i) {
+            this.components[i] = 0.0f;
+            for (int j = 0; j < 4; ++j) {
+                int n = i;
+                this.components[n] = this.components[n] + matrix4f.method_22669(i, j) * fs[j];
+            }
+        }
     }
 
     public void method_4959(Quaternion quaternion) {

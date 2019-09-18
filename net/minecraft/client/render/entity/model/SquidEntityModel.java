@@ -18,14 +18,14 @@ extends EntityModel<T> {
     public SquidEntityModel() {
         int i = -16;
         this.field_3575 = new ModelPart(this, 0, 0);
-        this.field_3575.addCuboid(-6.0f, -8.0f, -6.0f, 12, 16, 12);
+        this.field_3575.addCuboid(-6.0f, -8.0f, -6.0f, 12.0f, 16.0f, 12.0f);
         this.field_3575.rotationPointY += 8.0f;
         for (int j = 0; j < this.field_3574.length; ++j) {
             this.field_3574[j] = new ModelPart(this, 48, 0);
             double d = (double)j * Math.PI * 2.0 / (double)this.field_3574.length;
             float f = (float)Math.cos(d) * 5.0f;
             float g = (float)Math.sin(d) * 5.0f;
-            this.field_3574[j].addCuboid(-1.0f, 0.0f, -1.0f, 2, 18, 2);
+            this.field_3574[j].addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 18.0f, 2.0f);
             this.field_3574[j].rotationPointX = f;
             this.field_3574[j].rotationPointZ = g;
             this.field_3574[j].rotationPointY = 15.0f;

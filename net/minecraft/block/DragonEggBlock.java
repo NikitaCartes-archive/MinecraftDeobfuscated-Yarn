@@ -75,10 +75,5 @@ extends FallingBlock {
     public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
         return false;
     }
-
-    @Override
-    public boolean isOpaque(BlockState blockState) {
-        return false;
-    }
 }
 

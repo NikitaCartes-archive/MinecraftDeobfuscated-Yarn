@@ -17,44 +17,50 @@ import net.minecraft.util.math.MathHelper;
 public class WolfEntityModel<T extends WolfEntity>
 extends EntityModel<T> {
     private final ModelPart head;
+    private final ModelPart field_20788;
     private final ModelPart field_3623;
     private final ModelPart field_3622;
     private final ModelPart field_3620;
     private final ModelPart field_3618;
     private final ModelPart field_3624;
     private final ModelPart field_3617;
+    private final ModelPart field_20789;
     private final ModelPart field_3619;
 
     public WolfEntityModel() {
         float f = 0.0f;
         float g = 13.5f;
         this.head = new ModelPart(this, 0, 0);
-        this.head.addCuboid(-2.0f, -3.0f, -2.0f, 6, 6, 4, 0.0f);
         this.head.setRotationPoint(-1.0f, 13.5f, -7.0f);
+        this.field_20788 = new ModelPart(this, 0, 0);
+        this.field_20788.addCuboid(-2.0f, -3.0f, -2.0f, 6.0f, 6.0f, 4.0f, 0.0f);
+        this.head.addChild(this.field_20788);
         this.field_3623 = new ModelPart(this, 18, 14);
-        this.field_3623.addCuboid(-3.0f, -2.0f, -3.0f, 6, 9, 6, 0.0f);
+        this.field_3623.addCuboid(-3.0f, -2.0f, -3.0f, 6.0f, 9.0f, 6.0f, 0.0f);
         this.field_3623.setRotationPoint(0.0f, 14.0f, 2.0f);
         this.field_3619 = new ModelPart(this, 21, 0);
-        this.field_3619.addCuboid(-3.0f, -3.0f, -3.0f, 8, 6, 7, 0.0f);
+        this.field_3619.addCuboid(-3.0f, -3.0f, -3.0f, 8.0f, 6.0f, 7.0f, 0.0f);
         this.field_3619.setRotationPoint(-1.0f, 14.0f, 2.0f);
         this.field_3622 = new ModelPart(this, 0, 18);
-        this.field_3622.addCuboid(0.0f, 0.0f, -1.0f, 2, 8, 2, 0.0f);
+        this.field_3622.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f, 0.0f);
         this.field_3622.setRotationPoint(-2.5f, 16.0f, 7.0f);
         this.field_3620 = new ModelPart(this, 0, 18);
-        this.field_3620.addCuboid(0.0f, 0.0f, -1.0f, 2, 8, 2, 0.0f);
+        this.field_3620.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f, 0.0f);
         this.field_3620.setRotationPoint(0.5f, 16.0f, 7.0f);
         this.field_3618 = new ModelPart(this, 0, 18);
-        this.field_3618.addCuboid(0.0f, 0.0f, -1.0f, 2, 8, 2, 0.0f);
+        this.field_3618.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f, 0.0f);
         this.field_3618.setRotationPoint(-2.5f, 16.0f, -4.0f);
         this.field_3624 = new ModelPart(this, 0, 18);
-        this.field_3624.addCuboid(0.0f, 0.0f, -1.0f, 2, 8, 2, 0.0f);
+        this.field_3624.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f, 0.0f);
         this.field_3624.setRotationPoint(0.5f, 16.0f, -4.0f);
         this.field_3617 = new ModelPart(this, 9, 18);
-        this.field_3617.addCuboid(0.0f, 0.0f, -1.0f, 2, 8, 2, 0.0f);
         this.field_3617.setRotationPoint(-1.0f, 12.0f, 8.0f);
-        this.head.setTextureOffset(16, 14).addCuboid(-2.0f, -5.0f, 0.0f, 2, 2, 1, 0.0f);
-        this.head.setTextureOffset(16, 14).addCuboid(2.0f, -5.0f, 0.0f, 2, 2, 1, 0.0f);
-        this.head.setTextureOffset(0, 10).addCuboid(-0.5f, 0.0f, -5.0f, 3, 3, 4, 0.0f);
+        this.field_20789 = new ModelPart(this, 9, 18);
+        this.field_20789.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 8.0f, 2.0f, 0.0f);
+        this.field_3617.addChild(this.field_20789);
+        this.field_20788.setTextureOffset(16, 14).addCuboid(-2.0f, -5.0f, 0.0f, 2.0f, 2.0f, 1.0f, 0.0f);
+        this.field_20788.setTextureOffset(16, 14).addCuboid(2.0f, -5.0f, 0.0f, 2.0f, 2.0f, 1.0f, 0.0f);
+        this.field_20788.setTextureOffset(0, 10).addCuboid(-0.5f, 0.0f, -5.0f, 3.0f, 3.0f, 4.0f, 0.0f);
     }
 
     public void method_17132(T wolfEntity, float f, float g, float h, float i, float j, float k) {
@@ -64,7 +70,7 @@ extends EntityModel<T> {
             float l = 2.0f;
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0.0f, 5.0f * k, 2.0f * k);
-            this.head.method_2852(k);
+            this.head.render(k);
             RenderSystem.popMatrix();
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.5f, 0.5f, 0.5f);
@@ -74,17 +80,17 @@ extends EntityModel<T> {
             this.field_3620.render(k);
             this.field_3618.render(k);
             this.field_3624.render(k);
-            this.field_3617.method_2852(k);
+            this.field_3617.render(k);
             this.field_3619.render(k);
             RenderSystem.popMatrix();
         } else {
-            this.head.method_2852(k);
+            this.head.render(k);
             this.field_3623.render(k);
             this.field_3622.render(k);
             this.field_3620.render(k);
             this.field_3618.render(k);
             this.field_3624.render(k);
-            this.field_3617.method_2852(k);
+            this.field_3617.render(k);
             this.field_3619.render(k);
         }
     }
@@ -121,10 +127,10 @@ extends EntityModel<T> {
             this.field_3618.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
             this.field_3624.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
         }
-        this.head.roll = ((WolfEntity)wolfEntity).getBegAnimationProgress(h) + ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, 0.0f);
+        this.field_20788.roll = ((WolfEntity)wolfEntity).getBegAnimationProgress(h) + ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, 0.0f);
         this.field_3619.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.08f);
         this.field_3623.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.16f);
-        this.field_3617.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.2f);
+        this.field_20789.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.2f);
     }
 
     public void method_17133(T wolfEntity, float f, float g, float h, float i, float j, float k) {

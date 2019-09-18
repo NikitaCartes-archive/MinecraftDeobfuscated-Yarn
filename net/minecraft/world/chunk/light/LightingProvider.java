@@ -3,8 +3,6 @@
  */
 package net.minecraft.world.chunk.light;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -102,18 +100,6 @@ implements LightingView {
             return ChunkLightingView.Empty.INSTANCE;
         }
         return this.skyLightProvider;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public String getSectionDebugString(LightType lightType, ChunkSectionPos chunkSectionPos) {
-        if (lightType == LightType.BLOCK) {
-            if (this.blockLightProvider != null) {
-                return this.blockLightProvider.getSectionDebugString(chunkSectionPos.asLong());
-            }
-        } else if (this.skyLightProvider != null) {
-            return this.skyLightProvider.getSectionDebugString(chunkSectionPos.asLong());
-        }
-        return "n/a";
     }
 
     public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {

@@ -14,20 +14,17 @@ import net.minecraft.util.math.MathHelper;
 public class ShulkerEntityModel<T extends ShulkerEntity>
 extends EntityModel<T> {
     private final ModelPart field_3553;
-    private final ModelPart field_3555;
+    private final ModelPart field_3555 = new ModelPart(64, 64, 0, 0);
     private final ModelPart field_3554;
 
     public ShulkerEntityModel() {
-        this.textureHeight = 64;
-        this.textureWidth = 64;
-        this.field_3555 = new ModelPart(this);
-        this.field_3553 = new ModelPart(this);
-        this.field_3554 = new ModelPart(this);
-        this.field_3555.setTextureOffset(0, 0).addCuboid(-8.0f, -16.0f, -8.0f, 16, 12, 16);
+        this.field_3553 = new ModelPart(64, 64, 0, 28);
+        this.field_3554 = new ModelPart(64, 64, 0, 52);
+        this.field_3555.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);
         this.field_3555.setRotationPoint(0.0f, 24.0f, 0.0f);
-        this.field_3553.setTextureOffset(0, 28).addCuboid(-8.0f, -8.0f, -8.0f, 16, 8, 16);
+        this.field_3553.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 8.0f, 16.0f);
         this.field_3553.setRotationPoint(0.0f, 24.0f, 0.0f);
-        this.field_3554.setTextureOffset(0, 52).addCuboid(-3.0f, 0.0f, -3.0f, 6, 6, 6);
+        this.field_3554.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 6.0f, 6.0f);
         this.field_3554.setRotationPoint(0.0f, 12.0f, 0.0f);
     }
 

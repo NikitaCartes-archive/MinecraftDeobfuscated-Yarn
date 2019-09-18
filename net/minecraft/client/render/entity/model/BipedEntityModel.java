@@ -47,27 +47,27 @@ ModelWithHead {
         this.textureWidth = i;
         this.textureHeight = j;
         this.head = new ModelPart(this, 0, 0);
-        this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, f);
+        this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f);
         this.head.setRotationPoint(0.0f, 0.0f + g, 0.0f);
         this.headwear = new ModelPart(this, 32, 0);
-        this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, f + 0.5f);
+        this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f + 0.5f);
         this.headwear.setRotationPoint(0.0f, 0.0f + g, 0.0f);
         this.body = new ModelPart(this, 16, 16);
-        this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8, 12, 4, f);
+        this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
         this.body.setRotationPoint(0.0f, 0.0f + g, 0.0f);
         this.rightArm = new ModelPart(this, 40, 16);
-        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4, 12, 4, f);
+        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.rightArm.setRotationPoint(-5.0f, 2.0f + g, 0.0f);
         this.leftArm = new ModelPart(this, 40, 16);
         this.leftArm.mirror = true;
-        this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4, 12, 4, f);
+        this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.leftArm.setRotationPoint(5.0f, 2.0f + g, 0.0f);
         this.rightLeg = new ModelPart(this, 0, 16);
-        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.rightLeg.setRotationPoint(-1.9f, 12.0f + g, 0.0f);
         this.leftLeg = new ModelPart(this, 0, 16);
         this.leftLeg.mirror = true;
-        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.leftLeg.setRotationPoint(1.9f, 12.0f + g, 0.0f);
     }
 

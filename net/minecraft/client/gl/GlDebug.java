@@ -7,6 +7,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -121,6 +122,7 @@ public class GlDebug {
     }
 
     public static void enableDebug(int i, boolean bl) {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         if (i <= 0) {
             return;
         }

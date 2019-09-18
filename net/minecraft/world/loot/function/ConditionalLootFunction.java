@@ -8,30 +8,27 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.ConditionConsumerBuilder;
-import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextType;
 import net.minecraft.world.loot.function.LootFunction;
 import org.apache.commons.lang3.ArrayUtils;
 
 public abstract class ConditionalLootFunction
 implements LootFunction {
-    protected final LootCondition[] conditions;
+    protected final class_4570[] conditions;
     private final Predicate<LootContext> predicate;
 
-    protected ConditionalLootFunction(LootCondition[] lootConditions) {
-        this.conditions = lootConditions;
-        this.predicate = LootConditions.joinAnd(lootConditions);
+    protected ConditionalLootFunction(class_4570[] args) {
+        this.conditions = args;
+        this.predicate = LootConditions.joinAnd(args);
     }
 
     public final ItemStack method_521(ItemStack itemStack, LootContext lootContext) {
@@ -41,14 +38,14 @@ implements LootFunction {
     protected abstract ItemStack process(ItemStack var1, LootContext var2);
 
     @Override
-    public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-        LootFunction.super.check(lootTableReporter, function, set, lootContextType);
+    public void check(LootTableReporter lootTableReporter) {
+        LootFunction.super.check(lootTableReporter);
         for (int i = 0; i < this.conditions.length; ++i) {
-            this.conditions[i].check(lootTableReporter.makeChild(".conditions[" + i + "]"), function, set, lootContextType);
+            this.conditions[i].check(lootTableReporter.makeChild(".conditions[" + i + "]"));
         }
     }
 
-    protected static Builder<?> builder(Function<LootCondition[], LootFunction> function) {
+    protected static Builder<?> builder(Function<class_4570[], LootFunction> function) {
         return new Joiner(function);
     }
 
@@ -70,11 +67,11 @@ implements LootFunction {
         }
 
         public final T method_528(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "conditions", new LootCondition[0], jsonDeserializationContext, LootCondition[].class);
-            return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
+            class_4570[] lvs = JsonHelper.deserialize(jsonObject, "conditions", new class_4570[0], jsonDeserializationContext, class_4570[].class);
+            return this.fromJson(jsonObject, jsonDeserializationContext, lvs);
         }
 
-        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, LootCondition[] var3);
+        public abstract T fromJson(JsonObject var1, JsonDeserializationContext var2, class_4570[] var3);
 
         @Override
         public /* synthetic */ LootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -84,9 +81,9 @@ implements LootFunction {
 
     static final class Joiner
     extends Builder<Joiner> {
-        private final Function<LootCondition[], LootFunction> joiner;
+        private final Function<class_4570[], LootFunction> joiner;
 
-        public Joiner(Function<LootCondition[], LootFunction> function) {
+        public Joiner(Function<class_4570[], LootFunction> function) {
             this.joiner = function;
         }
 
@@ -108,9 +105,9 @@ implements LootFunction {
     public static abstract class Builder<T extends Builder<T>>
     implements LootFunction.Builder,
     ConditionConsumerBuilder<T> {
-        private final List<LootCondition> conditionList = Lists.newArrayList();
+        private final List<class_4570> conditionList = Lists.newArrayList();
 
-        public T method_524(LootCondition.Builder builder) {
+        public T method_524(class_4570.Builder builder) {
             this.conditionList.add(builder.build());
             return this.getThisBuilder();
         }
@@ -121,8 +118,8 @@ implements LootFunction {
 
         protected abstract T getThisBuilder();
 
-        protected LootCondition[] getConditions() {
-            return this.conditionList.toArray(new LootCondition[0]);
+        protected class_4570[] getConditions() {
+            return this.conditionList.toArray(new class_4570[0]);
         }
 
         @Override
@@ -131,7 +128,7 @@ implements LootFunction {
         }
 
         @Override
-        public /* synthetic */ Object withCondition(LootCondition.Builder builder) {
+        public /* synthetic */ Object withCondition(class_4570.Builder builder) {
             return this.method_524(builder);
         }
     }

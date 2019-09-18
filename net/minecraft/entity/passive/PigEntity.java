@@ -227,6 +227,7 @@ extends AnimalEntity {
             }
             this.setMovementSpeed(f);
             super.travel(new Vec3d(0.0, 0.0, 1.0));
+            this.bodyTrackingIncrements = 0;
         } else {
             this.setVelocity(Vec3d.ZERO);
         }

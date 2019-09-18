@@ -90,11 +90,6 @@ implements Position {
         return this.multiply(d, d, d);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public Vec3d negate() {
-        return this.multiply(-1.0);
-    }
-
     public Vec3d multiply(Vec3d vec3d) {
         return this.multiply(vec3d.x, vec3d.y, vec3d.z);
     }

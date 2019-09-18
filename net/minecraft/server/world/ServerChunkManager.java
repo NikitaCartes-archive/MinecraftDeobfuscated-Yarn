@@ -451,11 +451,6 @@ extends ChunkManager {
         this.spawnAnimals = bl2;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public String getDebugString(ChunkPos chunkPos) {
-        return this.threadedAnvilChunkStorage.getDebugString(chunkPos);
-    }
-
     public PersistentStateManager getPersistentStateManager() {
         return this.persistentStateManager;
     }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ConnectedPlantBlock;
 import net.minecraft.block.HorizontalConnectedBlock;
@@ -68,11 +67,6 @@ extends Block {
             return (BlockState)blockState.with(FACING_PROPERTIES.get(direction), this.shouldConnectTo(blockState2, direction));
         }
         return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override

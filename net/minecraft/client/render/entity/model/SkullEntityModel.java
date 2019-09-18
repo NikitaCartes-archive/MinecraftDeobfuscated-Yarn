@@ -21,7 +21,7 @@ extends Model {
         this.textureWidth = k;
         this.textureHeight = l;
         this.skull = new ModelPart(this, i, j);
-        this.skull.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, 0.0f);
+        this.skull.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, 0.0f);
         this.skull.setRotationPoint(0.0f, 0.0f, 0.0f);
     }
 

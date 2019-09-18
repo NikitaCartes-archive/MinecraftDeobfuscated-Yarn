@@ -44,6 +44,7 @@ extends HorseBaseEntity {
     private static final String[] HORSE_TEX_ID = new String[]{"hwh", "hcr", "hch", "hbr", "hbl", "hgr", "hdb"};
     private static final String[] HORSE_MARKING_TEX = new String[]{null, "textures/entity/horse/horse_markings_white.png", "textures/entity/horse/horse_markings_whitefield.png", "textures/entity/horse/horse_markings_whitedots.png", "textures/entity/horse/horse_markings_blackdots.png"};
     private static final String[] HORSE_MARKING_TEX_ID = new String[]{"", "wo_", "wmo", "wdo", "bdo"};
+    @Nullable
     private String textureLocation;
     private final String[] textureLayers = new String[2];
 

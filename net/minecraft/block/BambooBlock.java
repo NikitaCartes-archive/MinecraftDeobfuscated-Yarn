@@ -6,7 +6,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
@@ -169,11 +168,6 @@ implements Fertilizable {
             return 1.0f;
         }
         return super.calcBlockBreakingDelta(blockState, playerEntity, blockView, blockPos);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     protected void updateLeaves(BlockState blockState, World world, BlockPos blockPos, Random random, int i) {

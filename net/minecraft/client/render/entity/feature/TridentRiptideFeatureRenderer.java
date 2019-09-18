@@ -55,7 +55,7 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
             this.textureWidth = 64;
             this.textureHeight = 64;
             this.field_4900 = new ModelPart(this, 0, 0);
-            this.field_4900.addCuboid(-8.0f, -16.0f, -8.0f, 16, 32, 16);
+            this.field_4900.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 32.0f, 16.0f);
         }
 
         public void method_17166(float f, float g, float h, float i, float j, float k) {

@@ -23,19 +23,19 @@ extends EntityModel<T> {
         float f = 4.0f;
         float g = 0.0f;
         this.field_3568 = new ModelPart(this, 0, 0).setTextureSize(64, 64);
-        this.field_3568.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, -0.5f);
+        this.field_3568.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, -0.5f);
         this.field_3568.setRotationPoint(0.0f, 4.0f, 0.0f);
         this.field_3566 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
-        this.field_3566.addCuboid(-1.0f, 0.0f, -1.0f, 12, 2, 2, -0.5f);
+        this.field_3566.addCuboid(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, -0.5f);
         this.field_3566.setRotationPoint(0.0f, 6.0f, 0.0f);
         this.field_3565 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
-        this.field_3565.addCuboid(-1.0f, 0.0f, -1.0f, 12, 2, 2, -0.5f);
+        this.field_3565.addCuboid(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, -0.5f);
         this.field_3565.setRotationPoint(0.0f, 6.0f, 0.0f);
         this.field_3567 = new ModelPart(this, 0, 16).setTextureSize(64, 64);
-        this.field_3567.addCuboid(-5.0f, -10.0f, -5.0f, 10, 10, 10, -0.5f);
+        this.field_3567.addCuboid(-5.0f, -10.0f, -5.0f, 10.0f, 10.0f, 10.0f, -0.5f);
         this.field_3567.setRotationPoint(0.0f, 13.0f, 0.0f);
         this.field_3569 = new ModelPart(this, 0, 36).setTextureSize(64, 64);
-        this.field_3569.addCuboid(-6.0f, -12.0f, -6.0f, 12, 12, 12, -0.5f);
+        this.field_3569.addCuboid(-6.0f, -12.0f, -6.0f, 12.0f, 12.0f, 12.0f, -0.5f);
         this.field_3569.setRotationPoint(0.0f, 24.0f, 0.0f);
     }
 

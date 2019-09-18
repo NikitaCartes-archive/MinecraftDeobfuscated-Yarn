@@ -72,7 +72,7 @@ extends AbstractContainerScreen<T> {
     }
 
     private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
-        this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+        this.minecraft.getTextureManager().method_22813(BACKGROUND_TEXTURE);
         int k = this.top;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -82,12 +82,12 @@ extends AbstractContainerScreen<T> {
     }
 
     private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
-        this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+        this.minecraft.getTextureManager().method_22813(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
         StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.getStatusEffectSpriteManager();
         int k = this.top;
         for (StatusEffectInstance statusEffectInstance : iterable) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
-            AbstractInventoryScreen.blit(i + 6, k + 7, this.blitOffset, 18, 18, statusEffectSpriteManager.getSprite(statusEffect));
+            AbstractInventoryScreen.blit(i + 6, k + 7, this.getBlitOffset(), 18, 18, statusEffectSpriteManager.getSprite(statusEffect));
             k += j;
         }
     }

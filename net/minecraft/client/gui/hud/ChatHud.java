@@ -190,7 +190,7 @@ extends DrawableHelper {
         }
         double f = this.getChatScale();
         double g = d - 2.0;
-        double h = (double)this.client.window.getScaledHeight() - e - 40.0;
+        double h = (double)this.client.method_22683().getScaledHeight() - e - 40.0;
         g = MathHelper.floor(g / f);
         h = MathHelper.floor(h / f);
         if (g < 0.0 || h < 0.0) {

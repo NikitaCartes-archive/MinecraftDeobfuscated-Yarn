@@ -26,18 +26,18 @@ extends BipedEntityModel<T> {
         super(f, 0.0f, 64, 32);
         if (!bl) {
             this.rightArm = new ModelPart(this, 40, 16);
-            this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2, 12, 2, f);
+            this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
             this.rightArm.setRotationPoint(-5.0f, 2.0f, 0.0f);
             this.leftArm = new ModelPart(this, 40, 16);
             this.leftArm.mirror = true;
-            this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2, 12, 2, f);
+            this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
             this.leftArm.setRotationPoint(5.0f, 2.0f, 0.0f);
             this.rightLeg = new ModelPart(this, 0, 16);
-            this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2, 12, 2, f);
+            this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
             this.rightLeg.setRotationPoint(-2.0f, 12.0f, 0.0f);
             this.leftLeg = new ModelPart(this, 0, 16);
             this.leftLeg.mirror = true;
-            this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2, 12, 2, f);
+            this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
             this.leftLeg.setRotationPoint(2.0f, 12.0f, 0.0f);
         }
     }

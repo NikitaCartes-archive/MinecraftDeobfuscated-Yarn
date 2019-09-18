@@ -34,6 +34,7 @@ implements Nameable {
     private List<BannerPattern> patterns;
     private List<DyeColor> patternColors;
     private String patternCacheKey;
+    private boolean field_20743 = false;
 
     public BannerBlockEntity() {
         super(BlockEntityType.BANNER);
@@ -204,6 +205,16 @@ implements Nameable {
             this.baseColor = ((AbstractBannerBlock)supplier.get().getBlock()).getColor();
         }
         return this.baseColor;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void method_22534(boolean bl) {
+        this.field_20743 = bl;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public boolean method_22535() {
+        return this.field_20743;
     }
 }
 

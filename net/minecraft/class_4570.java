@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.loot.condition;
+package net.minecraft;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -14,11 +14,12 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.ParameterConsumer;
 
 @FunctionalInterface
-public interface LootCondition
+public interface class_4570
 extends ParameterConsumer,
 Predicate<LootContext> {
+    public static final class_4570 field_20766 = lootContext -> false;
 
-    public static abstract class Factory<T extends LootCondition> {
+    public static abstract class Factory<T extends class_4570> {
         private final Identifier id;
         private final Class<T> conditionClass;
 
@@ -42,7 +43,7 @@ Predicate<LootContext> {
 
     @FunctionalInterface
     public static interface Builder {
-        public LootCondition build();
+        public class_4570 build();
 
         default public Builder invert() {
             return InvertedLootCondition.builder(this);

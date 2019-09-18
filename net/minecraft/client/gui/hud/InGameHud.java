@@ -143,15 +143,15 @@ extends DrawableHelper {
     public void render(float f) {
         int j;
         float g;
-        this.scaledWidth = this.client.window.getScaledWidth();
-        this.scaledHeight = this.client.window.getScaledHeight();
+        this.scaledWidth = this.client.method_22683().getScaledWidth();
+        this.scaledHeight = this.client.method_22683().getScaledHeight();
         TextRenderer textRenderer = this.getFontRenderer();
         RenderSystem.enableBlend();
         if (MinecraftClient.isFancyGraphicsEnabled()) {
             this.renderVignetteOverlay(this.client.getCameraEntity());
         } else {
             RenderSystem.enableDepthTest();
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+            RenderSystem.defaultBlendFunc();
         }
         ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
         if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.CARVED_PUMPKIN.asItem()) {
@@ -167,16 +167,16 @@ extends DrawableHelper {
         }
         if (!this.client.options.hudHidden) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+            this.client.getTextureManager().method_22813(GUI_ICONS_LOCATION);
             RenderSystem.enableBlend();
             RenderSystem.enableAlphaTest();
             this.renderCrosshair();
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+            RenderSystem.defaultBlendFunc();
             this.client.getProfiler().push("bossHealth");
             this.bossBarHud.render();
             this.client.getProfiler().pop();
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+            this.client.getTextureManager().method_22813(GUI_ICONS_LOCATION);
             if (this.client.interactionManager.hasStatusBars()) {
                 this.renderStatusBars();
             }
@@ -231,7 +231,7 @@ extends DrawableHelper {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight - 68, 0.0f);
                     RenderSystem.enableBlend();
-                    RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+                    RenderSystem.defaultBlendFunc();
                     j = 0xFFFFFF;
                     if (this.overlayTinted) {
                         j = MathHelper.hsvToRgb(g / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
@@ -259,7 +259,7 @@ extends DrawableHelper {
                     RenderSystem.pushMatrix();
                     RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, 0.0f);
                     RenderSystem.enableBlend();
-                    RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+                    RenderSystem.defaultBlendFunc();
                     RenderSystem.pushMatrix();
                     RenderSystem.scalef(4.0f, 4.0f, 4.0f);
                     int j2 = k << 24 & 0xFF000000;
@@ -292,7 +292,7 @@ extends DrawableHelper {
                 this.renderScoreboardSidebar(scoreboardObjective2);
             }
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+            RenderSystem.defaultBlendFunc();
             RenderSystem.disableAlphaTest();
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0.0f, this.scaledHeight - 48, 0.0f);
@@ -331,7 +331,7 @@ extends DrawableHelper {
         }
         if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
             RenderSystem.pushMatrix();
-            RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, this.blitOffset);
+            RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, this.getBlitOffset());
             Camera camera = this.client.gameRenderer.getCamera();
             RenderSystem.rotatef(camera.getPitch(), -1.0f, 0.0f, 0.0f);
             RenderSystem.rotatef(camera.getYaw(), 0.0f, 1.0f, 0.0f);
@@ -387,7 +387,7 @@ extends DrawableHelper {
         int j = 0;
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        this.client.getTextureManager().bindTexture(AbstractContainerScreen.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().method_22813(AbstractContainerScreen.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;
@@ -419,10 +419,10 @@ extends DrawableHelper {
             float g = f;
             list.add(() -> {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
-                InGameHud.blit(n + 3, o + 3, this.blitOffset, 18, 18, sprite);
+                InGameHud.blit(n + 3, o + 3, this.getBlitOffset(), 18, 18, sprite);
             });
         }
-        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+        this.client.getTextureManager().method_22813(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
         list.forEach(Runnable::run);
     }
 
@@ -436,14 +436,14 @@ extends DrawableHelper {
             return;
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+        this.client.getTextureManager().method_22813(WIDGETS_TEX);
         ItemStack itemStack = playerEntity.getOffHandStack();
         Arm arm = playerEntity.getMainArm().getOpposite();
         int i = this.scaledWidth / 2;
-        int j = this.blitOffset;
+        int j = this.getBlitOffset();
         int k = 182;
         int l = 91;
-        this.blitOffset = -90;
+        this.setBlitOffset(-90);
         this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
         this.blit(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
         if (!itemStack.isEmpty()) {
@@ -453,10 +453,10 @@ extends DrawableHelper {
                 this.blit(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
             }
         }
-        this.blitOffset = j;
+        this.setBlitOffset(j);
         RenderSystem.enableRescaleNormal();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
         GuiLighting.enableForItems();
         for (m = 0; m < 9; ++m) {
             n = i - 90 + m * 20 + 2;
@@ -477,7 +477,7 @@ extends DrawableHelper {
             if (arm == Arm.RIGHT) {
                 o = i - 91 - 22;
             }
-            this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+            this.client.getTextureManager().method_22813(DrawableHelper.GUI_ICONS_LOCATION);
             int p = (int)(g * 19.0f);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.blit(o, n, 0, 94, 18, 18);
@@ -490,7 +490,7 @@ extends DrawableHelper {
 
     public void renderMountJumpBar(int i) {
         this.client.getProfiler().push("jumpBar");
-        this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+        this.client.getTextureManager().method_22813(DrawableHelper.GUI_ICONS_LOCATION);
         float f = this.client.player.method_3151();
         int j = 182;
         int k = (int)(f * 183.0f);
@@ -506,7 +506,7 @@ extends DrawableHelper {
         int m;
         int l;
         this.client.getProfiler().push("expBar");
-        this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+        this.client.getTextureManager().method_22813(DrawableHelper.GUI_ICONS_LOCATION);
         int j = this.client.player.getNextLevelExperience();
         if (j > 0) {
             int k = 182;
@@ -552,7 +552,7 @@ extends DrawableHelper {
             if (k > 0) {
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
-                RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+                RenderSystem.defaultBlendFunc();
                 InGameHud.fill(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(string) + 2, j + this.getFontRenderer().fontHeight + 2, this.client.options.getTextBackgroundColor(0));
                 this.getFontRenderer().drawWithShadow(string, i, j, 0xFFFFFF + (k << 24));
                 RenderSystem.disableBlend();
@@ -837,10 +837,10 @@ extends DrawableHelper {
     private void renderPumpkinOverlay() {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableAlphaTest();
-        this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
+        this.client.getTextureManager().method_22813(PUMPKIN_BLUR);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_UV);
@@ -877,7 +877,7 @@ extends DrawableHelper {
         } else {
             RenderSystem.color4f(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0f);
         }
-        this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
+        this.client.getTextureManager().method_22813(VIGNETTE_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_UV);
@@ -889,7 +889,7 @@ extends DrawableHelper {
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
     }
 
     private void renderPortalOverlay(float f) {
@@ -901,9 +901,9 @@ extends DrawableHelper {
         RenderSystem.disableAlphaTest();
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, f);
-        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
         float g = sprite.getMinU();
         float h = sprite.getMinV();

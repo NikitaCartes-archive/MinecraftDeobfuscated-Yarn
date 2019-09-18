@@ -33,25 +33,25 @@ extends EntityModel<T> {
         int j = 128;
         this.field_3415 = new ModelPart(this).setTextureSize(128, 128);
         this.field_3415.setRotationPoint(0.0f, 0.0f + g, -2.0f);
-        this.field_3415.setTextureOffset(0, 0).addCuboid(-4.0f, -12.0f, -5.5f, 8, 10, 8, f);
-        this.field_3415.setTextureOffset(24, 0).addCuboid(-1.0f, -5.0f, -7.5f, 2, 4, 2, f);
+        this.field_3415.setTextureOffset(0, 0).addCuboid(-4.0f, -12.0f, -5.5f, 8.0f, 10.0f, 8.0f, f);
+        this.field_3415.setTextureOffset(24, 0).addCuboid(-1.0f, -5.0f, -7.5f, 2.0f, 4.0f, 2.0f, f);
         this.field_3413 = new ModelPart(this).setTextureSize(128, 128);
         this.field_3413.setRotationPoint(0.0f, 0.0f + g, 0.0f);
-        this.field_3413.setTextureOffset(0, 40).addCuboid(-9.0f, -2.0f, -6.0f, 18, 12, 11, f);
-        this.field_3413.setTextureOffset(0, 70).addCuboid(-4.5f, 10.0f, -3.0f, 9, 5, 6, f + 0.5f);
+        this.field_3413.setTextureOffset(0, 40).addCuboid(-9.0f, -2.0f, -6.0f, 18.0f, 12.0f, 11.0f, f);
+        this.field_3413.setTextureOffset(0, 70).addCuboid(-4.5f, 10.0f, -3.0f, 9.0f, 5.0f, 6.0f, f + 0.5f);
         this.field_3414 = new ModelPart(this).setTextureSize(128, 128);
         this.field_3414.setRotationPoint(0.0f, -7.0f, 0.0f);
-        this.field_3414.setTextureOffset(60, 21).addCuboid(-13.0f, -2.5f, -3.0f, 4, 30, 6, f);
+        this.field_3414.setTextureOffset(60, 21).addCuboid(-13.0f, -2.5f, -3.0f, 4.0f, 30.0f, 6.0f, f);
         this.field_3412 = new ModelPart(this).setTextureSize(128, 128);
         this.field_3412.setRotationPoint(0.0f, -7.0f, 0.0f);
-        this.field_3412.setTextureOffset(60, 58).addCuboid(9.0f, -2.5f, -3.0f, 4, 30, 6, f);
+        this.field_3412.setTextureOffset(60, 58).addCuboid(9.0f, -2.5f, -3.0f, 4.0f, 30.0f, 6.0f, f);
         this.field_3411 = new ModelPart(this, 0, 22).setTextureSize(128, 128);
         this.field_3411.setRotationPoint(-4.0f, 18.0f + g, 0.0f);
-        this.field_3411.setTextureOffset(37, 0).addCuboid(-3.5f, -3.0f, -3.0f, 6, 16, 5, f);
+        this.field_3411.setTextureOffset(37, 0).addCuboid(-3.5f, -3.0f, -3.0f, 6.0f, 16.0f, 5.0f, f);
         this.field_3416 = new ModelPart(this, 0, 22).setTextureSize(128, 128);
         this.field_3416.mirror = true;
         this.field_3416.setTextureOffset(60, 0).setRotationPoint(5.0f, 18.0f + g, 0.0f);
-        this.field_3416.addCuboid(-3.5f, -3.0f, -3.0f, 6, 16, 5, f);
+        this.field_3416.addCuboid(-3.5f, -3.0f, -3.0f, 6.0f, 16.0f, 5.0f, f);
     }
 
     public void method_17096(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {

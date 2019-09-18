@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -141,11 +140,6 @@ extends Block {
             return (BlockState)blockState.with(EGGS, Math.min(4, blockState.get(EGGS) + 1));
         }
         return super.getPlacementState(itemPlacementContext);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

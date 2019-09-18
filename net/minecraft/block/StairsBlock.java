@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -127,11 +126,6 @@ implements Waterloggable {
     @Override
     public float getBlastResistance() {
         return this.baseBlock.getBlastResistance();
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return this.baseBlock.getRenderLayer();
     }
 
     @Override

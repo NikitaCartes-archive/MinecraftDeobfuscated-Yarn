@@ -5,6 +5,7 @@ package net.minecraft.entity.raid;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -397,14 +398,15 @@ public class Raid {
     private void playRaidHorn(BlockPos blockPos) {
         float f = 13.0f;
         int i = 64;
-        for (PlayerEntity playerEntity : this.world.getPlayers()) {
-            Vec3d vec3d = new Vec3d(playerEntity.x, playerEntity.y, playerEntity.z);
+        Collection<ServerPlayerEntity> collection = this.bar.getPlayers();
+        for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
+            Vec3d vec3d = new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
             Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
             float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
             double d = vec3d.x + (double)(13.0f / g) * (vec3d2.x - vec3d.x);
             double e = vec3d.z + (double)(13.0f / g) * (vec3d2.z - vec3d.z);
-            if (!(g <= 64.0f) && !this.world.isNearOccupiedPointOfInterest(new BlockPos(playerEntity))) continue;
-            ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, d, playerEntity.y, e, 64.0f, 1.0f));
+            if (!(g <= 64.0f) && !collection.contains(serverPlayerEntity)) continue;
+            serverPlayerEntity.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, d, serverPlayerEntity.y, e, 64.0f, 1.0f));
         }
     }
 

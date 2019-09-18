@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
@@ -80,10 +79,10 @@ extends EntityRenderer<ItemEntity> {
             bl = true;
         }
         RenderSystem.enableRescaleNormal();
-        RenderSystem.alphaFunc(516, 0.1f);
+        RenderSystem.defaultAlphaFunc();
         RenderSystem.enableBlend();
         GuiLighting.enable();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
         RenderSystem.pushMatrix();
         BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.world, null);
         int j = this.method_3997(itemEntity, d, e, f, h, bakedModel);

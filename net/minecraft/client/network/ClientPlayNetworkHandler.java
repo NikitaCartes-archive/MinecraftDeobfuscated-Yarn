@@ -560,14 +560,20 @@ implements ClientPlayPacketListener {
         if (entity == null) {
             return;
         }
-        entity.trackedX += (long)entityS2CPacket.getDeltaXShort();
-        entity.trackedY += (long)entityS2CPacket.getDeltaYShort();
-        entity.trackedZ += (long)entityS2CPacket.getDeltaZShort();
-        Vec3d vec3d = EntityS2CPacket.decodePacketCoordinates(entity.trackedX, entity.trackedY, entity.trackedZ);
         if (!entity.isLogicalSideForUpdatingMovement()) {
-            float f = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getYaw() * 360) / 256.0f : entity.yaw;
-            float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0f : entity.pitch;
-            entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
+            if (entityS2CPacket.method_22826()) {
+                entity.trackedX += (long)entityS2CPacket.getDeltaXShort();
+                entity.trackedY += (long)entityS2CPacket.getDeltaYShort();
+                entity.trackedZ += (long)entityS2CPacket.getDeltaZShort();
+                Vec3d vec3d = EntityS2CPacket.decodePacketCoordinates(entity.trackedX, entity.trackedY, entity.trackedZ);
+                float f = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getYaw() * 360) / 256.0f : entity.yaw;
+                float g = entityS2CPacket.hasRotation() ? (float)(entityS2CPacket.getPitch() * 360) / 256.0f : entity.pitch;
+                entity.updateTrackedPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f, g, 3, false);
+            } else if (entityS2CPacket.hasRotation()) {
+                float h = entityS2CPacket.getYaw();
+                float f = entityS2CPacket.getPitch();
+                entity.updateTrackedPositionAndAngles(entity.x, entity.y, entity.z, h, f, 3, false);
+            }
             entity.onGround = entityS2CPacket.isOnGround();
         }
     }

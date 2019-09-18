@@ -78,7 +78,7 @@ implements RecipeBookProvider {
     @Override
     protected void drawBackground(float f, int i, int j) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().bindTexture(BG_TEX);
+        this.minecraft.getTextureManager().method_22813(BG_TEX);
         int k = this.left;
         int l = (this.height - this.containerHeight) / 2;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);

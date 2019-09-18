@@ -4,7 +4,6 @@
 package net.minecraft.client.render;
 
 import com.google.common.base.MoreObjects;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
@@ -73,7 +72,7 @@ public class FirstPersonRenderer {
         Item item = itemStack.getItem();
         Block block = Block.getBlockFromItem(item);
         RenderSystem.pushMatrix();
-        boolean bl3 = bl2 = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
+        boolean bl3 = bl2 = this.itemRenderer.hasDepthInGui(itemStack) && BlockRenderLayer.method_22715(block.getDefaultState()) == BlockRenderLayer.field_9179;
         if (bl2) {
             RenderSystem.depthMask(false);
         }
@@ -129,7 +128,7 @@ public class FirstPersonRenderer {
     }
 
     private void renderArm(Arm arm) {
-        this.client.getTextureManager().bindTexture(this.client.player.getSkinTexture());
+        this.client.getTextureManager().method_22813(this.client.player.getSkinTexture());
         Object entityRenderer = this.renderManager.getRenderer(this.client.player);
         PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)entityRenderer;
         RenderSystem.pushMatrix();
@@ -189,7 +188,7 @@ public class FirstPersonRenderer {
         RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
         RenderSystem.scalef(0.38f, 0.38f, 0.38f);
         RenderSystem.disableLighting();
-        this.client.getTextureManager().bindTexture(MAP_BACKGROUND_TEX);
+        this.client.getTextureManager().method_22813(MAP_BACKGROUND_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         RenderSystem.translatef(-0.5f, -0.5f, 0.0f);
@@ -221,7 +220,7 @@ public class FirstPersonRenderer {
         RenderSystem.rotatef(h * n * 70.0f, 0.0f, 1.0f, 0.0f);
         RenderSystem.rotatef(h * m * -20.0f, 0.0f, 0.0f, 1.0f);
         ClientPlayerEntity abstractClientPlayerEntity = this.client.player;
-        this.client.getTextureManager().bindTexture(abstractClientPlayerEntity.getSkinTexture());
+        this.client.getTextureManager().method_22813(abstractClientPlayerEntity.getSkinTexture());
         RenderSystem.translatef(h * -1.0f, 3.6f, 3.5f);
         RenderSystem.rotatef(h * 120.0f, 0.0f, 0.0f, 1.0f);
         RenderSystem.rotatef(200.0f, 1.0f, 0.0f, 0.0f);
@@ -485,7 +484,7 @@ public class FirstPersonRenderer {
     }
 
     private void renderBlock(Sprite sprite) {
-        this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         float f = 0.1f;
@@ -511,13 +510,13 @@ public class FirstPersonRenderer {
     }
 
     private void renderWaterOverlay(float f) {
-        this.client.getTextureManager().bindTexture(UNDERWATER_TEX);
+        this.client.getTextureManager().method_22813(UNDERWATER_TEX);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         float g = this.client.player.getBrightnessAtEyes();
         RenderSystem.color4f(g, g, g, 0.1f);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
         RenderSystem.pushMatrix();
         float h = 4.0f;
         float i = -1.0f;
@@ -545,12 +544,12 @@ public class FirstPersonRenderer {
         RenderSystem.depthFunc(519);
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
         float f = 1.0f;
         for (int i = 0; i < 2; ++i) {
             RenderSystem.pushMatrix();
             Sprite sprite = this.client.getSpriteAtlas().getSprite(ModelLoader.FIRE_1);
-            this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+            this.client.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
             float g = sprite.getMinU();
             float h = sprite.getMaxU();
             float j = sprite.getMinV();

@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.class_4538;
@@ -37,11 +36,6 @@ extends Block {
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.down();
         return this.canPlantOnTop(arg.getBlockState(blockPos2), arg, blockPos2);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

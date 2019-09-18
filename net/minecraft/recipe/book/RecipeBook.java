@@ -51,6 +51,10 @@ public class RecipeBook {
         return this.recipes.contains(recipe.getId());
     }
 
+    public boolean method_22845(Identifier identifier) {
+        return this.recipes.contains(identifier);
+    }
+
     @Environment(value=EnvType.CLIENT)
     public void remove(Recipe<?> recipe) {
         this.remove(recipe.getId());

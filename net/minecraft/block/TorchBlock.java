@@ -7,7 +7,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.class_4538;
@@ -54,11 +53,6 @@ extends Block {
         double f = (double)blockPos.getZ() + 0.5;
         world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
         world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 }
 

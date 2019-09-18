@@ -80,7 +80,7 @@ implements AutoCloseable {
         this.program.getUniformByNameOrDummy("OutSize").set(g, h);
         this.program.getUniformByNameOrDummy("Time").set(f);
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        this.program.getUniformByNameOrDummy("ScreenSize").set(minecraftClient.window.getFramebufferWidth(), minecraftClient.window.getFramebufferHeight());
+        this.program.getUniformByNameOrDummy("ScreenSize").set(minecraftClient.method_22683().getFramebufferWidth(), minecraftClient.method_22683().getFramebufferHeight());
         this.program.enable();
         this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
         this.output.beginWrite(false);

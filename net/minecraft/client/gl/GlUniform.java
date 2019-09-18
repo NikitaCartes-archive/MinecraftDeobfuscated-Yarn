@@ -4,6 +4,7 @@
 package net.minecraft.client.gl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.fabricmc.api.EnvType;
@@ -50,7 +51,7 @@ implements AutoCloseable {
     }
 
     public static void uniform1(int i, int j) {
-        GlStateManager.uniform1(i, j);
+        RenderSystem.glUniform1i(i, j);
     }
 
     public static int getAttribLocation(int i, CharSequence charSequence) {
@@ -211,19 +212,19 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 0: {
-                GlStateManager.uniform1(this.loc, this.intData);
+                RenderSystem.glUniform1(this.loc, this.intData);
                 break;
             }
             case 1: {
-                GlStateManager.uniform2(this.loc, this.intData);
+                RenderSystem.glUniform2(this.loc, this.intData);
                 break;
             }
             case 2: {
-                GlStateManager.uniform3(this.loc, this.intData);
+                RenderSystem.glUniform3(this.loc, this.intData);
                 break;
             }
             case 3: {
-                GlStateManager.uniform4(this.loc, this.intData);
+                RenderSystem.glUniform4(this.loc, this.intData);
                 break;
             }
             default: {
@@ -236,19 +237,19 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 4: {
-                GlStateManager.uniform1(this.loc, this.floatData);
+                RenderSystem.glUniform1(this.loc, this.floatData);
                 break;
             }
             case 5: {
-                GlStateManager.uniform2(this.loc, this.floatData);
+                RenderSystem.glUniform2(this.loc, this.floatData);
                 break;
             }
             case 6: {
-                GlStateManager.uniform3(this.loc, this.floatData);
+                RenderSystem.glUniform3(this.loc, this.floatData);
                 break;
             }
             case 7: {
-                GlStateManager.uniform4(this.loc, this.floatData);
+                RenderSystem.glUniform4(this.loc, this.floatData);
                 break;
             }
             default: {
@@ -261,15 +262,15 @@ implements AutoCloseable {
         this.floatData.clear();
         switch (this.dataType) {
             case 8: {
-                GlStateManager.uniformMatrix2(this.loc, false, this.floatData);
+                RenderSystem.glUniformMatrix2(this.loc, false, this.floatData);
                 break;
             }
             case 9: {
-                GlStateManager.uniformMatrix3(this.loc, false, this.floatData);
+                RenderSystem.glUniformMatrix3(this.loc, false, this.floatData);
                 break;
             }
             case 10: {
-                GlStateManager.uniformMatrix4(this.loc, false, this.floatData);
+                RenderSystem.glUniformMatrix4(this.loc, false, this.floatData);
             }
         }
     }

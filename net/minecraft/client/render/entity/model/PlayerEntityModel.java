@@ -3,7 +3,10 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.List;
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -15,6 +18,7 @@ import net.minecraft.util.Arm;
 @Environment(value=EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity>
 extends BipedEntityModel<T> {
+    private List<ModelPart> field_20787 = Lists.newArrayList();
     public final ModelPart leftArmOverlay;
     public final ModelPart rightArmOverlay;
     public final ModelPart leftLegOverlay;
@@ -28,45 +32,45 @@ extends BipedEntityModel<T> {
         super(f, 0.0f, 64, 64);
         this.thinArms = bl;
         this.ears = new ModelPart(this, 24, 0);
-        this.ears.addCuboid(-3.0f, -6.0f, -1.0f, 6, 6, 1, f);
+        this.ears.addCuboid(-3.0f, -6.0f, -1.0f, 6.0f, 6.0f, 1.0f, f);
         this.cape = new ModelPart(this, 0, 0);
         this.cape.setTextureSize(64, 32);
-        this.cape.addCuboid(-5.0f, 0.0f, -1.0f, 10, 16, 1, f);
+        this.cape.addCuboid(-5.0f, 0.0f, -1.0f, 10.0f, 16.0f, 1.0f, f);
         if (bl) {
             this.leftArm = new ModelPart(this, 32, 48);
-            this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 3, 12, 4, f);
+            this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f);
             this.leftArm.setRotationPoint(5.0f, 2.5f, 0.0f);
             this.rightArm = new ModelPart(this, 40, 16);
-            this.rightArm.addCuboid(-2.0f, -2.0f, -2.0f, 3, 12, 4, f);
+            this.rightArm.addCuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f);
             this.rightArm.setRotationPoint(-5.0f, 2.5f, 0.0f);
             this.leftArmOverlay = new ModelPart(this, 48, 48);
-            this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 3, 12, 4, f + 0.25f);
+            this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
             this.leftArmOverlay.setRotationPoint(5.0f, 2.5f, 0.0f);
             this.rightArmOverlay = new ModelPart(this, 40, 32);
-            this.rightArmOverlay.addCuboid(-2.0f, -2.0f, -2.0f, 3, 12, 4, f + 0.25f);
+            this.rightArmOverlay.addCuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
             this.rightArmOverlay.setRotationPoint(-5.0f, 2.5f, 10.0f);
         } else {
             this.leftArm = new ModelPart(this, 32, 48);
-            this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4, 12, 4, f);
+            this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
             this.leftArm.setRotationPoint(5.0f, 2.0f, 0.0f);
             this.leftArmOverlay = new ModelPart(this, 48, 48);
-            this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 4, 12, 4, f + 0.25f);
+            this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
             this.leftArmOverlay.setRotationPoint(5.0f, 2.0f, 0.0f);
             this.rightArmOverlay = new ModelPart(this, 40, 32);
-            this.rightArmOverlay.addCuboid(-3.0f, -2.0f, -2.0f, 4, 12, 4, f + 0.25f);
+            this.rightArmOverlay.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
             this.rightArmOverlay.setRotationPoint(-5.0f, 2.0f, 10.0f);
         }
         this.leftLeg = new ModelPart(this, 16, 48);
-        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.leftLeg.setRotationPoint(1.9f, 12.0f, 0.0f);
         this.leftLegOverlay = new ModelPart(this, 0, 48);
-        this.leftLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f + 0.25f);
+        this.leftLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
         this.leftLegOverlay.setRotationPoint(1.9f, 12.0f, 0.0f);
         this.rightLegOverlay = new ModelPart(this, 0, 32);
-        this.rightLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f + 0.25f);
+        this.rightLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
         this.rightLegOverlay.setRotationPoint(-1.9f, 12.0f, 0.0f);
         this.bodyOverlay = new ModelPart(this, 16, 32);
-        this.bodyOverlay.addCuboid(-4.0f, 0.0f, -2.0f, 8, 12, 4, f + 0.25f);
+        this.bodyOverlay.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f + 0.25f);
         this.bodyOverlay.setRotationPoint(0.0f, 0.0f, 0.0f);
     }
 
@@ -141,6 +145,23 @@ extends BipedEntityModel<T> {
         } else {
             modelPart.applyTransform(f);
         }
+    }
+
+    public ModelPart method_22697(Random random) {
+        return this.field_20787.get(random.nextInt(this.field_20787.size()));
+    }
+
+    @Override
+    public void method_22696(ModelPart modelPart) {
+        if (this.field_20787 == null) {
+            this.field_20787 = Lists.newArrayList();
+        }
+        this.field_20787.add(modelPart);
+    }
+
+    @Override
+    public /* synthetic */ void accept(Object object) {
+        this.method_22696((ModelPart)object);
     }
 }
 

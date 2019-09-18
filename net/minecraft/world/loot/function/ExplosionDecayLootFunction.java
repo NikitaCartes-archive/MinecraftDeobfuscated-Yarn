@@ -6,17 +6,17 @@ package net.minecraft.world.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import java.util.Random;
+import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.function.ConditionalLootFunction;
 
 public class ExplosionDecayLootFunction
 extends ConditionalLootFunction {
-    private ExplosionDecayLootFunction(LootCondition[] lootConditions) {
-        super(lootConditions);
+    private ExplosionDecayLootFunction(class_4570[] args) {
+        super(args);
     }
 
     @Override
@@ -46,13 +46,13 @@ extends ConditionalLootFunction {
             super(new Identifier("explosion_decay"), ExplosionDecayLootFunction.class);
         }
 
-        public ExplosionDecayLootFunction method_479(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return new ExplosionDecayLootFunction(lootConditions);
+        public ExplosionDecayLootFunction method_479(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+            return new ExplosionDecayLootFunction(args);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_479(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+            return this.method_479(jsonObject, jsonDeserializationContext, args);
         }
     }
 }

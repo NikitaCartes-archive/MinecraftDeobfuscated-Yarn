@@ -29,10 +29,10 @@ extends EntityModel<T> {
                 k = 19;
             }
             this.field_3427[i] = new ModelPart(this, j, k);
-            this.field_3427[i].addCuboid(-4.0f, 16 + i, -4.0f, 8, 1, 8);
+            this.field_3427[i].addCuboid(-4.0f, 16 + i, -4.0f, 8.0f, 1.0f, 8.0f);
         }
         this.field_3428 = new ModelPart(this, 0, 16);
-        this.field_3428.addCuboid(-2.0f, 18.0f, -2.0f, 4, 4, 4);
+        this.field_3428.addCuboid(-2.0f, 18.0f, -2.0f, 4.0f, 4.0f, 4.0f);
     }
 
     public void method_17098(T slimeEntity, float f, float g, float h) {

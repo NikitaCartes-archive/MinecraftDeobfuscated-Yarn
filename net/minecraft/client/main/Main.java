@@ -46,6 +46,7 @@ public class Main {
      */
     public static void main(String[] strings) {
         Thread thread2;
+        MinecraftClient minecraftClient;
         OptionParser optionParser = new OptionParser();
         optionParser.allowsUnrecognizedOptions();
         optionParser.accepts("demo");
@@ -136,24 +137,26 @@ public class Main {
         thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
         Runtime.getRuntime().addShutdownHook(thread);
         class_4491 lv = new class_4491();
-        final MinecraftClient minecraftClient = new MinecraftClient(runArgs);
-        Thread.currentThread().setName("Render thread");
-        RenderSystem.initRenderThread();
         try {
-            minecraftClient.init();
+            Thread.currentThread().setName("Render thread");
+            RenderSystem.initRenderThread();
+            RenderSystem.beginInitialization();
+            minecraftClient = new MinecraftClient(runArgs);
+            RenderSystem.finishInitialization();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Initializing game");
             crashReport.addElement("Initialization");
-            minecraftClient.printCrashReport(minecraftClient.populateCrashReport(crashReport));
+            MinecraftClient.method_22681(null, runArgs.game.version, null, crashReport);
+            MinecraftClient.printCrashReport(crashReport);
             return;
         }
         if (minecraftClient.shouldRenderAsync()) {
-            thread2 = new Thread("Client thread"){
+            thread2 = new Thread("Game thread"){
 
                 @Override
                 public void run() {
                     try {
-                        RenderSystem.initClientThread();
+                        RenderSystem.initGameThread(true);
                         minecraftClient.start();
                     } catch (Throwable throwable) {
                         LOGGER.error("Exception in client thread", throwable);
@@ -166,6 +169,7 @@ public class Main {
         } else {
             thread2 = null;
             try {
+                RenderSystem.initGameThread(false);
                 minecraftClient.start();
             } catch (Throwable throwable2) {
                 LOGGER.error("Unhandled game exception", throwable2);
@@ -187,6 +191,7 @@ public class Main {
         return integer != null ? OptionalInt.of(integer) : OptionalInt.empty();
     }
 
+    @Nullable
     private static <T> T getOption(OptionSet optionSet, OptionSpec<T> optionSpec) {
         try {
             return optionSet.valueOf(optionSpec);
@@ -200,7 +205,7 @@ public class Main {
         }
     }
 
-    private static boolean isNotNullOrEmpty(String string) {
+    private static boolean isNotNullOrEmpty(@Nullable String string) {
         return string != null && !string.isEmpty();
     }
 

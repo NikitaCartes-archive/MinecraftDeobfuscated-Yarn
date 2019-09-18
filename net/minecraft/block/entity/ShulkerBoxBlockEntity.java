@@ -47,6 +47,7 @@ Tickable {
     private AnimationStage animationStage = AnimationStage.CLOSED;
     private float animationProgress;
     private float prevAnimationProgress;
+    @Nullable
     private DyeColor cachedColor;
     private boolean cachedColorUpdateNeeded;
 
@@ -274,6 +275,7 @@ Tickable {
         return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
     }
 
+    @Nullable
     @Environment(value=EnvType.CLIENT)
     public DyeColor getColor() {
         if (this.cachedColorUpdateNeeded) {

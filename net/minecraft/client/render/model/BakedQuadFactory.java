@@ -84,7 +84,7 @@ public class BakedQuadFactory {
     }
 
     private int[] method_3458(ModelElementTexture modelElementTexture, Sprite sprite, Direction direction, float[] fs, ModelRotation modelRotation, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation2, boolean bl) {
-        int[] is = new int[28];
+        int[] is = new int[32];
         for (int i = 0; i < 4; ++i) {
             this.method_3461(is, i, direction, modelElementTexture, fs, sprite, modelRotation, modelRotation2, bl);
         }
@@ -139,7 +139,7 @@ public class BakedQuadFactory {
     }
 
     private void method_3460(int[] is, int i, int j, Vector3f vector3f, int k, Sprite sprite, ModelElementTexture modelElementTexture) {
-        int l = i * 7;
+        int l = i * 8;
         is[l] = Float.floatToRawIntBits(vector3f.getX());
         is[l + 1] = Float.floatToRawIntBits(vector3f.getY());
         is[l + 2] = Float.floatToRawIntBits(vector3f.getZ());
@@ -205,8 +205,8 @@ public class BakedQuadFactory {
 
     public static Direction method_3467(int[] is) {
         Vector3f vector3f = new Vector3f(Float.intBitsToFloat(is[0]), Float.intBitsToFloat(is[1]), Float.intBitsToFloat(is[2]));
-        Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(is[7]), Float.intBitsToFloat(is[8]), Float.intBitsToFloat(is[9]));
-        Vector3f vector3f3 = new Vector3f(Float.intBitsToFloat(is[14]), Float.intBitsToFloat(is[15]), Float.intBitsToFloat(is[16]));
+        Vector3f vector3f2 = new Vector3f(Float.intBitsToFloat(is[8]), Float.intBitsToFloat(is[9]), Float.intBitsToFloat(is[10]));
+        Vector3f vector3f3 = new Vector3f(Float.intBitsToFloat(is[16]), Float.intBitsToFloat(is[17]), Float.intBitsToFloat(is[18]));
         Vector3f vector3f4 = new Vector3f(vector3f);
         vector3f4.subtract(vector3f2);
         Vector3f vector3f5 = new Vector3f(vector3f3);
@@ -243,7 +243,7 @@ public class BakedQuadFactory {
         fs[CubeFace.DirectionIds.UP] = -999.0f;
         fs[CubeFace.DirectionIds.SOUTH] = -999.0f;
         for (int i = 0; i < 4; ++i) {
-            j = 7 * i;
+            j = 8 * i;
             float f = Float.intBitsToFloat(js[j]);
             float g = Float.intBitsToFloat(js[j + 1]);
             h = Float.intBitsToFloat(js[j + 2]);
@@ -267,7 +267,7 @@ public class BakedQuadFactory {
         }
         CubeFace cubeFace = CubeFace.method_3163(direction);
         for (j = 0; j < 4; ++j) {
-            int k = 7 * j;
+            int k = 8 * j;
             CubeFace.Corner corner = cubeFace.getCorner(j);
             h = fs[corner.xSide];
             float l = fs[corner.ySide];
@@ -276,7 +276,7 @@ public class BakedQuadFactory {
             is[k + 1] = Float.floatToRawIntBits(l);
             is[k + 2] = Float.floatToRawIntBits(m);
             for (int n = 0; n < 4; ++n) {
-                int o = 7 * n;
+                int o = 8 * n;
                 float p = Float.intBitsToFloat(js[o]);
                 float q = Float.intBitsToFloat(js[o + 1]);
                 float r = Float.intBitsToFloat(js[o + 2]);

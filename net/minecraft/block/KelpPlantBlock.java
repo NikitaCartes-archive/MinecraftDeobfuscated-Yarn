@@ -7,7 +7,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
@@ -31,11 +30,6 @@ implements FluidFillable {
     protected KelpPlantBlock(KelpBlock kelpBlock, Block.Settings settings) {
         super(settings);
         this.kelpBlock = kelpBlock;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

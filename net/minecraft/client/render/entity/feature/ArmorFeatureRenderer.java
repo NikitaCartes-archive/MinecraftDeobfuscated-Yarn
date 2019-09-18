@@ -10,8 +10,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -98,8 +97,7 @@ extends FeatureRenderer<T, M> {
     public static <T extends Entity> void renderEnchantedGlint(Consumer<Identifier> consumer, T entity, EntityModel<T> entityModel, float f, float g, float h, float i, float j, float k, float l) {
         float m = (float)entity.age + h;
         consumer.accept(SKIN);
-        GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-        gameRenderer.setFogBlack(true);
+        BackgroundRenderer.setFogBlack(true);
         RenderSystem.enableBlend();
         RenderSystem.depthFunc(514);
         RenderSystem.depthMask(false);
@@ -127,7 +125,7 @@ extends FeatureRenderer<T, M> {
         RenderSystem.depthMask(true);
         RenderSystem.depthFunc(515);
         RenderSystem.disableBlend();
-        gameRenderer.setFogBlack(false);
+        BackgroundRenderer.setFogBlack(false);
     }
 
     private Identifier getArmorTexture(ArmorItem armorItem, boolean bl) {

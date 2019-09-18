@@ -383,8 +383,8 @@ extends Screen {
 
         public boolean mouseScrolled(double d) {
             int j;
-            int i = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getX() * (double)((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.window.getScaledWidth() / (double)((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.window.getWidth());
-            if (this.area.contains(i, j = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getY() * (double)((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.window.getScaledHeight() / (double)((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.window.getHeight()))) {
+            int i = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getX() * (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getScaledWidth() / (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getWidth());
+            if (this.area.contains(i, j = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getY() * (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getScaledHeight() / (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getHeight()))) {
                 this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - d), 0, Math.max(this.suggestions.getList().size() - 7, 0));
                 return true;
             }

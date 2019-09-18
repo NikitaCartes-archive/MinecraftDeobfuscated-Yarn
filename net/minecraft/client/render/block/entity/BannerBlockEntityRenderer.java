@@ -3,70 +3,98 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BannerBlock;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
+import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.class_4576;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.entity.model.BannerBlockEntityModel;
-import net.minecraft.client.texture.TextureCache;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.math.Quaternion;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class BannerBlockEntityRenderer
-extends BlockEntityRenderer<BannerBlockEntity> {
-    private final BannerBlockEntityModel model = new BannerBlockEntityModel();
+extends class_4576<BannerBlockEntity> {
+    private static final Logger field_20809 = LogManager.getLogger();
+    private final ModelPart field_20810 = new ModelPart(64, 64, 0, 0);
+    private final ModelPart field_20811;
+    private final ModelPart field_20812;
 
-    public void method_3546(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, int i) {
+    public BannerBlockEntityRenderer() {
+        this.field_20810.addCuboid(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f, 0.0f);
+        this.field_20811 = new ModelPart(64, 64, 44, 0);
+        this.field_20811.addCuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f, 0.0f);
+        this.field_20812 = new ModelPart(64, 64, 0, 42);
+        this.field_20812.addCuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f, 0.0f);
+    }
+
+    protected void method_3546(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, int j, int k) {
         long l;
         float h = 0.6666667f;
         boolean bl = bannerBlockEntity.getWorld() == null;
-        RenderSystem.pushMatrix();
-        ModelPart modelPart = this.model.getVerticalStick();
+        bufferBuilder.method_22629();
         if (bl) {
             l = 0L;
-            RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-            modelPart.visible = true;
+            bufferBuilder.method_22626(0.5, 0.5, f + 0.5);
+            this.field_20811.visible = !bannerBlockEntity.method_22535();
         } else {
             l = bannerBlockEntity.getWorld().getTime();
             BlockState blockState = bannerBlockEntity.getCachedState();
             if (blockState.getBlock() instanceof BannerBlock) {
-                RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-                RenderSystem.rotatef((float)(-blockState.get(BannerBlock.ROTATION).intValue() * 360) / 16.0f, 0.0f, 1.0f, 0.0f);
-                modelPart.visible = true;
+                bufferBuilder.method_22626(0.5, 0.5, 0.5);
+                bufferBuilder.method_22622(new Quaternion(Vector3f.field_20705, (float)(-blockState.get(BannerBlock.ROTATION).intValue() * 360) / 16.0f, true));
+                this.field_20811.visible = true;
             } else {
-                RenderSystem.translatef((float)d + 0.5f, (float)e - 0.16666667f, (float)f + 0.5f);
-                RenderSystem.rotatef(-blockState.get(WallBannerBlock.FACING).asRotation(), 0.0f, 1.0f, 0.0f);
-                RenderSystem.translatef(0.0f, -0.3125f, -0.4375f);
-                modelPart.visible = false;
+                bufferBuilder.method_22626(0.5, -0.1666666716337204, 0.5);
+                bufferBuilder.method_22622(new Quaternion(Vector3f.field_20705, -blockState.get(WallBannerBlock.FACING).asRotation(), true));
+                bufferBuilder.method_22626(0.0, -0.3125, -0.4375);
+                this.field_20811.visible = false;
             }
         }
-        BlockPos blockPos = bannerBlockEntity.getPos();
-        float j = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + g) / 100.0f;
-        this.model.getBanner().pitch = (-0.0125f + 0.01f * MathHelper.cos((float)Math.PI * 2 * j)) * (float)Math.PI;
-        RenderSystem.enableRescaleNormal();
-        Identifier identifier = this.getTextureId(bannerBlockEntity);
-        if (identifier != null) {
-            this.bindTexture(identifier);
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.6666667f, -0.6666667f, -0.6666667f);
-            this.model.render();
-            RenderSystem.popMatrix();
+        Sprite sprite = this.method_22739(ModelLoader.field_20847);
+        bufferBuilder.method_22629();
+        bufferBuilder.method_22627(0.6666667f, -0.6666667f, -0.6666667f);
+        float m = 0.0625f;
+        this.field_20811.method_22698(bufferBuilder, 0.0625f, j, k, sprite);
+        this.field_20812.method_22698(bufferBuilder, 0.0625f, j, k, sprite);
+        if (bannerBlockEntity.method_22535()) {
+            this.field_20810.pitch = 0.0f;
+        } else {
+            BlockPos blockPos = bannerBlockEntity.getPos();
+            float n = (float)((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l) + g;
+            this.field_20810.pitch = (-0.0125f + 0.01f * MathHelper.cos(n * (float)Math.PI * 0.02f)) * (float)Math.PI;
         }
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.popMatrix();
-    }
-
-    @Nullable
-    private Identifier getTextureId(BannerBlockEntity bannerBlockEntity) {
-        return TextureCache.BANNER.get(bannerBlockEntity.getPatternCacheKey(), bannerBlockEntity.getPatterns(), bannerBlockEntity.getPatternColors());
+        this.field_20810.rotationPointY = -32.0f;
+        this.field_20810.method_22698(bufferBuilder, 0.0625f, j, k, sprite);
+        List<BannerPattern> list = bannerBlockEntity.getPatterns();
+        List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
+        if (list == null) {
+            field_20809.error("patterns are null");
+        } else if (list2 == null) {
+            field_20809.error("colors are null");
+        } else {
+            for (int o = 0; o < 17 && o < list.size() && o < list2.size(); ++o) {
+                BannerPattern bannerPattern = list.get(o);
+                DyeColor dyeColor = list2.get(o);
+                float[] fs = dyeColor.getColorComponents();
+                this.field_20810.method_22699(bufferBuilder, 0.0625f, j, k, this.method_22739(bannerPattern.method_22536()), fs[0], fs[1], fs[2]);
+            }
+        }
+        bufferBuilder.method_22630();
+        bufferBuilder.method_22630();
     }
 }
 

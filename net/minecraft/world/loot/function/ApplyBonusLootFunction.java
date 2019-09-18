@@ -12,13 +12,13 @@ import com.google.gson.JsonSerializationContext;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -30,8 +30,8 @@ extends ConditionalLootFunction {
     private final Enchantment enchantment;
     private final Formula formula;
 
-    private ApplyBonusLootFunction(LootCondition[] lootConditions, Enchantment enchantment, Formula formula) {
-        super(lootConditions);
+    private ApplyBonusLootFunction(class_4570[] args, Enchantment enchantment, Formula formula) {
+        super(args);
         this.enchantment = enchantment;
         this.formula = formula;
     }
@@ -53,19 +53,19 @@ extends ConditionalLootFunction {
     }
 
     public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(Enchantment enchantment, float f, int i) {
-        return ApplyBonusLootFunction.builder(lootConditions -> new ApplyBonusLootFunction((LootCondition[])lootConditions, enchantment, new BinomialWithBonusCount(i, f)));
+        return ApplyBonusLootFunction.builder(args -> new ApplyBonusLootFunction((class_4570[])args, enchantment, new BinomialWithBonusCount(i, f)));
     }
 
     public static ConditionalLootFunction.Builder<?> oreDrops(Enchantment enchantment) {
-        return ApplyBonusLootFunction.builder(lootConditions -> new ApplyBonusLootFunction((LootCondition[])lootConditions, enchantment, new OreDrops()));
+        return ApplyBonusLootFunction.builder(args -> new ApplyBonusLootFunction((class_4570[])args, enchantment, new OreDrops()));
     }
 
     public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment) {
-        return ApplyBonusLootFunction.builder(lootConditions -> new ApplyBonusLootFunction((LootCondition[])lootConditions, enchantment, new UniformBonusCount(1)));
+        return ApplyBonusLootFunction.builder(args -> new ApplyBonusLootFunction((class_4570[])args, enchantment, new UniformBonusCount(1)));
     }
 
     public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment, int i) {
-        return ApplyBonusLootFunction.builder(lootConditions -> new ApplyBonusLootFunction((LootCondition[])lootConditions, enchantment, new UniformBonusCount(i)));
+        return ApplyBonusLootFunction.builder(args -> new ApplyBonusLootFunction((class_4570[])args, enchantment, new UniformBonusCount(i)));
     }
 
     static {
@@ -91,7 +91,7 @@ extends ConditionalLootFunction {
             }
         }
 
-        public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+        public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
             Enchantment enchantment = Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));
@@ -100,12 +100,12 @@ extends ConditionalLootFunction {
                 throw new JsonParseException("Invalid formula id: " + identifier2);
             }
             Formula formula = jsonObject.has("parameters") ? formulaFactory.deserialize(JsonHelper.getObject(jsonObject, "parameters"), jsonDeserializationContext) : formulaFactory.deserialize(new JsonObject(), jsonDeserializationContext);
-            return new ApplyBonusLootFunction(lootConditions, enchantment, formula);
+            return new ApplyBonusLootFunction(args, enchantment, formula);
         }
 
         @Override
-        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            return this.method_470(jsonObject, jsonDeserializationContext, lootConditions);
+        public /* synthetic */ ConditionalLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+            return this.method_470(jsonObject, jsonDeserializationContext, args);
         }
     }
 

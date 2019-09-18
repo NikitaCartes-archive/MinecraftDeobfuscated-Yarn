@@ -25,27 +25,27 @@ extends QuadrupedEntityModel<T> {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.head = new ModelPart(this, 0, 6);
-        this.head.addCuboid(-6.5f, -5.0f, -4.0f, 13, 10, 9);
+        this.head.addCuboid(-6.5f, -5.0f, -4.0f, 13.0f, 10.0f, 9.0f);
         this.head.setRotationPoint(0.0f, 11.5f, -17.0f);
-        this.head.setTextureOffset(45, 16).addCuboid(-3.5f, 0.0f, -6.0f, 7, 5, 2);
-        this.head.setTextureOffset(52, 25).addCuboid(-8.5f, -8.0f, -1.0f, 5, 4, 1);
-        this.head.setTextureOffset(52, 25).addCuboid(3.5f, -8.0f, -1.0f, 5, 4, 1);
+        this.head.setTextureOffset(45, 16).addCuboid(-3.5f, 0.0f, -6.0f, 7.0f, 5.0f, 2.0f);
+        this.head.setTextureOffset(52, 25).addCuboid(-8.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f);
+        this.head.setTextureOffset(52, 25).addCuboid(3.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f);
         this.body = new ModelPart(this, 0, 25);
-        this.body.addCuboid(-9.5f, -13.0f, -6.5f, 19, 26, 13);
+        this.body.addCuboid(-9.5f, -13.0f, -6.5f, 19.0f, 26.0f, 13.0f);
         this.body.setRotationPoint(0.0f, 10.0f, 0.0f);
         int j = 9;
         int k = 6;
         this.leg1 = new ModelPart(this, 40, 0);
-        this.leg1.addCuboid(-3.0f, 0.0f, -3.0f, 6, 9, 6);
+        this.leg1.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 9.0f, 6.0f);
         this.leg1.setRotationPoint(-5.5f, 15.0f, 9.0f);
         this.leg2 = new ModelPart(this, 40, 0);
-        this.leg2.addCuboid(-3.0f, 0.0f, -3.0f, 6, 9, 6);
+        this.leg2.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 9.0f, 6.0f);
         this.leg2.setRotationPoint(5.5f, 15.0f, 9.0f);
         this.leg3 = new ModelPart(this, 40, 0);
-        this.leg3.addCuboid(-3.0f, 0.0f, -3.0f, 6, 9, 6);
+        this.leg3.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 9.0f, 6.0f);
         this.leg3.setRotationPoint(-5.5f, 15.0f, -9.0f);
         this.leg4 = new ModelPart(this, 40, 0);
-        this.leg4.addCuboid(-3.0f, 0.0f, -3.0f, 6, 9, 6);
+        this.leg4.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 9.0f, 6.0f);
         this.leg4.setRotationPoint(5.5f, 15.0f, -9.0f);
     }
 

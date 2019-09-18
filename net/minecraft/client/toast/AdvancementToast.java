@@ -30,7 +30,7 @@ implements Toast {
 
     @Override
     public Toast.Visibility draw(ToastManager toastManager, long l) {
-        toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+        toastManager.getGame().getTextureManager().method_22813(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
         toastManager.blit(0, 0, 0, 0, 160, 32);

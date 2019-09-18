@@ -600,18 +600,18 @@ extends AbstractInventoryScreen<CreativeContainer> {
         GuiLighting.enableForItems();
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-            this.minecraft.getTextureManager().bindTexture(TEXTURE);
+            this.minecraft.getTextureManager().method_22813(TEXTURE);
             if (itemGroup2.getIndex() == selectedTab) continue;
             this.method_2468(itemGroup2);
         }
-        this.minecraft.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
+        this.minecraft.getTextureManager().method_22813(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
         this.blit(this.left, this.top, 0, 0, this.containerWidth, this.containerHeight);
         this.searchBox.render(i, j, f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int k = this.left + 175;
         int l = this.top + 18;
         int m = l + 112;
-        this.minecraft.getTextureManager().bindTexture(TEXTURE);
+        this.minecraft.getTextureManager().method_22813(TEXTURE);
         if (itemGroup.hasScrollbar()) {
             this.blit(k, l + (int)((float)(m - l - 17) * this.scrollPosition), 232 + (this.doRenderScrollBar() ? 0 : 12), 0, 12, 15);
         }
@@ -676,7 +676,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         }
         RenderSystem.disableLighting();
         this.blit(l, m, j, k, 28, 32);
-        this.blitOffset = 100;
+        this.setBlitOffset(100);
         this.itemRenderer.zOffset = 100.0f;
         int n2 = bl2 ? 1 : -1;
         RenderSystem.enableLighting();
@@ -686,7 +686,7 @@ extends AbstractInventoryScreen<CreativeContainer> {
         this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, l, m);
         RenderSystem.disableLighting();
         this.itemRenderer.zOffset = 0.0f;
-        this.blitOffset = 0;
+        this.setBlitOffset(0);
     }
 
     public int method_2469() {

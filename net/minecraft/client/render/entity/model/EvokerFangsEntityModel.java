@@ -19,13 +19,13 @@ extends EntityModel<T> {
 
     public EvokerFangsEntityModel() {
         this.field_3374.setRotationPoint(-5.0f, 22.0f, -5.0f);
-        this.field_3374.addCuboid(0.0f, 0.0f, 0.0f, 10, 12, 10);
+        this.field_3374.addCuboid(0.0f, 0.0f, 0.0f, 10.0f, 12.0f, 10.0f);
         this.field_3376 = new ModelPart(this, 40, 0);
         this.field_3376.setRotationPoint(1.5f, 22.0f, -4.0f);
-        this.field_3376.addCuboid(0.0f, 0.0f, 0.0f, 4, 14, 8);
+        this.field_3376.addCuboid(0.0f, 0.0f, 0.0f, 4.0f, 14.0f, 8.0f);
         this.field_3375 = new ModelPart(this, 40, 0);
         this.field_3375.setRotationPoint(-1.5f, 22.0f, 4.0f);
-        this.field_3375.addCuboid(0.0f, 0.0f, 0.0f, 4, 14, 8);
+        this.field_3375.addCuboid(0.0f, 0.0f, 0.0f, 4.0f, 14.0f, 8.0f);
     }
 
     @Override

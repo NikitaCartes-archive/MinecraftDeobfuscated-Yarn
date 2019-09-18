@@ -61,7 +61,7 @@ implements AutoCloseable {
         RenderSystem.scalef(0.00390625f, 0.00390625f, 0.00390625f);
         RenderSystem.translatef(8.0f, 8.0f, 8.0f);
         RenderSystem.matrixMode(5888);
-        this.client.getTextureManager().bindTexture(this.textureIdentifier);
+        this.client.getTextureManager().method_22813(this.textureIdentifier);
         RenderSystem.texParameter(3553, 10241, 9729);
         RenderSystem.texParameter(3553, 10240, 9729);
         RenderSystem.texParameter(3553, 10242, 10496);
@@ -83,7 +83,7 @@ implements AutoCloseable {
         float g = world.getAmbientLight(1.0f);
         float h = g * 0.95f + 0.05f;
         float i = this.client.player.method_3140();
-        float j = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? this.worldRenderer.getNightVisionStrength(this.client.player, f) : (i > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? i : 0.0f);
+        float j = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, f) : (i > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? i : 0.0f);
         for (int k = 0; k < 16; ++k) {
             for (int l = 0; l < 16; ++l) {
                 float x;

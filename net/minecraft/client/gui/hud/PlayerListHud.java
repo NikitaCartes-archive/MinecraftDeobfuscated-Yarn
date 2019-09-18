@@ -6,7 +6,6 @@ package net.minecraft.client.gui.hud;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Comparator;
 import java.util.List;
@@ -126,14 +125,14 @@ extends DrawableHelper {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.enableAlphaTest();
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+            RenderSystem.defaultBlendFunc();
             if (v >= list.size()) continue;
             PlayerListEntry playerListEntry2 = list.get(v);
             GameProfile gameProfile = playerListEntry2.getProfile();
             if (bl) {
                 PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
                 boolean bl22 = playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
-                this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
+                this.client.getTextureManager().method_22813(playerListEntry2.getSkinTexture());
                 z = 8 + (bl22 ? 8 : 0);
                 int aa = 8 * (bl22 ? -1 : 1);
                 DrawableHelper.blit(x, y, 8, 8, 8.0f, z, 8, aa, 64, 64);
@@ -167,19 +166,19 @@ extends DrawableHelper {
 
     protected void renderLatencyIcon(int i, int j, int k, PlayerListEntry playerListEntry) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+        this.client.getTextureManager().method_22813(GUI_ICONS_LOCATION);
         boolean l = false;
         int m = playerListEntry.getLatency() < 0 ? 5 : (playerListEntry.getLatency() < 150 ? 0 : (playerListEntry.getLatency() < 300 ? 1 : (playerListEntry.getLatency() < 600 ? 2 : (playerListEntry.getLatency() < 1000 ? 3 : 4))));
-        this.blitOffset += 100;
+        this.setBlitOffset(this.getBlitOffset() + 100);
         this.blit(j + i - 11, k, 0, 176 + m * 8, 10, 8);
-        this.blitOffset -= 100;
+        this.setBlitOffset(this.getBlitOffset() - 100);
     }
 
     private void renderScoreboardObjective(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {
         int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
         if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;
-            this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+            this.client.getTextureManager().method_22813(GUI_ICONS_LOCATION);
             long m = SystemUtil.getMeasuringTimeMs();
             if (this.showTime == playerListEntry.method_2976()) {
                 if (l < playerListEntry.method_2973()) {

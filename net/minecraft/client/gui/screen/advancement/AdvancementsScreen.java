@@ -4,7 +4,6 @@
 package net.minecraft.client.gui.screen.advancement;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
@@ -131,15 +130,15 @@ implements ClientAdvancementManager.Listener {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         GuiLighting.disable();
-        this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
+        this.minecraft.getTextureManager().method_22813(WINDOW_TEXTURE);
         this.blit(i, j, 0, 0, 252, 140);
         if (this.tabs.size() > 1) {
-            this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
+            this.minecraft.getTextureManager().method_22813(TABS_TEXTURE);
             for (AdvancementTab advancementTab : this.tabs.values()) {
                 advancementTab.drawBackground(i, j, advancementTab == this.selectedTab);
             }
             RenderSystem.enableRescaleNormal();
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+            RenderSystem.defaultBlendFunc();
             GuiLighting.enableForItems();
             for (AdvancementTab advancementTab : this.tabs.values()) {
                 advancementTab.drawIcon(i, j, this.itemRenderer);

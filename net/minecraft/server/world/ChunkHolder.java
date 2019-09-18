@@ -11,8 +11,6 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
@@ -105,18 +103,6 @@ public class ChunkHolder {
             return null;
         }
         return either.left().orElse(null);
-    }
-
-    @Nullable
-    @Environment(value=EnvType.CLIENT)
-    public ChunkStatus getCompletedStatus() {
-        for (int i = CHUNK_STATUSES.size() - 1; i >= 0; --i) {
-            ChunkStatus chunkStatus = CHUNK_STATUSES.get(i);
-            CompletableFuture<Either<Chunk, Unloaded>> completableFuture = this.getFuture(chunkStatus);
-            if (!completableFuture.getNow(UNLOADED_CHUNK).left().isPresent()) continue;
-            return chunkStatus;
-        }
-        return null;
     }
 
     @Nullable
@@ -241,11 +227,6 @@ public class ChunkHolder {
 
     private void updateFuture(CompletableFuture<? extends Either<? extends Chunk, Unloaded>> completableFuture) {
         this.future = this.future.thenCombine(completableFuture, (chunk2, either) -> either.map(chunk -> chunk, unloaded -> chunk2));
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public LevelType getLevelType() {
-        return ChunkHolder.getLevelType(this.level);
     }
 
     public ChunkPos getPos() {

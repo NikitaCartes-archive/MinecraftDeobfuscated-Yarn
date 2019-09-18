@@ -64,7 +64,8 @@ implements AutoCloseable {
     private int framerateLimit;
     private boolean field_16517;
 
-    public Window(WindowEventHandler windowEventHandler, MonitorTracker monitorTracker, WindowSettings windowSettings, String string, String string2) {
+    public Window(WindowEventHandler windowEventHandler, MonitorTracker monitorTracker, WindowSettings windowSettings, @Nullable String string, String string2) {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         this.monitorTracker = monitorTracker;
         this.throwExceptionOnGlError();
         this.setPhase("Pre startup");
@@ -106,6 +107,7 @@ implements AutoCloseable {
     }
 
     public int method_22092() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         return GLX._getRefreshRate(this);
     }
 
@@ -114,6 +116,7 @@ implements AutoCloseable {
     }
 
     public static void method_4492(BiConsumer<Integer, String> biConsumer) {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
             PointerBuffer pointerBuffer = memoryStack.mallocPointer(1);
             int i = GLFW.glfwGetError(pointerBuffer);
@@ -126,6 +129,7 @@ implements AutoCloseable {
     }
 
     public void method_4493(boolean bl) {
+        RenderSystem.assertThread(RenderSystem::isOnGameThread);
         RenderSystem.clear(256, bl);
         RenderSystem.matrixMode(5889);
         RenderSystem.loadIdentity();
@@ -136,6 +140,7 @@ implements AutoCloseable {
     }
 
     public void setIcon(InputStream inputStream, InputStream inputStream2) {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
             if (inputStream == null) {
                 throw new FileNotFoundException("icons/icon_16x16.png");
@@ -177,6 +182,7 @@ implements AutoCloseable {
      */
     @Nullable
     private ByteBuffer method_4510(InputStream inputStream, IntBuffer intBuffer, IntBuffer intBuffer2, IntBuffer intBuffer3) throws IOException {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         ByteBuffer byteBuffer = null;
         try {
             byteBuffer = TextureUtil.readResource(inputStream);
@@ -195,14 +201,17 @@ implements AutoCloseable {
     }
 
     private void throwExceptionOnGlError() {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         GLFW.glfwSetErrorCallback(Window::throwExceptionForGlError);
     }
 
     private static void throwExceptionForGlError(int i, long l) {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         throw new IllegalStateException("GLFW error " + i + ": " + MemoryUtil.memUTF8(l));
     }
 
     public void logGlError(int i, long l) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         String string = MemoryUtil.memUTF8(l);
         LOGGER.error("########## GL ERROR ##########");
         LOGGER.error("@ {}", (Object)this.phase);
@@ -217,12 +226,14 @@ implements AutoCloseable {
     }
 
     public void setVsync(boolean bl) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         this.field_16517 = bl;
         GLFW.glfwSwapInterval(bl ? 1 : 0);
     }
 
     @Override
     public void close() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         Callbacks.glfwFreeCallbacks(this.handle);
         this.errorCallback.close();
         GLFW.glfwDestroyWindow(this.handle);
@@ -251,6 +262,7 @@ implements AutoCloseable {
     }
 
     private void method_4483() {
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         int[] is = new int[1];
         int[] js = new int[1];
         GLFW.glfwGetFramebufferSize(this.handle, is, js);
@@ -318,6 +330,7 @@ implements AutoCloseable {
 
     private void method_4479() {
         boolean bl;
+        RenderSystem.assertThread(RenderSystem::isInInitPhase);
         boolean bl2 = bl = GLFW.glfwGetWindowMonitor(this.handle) != 0L;
         if (this.fullscreen) {
             Monitor monitor = this.monitorTracker.getMonitor(this);
@@ -352,6 +365,7 @@ implements AutoCloseable {
     }
 
     private void method_4485(boolean bl) {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         try {
             this.method_4479();
             this.windowEventHandler.onResolutionChanged();

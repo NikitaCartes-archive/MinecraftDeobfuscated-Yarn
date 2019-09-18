@@ -251,10 +251,6 @@ RangedAttackMob {
         return vector3f2;
     }
 
-    public BasicInventory getInventory() {
-        return this.inventory;
-    }
-
     @Override
     protected void loot(ItemEntity itemEntity) {
         ItemStack itemStack = itemEntity.getStack();
@@ -310,18 +306,8 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean cannotDespawn() {
-        return super.cannotDespawn() && this.getInventory().isInvEmpty();
-    }
-
-    @Override
     public SoundEvent getCelebratingSound() {
         return SoundEvents.ENTITY_PILLAGER_CELEBRATE;
-    }
-
-    @Override
-    public boolean canImmediatelyDespawn(double d) {
-        return super.canImmediatelyDespawn(d) && this.getInventory().isInvEmpty();
     }
 }
 

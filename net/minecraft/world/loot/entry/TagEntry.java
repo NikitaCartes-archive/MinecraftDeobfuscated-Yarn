@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Consumer;
+import net.minecraft.class_4570;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -16,7 +17,6 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.LootChoice;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.entry.LeafEntry;
 import net.minecraft.world.loot.function.LootFunction;
@@ -26,8 +26,8 @@ extends LeafEntry {
     private final Tag<Item> name;
     private final boolean expand;
 
-    private TagEntry(Tag<Item> tag, boolean bl, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-        super(i, j, lootConditions, lootFunctions);
+    private TagEntry(Tag<Item> tag, boolean bl, int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
+        super(i, j, args, lootFunctions);
         this.name = tag;
         this.expand = bl;
     }
@@ -62,7 +62,7 @@ extends LeafEntry {
     }
 
     public static LeafEntry.Builder<?> builder(Tag<Item> tag) {
-        return TagEntry.builder((int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) -> new TagEntry(tag, true, i, j, lootConditions, lootFunctions));
+        return TagEntry.builder((int i, int j, class_4570[] args, LootFunction[] lootFunctions) -> new TagEntry(tag, true, i, j, args, lootFunctions));
     }
 
     public static class Serializer
@@ -77,19 +77,19 @@ extends LeafEntry {
             jsonObject.addProperty("expand", tagEntry.expand);
         }
 
-        protected TagEntry method_450(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+        protected TagEntry method_450(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
             Tag<Item> tag = ItemTags.getContainer().get(identifier);
             if (tag == null) {
                 throw new JsonParseException("Can't find tag: " + identifier);
             }
             boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
-            return new TagEntry(tag, bl, i, j, lootConditions, lootFunctions);
+            return new TagEntry(tag, bl, i, j, args, lootFunctions);
         }
 
         @Override
-        protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.method_450(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+        protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
+            return this.method_450(jsonObject, jsonDeserializationContext, i, j, args, lootFunctions);
         }
     }
 }

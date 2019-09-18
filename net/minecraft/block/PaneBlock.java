@@ -6,7 +6,6 @@ package net.minecraft.block;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalConnectedBlock;
 import net.minecraft.fluid.FluidState;
@@ -70,11 +69,6 @@ extends HorizontalConnectedBlock {
     public final boolean connectsTo(BlockState blockState, boolean bl) {
         Block block = blockState.getBlock();
         return !PaneBlock.canConnect(block) && bl || block instanceof PaneBlock;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override

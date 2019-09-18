@@ -6,7 +6,6 @@ package net.minecraft.block;
 import com.google.common.base.MoreObjects;
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -218,11 +217,6 @@ extends Block {
     @Override
     public boolean emitsRedstonePower(BlockState blockState) {
         return true;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 
     @Override

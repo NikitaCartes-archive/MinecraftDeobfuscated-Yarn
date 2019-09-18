@@ -37,7 +37,7 @@ extends FeatureRenderer<T, VillagerResemblingModel<T>> {
         Item item = itemStack.getItem();
         Block block = Block.getBlockFromItem(item);
         RenderSystem.pushMatrix();
-        boolean bl2 = bl = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
+        boolean bl2 = bl = this.itemRenderer.hasDepthInGui(itemStack) && BlockRenderLayer.method_22715(block.getDefaultState()) == BlockRenderLayer.field_9179;
         if (bl) {
             RenderSystem.depthMask(false);
         }

@@ -36,8 +36,8 @@ extends AbstractTexture {
     @Override
     public void load(ResourceManager resourceManager) throws IOException {
         try (Resource resource = resourceManager.getResource(this.filename);
-             NativeImage nativeImage = NativeImage.read(resource.getInputStream());
-             NativeImage nativeImage2 = new NativeImage(nativeImage.getWidth(), nativeImage.getHeight(), false);){
+             NativeImage nativeImage = NativeImage.read(resource.getInputStream());){
+            NativeImage nativeImage2 = new NativeImage(nativeImage.getWidth(), nativeImage.getHeight(), false);
             nativeImage2.copyFrom(nativeImage);
             for (int i = 0; i < 17 && i < this.patternNames.size() && i < this.dyes.size(); ++i) {
                 String string = this.patternNames.get(i);
@@ -59,13 +59,21 @@ extends AbstractTexture {
                     continue;
                 }
             }
-            TextureUtil.prepareImage(this.getGlId(), nativeImage2.getWidth(), nativeImage2.getHeight());
-            RenderSystem.pixelTransfer(3357, Float.MAX_VALUE);
-            nativeImage2.upload(0, 0, 0, false);
-            RenderSystem.pixelTransfer(3357, 0.0f);
+            if (!RenderSystem.isOnRenderThreadOrInit()) {
+                RenderSystem.recordRenderCall(() -> this.method_22803(nativeImage2));
+            } else {
+                this.method_22803(nativeImage2);
+            }
         } catch (IOException iOException) {
             LOGGER.error("Couldn't load layered color mask image", (Throwable)iOException);
         }
+    }
+
+    private void method_22803(NativeImage nativeImage) {
+        TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+        RenderSystem.pixelTransfer(3357, Float.MAX_VALUE);
+        nativeImage.upload(0, 0, 0, true);
+        RenderSystem.pixelTransfer(3357, 0.0f);
     }
 }
 

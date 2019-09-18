@@ -145,17 +145,20 @@ extends HostileEntity {
         private final T actor;
         private final double leaderSpeed;
         private final double fellowSpeed;
+        private long field_20701;
 
         public PatrolGoal(T patrolEntity, double d, double e) {
             this.actor = patrolEntity;
             this.leaderSpeed = d;
             this.fellowSpeed = e;
+            this.field_20701 = -1L;
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
         @Override
         public boolean canStart() {
-            return ((PatrolEntity)this.actor).isRaidCenterSet() && ((MobEntity)this.actor).getTarget() == null && !((Entity)this.actor).hasPassengers() && ((PatrolEntity)this.actor).hasPatrolTarget();
+            boolean bl = ((PatrolEntity)this.actor).world.getTime() < this.field_20701;
+            return ((PatrolEntity)this.actor).isRaidCenterSet() && ((MobEntity)this.actor).getTarget() == null && !((Entity)this.actor).hasPassengers() && ((PatrolEntity)this.actor).hasPatrolTarget() && !bl;
         }
 
         @Override
@@ -182,7 +185,9 @@ extends HostileEntity {
                     Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
                     BlockPos blockPos = new BlockPos(vec3d4);
                     if (!entityNavigation.startMovingTo((blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos)).getX(), blockPos.getY(), blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
-                        this.wander();
+                        if (!this.wander()) {
+                            this.field_20701 = ((PatrolEntity)this.actor).world.getTime() + 200L;
+                        }
                     } else if (bl) {
                         for (PatrolEntity patrolEntity : list) {
                             patrolEntity.setPatrolTarget(blockPos);
@@ -198,10 +203,10 @@ extends HostileEntity {
             return ((PatrolEntity)this.actor).world.getEntities(PatrolEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf((Entity)this.actor));
         }
 
-        private void wander() {
+        private boolean wander() {
             Random random = ((LivingEntity)this.actor).getRand();
             BlockPos blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos((Entity)this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-            ((MobEntity)this.actor).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
+            return ((MobEntity)this.actor).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
         }
     }
 }

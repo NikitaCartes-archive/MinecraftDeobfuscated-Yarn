@@ -30,15 +30,15 @@ extends EntityModel<BoatEntity> {
         int k = 20;
         int l = 4;
         int m = 28;
-        this.body[0].addCuboid(-14.0f, -9.0f, -3.0f, 28, 16, 3, 0.0f);
+        this.body[0].addCuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f, 0.0f);
         this.body[0].setRotationPoint(0.0f, 3.0f, 1.0f);
-        this.body[1].addCuboid(-13.0f, -7.0f, -1.0f, 18, 6, 2, 0.0f);
+        this.body[1].addCuboid(-13.0f, -7.0f, -1.0f, 18.0f, 6.0f, 2.0f, 0.0f);
         this.body[1].setRotationPoint(-15.0f, 4.0f, 4.0f);
-        this.body[2].addCuboid(-8.0f, -7.0f, -1.0f, 16, 6, 2, 0.0f);
+        this.body[2].addCuboid(-8.0f, -7.0f, -1.0f, 16.0f, 6.0f, 2.0f, 0.0f);
         this.body[2].setRotationPoint(15.0f, 4.0f, 0.0f);
-        this.body[3].addCuboid(-14.0f, -7.0f, -1.0f, 28, 6, 2, 0.0f);
+        this.body[3].addCuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f, 0.0f);
         this.body[3].setRotationPoint(0.0f, 4.0f, -9.0f);
-        this.body[4].addCuboid(-14.0f, -7.0f, -1.0f, 28, 6, 2, 0.0f);
+        this.body[4].addCuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f, 0.0f);
         this.body[4].setRotationPoint(0.0f, 4.0f, 9.0f);
         this.body[0].pitch = 1.5707964f;
         this.body[1].yaw = 4.712389f;
@@ -52,7 +52,7 @@ extends EntityModel<BoatEntity> {
         this.paddles[0].roll = 0.19634955f;
         this.paddles[1].roll = 0.19634955f;
         this.bottom = new ModelPart(this, 0, 0).setTextureSize(128, 64);
-        this.bottom.addCuboid(-14.0f, -9.0f, -3.0f, 28, 16, 3, 0.0f);
+        this.bottom.addCuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f, 0.0f);
         this.bottom.setRotationPoint(0.0f, -3.0f, 1.0f);
         this.bottom.pitch = 1.5707964f;
     }
@@ -80,8 +80,8 @@ extends EntityModel<BoatEntity> {
         int j = 7;
         int k = 6;
         float f = -5.0f;
-        modelPart.addCuboid(-1.0f, 0.0f, -5.0f, 2, 2, 18);
-        modelPart.addCuboid(bl ? -1.001f : 0.001f, -3.0f, 8.0f, 1, 6, 7);
+        modelPart.addCuboid(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f);
+        modelPart.addCuboid(bl ? -1.001f : 0.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f);
         return modelPart;
     }
 

@@ -184,13 +184,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.client.textRenderer.draw(string2, k + 32 + 3, j + this.client.textRenderer.fontHeight + 3, 0x808080);
             this.client.textRenderer.draw(string3, k + 32 + 3, j + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3, 0x808080);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
+            this.client.getTextureManager().method_22813(this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
             RenderSystem.enableBlend();
             DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 32, 32);
             RenderSystem.disableBlend();
             if (this.client.options.touchscreen || bl) {
                 int q;
-                this.client.getTextureManager().bindTexture(WORLD_SELECTION_LOCATION);
+                this.client.getTextureManager().method_22813(WORLD_SELECTION_LOCATION);
                 DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 int p = n - k;

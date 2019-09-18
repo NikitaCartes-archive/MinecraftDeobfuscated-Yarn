@@ -49,7 +49,7 @@ extends AbstractContainerScreen<StonecutterContainer> {
     protected void drawBackground(float f, int i, int j) {
         this.renderBackground();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().bindTexture(TEXTURE);
+        this.minecraft.getTextureManager().method_22813(TEXTURE);
         int k = this.left;
         int l = this.top;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);

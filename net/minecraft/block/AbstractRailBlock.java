@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RailPlacementHelper;
 import net.minecraft.block.enums.RailShape;
@@ -122,11 +121,6 @@ extends Block {
     @Override
     public PistonBehavior getPistonBehavior(BlockState blockState) {
         return PistonBehavior.NORMAL;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

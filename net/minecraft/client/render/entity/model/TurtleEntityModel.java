@@ -22,27 +22,27 @@ extends QuadrupedEntityModel<T> {
         this.textureWidth = 128;
         this.textureHeight = 64;
         this.head = new ModelPart(this, 3, 0);
-        this.head.addCuboid(-3.0f, -1.0f, -3.0f, 6, 5, 6, 0.0f);
+        this.head.addCuboid(-3.0f, -1.0f, -3.0f, 6.0f, 5.0f, 6.0f, 0.0f);
         this.head.setRotationPoint(0.0f, 19.0f, -10.0f);
         this.body = new ModelPart(this);
-        this.body.setTextureOffset(7, 37).addCuboid(-9.5f, 3.0f, -10.0f, 19, 20, 6, 0.0f);
-        this.body.setTextureOffset(31, 1).addCuboid(-5.5f, 3.0f, -13.0f, 11, 18, 3, 0.0f);
+        this.body.setTextureOffset(7, 37).addCuboid(-9.5f, 3.0f, -10.0f, 19.0f, 20.0f, 6.0f, 0.0f);
+        this.body.setTextureOffset(31, 1).addCuboid(-5.5f, 3.0f, -13.0f, 11.0f, 18.0f, 3.0f, 0.0f);
         this.body.setRotationPoint(0.0f, 11.0f, -10.0f);
         this.field_3594 = new ModelPart(this);
-        this.field_3594.setTextureOffset(70, 33).addCuboid(-4.5f, 3.0f, -14.0f, 9, 18, 1, 0.0f);
+        this.field_3594.setTextureOffset(70, 33).addCuboid(-4.5f, 3.0f, -14.0f, 9.0f, 18.0f, 1.0f, 0.0f);
         this.field_3594.setRotationPoint(0.0f, 11.0f, -10.0f);
         boolean i = true;
         this.leg1 = new ModelPart(this, 1, 23);
-        this.leg1.addCuboid(-2.0f, 0.0f, 0.0f, 4, 1, 10, 0.0f);
+        this.leg1.addCuboid(-2.0f, 0.0f, 0.0f, 4.0f, 1.0f, 10.0f, 0.0f);
         this.leg1.setRotationPoint(-3.5f, 22.0f, 11.0f);
         this.leg2 = new ModelPart(this, 1, 12);
-        this.leg2.addCuboid(-2.0f, 0.0f, 0.0f, 4, 1, 10, 0.0f);
+        this.leg2.addCuboid(-2.0f, 0.0f, 0.0f, 4.0f, 1.0f, 10.0f, 0.0f);
         this.leg2.setRotationPoint(3.5f, 22.0f, 11.0f);
         this.leg3 = new ModelPart(this, 27, 30);
-        this.leg3.addCuboid(-13.0f, 0.0f, -2.0f, 13, 1, 5, 0.0f);
+        this.leg3.addCuboid(-13.0f, 0.0f, -2.0f, 13.0f, 1.0f, 5.0f, 0.0f);
         this.leg3.setRotationPoint(-5.0f, 21.0f, -4.0f);
         this.leg4 = new ModelPart(this, 27, 24);
-        this.leg4.addCuboid(0.0f, 0.0f, -2.0f, 13, 1, 5, 0.0f);
+        this.leg4.addCuboid(0.0f, 0.0f, -2.0f, 13.0f, 1.0f, 5.0f, 0.0f);
         this.leg4.setRotationPoint(5.0f, 21.0f, -4.0f);
     }
 

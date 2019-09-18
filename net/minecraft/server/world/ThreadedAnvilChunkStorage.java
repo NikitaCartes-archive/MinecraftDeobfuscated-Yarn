@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,8 +39,6 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
@@ -201,26 +200,6 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
             return Math.min(chunkHolder.getCompletedLevel(), LevelPrioritizedQueue.LEVEL_COUNT - 1);
         };
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public String getDebugString(ChunkPos chunkPos) {
-        ChunkHolder chunkHolder = this.getChunkHolder(chunkPos.toLong());
-        if (chunkHolder == null) {
-            return "null";
-        }
-        String string = chunkHolder.getLevel() + "\n";
-        ChunkStatus chunkStatus = chunkHolder.getCompletedStatus();
-        Chunk chunk = chunkHolder.getCompletedChunk();
-        if (chunkStatus != null) {
-            string = string + "St: \u00a7" + chunkStatus.getIndex() + chunkStatus + '\u00a7' + "r\n";
-        }
-        if (chunk != null) {
-            string = string + "Ch: \u00a7" + chunk.getStatus().getIndex() + chunk.getStatus() + '\u00a7' + "r\n";
-        }
-        ChunkHolder.LevelType levelType = chunkHolder.getLevelType();
-        string = string + "\u00a7" + levelType.ordinal() + (Object)((Object)levelType);
-        return string + '\u00a7' + "r";
     }
 
     private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> createChunkRegionFuture(ChunkPos chunkPos, final int i, IntFunction<ChunkStatus> intFunction) {
@@ -860,8 +839,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
             entityTracker.entry.method_18756();
         }
-        for (EntityTracker entityTracker : this.entityTrackers.values()) {
-            entityTracker.updateCameraPosition(list);
+        if (!list.isEmpty()) {
+            for (EntityTracker entityTracker : this.entityTrackers.values()) {
+                entityTracker.updateCameraPosition(list);
+            }
         }
     }
 
@@ -974,7 +955,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 return;
             }
             Vec3d vec3d = new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z).subtract(this.entry.method_18759());
-            int i = Math.min(this.maxDistance, (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
+            int i = Math.min(this.method_22844(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
             boolean bl2 = bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(serverPlayerEntity);
             if (bl) {
                 ChunkPos chunkPos;
@@ -989,6 +970,17 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             } else if (this.playersTracking.remove(serverPlayerEntity)) {
                 this.entry.stopTracking(serverPlayerEntity);
             }
+        }
+
+        private int method_22844() {
+            Collection<Entity> collection = this.entity.getPassengersDeep();
+            int i = this.maxDistance;
+            for (Entity entity : collection) {
+                int j = entity.getType().getMaxTrackDistance() * 16;
+                if (j <= i) continue;
+                i = j;
+            }
+            return i;
         }
 
         public void updateCameraPosition(List<ServerPlayerEntity> list) {

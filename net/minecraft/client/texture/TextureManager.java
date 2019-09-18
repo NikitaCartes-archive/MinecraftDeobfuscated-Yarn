@@ -5,6 +5,7 @@ package net.minecraft.client.texture;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureManager
@@ -49,7 +51,15 @@ ResourceReloadListener {
         this.resourceContainer = resourceManager;
     }
 
-    public void bindTexture(Identifier identifier) {
+    public void method_22813(Identifier identifier) {
+        if (!RenderSystem.isOnRenderThread()) {
+            RenderSystem.recordRenderCall(() -> this.bindTexture(identifier));
+        } else {
+            this.bindTexture(identifier);
+        }
+    }
+
+    private void bindTexture(Identifier identifier) {
         Texture texture = this.textures.get(identifier);
         if (texture == null) {
             texture = new ResourceTexture(identifier);
@@ -89,6 +99,7 @@ ResourceReloadListener {
         return bl;
     }
 
+    @Nullable
     public Texture getTexture(Identifier identifier) {
         return this.textures.get(identifier);
     }
@@ -111,9 +122,13 @@ ResourceReloadListener {
         if (!this.textures.containsKey(identifier)) {
             AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
             this.textures.put(identifier, asyncTexture);
-            return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), MinecraftClient.getInstance());
+            return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), TextureManager::method_22812);
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    private static void method_22812(Runnable runnable) {
+        MinecraftClient.getInstance().execute(() -> RenderSystem.recordRenderCall(runnable::run));
     }
 
     @Override
@@ -145,7 +160,7 @@ ResourceReloadListener {
                 }
                 texture.registerTexture(this, resourceManager, identifier, executor2);
             }
-        }, executor2);
+        }, runnable -> RenderSystem.recordRenderCall(runnable::run));
     }
 }
 

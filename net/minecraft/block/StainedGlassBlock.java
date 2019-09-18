@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.block.ColoredBlock;
 import net.minecraft.util.DyeColor;
 
@@ -22,11 +21,6 @@ implements ColoredBlock {
     @Override
     public DyeColor getColor() {
         return this.color;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
     }
 }
 

@@ -80,10 +80,7 @@ implements FluidDrainable {
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean isSideInvisible(BlockState blockState, BlockState blockState2, Direction direction) {
-        if (blockState2.getFluidState().getFluid().matchesType(this.fluid)) {
-            return true;
-        }
-        return super.isOpaque(blockState);
+        return blockState2.getFluidState().getFluid().matchesType(this.fluid);
     }
 
     @Override

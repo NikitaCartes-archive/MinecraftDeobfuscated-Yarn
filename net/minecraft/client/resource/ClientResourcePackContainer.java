@@ -47,7 +47,7 @@ extends ResourcePackContainer {
         if (this.iconId == null) {
             this.iconId = this.icon == null ? new Identifier("textures/misc/unknown_pack.png") : textureManager.registerDynamicTexture("texturepackicon", new NativeImageBackedTexture(this.icon));
         }
-        textureManager.bindTexture(this.iconId);
+        textureManager.method_22813(this.iconId);
     }
 
     @Override

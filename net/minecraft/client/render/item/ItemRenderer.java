@@ -117,7 +117,7 @@ implements SynchronousResourceReloadListener {
         RenderSystem.depthFunc(514);
         RenderSystem.disableLighting();
         RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
-        textureManager.bindTexture(ENCHANTMENT_GLINT_TEX);
+        textureManager.method_22813(ENCHANTMENT_GLINT_TEX);
         RenderSystem.matrixMode(5890);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(i, i, i);
@@ -138,7 +138,7 @@ implements SynchronousResourceReloadListener {
         RenderSystem.enableLighting();
         RenderSystem.depthFunc(515);
         RenderSystem.depthMask(true);
-        textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
     }
 
     private void postNormalQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad) {
@@ -148,6 +148,7 @@ implements SynchronousResourceReloadListener {
 
     private void renderQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad, int i) {
         bufferBuilder.putVertexData(bakedQuad.getVertexData());
+        bufferBuilder.brightness(0xF000F0, 0xF000F0, 0xF000F0, 0xF000F0);
         bufferBuilder.setQuadColor(i);
         this.postNormalQuad(bufferBuilder, bakedQuad);
     }
@@ -221,13 +222,13 @@ implements SynchronousResourceReloadListener {
         if (itemStack.isEmpty()) {
             return;
         }
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableRescaleNormal();
-        RenderSystem.alphaFunc(516, 0.1f);
+        RenderSystem.defaultAlphaFunc();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.defaultBlendFunc();
         RenderSystem.pushMatrix();
         ModelTransformation modelTransformation = bakedModel.getTransformation();
         ModelTransformation.applyGl(modelTransformation.getTransformation(type), bl);
@@ -239,7 +240,7 @@ implements SynchronousResourceReloadListener {
         RenderSystem.popMatrix();
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
     }
 
@@ -253,11 +254,11 @@ implements SynchronousResourceReloadListener {
 
     protected void renderGuiItemModel(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
         RenderSystem.pushMatrix();
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
         RenderSystem.enableRescaleNormal();
         RenderSystem.enableAlphaTest();
-        RenderSystem.alphaFunc(516, 0.1f);
+        RenderSystem.defaultAlphaFunc();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -268,7 +269,7 @@ implements SynchronousResourceReloadListener {
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableLighting();
         RenderSystem.popMatrix();
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.textureManager.method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
     }
 

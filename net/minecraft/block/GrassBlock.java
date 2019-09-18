@@ -6,7 +6,6 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
@@ -61,16 +60,6 @@ implements Fertilizable {
             if (!blockState4.canPlaceAt(serverWorld, blockPos3)) continue;
             serverWorld.setBlockState(blockPos3, blockState4, 3);
         }
-    }
-
-    @Override
-    public boolean isOpaque(BlockState blockState) {
-        return true;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT_MIPPED;
     }
 }
 

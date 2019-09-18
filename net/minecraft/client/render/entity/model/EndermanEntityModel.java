@@ -19,24 +19,24 @@ extends BipedEntityModel<T> {
         super(0.0f, -14.0f, 64, 32);
         float g = -14.0f;
         this.headwear = new ModelPart(this, 0, 16);
-        this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8, 8, 8, f - 0.5f);
+        this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f - 0.5f);
         this.headwear.setRotationPoint(0.0f, -14.0f, 0.0f);
         this.body = new ModelPart(this, 32, 16);
-        this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8, 12, 4, f);
+        this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
         this.body.setRotationPoint(0.0f, -14.0f, 0.0f);
         this.rightArm = new ModelPart(this, 56, 0);
-        this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2, 30, 2, f);
+        this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
         this.rightArm.setRotationPoint(-3.0f, -12.0f, 0.0f);
         this.leftArm = new ModelPart(this, 56, 0);
         this.leftArm.mirror = true;
-        this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2, 30, 2, f);
+        this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
         this.leftArm.setRotationPoint(5.0f, -12.0f, 0.0f);
         this.rightLeg = new ModelPart(this, 56, 0);
-        this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2, 30, 2, f);
+        this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
         this.rightLeg.setRotationPoint(-2.0f, -2.0f, 0.0f);
         this.leftLeg = new ModelPart(this, 56, 0);
         this.leftLeg.mirror = true;
-        this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2, 30, 2, f);
+        this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
         this.leftLeg.setRotationPoint(2.0f, -2.0f, 0.0f);
     }
 

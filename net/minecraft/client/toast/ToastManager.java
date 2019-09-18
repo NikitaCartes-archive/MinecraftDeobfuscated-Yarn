@@ -35,7 +35,7 @@ extends DrawableHelper {
         GuiLighting.disable();
         for (int i = 0; i < this.visibleEntries.length; ++i) {
             Entry<?> entry = this.visibleEntries[i];
-            if (entry != null && entry.draw(this.client.window.getScaledWidth(), i)) {
+            if (entry != null && entry.draw(this.client.method_22683().getScaledWidth(), i)) {
                 this.visibleEntries[i] = null;
             }
             if (this.visibleEntries[i] != null || this.toastQueue.isEmpty()) continue;

@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -68,11 +67,6 @@ implements ColoredBlock {
         if (itemStack.hasCustomName() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BeaconBlockEntity) {
             ((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getName());
         }
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 }
 

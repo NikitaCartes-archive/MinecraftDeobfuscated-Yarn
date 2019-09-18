@@ -3,106 +3,53 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4558;
+import net.minecraft.class_4559;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.StateFactory;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class EnterBlockCriterion
-implements Criterion<Conditions> {
+extends class_4558<Conditions> {
     private static final Identifier ID = new Identifier("enter_block");
-    private final Map<PlayerAdvancementTracker, Handler> handlers = Maps.newHashMap();
 
     @Override
     public Identifier getId() {
         return ID;
     }
 
-    @Override
-    public void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.handlers.get(playerAdvancementTracker);
-        if (handler == null) {
-            handler = new Handler(playerAdvancementTracker);
-            this.handlers.put(playerAdvancementTracker, handler);
-        }
-        handler.addConditon(conditionsContainer);
-    }
-
-    @Override
-    public void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-        Handler handler = this.handlers.get(playerAdvancementTracker);
-        if (handler != null) {
-            handler.removeCondition(conditionsContainer);
-            if (handler.isEmpty()) {
-                this.handlers.remove(playerAdvancementTracker);
-            }
-        }
-    }
-
-    @Override
-    public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-        this.handlers.remove(playerAdvancementTracker);
-    }
-
     public Conditions method_8883(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        Block block = null;
+        Block block = EnterBlockCriterion.method_22466(jsonObject);
+        class_4559 lv = class_4559.method_22519(jsonObject.get("state"));
+        if (block != null) {
+            lv.method_22516(block.getStateFactory(), string -> {
+                throw new JsonSyntaxException("Block " + block + " has no property " + string);
+            });
+        }
+        return new Conditions(block, lv);
+    }
+
+    @Nullable
+    private static Block method_22466(JsonObject jsonObject) {
         if (jsonObject.has("block")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-            block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
+            return (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
         }
-        HashMap<Property<?>, ?> map = null;
-        if (jsonObject.has("state")) {
-            if (block == null) {
-                throw new JsonSyntaxException("Can't define block state without a specific block type");
-            }
-            StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
-            for (Map.Entry<String, JsonElement> entry : JsonHelper.getObject(jsonObject, "state").entrySet()) {
-                Property<?> property = stateFactory.getProperty(entry.getKey());
-                if (property == null) {
-                    throw new JsonSyntaxException("Unknown block state property '" + entry.getKey() + "' for block '" + Registry.BLOCK.getId(block) + "'");
-                }
-                String string = JsonHelper.asString(entry.getValue(), entry.getKey());
-                Optional<?> optional = property.getValue(string);
-                if (optional.isPresent()) {
-                    if (map == null) {
-                        map = Maps.newHashMap();
-                    }
-                    map.put(property, optional.get());
-                    continue;
-                }
-                throw new JsonSyntaxException("Invalid block state value '" + string + "' for property '" + entry.getKey() + "' on block '" + Registry.BLOCK.getId(block) + "'");
-            }
-        }
-        return new Conditions(block, map);
+        return null;
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
-        Handler handler = this.handlers.get(serverPlayerEntity.getAdvancementManager());
-        if (handler != null) {
-            handler.handle(blockState);
-        }
+        this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState));
     }
 
     @Override
@@ -110,56 +57,19 @@ implements Criterion<Conditions> {
         return this.method_8883(jsonObject, jsonDeserializationContext);
     }
 
-    static class Handler {
-        private final PlayerAdvancementTracker manager;
-        private final Set<Criterion.ConditionsContainer<Conditions>> conditions = Sets.newHashSet();
-
-        public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-            this.manager = playerAdvancementTracker;
-        }
-
-        public boolean isEmpty() {
-            return this.conditions.isEmpty();
-        }
-
-        public void addConditon(Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-            this.conditions.add(conditionsContainer);
-        }
-
-        public void removeCondition(Criterion.ConditionsContainer<Conditions> conditionsContainer) {
-            this.conditions.remove(conditionsContainer);
-        }
-
-        public void handle(BlockState blockState) {
-            ArrayList<Criterion.ConditionsContainer<Conditions>> list = null;
-            for (Criterion.ConditionsContainer<Conditions> conditionsContainer : this.conditions) {
-                if (!conditionsContainer.getConditions().matches(blockState)) continue;
-                if (list == null) {
-                    list = Lists.newArrayList();
-                }
-                list.add(conditionsContainer);
-            }
-            if (list != null) {
-                for (Criterion.ConditionsContainer<Conditions> conditionsContainer : list) {
-                    conditionsContainer.apply(this.manager);
-                }
-            }
-        }
-    }
-
     public static class Conditions
     extends AbstractCriterionConditions {
         private final Block block;
-        private final Map<Property<?>, Object> state;
+        private final class_4559 state;
 
-        public Conditions(@Nullable Block block, @Nullable Map<Property<?>, Object> map) {
+        public Conditions(@Nullable Block block, class_4559 arg) {
             super(ID);
             this.block = block;
-            this.state = map;
+            this.state = arg;
         }
 
         public static Conditions block(Block block) {
-            return new Conditions(block, null);
+            return new Conditions(block, class_4559.field_20736);
         }
 
         @Override
@@ -167,14 +77,8 @@ implements Criterion<Conditions> {
             JsonObject jsonObject = new JsonObject();
             if (this.block != null) {
                 jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
-                if (this.state != null && !this.state.isEmpty()) {
-                    JsonObject jsonObject2 = new JsonObject();
-                    for (Map.Entry<Property<?>, Object> entry : this.state.entrySet()) {
-                        jsonObject2.addProperty(entry.getKey().getName(), SystemUtil.getValueAsString(entry.getKey(), entry.getValue()));
-                    }
-                    jsonObject.add("state", jsonObject2);
-                }
             }
+            jsonObject.add("state", this.state.method_22513());
             return jsonObject;
         }
 
@@ -182,13 +86,7 @@ implements Criterion<Conditions> {
             if (this.block != null && blockState.getBlock() != this.block) {
                 return false;
             }
-            if (this.state != null) {
-                for (Map.Entry<Property<?>, Object> entry : this.state.entrySet()) {
-                    if (blockState.get(entry.getKey()) == entry.getValue()) continue;
-                    return false;
-                }
-            }
-            return true;
+            return this.state.method_22514(blockState);
         }
     }
 }

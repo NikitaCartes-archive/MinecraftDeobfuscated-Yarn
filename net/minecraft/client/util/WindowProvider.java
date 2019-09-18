@@ -10,6 +10,7 @@ import net.minecraft.client.WindowSettings;
 import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.MonitorTracker;
 import net.minecraft.client.util.Window;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public final class WindowProvider
@@ -22,7 +23,7 @@ implements AutoCloseable {
         this.monitorTracker = new MonitorTracker(Monitor::new);
     }
 
-    public Window createWindow(WindowSettings windowSettings, String string, String string2) {
+    public Window createWindow(WindowSettings windowSettings, @Nullable String string, String string2) {
         return new Window(this.client, this.monitorTracker, windowSettings, string, string2);
     }
 

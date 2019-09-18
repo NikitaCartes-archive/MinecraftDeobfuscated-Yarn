@@ -78,11 +78,6 @@ public class PathNode {
         return f + g + h;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public BlockPos getPos() {
-        return new BlockPos(this.x, this.y, this.z);
-    }
-
     public boolean equals(Object object) {
         if (object instanceof PathNode) {
             PathNode pathNode = (PathNode)object;

@@ -21,6 +21,10 @@ public class FluidTags {
         ++latestVersion;
     }
 
+    public static TagContainer<Fluid> method_22448() {
+        return container;
+    }
+
     private static Tag<Fluid> register(String string) {
         return new CachingTag(new Identifier(string));
     }

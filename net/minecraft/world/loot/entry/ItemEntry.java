@@ -7,13 +7,13 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Consumer;
+import net.minecraft.class_4570;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.entry.LeafEntry;
 import net.minecraft.world.loot.function.LootFunction;
@@ -22,8 +22,8 @@ public class ItemEntry
 extends LeafEntry {
     private final Item item;
 
-    private ItemEntry(Item item, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-        super(i, j, lootConditions, lootFunctions);
+    private ItemEntry(Item item, int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
+        super(i, j, args, lootFunctions);
         this.item = item;
     }
 
@@ -33,7 +33,7 @@ extends LeafEntry {
     }
 
     public static LeafEntry.Builder<?> builder(ItemConvertible itemConvertible) {
-        return ItemEntry.builder((int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) -> new ItemEntry(itemConvertible.asItem(), i, j, lootConditions, lootFunctions));
+        return ItemEntry.builder((int i, int j, class_4570[] args, LootFunction[] lootFunctions) -> new ItemEntry(itemConvertible.asItem(), i, j, args, lootFunctions));
     }
 
     public static class Serializer
@@ -51,14 +51,14 @@ extends LeafEntry {
             jsonObject.addProperty("name", identifier.toString());
         }
 
-        protected ItemEntry method_413(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
+        protected ItemEntry method_413(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
             Item item = JsonHelper.getItem(jsonObject, "name");
-            return new ItemEntry(item, i, j, lootConditions, lootFunctions);
+            return new ItemEntry(item, i, j, args, lootFunctions);
         }
 
         @Override
-        protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            return this.method_413(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+        protected /* synthetic */ LeafEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
+            return this.method_413(jsonObject, jsonDeserializationContext, i, j, args, lootFunctions);
         }
     }
 }

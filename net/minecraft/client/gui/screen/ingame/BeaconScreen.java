@@ -140,7 +140,7 @@ extends AbstractContainerScreen<BeaconContainer> {
     @Override
     protected void drawBackground(float f, int i, int j) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().bindTexture(BG_TEX);
+        this.minecraft.getTextureManager().method_22813(BG_TEX);
         int k = (this.width - this.containerWidth) / 2;
         int l = (this.height - this.containerHeight) / 2;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -257,8 +257,8 @@ extends AbstractContainerScreen<BeaconContainer> {
 
         @Override
         protected void renderExtra() {
-            MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
-            EffectButtonWidget.blit(this.x + 2, this.y + 2, this.blitOffset, 18, 18, this.sprite);
+            MinecraftClient.getInstance().getTextureManager().method_22813(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+            EffectButtonWidget.blit(this.x + 2, this.y + 2, this.getBlitOffset(), 18, 18, this.sprite);
         }
     }
 
@@ -273,7 +273,7 @@ extends AbstractContainerScreen<BeaconContainer> {
 
         @Override
         public void renderButton(int i, int j, float f) {
-            MinecraftClient.getInstance().getTextureManager().bindTexture(BG_TEX);
+            MinecraftClient.getInstance().getTextureManager().method_22813(BG_TEX);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             int k = 219;
             int l = 0;

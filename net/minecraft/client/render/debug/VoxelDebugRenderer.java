@@ -3,18 +3,12 @@
  */
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.shape.VoxelShape;
 
 @Environment(value=EnvType.CLIENT)
@@ -26,30 +20,6 @@ implements DebugRenderer.Renderer {
 
     public VoxelDebugRenderer(MinecraftClient minecraftClient) {
         this.field_4540 = minecraftClient;
-    }
-
-    @Override
-    public void render(long l) {
-        Camera camera = this.field_4540.gameRenderer.getCamera();
-        double d = SystemUtil.getMeasuringTimeNano();
-        if (d - this.field_4541 > 1.0E8) {
-            this.field_4541 = d;
-            this.field_4542 = camera.getFocusedEntity().world.getCollisions(camera.getFocusedEntity(), camera.getFocusedEntity().getBoundingBox().expand(6.0), Collections.emptySet()).collect(Collectors.toList());
-        }
-        double e = camera.getPos().x;
-        double f = camera.getPos().y;
-        double g = camera.getPos().z;
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
-        RenderSystem.lineWidth(2.0f);
-        RenderSystem.disableTexture();
-        RenderSystem.depthMask(false);
-        for (VoxelShape voxelShape : this.field_4542) {
-            WorldRenderer.drawDebugShapeOutline(voxelShape, -e, -f, -g, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
-        RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
     }
 }
 

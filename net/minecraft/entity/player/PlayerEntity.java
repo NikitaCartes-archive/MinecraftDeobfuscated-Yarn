@@ -728,7 +728,7 @@ extends LivingEntity {
         if (damageSource == DamageSource.FALL) {
             return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
         }
-        if (damageSource == DamageSource.ON_FIRE || damageSource == DamageSource.IN_FIRE || damageSource == DamageSource.LAVA) {
+        if (damageSource.isFire()) {
             return !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
         }
         return false;

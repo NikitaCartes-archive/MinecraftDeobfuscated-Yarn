@@ -226,8 +226,8 @@ extends Screen {
 
             private void method_2198(int i, int j) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                SuperflatPresetsListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
-                DrawableHelper.blit(i, j, PresetsScreen.this.blitOffset, 0.0f, 0.0f, 18, 18, 128, 128);
+                SuperflatPresetsListWidget.this.minecraft.getTextureManager().method_22813(DrawableHelper.STATS_ICON_LOCATION);
+                DrawableHelper.blit(i, j, PresetsScreen.this.getBlitOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }
         }
     }

@@ -3,195 +3,90 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.ConduitBlockEntity;
-import net.minecraft.client.model.Model;
+import net.minecraft.class_4576;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
 public class ConduitBlockEntityRenderer
-extends BlockEntityRenderer<ConduitBlockEntity> {
-    private static final Identifier BASE_TEX = new Identifier("textures/entity/conduit/base.png");
-    private static final Identifier CAGE_TEX = new Identifier("textures/entity/conduit/cage.png");
-    private static final Identifier WIND_TEX = new Identifier("textures/entity/conduit/wind.png");
-    private static final Identifier WIND_VERTICAL_TEX = new Identifier("textures/entity/conduit/wind_vertical.png");
-    private static final Identifier OPEN_EYE_TEX = new Identifier("textures/entity/conduit/open_eye.png");
-    private static final Identifier CLOSED_EYE_TEX = new Identifier("textures/entity/conduit/closed_eye.png");
-    private final BaseModel baseModel = new BaseModel();
-    private final CageModel cageModel = new CageModel();
-    private final WindModel windModel = new WindModel();
-    private final EyeModel eyeModel = new EyeModel();
+extends class_4576<ConduitBlockEntity> {
+    public static final Identifier BASE_TEX = new Identifier("entity/conduit/base");
+    public static final Identifier CAGE_TEX = new Identifier("entity/conduit/cage");
+    public static final Identifier WIND_TEX = new Identifier("entity/conduit/wind");
+    public static final Identifier WIND_VERTICAL_TEX = new Identifier("entity/conduit/wind_vertical");
+    public static final Identifier OPEN_EYE_TEX = new Identifier("entity/conduit/open_eye");
+    public static final Identifier CLOSED_EYE_TEX = new Identifier("entity/conduit/closed_eye");
+    private final ModelPart field_20823 = new ModelPart(8, 8, 0, 0);
+    private final ModelPart field_20824;
+    private final ModelPart field_20825;
+    private final ModelPart field_20826;
 
-    public void method_3572(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, int i) {
+    public ConduitBlockEntityRenderer() {
+        this.field_20823.addCuboid(-4.0f, -4.0f, 0.0f, 8.0f, 8.0f, 0.0f, 0.01f);
+        this.field_20824 = new ModelPart(64, 32, 0, 0);
+        this.field_20824.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 16.0f, 16.0f);
+        this.field_20825 = new ModelPart(32, 16, 0, 0);
+        this.field_20825.addCuboid(-3.0f, -3.0f, -3.0f, 6.0f, 6.0f, 6.0f);
+        this.field_20826 = new ModelPart(32, 16, 0, 0);
+        this.field_20826.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
+    }
+
+    protected void method_22750(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, int j, int k) {
         float h = (float)conduitBlockEntity.ticks + g;
         if (!conduitBlockEntity.isActive()) {
-            float j = conduitBlockEntity.getRotation(0.0f);
-            this.bindTexture(BASE_TEX);
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-            RenderSystem.rotatef(j, 0.0f, 1.0f, 0.0f);
-            this.baseModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-            RenderSystem.popMatrix();
-        } else if (conduitBlockEntity.isActive()) {
-            float j = conduitBlockEntity.getRotation(g) * 57.295776f;
-            float k = MathHelper.sin(h * 0.1f) / 2.0f + 0.5f;
-            k = k * k + k;
-            this.bindTexture(CAGE_TEX);
-            RenderSystem.disableCull();
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)d + 0.5f, (float)e + 0.3f + k * 0.2f, (float)f + 0.5f);
-            RenderSystem.rotatef(j, 0.5f, 1.0f, 0.5f);
-            this.cageModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-            RenderSystem.popMatrix();
-            int l = 3;
-            int m = conduitBlockEntity.ticks / 3 % 22;
-            this.windModel.method_3573(m);
-            int n = conduitBlockEntity.ticks / 66 % 3;
-            switch (n) {
-                case 0: {
-                    this.bindTexture(WIND_TEX);
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-                    this.windModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-                    RenderSystem.popMatrix();
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-                    RenderSystem.scalef(0.875f, 0.875f, 0.875f);
-                    RenderSystem.rotatef(180.0f, 1.0f, 0.0f, 0.0f);
-                    RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                    this.windModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-                    RenderSystem.popMatrix();
-                    break;
-                }
-                case 1: {
-                    this.bindTexture(WIND_VERTICAL_TEX);
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-                    RenderSystem.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
-                    this.windModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-                    RenderSystem.popMatrix();
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-                    RenderSystem.scalef(0.875f, 0.875f, 0.875f);
-                    RenderSystem.rotatef(180.0f, 1.0f, 0.0f, 0.0f);
-                    RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                    this.windModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-                    RenderSystem.popMatrix();
-                    break;
-                }
-                case 2: {
-                    this.bindTexture(WIND_TEX);
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-                    RenderSystem.rotatef(90.0f, 0.0f, 0.0f, 1.0f);
-                    this.windModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-                    RenderSystem.popMatrix();
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translatef((float)d + 0.5f, (float)e + 0.5f, (float)f + 0.5f);
-                    RenderSystem.scalef(0.875f, 0.875f, 0.875f);
-                    RenderSystem.rotatef(180.0f, 1.0f, 0.0f, 0.0f);
-                    RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                    this.windModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-                    RenderSystem.popMatrix();
-                }
-            }
-            Camera camera = this.renderManager.cameraEntity;
-            if (conduitBlockEntity.isEyeOpen()) {
-                this.bindTexture(OPEN_EYE_TEX);
-            } else {
-                this.bindTexture(CLOSED_EYE_TEX);
-            }
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)d + 0.5f, (float)e + 0.3f + k * 0.2f, (float)f + 0.5f);
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.rotatef(-camera.getYaw(), 0.0f, 1.0f, 0.0f);
-            RenderSystem.rotatef(camera.getPitch(), 1.0f, 0.0f, 0.0f);
-            RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
-            this.eyeModel.render(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.083333336f);
-            RenderSystem.popMatrix();
+            float l = conduitBlockEntity.getRotation(0.0f);
+            bufferBuilder.method_22629();
+            bufferBuilder.method_22626(0.5, 0.5, 0.5);
+            bufferBuilder.method_22622(new Quaternion(Vector3f.field_20705, l, true));
+            this.field_20825.method_22698(bufferBuilder, 0.0625f, j, k, this.method_22739(BASE_TEX));
+            bufferBuilder.method_22630();
+            return;
         }
-        super.render(conduitBlockEntity, d, e, f, g, i);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class EyeModel
-    extends Model {
-        private final ModelPart cuboid;
-
-        public EyeModel() {
-            this.textureWidth = 8;
-            this.textureHeight = 8;
-            this.cuboid = new ModelPart(this, 0, 0);
-            this.cuboid.addCuboid(-4.0f, -4.0f, 0.0f, 8, 8, 0, 0.01f);
+        float l = conduitBlockEntity.getRotation(g) * 57.295776f;
+        float m = MathHelper.sin(h * 0.1f) / 2.0f + 0.5f;
+        m = m * m + m;
+        bufferBuilder.method_22629();
+        bufferBuilder.method_22626(0.5, 0.3f + m * 0.2f, 0.5);
+        Vector3f vector3f = new Vector3f(0.5f, 1.0f, 0.5f);
+        vector3f.reciprocal();
+        bufferBuilder.method_22622(new Quaternion(vector3f, l, true));
+        this.field_20826.method_22698(bufferBuilder, 0.0625f, j, k, this.method_22739(CAGE_TEX));
+        bufferBuilder.method_22630();
+        int n = conduitBlockEntity.ticks / 66 % 3;
+        bufferBuilder.method_22629();
+        bufferBuilder.method_22626(0.5, 0.5, 0.5);
+        if (n == 1) {
+            bufferBuilder.method_22622(new Quaternion(Vector3f.field_20703, 90.0f, true));
+        } else if (n == 2) {
+            bufferBuilder.method_22622(new Quaternion(Vector3f.field_20707, 90.0f, true));
         }
-
-        public void render(float f, float g, float h, float i, float j, float k) {
-            this.cuboid.render(k);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class WindModel
-    extends Model {
-        private final ModelPart[] cuboids = new ModelPart[22];
-        private int field_4384;
-
-        public WindModel() {
-            this.textureWidth = 64;
-            this.textureHeight = 1024;
-            for (int i = 0; i < 22; ++i) {
-                this.cuboids[i] = new ModelPart(this, 0, 32 * i);
-                this.cuboids[i].addCuboid(-8.0f, -8.0f, -8.0f, 16, 16, 16);
-            }
-        }
-
-        public void render(float f, float g, float h, float i, float j, float k) {
-            this.cuboids[this.field_4384].render(k);
-        }
-
-        public void method_3573(int i) {
-            this.field_4384 = i;
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class CageModel
-    extends Model {
-        private final ModelPart cuboid;
-
-        public CageModel() {
-            this.textureWidth = 32;
-            this.textureHeight = 16;
-            this.cuboid = new ModelPart(this, 0, 0);
-            this.cuboid.addCuboid(-4.0f, -4.0f, -4.0f, 8, 8, 8);
-        }
-
-        public void render(float f, float g, float h, float i, float j, float k) {
-            this.cuboid.render(k);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static class BaseModel
-    extends Model {
-        private final ModelPart cuboid;
-
-        public BaseModel() {
-            this.textureWidth = 32;
-            this.textureHeight = 16;
-            this.cuboid = new ModelPart(this, 0, 0);
-            this.cuboid.addCuboid(-3.0f, -3.0f, -3.0f, 6, 6, 6);
-        }
-
-        public void render(float f, float g, float h, float i, float j, float k) {
-            this.cuboid.render(k);
-        }
+        this.field_20824.method_22698(bufferBuilder, 0.0625f, j, k, this.method_22739(n == 1 ? WIND_VERTICAL_TEX : WIND_TEX));
+        bufferBuilder.method_22630();
+        bufferBuilder.method_22629();
+        bufferBuilder.method_22626(0.5, 0.5, 0.5);
+        bufferBuilder.method_22627(0.875f, 0.875f, 0.875f);
+        bufferBuilder.method_22622(new Quaternion(Vector3f.field_20703, 180.0f, true));
+        bufferBuilder.method_22622(new Quaternion(Vector3f.field_20707, 180.0f, true));
+        this.field_20824.render(0.0625f);
+        bufferBuilder.method_22630();
+        Camera camera = this.renderManager.cameraEntity;
+        bufferBuilder.method_22629();
+        bufferBuilder.method_22626(0.5, 0.3f + m * 0.2f, 0.5);
+        bufferBuilder.method_22627(0.5f, 0.5f, 0.5f);
+        bufferBuilder.method_22622(new Quaternion(Vector3f.field_20705, -camera.getYaw(), true));
+        bufferBuilder.method_22622(new Quaternion(Vector3f.field_20703, camera.getPitch(), true));
+        bufferBuilder.method_22622(new Quaternion(Vector3f.field_20707, 180.0f, true));
+        this.field_20823.method_22698(bufferBuilder, 0.083333336f, k, j, this.method_22739(conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEX : CLOSED_EYE_TEX));
+        bufferBuilder.method_22630();
     }
 }
 

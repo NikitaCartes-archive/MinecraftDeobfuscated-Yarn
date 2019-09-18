@@ -9,19 +9,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
 public class TableBonusLootCondition
-implements LootCondition {
+implements class_4570 {
     private final Enchantment enchantment;
     private final float[] chances;
 
@@ -42,7 +42,7 @@ implements LootCondition {
         return lootContext.getRandom().nextFloat() < f;
     }
 
-    public static LootCondition.Builder builder(Enchantment enchantment, float ... fs) {
+    public static class_4570.Builder builder(Enchantment enchantment, float ... fs) {
         return () -> new TableBonusLootCondition(enchantment, fs);
     }
 
@@ -52,7 +52,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<TableBonusLootCondition> {
+    extends class_4570.Factory<TableBonusLootCondition> {
         public Factory() {
             super(new Identifier("table_bonus"), TableBonusLootCondition.class);
         }
@@ -70,7 +70,7 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        public /* synthetic */ class_4570 fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return this.method_804(jsonObject, jsonDeserializationContext);
         }
     }

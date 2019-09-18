@@ -20,7 +20,7 @@ extends EntityModel<T> {
     protected final ModelPart backLegRight;
     protected final ModelPart tail1;
     protected final ModelPart tail2;
-    protected final ModelPart head = new ModelPart(this, "head");
+    protected final ModelPart head = new ModelPart(this);
     protected final ModelPart body;
     protected int animationState = 1;
 
@@ -31,26 +31,26 @@ extends EntityModel<T> {
         this.head.addCuboid("ear2", 1.0f, -3.0f, 0.0f, 1, 1, 2, f, 6, 10);
         this.head.setRotationPoint(0.0f, 15.0f, -9.0f);
         this.body = new ModelPart(this, 20, 0);
-        this.body.addCuboid(-2.0f, 3.0f, -8.0f, 4, 16, 6, f);
+        this.body.addCuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, f);
         this.body.setRotationPoint(0.0f, 12.0f, -10.0f);
         this.tail1 = new ModelPart(this, 0, 15);
-        this.tail1.addCuboid(-0.5f, 0.0f, 0.0f, 1, 8, 1, f);
+        this.tail1.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
         this.tail1.pitch = 0.9f;
         this.tail1.setRotationPoint(0.0f, 15.0f, 8.0f);
         this.tail2 = new ModelPart(this, 4, 15);
-        this.tail2.addCuboid(-0.5f, 0.0f, 0.0f, 1, 8, 1, f);
+        this.tail2.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
         this.tail2.setRotationPoint(0.0f, 20.0f, 14.0f);
         this.frontLegLeft = new ModelPart(this, 8, 13);
-        this.frontLegLeft.addCuboid(-1.0f, 0.0f, 1.0f, 2, 6, 2, f);
+        this.frontLegLeft.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
         this.frontLegLeft.setRotationPoint(1.1f, 18.0f, 5.0f);
         this.frontLegRight = new ModelPart(this, 8, 13);
-        this.frontLegRight.addCuboid(-1.0f, 0.0f, 1.0f, 2, 6, 2, f);
+        this.frontLegRight.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
         this.frontLegRight.setRotationPoint(-1.1f, 18.0f, 5.0f);
         this.backLegLeft = new ModelPart(this, 40, 0);
-        this.backLegLeft.addCuboid(-1.0f, 0.0f, 0.0f, 2, 10, 2, f);
+        this.backLegLeft.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
         this.backLegLeft.setRotationPoint(1.2f, 14.1f, -5.0f);
         this.backLegRight = new ModelPart(this, 40, 0);
-        this.backLegRight.addCuboid(-1.0f, 0.0f, 0.0f, 2, 10, 2, f);
+        this.backLegRight.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
         this.backLegRight.setRotationPoint(-1.2f, 14.1f, -5.0f);
     }
 

@@ -13,18 +13,18 @@ import com.google.gson.JsonSerializationContext;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.UniformLootTableRange;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 
 public class EntityScoresLootCondition
-implements LootCondition {
+implements class_4570 {
     private final Map<String, UniformLootTableRange> scores;
     private final LootContext.EntityTarget target;
 
@@ -69,7 +69,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<EntityScoresLootCondition> {
+    extends class_4570.Factory<EntityScoresLootCondition> {
         protected Factory() {
             super(new Identifier("entity_scores"), EntityScoresLootCondition.class);
         }
@@ -93,7 +93,7 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        public /* synthetic */ class_4570 fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return this.method_867(jsonObject, jsonDeserializationContext);
         }
     }

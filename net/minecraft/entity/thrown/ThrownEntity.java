@@ -205,13 +205,9 @@ implements Projectile {
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
+        if ((this.owner == null || this.owner.removed) && this.ownerUuid != null && this.world instanceof ServerWorld) {
             Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
-            if (entity instanceof LivingEntity) {
-                this.owner = (LivingEntity)entity;
-            } else {
-                this.ownerUuid = null;
-            }
+            this.owner = entity instanceof LivingEntity ? (LivingEntity)entity : null;
         }
         return this.owner;
     }

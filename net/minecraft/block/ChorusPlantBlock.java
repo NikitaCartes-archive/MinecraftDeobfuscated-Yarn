@@ -6,7 +6,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectedPlantBlock;
@@ -77,11 +76,6 @@ extends ConnectedPlantBlock {
         }
         Block block3 = blockState2.getBlock();
         return block3 == this || block3 == Blocks.END_STONE;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

@@ -15,7 +15,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockPlacementEnvironment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -114,6 +113,7 @@ implements ItemConvertible {
     private BlockState defaultState;
     protected final boolean collidable;
     private final boolean dynamicBounds;
+    private final boolean field_20720;
     @Nullable
     private Identifier dropTableId;
     @Nullable
@@ -261,6 +261,7 @@ implements ItemConvertible {
         this.slipperiness = settings.slipperiness;
         this.dynamicBounds = settings.dynamicBounds;
         this.dropTableId = settings.dropTableId;
+        this.field_20720 = settings.field_20721;
         this.stateFactory = builder.build(BlockState::new);
         this.setDefaultState(this.stateFactory.getDefaultState());
     }
@@ -367,8 +368,8 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public boolean isOpaque(BlockState blockState) {
-        return this.collidable && this.getRenderLayer() == BlockRenderLayer.SOLID;
+    public final boolean isOpaque(BlockState blockState) {
+        return this.field_20720;
     }
 
     @Deprecated
@@ -589,10 +590,6 @@ implements ItemConvertible {
     public void onDestroyedByExplosion(World world, BlockPos blockPos, Explosion explosion) {
     }
 
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.SOLID;
-    }
-
     @Deprecated
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         return true;
@@ -810,6 +807,7 @@ implements ItemConvertible {
         private boolean randomTicks;
         private float slipperiness = 0.6f;
         private Identifier dropTableId;
+        private boolean field_20721 = true;
         private boolean dynamicBounds;
 
         private Settings(Material material, MaterialColor materialColor) {
@@ -841,11 +839,18 @@ implements ItemConvertible {
             settings.soundGroup = block.soundGroup;
             settings.slipperiness = block.getSlipperiness();
             settings.dynamicBounds = block.dynamicBounds;
+            settings.field_20721 = block.field_20720;
             return settings;
         }
 
         public Settings noCollision() {
             this.collidable = false;
+            this.field_20721 = false;
+            return this;
+        }
+
+        public Settings method_22488() {
+            this.field_20721 = false;
             return this;
         }
 

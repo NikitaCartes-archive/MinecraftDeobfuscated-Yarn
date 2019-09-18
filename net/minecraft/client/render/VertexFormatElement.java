@@ -3,6 +3,8 @@
  */
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.function.IntConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +30,7 @@ public class VertexFormatElement {
         this.count = j;
     }
 
-    private final boolean isValidType(int i, Type type) {
+    private boolean isValidType(int i, Type type) {
         return i == 0 || type == Type.UV;
     }
 
@@ -88,6 +90,14 @@ public class VertexFormatElement {
         return i;
     }
 
+    public void method_22652(long l, int i) {
+        this.type.method_22655(this.count, this.format.getGlId(), i, l, this.index);
+    }
+
+    public void method_22653() {
+        this.type.method_22654(this.index);
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static enum Format {
         FLOAT(4, "Float", 5126),
@@ -123,22 +133,62 @@ public class VertexFormatElement {
 
     @Environment(value=EnvType.CLIENT)
     public static enum Type {
-        POSITION("Position"),
-        NORMAL("Normal"),
-        COLOR("Vertex Color"),
-        UV("UV"),
-        MATRIX("Bone Matrix"),
-        BLEND_WEIGHT("Blend Weight"),
-        PADDING("Padding");
+        POSITION("Position", (i, j, k, l, m) -> {
+            GlStateManager.vertexPointer(i, j, k, l);
+            GlStateManager.enableClientState(32884);
+        }, i -> GlStateManager.disableClientState(32884)),
+        NORMAL("Normal", (i, j, k, l, m) -> {
+            GlStateManager.normalPointer(j, k, l);
+            GlStateManager.enableClientState(32885);
+        }, i -> GlStateManager.disableClientState(32885)),
+        COLOR("Vertex Color", (i, j, k, l, m) -> {
+            GlStateManager.colorPointer(i, j, k, l);
+            GlStateManager.enableClientState(32886);
+        }, i -> {
+            GlStateManager.disableClientState(32886);
+            GlStateManager.clearCurrentColor();
+        }),
+        UV("UV", (i, j, k, l, m) -> {
+            GlStateManager.clientActiveTexture(33984 + m);
+            GlStateManager.texCoordPointer(i, j, k, l);
+            GlStateManager.enableClientState(32888);
+            GlStateManager.clientActiveTexture(33984);
+        }, i -> {
+            GlStateManager.clientActiveTexture(33984 + i);
+            GlStateManager.disableClientState(32888);
+            GlStateManager.clientActiveTexture(33984);
+        }),
+        PADDING("Padding", (i, j, k, l, m) -> {}, i -> {}),
+        GENERIC("Generic", (i, j, k, l, m) -> {
+            GlStateManager.method_22606(m);
+            GlStateManager.method_22609(m, i, j, false, k, l);
+        }, GlStateManager::method_22607);
 
         private final String name;
+        private final class_4575 field_20783;
+        private final IntConsumer field_20784;
 
-        private Type(String string2) {
+        private Type(String string2, class_4575 arg, IntConsumer intConsumer) {
             this.name = string2;
+            this.field_20783 = arg;
+            this.field_20784 = intConsumer;
+        }
+
+        private void method_22655(int i, int j, int k, long l, int m) {
+            this.field_20783.setupBufferState(i, j, k, l, m);
+        }
+
+        public void method_22654(int i) {
+            this.field_20784.accept(i);
         }
 
         public String getName() {
             return this.name;
+        }
+
+        @Environment(value=EnvType.CLIENT)
+        static interface class_4575 {
+            public void setupBufferState(int var1, int var2, int var3, long var4, int var6);
         }
     }
 }

@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureCache {
-    public static final Manager BANNER = new Manager("banner_", new Identifier("textures/entity/banner_base.png"), "textures/entity/banner/");
     public static final Manager SHIELD = new Manager("shield_", new Identifier("textures/entity/shield_base.png"), "textures/entity/shield/");
     public static final Identifier DEFAULT_SHIELD = new Identifier("textures/entity/shield_base_nopattern.png");
     public static final Identifier DEFAULT_BANNER = new Identifier("textures/entity/banner/base.png");

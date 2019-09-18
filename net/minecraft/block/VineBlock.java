@@ -6,7 +6,6 @@ package net.minecraft.block;
 import java.util.Map;
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectedPlantBlock;
@@ -265,11 +264,6 @@ extends Block {
             return (BlockState)blockState2.with(booleanProperty, true);
         }
         return bl ? blockState2 : null;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override

@@ -99,7 +99,7 @@ implements Font {
 
         @Override
         public void upload(int i, int j) {
-            this.image.upload(0, i, j, this.x, this.y, this.width, this.height, false);
+            this.image.upload(0, i, j, this.x, this.y, this.width, this.height, false, false);
         }
 
         @Override

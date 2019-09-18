@@ -21,16 +21,16 @@ extends EntityModel<T> {
     public SlimeEntityModel(int i) {
         if (i > 0) {
             this.field_3571 = new ModelPart(this, 0, i);
-            this.field_3571.addCuboid(-3.0f, 17.0f, -3.0f, 6, 6, 6);
+            this.field_3571.addCuboid(-3.0f, 17.0f, -3.0f, 6.0f, 6.0f, 6.0f);
             this.field_3573 = new ModelPart(this, 32, 0);
-            this.field_3573.addCuboid(-3.25f, 18.0f, -3.5f, 2, 2, 2);
+            this.field_3573.addCuboid(-3.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
             this.field_3572 = new ModelPart(this, 32, 4);
-            this.field_3572.addCuboid(1.25f, 18.0f, -3.5f, 2, 2, 2);
+            this.field_3572.addCuboid(1.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
             this.field_3570 = new ModelPart(this, 32, 8);
-            this.field_3570.addCuboid(0.0f, 21.0f, -3.5f, 1, 1, 1);
+            this.field_3570.addCuboid(0.0f, 21.0f, -3.5f, 1.0f, 1.0f, 1.0f);
         } else {
             this.field_3571 = new ModelPart(this, 0, i);
-            this.field_3571.addCuboid(-4.0f, 16.0f, -4.0f, 8, 8, 8);
+            this.field_3571.addCuboid(-4.0f, 16.0f, -4.0f, 8.0f, 8.0f, 8.0f);
             this.field_3573 = null;
             this.field_3572 = null;
             this.field_3570 = null;

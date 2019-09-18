@@ -349,7 +349,10 @@ extends Entity {
     }
 
     private void method_7555() {
-        if (this.field_7708 <= 0 || this.isLogicalSideForUpdatingMovement()) {
+        if (this.isLogicalSideForUpdatingMovement()) {
+            this.field_7708 = 0;
+        }
+        if (this.field_7708 <= 0) {
             return;
         }
         double d = this.x + (this.field_7686 - this.x) / (double)this.field_7708;

@@ -23,10 +23,10 @@ extends ZombieEntityModel<T> {
     public DrownedEntityModel(float f, float g, int i, int j) {
         super(f, g, i, j);
         this.rightArm = new ModelPart(this, 32, 48);
-        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4, 12, 4, f);
+        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.rightArm.setRotationPoint(-5.0f, 2.0f + g, 0.0f);
         this.rightLeg = new ModelPart(this, 16, 48);
-        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4, 12, 4, f);
+        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.rightLeg.setRotationPoint(-1.9f, 12.0f + g, 0.0f);
     }
 

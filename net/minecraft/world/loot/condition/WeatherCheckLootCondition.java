@@ -6,15 +6,15 @@ package net.minecraft.world.loot.condition;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import net.minecraft.class_4570;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import org.jetbrains.annotations.Nullable;
 
 public class WeatherCheckLootCondition
-implements LootCondition {
+implements class_4570 {
     @Nullable
     private final Boolean raining;
     @Nullable
@@ -39,7 +39,7 @@ implements LootCondition {
     }
 
     public static class Factory
-    extends LootCondition.Factory<WeatherCheckLootCondition> {
+    extends class_4570.Factory<WeatherCheckLootCondition> {
         public Factory() {
             super(new Identifier("weather_check"), WeatherCheckLootCondition.class);
         }
@@ -56,7 +56,7 @@ implements LootCondition {
         }
 
         @Override
-        public /* synthetic */ LootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+        public /* synthetic */ class_4570 fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             return this.method_961(jsonObject, jsonDeserializationContext);
         }
     }

@@ -3,10 +3,10 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Calendar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -14,25 +14,33 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.class_4576;
 import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.entity.model.ChestEntityModel;
-import net.minecraft.client.render.entity.model.LargeChestEntityModel;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity>
-extends BlockEntityRenderer<T> {
-    private static final Identifier TRAPPED_DOUBLE_TEX = new Identifier("textures/entity/chest/trapped_double.png");
-    private static final Identifier CHRISTMAS_DOUBLE_TEX = new Identifier("textures/entity/chest/christmas_double.png");
-    private static final Identifier NORMAL_DOUBLE_TEX = new Identifier("textures/entity/chest/normal_double.png");
-    private static final Identifier TRAPPED_TEX = new Identifier("textures/entity/chest/trapped.png");
-    private static final Identifier CHRISTMAS_TEX = new Identifier("textures/entity/chest/christmas.png");
-    private static final Identifier NORMAL_TEX = new Identifier("textures/entity/chest/normal.png");
-    private static final Identifier ENDER_TEX = new Identifier("textures/entity/chest/ender.png");
-    private final ChestEntityModel modelSingleChest = new ChestEntityModel();
-    private final ChestEntityModel modelDoubleChest = new LargeChestEntityModel();
+extends class_4576<T> {
+    public static final Identifier TRAPPED_DOUBLE_TEX = new Identifier("entity/chest/trapped_double");
+    public static final Identifier CHRISTMAS_DOUBLE_TEX = new Identifier("entity/chest/christmas_double");
+    public static final Identifier NORMAL_DOUBLE_TEX = new Identifier("entity/chest/normal_double");
+    public static final Identifier TRAPPED_TEX = new Identifier("entity/chest/trapped");
+    public static final Identifier CHRISTMAS_TEX = new Identifier("entity/chest/christmas");
+    public static final Identifier NORMAL_TEX = new Identifier("entity/chest/normal");
+    public static final Identifier ENDER_TEX = new Identifier("entity/chest/ender");
+    private final ModelPart field_20817;
+    private final ModelPart field_20818;
+    private final ModelPart field_20819;
+    private final ModelPart field_20820;
+    private final ModelPart field_20821;
+    private final ModelPart field_20822;
     private boolean isChristmas;
 
     public ChestBlockEntityRenderer() {
@@ -40,63 +48,59 @@ extends BlockEntityRenderer<T> {
         if (calendar.get(2) + 1 == 12 && calendar.get(5) >= 24 && calendar.get(5) <= 26) {
             this.isChristmas = true;
         }
+        this.field_20818 = new ModelPart(64, 64, 0, 19);
+        this.field_20818.addCuboid(1.0f, 0.0f, 1.0f, 14.0f, 10.0f, 14.0f, 0.0f);
+        this.field_20817 = new ModelPart(64, 64, 0, 0);
+        this.field_20817.addCuboid(1.0f, 0.0f, 0.0f, 14.0f, 5.0f, 14.0f, 0.0f);
+        this.field_20817.rotationPointY = 9.0f;
+        this.field_20817.rotationPointZ = 1.0f;
+        this.field_20819 = new ModelPart(64, 64, 0, 0);
+        this.field_20819.addCuboid(7.0f, -2.0f, 15.0f, 2.0f, 4.0f, 1.0f, 0.0f);
+        this.field_20819.rotationPointY = 9.0f;
+        this.field_20821 = new ModelPart(128, 64, 0, 19);
+        this.field_20821.addCuboid(1.0f, 0.0f, 1.0f, 30.0f, 10.0f, 14.0f, 0.0f);
+        this.field_20820 = new ModelPart(128, 64, 0, 0);
+        this.field_20820.addCuboid(1.0f, 0.0f, 0.0f, 30.0f, 5.0f, 14.0f, 0.0f);
+        this.field_20820.rotationPointY = 9.0f;
+        this.field_20820.rotationPointZ = 1.0f;
+        this.field_20822 = new ModelPart(128, 64, 0, 0);
+        this.field_20822.addCuboid(15.0f, -2.0f, 15.0f, 2.0f, 4.0f, 1.0f, 0.0f);
+        this.field_20822.rotationPointY = 9.0f;
     }
 
     @Override
-    public void render(T blockEntity, double d, double e, double f, float g, int i) {
+    protected void method_22738(T blockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, int j, int k) {
+        boolean bl;
         ChestType chestType;
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthFunc(515);
-        RenderSystem.depthMask(true);
         BlockState blockState = ((BlockEntity)blockEntity).hasWorld() ? ((BlockEntity)blockEntity).getCachedState() : (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         ChestType chestType2 = chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         if (chestType == ChestType.LEFT) {
             return;
         }
-        boolean bl = chestType != ChestType.SINGLE;
-        ChestEntityModel chestEntityModel = this.method_3562(blockEntity, i, bl);
-        if (i >= 0) {
-            RenderSystem.matrixMode(5890);
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(bl ? 8.0f : 4.0f, 4.0f, 1.0f);
-            RenderSystem.translatef(0.0625f, 0.0625f, 0.0625f);
-            RenderSystem.matrixMode(5888);
-        } else {
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        }
-        RenderSystem.pushMatrix();
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.translatef((float)d, (float)e + 1.0f, (float)f + 1.0f);
-        RenderSystem.scalef(1.0f, -1.0f, -1.0f);
+        boolean bl2 = bl = chestType != ChestType.SINGLE;
+        Identifier identifier = i >= 0 ? ModelLoader.field_20848.get(i) : (this.isChristmas ? (bl ? CHRISTMAS_DOUBLE_TEX : CHRISTMAS_TEX) : (blockEntity instanceof TrappedChestBlockEntity ? (bl ? TRAPPED_DOUBLE_TEX : TRAPPED_TEX) : (blockEntity instanceof EnderChestBlockEntity ? ENDER_TEX : (bl ? NORMAL_DOUBLE_TEX : NORMAL_TEX))));
+        bufferBuilder.method_22629();
         float h = blockState.get(ChestBlock.FACING).asRotation();
-        if ((double)Math.abs(h) > 1.0E-5) {
-            RenderSystem.translatef(0.5f, 0.5f, 0.5f);
-            RenderSystem.rotatef(h, 0.0f, 1.0f, 0.0f);
-            RenderSystem.translatef(-0.5f, -0.5f, -0.5f);
+        bufferBuilder.method_22626(0.5, 0.5, 0.5);
+        bufferBuilder.method_22622(new Quaternion(Vector3f.field_20705, -h, true));
+        bufferBuilder.method_22626(-0.5, -0.5, -0.5);
+        float l = ((ChestAnimationProgress)blockEntity).getAnimationProgress(g);
+        l = 1.0f - l;
+        l = 1.0f - l * l * l;
+        Sprite sprite = this.method_22739(identifier);
+        if (bl) {
+            this.method_22749(bufferBuilder, this.field_20820, this.field_20822, this.field_20821, l, j, k, sprite);
+        } else {
+            this.method_22749(bufferBuilder, this.field_20817, this.field_20819, this.field_20818, l, j, k, sprite);
         }
-        this.method_3561(blockEntity, g, chestEntityModel);
-        chestEntityModel.render();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.popMatrix();
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        if (i >= 0) {
-            RenderSystem.matrixMode(5890);
-            RenderSystem.popMatrix();
-            RenderSystem.matrixMode(5888);
-        }
+        bufferBuilder.method_22630();
     }
 
-    private ChestEntityModel method_3562(T blockEntity, int i, boolean bl) {
-        Identifier identifier = i >= 0 ? DESTROY_STAGE_TEXTURES[i] : (this.isChristmas ? (bl ? CHRISTMAS_DOUBLE_TEX : CHRISTMAS_TEX) : (blockEntity instanceof TrappedChestBlockEntity ? (bl ? TRAPPED_DOUBLE_TEX : TRAPPED_TEX) : (blockEntity instanceof EnderChestBlockEntity ? ENDER_TEX : (bl ? NORMAL_DOUBLE_TEX : NORMAL_TEX))));
-        this.bindTexture(identifier);
-        return bl ? this.modelDoubleChest : this.modelSingleChest;
-    }
-
-    private void method_3561(T blockEntity, float f, ChestEntityModel chestEntityModel) {
-        float g = ((ChestAnimationProgress)blockEntity).getAnimationProgress(f);
-        g = 1.0f - g;
-        g = 1.0f - g * g * g;
-        chestEntityModel.getLid().pitch = -(g * 1.5707964f);
+    private void method_22749(BufferBuilder bufferBuilder, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j, Sprite sprite) {
+        modelPart2.pitch = modelPart.pitch = -(f * 1.5707964f);
+        modelPart.method_22698(bufferBuilder, 0.0625f, i, j, sprite);
+        modelPart2.method_22698(bufferBuilder, 0.0625f, i, j, sprite);
+        modelPart3.method_22698(bufferBuilder, 0.0625f, i, j, sprite);
     }
 }
 

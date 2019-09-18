@@ -31,20 +31,20 @@ extends DrawableHelper {
         if (this.bossBars.isEmpty()) {
             return;
         }
-        int i = this.client.window.getScaledWidth();
+        int i = this.client.method_22683().getScaledWidth();
         int j = 12;
         for (ClientBossBar clientBossBar : this.bossBars.values()) {
             int k = i / 2 - 91;
             int l = j;
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(BAR_TEX);
+            this.client.getTextureManager().method_22813(BAR_TEX);
             this.renderBossBar(k, l, clientBossBar);
             String string = clientBossBar.getName().asFormattedString();
             int m = this.client.textRenderer.getStringWidth(string);
             int n = i / 2 - m / 2;
             int o = l - 9;
             this.client.textRenderer.drawWithShadow(string, n, o, 0xFFFFFF);
-            if ((j += 10 + this.client.textRenderer.fontHeight) < this.client.window.getScaledHeight() / 3) continue;
+            if ((j += 10 + this.client.textRenderer.fontHeight) < this.client.method_22683().getScaledHeight() / 3) continue;
             break;
         }
     }

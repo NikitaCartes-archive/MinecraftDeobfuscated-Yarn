@@ -6,7 +6,6 @@ package net.minecraft.fluid;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.class_4538;
 import net.minecraft.fluid.FluidState;
@@ -50,9 +49,6 @@ public abstract class Fluid {
     public final FluidState getDefaultState() {
         return this.defaultState;
     }
-
-    @Environment(value=EnvType.CLIENT)
-    protected abstract BlockRenderLayer getRenderLayer();
 
     public abstract Item getBucketItem();
 

@@ -13,6 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,6 +81,11 @@ public enum BannerPattern {
         this.recipePattern[0] = string4;
         this.recipePattern[1] = string5;
         this.recipePattern[2] = string6;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Identifier method_22536() {
+        return new Identifier("entity/banner/" + this.getName());
     }
 
     @Environment(value=EnvType.CLIENT)

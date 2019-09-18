@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import net.minecraft.class_4580;
 import net.minecraft.command.BlockDataObject;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.EntityDataObject;
@@ -45,7 +46,7 @@ public class DataCommand {
     private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.expected_list", object));
     private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.expected_object", object));
     private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.data.modify.invalid_index", object));
-    public static final List<Function<String, ObjectType>> OBJECT_TYPES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786);
+    public static final List<Function<String, ObjectType>> OBJECT_TYPES = ImmutableList.of(EntityDataObject.field_13800, BlockDataObject.field_13786, class_4580.field_20855);
     public static final List<ObjectType> TARGET_OBJECT_TYPES = OBJECT_TYPES.stream().map(function -> (ObjectType)function.apply("target")).collect(ImmutableList.toImmutableList());
     public static final List<ObjectType> SOURCE_OBJECT_TYPES = OBJECT_TYPES.stream().map(function -> (ObjectType)function.apply("source")).collect(ImmutableList.toImmutableList());
 

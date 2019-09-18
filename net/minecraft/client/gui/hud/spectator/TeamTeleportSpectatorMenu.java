@@ -60,7 +60,7 @@ SpectatorMenuCommand {
 
     @Override
     public void renderIcon(float f, int i) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
+        MinecraftClient.getInstance().getTextureManager().method_22813(SpectatorHud.SPECTATOR_TEX);
         DrawableHelper.blit(0, 0, 16.0f, 0.0f, 16, 16, 256, 256);
     }
 
@@ -116,7 +116,7 @@ SpectatorMenuCommand {
                 float j = (float)(integer & 0xFF) / 255.0f;
                 DrawableHelper.fill(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
             }
-            MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
+            MinecraftClient.getInstance().getTextureManager().method_22813(this.skinId);
             RenderSystem.color4f(f, f, f, (float)i / 255.0f);
             DrawableHelper.blit(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
             DrawableHelper.blit(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);

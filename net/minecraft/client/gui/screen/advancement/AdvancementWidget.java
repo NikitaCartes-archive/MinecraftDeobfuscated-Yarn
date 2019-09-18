@@ -126,7 +126,7 @@ extends DrawableHelper {
         if (!this.display.isHidden() || this.progress != null && this.progress.isDone()) {
             float f = this.progress == null ? 0.0f : this.progress.getProgressBarPercentage();
             AdvancementObtainedStatus advancementObtainedStatus = f >= 1.0f ? AdvancementObtainedStatus.OBTAINED : AdvancementObtainedStatus.UNOBTAINED;
-            this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+            this.client.getTextureManager().method_22813(WIDGETS_TEX);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.enableBlend();
             this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
@@ -177,7 +177,7 @@ extends DrawableHelper {
             advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
         }
         int o = this.width - n;
-        this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+        this.client.getTextureManager().method_22813(WIDGETS_TEX);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         int p = j + this.yPos;

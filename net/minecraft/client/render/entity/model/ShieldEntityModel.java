@@ -18,9 +18,9 @@ extends Model {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.field_3550 = new ModelPart(this, 0, 0);
-        this.field_3550.addCuboid(-6.0f, -11.0f, -2.0f, 12, 22, 1, 0.0f);
+        this.field_3550.addCuboid(-6.0f, -11.0f, -2.0f, 12.0f, 22.0f, 1.0f, 0.0f);
         this.field_3551 = new ModelPart(this, 26, 0);
-        this.field_3551.addCuboid(-1.0f, -3.0f, -1.0f, 2, 6, 6, 0.0f);
+        this.field_3551.addCuboid(-1.0f, -3.0f, -1.0f, 2.0f, 6.0f, 6.0f, 0.0f);
     }
 
     public void renderItem() {

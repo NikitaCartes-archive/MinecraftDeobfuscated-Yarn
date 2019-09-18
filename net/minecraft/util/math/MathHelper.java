@@ -342,6 +342,11 @@ public class MathHelper {
         return i & 0xFF000000 | q << 16 | r << 8 | s;
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public static float method_22450(float f) {
+        return f - (float)MathHelper.floor(f);
+    }
+
     public static double fractionalPart(double d) {
         return d - (double)MathHelper.lfloor(d);
     }
@@ -535,6 +540,11 @@ public class MathHelper {
     @Environment(value=EnvType.CLIENT)
     public static float lerpAngleDegrees(float f, float g, float h) {
         return g + f * MathHelper.wrapDegrees(h - g);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static float method_22451(float f, float g, float h) {
+        return Math.min(f * f * 0.6f + g * g * ((3.0f + g) / 4.0f) + h * h * 0.8f, 1.0f);
     }
 
     static {
