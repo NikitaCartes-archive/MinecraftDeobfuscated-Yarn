@@ -273,14 +273,14 @@ public class Keyboard {
 	}
 
 	public void onKey(long l, int i, int j, int k, int m) {
-		if (l == this.client.window.getHandle()) {
+		if (l == this.client.method_22683().getHandle()) {
 			if (this.debugCrashStartTime > 0L) {
-				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 67)
-					|| !InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292)) {
+				if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 67)
+					|| !InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292)) {
 					this.debugCrashStartTime = -1L;
 				}
-			} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 67)
-				&& InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292)) {
+			} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 67)
+				&& InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292)) {
 				this.switchF3State = true;
 				this.debugCrashStartTime = SystemUtil.getMeasuringTimeMs();
 				this.debugCrashLastLogTime = SystemUtil.getMeasuringTimeMs();
@@ -293,8 +293,8 @@ public class Keyboard {
 				)
 			 {
 				if (this.client.options.keyFullscreen.matchesKey(i, j)) {
-					this.client.window.toggleFullscreen();
-					this.client.options.fullscreen = this.client.window.isFullscreen();
+					this.client.method_22683().toggleFullscreen();
+					this.client.options.fullscreen = this.client.method_22683().isFullscreen();
 					return;
 				}
 
@@ -304,8 +304,8 @@ public class Keyboard {
 
 					ScreenshotUtils.saveScreenshot(
 						this.client.runDirectory,
-						this.client.window.getFramebufferWidth(),
-						this.client.window.getFramebufferHeight(),
+						this.client.method_22683().getFramebufferWidth(),
+						this.client.method_22683().getFramebufferHeight(),
 						this.client.getFramebuffer(),
 						text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage(text))
 					);
@@ -362,11 +362,11 @@ public class Keyboard {
 					boolean bl2 = false;
 					if (this.client.currentScreen == null) {
 						if (i == 256) {
-							boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292);
+							boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292);
 							this.client.openPauseMenu(bl3);
 						}
 
-						bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292) && this.processF3(i);
+						bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292) && this.processF3(i);
 						this.switchF3State |= bl2;
 						if (i == 290) {
 							this.client.options.hudHidden = !this.client.options.hudHidden;
@@ -397,7 +397,7 @@ public class Keyboard {
 	}
 
 	private void onChar(long l, int i, int j) {
-		if (l == this.client.window.getHandle()) {
+		if (l == this.client.method_22683().getHandle()) {
 			Element element = this.client.currentScreen;
 			if (element != null && this.client.getOverlay() == null) {
 				if (Character.charCount(i) == 1) {
@@ -416,19 +416,21 @@ public class Keyboard {
 	}
 
 	public void setup(long l) {
-		InputUtil.setKeyboardCallbacks(l, this::onKey, this::onChar);
+		InputUtil.setKeyboardCallbacks(
+			l, (lx, i, j, k, m) -> this.client.execute(() -> this.onKey(lx, i, j, k, m)), (lx, i, j) -> this.client.execute(() -> this.onChar(lx, i, j))
+		);
 	}
 
 	public String getClipboard() {
-		return this.clipboard.getClipboard(this.client.window.getHandle(), (i, l) -> {
+		return this.clipboard.getClipboard(this.client.method_22683().getHandle(), (i, l) -> {
 			if (i != 65545) {
-				this.client.window.logGlError(i, l);
+				this.client.method_22683().logGlError(i, l);
 			}
 		});
 	}
 
 	public void setClipboard(String string) {
-		this.clipboard.setClipboard(this.client.window.getHandle(), string);
+		this.clipboard.setClipboard(this.client.method_22683().getHandle(), string);
 	}
 
 	public void pollDebugCrash() {

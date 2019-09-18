@@ -1,5 +1,7 @@
 package net.minecraft.client.render.chunk;
 
+import java.util.Map;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderLayer;
@@ -7,20 +9,15 @@ import net.minecraft.client.render.BufferBuilder;
 
 @Environment(EnvType.CLIENT)
 public class BlockLayeredBufferBuilder {
-	private final BufferBuilder[] layerBuilders = new BufferBuilder[BlockRenderLayer.values().length];
-
-	public BlockLayeredBufferBuilder() {
-		this.layerBuilders[BlockRenderLayer.SOLID.ordinal()] = new BufferBuilder(2097152);
-		this.layerBuilders[BlockRenderLayer.CUTOUT.ordinal()] = new BufferBuilder(131072);
-		this.layerBuilders[BlockRenderLayer.CUTOUT_MIPPED.ordinal()] = new BufferBuilder(131072);
-		this.layerBuilders[BlockRenderLayer.TRANSLUCENT.ordinal()] = new BufferBuilder(262144);
-	}
+	private final Map<BlockRenderLayer, BufferBuilder> layerBuilders = (Map<BlockRenderLayer, BufferBuilder>)BlockRenderLayer.method_22720()
+		.stream()
+		.collect(Collectors.toMap(blockRenderLayer -> blockRenderLayer, blockRenderLayer -> new BufferBuilder(blockRenderLayer.method_22722())));
 
 	public BufferBuilder get(BlockRenderLayer blockRenderLayer) {
-		return this.layerBuilders[blockRenderLayer.ordinal()];
+		return (BufferBuilder)this.layerBuilders.get(blockRenderLayer);
 	}
 
-	public BufferBuilder get(int i) {
-		return this.layerBuilders[i];
+	public void method_22705() {
+		this.layerBuilders.values().forEach(BufferBuilder::clear);
 	}
 }

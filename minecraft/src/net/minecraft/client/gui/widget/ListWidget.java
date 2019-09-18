@@ -160,7 +160,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			RenderSystem.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+			this.minecraft.getTextureManager().method_22813(DrawableHelper.BACKGROUND_LOCATION);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			float g = 32.0F;
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
@@ -411,7 +411,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	protected void renderHoleBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().method_22813(DrawableHelper.BACKGROUND_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);

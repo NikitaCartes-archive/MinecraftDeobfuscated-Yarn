@@ -54,10 +54,9 @@ public class BoatItem extends Item {
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
-					}
-
-					if (!playerEntity.abilities.creativeMode) {
-						itemStack.decrement(1);
+						if (!playerEntity.abilities.creativeMode) {
+							itemStack.decrement(1);
+						}
 					}
 
 					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));

@@ -1,9 +1,6 @@
 package net.minecraft.fluid;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.class_4538;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
@@ -16,12 +13,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class EmptyFluid extends Fluid {
-	@Environment(EnvType.CLIENT)
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.SOLID;
-	}
-
 	@Override
 	public Item getBucketItem() {
 		return Items.AIR;

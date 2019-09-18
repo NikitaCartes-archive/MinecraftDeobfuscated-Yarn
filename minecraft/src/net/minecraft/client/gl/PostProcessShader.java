@@ -79,7 +79,7 @@ public class PostProcessShader implements AutoCloseable {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		this.program
 			.getUniformByNameOrDummy("ScreenSize")
-			.set((float)minecraftClient.window.getFramebufferWidth(), (float)minecraftClient.window.getFramebufferHeight());
+			.set((float)minecraftClient.method_22683().getFramebufferWidth(), (float)minecraftClient.method_22683().getFramebufferHeight());
 		this.program.enable();
 		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
 		this.output.beginWrite(false);

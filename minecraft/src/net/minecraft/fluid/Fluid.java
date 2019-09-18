@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4538;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
@@ -45,9 +44,6 @@ public abstract class Fluid {
 	public final FluidState getDefaultState() {
 		return this.defaultState;
 	}
-
-	@Environment(EnvType.CLIENT)
-	protected abstract BlockRenderLayer getRenderLayer();
 
 	public abstract Item getBucketItem();
 

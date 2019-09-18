@@ -1,9 +1,9 @@
 package net.minecraft.world.loot;
 
-import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.class_4570;
 
 public interface ConditionConsumerBuilder<T> {
-	T withCondition(LootCondition.Builder builder);
+	T withCondition(class_4570.Builder builder);
 
 	T getThis();
 }

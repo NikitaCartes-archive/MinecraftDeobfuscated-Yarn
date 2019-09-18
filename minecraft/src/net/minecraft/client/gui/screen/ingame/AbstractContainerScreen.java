@@ -160,11 +160,11 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 
 	private void drawItem(ItemStack itemStack, int i, int j, String string) {
 		RenderSystem.translatef(0.0F, 0.0F, 32.0F);
-		this.blitOffset = 200;
+		this.setBlitOffset(200);
 		this.itemRenderer.zOffset = 200.0F;
 		this.itemRenderer.renderGuiItem(itemStack, i, j);
 		this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i, j - (this.touchDragStack.isEmpty() ? 0 : 8), string);
-		this.blitOffset = 0;
+		this.setBlitOffset(0);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
@@ -204,15 +204,15 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			}
 		}
 
-		this.blitOffset = 100;
+		this.setBlitOffset(100);
 		this.itemRenderer.zOffset = 100.0F;
 		if (itemStack.isEmpty() && slot.doDrawHoveringEffect()) {
 			String string2 = slot.getBackgroundSprite();
 			if (string2 != null) {
 				Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
 				RenderSystem.disableLighting();
-				this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-				blit(i, j, this.blitOffset, 16, 16, sprite);
+				this.minecraft.getTextureManager().method_22813(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+				blit(i, j, this.getBlitOffset(), 16, 16, sprite);
 				RenderSystem.enableLighting();
 				bl2 = true;
 			}
@@ -229,7 +229,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		}
 
 		this.itemRenderer.zOffset = 0.0F;
-		this.blitOffset = 0;
+		this.setBlitOffset(0);
 	}
 
 	private void calculateOffset() {
@@ -311,8 +311,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 							} else {
 								boolean bl3 = m != -999
 									&& (
-										InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 340)
-											|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 344)
+										InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340)
+											|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344)
 									);
 								SlotActionType slotActionType = SlotActionType.PICKUP;
 								if (bl3) {
@@ -485,8 +485,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				} else {
 					boolean bl2 = l != -999
 						&& (
-							InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 340)
-								|| InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 344)
+							InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340)
+								|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344)
 						);
 					if (bl2) {
 						this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;

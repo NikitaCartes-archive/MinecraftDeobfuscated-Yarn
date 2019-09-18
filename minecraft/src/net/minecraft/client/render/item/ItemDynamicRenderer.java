@@ -67,9 +67,9 @@ public class ItemDynamicRenderer {
 				this.renderBanner.deserialize(itemStack, ShieldItem.getColor(itemStack));
 				MinecraftClient.getInstance()
 					.getTextureManager()
-					.bindTexture(TextureCache.SHIELD.get(this.renderBanner.getPatternCacheKey(), this.renderBanner.getPatterns(), this.renderBanner.getPatternColors()));
+					.method_22813(TextureCache.SHIELD.get(this.renderBanner.getPatternCacheKey(), this.renderBanner.getPatterns(), this.renderBanner.getPatternColors()));
 			} else {
-				MinecraftClient.getInstance().getTextureManager().bindTexture(TextureCache.DEFAULT_SHIELD);
+				MinecraftClient.getInstance().getTextureManager().method_22813(TextureCache.DEFAULT_SHIELD);
 			}
 
 			RenderSystem.pushMatrix();
@@ -103,7 +103,7 @@ public class ItemDynamicRenderer {
 				RenderSystem.popMatrix();
 			}
 		} else if (item == Items.TRIDENT) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(TridentEntityModel.TEXTURE);
+			MinecraftClient.getInstance().getTextureManager().method_22813(TridentEntityModel.TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(1.0F, -1.0F, -1.0F);
 			this.modelTrident.renderItem();
@@ -132,7 +132,7 @@ public class ItemDynamicRenderer {
 
 	private void renderEnchantmentGlint(Runnable runnable) {
 		RenderSystem.color3f(0.5019608F, 0.2509804F, 0.8F);
-		MinecraftClient.getInstance().getTextureManager().bindTexture(ItemRenderer.ENCHANTMENT_GLINT_TEX);
+		MinecraftClient.getInstance().getTextureManager().method_22813(ItemRenderer.ENCHANTMENT_GLINT_TEX);
 		ItemRenderer.renderGlint(MinecraftClient.getInstance().getTextureManager(), runnable, 1);
 	}
 }

@@ -28,7 +28,7 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends Fea
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);
 			RenderSystem.pushMatrix();
-			boolean bl = this.itemRenderer.hasDepthInGui(itemStack) && block.getRenderLayer() == BlockRenderLayer.TRANSLUCENT;
+			boolean bl = this.itemRenderer.hasDepthInGui(itemStack) && BlockRenderLayer.method_22715(block.getDefaultState()) == BlockRenderLayer.field_9179;
 			if (bl) {
 				RenderSystem.depthMask(false);
 			}

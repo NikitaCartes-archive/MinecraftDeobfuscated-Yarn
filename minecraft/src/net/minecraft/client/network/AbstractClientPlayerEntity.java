@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.PlayerSkinTexture;
-import net.minecraft.client.texture.SkinRemappingImageFilter;
 import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -92,7 +91,8 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 				null,
 				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(string)),
 				DefaultSkinHelper.getTexture(getOfflinePlayerUuid(string)),
-				new SkinRemappingImageFilter()
+				true,
+				null
 			);
 			textureManager.registerTexture(identifier, texture);
 		}

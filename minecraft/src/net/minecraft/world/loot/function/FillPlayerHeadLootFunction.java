@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.authlib.GameProfile;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -14,15 +15,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TagHelper;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	private final LootContext.EntityTarget entity;
 
-	public FillPlayerHeadLootFunction(LootCondition[] lootConditions, LootContext.EntityTarget entityTarget) {
-		super(lootConditions);
+	public FillPlayerHeadLootFunction(class_4570[] args, LootContext.EntityTarget entityTarget) {
+		super(args);
 		this.entity = entityTarget;
 	}
 
@@ -54,9 +54,9 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 			jsonObject.add("entity", jsonSerializationContext.serialize(fillPlayerHeadLootFunction.entity));
 		}
 
-		public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new FillPlayerHeadLootFunction(lootConditions, entityTarget);
+			return new FillPlayerHeadLootFunction(args, entityTarget);
 		}
 	}
 }

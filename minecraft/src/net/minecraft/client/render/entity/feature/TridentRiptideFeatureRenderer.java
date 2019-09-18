@@ -48,7 +48,7 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 			this.textureWidth = 64;
 			this.textureHeight = 64;
 			this.field_4900 = new ModelPart(this, 0, 0);
-			this.field_4900.addCuboid(-8.0F, -16.0F, -8.0F, 16, 32, 16);
+			this.field_4900.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 32.0F, 16.0F);
 		}
 
 		public void method_17166(float f, float g, float h, float i, float j, float k) {

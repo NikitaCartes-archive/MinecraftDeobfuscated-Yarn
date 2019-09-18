@@ -30,16 +30,16 @@ public class BeeEntityModel<T extends BeeEntity> extends EntityModel<T> {
 		this.mainBody = new ModelPart(this, 0, 0);
 		this.mainBody.setRotationPoint(0.0F, 0.0F, 0.0F);
 		this.body.addChild(this.mainBody);
-		this.mainBody.addCuboid(-3.5F, -4.0F, -5.0F, 7, 7, 10, 0.0F);
+		this.mainBody.addCuboid(-3.5F, -4.0F, -5.0F, 7.0F, 7.0F, 10.0F, 0.0F);
 		this.stinger = new ModelPart(this, 26, 7);
-		this.stinger.addCuboid(0.0F, -1.0F, 5.0F, 0, 1, 2, 0.0F);
+		this.stinger.addCuboid(0.0F, -1.0F, 5.0F, 0.0F, 1.0F, 2.0F, 0.0F);
 		this.mainBody.addChild(this.stinger);
 		this.leftAntenna = new ModelPart(this, 2, 0);
 		this.leftAntenna.setRotationPoint(0.0F, -2.0F, -5.0F);
-		this.leftAntenna.addCuboid(1.5F, -2.0F, -3.0F, 1, 2, 3, 0.0F);
+		this.leftAntenna.addCuboid(1.5F, -2.0F, -3.0F, 1.0F, 2.0F, 3.0F, 0.0F);
 		this.rightAntenna = new ModelPart(this, 2, 3);
 		this.rightAntenna.setRotationPoint(0.0F, -2.0F, -5.0F);
-		this.rightAntenna.addCuboid(-2.5F, -2.0F, -3.0F, 1, 2, 3, 0.0F);
+		this.rightAntenna.addCuboid(-2.5F, -2.0F, -3.0F, 1.0F, 2.0F, 3.0F, 0.0F);
 		this.mainBody.addChild(this.leftAntenna);
 		this.mainBody.addChild(this.rightAntenna);
 		this.leftWing = new ModelPart(this, 0, 18);
@@ -48,7 +48,7 @@ public class BeeEntityModel<T extends BeeEntity> extends EntityModel<T> {
 		this.leftWing.yaw = -0.2618F;
 		this.leftWing.roll = 0.0F;
 		this.body.addChild(this.leftWing);
-		this.leftWing.addCuboid(-9.0F, 0.0F, 0.0F, 9, 0, 6, 0.001F);
+		this.leftWing.addCuboid(-9.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, 0.001F);
 		this.rightWing = new ModelPart(this, 0, 18);
 		this.rightWing.setRotationPoint(1.5F, -4.0F, -3.0F);
 		this.rightWing.pitch = 0.0F;
@@ -56,7 +56,7 @@ public class BeeEntityModel<T extends BeeEntity> extends EntityModel<T> {
 		this.rightWing.roll = 0.0F;
 		this.rightWing.mirror = true;
 		this.body.addChild(this.rightWing);
-		this.rightWing.addCuboid(0.0F, 0.0F, 0.0F, 9, 0, 6, 0.001F);
+		this.rightWing.addCuboid(0.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, 0.001F);
 		this.frontLeg = new ModelPart(this);
 		this.frontLeg.setRotationPoint(1.5F, 3.0F, -2.0F);
 		this.body.addChild(this.frontLeg);

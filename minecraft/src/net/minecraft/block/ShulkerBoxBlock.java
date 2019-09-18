@@ -234,11 +234,6 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return false;
-	}
-
-	@Override
 	public boolean hasComparatorOutput(BlockState blockState) {
 		return true;
 	}

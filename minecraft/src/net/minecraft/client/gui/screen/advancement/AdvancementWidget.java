@@ -137,7 +137,7 @@ public class AdvancementWidget extends DrawableHelper {
 				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
-			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+			this.client.getTextureManager().method_22813(WIDGETS_TEX);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableBlend();
 			this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
@@ -190,7 +190,7 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		int o = this.width - n;
-		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+		this.client.getTextureManager().method_22813(WIDGETS_TEX);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		int p = j + this.yPos;

@@ -32,11 +32,6 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}

@@ -181,11 +181,6 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
-	}
-
-	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.INVISIBLE;
 	}

@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
+import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
@@ -15,7 +16,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import org.apache.logging.log4j.LogManager;
@@ -27,8 +27,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 	@Nullable
 	private final LootContext.EntityTarget entity;
 
-	private SetNameLootFunction(LootCondition[] lootConditions, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
-		super(lootConditions);
+	private SetNameLootFunction(class_4570[] args, @Nullable Text text, @Nullable LootContext.EntityTarget entityTarget) {
+		super(args);
 		this.name = text;
 		this.entity = entityTarget;
 	}
@@ -82,10 +82,10 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public SetNameLootFunction method_629(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
 			Text text = Text.Serializer.fromJson(jsonObject.get("name"));
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new SetNameLootFunction(lootConditions, text, entityTarget);
+			return new SetNameLootFunction(args, text, entityTarget);
 		}
 	}
 }

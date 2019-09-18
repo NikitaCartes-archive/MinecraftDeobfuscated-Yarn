@@ -1,11 +1,11 @@
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class GlMatrixFrustum extends Frustum {
@@ -15,24 +15,32 @@ public class GlMatrixFrustum extends Frustum {
 	private final FloatBuffer field_4493 = GlAllocationUtils.allocateFloatBuffer(16);
 
 	public static Frustum get() {
-		INSTANCE.loadFromGlMatrices();
+		INSTANCE.method_22605();
 		return INSTANCE;
 	}
 
 	private void normalize(float[] fs) {
-		float f = MathHelper.sqrt(fs[0] * fs[0] + fs[1] * fs[1] + fs[2] * fs[2]);
+		float f = (float)Math.sqrt((double)(fs[0] * fs[0] + fs[1] * fs[1] + fs[2] * fs[2]));
 		fs[0] /= f;
 		fs[1] /= f;
 		fs[2] /= f;
 		fs[3] /= f;
 	}
 
-	public void loadFromGlMatrices() {
+	public void method_22605() {
+		if (!RenderSystem.isOnRenderThread()) {
+			RenderSystem.recordRenderCall(this::loadFromGlMatrices);
+		} else {
+			this.loadFromGlMatrices();
+		}
+	}
+
+	private void loadFromGlMatrices() {
 		this.projectionMatrixBuffer.clear();
 		this.modelviewMatrixBuffer.clear();
 		this.field_4493.clear();
-		RenderSystem.getMatrix(2983, this.projectionMatrixBuffer);
-		RenderSystem.getMatrix(2982, this.modelviewMatrixBuffer);
+		GlStateManager.getMatrix(2983, this.projectionMatrixBuffer);
+		GlStateManager.getMatrix(2982, this.modelviewMatrixBuffer);
 		float[] fs = this.projectionMatrix;
 		float[] gs = this.modelViewMatrix;
 		this.projectionMatrixBuffer.flip().limit(16);

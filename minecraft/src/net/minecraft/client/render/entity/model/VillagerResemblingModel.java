@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class VillagerResemblingModel<T extends Entity> extends EntityModel<T> implements ModelWithHead, ModelWithHat {
-	protected final ModelPart head;
+	protected ModelPart head;
 	protected ModelPart headOverlay;
 	protected final ModelPart hat;
 	protected final ModelPart body;
@@ -27,39 +27,39 @@ public class VillagerResemblingModel<T extends Entity> extends EntityModel<T> im
 		float g = 0.5F;
 		this.head = new ModelPart(this).setTextureSize(i, j);
 		this.head.setRotationPoint(0.0F, 0.0F, 0.0F);
-		this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8, 10, 8, f);
+		this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, f);
 		this.headOverlay = new ModelPart(this).setTextureSize(i, j);
 		this.headOverlay.setRotationPoint(0.0F, 0.0F, 0.0F);
-		this.headOverlay.setTextureOffset(32, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8, 10, 8, f + 0.5F);
+		this.headOverlay.setTextureOffset(32, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, f + 0.5F);
 		this.head.addChild(this.headOverlay);
 		this.hat = new ModelPart(this).setTextureSize(i, j);
 		this.hat.setRotationPoint(0.0F, 0.0F, 0.0F);
-		this.hat.setTextureOffset(30, 47).addCuboid(-8.0F, -8.0F, -6.0F, 16, 16, 1, f);
+		this.hat.setTextureOffset(30, 47).addCuboid(-8.0F, -8.0F, -6.0F, 16.0F, 16.0F, 1.0F, f);
 		this.hat.pitch = (float) (-Math.PI / 2);
 		this.headOverlay.addChild(this.hat);
 		this.nose = new ModelPart(this).setTextureSize(i, j);
 		this.nose.setRotationPoint(0.0F, -2.0F, 0.0F);
-		this.nose.setTextureOffset(24, 0).addCuboid(-1.0F, -1.0F, -6.0F, 2, 4, 2, f);
+		this.nose.setTextureOffset(24, 0).addCuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F, f);
 		this.head.addChild(this.nose);
 		this.body = new ModelPart(this).setTextureSize(i, j);
 		this.body.setRotationPoint(0.0F, 0.0F, 0.0F);
-		this.body.setTextureOffset(16, 20).addCuboid(-4.0F, 0.0F, -3.0F, 8, 12, 6, f);
+		this.body.setTextureOffset(16, 20).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F, f);
 		this.robe = new ModelPart(this).setTextureSize(i, j);
 		this.robe.setRotationPoint(0.0F, 0.0F, 0.0F);
-		this.robe.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8, 18, 6, f + 0.5F);
+		this.robe.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, f + 0.5F);
 		this.body.addChild(this.robe);
 		this.arms = new ModelPart(this).setTextureSize(i, j);
 		this.arms.setRotationPoint(0.0F, 2.0F, 0.0F);
-		this.arms.setTextureOffset(44, 22).addCuboid(-8.0F, -2.0F, -2.0F, 4, 8, 4, f);
-		this.arms.setTextureOffset(44, 22).addCuboid(4.0F, -2.0F, -2.0F, 4, 8, 4, f, true);
-		this.arms.setTextureOffset(40, 38).addCuboid(-4.0F, 2.0F, -2.0F, 8, 4, 4, f);
+		this.arms.setTextureOffset(44, 22).addCuboid(-8.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, f);
+		this.arms.setTextureOffset(44, 22).addCuboid(4.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, f, true);
+		this.arms.setTextureOffset(40, 38).addCuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, f);
 		this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
 		this.leftLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
-		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
 		this.rightLeg.mirror = true;
 		this.rightLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
-		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 	}
 
 	@Override

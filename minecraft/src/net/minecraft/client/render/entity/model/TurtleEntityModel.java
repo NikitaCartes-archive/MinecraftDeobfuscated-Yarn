@@ -16,27 +16,27 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.textureWidth = 128;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 3, 0);
-		this.head.addCuboid(-3.0F, -1.0F, -3.0F, 6, 5, 6, 0.0F);
+		this.head.addCuboid(-3.0F, -1.0F, -3.0F, 6.0F, 5.0F, 6.0F, 0.0F);
 		this.head.setRotationPoint(0.0F, 19.0F, -10.0F);
 		this.body = new ModelPart(this);
-		this.body.setTextureOffset(7, 37).addCuboid(-9.5F, 3.0F, -10.0F, 19, 20, 6, 0.0F);
-		this.body.setTextureOffset(31, 1).addCuboid(-5.5F, 3.0F, -13.0F, 11, 18, 3, 0.0F);
+		this.body.setTextureOffset(7, 37).addCuboid(-9.5F, 3.0F, -10.0F, 19.0F, 20.0F, 6.0F, 0.0F);
+		this.body.setTextureOffset(31, 1).addCuboid(-5.5F, 3.0F, -13.0F, 11.0F, 18.0F, 3.0F, 0.0F);
 		this.body.setRotationPoint(0.0F, 11.0F, -10.0F);
 		this.field_3594 = new ModelPart(this);
-		this.field_3594.setTextureOffset(70, 33).addCuboid(-4.5F, 3.0F, -14.0F, 9, 18, 1, 0.0F);
+		this.field_3594.setTextureOffset(70, 33).addCuboid(-4.5F, 3.0F, -14.0F, 9.0F, 18.0F, 1.0F, 0.0F);
 		this.field_3594.setRotationPoint(0.0F, 11.0F, -10.0F);
 		int i = 1;
 		this.leg1 = new ModelPart(this, 1, 23);
-		this.leg1.addCuboid(-2.0F, 0.0F, 0.0F, 4, 1, 10, 0.0F);
+		this.leg1.addCuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F, 0.0F);
 		this.leg1.setRotationPoint(-3.5F, 22.0F, 11.0F);
 		this.leg2 = new ModelPart(this, 1, 12);
-		this.leg2.addCuboid(-2.0F, 0.0F, 0.0F, 4, 1, 10, 0.0F);
+		this.leg2.addCuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F, 0.0F);
 		this.leg2.setRotationPoint(3.5F, 22.0F, 11.0F);
 		this.leg3 = new ModelPart(this, 27, 30);
-		this.leg3.addCuboid(-13.0F, 0.0F, -2.0F, 13, 1, 5, 0.0F);
+		this.leg3.addCuboid(-13.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F, 0.0F);
 		this.leg3.setRotationPoint(-5.0F, 21.0F, -4.0F);
 		this.leg4 = new ModelPart(this, 27, 24);
-		this.leg4.addCuboid(0.0F, 0.0F, -2.0F, 13, 1, 5, 0.0F);
+		this.leg4.addCuboid(0.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F, 0.0F);
 		this.leg4.setRotationPoint(5.0F, 21.0F, -4.0F);
 	}
 

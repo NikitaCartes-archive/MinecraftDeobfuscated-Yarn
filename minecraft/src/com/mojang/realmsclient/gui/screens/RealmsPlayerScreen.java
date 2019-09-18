@@ -225,13 +225,13 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float g = 32.0F;
 		tezzelator.begin(7, RealmsDefaultVertexFormat.POSITION_TEX_COLOR);
-		tezzelator.vertex(0.0, (double)this.height(), 0.0).tex(0.0, (double)((float)(this.height() - k) / 32.0F + 0.0F)).color(64, 64, 64, 255).endVertex();
+		tezzelator.vertex(0.0, (double)this.height(), 0.0).tex(0.0, (double)((float)(this.height() - k) / 32.0F + 0.0F)).color(64, 64, 64, 255).next();
 		tezzelator.vertex((double)this.width(), (double)this.height(), 0.0)
 			.tex((double)((float)this.width() / 32.0F), (double)((float)(this.height() - k) / 32.0F + 0.0F))
 			.color(64, 64, 64, 255)
-			.endVertex();
-		tezzelator.vertex((double)this.width(), (double)k, 0.0).tex((double)((float)this.width() / 32.0F), 0.0).color(64, 64, 64, 255).endVertex();
-		tezzelator.vertex(0.0, (double)k, 0.0).tex(0.0, 0.0).color(64, 64, 64, 255).endVertex();
+			.next();
+		tezzelator.vertex((double)this.width(), (double)k, 0.0).tex((double)((float)this.width() / 32.0F), 0.0).color(64, 64, 64, 255).next();
+		tezzelator.vertex(0.0, (double)k, 0.0).tex(0.0, 0.0).color(64, 64, 64, 255).next();
 		tezzelator.end();
 		this.titleLabel.render(this);
 		if (this.serverData != null && this.serverData.players != null) {

@@ -138,11 +138,6 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return this.baseBlock.getRenderLayer();
-	}
-
-	@Override
 	public int getTickRate(class_4538 arg) {
 		return this.baseBlock.getTickRate(arg);
 	}

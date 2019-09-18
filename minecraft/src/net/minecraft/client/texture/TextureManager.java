@@ -2,6 +2,7 @@ package net.minecraft.client.texture;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -38,7 +40,15 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		this.resourceContainer = resourceManager;
 	}
 
-	public void bindTexture(Identifier identifier) {
+	public void method_22813(Identifier identifier) {
+		if (!RenderSystem.isOnRenderThread()) {
+			RenderSystem.recordRenderCall(() -> this.bindTexture(identifier));
+		} else {
+			this.bindTexture(identifier);
+		}
+	}
+
+	private void bindTexture(Identifier identifier) {
 		Texture texture = (Texture)this.textures.get(identifier);
 		if (texture == null) {
 			texture = new ResourceTexture(identifier);
@@ -82,6 +92,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		return bl;
 	}
 
+	@Nullable
 	public Texture getTexture(Identifier identifier) {
 		return (Texture)this.textures.get(identifier);
 	}
@@ -104,10 +115,14 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		if (!this.textures.containsKey(identifier)) {
 			AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
 			this.textures.put(identifier, asyncTexture);
-			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), MinecraftClient.getInstance());
+			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), TextureManager::method_22812);
 		} else {
 			return CompletableFuture.completedFuture(null);
 		}
+	}
+
+	private static void method_22812(Runnable runnable) {
+		MinecraftClient.getInstance().execute(() -> RenderSystem.recordRenderCall(runnable::run));
 	}
 
 	@Override
@@ -149,6 +164,6 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 						texture.registerTexture(this, resourceManager, identifier, executor2);
 					}
 				}
-			}, executor2);
+			}, runnable -> RenderSystem.recordRenderCall(runnable::run));
 	}
 }

@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -20,7 +21,7 @@ public class LilyPadBlock extends PlantBlock {
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		super.onEntityCollision(blockState, world, blockPos, entity);
-		if (entity instanceof BoatEntity) {
+		if (world instanceof ServerWorld && entity instanceof BoatEntity) {
 			world.breakBlock(new BlockPos(blockPos), true, entity);
 		}
 	}

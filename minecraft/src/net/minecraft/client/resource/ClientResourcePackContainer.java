@@ -86,7 +86,7 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 			}
 		}
 
-		textureManager.bindTexture(this.iconId);
+		textureManager.method_22813(this.iconId);
 	}
 
 	@Override

@@ -1,37 +1,49 @@
 package net.minecraft.client.render.block.entity;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public abstract class BlockEntityRenderer<T extends BlockEntity> {
-	public static final Identifier[] DESTROY_STAGE_TEXTURES = new Identifier[]{
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_0.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_1.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_2.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_3.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_4.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_5.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_6.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_7.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_8.getPath() + ".png"),
-		new Identifier("textures/" + ModelLoader.DESTROY_STAGE_9.getPath() + ".png")
-	};
+	protected static final List<Identifier> DESTROY_STAGE_TEXTURES = (List<Identifier>)ModelLoader.field_20848
+		.stream()
+		.map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png"))
+		.collect(Collectors.toList());
 	protected BlockEntityRenderDispatcher renderManager;
 
-	public void render(T blockEntity, double d, double e, double f, float g, int i) {
+	public void method_22747(
+		T blockEntity, double d, double e, double f, float g, int i, BufferBuilder bufferBuilder, BlockRenderLayer blockRenderLayer, BlockPos blockPos
+	) {
+		GuiLighting.enable();
+		int j = blockEntity.getWorld().getLightmapIndex(blockEntity.getPos());
+		int k = j % 65536;
+		int l = j / 65536;
+		RenderSystem.glMultiTexCoord2f(33985, (float)k, (float)l);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		this.render(blockEntity, d, e, f, g, i, blockRenderLayer);
+	}
+
+	public abstract void render(T blockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer);
+
+	protected void method_22746(T blockEntity, double d, double e, double f) {
 		HitResult hitResult = this.renderManager.hitResult;
 		if (blockEntity instanceof Nameable
 			&& hitResult != null
@@ -57,7 +69,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 	protected void bindTexture(Identifier identifier) {
 		TextureManager textureManager = this.renderManager.textureManager;
 		if (textureManager != null) {
-			textureManager.bindTexture(identifier);
+			textureManager.method_22813(identifier);
 		}
 	}
 

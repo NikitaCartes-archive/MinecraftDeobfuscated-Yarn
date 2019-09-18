@@ -113,11 +113,6 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(BOTTLE_PROPERTIES[0], BOTTLE_PROPERTIES[1], BOTTLE_PROPERTIES[2]);
 	}

@@ -55,11 +55,6 @@ public class LanternBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		Direction direction = attachedDirection(blockState).getOpposite();
 		return Block.sideCoversSmallSquare(arg, blockPos.offset(direction), direction.getOpposite());

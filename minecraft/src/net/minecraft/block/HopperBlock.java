@@ -171,11 +171,6 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT_MIPPED;
-	}
-
-	@Override
 	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}

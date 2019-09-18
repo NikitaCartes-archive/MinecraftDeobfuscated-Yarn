@@ -121,11 +121,6 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.add(FACING, AGE);
 	}

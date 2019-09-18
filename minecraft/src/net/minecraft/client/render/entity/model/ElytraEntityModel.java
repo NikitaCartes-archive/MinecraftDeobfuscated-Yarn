@@ -14,10 +14,10 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 	private final ModelPart field_3365 = new ModelPart(this, 22, 0);
 
 	public ElytraEntityModel() {
-		this.field_3365.addCuboid(-10.0F, 0.0F, 0.0F, 10, 20, 2, 1.0F);
+		this.field_3365.addCuboid(-10.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, 1.0F);
 		this.field_3364 = new ModelPart(this, 22, 0);
 		this.field_3364.mirror = true;
-		this.field_3364.addCuboid(0.0F, 0.0F, 0.0F, 10, 20, 2, 1.0F);
+		this.field_3364.addCuboid(0.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, 1.0F);
 	}
 
 	public void method_17078(T livingEntity, float f, float g, float h, float i, float j, float k) {

@@ -48,9 +48,4 @@ public class TorchBlock extends Block {
 		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 		world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
 	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
 }

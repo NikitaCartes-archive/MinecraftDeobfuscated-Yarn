@@ -4,9 +4,4 @@ public class GlassBlock extends AbstractGlassBlock {
 	public GlassBlock(Block.Settings settings) {
 		super(settings);
 	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
 }

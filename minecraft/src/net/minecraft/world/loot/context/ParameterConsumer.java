@@ -2,9 +2,6 @@ package net.minecraft.world.loot.context;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
-import java.util.function.Function;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.LootSupplier;
 import net.minecraft.world.loot.LootTableReporter;
 
 public interface ParameterConsumer {
@@ -12,7 +9,7 @@ public interface ParameterConsumer {
 		return ImmutableSet.of();
 	}
 
-	default void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		lootContextType.check(lootTableReporter, this);
+	default void check(LootTableReporter lootTableReporter) {
+		lootTableReporter.method_22567(this);
 	}
 }

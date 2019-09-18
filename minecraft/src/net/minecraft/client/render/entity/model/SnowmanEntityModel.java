@@ -18,19 +18,19 @@ public class SnowmanEntityModel<T extends Entity> extends EntityModel<T> {
 		float f = 4.0F;
 		float g = 0.0F;
 		this.field_3568 = new ModelPart(this, 0, 0).setTextureSize(64, 64);
-		this.field_3568.addCuboid(-4.0F, -8.0F, -4.0F, 8, 8, 8, -0.5F);
+		this.field_3568.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, -0.5F);
 		this.field_3568.setRotationPoint(0.0F, 4.0F, 0.0F);
 		this.field_3566 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
-		this.field_3566.addCuboid(-1.0F, 0.0F, -1.0F, 12, 2, 2, -0.5F);
+		this.field_3566.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
 		this.field_3566.setRotationPoint(0.0F, 6.0F, 0.0F);
 		this.field_3565 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
-		this.field_3565.addCuboid(-1.0F, 0.0F, -1.0F, 12, 2, 2, -0.5F);
+		this.field_3565.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
 		this.field_3565.setRotationPoint(0.0F, 6.0F, 0.0F);
 		this.field_3567 = new ModelPart(this, 0, 16).setTextureSize(64, 64);
-		this.field_3567.addCuboid(-5.0F, -10.0F, -5.0F, 10, 10, 10, -0.5F);
+		this.field_3567.addCuboid(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, -0.5F);
 		this.field_3567.setRotationPoint(0.0F, 13.0F, 0.0F);
 		this.field_3569 = new ModelPart(this, 0, 36).setTextureSize(64, 64);
-		this.field_3569.addCuboid(-6.0F, -12.0F, -6.0F, 12, 12, 12, -0.5F);
+		this.field_3569.addCuboid(-6.0F, -12.0F, -6.0F, 12.0F, 12.0F, 12.0F, -0.5F);
 		this.field_3569.setRotationPoint(0.0F, 24.0F, 0.0F);
 	}
 

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Consumer;
+import net.minecraft.class_4570;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.ItemTags;
@@ -12,7 +13,6 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.LootChoice;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.LootFunction;
 
@@ -20,8 +20,8 @@ public class TagEntry extends LeafEntry {
 	private final Tag<Item> name;
 	private final boolean expand;
 
-	private TagEntry(Tag<Item> tag, boolean bl, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
+	private TagEntry(Tag<Item> tag, boolean bl, int i, int j, class_4570[] args, LootFunction[] lootFunctions) {
+		super(i, j, args, lootFunctions);
 		this.name = tag;
 		this.expand = bl;
 	}
@@ -54,7 +54,7 @@ public class TagEntry extends LeafEntry {
 	}
 
 	public static LeafEntry.Builder<?> builder(Tag<Item> tag) {
-		return builder((i, j, lootConditions, lootFunctions) -> new TagEntry(tag, true, i, j, lootConditions, lootFunctions));
+		return builder((i, j, args, lootFunctions) -> new TagEntry(tag, true, i, j, args, lootFunctions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<TagEntry> {
@@ -69,7 +69,7 @@ public class TagEntry extends LeafEntry {
 		}
 
 		protected TagEntry method_450(
-			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
+			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, class_4570[] args, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
 			Tag<Item> tag = ItemTags.getContainer().get(identifier);
@@ -77,7 +77,7 @@ public class TagEntry extends LeafEntry {
 				throw new JsonParseException("Can't find tag: " + identifier);
 			} else {
 				boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
-				return new TagEntry(tag, bl, i, j, lootConditions, lootFunctions);
+				return new TagEntry(tag, bl, i, j, args, lootFunctions);
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -59,9 +58,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 
 			this.setModelPose(abstractClientPlayerEntity);
-			GlStateManager.beginRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
+			RenderSystem.setProfile(RenderSystem.class_4564.field_20745);
 			super.method_4054(abstractClientPlayerEntity, d, i, f, g, h);
-			GlStateManager.endRenderMode(GlStateManager.RenderMode.PLAYER_SKIN);
+			RenderSystem.unsetProfile(RenderSystem.class_4564.field_20745);
 		}
 	}
 

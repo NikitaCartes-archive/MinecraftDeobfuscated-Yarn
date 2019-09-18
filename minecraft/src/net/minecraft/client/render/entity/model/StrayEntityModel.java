@@ -21,18 +21,18 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 		super(f, 0.0F, 64, 32);
 		if (!bl) {
 			this.rightArm = new ModelPart(this, 40, 16);
-			this.rightArm.addCuboid(-1.0F, -2.0F, -1.0F, 2, 12, 2, f);
+			this.rightArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
 			this.rightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
 			this.leftArm = new ModelPart(this, 40, 16);
 			this.leftArm.mirror = true;
-			this.leftArm.addCuboid(-1.0F, -2.0F, -1.0F, 2, 12, 2, f);
+			this.leftArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
 			this.leftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			this.rightLeg = new ModelPart(this, 0, 16);
-			this.rightLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2, 12, 2, f);
+			this.rightLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
 			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
 			this.leftLeg = new ModelPart(this, 0, 16);
 			this.leftLeg.mirror = true;
-			this.leftLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2, 12, 2, f);
+			this.leftLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
 			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
 		}
 	}

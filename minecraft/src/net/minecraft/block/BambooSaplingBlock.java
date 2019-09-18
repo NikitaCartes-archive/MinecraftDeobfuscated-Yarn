@@ -91,11 +91,6 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 		return playerEntity.getMainHandStack().getItem() instanceof SwordItem ? 1.0F : super.calcBlockBreakingDelta(blockState, playerEntity, blockView, blockPos);
 	}
 
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
 	protected void grow(World world, BlockPos blockPos) {
 		world.setBlockState(blockPos.up(), Blocks.BAMBOO.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.SMALL), 3);
 	}

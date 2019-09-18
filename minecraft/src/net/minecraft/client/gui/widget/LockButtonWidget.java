@@ -31,7 +31,7 @@ public class LockButtonWidget extends ButtonWidget {
 
 	@Override
 	public void renderButton(int i, int j, float f) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
+		MinecraftClient.getInstance().getTextureManager().method_22813(ButtonWidget.WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
 		if (!this.active) {

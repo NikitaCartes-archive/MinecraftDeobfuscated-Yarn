@@ -6,6 +6,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SignBlock;
@@ -32,7 +33,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 	private static final Identifier DARK_OAK_TEX = new Identifier("textures/entity/signs/dark_oak.png");
 	private final SignBlockEntityModel model = new SignBlockEntityModel();
 
-	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
+	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		RenderSystem.pushMatrix();
 		float h = 0.6666667F;
@@ -48,7 +49,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		}
 
 		if (i >= 0) {
-			this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
+			this.bindTexture((Identifier)DESTROY_STAGE_TEXTURES.get(i));
 			RenderSystem.matrixMode(5890);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(4.0F, 2.0F, 1.0F);

@@ -13,6 +13,12 @@ public class LootContextTypes {
 	public static final LootContextType CHEST = register(
 		"chest", builder -> builder.require(LootContextParameters.POSITION).allow(LootContextParameters.THIS_ENTITY)
 	);
+	public static final LootContextType COMMAND = register(
+		"command", builder -> builder.require(LootContextParameters.POSITION).allow(LootContextParameters.THIS_ENTITY)
+	);
+	public static final LootContextType SELECTOR = register(
+		"selector", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.THIS_ENTITY)
+	);
 	public static final LootContextType FISHING = register(
 		"fishing", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.TOOL)
 	);

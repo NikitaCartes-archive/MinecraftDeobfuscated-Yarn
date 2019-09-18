@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Locale;
 import java.util.Set;
+import net.minecraft.class_4570;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -17,7 +18,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -33,8 +33,8 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	private final int searchRadius;
 	private final boolean skipExistingChunks;
 
-	private ExplorationMapLootFunction(LootCondition[] lootConditions, String string, MapIcon.Type type, byte b, int i, boolean bl) {
-		super(lootConditions);
+	private ExplorationMapLootFunction(class_4570[] args, String string, MapIcon.Type type, byte b, int i, boolean bl) {
+		super(args);
 		this.destination = string;
 		this.decoration = type;
 		this.zoom = b;
@@ -138,7 +138,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		public ExplorationMapLootFunction method_504(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+		public ExplorationMapLootFunction method_504(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
 			String string = jsonObject.has("destination") ? JsonHelper.getString(jsonObject, "destination") : "Buried_Treasure";
 			string = Feature.STRUCTURES.containsKey(string.toLowerCase(Locale.ROOT)) ? string : "Buried_Treasure";
 			String string2 = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";
@@ -154,7 +154,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			byte b = JsonHelper.getByte(jsonObject, "zoom", (byte)2);
 			int i = JsonHelper.getInt(jsonObject, "search_radius", 50);
 			boolean bl = JsonHelper.getBoolean(jsonObject, "skip_existing_chunks", true);
-			return new ExplorationMapLootFunction(lootConditions, string, type, b, i, bl);
+			return new ExplorationMapLootFunction(args, string, type, b, i, bl);
 		}
 	}
 }

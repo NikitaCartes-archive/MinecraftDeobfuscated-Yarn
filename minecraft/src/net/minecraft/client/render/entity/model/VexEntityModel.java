@@ -21,13 +21,13 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		this.leftLeg.visible = false;
 		this.headwear.visible = false;
 		this.rightLeg = new ModelPart(this, 32, 0);
-		this.rightLeg.addCuboid(-1.0F, -1.0F, -2.0F, 6, 10, 4, 0.0F);
+		this.rightLeg.addCuboid(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F, 0.0F);
 		this.rightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
 		this.field_3602 = new ModelPart(this, 0, 32);
-		this.field_3602.addCuboid(-20.0F, 0.0F, 0.0F, 20, 12, 1);
+		this.field_3602.addCuboid(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
 		this.field_3601 = new ModelPart(this, 0, 32);
 		this.field_3601.mirror = true;
-		this.field_3601.addCuboid(0.0F, 0.0F, 0.0F, 20, 12, 1);
+		this.field_3601.addCuboid(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
 	}
 
 	public void method_17126(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {

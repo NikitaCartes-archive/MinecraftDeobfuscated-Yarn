@@ -2,6 +2,7 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 
 @Environment(EnvType.CLIENT)
@@ -42,8 +43,8 @@ public class Tezzelator {
 		t.getBufferBuilder().setOffset(d, e, f);
 	}
 
-	public RealmsBufferBuilder color(int i, int j, int k, int l) {
-		return new RealmsBufferBuilder(t.getBufferBuilder().color(i, j, k, l));
+	public BufferBuilder color(int i, int j, int k, int l) {
+		return t.getBufferBuilder().color(i, j, k, l);
 	}
 
 	public Tezzelator tex(double d, double e) {

@@ -66,11 +66,6 @@ public class CactusBlock extends Block {
 	}
 
 	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return true;
-	}
-
-	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
@@ -98,11 +93,6 @@ public class CactusBlock extends Block {
 	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		entity.damage(DamageSource.CACTUS, 1.0F);
-	}
-
-	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
 	}
 
 	@Override

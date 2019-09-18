@@ -74,11 +74,6 @@ public class PathNode {
 		return f + g + h;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public BlockPos getPos() {
-		return new BlockPos(this.x, this.y, this.z);
-	}
-
 	public boolean equals(Object object) {
 		if (!(object instanceof PathNode)) {
 			return false;

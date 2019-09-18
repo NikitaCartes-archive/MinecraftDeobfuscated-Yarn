@@ -1,6 +1,9 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.List;
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -9,6 +12,7 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
+	private List<ModelPart> field_20787 = Lists.<ModelPart>newArrayList();
 	public final ModelPart leftArmOverlay;
 	public final ModelPart rightArmOverlay;
 	public final ModelPart leftLegOverlay;
@@ -22,46 +26,46 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		super(f, 0.0F, 64, 64);
 		this.thinArms = bl;
 		this.ears = new ModelPart(this, 24, 0);
-		this.ears.addCuboid(-3.0F, -6.0F, -1.0F, 6, 6, 1, f);
+		this.ears.addCuboid(-3.0F, -6.0F, -1.0F, 6.0F, 6.0F, 1.0F, f);
 		this.cape = new ModelPart(this, 0, 0);
 		this.cape.setTextureSize(64, 32);
-		this.cape.addCuboid(-5.0F, 0.0F, -1.0F, 10, 16, 1, f);
+		this.cape.addCuboid(-5.0F, 0.0F, -1.0F, 10.0F, 16.0F, 1.0F, f);
 		if (bl) {
 			this.leftArm = new ModelPart(this, 32, 48);
-			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 3, 12, 4, f);
+			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f);
 			this.leftArm.setRotationPoint(5.0F, 2.5F, 0.0F);
 			this.rightArm = new ModelPart(this, 40, 16);
-			this.rightArm.addCuboid(-2.0F, -2.0F, -2.0F, 3, 12, 4, f);
+			this.rightArm.addCuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f);
 			this.rightArm.setRotationPoint(-5.0F, 2.5F, 0.0F);
 			this.leftArmOverlay = new ModelPart(this, 48, 48);
-			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 3, 12, 4, f + 0.25F);
+			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f + 0.25F);
 			this.leftArmOverlay.setRotationPoint(5.0F, 2.5F, 0.0F);
 			this.rightArmOverlay = new ModelPart(this, 40, 32);
-			this.rightArmOverlay.addCuboid(-2.0F, -2.0F, -2.0F, 3, 12, 4, f + 0.25F);
+			this.rightArmOverlay.addCuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f + 0.25F);
 			this.rightArmOverlay.setRotationPoint(-5.0F, 2.5F, 10.0F);
 		} else {
 			this.leftArm = new ModelPart(this, 32, 48);
-			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4, 12, 4, f);
+			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 			this.leftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
 			this.leftArmOverlay = new ModelPart(this, 48, 48);
-			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 4, 12, 4, f + 0.25F);
+			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
 			this.leftArmOverlay.setRotationPoint(5.0F, 2.0F, 0.0F);
 			this.rightArmOverlay = new ModelPart(this, 40, 32);
-			this.rightArmOverlay.addCuboid(-3.0F, -2.0F, -2.0F, 4, 12, 4, f + 0.25F);
+			this.rightArmOverlay.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
 			this.rightArmOverlay.setRotationPoint(-5.0F, 2.0F, 10.0F);
 		}
 
 		this.leftLeg = new ModelPart(this, 16, 48);
-		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f);
+		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		this.leftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
 		this.leftLegOverlay = new ModelPart(this, 0, 48);
-		this.leftLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f + 0.25F);
+		this.leftLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
 		this.leftLegOverlay.setRotationPoint(1.9F, 12.0F, 0.0F);
 		this.rightLegOverlay = new ModelPart(this, 0, 32);
-		this.rightLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4, 12, 4, f + 0.25F);
+		this.rightLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
 		this.rightLegOverlay.setRotationPoint(-1.9F, 12.0F, 0.0F);
 		this.bodyOverlay = new ModelPart(this, 16, 32);
-		this.bodyOverlay.addCuboid(-4.0F, 0.0F, -2.0F, 8, 12, 4, f + 0.25F);
+		this.bodyOverlay.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f + 0.25F);
 		this.bodyOverlay.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 
@@ -142,5 +146,18 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		} else {
 			modelPart.applyTransform(f);
 		}
+	}
+
+	public ModelPart method_22697(Random random) {
+		return (ModelPart)this.field_20787.get(random.nextInt(this.field_20787.size()));
+	}
+
+	@Override
+	public void method_22696(ModelPart modelPart) {
+		if (this.field_20787 == null) {
+			this.field_20787 = Lists.<ModelPart>newArrayList();
+		}
+
+		this.field_20787.add(modelPart);
 	}
 }

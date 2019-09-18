@@ -114,7 +114,8 @@ public class SignEditScreen extends Screen {
 		RenderSystem.translatef(0.0F, -1.0625F, 0.0F);
 		this.sign
 			.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);
-		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, -0.5, -0.75, -0.5, 0.0F);
+		RenderSystem.translatef(-0.5F, -0.75F, -0.5F);
+		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign);
 		this.sign.resetSelectionState();
 		RenderSystem.popMatrix();
 		super.render(i, j, f);

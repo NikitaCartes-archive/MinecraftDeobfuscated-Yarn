@@ -101,11 +101,6 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.TRANSLUCENT;
-	}
-
-	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		if (!entity.hasVehicle() && !entity.hasPassengers() && entity.canUsePortals()) {
 			entity.setInPortal(blockPos);

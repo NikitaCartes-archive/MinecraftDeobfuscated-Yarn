@@ -17,7 +17,7 @@ public class SkullEntityModel extends Model {
 		this.textureWidth = k;
 		this.textureHeight = l;
 		this.skull = new ModelPart(this, i, j);
-		this.skull.addCuboid(-4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
+		this.skull.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.0F);
 		this.skull.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 

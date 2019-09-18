@@ -52,7 +52,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 			RenderSystem.alphaFunc(516, l);
 			this.bindTexture(EXPLOSION_TEX);
 			this.model.method_17137(enderDragonEntity, f, g, h, i, j, k);
-			RenderSystem.alphaFunc(516, 0.1F);
+			RenderSystem.defaultAlphaFunc();
 			RenderSystem.depthFunc(514);
 		}
 

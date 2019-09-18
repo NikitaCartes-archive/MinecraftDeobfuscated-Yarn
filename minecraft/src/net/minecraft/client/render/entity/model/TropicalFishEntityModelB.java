@@ -24,24 +24,24 @@ public class TropicalFishEntityModelB<T extends Entity> extends EntityModel<T> {
 		this.textureHeight = 32;
 		int i = 19;
 		this.field_3597 = new ModelPart(this, 0, 20);
-		this.field_3597.addCuboid(-1.0F, -3.0F, -3.0F, 2, 6, 6, f);
+		this.field_3597.addCuboid(-1.0F, -3.0F, -3.0F, 2.0F, 6.0F, 6.0F, f);
 		this.field_3597.setRotationPoint(0.0F, 19.0F, 0.0F);
 		this.field_3599 = new ModelPart(this, 21, 16);
-		this.field_3599.addCuboid(0.0F, -3.0F, 0.0F, 0, 6, 5, f);
+		this.field_3599.addCuboid(0.0F, -3.0F, 0.0F, 0.0F, 6.0F, 5.0F, f);
 		this.field_3599.setRotationPoint(0.0F, 19.0F, 3.0F);
 		this.field_3598 = new ModelPart(this, 2, 16);
-		this.field_3598.addCuboid(-2.0F, 0.0F, 0.0F, 2, 2, 0, f);
+		this.field_3598.addCuboid(-2.0F, 0.0F, 0.0F, 2.0F, 2.0F, 0.0F, f);
 		this.field_3598.setRotationPoint(-1.0F, 20.0F, 0.0F);
 		this.field_3598.yaw = (float) (Math.PI / 4);
 		this.field_3596 = new ModelPart(this, 2, 12);
-		this.field_3596.addCuboid(0.0F, 0.0F, 0.0F, 2, 2, 0, f);
+		this.field_3596.addCuboid(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 0.0F, f);
 		this.field_3596.setRotationPoint(1.0F, 20.0F, 0.0F);
 		this.field_3596.yaw = (float) (-Math.PI / 4);
 		this.field_3595 = new ModelPart(this, 20, 11);
-		this.field_3595.addCuboid(0.0F, -4.0F, 0.0F, 0, 4, 6, f);
+		this.field_3595.addCuboid(0.0F, -4.0F, 0.0F, 0.0F, 4.0F, 6.0F, f);
 		this.field_3595.setRotationPoint(0.0F, 16.0F, -3.0F);
 		this.field_3600 = new ModelPart(this, 20, 21);
-		this.field_3600.addCuboid(0.0F, 0.0F, 0.0F, 0, 4, 6, f);
+		this.field_3600.addCuboid(0.0F, 0.0F, 0.0F, 0.0F, 4.0F, 6.0F, f);
 		this.field_3600.setRotationPoint(0.0F, 22.0F, -3.0F);
 	}
 

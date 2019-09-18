@@ -54,11 +54,6 @@ public class CauldronBlock extends Block {
 	}
 
 	@Override
-	public boolean isOpaque(BlockState blockState) {
-		return false;
-	}
-
-	@Override
 	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return RAY_TRACE_SHAPE;
 	}

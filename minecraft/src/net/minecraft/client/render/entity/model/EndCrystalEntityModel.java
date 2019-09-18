@@ -9,16 +9,16 @@ import net.minecraft.entity.Entity;
 @Environment(EnvType.CLIENT)
 public class EndCrystalEntityModel<T extends Entity> extends EntityModel<T> {
 	private final ModelPart cube;
-	private final ModelPart glass = new ModelPart(this, "glass");
+	private final ModelPart glass = new ModelPart(this);
 	private final ModelPart base;
 
 	public EndCrystalEntityModel(float f, boolean bl) {
-		this.glass.setTextureOffset(0, 0).addCuboid(-4.0F, -4.0F, -4.0F, 8, 8, 8);
-		this.cube = new ModelPart(this, "cube");
-		this.cube.setTextureOffset(32, 0).addCuboid(-4.0F, -4.0F, -4.0F, 8, 8, 8);
+		this.glass.setTextureOffset(0, 0).addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+		this.cube = new ModelPart(this);
+		this.cube.setTextureOffset(32, 0).addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
 		if (bl) {
-			this.base = new ModelPart(this, "base");
-			this.base.setTextureOffset(0, 16).addCuboid(-6.0F, 0.0F, -6.0F, 12, 4, 12);
+			this.base = new ModelPart(this);
+			this.base.setTextureOffset(0, 16).addCuboid(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F);
 		} else {
 			this.base = null;
 		}

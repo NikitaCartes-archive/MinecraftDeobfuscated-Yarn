@@ -56,11 +56,6 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockRenderLayer getRenderLayer() {
-		return BlockRenderLayer.CUTOUT;
-	}
-
-	@Override
 	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		return itemPlacementContext.getStack().getItem() == this.asItem();
 	}
