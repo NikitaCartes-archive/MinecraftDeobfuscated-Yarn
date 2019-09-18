@@ -31,12 +31,12 @@ import net.minecraft.util.math.MathHelper;
 public class BookScreen extends Screen {
 	public static final BookScreen.Contents EMPTY_PROVIDER = new BookScreen.Contents() {
 		@Override
-		public int getLineCount() {
+		public int getPageCount() {
 			return 0;
 		}
 
 		@Override
-		public Text getLine(int i) {
+		public Text getPageUnchecked(int i) {
 			return new LiteralText("");
 		}
 	};
@@ -65,13 +65,13 @@ public class BookScreen extends Screen {
 
 	public void setPageProvider(BookScreen.Contents contents) {
 		this.contents = contents;
-		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, contents.getLineCount());
+		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, contents.getPageCount());
 		this.updatePageButtons();
 		this.cachedPageIndex = -1;
 	}
 
 	public boolean setPage(int i) {
-		int j = MathHelper.clamp(i, 0, this.contents.getLineCount() - 1);
+		int j = MathHelper.clamp(i, 0, this.contents.getPageCount() - 1);
 		if (j != this.pageIndex) {
 			this.pageIndex = j;
 			this.updatePageButtons();
@@ -105,7 +105,7 @@ public class BookScreen extends Screen {
 	}
 
 	private int getPageCount() {
-		return this.contents.getLineCount();
+		return this.contents.getPageCount();
 	}
 
 	protected void goToPreviousPage() {
@@ -151,13 +151,13 @@ public class BookScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().method_22813(BOOK_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
 		int k = (this.width - 192) / 2;
 		int l = 2;
 		this.blit(k, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
-			Text text = this.contents.getLineOrDefault(this.pageIndex);
+			Text text = this.contents.getPage(this.pageIndex);
 			this.cachedPage = TextComponentUtil.wrapLines(text, 114, this.font, true, true);
 		}
 
@@ -254,7 +254,7 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	public static List<String> getLines(CompoundTag compoundTag) {
+	public static List<String> readPages(CompoundTag compoundTag) {
 		ListTag listTag = compoundTag.getList("pages", 8).method_10612();
 		Builder<String> builder = ImmutableList.builder();
 
@@ -267,12 +267,12 @@ public class BookScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	public interface Contents {
-		int getLineCount();
+		int getPageCount();
 
-		Text getLine(int i);
+		Text getPageUnchecked(int i);
 
-		default Text getLineOrDefault(int i) {
-			return (Text)(i >= 0 && i < this.getLineCount() ? this.getLine(i) : new LiteralText(""));
+		default Text getPage(int i) {
+			return (Text)(i >= 0 && i < this.getPageCount() ? this.getPageUnchecked(i) : new LiteralText(""));
 		}
 
 		static BookScreen.Contents create(ItemStack itemStack) {
@@ -287,51 +287,51 @@ public class BookScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	public static class WritableBookContents implements BookScreen.Contents {
-		private final List<String> lines;
+		private final List<String> pages;
 
 		public WritableBookContents(ItemStack itemStack) {
-			this.lines = getLines(itemStack);
+			this.pages = getPages(itemStack);
 		}
 
-		private static List<String> getLines(ItemStack itemStack) {
+		private static List<String> getPages(ItemStack itemStack) {
 			CompoundTag compoundTag = itemStack.getTag();
-			return (List<String>)(compoundTag != null ? BookScreen.getLines(compoundTag) : ImmutableList.of());
+			return (List<String>)(compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of());
 		}
 
 		@Override
-		public int getLineCount() {
-			return this.lines.size();
+		public int getPageCount() {
+			return this.pages.size();
 		}
 
 		@Override
-		public Text getLine(int i) {
-			return new LiteralText((String)this.lines.get(i));
+		public Text getPageUnchecked(int i) {
+			return new LiteralText((String)this.pages.get(i));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class WrittenBookContents implements BookScreen.Contents {
-		private final List<String> lines;
+		private final List<String> pages;
 
 		public WrittenBookContents(ItemStack itemStack) {
-			this.lines = getLines(itemStack);
+			this.pages = getPages(itemStack);
 		}
 
-		private static List<String> getLines(ItemStack itemStack) {
+		private static List<String> getPages(ItemStack itemStack) {
 			CompoundTag compoundTag = itemStack.getTag();
 			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
-				? BookScreen.getLines(compoundTag)
+				? BookScreen.readPages(compoundTag)
 				: ImmutableList.of(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED).asFormattedString()));
 		}
 
 		@Override
-		public int getLineCount() {
-			return this.lines.size();
+		public int getPageCount() {
+			return this.pages.size();
 		}
 
 		@Override
-		public Text getLine(int i) {
-			String string = (String)this.lines.get(i);
+		public Text getPageUnchecked(int i) {
+			String string = (String)this.pages.get(i);
 
 			try {
 				Text text = Text.Serializer.fromJson(string);

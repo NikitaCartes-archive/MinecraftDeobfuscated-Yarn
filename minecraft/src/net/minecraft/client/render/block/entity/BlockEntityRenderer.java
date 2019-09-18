@@ -69,7 +69,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 	protected void bindTexture(Identifier identifier) {
 		TextureManager textureManager = this.renderManager.textureManager;
 		if (textureManager != null) {
-			textureManager.method_22813(identifier);
+			textureManager.bindTexture(identifier);
 		}
 	}
 

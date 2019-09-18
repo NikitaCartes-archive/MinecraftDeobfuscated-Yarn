@@ -1,33 +1,31 @@
-package net.minecraft;
+package net.minecraft.world.loot.condition;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Predicate;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.condition.AlternativeLootCondition;
-import net.minecraft.world.loot.condition.InvertedLootCondition;
 import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.ParameterConsumer;
+import net.minecraft.world.loot.context.LootContextAware;
 
 @FunctionalInterface
-public interface class_4570 extends ParameterConsumer, Predicate<LootContext> {
-	class_4570 field_20766 = lootContext -> false;
+public interface LootCondition extends LootContextAware, Predicate<LootContext> {
+	LootCondition ALWAYS_FALSE = lootContext -> false;
 
 	@FunctionalInterface
 	public interface Builder {
-		class_4570 build();
+		LootCondition build();
 
-		default class_4570.Builder invert() {
+		default LootCondition.Builder invert() {
 			return InvertedLootCondition.builder(this);
 		}
 
-		default AlternativeLootCondition.Builder withCondition(class_4570.Builder builder) {
+		default AlternativeLootCondition.Builder withCondition(LootCondition.Builder builder) {
 			return AlternativeLootCondition.builder(this, builder);
 		}
 	}
 
-	public abstract static class Factory<T extends class_4570> {
+	public abstract static class Factory<T extends LootCondition> {
 		private final Identifier id;
 		private final Class<T> conditionClass;
 
@@ -44,7 +42,7 @@ public interface class_4570 extends ParameterConsumer, Predicate<LootContext> {
 			return this.conditionClass;
 		}
 
-		public abstract void toJson(JsonObject jsonObject, T arg, JsonSerializationContext jsonSerializationContext);
+		public abstract void toJson(JsonObject jsonObject, T lootCondition, JsonSerializationContext jsonSerializationContext);
 
 		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
 	}

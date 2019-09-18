@@ -5,11 +5,11 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Nameable;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
@@ -17,8 +17,8 @@ import net.minecraft.world.loot.context.LootContextParameters;
 public class CopyNameLootFunction extends ConditionalLootFunction {
 	private final CopyNameLootFunction.Source source;
 
-	private CopyNameLootFunction(class_4570[] args, CopyNameLootFunction.Source source) {
-		super(args);
+	private CopyNameLootFunction(LootCondition[] lootConditions, CopyNameLootFunction.Source source) {
+		super(lootConditions);
 		this.source = source;
 	}
 
@@ -41,7 +41,7 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(CopyNameLootFunction.Source source) {
-		return builder(args -> new CopyNameLootFunction(args, source));
+		return builder(lootConditions -> new CopyNameLootFunction(lootConditions, source));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<CopyNameLootFunction> {
@@ -54,9 +54,9 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 			jsonObject.addProperty("source", copyNameLootFunction.source.name);
 		}
 
-		public CopyNameLootFunction method_477(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+		public CopyNameLootFunction method_477(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			CopyNameLootFunction.Source source = CopyNameLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
-			return new CopyNameLootFunction(args, source);
+			return new CopyNameLootFunction(lootConditions, source);
 		}
 	}
 

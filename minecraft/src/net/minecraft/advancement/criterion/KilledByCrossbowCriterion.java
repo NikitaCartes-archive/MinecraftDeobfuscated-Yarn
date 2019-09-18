@@ -9,15 +9,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.class_4558;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.NumberRange;
 
-public class KilledByCrossbowCriterion extends class_4558<KilledByCrossbowCriterion.Conditions> {
+public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbowCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("killed_by_crossbow");
 
 	@Override
@@ -26,13 +25,13 @@ public class KilledByCrossbowCriterion extends class_4558<KilledByCrossbowCriter
 	}
 
 	public KilledByCrossbowCriterion.Conditions method_8979(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
+		EntityPredicate[] entityPredicates = EntityPredicate.fromJsonArray(jsonObject.get("victims"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("unique_entity_types"));
 		return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 	}
 
 	public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, collection, i));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, collection, i));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -101,7 +100,7 @@ public class KilledByCrossbowCriterion extends class_4558<KilledByCrossbowCriter
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
-			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.serialize());
+			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.toJson());
 			return jsonObject;
 		}
 	}

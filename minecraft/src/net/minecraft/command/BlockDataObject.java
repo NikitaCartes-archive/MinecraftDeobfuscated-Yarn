@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class BlockDataObject implements DataCommandObject {
 	private static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
-	public static final Function<String, DataCommand.ObjectType> field_13786 = string -> new DataCommand.ObjectType() {
+	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
 				BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(commandContext, string + "Pos");
@@ -69,17 +69,17 @@ public class BlockDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text getModifiedFeedback() {
+	public Text feedbackModify() {
 		return new TranslatableText("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
 	}
 
 	@Override
-	public Text getQueryFeedback(Tag tag) {
+	public Text feedbackQuery(Tag tag) {
 		return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), tag.toText());
 	}
 
 	@Override
-	public Text getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
 		return new TranslatableText("commands.data.block.get", nbtPath, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

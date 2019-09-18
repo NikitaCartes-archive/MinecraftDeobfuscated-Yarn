@@ -3,13 +3,12 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class SummonedEntityCriterion extends class_4558<SummonedEntityCriterion.Conditions> {
+public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("summoned_entity");
 
 	@Override
@@ -18,12 +17,12 @@ public class SummonedEntityCriterion extends class_4558<SummonedEntityCriterion.
 	}
 
 	public SummonedEntityCriterion.Conditions method_9123(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("entity"));
+		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
 		return new SummonedEntityCriterion.Conditions(entityPredicate);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, entity));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, entity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

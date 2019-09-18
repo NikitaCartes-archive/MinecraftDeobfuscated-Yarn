@@ -72,7 +72,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().method_22813(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -93,7 +93,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		float h = 5.0F;
 		RenderSystem.scalef(5.0F, 5.0F, 5.0F);
 		RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-		this.minecraft.getTextureManager().method_22813(BOOK_TEXURE);
+		this.minecraft.getTextureManager().bindTexture(BOOK_TEXURE);
 		RenderSystem.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
 		float n = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
 		RenderSystem.translatef((1.0F - n) * 0.2F, (1.0F - n) * 0.1F, (1.0F - n) * 0.25F);
@@ -138,7 +138,7 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 			int s = k + 60;
 			int t = s + 20;
 			this.setBlitOffset(0);
-			this.minecraft.getTextureManager().method_22813(TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(TEXTURE);
 			int u = this.container.enchantmentPower[r];
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			if (u == 0) {

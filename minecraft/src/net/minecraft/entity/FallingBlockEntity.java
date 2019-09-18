@@ -21,12 +21,12 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -224,7 +224,7 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.put("BlockState", TagHelper.serializeBlockState(this.block));
+		compoundTag.put("BlockState", NbtHelper.fromBlockState(this.block));
 		compoundTag.putInt("Time", this.timeFalling);
 		compoundTag.putBoolean("DropItem", this.dropItem);
 		compoundTag.putBoolean("HurtEntities", this.hurtEntities);
@@ -237,7 +237,7 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.block = TagHelper.deserializeBlockState(compoundTag.getCompound("BlockState"));
+		this.block = NbtHelper.toBlockState(compoundTag.getCompound("BlockState"));
 		this.timeFalling = compoundTag.getInt("Time");
 		if (compoundTag.containsKey("HurtEntities", 99)) {
 			this.hurtEntities = compoundTag.getBoolean("HurtEntities");

@@ -52,7 +52,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 
 	@Override
 	public void renderIcon(float f, int i) {
-		MinecraftClient.getInstance().getTextureManager().method_22813(SpectatorHud.SPECTATOR_TEX);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 		DrawableHelper.blit(0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
 	}
 
@@ -113,7 +113,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 				DrawableHelper.fill(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
 			}
 
-			MinecraftClient.getInstance().getTextureManager().method_22813(this.skinId);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
 			RenderSystem.color4f(f, f, f, (float)i / 255.0F);
 			DrawableHelper.blit(2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
 			DrawableHelper.blit(2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);

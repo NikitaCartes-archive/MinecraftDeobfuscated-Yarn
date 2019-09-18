@@ -36,12 +36,12 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -149,7 +149,7 @@ public class EndermanEntity extends HostileEntity {
 		super.writeCustomDataToTag(compoundTag);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
-			compoundTag.put("carriedBlockState", TagHelper.serializeBlockState(blockState));
+			compoundTag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
 		}
 	}
 
@@ -158,7 +158,7 @@ public class EndermanEntity extends HostileEntity {
 		super.readCustomDataFromTag(compoundTag);
 		BlockState blockState = null;
 		if (compoundTag.containsKey("carriedBlockState", 10)) {
-			blockState = TagHelper.deserializeBlockState(compoundTag.getCompound("carriedBlockState"));
+			blockState = NbtHelper.toBlockState(compoundTag.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
 			}

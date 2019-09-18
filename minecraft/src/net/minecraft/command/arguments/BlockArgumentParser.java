@@ -21,7 +21,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
@@ -57,7 +57,7 @@ public class BlockArgumentParser {
 	private final Map<Property<?>, Comparable<?>> blockProperties = Maps.newHashMap();
 	private final Map<String, String> tagProperties = Maps.newHashMap();
 	private Identifier blockId = new Identifier("");
-	private StateFactory<Block, BlockState> stateFactory;
+	private StateManager<Block, BlockState> stateFactory;
 	private BlockState blockState;
 	@Nullable
 	private CompoundTag data;
@@ -213,7 +213,7 @@ public class BlockArgumentParser {
 			if (comparable instanceof Integer) {
 				suggestionsBuilder.suggest((Integer)comparable);
 			} else {
-				suggestionsBuilder.suggest(property.getName(comparable));
+				suggestionsBuilder.suggest(property.name(comparable));
 			}
 		}
 
@@ -439,7 +439,7 @@ public class BlockArgumentParser {
 	}
 
 	private <T extends Comparable<T>> void parsePropertyValue(Property<T> property, String string, int i) throws CommandSyntaxException {
-		Optional<T> optional = property.getValue(string);
+		Optional<T> optional = property.parse(string);
 		if (optional.isPresent()) {
 			this.blockState = this.blockState.with(property, (Comparable)optional.get());
 			this.blockProperties.put(property, optional.get());
@@ -473,7 +473,7 @@ public class BlockArgumentParser {
 	private static <T extends Comparable<T>> void stringifyProperty(StringBuilder stringBuilder, Property<T> property, Comparable<?> comparable) {
 		stringBuilder.append(property.getName());
 		stringBuilder.append('=');
-		stringBuilder.append(property.getName((T)comparable));
+		stringBuilder.append(property.name((T)comparable));
 	}
 
 	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder suggestionsBuilder) {

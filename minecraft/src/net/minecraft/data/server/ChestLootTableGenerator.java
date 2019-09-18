@@ -9,7 +9,7 @@ import net.minecraft.item.map.MapIcon;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.loot.ConstantLootTableRange;
 import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.UniformLootTableRange;
 import net.minecraft.world.loot.entry.EmptyEntry;
@@ -20,11 +20,11 @@ import net.minecraft.world.loot.function.ExplorationMapLootFunction;
 import net.minecraft.world.loot.function.SetCountLootFunction;
 import net.minecraft.world.loot.function.SetStewEffectLootFunction;
 
-public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-	public void method_10399(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
+public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
+	public void method_10399(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
 		biConsumer.accept(
 			LootTables.ABANDONED_MINESHAFT_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -61,7 +61,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.BURIED_TREASURE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.HEART_OF_THE_SEA)))
 				.withPool(
 					LootPool.builder()
@@ -92,7 +92,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.DESERT_PYRAMID_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 4.0F))
@@ -124,7 +124,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.END_CITY_TREASURE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 6.0F))
@@ -211,7 +211,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.IGLOO_CHEST_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 8.0F))
@@ -227,7 +227,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.JUNGLE_TEMPLE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 6.0F))
@@ -249,7 +249,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.JUNGLE_TEMPLE_DISPENSER_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 2.0F))
@@ -258,7 +258,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.NETHER_BRIDGE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 4.0F))
@@ -278,7 +278,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.PILLAGER_OUTPOST_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(LootPool.builder().withRolls(UniformLootTableRange.between(0.0F, 1.0F)).withEntry(ItemEntry.builder(Items.CROSSBOW)))
 				.withPool(
 					LootPool.builder()
@@ -305,7 +305,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.SHIPWRECK_MAP_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -333,7 +333,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.SHIPWRECK_SUPPLY_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 10.0F))
@@ -369,7 +369,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.SHIPWRECK_TREASURE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 6.0F))
@@ -389,7 +389,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.SIMPLE_DUNGEON_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 3.0F))
@@ -429,7 +429,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.SPAWN_BONUS_CHEST_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -464,7 +464,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.STRONGHOLD_CORRIDOR_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 3.0F))
@@ -493,7 +493,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.STRONGHOLD_CROSSING_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 4.0F))
@@ -511,7 +511,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.STRONGHOLD_LIBRARY_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 10.0F))
@@ -528,7 +528,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.UNDERWATER_RUIN_BIG_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 8.0F))
@@ -560,7 +560,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.UNDERWATER_RUIN_SMALL_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(2.0F, 8.0F))
@@ -591,7 +591,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_WEAPONSMITH_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -616,7 +616,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_TOOLSMITH_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -632,7 +632,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_CARTOGRAPHER_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -645,7 +645,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_MASON_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -661,7 +661,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_ARMORER_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -673,7 +673,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_SHEPHERD_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -689,7 +689,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_BUTCHER_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -703,7 +703,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_FLETCHER_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -717,7 +717,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_FISHER_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -732,7 +732,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_TANNERY_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 5.0F))
@@ -748,7 +748,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_TEMPLE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -762,7 +762,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_PLAINS_HOUSE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -780,7 +780,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_TAIGA_HOUSE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -800,7 +800,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_SAVANNA_HOUSE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -818,7 +818,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_SNOWY_HOUSE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -836,7 +836,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.VILLAGE_VILLAGE_DESERT_HOUSE_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(3.0F, 8.0F))
@@ -852,7 +852,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		biConsumer.accept(
 			LootTables.WOODLAND_MANSION_CHEST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 3.0F))

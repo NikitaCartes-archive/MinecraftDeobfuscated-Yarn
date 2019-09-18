@@ -59,7 +59,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		this.renderBackground();
-		this.minecraft.getTextureManager().method_22813(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
@@ -102,7 +102,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 				int r = q - this.firstPatternButtonId;
 				int s = n + r % 4 * 14;
 				int t = o + r / 4 * 14;
-				this.minecraft.getTextureManager().method_22813(TEXTURE);
+				this.minecraft.getTextureManager().bindTexture(TEXTURE);
 				int u = this.containerHeight;
 				if (q == this.container.getSelectedPattern()) {
 					u += 14;
@@ -116,7 +116,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 		} else if (this.canApplySpecialPattern) {
 			int n = k + 60;
 			int o = l + 13;
-			this.minecraft.getTextureManager().method_22813(TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(TEXTURE);
 			this.blit(n, o, 0, this.containerHeight, 14, 14);
 			int p = this.container.getSelectedPattern();
 			this.method_22692(p, n, o);

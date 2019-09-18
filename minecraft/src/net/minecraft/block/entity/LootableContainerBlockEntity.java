@@ -13,7 +13,7 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
@@ -59,7 +59,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	public void checkLootInteraction(@Nullable PlayerEntity playerEntity) {
 		if (this.lootTableId != null && this.world.getServer() != null) {
-			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
+			LootTable lootTable = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 				.put(LootContextParameters.POSITION, new BlockPos(this.pos))
@@ -68,7 +68,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
 		}
 	}
 

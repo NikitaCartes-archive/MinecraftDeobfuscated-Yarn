@@ -7,7 +7,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.texture.Sprite;
@@ -38,12 +37,12 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		return this.models;
 	}
 
-	public void tesselateDamage(BlockState blockState, BlockPos blockPos, Sprite sprite, BlockRenderView blockRenderView) {
+	public void tesselateDamage(BufferBuilder bufferBuilder, BlockState blockState, BlockPos blockPos, Sprite sprite, BlockRenderView blockRenderView) {
 		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			BakedModel bakedModel = this.models.getModel(blockState);
 			long l = blockState.getRenderingSeed(blockPos);
 			BakedModel bakedModel2 = new BasicBakedModel.Builder(blockState, bakedModel, sprite, this.random, l).build();
-			this.renderer.tesselate(blockRenderView, bakedModel2, blockState, blockPos, Tessellator.getInstance().getBufferBuilder(), true, this.random, l);
+			this.renderer.tesselate(blockRenderView, bakedModel2, blockState, blockPos, bufferBuilder, true, this.random, l);
 		}
 	}
 

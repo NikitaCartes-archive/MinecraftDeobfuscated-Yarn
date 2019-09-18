@@ -17,7 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
@@ -40,8 +40,8 @@ public class MultipartModelComponent {
 		return this.model;
 	}
 
-	public Predicate<BlockState> getPredicate(StateFactory<Block, BlockState> stateFactory) {
-		return this.selector.getPredicate(stateFactory);
+	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
+		return this.selector.getPredicate(stateManager);
 	}
 
 	public boolean equals(Object object) {

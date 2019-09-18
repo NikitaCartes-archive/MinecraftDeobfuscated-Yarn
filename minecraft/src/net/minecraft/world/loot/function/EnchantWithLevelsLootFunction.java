@@ -4,21 +4,21 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.Random;
-import net.minecraft.class_4570;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.LootTableRange;
 import net.minecraft.world.loot.LootTableRanges;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	private final LootTableRange range;
 	private final boolean treasureEnchantmentsAllowed;
 
-	private EnchantWithLevelsLootFunction(class_4570[] args, LootTableRange lootTableRange, boolean bl) {
-		super(args);
+	private EnchantWithLevelsLootFunction(LootCondition[] lootConditions, LootTableRange lootTableRange, boolean bl) {
+		super(lootConditions);
 		this.range = lootTableRange;
 		this.treasureEnchantmentsAllowed = bl;
 	}
@@ -63,14 +63,14 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 
 		public void method_485(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
-			jsonObject.add("levels", LootTableRanges.serialize(enchantWithLevelsLootFunction.range, jsonSerializationContext));
+			jsonObject.add("levels", LootTableRanges.toJson(enchantWithLevelsLootFunction.range, jsonSerializationContext));
 			jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
 		}
 
-		public EnchantWithLevelsLootFunction method_486(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
-			LootTableRange lootTableRange = LootTableRanges.deserialize(jsonObject.get("levels"), jsonDeserializationContext);
+		public EnchantWithLevelsLootFunction method_486(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
+			LootTableRange lootTableRange = LootTableRanges.fromJson(jsonObject.get("levels"), jsonDeserializationContext);
 			boolean bl = JsonHelper.getBoolean(jsonObject, "treasure", false);
-			return new EnchantWithLevelsLootFunction(args, lootTableRange, bl);
+			return new EnchantWithLevelsLootFunction(lootConditions, lootTableRange, bl);
 		}
 	}
 }

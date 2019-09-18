@@ -30,12 +30,12 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.resource.ResourcePackContainerManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.TagHelper;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -533,7 +533,7 @@ public class GameOptions {
 		} catch (RuntimeException var4) {
 		}
 
-		return TagHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
+		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
 	}
 
 	private static float parseFloat(String string) {

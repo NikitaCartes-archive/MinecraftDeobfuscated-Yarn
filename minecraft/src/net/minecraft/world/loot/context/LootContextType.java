@@ -35,8 +35,8 @@ public class LootContextType {
 			+ "]";
 	}
 
-	public void check(LootTableReporter lootTableReporter, ParameterConsumer parameterConsumer) {
-		Set<LootContextParameter<?>> set = parameterConsumer.getRequiredParameters();
+	public void check(LootTableReporter lootTableReporter, LootContextAware lootContextAware) {
+		Set<LootContextParameter<?>> set = lootContextAware.getRequiredParameters();
 		Set<LootContextParameter<?>> set2 = Sets.<LootContextParameter<?>>difference(set, this.allowed);
 		if (!set2.isEmpty()) {
 			lootTableReporter.report("Parameters " + set2 + " are not provided in this context");

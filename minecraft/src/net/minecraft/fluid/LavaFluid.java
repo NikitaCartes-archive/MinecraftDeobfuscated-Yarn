@@ -14,7 +14,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -214,7 +214,7 @@ public abstract class LavaFluid extends BaseFluid {
 
 	public static class Flowing extends LavaFluid {
 		@Override
-		protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
+		protected void appendProperties(StateManager.Builder<Fluid, FluidState> builder) {
 			super.appendProperties(builder);
 			builder.add(LEVEL);
 		}

@@ -15,13 +15,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -228,11 +228,11 @@ public class ItemEntity extends Entity {
 		compoundTag.putShort("Age", (short)this.age);
 		compoundTag.putShort("PickupDelay", (short)this.pickupDelay);
 		if (this.getThrower() != null) {
-			compoundTag.put("Thrower", TagHelper.serializeUuid(this.getThrower()));
+			compoundTag.put("Thrower", NbtHelper.fromUuid(this.getThrower()));
 		}
 
 		if (this.getOwner() != null) {
-			compoundTag.put("Owner", TagHelper.serializeUuid(this.getOwner()));
+			compoundTag.put("Owner", NbtHelper.fromUuid(this.getOwner()));
 		}
 
 		if (!this.getStack().isEmpty()) {
@@ -249,11 +249,11 @@ public class ItemEntity extends Entity {
 		}
 
 		if (compoundTag.containsKey("Owner", 10)) {
-			this.owner = TagHelper.deserializeUuid(compoundTag.getCompound("Owner"));
+			this.owner = NbtHelper.toUuid(compoundTag.getCompound("Owner"));
 		}
 
 		if (compoundTag.containsKey("Thrower", 10)) {
-			this.thrower = TagHelper.deserializeUuid(compoundTag.getCompound("Thrower"));
+			this.thrower = NbtHelper.toUuid(compoundTag.getCompound("Thrower"));
 		}
 
 		CompoundTag compoundTag2 = compoundTag.getCompound("Item");

@@ -6,38 +6,38 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.authlib.GameProfile;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.TagHelper;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	private final LootContext.EntityTarget entity;
 
-	public FillPlayerHeadLootFunction(class_4570[] args, LootContext.EntityTarget entityTarget) {
-		super(args);
+	public FillPlayerHeadLootFunction(LootCondition[] lootConditions, LootContext.EntityTarget entityTarget) {
+		super(lootConditions);
 		this.entity = entityTarget;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.entity.getIdentifier());
+		return ImmutableSet.of(this.entity.getParameter());
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		if (itemStack.getItem() == Items.PLAYER_HEAD) {
-			Entity entity = lootContext.get(this.entity.getIdentifier());
+			Entity entity = lootContext.get(this.entity.getParameter());
 			if (entity instanceof PlayerEntity) {
 				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-				itemStack.getOrCreateTag().put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
+				itemStack.getOrCreateTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
 			}
 		}
 
@@ -54,9 +54,9 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 			jsonObject.add("entity", jsonSerializationContext.serialize(fillPlayerHeadLootFunction.entity));
 		}
 
-		public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args) {
+		public FillPlayerHeadLootFunction method_15958(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class);
-			return new FillPlayerHeadLootFunction(args, entityTarget);
+			return new FillPlayerHeadLootFunction(lootConditions, entityTarget);
 		}
 	}
 }

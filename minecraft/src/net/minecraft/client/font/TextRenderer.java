@@ -142,7 +142,7 @@ public class TextRenderer implements AutoCloseable {
 				if (identifier2 != null) {
 					if (identifier != identifier2) {
 						tessellator.draw();
-						this.textureManager.method_22813(identifier2);
+						this.textureManager.bindTexture(identifier2);
 						bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 						identifier = identifier2;
 					}

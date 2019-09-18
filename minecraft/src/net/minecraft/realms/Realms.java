@@ -162,7 +162,7 @@ public class Realms {
 
 	public static void bind(String string) {
 		Identifier identifier = new Identifier(string);
-		MinecraftClient.getInstance().getTextureManager().method_22813(identifier);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
 	}
 
 	public static void narrateNow(String string) {

@@ -35,7 +35,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.loot.LootManager;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
@@ -465,8 +465,8 @@ public class LootCommand {
 			builder.putNullable(LootContextParameters.KILLER_ENTITY, entity2);
 			builder.put(LootContextParameters.THIS_ENTITY, entity);
 			builder.put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
-			LootSupplier lootSupplier = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
-			List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.ENTITY));
+			LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
+			List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.ENTITY));
 			return target.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
 		}
 	}
@@ -494,8 +494,8 @@ public class LootCommand {
 		CommandContext<ServerCommandSource> commandContext, Identifier identifier, LootContext lootContext, LootCommand.Target target
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
-		LootSupplier lootSupplier = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
-		List<ItemStack> list = lootSupplier.getDrops(lootContext);
+		LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
+		List<ItemStack> list = lootTable.getDrops(lootContext);
 		return target.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx));
 	}
 

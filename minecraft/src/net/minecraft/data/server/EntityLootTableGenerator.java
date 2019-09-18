@@ -23,7 +23,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.loot.ConstantLootTableRange;
 import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
 import net.minecraft.world.loot.UniformLootTableRange;
 import net.minecraft.world.loot.condition.DamageSourcePropertiesLootCondition;
@@ -41,26 +41,26 @@ import net.minecraft.world.loot.function.LootingEnchantLootFunction;
 import net.minecraft.world.loot.function.SetCountLootFunction;
 import net.minecraft.world.loot.function.SetNbtLootFunction;
 
-public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
+public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	private static final EntityPredicate.Builder field_11344 = EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
 	private static final Set<EntityType<?>> field_19339 = ImmutableSet.of(
 		EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER
 	);
-	private final Map<Identifier, LootSupplier.Builder> field_16543 = Maps.<Identifier, LootSupplier.Builder>newHashMap();
+	private final Map<Identifier, LootTable.Builder> field_16543 = Maps.<Identifier, LootTable.Builder>newHashMap();
 
-	private static LootSupplier.Builder method_10401(ItemConvertible itemConvertible) {
-		return LootSupplier.builder()
+	private static LootTable.Builder method_10401(ItemConvertible itemConvertible) {
+		return LootTable.builder()
 			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible)))
 			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
 	}
 
-	public void method_10400(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
-		this.method_16368(EntityType.ARMOR_STAND, LootSupplier.builder());
-		this.method_16368(EntityType.BAT, LootSupplier.builder());
-		this.method_16368(EntityType.BEE, LootSupplier.builder());
+	public void method_10400(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
+		this.method_16368(EntityType.ARMOR_STAND, LootTable.builder());
+		this.method_16368(EntityType.BAT, LootTable.builder());
+		this.method_16368(EntityType.BEE, LootTable.builder());
 		this.method_16368(
 			EntityType.BLAZE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -74,7 +74,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.CAT,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -83,7 +83,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.CAVE_SPIDER,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -106,7 +106,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.CHICKEN,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -128,7 +128,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.COD,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -146,7 +146,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.COW,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -169,7 +169,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.CREEPER,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -187,7 +187,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.DOLPHIN,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -201,7 +201,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.DONKEY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -214,7 +214,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.DROWNED,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -234,7 +234,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.ELDER_GUARDIAN,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -272,10 +272,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
-		this.method_16368(EntityType.ENDER_DRAGON, LootSupplier.builder());
+		this.method_16368(EntityType.ENDER_DRAGON, LootTable.builder());
 		this.method_16368(
 			EntityType.ENDERMAN,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -286,10 +286,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
-		this.method_16368(EntityType.ENDERMITE, LootSupplier.builder());
+		this.method_16368(EntityType.ENDERMITE, LootTable.builder());
 		this.method_16368(
 			EntityType.EVOKER,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.TOTEM_OF_UNDYING)))
 				.withPool(
 					LootPool.builder()
@@ -302,10 +302,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.method_356(KilledByPlayerLootCondition.builder())
 				)
 		);
-		this.method_16368(EntityType.FOX, LootSupplier.builder());
+		this.method_16368(EntityType.FOX, LootTable.builder());
 		this.method_16368(
 			EntityType.GHAST,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -325,10 +325,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
-		this.method_16368(EntityType.GIANT, LootSupplier.builder());
+		this.method_16368(EntityType.GIANT, LootTable.builder());
 		this.method_16368(
 			EntityType.GUARDIAN,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -362,7 +362,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.HORSE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -375,7 +375,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.HUSK,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -397,17 +397,17 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.RAVAGER,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.SADDLE).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
 		);
-		this.method_16368(EntityType.ILLUSIONER, LootSupplier.builder());
+		this.method_16368(EntityType.ILLUSIONER, LootTable.builder());
 		this.method_16368(
 			EntityType.IRON_GOLEM,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -421,7 +421,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.LLAMA,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -434,7 +434,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.MAGMA_CUBE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -447,7 +447,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.MULE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -460,7 +460,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.MOOSHROOM,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -481,10 +481,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
-		this.method_16368(EntityType.OCELOT, LootSupplier.builder());
+		this.method_16368(EntityType.OCELOT, LootTable.builder());
 		this.method_16368(
 			EntityType.PANDA,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -493,7 +493,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.PARROT,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -506,7 +506,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.PHANTOM,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -520,7 +520,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.PIG,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -532,11 +532,11 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
-		this.method_16368(EntityType.PILLAGER, LootSupplier.builder());
-		this.method_16368(EntityType.PLAYER, LootSupplier.builder());
+		this.method_16368(EntityType.PILLAGER, LootTable.builder());
+		this.method_16368(EntityType.PLAYER, LootTable.builder());
 		this.method_16368(
 			EntityType.POLAR_BEAR,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -555,7 +555,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.PUFFERFISH,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -570,7 +570,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.RABBIT,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -600,7 +600,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.SALMON,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -618,7 +618,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.SHEEP,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -648,7 +648,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.method_16369(LootTables.SHEEP_YELLOW_ENTITIE, method_10401(Blocks.YELLOW_WOOL));
 		this.method_16368(
 			EntityType.SHULKER,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -656,10 +656,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.method_356(RandomChanceWithLootingLootCondition.builder(0.5F, 0.0625F))
 				)
 		);
-		this.method_16368(EntityType.SILVERFISH, LootSupplier.builder());
+		this.method_16368(EntityType.SILVERFISH, LootTable.builder());
 		this.method_16368(
 			EntityType.SKELETON,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -681,7 +681,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.SKELETON_HORSE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -694,7 +694,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.SLIME,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -707,7 +707,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.SNOW_GOLEM,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -716,7 +716,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.SPIDER,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -739,7 +739,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.SQUID,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -752,7 +752,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.STRAY,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -785,7 +785,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.TRADER_LLAMA,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -798,7 +798,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.TROPICAL_FISH,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -813,7 +813,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.TURTLE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -831,12 +831,12 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.method_356(DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().lightning(true)))
 				)
 		);
-		this.method_16368(EntityType.VEX, LootSupplier.builder());
-		this.method_16368(EntityType.VILLAGER, LootSupplier.builder());
-		this.method_16368(EntityType.WANDERING_TRADER, LootSupplier.builder());
+		this.method_16368(EntityType.VEX, LootTable.builder());
+		this.method_16368(EntityType.VILLAGER, LootTable.builder());
+		this.method_16368(EntityType.WANDERING_TRADER, LootTable.builder());
 		this.method_16368(
 			EntityType.VINDICATOR,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -850,7 +850,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.WITCH,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(UniformLootTableRange.between(1.0F, 3.0F))
@@ -892,10 +892,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
-		this.method_16368(EntityType.WITHER, LootSupplier.builder());
+		this.method_16368(EntityType.WITHER, LootTable.builder());
 		this.method_16368(
 			EntityType.WITHER_SKELETON,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -922,10 +922,10 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						.method_356(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
-		this.method_16368(EntityType.WOLF, LootSupplier.builder());
+		this.method_16368(EntityType.WOLF, LootTable.builder());
 		this.method_16368(
 			EntityType.ZOMBIE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -947,7 +947,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.ZOMBIE_HORSE,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -960,7 +960,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.ZOMBIE_PIGMAN,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -989,7 +989,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.method_16368(
 			EntityType.ZOMBIE_VILLAGER,
-			LootSupplier.builder()
+			LootTable.builder()
 				.withPool(
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
@@ -1020,7 +1020,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 					);
 				}
 			} else if (identifier != LootTables.EMPTY && set.add(identifier)) {
-				LootSupplier.Builder builder = (LootSupplier.Builder)this.field_16543.remove(identifier);
+				LootTable.Builder builder = (LootTable.Builder)this.field_16543.remove(identifier);
 				if (builder == null) {
 					throw new IllegalStateException(String.format("Missing loottable '%s' for '%s'", identifier, Registry.ENTITY_TYPE.getId(entityType)));
 				}
@@ -1032,11 +1032,11 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.field_16543.forEach(biConsumer::accept);
 	}
 
-	private void method_16368(EntityType<?> entityType, LootSupplier.Builder builder) {
+	private void method_16368(EntityType<?> entityType, LootTable.Builder builder) {
 		this.method_16369(entityType.getLootTableId(), builder);
 	}
 
-	private void method_16369(Identifier identifier, LootSupplier.Builder builder) {
+	private void method_16369(Identifier identifier, LootTable.Builder builder) {
 		this.field_16543.put(identifier, builder);
 	}
 }

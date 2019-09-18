@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 
 public class GlazedTerracottaBlock extends HorizontalFacingBlock {
 	public GlazedTerracottaBlock(Block.Settings settings) {
@@ -10,7 +10,7 @@ public class GlazedTerracottaBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 

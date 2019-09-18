@@ -15,11 +15,11 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TagHelper;
 
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
@@ -84,7 +84,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 
 		public boolean method_9806(ItemStack itemStack) {
-			return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
+			return itemStack.getItem() == this.item && NbtHelper.matches(this.compound, itemStack.getTag(), true);
 		}
 	}
 
@@ -103,7 +103,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 
 		public boolean method_9807(ItemStack itemStack) {
-			return this.tag.contains(itemStack.getItem()) && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
+			return this.tag.contains(itemStack.getItem()) && NbtHelper.matches(this.compound, itemStack.getTag(), true);
 		}
 	}
 }

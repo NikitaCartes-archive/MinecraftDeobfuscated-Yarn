@@ -1,12 +1,12 @@
 package net.minecraft.world.loot.entry;
 
 import java.util.function.Consumer;
-import net.minecraft.class_4570;
+import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class SequenceEntry extends CombinedEntry {
-	SequenceEntry(LootEntry[] lootEntrys, class_4570[] args) {
-		super(lootEntrys, args);
+	SequenceEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
+		super(lootEntrys, lootConditions);
 	}
 
 	@Override

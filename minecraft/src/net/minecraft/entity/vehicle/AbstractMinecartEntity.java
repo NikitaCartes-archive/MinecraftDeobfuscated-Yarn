@@ -23,10 +23,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -569,7 +569,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		if (compoundTag.getBoolean("CustomDisplayTile")) {
-			this.setCustomBlock(TagHelper.deserializeBlockState(compoundTag.getCompound("DisplayState")));
+			this.setCustomBlock(NbtHelper.toBlockState(compoundTag.getCompound("DisplayState")));
 			this.setCustomBlockOffset(compoundTag.getInt("DisplayOffset"));
 		}
 	}
@@ -578,7 +578,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		if (this.hasCustomBlock()) {
 			compoundTag.putBoolean("CustomDisplayTile", true);
-			compoundTag.put("DisplayState", TagHelper.serializeBlockState(this.getContainedBlock()));
+			compoundTag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
 			compoundTag.putInt("DisplayOffset", this.getBlockOffset());
 		}
 	}

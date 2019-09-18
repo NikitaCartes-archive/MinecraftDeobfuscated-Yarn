@@ -1,7 +1,7 @@
 package net.minecraft.item.map;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.TagHelper;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 
 public class MapFrameMarker {
@@ -16,7 +16,7 @@ public class MapFrameMarker {
 	}
 
 	public static MapFrameMarker fromTag(CompoundTag compoundTag) {
-		BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
+		BlockPos blockPos = NbtHelper.toBlockPos(compoundTag.getCompound("Pos"));
 		int i = compoundTag.getInt("Rotation");
 		int j = compoundTag.getInt("EntityId");
 		return new MapFrameMarker(blockPos, i, j);
@@ -24,7 +24,7 @@ public class MapFrameMarker {
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
+		compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
 		compoundTag.putInt("Rotation", this.rotation);
 		compoundTag.putInt("EntityId", this.entityId);
 		return compoundTag;

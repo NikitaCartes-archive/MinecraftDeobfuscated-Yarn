@@ -2,11 +2,10 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class TickCriterion extends class_4558<TickCriterion.Conditions> {
+public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 	public static final Identifier ID = new Identifier("tick");
 
 	@Override
@@ -19,7 +18,7 @@ public class TickCriterion extends class_4558<TickCriterion.Conditions> {
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity) {
-		this.method_22511(serverPlayerEntity.getAdvancementManager());
+		this.grant(serverPlayerEntity.getAdvancementManager());
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

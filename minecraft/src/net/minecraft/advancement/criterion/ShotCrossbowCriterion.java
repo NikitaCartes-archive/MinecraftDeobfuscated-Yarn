@@ -3,14 +3,13 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class ShotCrossbowCriterion extends class_4558<ShotCrossbowCriterion.Conditions> {
+public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("shot_crossbow");
 
 	@Override
@@ -24,7 +23,7 @@ public class ShotCrossbowCriterion extends class_4558<ShotCrossbowCriterion.Cond
 	}
 
 	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

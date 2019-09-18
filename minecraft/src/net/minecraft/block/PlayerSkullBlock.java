@@ -7,7 +7,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.TagHelper;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +27,7 @@ public class PlayerSkullBlock extends SkullBlock {
 			if (itemStack.hasTag()) {
 				CompoundTag compoundTag = itemStack.getTag();
 				if (compoundTag.containsKey("SkullOwner", 10)) {
-					gameProfile = TagHelper.deserializeProfile(compoundTag.getCompound("SkullOwner"));
+					gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
 				} else if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
 					gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
 				}

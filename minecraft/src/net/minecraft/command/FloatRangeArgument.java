@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.NumberRange;
 
 public class FloatRangeArgument {
 	public static final FloatRangeArgument ANY = new FloatRangeArgument(null, null);

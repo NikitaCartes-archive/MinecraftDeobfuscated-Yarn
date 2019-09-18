@@ -51,7 +51,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ChunkBatcher {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final PriorityBlockingQueue<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577> pendingChunks = Queues.newPriorityBlockingQueue();
+	private final PriorityBlockingQueue<ChunkBatcher.ChunkRenderer.class_4577> pendingChunks = Queues.newPriorityBlockingQueue();
 	private final Queue<BlockLayeredBufferBuilder> field_20827;
 	private final Queue<Runnable> pendingUploads = Queues.newConcurrentLinkedQueue();
 	private final BlockLayeredBufferBuilder field_20828;
@@ -101,8 +101,7 @@ public class ChunkBatcher {
 
 	private void method_22763() {
 		if (!this.field_20827.isEmpty()) {
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 lv = (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577)this.pendingChunks
-				.poll();
+			ChunkBatcher.ChunkRenderer.class_4577 lv = (ChunkBatcher.ChunkRenderer.class_4577)this.pendingChunks.poll();
 			if (lv != null) {
 				BlockLayeredBufferBuilder blockLayeredBufferBuilder = (BlockLayeredBufferBuilder)this.field_20827.poll();
 				CompletableFuture.runAsync(() -> {
@@ -143,7 +142,7 @@ public class ChunkBatcher {
 		return bl;
 	}
 
-	public void rebuildSync(ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer chunkRenderer) {
+	public void rebuildSync(ChunkBatcher.ChunkRenderer chunkRenderer) {
 		chunkRenderer.method_22781();
 	}
 
@@ -151,7 +150,7 @@ public class ChunkBatcher {
 		this.clear();
 	}
 
-	public void method_22756(ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 arg) {
+	public void method_22756(ChunkBatcher.ChunkRenderer.class_4577 arg) {
 		this.pendingChunks.offer(arg);
 		this.field_20829.send(this::method_22763);
 	}
@@ -167,8 +166,7 @@ public class ChunkBatcher {
 
 	private void clear() {
 		while(!this.pendingChunks.isEmpty()) {
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 lv = (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577)this.pendingChunks
-				.poll();
+			ChunkBatcher.ChunkRenderer.class_4577 lv = (ChunkBatcher.ChunkRenderer.class_4577)this.pendingChunks.poll();
 			if (lv != null) {
 				lv.method_22782();
 			}
@@ -186,10 +184,8 @@ public class ChunkBatcher {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class net/minecraft/client/render/chunk/ChunkRenderData {
-		public static final ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData EMPTY = new ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData(
-			
-		) {
+	public static class ChunkRenderData {
+		public static final ChunkBatcher.ChunkRenderData EMPTY = new ChunkBatcher.ChunkRenderData() {
 			@Override
 			public boolean isVisibleThrough(Direction direction, Direction direction2) {
 				return false;
@@ -221,14 +217,12 @@ public class ChunkBatcher {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public class net/minecraft/client/render/chunk/ChunkRenderer {
-		public final AtomicReference<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData> data = new AtomicReference(
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData.EMPTY
-		);
+	public class ChunkRenderer {
+		public final AtomicReference<ChunkBatcher.ChunkRenderData> data = new AtomicReference(ChunkBatcher.ChunkRenderData.EMPTY);
 		@Nullable
-		private ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4578 field_20834;
+		private ChunkBatcher.ChunkRenderer.class_4578 field_20834;
 		@Nullable
-		private ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4579 task;
+		private ChunkBatcher.ChunkRenderer.class_4579 task;
 		private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
 		private final Map<BlockRenderLayer, GlBuffer> buffers = (Map<BlockRenderLayer, GlBuffer>)BlockRenderLayer.method_22720()
 			.stream()
@@ -298,13 +292,13 @@ public class ChunkBatcher {
 			bufferBuilder.setOffset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()));
 		}
 
-		public ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData getData() {
-			return (ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData)this.data.get();
+		public ChunkBatcher.ChunkRenderData getData() {
+			return (ChunkBatcher.ChunkRenderData)this.data.get();
 		}
 
 		private void clear() {
 			this.cancel();
-			this.data.set(ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData.EMPTY);
+			this.data.set(ChunkBatcher.ChunkRenderData.EMPTY);
 			this.rebuildScheduled = true;
 		}
 
@@ -341,7 +335,7 @@ public class ChunkBatcher {
 		}
 
 		public boolean method_22773(BlockRenderLayer blockRenderLayer, ChunkBatcher chunkBatcher) {
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData chunkRenderData = this.getData();
+			ChunkBatcher.ChunkRenderData chunkRenderData = this.getData();
 			if (this.task != null) {
 				this.task.method_22782();
 			}
@@ -349,7 +343,7 @@ public class ChunkBatcher {
 			if (!chunkRenderData.initialized.contains(blockRenderLayer)) {
 				return false;
 			} else {
-				this.task = new ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4579(this.getSquaredCameraDistance(), chunkRenderData);
+				this.task = new ChunkBatcher.ChunkRenderer.class_4579(this.getSquaredCameraDistance(), chunkRenderData);
 				chunkBatcher.method_22756(this.task);
 				return true;
 			}
@@ -367,17 +361,17 @@ public class ChunkBatcher {
 			}
 		}
 
-		public ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 startRebuild() {
+		public ChunkBatcher.ChunkRenderer.class_4577 startRebuild() {
 			this.cancel();
 			BlockPos blockPos = this.origin.toImmutable();
 			int i = 1;
 			ChunkRendererRegion chunkRendererRegion = ChunkRendererRegion.create(ChunkBatcher.this.field_20831, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
-			this.field_20834 = new ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4578(this.getSquaredCameraDistance(), chunkRendererRegion);
+			this.field_20834 = new ChunkBatcher.ChunkRenderer.class_4578(this.getSquaredCameraDistance(), chunkRendererRegion);
 			return this.field_20834;
 		}
 
 		public void method_22777(ChunkBatcher chunkBatcher) {
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 lv = this.startRebuild();
+			ChunkBatcher.ChunkRenderer.class_4577 lv = this.startRebuild();
 			chunkBatcher.method_22756(lv);
 		}
 
@@ -392,12 +386,12 @@ public class ChunkBatcher {
 		}
 
 		public void method_22781() {
-			ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 lv = this.startRebuild();
+			ChunkBatcher.ChunkRenderer.class_4577 lv = this.startRebuild();
 			lv.method_22783(ChunkBatcher.this.field_20828);
 		}
 
 		@Environment(EnvType.CLIENT)
-		abstract class class_4577 implements Comparable<ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577> {
+		abstract class class_4577 implements Comparable<ChunkBatcher.ChunkRenderer.class_4577> {
 			protected final double field_20835;
 			protected final AtomicBoolean field_20836 = new AtomicBoolean(false);
 
@@ -409,13 +403,13 @@ public class ChunkBatcher {
 
 			public abstract void method_22782();
 
-			public int method_22784(ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 arg) {
+			public int method_22784(ChunkBatcher.ChunkRenderer.class_4577 arg) {
 				return Doubles.compare(this.field_20835, arg.field_20835);
 			}
 		}
 
 		@Environment(EnvType.CLIENT)
-		class class_4578 extends ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 {
+		class class_4578 extends ChunkBatcher.ChunkRenderer.class_4577 {
 			@Nullable
 			protected ChunkRendererRegion field_20838;
 
@@ -428,9 +422,9 @@ public class ChunkBatcher {
 			public CompletableFuture<Unit> method_22783(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
 				if (this.field_20836.get()) {
 					return CompletableFuture.completedFuture(Unit.INSTANCE);
-				} else if (!net/minecraft/client/render/chunk/ChunkRenderer.this.shouldBuild()) {
+				} else if (!ChunkRenderer.this.shouldBuild()) {
 					this.field_20838 = null;
-					net/minecraft/client/render/chunk/ChunkRenderer.this.scheduleRebuild(false);
+					ChunkRenderer.this.scheduleRebuild(false);
 					this.field_20836.set(true);
 					return CompletableFuture.completedFuture(Unit.INSTANCE);
 				} else if (this.field_20836.get()) {
@@ -440,9 +434,9 @@ public class ChunkBatcher {
 					float f = (float)vec3d.x;
 					float g = (float)vec3d.y;
 					float h = (float)vec3d.z;
-					ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData chunkRenderData = new ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData();
+					ChunkBatcher.ChunkRenderData chunkRenderData = new ChunkBatcher.ChunkRenderData();
 					Set<BlockEntity> set = this.method_22785(f, g, h, chunkRenderData, blockLayeredBufferBuilder);
-					net/minecraft/client/render/chunk/ChunkRenderer.this.method_22778(set);
+					ChunkRenderer.this.method_22778(set);
 					if (this.field_20836.get()) {
 						return CompletableFuture.completedFuture(Unit.INSTANCE);
 					} else {
@@ -450,9 +444,7 @@ public class ChunkBatcher {
 						chunkRenderData.initialized
 							.forEach(
 								blockRenderLayer -> list.add(
-										ChunkBatcher.this.upload(
-											blockLayeredBufferBuilder.get(blockRenderLayer), net/minecraft/client/render/chunk/ChunkRenderer.this.getGlBuffer(blockRenderLayer)
-										)
+										ChunkBatcher.this.upload(blockLayeredBufferBuilder.get(blockRenderLayer), ChunkRenderer.this.getGlBuffer(blockRenderLayer))
 									)
 							);
 						CompletableFuture<Unit> completableFuture = SystemUtil.thenCombine(list).thenApply(listx -> Unit.INSTANCE);
@@ -462,7 +454,7 @@ public class ChunkBatcher {
 							}
 
 							if (!this.field_20836.get()) {
-								net/minecraft/client/render/chunk/ChunkRenderer.this.data.set(chunkRenderData);
+								ChunkRenderer.this.data.set(chunkRenderData);
 							}
 						});
 					}
@@ -470,14 +462,10 @@ public class ChunkBatcher {
 			}
 
 			private Set<BlockEntity> method_22785(
-				float f,
-				float g,
-				float h,
-				ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData chunkRenderData,
-				BlockLayeredBufferBuilder blockLayeredBufferBuilder
+				float f, float g, float h, ChunkBatcher.ChunkRenderData chunkRenderData, BlockLayeredBufferBuilder blockLayeredBufferBuilder
 			) {
 				int i = 1;
-				BlockPos blockPos = net/minecraft/client/render/chunk/ChunkRenderer.this.origin.toImmutable();
+				BlockPos blockPos = ChunkRenderer.this.origin.toImmutable();
 				BlockPos blockPos2 = blockPos.add(15, 15, 15);
 				ChunkOcclusionGraphBuilder chunkOcclusionGraphBuilder = new ChunkOcclusionGraphBuilder();
 				Set<BlockEntity> set = Sets.<BlockEntity>newHashSet();
@@ -513,7 +501,7 @@ public class ChunkBatcher {
 							BlockRenderLayer blockRenderLayer = BlockRenderLayer.method_22716(fluidState);
 							BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(blockRenderLayer);
 							if (chunkRenderData.initialized.add(blockRenderLayer)) {
-								net/minecraft/client/render/chunk/ChunkRenderer.this.beginBufferBuilding(bufferBuilder, blockPos);
+								ChunkRenderer.this.beginBufferBuilding(bufferBuilder, blockPos);
 							}
 
 							if (blockRenderManager.tesselateFluid(blockPos3, chunkRendererRegion, bufferBuilder, fluidState)) {
@@ -526,7 +514,7 @@ public class ChunkBatcher {
 							BlockRenderLayer blockRenderLayer = BlockRenderLayer.method_22715(blockState);
 							BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(blockRenderLayer);
 							if (chunkRenderData.initialized.add(blockRenderLayer)) {
-								net/minecraft/client/render/chunk/ChunkRenderer.this.beginBufferBuilding(bufferBuilder, blockPos);
+								ChunkRenderer.this.beginBufferBuilding(bufferBuilder, blockPos);
 							}
 
 							if (blockRenderManager.tesselateBlock(blockState, blockPos3, chunkRendererRegion, bufferBuilder, random)) {
@@ -554,16 +542,16 @@ public class ChunkBatcher {
 			public void method_22782() {
 				this.field_20838 = null;
 				if (this.field_20836.compareAndSet(false, true)) {
-					net/minecraft/client/render/chunk/ChunkRenderer.this.scheduleRebuild(false);
+					ChunkRenderer.this.scheduleRebuild(false);
 				}
 			}
 		}
 
 		@Environment(EnvType.CLIENT)
-		class class_4579 extends ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderer.class_4577 {
-			private final ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData field_20841;
+		class class_4579 extends ChunkBatcher.ChunkRenderer.class_4577 {
+			private final ChunkBatcher.ChunkRenderData field_20841;
 
-			public class_4579(double d, ChunkBatcher.net/minecraft/client/render/chunk/ChunkRenderData chunkRenderData) {
+			public class_4579(double d, ChunkBatcher.ChunkRenderData chunkRenderData) {
 				super(d);
 				this.field_20841 = chunkRenderData;
 			}
@@ -572,7 +560,7 @@ public class ChunkBatcher {
 			public CompletableFuture<Unit> method_22783(BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
 				if (this.field_20836.get()) {
 					return CompletableFuture.completedFuture(Unit.INSTANCE);
-				} else if (!net/minecraft/client/render/chunk/ChunkRenderer.this.shouldBuild()) {
+				} else if (!ChunkRenderer.this.shouldBuild()) {
 					this.field_20836.set(true);
 					return CompletableFuture.completedFuture(Unit.INSTANCE);
 				} else if (this.field_20836.get()) {
@@ -585,7 +573,7 @@ public class ChunkBatcher {
 					BufferBuilder.State state = this.field_20841.bufferState;
 					if (state != null && this.field_20841.nonEmpty.contains(BlockRenderLayer.field_9179)) {
 						BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(BlockRenderLayer.field_9179);
-						net/minecraft/client/render/chunk/ChunkRenderer.this.beginBufferBuilding(bufferBuilder, net/minecraft/client/render/chunk/ChunkRenderer.this.origin);
+						ChunkRenderer.this.beginBufferBuilding(bufferBuilder, ChunkRenderer.this.origin);
 						bufferBuilder.restoreState(state);
 						bufferBuilder.sortQuads(f, g, h);
 						this.field_20841.bufferState = bufferBuilder.toBufferState();
@@ -594,8 +582,7 @@ public class ChunkBatcher {
 							return CompletableFuture.completedFuture(Unit.INSTANCE);
 						} else {
 							CompletableFuture<Unit> completableFuture = ChunkBatcher.this.upload(
-									blockLayeredBufferBuilder.get(BlockRenderLayer.field_9179),
-									net/minecraft/client/render/chunk/ChunkRenderer.this.getGlBuffer(BlockRenderLayer.field_9179)
+									blockLayeredBufferBuilder.get(BlockRenderLayer.field_9179), ChunkRenderer.this.getGlBuffer(BlockRenderLayer.field_9179)
 								)
 								.thenApply(void_ -> Unit.INSTANCE);
 							return completableFuture.whenComplete((unit, throwable) -> {

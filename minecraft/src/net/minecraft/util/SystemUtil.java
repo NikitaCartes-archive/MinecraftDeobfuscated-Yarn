@@ -61,7 +61,7 @@ public class SystemUtil {
 	}
 
 	public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object object) {
-		return property.getName((T)object);
+		return property.name((T)object);
 	}
 
 	public static String createTranslationKey(String string, @Nullable Identifier identifier) {

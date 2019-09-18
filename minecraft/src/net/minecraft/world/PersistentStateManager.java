@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.util.TagHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +34,7 @@ public class PersistentStateManager {
 	}
 
 	public <T extends PersistentState> T getOrCreate(Supplier<T> supplier, String string) {
-		T persistentState = this.method_20786(supplier, string);
+		T persistentState = this.get(supplier, string);
 		if (persistentState != null) {
 			return persistentState;
 		} else {
@@ -45,10 +45,10 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	public <T extends PersistentState> T method_20786(Supplier<T> supplier, String string) {
+	public <T extends PersistentState> T get(Supplier<T> supplier, String string) {
 		PersistentState persistentState = (PersistentState)this.loadedStates.get(string);
 		if (persistentState == null && !this.loadedStates.containsKey(string)) {
-			persistentState = this.get(supplier, string);
+			persistentState = this.readFromFile(supplier, string);
 			this.loadedStates.put(string, persistentState);
 		}
 
@@ -56,12 +56,12 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	private <T extends PersistentState> T get(Supplier<T> supplier, String string) {
+	private <T extends PersistentState> T readFromFile(Supplier<T> supplier, String string) {
 		try {
 			File file = this.getFile(string);
 			if (file.exists()) {
 				T persistentState = (T)supplier.get();
-				CompoundTag compoundTag = this.method_17923(string, SharedConstants.getGameVersion().getWorldVersion());
+				CompoundTag compoundTag = this.readTag(string, SharedConstants.getGameVersion().getWorldVersion());
 				persistentState.fromTag(compoundTag.getCompound("data"));
 				return persistentState;
 			}
@@ -76,7 +76,7 @@ public class PersistentStateManager {
 		this.loadedStates.put(persistentState.getId(), persistentState);
 	}
 
-	public CompoundTag method_17923(String string, int i) throws IOException {
+	public CompoundTag readTag(String string, int i) throws IOException {
 		File file = this.getFile(string);
 		PushbackInputStream pushbackInputStream = new PushbackInputStream(new FileInputStream(file), 2);
 		Throwable var5 = null;
@@ -84,7 +84,7 @@ public class PersistentStateManager {
 		CompoundTag var36;
 		try {
 			CompoundTag compoundTag;
-			if (this.method_17921(pushbackInputStream)) {
+			if (this.isCompressed(pushbackInputStream)) {
 				compoundTag = NbtIo.readCompressed(pushbackInputStream);
 			} else {
 				DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
@@ -111,7 +111,7 @@ public class PersistentStateManager {
 			}
 
 			int j = compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-			var36 = TagHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
+			var36 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
 		} catch (Throwable var33) {
 			var5 = var33;
 			throw var33;
@@ -132,7 +132,7 @@ public class PersistentStateManager {
 		return var36;
 	}
 
-	private boolean method_17921(PushbackInputStream pushbackInputStream) throws IOException {
+	private boolean isCompressed(PushbackInputStream pushbackInputStream) throws IOException {
 		byte[] bs = new byte[2];
 		boolean bl = false;
 		int i = pushbackInputStream.read(bs, 0, 2);

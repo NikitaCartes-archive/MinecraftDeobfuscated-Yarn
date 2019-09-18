@@ -97,7 +97,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.LootSupplier;
+import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
@@ -1153,9 +1153,9 @@ public abstract class LivingEntity extends Entity {
 
 	protected void dropLoot(DamageSource damageSource, boolean bl) {
 		Identifier identifier = this.getLootTable();
-		LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(identifier);
+		LootTable lootTable = this.world.getServer().getLootManager().getSupplier(identifier);
 		LootContext.Builder builder = this.getLootContextBuilder(bl, damageSource);
-		lootSupplier.dropLimited(builder.build(LootContextTypes.ENTITY), this::dropStack);
+		lootTable.dropLimited(builder.build(LootContextTypes.ENTITY), this::dropStack);
 	}
 
 	protected LootContext.Builder getLootContextBuilder(boolean bl, DamageSource damageSource) {

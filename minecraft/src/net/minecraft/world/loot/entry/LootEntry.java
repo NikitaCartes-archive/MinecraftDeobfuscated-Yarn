@@ -6,20 +6,20 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.List;
 import java.util.function.Predicate;
-import net.minecraft.class_4570;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.ConditionConsumerBuilder;
 import net.minecraft.world.loot.LootTableReporter;
+import net.minecraft.world.loot.condition.LootCondition;
+import net.minecraft.world.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.world.loot.condition.LootConditions;
 import net.minecraft.world.loot.context.LootContext;
 
 public abstract class LootEntry implements EntryCombiner {
-	protected final class_4570[] conditions;
+	protected final LootCondition[] conditions;
 	private final Predicate<LootContext> conditionPredicate;
 
-	protected LootEntry(class_4570[] args) {
-		this.conditions = args;
-		this.conditionPredicate = LootConditions.joinAnd(args);
+	protected LootEntry(LootCondition[] lootConditions) {
+		this.conditions = lootConditions;
+		this.conditionPredicate = LootConditions.joinAnd(lootConditions);
 	}
 
 	public void check(LootTableReporter lootTableReporter) {
@@ -32,13 +32,13 @@ public abstract class LootEntry implements EntryCombiner {
 		return this.conditionPredicate.test(lootContext);
 	}
 
-	public abstract static class Builder<T extends LootEntry.Builder<T>> implements ConditionConsumerBuilder<T> {
-		private final List<class_4570> children = Lists.<class_4570>newArrayList();
+	public abstract static class Builder<T extends LootEntry.Builder<T>> implements LootConditionConsumingBuilder<T> {
+		private final List<LootCondition> conditions = Lists.<LootCondition>newArrayList();
 
 		protected abstract T getThisBuilder();
 
-		public T method_421(class_4570.Builder builder) {
-			this.children.add(builder.build());
+		public T method_421(LootCondition.Builder builder) {
+			this.conditions.add(builder.build());
 			return this.getThisBuilder();
 		}
 
@@ -46,8 +46,8 @@ public abstract class LootEntry implements EntryCombiner {
 			return this.getThisBuilder();
 		}
 
-		protected class_4570[] getConditions() {
-			return (class_4570[])this.children.toArray(new class_4570[0]);
+		protected LootCondition[] getConditions() {
+			return (LootCondition[])this.conditions.toArray(new LootCondition[0]);
 		}
 
 		public AlternativeEntry.Builder withChild(LootEntry.Builder<?> builder) {
@@ -76,6 +76,6 @@ public abstract class LootEntry implements EntryCombiner {
 
 		public abstract void toJson(JsonObject jsonObject, T lootEntry, JsonSerializationContext jsonSerializationContext);
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, class_4570[] args);
+		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
 	}
 }

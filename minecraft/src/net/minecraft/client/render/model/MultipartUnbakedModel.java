@@ -23,16 +23,16 @@ import net.minecraft.client.render.model.json.ModelVariantMap;
 import net.minecraft.client.render.model.json.MultipartModelComponent;
 import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class MultipartUnbakedModel implements UnbakedModel {
-	private final StateFactory<Block, BlockState> stateFactory;
+	private final StateManager<Block, BlockState> stateFactory;
 	private final List<MultipartModelComponent> components;
 
-	public MultipartUnbakedModel(StateFactory<Block, BlockState> stateFactory, List<MultipartModelComponent> list) {
-		this.stateFactory = stateFactory;
+	public MultipartUnbakedModel(StateManager<Block, BlockState> stateManager, List<MultipartModelComponent> list) {
+		this.stateFactory = stateManager;
 		this.components = list;
 	}
 

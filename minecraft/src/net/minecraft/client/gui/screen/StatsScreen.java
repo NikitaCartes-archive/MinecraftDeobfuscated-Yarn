@@ -151,7 +151,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	private void renderIcon(int i, int j, int k, int l) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().method_22813(STATS_ICON_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(STATS_ICON_LOCATION);
 		blit(i, j, this.getBlitOffset(), (float)k, (float)l, 18, 18, 128, 128);
 	}
 

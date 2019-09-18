@@ -3,13 +3,12 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.class_4558;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 
-public class LocationArrivalCriterion extends class_4558<LocationArrivalCriterion.Conditions> {
+public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalCriterion.Conditions> {
 	private final Identifier id;
 
 	public LocationArrivalCriterion(Identifier identifier) {
@@ -22,12 +21,12 @@ public class LocationArrivalCriterion extends class_4558<LocationArrivalCriterio
 	}
 
 	public LocationArrivalCriterion.Conditions method_9026(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		LocationPredicate locationPredicate = LocationPredicate.deserialize(jsonObject);
+		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject);
 		return new LocationArrivalCriterion.Conditions(this.id, locationPredicate);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity) {
-		this.method_22510(
+		this.test(
 			serverPlayerEntity.getAdvancementManager(),
 			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z)
 		);
@@ -59,7 +58,7 @@ public class LocationArrivalCriterion extends class_4558<LocationArrivalCriterio
 
 		@Override
 		public JsonElement toJson() {
-			return this.location.serialize();
+			return this.location.toJson();
 		}
 	}
 }

@@ -8,8 +8,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.NumberRange;
 import net.minecraft.util.PacketByteBuf;
 
 public interface NumberRangeArgumentType<T extends NumberRange<?>> extends ArgumentType<T> {

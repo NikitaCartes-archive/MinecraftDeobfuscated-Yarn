@@ -294,7 +294,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().method_22813(DrawableHelper.GUI_ICONS_LOCATION);
+			this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
 			DrawableHelper.blit(k + l - 15, j, (float)(r * 10), (float)(176 + s * 8), 10, 8, 256, 256);
 			if (this.server.getIcon() != null && !this.server.getIcon().equals(this.iconUri)) {
 				this.iconUri = this.server.getIcon();
@@ -317,7 +317,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			if (this.client.options.touchscreen || bl) {
-				this.client.getTextureManager().method_22813(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
+				this.client.getTextureManager().bindTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
 				DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				int v = n - k;
@@ -349,7 +349,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		protected void draw(int i, int j, Identifier identifier) {
-			this.client.getTextureManager().method_22813(identifier);
+			this.client.getTextureManager().bindTexture(identifier);
 			RenderSystem.enableBlend();
 			DrawableHelper.blit(i, j, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();

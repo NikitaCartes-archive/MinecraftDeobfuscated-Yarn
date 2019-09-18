@@ -4,13 +4,12 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javax.annotation.Nullable;
-import net.minecraft.class_4558;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.dimension.DimensionType;
 
-public class ChangedDimensionCriterion extends class_4558<ChangedDimensionCriterion.Conditions> {
+public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensionCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("changed_dimension");
 
 	@Override
@@ -25,7 +24,7 @@ public class ChangedDimensionCriterion extends class_4558<ChangedDimensionCriter
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
-		this.method_22510(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(dimensionType, dimensionType2));
+		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(dimensionType, dimensionType2));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

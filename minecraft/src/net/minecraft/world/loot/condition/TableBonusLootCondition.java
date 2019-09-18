@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
-import net.minecraft.class_4570;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -17,7 +16,7 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
-public class TableBonusLootCondition implements class_4570 {
+public class TableBonusLootCondition implements LootCondition {
 	private final Enchantment enchantment;
 	private final float[] chances;
 
@@ -38,11 +37,11 @@ public class TableBonusLootCondition implements class_4570 {
 		return lootContext.getRandom().nextFloat() < f;
 	}
 
-	public static class_4570.Builder builder(Enchantment enchantment, float... fs) {
+	public static LootCondition.Builder builder(Enchantment enchantment, float... fs) {
 		return () -> new TableBonusLootCondition(enchantment, fs);
 	}
 
-	public static class Factory extends class_4570.Factory<TableBonusLootCondition> {
+	public static class Factory extends LootCondition.Factory<TableBonusLootCondition> {
 		public Factory() {
 			super(new Identifier("table_bonus"), TableBonusLootCondition.class);
 		}

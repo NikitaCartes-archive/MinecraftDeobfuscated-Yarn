@@ -16,12 +16,12 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -83,7 +83,7 @@ public class ShulkerBulletEntity extends Entity {
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 		if (this.owner != null) {
 			BlockPos blockPos = new BlockPos(this.owner);
-			CompoundTag compoundTag2 = TagHelper.serializeUuid(this.owner.getUuid());
+			CompoundTag compoundTag2 = NbtHelper.fromUuid(this.owner.getUuid());
 			compoundTag2.putInt("X", blockPos.getX());
 			compoundTag2.putInt("Y", blockPos.getY());
 			compoundTag2.putInt("Z", blockPos.getZ());
@@ -92,7 +92,7 @@ public class ShulkerBulletEntity extends Entity {
 
 		if (this.target != null) {
 			BlockPos blockPos = new BlockPos(this.target);
-			CompoundTag compoundTag2 = TagHelper.serializeUuid(this.target.getUuid());
+			CompoundTag compoundTag2 = NbtHelper.fromUuid(this.target.getUuid());
 			compoundTag2.putInt("X", blockPos.getX());
 			compoundTag2.putInt("Y", blockPos.getY());
 			compoundTag2.putInt("Z", blockPos.getZ());
@@ -121,13 +121,13 @@ public class ShulkerBulletEntity extends Entity {
 
 		if (compoundTag.containsKey("Owner", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Owner");
-			this.ownerUuid = TagHelper.deserializeUuid(compoundTag2);
+			this.ownerUuid = NbtHelper.toUuid(compoundTag2);
 			this.ownerPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
 		}
 
 		if (compoundTag.containsKey("Target", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Target");
-			this.targetUuid = TagHelper.deserializeUuid(compoundTag2);
+			this.targetUuid = NbtHelper.toUuid(compoundTag2);
 			this.targetPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
 		}
 	}

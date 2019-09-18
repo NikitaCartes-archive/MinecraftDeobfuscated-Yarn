@@ -88,8 +88,8 @@ public class DamageSourcePredicate {
 			Boolean boolean6 = getBoolean(jsonObject, "is_fire");
 			Boolean boolean7 = getBoolean(jsonObject, "is_magic");
 			Boolean boolean8 = getBoolean(jsonObject, "is_lightning");
-			EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("direct_entity"));
-			EntityPredicate entityPredicate2 = EntityPredicate.deserialize(jsonObject.get("source_entity"));
+			EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("direct_entity"));
+			EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("source_entity"));
 			return new DamageSourcePredicate(boolean_, boolean2, boolean3, boolean4, boolean5, boolean6, boolean7, boolean8, entityPredicate, entityPredicate2);
 		} else {
 			return EMPTY;
