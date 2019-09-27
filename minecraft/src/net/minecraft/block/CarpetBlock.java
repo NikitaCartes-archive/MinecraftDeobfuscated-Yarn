@@ -38,6 +38,6 @@ public class CarpetBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return !arg.isAir(blockPos.down());
+		return !arg.isAir(blockPos.method_10074());
 	}
 }

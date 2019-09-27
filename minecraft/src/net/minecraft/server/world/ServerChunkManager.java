@@ -495,6 +495,11 @@ public class ServerChunkManager extends ChunkManager {
 		this.spawnAnimals = bl2;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public String method_23273(ChunkPos chunkPos) {
+		return this.threadedAnvilChunkStorage.method_23272(chunkPos);
+	}
+
 	public PersistentStateManager getPersistentStateManager() {
 		return this.persistentStateManager;
 	}

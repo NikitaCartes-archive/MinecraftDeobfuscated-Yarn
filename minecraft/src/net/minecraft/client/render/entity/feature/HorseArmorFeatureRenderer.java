@@ -1,8 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.DyeableHorseArmorItem;
@@ -17,30 +18,28 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 		super(featureRendererContext);
 	}
 
-	public void method_18658(HorseEntity horseEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_18658(class_4587 arg, class_4597 arg2, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
 		ItemStack itemStack = horseEntity.getArmorType();
 		if (itemStack.getItem() instanceof HorseArmorItem) {
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
 			this.getModel().copyStateTo(this.model);
 			this.model.method_17084(horseEntity, f, g, h);
-			this.bindTexture(horseArmorItem.getEntityTexture());
+			this.model.method_17085(horseEntity, f, g, j, k, l, m);
+			float o;
+			float p;
+			float q;
 			if (horseArmorItem instanceof DyeableHorseArmorItem) {
-				int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
-				float n = (float)(m >> 16 & 0xFF) / 255.0F;
-				float o = (float)(m >> 8 & 0xFF) / 255.0F;
-				float p = (float)(m & 0xFF) / 255.0F;
-				RenderSystem.color4f(n, o, p, 1.0F);
-				this.model.method_17085(horseEntity, f, g, i, j, k, l);
-				return;
+				int n = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
+				o = (float)(n >> 16 & 0xFF) / 255.0F;
+				p = (float)(n >> 8 & 0xFF) / 255.0F;
+				q = (float)(n & 0xFF) / 255.0F;
+			} else {
+				o = 1.0F;
+				p = 1.0F;
+				q = 1.0F;
 			}
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.model.method_17085(horseEntity, f, g, i, j, k, l);
+			method_23197(this.model, horseArmorItem.getEntityTexture(), arg, arg2, i, o, p, q);
 		}
-	}
-
-	@Override
-	public boolean hasHurtOverlay() {
-		return false;
 	}
 }

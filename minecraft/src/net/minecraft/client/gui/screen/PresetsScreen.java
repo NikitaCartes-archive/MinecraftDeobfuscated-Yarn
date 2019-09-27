@@ -15,7 +15,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.item.Item;
@@ -300,9 +299,7 @@ public class PresetsScreen extends Screen {
 			private void method_2200(int i, int j, Item item) {
 				this.method_2198(i + 1, j + 1);
 				RenderSystem.enableRescaleNormal();
-				GuiLighting.enableForItems();
 				PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(item), i + 2, j + 2);
-				GuiLighting.disable();
 				RenderSystem.disableRescaleNormal();
 			}
 

@@ -207,7 +207,7 @@ public class GuardianEntity extends HostileEntity {
 						this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).down(), this);
+					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).method_10074(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -314,7 +314,7 @@ public class GuardianEntity extends HostileEntity {
 		return arg.intersectsEntities(this);
 	}
 
-	public static boolean method_20676(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		return (random.nextInt(20) == 0 || !iWorld.isSkyVisibleAllowingSea(blockPos))
 			&& iWorld.getDifficulty() != Difficulty.PEACEFUL
 			&& (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));

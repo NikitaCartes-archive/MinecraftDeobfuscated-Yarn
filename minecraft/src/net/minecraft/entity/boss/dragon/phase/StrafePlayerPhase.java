@@ -92,7 +92,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 		if (this.field_7059 == null || this.field_7059.isFinished()) {
 			int i = this.dragon.method_6818();
 			int j = i;
-			if (this.dragon.getRand().nextInt(8) == 0) {
+			if (this.dragon.getRandom().nextInt(8) == 0) {
 				this.field_7058 = !this.field_7058;
 				j = i + 6;
 			}
@@ -132,7 +132,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 
 			double f;
 			do {
-				f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0F);
+				f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
 			} while (f < vec3d.y);
 
 			this.field_7057 = new Vec3d(d, f, e);

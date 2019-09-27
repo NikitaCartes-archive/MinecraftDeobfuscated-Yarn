@@ -21,7 +21,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 				SoundEvents.ENTITY_ENDER_DRAGON_GROWL,
 				this.dragon.getSoundCategory(),
 				2.5F,
-				0.8F + this.dragon.getRand().nextFloat() * 0.3F,
+				0.8F + this.dragon.getRandom().nextFloat() * 0.3F,
 				false
 			);
 	}

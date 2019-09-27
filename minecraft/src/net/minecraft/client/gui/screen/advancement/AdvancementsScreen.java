@@ -11,7 +11,6 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
@@ -128,7 +127,6 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	public void drawWidgets(int i, int j) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
-		GuiLighting.disable();
 		this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
 		this.blit(i, j, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {
@@ -140,7 +138,6 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 			RenderSystem.enableRescaleNormal();
 			RenderSystem.defaultBlendFunc();
-			GuiLighting.enableForItems();
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
 				advancementTab.drawIcon(i, j, this.itemRenderer);

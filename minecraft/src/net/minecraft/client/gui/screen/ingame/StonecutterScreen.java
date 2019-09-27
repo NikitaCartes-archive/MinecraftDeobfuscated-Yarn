@@ -5,7 +5,6 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -75,7 +74,6 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 	}
 
 	private void method_17951(int i, int j, int k) {
-		GuiLighting.enableForItems();
 		List<StonecuttingRecipe> list = this.container.getAvailableRecipes();
 
 		for (int l = this.scrollOffset; l < k && l < this.container.getAvailableRecipeCount(); l++) {
@@ -85,8 +83,6 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 			int p = j + o * 18 + 2;
 			this.minecraft.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(l)).getOutput(), n, p);
 		}
-
-		GuiLighting.disable();
 	}
 
 	@Override

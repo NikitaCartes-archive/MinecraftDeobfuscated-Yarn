@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
@@ -58,7 +57,6 @@ public class AdvancementToast implements Toast {
 				}
 			}
 
-			GuiLighting.enableForItems();
 			toastManager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
 			return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		} else {

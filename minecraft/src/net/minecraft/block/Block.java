@@ -100,7 +100,7 @@ public class Block implements ItemConvertible {
 	private BlockState defaultState;
 	protected final boolean collidable;
 	private final boolean dynamicBounds;
-	private final boolean field_20720;
+	private final boolean opaque;
 	@Nullable
 	private Identifier dropTableId;
 	@Nullable
@@ -253,7 +253,7 @@ public class Block implements ItemConvertible {
 		this.slipperiness = settings.slipperiness;
 		this.dynamicBounds = settings.dynamicBounds;
 		this.dropTableId = settings.dropTableId;
-		this.field_20720 = settings.field_20721;
+		this.opaque = settings.opaque;
 		this.stateFactory = builder.build(BlockState::new);
 		this.setDefaultState(this.stateFactory.getDefaultState());
 	}
@@ -275,12 +275,6 @@ public class Block implements ItemConvertible {
 	@Deprecated
 	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return this.material.blocksMovement() && blockState.method_21743(blockView, blockPos);
-	}
-
-	@Deprecated
-	@Environment(EnvType.CLIENT)
-	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-		return false;
 	}
 
 	@Deprecated
@@ -366,7 +360,7 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public final boolean isOpaque(BlockState blockState) {
-		return this.field_20720;
+		return this.opaque;
 	}
 
 	@Deprecated
@@ -859,7 +853,7 @@ public class Block implements ItemConvertible {
 		private boolean randomTicks;
 		private float slipperiness = 0.6F;
 		private Identifier dropTableId;
-		private boolean field_20721 = true;
+		private boolean opaque = true;
 		private boolean dynamicBounds;
 
 		private Settings(Material material, MaterialColor materialColor) {
@@ -891,18 +885,18 @@ public class Block implements ItemConvertible {
 			settings.soundGroup = block.soundGroup;
 			settings.slipperiness = block.getSlipperiness();
 			settings.dynamicBounds = block.dynamicBounds;
-			settings.field_20721 = block.field_20720;
+			settings.opaque = block.opaque;
 			return settings;
 		}
 
 		public Block.Settings noCollision() {
 			this.collidable = false;
-			this.field_20721 = false;
+			this.opaque = false;
 			return this;
 		}
 
-		public Block.Settings method_22488() {
-			this.field_20721 = false;
+		public Block.Settings nonOpaque() {
+			this.opaque = false;
 			return this;
 		}
 

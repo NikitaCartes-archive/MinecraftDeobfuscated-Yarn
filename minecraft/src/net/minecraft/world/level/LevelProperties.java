@@ -96,7 +96,7 @@ public class LevelProperties {
 
 	public LevelProperties(CompoundTag compoundTag, DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag2) {
 		this.dataFixer = dataFixer;
-		if (compoundTag.containsKey("Version", 10)) {
+		if (compoundTag.contains("Version", 10)) {
 			CompoundTag compoundTag3 = compoundTag.getCompound("Version");
 			this.versionName = compoundTag3.getString("Name");
 			this.versionId = compoundTag3.getInt("Id");
@@ -104,7 +104,7 @@ public class LevelProperties {
 		}
 
 		this.randomSeed = compoundTag.getLong("RandomSeed");
-		if (compoundTag.containsKey("generatorName", 8)) {
+		if (compoundTag.contains("generatorName", 8)) {
 			String string = compoundTag.getString("generatorName");
 			this.generatorType = LevelGeneratorType.getTypeFromName(string);
 			if (this.generatorType == null) {
@@ -113,7 +113,7 @@ public class LevelProperties {
 				this.legacyCustomOptions = compoundTag.getString("generatorOptions");
 			} else if (this.generatorType.isVersioned()) {
 				int j = 0;
-				if (compoundTag.containsKey("generatorVersion", 99)) {
+				if (compoundTag.contains("generatorVersion", 99)) {
 					j = compoundTag.getInt("generatorVersion");
 				}
 
@@ -124,11 +124,11 @@ public class LevelProperties {
 		}
 
 		this.gameMode = GameMode.byId(compoundTag.getInt("GameType"));
-		if (compoundTag.containsKey("legacy_custom_options", 8)) {
+		if (compoundTag.contains("legacy_custom_options", 8)) {
 			this.legacyCustomOptions = compoundTag.getString("legacy_custom_options");
 		}
 
-		if (compoundTag.containsKey("MapFeatures", 99)) {
+		if (compoundTag.contains("MapFeatures", 99)) {
 			this.structures = compoundTag.getBoolean("MapFeatures");
 		} else {
 			this.structures = true;
@@ -138,7 +138,7 @@ public class LevelProperties {
 		this.spawnY = compoundTag.getInt("SpawnY");
 		this.spawnZ = compoundTag.getInt("SpawnZ");
 		this.time = compoundTag.getLong("Time");
-		if (compoundTag.containsKey("DayTime", 99)) {
+		if (compoundTag.contains("DayTime", 99)) {
 			this.timeOfDay = compoundTag.getLong("DayTime");
 		} else {
 			this.timeOfDay = this.time;
@@ -154,13 +154,13 @@ public class LevelProperties {
 		this.thunderTime = compoundTag.getInt("thunderTime");
 		this.thundering = compoundTag.getBoolean("thundering");
 		this.hardcore = compoundTag.getBoolean("hardcore");
-		if (compoundTag.containsKey("initialized", 99)) {
+		if (compoundTag.contains("initialized", 99)) {
 			this.initialized = compoundTag.getBoolean("initialized");
 		} else {
 			this.initialized = true;
 		}
 
-		if (compoundTag.containsKey("allowCommands", 99)) {
+		if (compoundTag.contains("allowCommands", 99)) {
 			this.commandsAllowed = compoundTag.getBoolean("allowCommands");
 		} else {
 			this.commandsAllowed = this.gameMode == GameMode.CREATIVE;
@@ -171,55 +171,55 @@ public class LevelProperties {
 			this.playerData = compoundTag2;
 		}
 
-		if (compoundTag.containsKey("GameRules", 10)) {
+		if (compoundTag.contains("GameRules", 10)) {
 			this.gameRules.fromNbt(compoundTag.getCompound("GameRules"));
 		}
 
-		if (compoundTag.containsKey("Difficulty", 99)) {
+		if (compoundTag.contains("Difficulty", 99)) {
 			this.difficulty = Difficulty.byOrdinal(compoundTag.getByte("Difficulty"));
 		}
 
-		if (compoundTag.containsKey("DifficultyLocked", 1)) {
+		if (compoundTag.contains("DifficultyLocked", 1)) {
 			this.difficultyLocked = compoundTag.getBoolean("DifficultyLocked");
 		}
 
-		if (compoundTag.containsKey("BorderCenterX", 99)) {
+		if (compoundTag.contains("BorderCenterX", 99)) {
 			this.borderCenterX = compoundTag.getDouble("BorderCenterX");
 		}
 
-		if (compoundTag.containsKey("BorderCenterZ", 99)) {
+		if (compoundTag.contains("BorderCenterZ", 99)) {
 			this.borderCenterZ = compoundTag.getDouble("BorderCenterZ");
 		}
 
-		if (compoundTag.containsKey("BorderSize", 99)) {
+		if (compoundTag.contains("BorderSize", 99)) {
 			this.borderSize = compoundTag.getDouble("BorderSize");
 		}
 
-		if (compoundTag.containsKey("BorderSizeLerpTime", 99)) {
+		if (compoundTag.contains("BorderSizeLerpTime", 99)) {
 			this.borderSizeLerpTime = compoundTag.getLong("BorderSizeLerpTime");
 		}
 
-		if (compoundTag.containsKey("BorderSizeLerpTarget", 99)) {
+		if (compoundTag.contains("BorderSizeLerpTarget", 99)) {
 			this.borderSizeLerpTarget = compoundTag.getDouble("BorderSizeLerpTarget");
 		}
 
-		if (compoundTag.containsKey("BorderSafeZone", 99)) {
+		if (compoundTag.contains("BorderSafeZone", 99)) {
 			this.borderSafeZone = compoundTag.getDouble("BorderSafeZone");
 		}
 
-		if (compoundTag.containsKey("BorderDamagePerBlock", 99)) {
+		if (compoundTag.contains("BorderDamagePerBlock", 99)) {
 			this.borderDamagePerBlock = compoundTag.getDouble("BorderDamagePerBlock");
 		}
 
-		if (compoundTag.containsKey("BorderWarningBlocks", 99)) {
+		if (compoundTag.contains("BorderWarningBlocks", 99)) {
 			this.borderWarningBlocks = compoundTag.getInt("BorderWarningBlocks");
 		}
 
-		if (compoundTag.containsKey("BorderWarningTime", 99)) {
+		if (compoundTag.contains("BorderWarningTime", 99)) {
 			this.borderWarningTime = compoundTag.getInt("BorderWarningTime");
 		}
 
-		if (compoundTag.containsKey("DimensionData", 10)) {
+		if (compoundTag.contains("DimensionData", 10)) {
 			CompoundTag compoundTag3 = compoundTag.getCompound("DimensionData");
 
 			for (String string2 : compoundTag3.getKeys()) {
@@ -227,7 +227,7 @@ public class LevelProperties {
 			}
 		}
 
-		if (compoundTag.containsKey("DataPacks", 10)) {
+		if (compoundTag.contains("DataPacks", 10)) {
 			CompoundTag compoundTag3 = compoundTag.getCompound("DataPacks");
 			ListTag listTag = compoundTag3.getList("Disabled", 8);
 
@@ -242,23 +242,23 @@ public class LevelProperties {
 			}
 		}
 
-		if (compoundTag.containsKey("CustomBossEvents", 10)) {
+		if (compoundTag.contains("CustomBossEvents", 10)) {
 			this.customBossEvents = compoundTag.getCompound("CustomBossEvents");
 		}
 
-		if (compoundTag.containsKey("ScheduledEvents", 9)) {
+		if (compoundTag.contains("ScheduledEvents", 9)) {
 			this.scheduledEvents.fromTag(compoundTag.getList("ScheduledEvents", 10));
 		}
 
-		if (compoundTag.containsKey("WanderingTraderSpawnDelay", 99)) {
+		if (compoundTag.contains("WanderingTraderSpawnDelay", 99)) {
 			this.wanderingTraderSpawnDelay = compoundTag.getInt("WanderingTraderSpawnDelay");
 		}
 
-		if (compoundTag.containsKey("WanderingTraderSpawnChance", 99)) {
+		if (compoundTag.contains("WanderingTraderSpawnChance", 99)) {
 			this.wanderingTraderSpawnChance = compoundTag.getInt("WanderingTraderSpawnChance");
 		}
 
-		if (compoundTag.containsKey("WanderingTraderId", 8)) {
+		if (compoundTag.contains("WanderingTraderId", 8)) {
 			this.wanderingTraderId = UUID.fromString(compoundTag.getString("WanderingTraderId"));
 		}
 	}
@@ -360,14 +360,14 @@ public class LevelProperties {
 		ListTag listTag = new ListTag();
 
 		for (String string : this.enabledDataPacks) {
-			listTag.add(new StringTag(string));
+			listTag.add(StringTag.of(string));
 		}
 
 		compoundTag5.put("Enabled", listTag);
 		ListTag listTag2 = new ListTag();
 
 		for (String string2 : this.disabledDataPacks) {
-			listTag2.add(new StringTag(string2));
+			listTag2.add(StringTag.of(string2));
 		}
 
 		compoundTag5.put("Disabled", listTag2);

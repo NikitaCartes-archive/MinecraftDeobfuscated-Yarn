@@ -19,7 +19,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
@@ -224,8 +223,6 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	@Override
 	public void render(int i, int j, float f) {
 		if (this.isOpen()) {
-			GuiLighting.enableForItems();
-			RenderSystem.disableLighting();
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 100.0F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
@@ -234,7 +231,6 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			int l = (this.parentHeight - 166) / 2;
 			this.blit(k, l, 1, 1, 147, 166);
 			this.searchField.render(i, j, f);
-			GuiLighting.disable();
 
 			for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
 				recipeGroupButtonWidget.render(i, j, f);

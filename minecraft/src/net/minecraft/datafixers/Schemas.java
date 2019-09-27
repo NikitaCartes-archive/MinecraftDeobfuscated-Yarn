@@ -9,11 +9,11 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
-import net.minecraft.datafixer.fixes.PoiRebuildFix;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
 import net.minecraft.datafixers.fixes.BedItemColorFix;
+import net.minecraft.datafixers.fixes.BiomeFormatFix;
 import net.minecraft.datafixers.fixes.BiomesFix;
 import net.minecraft.datafixers.fixes.BlockEntityBannerColorFix;
 import net.minecraft.datafixers.fixes.BlockEntityBlockStateFix;
@@ -94,6 +94,7 @@ import net.minecraft.datafixers.fixes.OptionsForceVBOFix;
 import net.minecraft.datafixers.fixes.OptionsKeyLwjgl3Fix;
 import net.minecraft.datafixers.fixes.OptionsKeyTranslationFix;
 import net.minecraft.datafixers.fixes.OptionsLowerCaseLanguageFix;
+import net.minecraft.datafixers.fixes.PoiRebuildFix;
 import net.minecraft.datafixers.fixes.PointOfInterestReorganizationFix;
 import net.minecraft.datafixers.fixes.RecipeFix;
 import net.minecraft.datafixers.fixes.RecipeRenamingFix;
@@ -514,7 +515,7 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new ChoiceTypesFix(schema96, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
 		dataFixerBuilder.addFixer(new ChoiceTypesFix(schema96, "Add beehive", TypeReferences.BLOCK_ENTITY));
 		Schema schema97 = dataFixerBuilder.addSchema(2202, EMPTY_IDENTIFIER_NORMALIZE);
-		dataFixerBuilder.addFixer(new net.minecraft.datafixer.fixes.LeavesFix(schema97, false));
+		dataFixerBuilder.addFixer(new BiomeFormatFix(schema97, false));
 		dataFixerBuilder.addFixer(new PoiRebuildFix(schema97, false));
 	}
 }

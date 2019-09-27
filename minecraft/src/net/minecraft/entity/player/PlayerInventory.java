@@ -459,7 +459,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		this.offHand.clear();
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			int j = compoundTag.getByte("Slot") & 255;
 			ItemStack itemStack = ItemStack.fromTag(compoundTag);
 			if (!itemStack.isEmpty()) {

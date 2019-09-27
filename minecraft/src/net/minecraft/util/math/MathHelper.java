@@ -408,6 +408,15 @@ public class MathHelper {
 		}
 	}
 
+	@Environment(EnvType.CLIENT)
+	public static float method_22858(float f) {
+		float g = 0.5F * f;
+		int i = Float.floatToIntBits(f);
+		i = 1597463007 - (i >> 1);
+		f = Float.intBitsToFloat(i);
+		return f * (1.5F - g * f * f);
+	}
+
 	public static double fastInverseSqrt(double d) {
 		double e = 0.5 * d;
 		long l = Double.doubleToRawLongBits(d);
@@ -528,6 +537,35 @@ public class MathHelper {
 	@Environment(EnvType.CLIENT)
 	public static float method_22451(float f, float g, float h) {
 		return Math.min(f * f * 0.6F + g * g * ((3.0F + g) / 4.0F) + h * h * 0.8F, 1.0F);
+	}
+
+	@Deprecated
+	public static float method_22859(float f, float g, float h) {
+		float i = g - f;
+
+		while (i < -180.0F) {
+			i += 360.0F;
+		}
+
+		while (i >= 180.0F) {
+			i -= 360.0F;
+		}
+
+		return f + h * i;
+	}
+
+	@Deprecated
+	@Environment(EnvType.CLIENT)
+	public static float method_22860(double d) {
+		while (d >= 180.0) {
+			d -= 360.0;
+		}
+
+		while (d < -180.0) {
+			d += 360.0;
+		}
+
+		return (float)d;
 	}
 
 	static {

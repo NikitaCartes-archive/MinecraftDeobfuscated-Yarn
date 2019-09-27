@@ -113,7 +113,7 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 			Optional<BlockPos> optional = Optional.empty();
 			BlockState blockState = this.getCachedState();
 			Direction direction = blockState.get(BeeHiveBlock.FACING);
-			BlockPos blockPos2 = blockPos.offset(direction, 2);
+			BlockPos blockPos2 = blockPos.method_10079(direction, 2);
 			if (this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) {
 				optional = Optional.of(blockPos2);
 			}
@@ -236,7 +236,7 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 		ListTag listTag = compoundTag.getList("Bees", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+			CompoundTag compoundTag2 = listTag.getCompound(i);
 			BeeHiveBlockEntity.Bee bee = new BeeHiveBlockEntity.Bee(
 				compoundTag2.getCompound("EntityData"), compoundTag2.getInt("TicksInHive"), compoundTag2.getInt("MinOccupationTicks")
 			);

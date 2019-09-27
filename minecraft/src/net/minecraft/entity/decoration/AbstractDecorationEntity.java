@@ -90,9 +90,6 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void tick() {
-		this.prevX = this.x;
-		this.prevY = this.y;
-		this.prevZ = this.z;
 		if (this.field_7097++ == 100 && !this.world.isClient) {
 			this.field_7097 = 0;
 			if (!this.removed && !this.method_6888()) {

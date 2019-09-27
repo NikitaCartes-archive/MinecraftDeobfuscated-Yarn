@@ -66,7 +66,7 @@ public class HideInHomeTask extends Task<LivingEntity> {
 					PointOfInterestStorage.OccupationStatus.ANY,
 					new BlockPos(livingEntity),
 					this.maxDistance,
-					livingEntity.getRand()
+					livingEntity.getRandom()
 				);
 			if (!optional.isPresent()) {
 				Optional<GlobalPos> optional2 = brain.getOptionalMemory(MemoryModuleType.HOME);

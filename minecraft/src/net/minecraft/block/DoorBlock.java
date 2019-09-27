@@ -102,13 +102,13 @@ public class DoorBlock extends Block {
 	@Override
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
-		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.LOWER ? blockPos.up() : blockPos.down();
+		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.LOWER ? blockPos.up() : blockPos.method_10074();
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
 			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			ItemStack itemStack = playerEntity.getMainHandStack();
-			if (!world.isClient && !playerEntity.isCreative()) {
+			if (!world.isClient && !playerEntity.isCreative() && playerEntity.isUsingEffectiveTool(blockState2)) {
 				Block.dropStacks(blockState, world, blockPos, null, playerEntity, itemStack);
 				Block.dropStacks(blockState2, world, blockPos2, null, playerEntity, itemStack);
 			}
@@ -234,7 +234,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos2 = blockPos.method_10074();
 		BlockState blockState2 = arg.getBlockState(blockPos2);
 		return blockState.get(HALF) == DoubleBlockHalf.LOWER ? blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP) : blockState2.getBlock() == this;
 	}

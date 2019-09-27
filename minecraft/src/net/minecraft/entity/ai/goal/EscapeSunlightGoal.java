@@ -63,7 +63,7 @@ public class EscapeSunlightGoal extends Goal {
 
 	@Nullable
 	protected Vec3d locateShadedPos() {
-		Random random = this.mob.getRand();
+		Random random = this.mob.getRandom();
 		BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
 
 		for (int i = 0; i < 10; i++) {

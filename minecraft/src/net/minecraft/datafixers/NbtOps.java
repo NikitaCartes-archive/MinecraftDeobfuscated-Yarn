@@ -43,7 +43,7 @@ public class NbtOps implements DynamicOps<Tag> {
 	}
 
 	public Tag method_10668() {
-		return new EndTag();
+		return EndTag.INSTANCE;
 	}
 
 	public Type<?> method_10642(Tag tag) {
@@ -84,31 +84,35 @@ public class NbtOps implements DynamicOps<Tag> {
 	}
 
 	public Tag method_10660(Number number) {
-		return new DoubleTag(number.doubleValue());
+		return DoubleTag.of(number.doubleValue());
 	}
 
 	public Tag method_10640(byte b) {
-		return new ByteTag(b);
+		return ByteTag.of(b);
 	}
 
 	public Tag method_10635(short s) {
-		return new ShortTag(s);
+		return ShortTag.of(s);
 	}
 
 	public Tag method_10661(int i) {
-		return new IntTag(i);
+		return IntTag.of(i);
 	}
 
 	public Tag method_10654(long l) {
-		return new LongTag(l);
+		return LongTag.of(l);
 	}
 
 	public Tag method_10662(float f) {
-		return new FloatTag(f);
+		return FloatTag.of(f);
 	}
 
 	public Tag method_10652(double d) {
-		return new DoubleTag(d);
+		return DoubleTag.of(d);
+	}
+
+	public Tag method_23253(boolean bl) {
+		return ByteTag.of(bl);
 	}
 
 	public Optional<String> method_10656(Tag tag) {
@@ -116,7 +120,7 @@ public class NbtOps implements DynamicOps<Tag> {
 	}
 
 	public Tag method_10639(String string) {
-		return new StringTag(string);
+		return StringTag.of(string);
 	}
 
 	public Tag method_10653(Tag tag, Tag tag2) {
@@ -141,13 +145,13 @@ public class NbtOps implements DynamicOps<Tag> {
 			CompoundTag compoundTag2 = (CompoundTag)tag;
 
 			for (String string : compoundTag2.getKeys()) {
-				compoundTag.put(string, compoundTag2.getTag(string));
+				compoundTag.put(string, compoundTag2.get(string));
 			}
 
 			CompoundTag compoundTag3 = (CompoundTag)tag2;
 
 			for (String string2 : compoundTag3.getKeys()) {
-				compoundTag.put(string2, compoundTag3.getTag(string2));
+				compoundTag.put(string2, compoundTag3.get(string2));
 			}
 
 			return compoundTag;
@@ -165,7 +169,7 @@ public class NbtOps implements DynamicOps<Tag> {
 
 			CompoundTag compoundTag2 = (CompoundTag)tag;
 			compoundTag = new CompoundTag();
-			compoundTag2.getKeys().forEach(string -> compoundTag.put(string, compoundTag2.getTag(string)));
+			compoundTag2.getKeys().forEach(string -> compoundTag.put(string, compoundTag2.get(string)));
 		}
 
 		compoundTag.put(tag2.asString(), tag3);
@@ -182,8 +186,8 @@ public class NbtOps implements DynamicOps<Tag> {
 				CompoundTag compoundTag = (CompoundTag)tag;
 				CompoundTag compoundTag2 = (CompoundTag)tag2;
 				CompoundTag compoundTag3 = new CompoundTag();
-				compoundTag.getKeys().forEach(string -> compoundTag3.put(string, compoundTag.getTag(string)));
-				compoundTag2.getKeys().forEach(string -> compoundTag3.put(string, compoundTag2.getTag(string)));
+				compoundTag.getKeys().forEach(string -> compoundTag3.put(string, compoundTag.get(string)));
+				compoundTag2.getKeys().forEach(string -> compoundTag3.put(string, compoundTag2.get(string)));
 			}
 
 			if (tag instanceof AbstractListTag && tag2 instanceof AbstractListTag) {
@@ -203,7 +207,7 @@ public class NbtOps implements DynamicOps<Tag> {
 			return Optional.of(
 				compoundTag.getKeys()
 					.stream()
-					.map(string -> Pair.of(this.method_10639(string), compoundTag.getTag(string)))
+					.map(string -> Pair.of(this.method_10639(string), compoundTag.get(string)))
 					.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
 			);
 		} else {
@@ -283,10 +287,7 @@ public class NbtOps implements DynamicOps<Tag> {
 		if (tag instanceof CompoundTag) {
 			CompoundTag compoundTag = (CompoundTag)tag;
 			CompoundTag compoundTag2 = new CompoundTag();
-			compoundTag.getKeys()
-				.stream()
-				.filter(string2 -> !Objects.equals(string2, string))
-				.forEach(stringx -> compoundTag2.put(stringx, compoundTag.getTag(stringx)));
+			compoundTag.getKeys().stream().filter(string2 -> !Objects.equals(string2, string)).forEach(stringx -> compoundTag2.put(stringx, compoundTag.get(stringx)));
 			return compoundTag2;
 		} else {
 			return tag;

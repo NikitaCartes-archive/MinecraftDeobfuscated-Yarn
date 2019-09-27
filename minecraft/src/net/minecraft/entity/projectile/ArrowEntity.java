@@ -65,7 +65,7 @@ public class ArrowEntity extends ProjectileEntity {
 
 	public static int getCustomPotionColor(ItemStack itemStack) {
 		CompoundTag compoundTag = itemStack.getTag();
-		return compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99) ? compoundTag.getInt("CustomPotionColor") : -1;
+		return compoundTag != null && compoundTag.contains("CustomPotionColor", 99) ? compoundTag.getInt("CustomPotionColor") : -1;
 	}
 
 	private void initColor() {
@@ -163,7 +163,7 @@ public class ArrowEntity extends ProjectileEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Potion", 8)) {
+		if (compoundTag.contains("Potion", 8)) {
 			this.potion = PotionUtil.getPotion(compoundTag);
 		}
 
@@ -171,7 +171,7 @@ public class ArrowEntity extends ProjectileEntity {
 			this.addEffect(statusEffectInstance);
 		}
 
-		if (compoundTag.containsKey("Color", 99)) {
+		if (compoundTag.contains("Color", 99)) {
 			this.setColor(compoundTag.getInt("Color"));
 		} else {
 			this.initColor();

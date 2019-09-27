@@ -150,7 +150,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 	}
 
 	public Structure createStructure(CompoundTag compoundTag) {
-		if (!compoundTag.containsKey("DataVersion", 99)) {
+		if (!compoundTag.contains("DataVersion", 99)) {
 			compoundTag.putInt("DataVersion", 500);
 		}
 

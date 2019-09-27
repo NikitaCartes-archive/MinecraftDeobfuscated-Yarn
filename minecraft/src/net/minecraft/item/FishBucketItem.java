@@ -54,7 +54,7 @@ public class FishBucketItem extends BucketItem {
 	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 		if (this.fishType == EntityType.TROPICAL_FISH) {
 			CompoundTag compoundTag = itemStack.getTag();
-			if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
+			if (compoundTag != null && compoundTag.contains("BucketVariantTag", 3)) {
 				int i = compoundTag.getInt("BucketVariantTag");
 				Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
 				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);

@@ -106,7 +106,7 @@ public class TargetFinder {
 		boolean bl3
 	) {
 		EntityNavigation entityNavigation = mobEntityWithAi.getNavigation();
-		Random random = mobEntityWithAi.getRand();
+		Random random = mobEntityWithAi.getRandom();
 		boolean bl4;
 		if (mobEntityWithAi.hasPositionTarget()) {
 			bl4 = mobEntityWithAi.getPositionTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getPositionTargetRange() + (float)i) + 1.0);

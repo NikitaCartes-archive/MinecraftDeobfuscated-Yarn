@@ -24,7 +24,7 @@ public class BossBarHud extends DrawableHelper {
 
 	public void render() {
 		if (!this.bossBars.isEmpty()) {
-			int i = this.client.method_22683().getScaledWidth();
+			int i = this.client.getWindow().getScaledWidth();
 			int j = 12;
 
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
@@ -38,7 +38,7 @@ public class BossBarHud extends DrawableHelper {
 				int o = j - 9;
 				this.client.textRenderer.drawWithShadow(string, (float)n, (float)o, 16777215);
 				j += 10 + 9;
-				if (j >= this.client.method_22683().getScaledHeight() / 3) {
+				if (j >= this.client.getWindow().getScaledHeight() / 3) {
 					break;
 				}
 			}

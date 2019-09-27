@@ -572,7 +572,7 @@ public class WorldChunk implements Chunk {
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
 			String string = type.getName();
-			if (compoundTag.containsKey(string, 12)) {
+			if (compoundTag.contains(string, 12)) {
 				this.setHeightmap(type, compoundTag.getLongArray(string));
 			}
 		}

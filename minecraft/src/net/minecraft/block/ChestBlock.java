@@ -2,8 +2,6 @@ package net.minecraft.block;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
@@ -99,12 +97,6 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 		this.setDefaultState(
 			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(CHEST_TYPE, ChestType.SINGLE).with(WATERLOGGED, Boolean.valueOf(false))
 		);
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-		return true;
 	}
 
 	@Override

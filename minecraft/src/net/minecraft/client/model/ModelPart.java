@@ -1,30 +1,23 @@
 package net.minecraft.client.model;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.class_4581;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ModelPart {
-	private static final BufferBuilder field_20790 = new BufferBuilder(256);
 	private float textureWidth = 64.0F;
 	private float textureHeight = 32.0F;
 	private int textureOffsetU;
@@ -35,8 +28,6 @@ public class ModelPart {
 	public float pitch;
 	public float yaw;
 	public float roll;
-	@Nullable
-	private ByteBuffer compiled;
 	public boolean mirror;
 	public boolean visible = true;
 	private final List<ModelPart.Cuboid> cuboids = Lists.<ModelPart.Cuboid>newArrayList();
@@ -78,29 +69,34 @@ public class ModelPart {
 
 	public ModelPart addCuboid(String string, float f, float g, float h, int i, int j, int k, float l, int m, int n) {
 		this.setTextureOffset(m, n);
-		this.cuboids
-			.add(
-				new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, (float)i, (float)j, (float)k, l, this.mirror, this.textureWidth, this.textureHeight)
-			);
+		this.method_22972(this.textureOffsetU, this.textureOffsetV, f, g, h, (float)i, (float)j, (float)k, l, l, l, this.mirror, false);
 		return this;
 	}
 
 	public ModelPart addCuboid(float f, float g, float h, float i, float j, float k) {
-		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, this.mirror, this.textureWidth, this.textureHeight));
+		this.method_22972(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, 0.0F, 0.0F, this.mirror, false);
 		return this;
 	}
 
 	public ModelPart addCuboid(float f, float g, float h, float i, float j, float k, boolean bl) {
-		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, bl, this.textureWidth, this.textureHeight));
+		this.method_22972(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, 0.0F, 0.0F, 0.0F, bl, false);
 		return this;
 	}
 
 	public void addCuboid(float f, float g, float h, float i, float j, float k, float l) {
-		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, this.mirror, this.textureWidth, this.textureHeight));
+		this.method_22972(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, l, l, this.mirror, false);
+	}
+
+	public void method_22971(float f, float g, float h, float i, float j, float k, float l, float m, float n) {
+		this.method_22972(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, m, n, this.mirror, false);
 	}
 
 	public void addCuboid(float f, float g, float h, float i, float j, float k, float l, boolean bl) {
-		this.cuboids.add(new ModelPart.Cuboid(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, bl, this.textureWidth, this.textureHeight));
+		this.method_22972(this.textureOffsetU, this.textureOffsetV, f, g, h, i, j, k, l, l, l, bl, false);
+	}
+
+	private void method_22972(int i, int j, float f, float g, float h, float k, float l, float m, float n, float o, float p, boolean bl, boolean bl2) {
+		this.cuboids.add(new ModelPart.Cuboid(i, j, f, g, h, k, l, m, n, o, p, bl, this.textureWidth, this.textureHeight));
 	}
 
 	public void setRotationPoint(float f, float g, float h) {
@@ -109,132 +105,77 @@ public class ModelPart {
 		this.rotationPointZ = h;
 	}
 
-	public void render(float f) {
-		if (this.visible) {
-			this.compile(f);
-			if (this.compiled != null) {
-				RenderSystem.pushMatrix();
-				this.method_22703(f);
-				this.compiled.clear();
-				int i = this.compiled.remaining() / VertexFormats.POSITION_UV_NORMAL_2.getVertexSize();
-				BufferRenderer.method_22637(this.compiled, 7, VertexFormats.POSITION_UV_NORMAL_2, i);
-
-				for (ModelPart modelPart : this.children) {
-					modelPart.render(f);
-				}
-
-				RenderSystem.popMatrix();
-			}
-		}
+	public void method_22698(class_4587 arg, class_4588 arg2, float f, int i, @Nullable Sprite sprite) {
+		this.method_22699(arg, arg2, f, i, sprite, 1.0F, 1.0F, 1.0F);
 	}
 
-	public void method_22698(BufferBuilder bufferBuilder, float f, int i, int j, Sprite sprite) {
-		this.method_22699(bufferBuilder, f, i, j, sprite, 1.0F, 1.0F, 1.0F);
-	}
-
-	public void method_22699(BufferBuilder bufferBuilder, float f, int i, int j, Sprite sprite, float g, float h, float k) {
+	public void method_22699(class_4587 arg, class_4588 arg2, float f, int i, @Nullable Sprite sprite, float g, float h, float j) {
 		if (this.visible) {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
-				bufferBuilder.method_22629();
-				bufferBuilder.method_22626((double)(this.rotationPointX * f), (double)(this.rotationPointY * f), (double)(this.rotationPointZ * f));
-				if (this.roll != 0.0F) {
-					bufferBuilder.method_22622(new Quaternion(Vector3f.field_20707, this.roll, false));
-				}
-
-				if (this.yaw != 0.0F) {
-					bufferBuilder.method_22622(new Quaternion(Vector3f.field_20705, this.yaw, false));
-				}
-
-				if (this.pitch != 0.0F) {
-					bufferBuilder.method_22622(new Quaternion(Vector3f.field_20703, this.pitch, false));
-				}
-
-				this.method_22702(bufferBuilder, f, i, j, sprite, g, h, k);
+				arg.method_22903();
+				this.method_22703(arg, f);
+				this.method_22702(arg.method_22910(), arg2, f, i, sprite, g, h, j);
 
 				for (ModelPart modelPart : this.children) {
-					modelPart.method_22698(bufferBuilder, f, i, j, sprite);
+					modelPart.method_22699(arg, arg2, f, i, sprite, g, h, j);
 				}
 
-				bufferBuilder.method_22630();
+				arg.method_22909();
 			}
 		}
 	}
 
-	private void compile(float f) {
-		if (this.visible) {
-			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
-				if (this.compiled == null) {
-					field_20790.begin(7, VertexFormats.POSITION_UV_NORMAL_2);
-					this.method_22701(field_20790, f, 240, 240, null);
-					field_20790.end();
-					Pair<BufferBuilder.class_4574, ByteBuffer> pair = field_20790.method_22632();
-					ByteBuffer byteBuffer = pair.getSecond();
-					this.compiled = GlAllocationUtils.allocateByteBuffer(byteBuffer.remaining());
-					this.compiled.put(byteBuffer);
-				}
-			}
-		}
-	}
-
-	public void applyTransform(float f) {
-		if (this.visible) {
-			this.method_22703(f);
-		}
-	}
-
-	private void method_22703(float f) {
-		RenderSystem.translatef(this.rotationPointX * f, this.rotationPointY * f, this.rotationPointZ * f);
+	public void method_22703(class_4587 arg, float f) {
+		arg.method_22904((double)(this.rotationPointX * f), (double)(this.rotationPointY * f), (double)(this.rotationPointZ * f));
 		if (this.roll != 0.0F) {
-			RenderSystem.rotatef(this.roll * (180.0F / (float)Math.PI), 0.0F, 0.0F, 1.0F);
+			arg.method_22907(Vector3f.field_20707.method_23214(this.roll, false));
 		}
 
 		if (this.yaw != 0.0F) {
-			RenderSystem.rotatef(this.yaw * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+			arg.method_22907(Vector3f.field_20705.method_23214(this.yaw, false));
 		}
 
 		if (this.pitch != 0.0F) {
-			RenderSystem.rotatef(this.pitch * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
+			arg.method_22907(Vector3f.field_20703.method_23214(this.pitch, false));
 		}
 	}
 
-	private void method_22701(BufferBuilder bufferBuilder, float f, int i, int j, @Nullable Sprite sprite) {
-		this.method_22702(bufferBuilder, f, i, j, sprite, 1.0F, 1.0F, 1.0F);
-	}
-
-	private void method_22702(BufferBuilder bufferBuilder, float f, int i, int j, @Nullable Sprite sprite, float g, float h, float k) {
-		Matrix4f matrix4f = bufferBuilder.method_22631();
-		VertexFormat vertexFormat = bufferBuilder.getVertexFormat();
+	private void method_22702(Matrix4f matrix4f, class_4588 arg, float f, int i, @Nullable Sprite sprite, float g, float h, float j) {
+		class_4581 lv = new class_4581(matrix4f);
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
 			for (ModelPart.Quad quad : cuboid.polygons) {
-				Vec3d vec3d = quad.vertices[1].pos.reverseSubtract(quad.vertices[0].pos);
-				Vec3d vec3d2 = quad.vertices[1].pos.reverseSubtract(quad.vertices[2].pos);
-				Vec3d vec3d3 = vec3d2.crossProduct(vec3d).normalize();
-				float l = (float)vec3d3.x;
-				float m = (float)vec3d3.y;
-				float n = (float)vec3d3.z;
+				Vector3f vector3f = new Vector3f(quad.vertices[1].pos.reverseSubtract(quad.vertices[0].pos));
+				Vector3f vector3f2 = new Vector3f(quad.vertices[1].pos.reverseSubtract(quad.vertices[2].pos));
+				vector3f.method_23215(lv);
+				vector3f2.method_23215(lv);
+				vector3f2.cross(vector3f);
+				vector3f2.reciprocal();
+				float k = vector3f2.getX();
+				float l = vector3f2.getY();
+				float m = vector3f2.getZ();
 
-				for (int o = 0; o < 4; o++) {
-					ModelPart.Vertex vertex = quad.vertices[o];
+				for (int n = 0; n < 4; n++) {
+					ModelPart.Vertex vertex = quad.vertices[n];
 					Vector4f vector4f = new Vector4f((float)vertex.pos.x * f, (float)vertex.pos.y * f, (float)vertex.pos.z * f, 1.0F);
 					vector4f.method_22674(matrix4f);
-					bufferBuilder.vertex((double)vector4f.getX(), (double)vector4f.getY(), (double)vector4f.getZ());
-					if (vertexFormat.hasColorElement()) {
-						float p = MathHelper.method_22451(l, m, n);
-						bufferBuilder.color(p * g, p * h, p * k, 1.0F);
-					}
-
+					float o = MathHelper.method_22451(k, l, m);
+					float p;
+					float q;
 					if (sprite == null) {
-						bufferBuilder.texture((double)vertex.u, (double)vertex.v);
+						p = vertex.u;
+						q = vertex.v;
 					} else {
-						bufferBuilder.texture((double)sprite.getU((double)(vertex.u * 16.0F)), (double)sprite.getV((double)(vertex.v * 16.0F)));
+						p = sprite.getU((double)(vertex.u * 16.0F));
+						q = sprite.getV((double)(vertex.v * 16.0F));
 					}
 
-					if (vertexFormat.hasUvElement(1)) {
-						bufferBuilder.texture(i, j);
-					}
-
-					bufferBuilder.normal(l, m, n).next();
+					arg.vertex((double)vector4f.getX(), (double)vector4f.getY(), (double)vector4f.getZ())
+						.method_22915(o * g, o * h, o * j, 1.0F)
+						.texture(p, q)
+						.method_22916(i)
+						.method_22914(k, l, m)
+						.next();
 				}
 			}
 		}
@@ -260,7 +201,7 @@ public class ModelPart {
 		public final float yMax;
 		public final float zMax;
 
-		public Cuboid(int i, int j, float f, float g, float h, float k, float l, float m, float n, boolean bl, float o, float p) {
+		public Cuboid(int i, int j, float f, float g, float h, float k, float l, float m, float n, float o, float p, boolean bl, float q, float r) {
 			this.xMin = f;
 			this.yMin = g;
 			this.zMin = h;
@@ -268,47 +209,44 @@ public class ModelPart {
 			this.yMax = g + l;
 			this.zMax = h + m;
 			this.polygons = new ModelPart.Quad[6];
-			float q = f + k;
-			float r = g + l;
-			float s = h + m;
+			float s = f + k;
+			float t = g + l;
+			float u = h + m;
 			f -= n;
-			g -= n;
-			h -= n;
-			q += n;
-			r += n;
+			g -= o;
+			h -= p;
 			s += n;
+			t += o;
+			u += p;
 			if (bl) {
-				float t = q;
-				q = f;
-				f = t;
+				float v = s;
+				s = f;
+				f = v;
 			}
 
 			ModelPart.Vertex vertex = new ModelPart.Vertex(f, g, h, 0.0F, 0.0F);
-			ModelPart.Vertex vertex2 = new ModelPart.Vertex(q, g, h, 0.0F, 8.0F);
-			ModelPart.Vertex vertex3 = new ModelPart.Vertex(q, r, h, 8.0F, 8.0F);
-			ModelPart.Vertex vertex4 = new ModelPart.Vertex(f, r, h, 8.0F, 0.0F);
-			ModelPart.Vertex vertex5 = new ModelPart.Vertex(f, g, s, 0.0F, 0.0F);
-			ModelPart.Vertex vertex6 = new ModelPart.Vertex(q, g, s, 0.0F, 8.0F);
-			ModelPart.Vertex vertex7 = new ModelPart.Vertex(q, r, s, 8.0F, 8.0F);
-			ModelPart.Vertex vertex8 = new ModelPart.Vertex(f, r, s, 8.0F, 0.0F);
-			this.polygons[0] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, (float)i + m + k, (float)j + m, (float)i + m + k + m, (float)j + m + l, o, p
-			);
-			this.polygons[1] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, (float)i, (float)j + m, (float)i + m, (float)j + m + l, o, p
-			);
-			this.polygons[2] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, (float)i + m, (float)j, (float)i + m + k, (float)j + m, o, p
-			);
-			this.polygons[3] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, (float)i + m + k, (float)j + m, (float)i + m + k + k, (float)j, o, p
-			);
-			this.polygons[4] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, (float)i + m, (float)j + m, (float)i + m + k, (float)j + m + l, o, p
-			);
-			this.polygons[5] = new ModelPart.Quad(
-				new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, (float)i + m + k + m, (float)j + m, (float)i + m + k + m + k, (float)j + m + l, o, p
-			);
+			ModelPart.Vertex vertex2 = new ModelPart.Vertex(s, g, h, 0.0F, 8.0F);
+			ModelPart.Vertex vertex3 = new ModelPart.Vertex(s, t, h, 8.0F, 8.0F);
+			ModelPart.Vertex vertex4 = new ModelPart.Vertex(f, t, h, 8.0F, 0.0F);
+			ModelPart.Vertex vertex5 = new ModelPart.Vertex(f, g, u, 0.0F, 0.0F);
+			ModelPart.Vertex vertex6 = new ModelPart.Vertex(s, g, u, 0.0F, 8.0F);
+			ModelPart.Vertex vertex7 = new ModelPart.Vertex(s, t, u, 8.0F, 8.0F);
+			ModelPart.Vertex vertex8 = new ModelPart.Vertex(f, t, u, 8.0F, 0.0F);
+			float w = (float)i;
+			float x = (float)i + m;
+			float y = (float)i + m + k;
+			float z = (float)i + m + k + k;
+			float aa = (float)i + m + k + m;
+			float ab = (float)i + m + k + m + k;
+			float ac = (float)j;
+			float ad = (float)j + m;
+			float ae = (float)j + m + l;
+			this.polygons[2] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex6, vertex5, vertex, vertex2}, x, ac, y, ad, q, r);
+			this.polygons[3] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, y, ad, z, ac, q, r);
+			this.polygons[1] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex, vertex5, vertex8, vertex4}, w, ad, x, ae, q, r);
+			this.polygons[4] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex2, vertex, vertex4, vertex3}, x, ad, y, ae, q, r);
+			this.polygons[0] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex6, vertex2, vertex3, vertex7}, y, ad, aa, ae, q, r);
+			this.polygons[5] = new ModelPart.Quad(new ModelPart.Vertex[]{vertex5, vertex6, vertex7, vertex8}, aa, ad, ab, ae, q, r);
 			if (bl) {
 				for (ModelPart.Quad quad : this.polygons) {
 					quad.flip();

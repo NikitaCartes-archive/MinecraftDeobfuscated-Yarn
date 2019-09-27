@@ -115,17 +115,17 @@ public class ShulkerBulletEntity extends Entity {
 		this.field_7635 = compoundTag.getDouble("TXD");
 		this.field_7633 = compoundTag.getDouble("TYD");
 		this.field_7625 = compoundTag.getDouble("TZD");
-		if (compoundTag.containsKey("Dir", 99)) {
+		if (compoundTag.contains("Dir", 99)) {
 			this.direction = Direction.byId(compoundTag.getInt("Dir"));
 		}
 
-		if (compoundTag.containsKey("Owner", 10)) {
+		if (compoundTag.contains("Owner", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Owner");
 			this.ownerUuid = NbtHelper.toUuid(compoundTag2);
 			this.ownerPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
 		}
 
-		if (compoundTag.containsKey("Target", 10)) {
+		if (compoundTag.contains("Target", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Target");
 			this.targetUuid = NbtHelper.toUuid(compoundTag2);
 			this.targetPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
@@ -144,7 +144,7 @@ public class ShulkerBulletEntity extends Entity {
 		double d = 0.5;
 		BlockPos blockPos;
 		if (this.target == null) {
-			blockPos = new BlockPos(this).down();
+			blockPos = new BlockPos(this).method_10074();
 		} else {
 			d = (double)this.target.getHeight() * 0.5;
 			blockPos = new BlockPos(this.target.x, this.target.y + d, this.target.z);
@@ -168,7 +168,7 @@ public class ShulkerBulletEntity extends Entity {
 			if (axis != Direction.Axis.Y) {
 				if (blockPos2.getY() < blockPos.getY() && this.world.isAir(blockPos2.up())) {
 					list.add(Direction.UP);
-				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.down())) {
+				} else if (blockPos2.getY() > blockPos.getY() && this.world.isAir(blockPos2.method_10074())) {
 					list.add(Direction.DOWN);
 				}
 			}

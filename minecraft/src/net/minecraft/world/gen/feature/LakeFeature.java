@@ -27,7 +27,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig
 	) {
 		while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		if (blockPos.getY() <= 4) {

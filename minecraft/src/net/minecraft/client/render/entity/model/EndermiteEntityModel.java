@@ -1,13 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EndermiteEntityModel<T extends Entity> extends EntityModel<T> {
+public class EndermiteEntityModel<T extends Entity> extends class_4595<T> {
 	private static final int[][] field_3366 = new int[][]{{4, 3, 2}, {6, 4, 5}, {3, 3, 1}, {1, 2, 1}};
 	private static final int[][] field_3369 = new int[][]{{0, 0}, {0, 5}, {0, 14}, {0, 18}};
 	private static final int field_3367 = field_3366.length;
@@ -30,12 +32,8 @@ public class EndermiteEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-
-		for (ModelPart modelPart : this.field_3368) {
-			modelPart.render(k);
-		}
+	public Iterable<ModelPart> method_22960() {
+		return Arrays.asList(this.field_3368);
 	}
 
 	@Override

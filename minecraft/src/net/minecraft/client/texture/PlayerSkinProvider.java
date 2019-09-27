@@ -56,8 +56,8 @@ public class PlayerSkinProvider {
 	) {
 		String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
 		Identifier identifier = new Identifier("skins/" + string);
-		Texture texture = this.textureManager.getTexture(identifier);
-		if (texture != null) {
+		AbstractTexture abstractTexture = this.textureManager.getTexture(identifier);
+		if (abstractTexture != null) {
 			if (skinTextureAvailableCallback != null) {
 				skinTextureAvailableCallback.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
 			}

@@ -7,13 +7,35 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class LongTag extends AbstractNumberTag {
-	private long value;
+	public static final TagReader<LongTag> READER = new TagReader<LongTag>() {
+		public LongTag method_23252(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+			positionTracker.add(128L);
+			return LongTag.of(dataInput.readLong());
+		}
 
-	LongTag() {
+		@Override
+		public String getCrashReportName() {
+			return "LONG";
+		}
+
+		@Override
+		public String getCommandFeedbackName() {
+			return "TAG_Long";
+		}
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+	};
+	private final long value;
+
+	private LongTag(long l) {
+		this.value = l;
 	}
 
-	public LongTag(long l) {
-		this.value = l;
+	public static LongTag of(long l) {
+		return l >= -128L && l <= 1024L ? LongTag.Cache.VALUES[(int)l + 128] : new LongTag(l);
 	}
 
 	@Override
@@ -22,14 +44,13 @@ public class LongTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-		positionTracker.add(128L);
-		this.value = dataInput.readLong();
+	public byte getType() {
+		return 4;
 	}
 
 	@Override
-	public byte getType() {
-		return 4;
+	public TagReader<LongTag> getReader() {
+		return READER;
 	}
 
 	@Override
@@ -38,7 +59,7 @@ public class LongTag extends AbstractNumberTag {
 	}
 
 	public LongTag method_10621() {
-		return new LongTag(this.value);
+		return this;
 	}
 
 	public boolean equals(Object object) {
@@ -88,5 +109,15 @@ public class LongTag extends AbstractNumberTag {
 	@Override
 	public Number getNumber() {
 		return this.value;
+	}
+
+	static class Cache {
+		static final LongTag[] VALUES = new LongTag[1153];
+
+		static {
+			for (int i = 0; i < VALUES.length; i++) {
+				VALUES[i] = new LongTag((long)(-128 + i));
+			}
+		}
 	}
 }

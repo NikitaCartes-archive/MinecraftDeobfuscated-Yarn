@@ -76,7 +76,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		if (!fluidState.isEmpty()) {
 			return null;
 		} else {
-			BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().down());
+			BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().method_10074());
 			if (blockState.matches(BlockTags.BAMBOO_PLANTABLE_ON)) {
 				Block block = blockState.getBlock();
 				if (block == Blocks.BAMBOO_SAPLING) {
@@ -109,7 +109,7 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return arg.getBlockState(blockPos.down()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
+		return arg.getBlockState(blockPos.method_10074()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	protected void updateLeaves(BlockState blockState, World world, BlockPos blockPos, Random random, int i) {
-		BlockState blockState2 = world.getBlockState(blockPos.down());
+		BlockState blockState2 = world.getBlockState(blockPos.method_10074());
 		BlockPos blockPos2 = blockPos.down(2);
 		BlockState blockState3 = world.getBlockState(blockPos2);
 		BambooLeaves bambooLeaves = BambooLeaves.NONE;
@@ -175,7 +175,7 @@ public class BambooBlock extends Block implements Fertilizable {
 			} else if (blockState2.getBlock() == Blocks.BAMBOO && blockState2.get(LEAVES) != BambooLeaves.NONE) {
 				bambooLeaves = BambooLeaves.LARGE;
 				if (blockState3.getBlock() == Blocks.BAMBOO) {
-					world.setBlockState(blockPos.down(), blockState2.with(LEAVES, BambooLeaves.SMALL), 3);
+					world.setBlockState(blockPos.method_10074(), blockState2.with(LEAVES, BambooLeaves.SMALL), 3);
 					world.setBlockState(blockPos2, blockState3.with(LEAVES, BambooLeaves.NONE), 3);
 				}
 			}

@@ -1,15 +1,20 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WitherEntityModel<T extends WitherEntity> extends EntityModel<T> {
+public class WitherEntityModel<T extends WitherEntity> extends class_4595<T> {
 	private final ModelPart[] field_3613;
 	private final ModelPart[] field_3612;
+	private final ImmutableList<ModelPart> field_20943;
 
 	public WitherEntityModel(float f) {
 		this.textureWidth = 64;
@@ -36,18 +41,14 @@ public class WitherEntityModel<T extends WitherEntity> extends EntityModel<T> {
 		this.field_3612[2].addCuboid(-4.0F, -4.0F, -4.0F, 6.0F, 6.0F, 6.0F, f);
 		this.field_3612[2].rotationPointX = 10.0F;
 		this.field_3612[2].rotationPointY = 4.0F;
+		Builder<ModelPart> builder = ImmutableList.builder();
+		builder.addAll(Arrays.asList(this.field_3612));
+		builder.addAll(Arrays.asList(this.field_3613));
+		this.field_20943 = builder.build();
 	}
 
-	public void method_17129(T witherEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17130(witherEntity, f, g, h, i, j, k);
-
-		for (ModelPart modelPart : this.field_3612) {
-			modelPart.render(k);
-		}
-
-		for (ModelPart modelPart : this.field_3613) {
-			modelPart.render(k);
-		}
+	public ImmutableList<ModelPart> method_22970() {
+		return this.field_20943;
 	}
 
 	public void method_17130(T witherEntity, float f, float g, float h, float i, float j, float k) {

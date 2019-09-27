@@ -50,9 +50,9 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		if (compoundTag.containsKey("Owner", 10)) {
+		if (compoundTag.contains("Owner", 10)) {
 			this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("Owner")));
-		} else if (compoundTag.containsKey("ExtraType", 8)) {
+		} else if (compoundTag.contains("ExtraType", 8)) {
 			String string = compoundTag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
 				this.setOwnerAndType(new GameProfile(null, string));

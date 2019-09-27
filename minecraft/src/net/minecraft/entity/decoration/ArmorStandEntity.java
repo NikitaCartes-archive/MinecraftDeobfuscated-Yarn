@@ -221,19 +221,19 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("ArmorItems", 9)) {
+		if (compoundTag.contains("ArmorItems", 9)) {
 			ListTag listTag = compoundTag.getList("ArmorItems", 10);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
+				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
 			}
 		}
 
-		if (compoundTag.containsKey("HandItems", 9)) {
+		if (compoundTag.contains("HandItems", 9)) {
 			ListTag listTag = compoundTag.getList("HandItems", 10);
 
 			for (int i = 0; i < this.heldItems.size(); i++) {
-				this.heldItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
+				this.heldItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
 			}
 		}
 

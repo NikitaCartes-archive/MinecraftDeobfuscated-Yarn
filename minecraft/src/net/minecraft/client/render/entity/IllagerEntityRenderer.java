@@ -1,8 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.EvilVillagerEntityModel;
 import net.minecraft.entity.mob.IllagerEntity;
@@ -14,13 +14,8 @@ public abstract class IllagerEntityRenderer<T extends IllagerEntity> extends Mob
 		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
-	public IllagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
-		this.addFeature(new HeadFeatureRenderer<>(this));
-	}
-
-	protected void method_16460(T illagerEntity, float f) {
+	protected void method_16460(T illagerEntity, class_4587 arg, float f) {
 		float g = 0.9375F;
-		RenderSystem.scalef(0.9375F, 0.9375F, 0.9375F);
+		arg.method_22905(0.9375F, 0.9375F, 0.9375F);
 	}
 }

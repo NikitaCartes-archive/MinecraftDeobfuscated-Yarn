@@ -11,10 +11,31 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class LongArrayTag extends AbstractListTag<LongTag> {
-	private long[] value;
+	public static final TagReader<LongArrayTag> READER = new TagReader<LongArrayTag>() {
+		public LongArrayTag method_23250(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+			positionTracker.add(192L);
+			int j = dataInput.readInt();
+			positionTracker.add((long)(64 * j));
+			long[] ls = new long[j];
 
-	LongArrayTag() {
-	}
+			for (int k = 0; k < j; k++) {
+				ls[k] = dataInput.readLong();
+			}
+
+			return new LongArrayTag(ls);
+		}
+
+		@Override
+		public String getCrashReportName() {
+			return "LONG[]";
+		}
+
+		@Override
+		public String getCommandFeedbackName() {
+			return "TAG_Long_Array";
+		}
+	};
+	private long[] value;
 
 	public LongArrayTag(long[] ls) {
 		this.value = ls;
@@ -49,20 +70,13 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-		positionTracker.add(192L);
-		int j = dataInput.readInt();
-		positionTracker.add((long)(64 * j));
-		this.value = new long[j];
-
-		for (int k = 0; k < j; k++) {
-			this.value[k] = dataInput.readLong();
-		}
+	public byte getType() {
+		return 12;
 	}
 
 	@Override
-	public byte getType() {
-		return 12;
+	public TagReader<LongArrayTag> getReader() {
+		return READER;
 	}
 
 	@Override
@@ -120,13 +134,13 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	public LongTag method_10616(int i) {
-		return new LongTag(this.value[i]);
+		return LongTag.of(this.value[i]);
 	}
 
 	public LongTag method_17810(int i, LongTag longTag) {
 		long l = this.value[i];
 		this.value[i] = longTag.getLong();
-		return new LongTag(l);
+		return LongTag.of(l);
 	}
 
 	public void method_17812(int i, LongTag longTag) {
@@ -156,7 +170,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	public LongTag method_17811(int i) {
 		long l = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
-		return new LongTag(l);
+		return LongTag.of(l);
 	}
 
 	public void clear() {

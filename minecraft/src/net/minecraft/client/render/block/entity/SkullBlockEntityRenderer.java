@@ -4,11 +4,14 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
@@ -27,7 +30,6 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEntity> {
-	public static SkullBlockEntityRenderer INSTANCE;
 	private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = SystemUtil.consume(
 		Maps.<SkullBlock.SkullType, SkullEntityModel>newHashMap(), hashMap -> {
 			SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
@@ -50,73 +52,52 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
-	public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
+	public SkullBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+		super(blockEntityRenderDispatcher);
+	}
+
+	public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
 		float h = skullBlockEntity.getTicksPowered(g);
 		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
 		Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
 		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
-		this.render((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), i, h);
+		render(direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, arg, arg2, i);
 	}
 
-	@Override
-	public void setRenderManager(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
-		super.setRenderManager(blockEntityRenderDispatcher);
-		INSTANCE = this;
-	}
-
-	public void render(
-		float f, float g, float h, @Nullable Direction direction, float i, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, int j, float k
+	public static void render(
+		@Nullable Direction direction, float f, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, float g, class_4587 arg, class_4597 arg2, int i
 	) {
 		SkullEntityModel skullEntityModel = (SkullEntityModel)MODELS.get(skullType);
-		if (j >= 0) {
-			this.bindTexture((Identifier)DESTROY_STAGE_TEXTURES.get(j));
-			RenderSystem.matrixMode(5890);
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(4.0F, 2.0F, 1.0F);
-			RenderSystem.translatef(0.0625F, 0.0625F, 0.0625F);
-			RenderSystem.matrixMode(5888);
-		} else {
-			this.bindTexture(this.method_3578(skullType, gameProfile));
-		}
-
-		RenderSystem.pushMatrix();
+		arg.method_22903();
 		if (direction == null) {
-			RenderSystem.translatef(f + 0.5F, g, h + 0.5F);
+			arg.method_22904(0.5, 0.0, 0.5);
 		} else {
 			switch (direction) {
 				case NORTH:
-					RenderSystem.translatef(f + 0.5F, g + 0.25F, h + 0.74F);
+					arg.method_22904(0.5, 0.25, 0.74F);
 					break;
 				case SOUTH:
-					RenderSystem.translatef(f + 0.5F, g + 0.25F, h + 0.26F);
+					arg.method_22904(0.5, 0.25, 0.26F);
 					break;
 				case WEST:
-					RenderSystem.translatef(f + 0.74F, g + 0.25F, h + 0.5F);
+					arg.method_22904(0.74F, 0.25, 0.5);
 					break;
 				case EAST:
 				default:
-					RenderSystem.translatef(f + 0.26F, g + 0.25F, h + 0.5F);
+					arg.method_22904(0.26F, 0.25, 0.5);
 			}
 		}
 
-		RenderSystem.enableRescaleNormal();
-		RenderSystem.scalef(-1.0F, -1.0F, 1.0F);
-		RenderSystem.enableAlphaTest();
-		if (skullType == SkullBlock.Type.PLAYER) {
-			RenderSystem.setProfile(RenderSystem.class_4564.field_20745);
-		}
-
-		skullEntityModel.render(k, 0.0F, 0.0F, i, 0.0F, 0.0625F);
-		RenderSystem.popMatrix();
-		if (j >= 0) {
-			RenderSystem.matrixMode(5890);
-			RenderSystem.popMatrix();
-			RenderSystem.matrixMode(5888);
-		}
+		arg.method_22905(-1.0F, -1.0F, 1.0F);
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(method_3578(skullType, gameProfile)));
+		class_4608.method_23211(lv);
+		skullEntityModel.render(arg, lv, g, f, 0.0F, 0.0625F, i);
+		lv.method_22923();
+		arg.method_22909();
 	}
 
-	private Identifier method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
+	private static Identifier method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
 		Identifier identifier = (Identifier)TEXTURES.get(skullType);
 		if (skullType == SkullBlock.Type.PLAYER && gameProfile != null) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();

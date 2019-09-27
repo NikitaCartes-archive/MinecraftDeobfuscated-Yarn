@@ -67,10 +67,11 @@ public class SnowBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockState blockState2 = arg.getBlockState(blockPos.down());
+		BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
 		Block block = blockState2.getBlock();
 		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER
-			? Block.isFaceFullSquare(blockState2.getCollisionShape(arg, blockPos.down()), Direction.UP) || block == this && (Integer)blockState2.get(LAYERS) == 8
+			? Block.isFaceFullSquare(blockState2.getCollisionShape(arg, blockPos.method_10074()), Direction.UP)
+				|| block == this && (Integer)blockState2.get(LAYERS) == 8
 			: false;
 	}
 

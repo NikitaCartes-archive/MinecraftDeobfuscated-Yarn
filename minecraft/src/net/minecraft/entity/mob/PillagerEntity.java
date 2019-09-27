@@ -141,7 +141,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		ListTag listTag = compoundTag.getList("Inventory", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompoundTag(i));
+			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.inventory.add(itemStack);
 			}
@@ -152,7 +152,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		Block block = arg.getBlockState(blockPos.down()).getBlock();
+		Block block = arg.getBlockState(blockPos.method_10074()).getBlock();
 		return block != Blocks.GRASS_BLOCK && block != Blocks.SAND ? 0.5F - arg.getBrightness(blockPos) : 10.0F;
 	}
 
@@ -229,7 +229,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		double h = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - entity.y + g * 0.2F;
 		Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, h, e), f);
 		projectile.setVelocity((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 	}
 
 	private Vector3f getProjectileVelocity(Vec3d vec3d, float f) {

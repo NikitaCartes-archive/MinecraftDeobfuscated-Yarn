@@ -80,7 +80,7 @@ public class FeatureUpdater {
 
 		for (String string : this.field_17659) {
 			StructureFeature<?> structureFeature = (StructureFeature<?>)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-			if (!compoundTag4.containsKey(string, 12) && structureFeature != null) {
+			if (!compoundTag4.contains(string, 12) && structureFeature != null) {
 				int i = structureFeature.getRadius();
 				LongList longList = new LongArrayList();
 
@@ -164,7 +164,7 @@ public class FeatureUpdater {
 					long l = ChunkPos.toLong(compoundTag2.getInt("ChunkX"), compoundTag2.getInt("ChunkZ"));
 					ListTag listTag = compoundTag2.getList("Children", 10);
 					if (!listTag.isEmpty()) {
-						String string3 = listTag.getCompoundTag(0).getString("id");
+						String string3 = listTag.getCompound(0).getString("id");
 						String string4 = (String)ANCIENT_TO_OLD.get(string3);
 						if (string4 != null) {
 							compoundTag2.putString("id", string4);

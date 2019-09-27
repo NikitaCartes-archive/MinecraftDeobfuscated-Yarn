@@ -42,7 +42,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 		if (blockState != null) {
 			CompoundTag compoundTag = itemStack.getOrCreateTag();
 			CompoundTag compoundTag2;
-			if (compoundTag.containsKey("BlockStateTag", 10)) {
+			if (compoundTag.contains("BlockStateTag", 10)) {
 				compoundTag2 = compoundTag.getCompound("BlockStateTag");
 			} else {
 				compoundTag2 = new CompoundTag();

@@ -34,7 +34,7 @@ public class BlockColors {
 		BlockColors blockColors = new BlockColors();
 		blockColors.registerColorProvider(
 			(blockState, blockRenderView, blockPos, i) -> blockRenderView != null && blockPos != null
-					? BiomeColors.getGrassColor(blockRenderView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos)
+					? BiomeColors.getGrassColor(blockRenderView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.method_10074() : blockPos)
 					: -1,
 			Blocks.LARGE_FERN,
 			Blocks.TALL_GRASS

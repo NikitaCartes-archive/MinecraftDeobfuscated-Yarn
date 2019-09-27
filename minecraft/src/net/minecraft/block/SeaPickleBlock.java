@@ -63,7 +63,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos2 = blockPos.method_10074();
 		return this.canPlantOnTop(arg.getBlockState(blockPos2), arg, blockPos2);
 	}
 
@@ -124,7 +124,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
-		if (!this.isDry(blockState) && serverWorld.getBlockState(blockPos.down()).matches(BlockTags.CORAL_BLOCKS)) {
+		if (!this.isDry(blockState) && serverWorld.getBlockState(blockPos.method_10074()).matches(BlockTags.CORAL_BLOCKS)) {
 			int i = 5;
 			int j = 1;
 			int k = 2;
@@ -139,7 +139,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 					for (int r = q - 2; r < q; r++) {
 						BlockPos blockPos2 = new BlockPos(m + o, r, blockPos.getZ() - n + p);
 						if (blockPos2 != blockPos && random.nextInt(6) == 0 && serverWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
-							BlockState blockState2 = serverWorld.getBlockState(blockPos2.down());
+							BlockState blockState2 = serverWorld.getBlockState(blockPos2.method_10074());
 							if (blockState2.matches(BlockTags.CORAL_BLOCKS)) {
 								serverWorld.setBlockState(blockPos2, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
 							}

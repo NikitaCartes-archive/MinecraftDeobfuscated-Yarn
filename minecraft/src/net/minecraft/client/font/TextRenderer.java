@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.class_4588;
+import net.minecraft.class_4590;
+import net.minecraft.class_4597;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -41,12 +44,12 @@ public class TextRenderer implements AutoCloseable {
 
 	public int drawWithShadow(String string, float f, float g, int i) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(string, f, g, i, true);
+		return this.method_22941(string, f, g, i, class_4590.method_22931().method_22936(), true);
 	}
 
 	public int draw(String string, float f, float g, int i) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(string, f, g, i, false);
+		return this.method_22941(string, f, g, i, class_4590.method_22931().method_22936(), false);
 	}
 
 	public String mirror(String string) {
@@ -59,135 +62,144 @@ public class TextRenderer implements AutoCloseable {
 		}
 	}
 
-	private int draw(String string, float f, float g, int i, boolean bl) {
+	private int method_22941(String string, float f, float g, int i, Matrix4f matrix4f, boolean bl) {
 		if (string == null) {
 			return 0;
 		} else {
-			if (this.rightToLeft) {
-				string = this.mirror(string);
-			}
-
-			if ((i & -67108864) == 0) {
-				i |= -16777216;
-			}
-
-			if (bl) {
-				this.drawLayer(string, f, g, i, true);
-			}
-
-			f = this.drawLayer(string, f, g, i, false);
-			return (int)f + (bl ? 1 : 0);
+			class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
+			int j = this.method_22942(string, f, g, i, bl, matrix4f, lv, false, 0, 15728880);
+			lv.method_22993();
+			return j;
 		}
 	}
 
-	private float drawLayer(String string, float f, float g, int i, boolean bl) {
+	public int method_22942(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
+		return this.draw(string, f, g, i, bl, matrix4f, arg, bl2, j, k);
+	}
+
+	private int draw(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
+		if (this.rightToLeft) {
+			string = this.mirror(string);
+		}
+
+		if ((i & -67108864) == 0) {
+			i |= -16777216;
+		}
+
+		if (bl) {
+			this.drawLayer(string, f, g, i, true, matrix4f, arg, bl2, j, k);
+		}
+
+		f = this.drawLayer(string, f, g, i, false, matrix4f, arg, bl2, j, k);
+		return (int)f + (bl ? 1 : 0);
+	}
+
+	private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
 		float h = bl ? 0.25F : 1.0F;
-		float j = (float)(i >> 16 & 0xFF) / 255.0F * h;
-		float k = (float)(i >> 8 & 0xFF) / 255.0F * h;
-		float l = (float)(i & 0xFF) / 255.0F * h;
-		float m = j;
-		float n = k;
-		float o = l;
-		float p = (float)(i >> 24 & 0xFF) / 255.0F;
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		Identifier identifier = null;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		boolean bl2 = false;
+		float l = (float)(i >> 16 & 0xFF) / 255.0F * h;
+		float m = (float)(i >> 8 & 0xFF) / 255.0F * h;
+		float n = (float)(i & 0xFF) / 255.0F * h;
+		float o = f;
+		float p = l;
+		float q = m;
+		float r = n;
+		float s = (float)(i >> 24 & 0xFF) / 255.0F;
 		boolean bl3 = false;
 		boolean bl4 = false;
 		boolean bl5 = false;
 		boolean bl6 = false;
-		List<TextRenderer.Rectangle> list = Lists.<TextRenderer.Rectangle>newArrayList();
+		boolean bl7 = false;
+		List<GlyphRenderer.Rectangle> list = Lists.<GlyphRenderer.Rectangle>newArrayList();
 
-		for (int q = 0; q < string.length(); q++) {
-			char c = string.charAt(q);
-			if (c == 167 && q + 1 < string.length()) {
-				Formatting formatting = Formatting.byCode(string.charAt(q + 1));
+		for (int t = 0; t < string.length(); t++) {
+			char c = string.charAt(t);
+			if (c == 167 && t + 1 < string.length()) {
+				Formatting formatting = Formatting.byCode(string.charAt(t + 1));
 				if (formatting != null) {
 					if (formatting.affectsGlyphWidth()) {
-						bl2 = false;
 						bl3 = false;
+						bl4 = false;
+						bl7 = false;
 						bl6 = false;
 						bl5 = false;
-						bl4 = false;
-						m = j;
-						n = k;
-						o = l;
+						p = l;
+						q = m;
+						r = n;
 					}
 
 					if (formatting.getColorValue() != null) {
-						int r = formatting.getColorValue();
-						m = (float)(r >> 16 & 0xFF) / 255.0F * h;
-						n = (float)(r >> 8 & 0xFF) / 255.0F * h;
-						o = (float)(r & 0xFF) / 255.0F * h;
+						int u = formatting.getColorValue();
+						p = (float)(u >> 16 & 0xFF) / 255.0F * h;
+						q = (float)(u >> 8 & 0xFF) / 255.0F * h;
+						r = (float)(u & 0xFF) / 255.0F * h;
 					} else if (formatting == Formatting.OBFUSCATED) {
-						bl2 = true;
-					} else if (formatting == Formatting.BOLD) {
 						bl3 = true;
-					} else if (formatting == Formatting.STRIKETHROUGH) {
-						bl6 = true;
-					} else if (formatting == Formatting.UNDERLINE) {
-						bl5 = true;
-					} else if (formatting == Formatting.ITALIC) {
+					} else if (formatting == Formatting.BOLD) {
 						bl4 = true;
+					} else if (formatting == Formatting.STRIKETHROUGH) {
+						bl7 = true;
+					} else if (formatting == Formatting.UNDERLINE) {
+						bl6 = true;
+					} else if (formatting == Formatting.ITALIC) {
+						bl5 = true;
 					}
 				}
 
-				q++;
+				t++;
 			} else {
 				Glyph glyph = this.fontStorage.getGlyph(c);
-				GlyphRenderer glyphRenderer = bl2 && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
-				Identifier identifier2 = glyphRenderer.getId();
-				if (identifier2 != null) {
-					if (identifier != identifier2) {
-						tessellator.draw();
-						this.textureManager.bindTexture(identifier2);
-						bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-						identifier = identifier2;
-					}
-
-					float s = bl3 ? glyph.getBoldOffset() : 0.0F;
-					float t = bl ? glyph.getShadowOffset() : 0.0F;
-					this.drawGlyph(glyphRenderer, bl3, bl4, s, f + t, g + t, bufferBuilder, m, n, o, p);
+				GlyphRenderer glyphRenderer = bl3 && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
+				Identifier identifier = glyphRenderer.getId();
+				if (identifier != null) {
+					float v = bl4 ? glyph.getBoldOffset() : 0.0F;
+					float w = bl ? glyph.getShadowOffset() : 0.0F;
+					class_4588 lv = arg.getBuffer(bl2 ? BlockRenderLayer.method_23030(identifier) : BlockRenderLayer.method_23028(identifier));
+					this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, lv, p, q, r, s, k);
 				}
 
-				float s = glyph.getAdvance(bl3);
-				float t = bl ? 1.0F : 0.0F;
+				float v = glyph.getAdvance(bl4);
+				float w = bl ? 1.0F : 0.0F;
+				if (bl7) {
+					list.add(new GlyphRenderer.Rectangle(o + w - 1.0F, g + w + 4.5F, o + w + v, g + w + 4.5F - 1.0F, 0.001F, p, q, r, s));
+				}
+
 				if (bl6) {
-					list.add(new TextRenderer.Rectangle(f + t - 1.0F, g + t + 4.5F, f + t + s, g + t + 4.5F - 1.0F, m, n, o, p));
+					list.add(new GlyphRenderer.Rectangle(o + w - 1.0F, g + w + 9.0F, o + w + v, g + w + 9.0F - 1.0F, 0.001F, p, q, r, s));
 				}
 
-				if (bl5) {
-					list.add(new TextRenderer.Rectangle(f + t - 1.0F, g + t + 9.0F, f + t + s, g + t + 9.0F - 1.0F, m, n, o, p));
-				}
-
-				f += s;
+				o += v;
 			}
 		}
 
-		tessellator.draw();
+		if (j != 0) {
+			float x = (float)(j >> 24 & 0xFF) / 255.0F;
+			float y = (float)(j >> 16 & 0xFF) / 255.0F;
+			float z = (float)(j >> 8 & 0xFF) / 255.0F;
+			float aa = (float)(j & 0xFF) / 255.0F;
+			list.add(new GlyphRenderer.Rectangle(f - 1.0F, g + 9.0F, o + 1.0F, g - 1.0F, -0.001F, y, z, aa, x));
+		}
+
 		if (!list.isEmpty()) {
-			RenderSystem.disableTexture();
-			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+			GlyphRenderer glyphRenderer2 = this.fontStorage.method_22943();
+			Identifier identifier2 = glyphRenderer2.getId();
+			if (identifier2 != null) {
+				class_4588 lv2 = arg.getBuffer(bl2 ? BlockRenderLayer.method_23030(identifier2) : BlockRenderLayer.method_23028(identifier2));
 
-			for (TextRenderer.Rectangle rectangle : list) {
-				rectangle.draw(bufferBuilder);
+				for (GlyphRenderer.Rectangle rectangle : list) {
+					glyphRenderer2.method_22944(rectangle, matrix4f, lv2, k);
+				}
 			}
-
-			tessellator.draw();
-			RenderSystem.enableTexture();
 		}
 
-		return f;
+		return o;
 	}
 
 	private void drawGlyph(
-		GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, BufferBuilder bufferBuilder, float i, float j, float k, float l
+		GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, Matrix4f matrix4f, class_4588 arg, float i, float j, float k, float l, int m
 	) {
-		glyphRenderer.draw(this.textureManager, bl2, g, h, bufferBuilder, i, j, k, l);
+		glyphRenderer.draw(bl2, g, h, matrix4f, arg, i, j, k, l, m);
 		if (bl) {
-			glyphRenderer.draw(this.textureManager, bl2, g + f, h, bufferBuilder, i, j, k, l);
+			glyphRenderer.draw(bl2, g + f, h, matrix4f, arg, i, j, k, l, m);
 		}
 	}
 
@@ -279,14 +291,17 @@ public class TextRenderer implements AutoCloseable {
 	}
 
 	private void renderStringBounded(String string, int i, int j, int k, int l) {
-		for (String string2 : this.wrapStringToWidthAsList(string, k)) {
+		List<String> list = this.wrapStringToWidthAsList(string, k);
+		Matrix4f matrix4f = class_4590.method_22931().method_22936();
+
+		for (String string2 : list) {
 			float f = (float)i;
 			if (this.rightToLeft) {
 				int m = this.getStringWidth(this.mirror(string2));
 				f += (float)(k - m);
 			}
 
-			this.draw(string2, f, (float)j, l, false);
+			this.method_22941(string2, f, (float)j, l, matrix4f, false);
 			j += 9;
 		}
 	}
@@ -418,35 +433,5 @@ public class TextRenderer implements AutoCloseable {
 
 	public boolean isRightToLeft() {
 		return this.rightToLeft;
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class Rectangle {
-		protected final float xMin;
-		protected final float yMin;
-		protected final float xMax;
-		protected final float yMax;
-		protected final float red;
-		protected final float green;
-		protected final float blue;
-		protected final float alpha;
-
-		private Rectangle(float f, float g, float h, float i, float j, float k, float l, float m) {
-			this.xMin = f;
-			this.yMin = g;
-			this.xMax = h;
-			this.yMax = i;
-			this.red = j;
-			this.green = k;
-			this.blue = l;
-			this.alpha = m;
-		}
-
-		public void draw(BufferBuilder bufferBuilder) {
-			bufferBuilder.vertex((double)this.xMin, (double)this.yMin, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
-			bufferBuilder.vertex((double)this.xMax, (double)this.yMin, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
-			bufferBuilder.vertex((double)this.xMax, (double)this.yMax, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
-			bufferBuilder.vertex((double)this.xMin, (double)this.yMax, 0.0).color(this.red, this.green, this.blue, this.alpha).next();
-		}
 	}
 }

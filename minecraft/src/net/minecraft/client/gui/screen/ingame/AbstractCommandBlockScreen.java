@@ -44,8 +44,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected ButtonWidget toggleTrackingOutputButton;
 	protected boolean trackingOutput;
 	protected final List<String> exceptions = Lists.<String>newArrayList();
-	protected int field_2757;
-	protected int field_2756;
+	protected int suggestionStartX;
+	protected int suggestionWidth;
 	protected ParseResults<CommandSource> parsedCommand;
 	protected CompletableFuture<Suggestions> suggestionsFuture;
 	protected AbstractCommandBlockScreen.SuggestionWindow suggestionWindow;
@@ -62,7 +62,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	abstract CommandBlockExecutor getCommandExecutor();
 
-	abstract int method_2364();
+	abstract int getTrackOutputButtonHeight();
 
 	@Override
 	protected void init() {
@@ -73,17 +73,21 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.cancelButton = this.addButton(
 			new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.onClose())
 		);
-		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.width / 2 + 150 - 20, this.method_2364(), 20, 20, "O", buttonWidget -> {
-			CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-			commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
-			this.updateTrackedOutput();
-		}));
+		this.toggleTrackingOutputButton = this.addButton(
+			new ButtonWidget(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, "O", buttonWidget -> {
+				CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
+				commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
+				this.updateTrackedOutput();
+			})
+		);
 		this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command"));
 		this.consoleCommandTextField.setMaxLength(32500);
 		this.consoleCommandTextField.setRenderTextProvider(this::method_2348);
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.children.add(this.consoleCommandTextField);
-		this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.method_2364(), 276, 20, I18n.translate("advMode.previousOutput"));
+		this.previousOutputTextField = new TextFieldWidget(
+			this.font, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, I18n.translate("advMode.previousOutput")
+		);
 		this.previousOutputTextField.setMaxLength(32500);
 		this.previousOutputTextField.setEditable(false);
 		this.previousOutputTextField.setText("-");
@@ -223,8 +227,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			}
 		}
 
-		this.field_2757 = 0;
-		this.field_2756 = this.width;
+		this.suggestionStartX = 0;
+		this.suggestionWidth = this.width;
 		if (this.exceptions.isEmpty()) {
 			this.method_2356(Formatting.GRAY);
 		}
@@ -259,12 +263,12 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		if (!list.isEmpty()) {
 			this.exceptions.addAll(list);
-			this.field_2757 = MathHelper.clamp(
+			this.suggestionStartX = MathHelper.clamp(
 				this.consoleCommandTextField.getCharacterX(suggestionContext.startPos),
 				0,
 				this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.getInnerWidth() - i
 			);
-			this.field_2756 = i;
+			this.suggestionWidth = i;
 		}
 	}
 
@@ -276,7 +280,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.consoleCommandTextField.render(i, j, f);
 		int k = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
-			k += 5 * 9 + 1 + this.method_2364() - 135;
+			k += 5 * 9 + 1 + this.getTrackOutputButtonHeight() - 135;
 			this.drawString(this.font, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, k + 4, 10526880);
 			this.previousOutputTextField.render(i, j, f);
 		}
@@ -288,8 +292,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			k = 0;
 
 			for (String string : this.exceptions) {
-				fill(this.field_2757 - 1, 72 + 12 * k, this.field_2757 + this.field_2756 + 1, 84 + 12 * k, Integer.MIN_VALUE);
-				this.font.drawWithShadow(string, (float)this.field_2757, (float)(74 + 12 * k), -1);
+				fill(this.suggestionStartX - 1, 72 + 12 * k, this.suggestionStartX + this.suggestionWidth + 1, 84 + 12 * k, Integer.MIN_VALUE);
+				this.font.drawWithShadow(string, (float)this.suggestionStartX, (float)(74 + 12 * k), -1);
 				k++;
 			}
 		}
@@ -425,13 +429,13 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		public boolean mouseScrolled(double d) {
 			int i = (int)(
 				AbstractCommandBlockScreen.this.minecraft.mouse.getX()
-					* (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getScaledWidth()
-					/ (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getWidth()
+					* (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getScaledWidth()
+					/ (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getWidth()
 			);
 			int j = (int)(
 				AbstractCommandBlockScreen.this.minecraft.mouse.getY()
-					* (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getScaledHeight()
-					/ (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getHeight()
+					* (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getScaledHeight()
+					/ (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getHeight()
 			);
 			if (this.area.contains(i, j)) {
 				this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - d), 0, Math.max(this.suggestions.getList().size() - 7, 0));

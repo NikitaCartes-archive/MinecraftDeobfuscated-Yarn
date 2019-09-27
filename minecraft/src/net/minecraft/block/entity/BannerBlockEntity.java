@@ -41,7 +41,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public void deserialize(ItemStack itemStack, DyeColor dyeColor) {
 		this.patternListTag = null;
 		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-		if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
+		if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
 			this.patternListTag = compoundTag.getList("Patterns", 10).method_10612();
 		}
 
@@ -85,7 +85,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		if (compoundTag.containsKey("CustomName", 8)) {
+		if (compoundTag.contains("CustomName", 8)) {
 			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
@@ -115,7 +115,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	public static int getPatternCount(ItemStack itemStack) {
 		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-		return compoundTag != null && compoundTag.containsKey("Patterns") ? compoundTag.getList("Patterns", 10).size() : 0;
+		return compoundTag != null && compoundTag.contains("Patterns") ? compoundTag.getList("Patterns", 10).size() : 0;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -153,7 +153,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 					this.patternCacheKey = "b" + dyeColor.getId();
 					if (this.patternListTag != null) {
 						for (int i = 0; i < this.patternListTag.size(); i++) {
-							CompoundTag compoundTag = this.patternListTag.getCompoundTag(i);
+							CompoundTag compoundTag = this.patternListTag.getCompound(i);
 							BannerPattern bannerPattern = BannerPattern.byId(compoundTag.getString("Pattern"));
 							if (bannerPattern != null) {
 								this.patterns.add(bannerPattern);
@@ -170,7 +170,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	public static void loadFromItemStack(ItemStack itemStack) {
 		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-		if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
+		if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
 			ListTag listTag = compoundTag.getList("Patterns", 10);
 			if (!listTag.isEmpty()) {
 				listTag.method_10536(listTag.size() - 1);

@@ -62,7 +62,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		this.age = compoundTag.getLong("Age");
-		if (compoundTag.containsKey("ExitPortal", 10)) {
+		if (compoundTag.contains("ExitPortal", 10)) {
 			this.exitPortalPos = NbtHelper.toBlockPos(compoundTag.getCompound("ExitPortal"));
 		}
 

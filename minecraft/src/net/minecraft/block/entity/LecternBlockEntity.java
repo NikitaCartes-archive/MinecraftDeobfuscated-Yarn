@@ -206,7 +206,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		if (compoundTag.containsKey("Book", 10)) {
+		if (compoundTag.contains("Book", 10)) {
 			this.book = this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;

@@ -288,8 +288,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		return false;
 	}
 
-	public static boolean method_20667(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+	public static boolean canSpawn(EntityType<ParrotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
 		return (block.matches(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR)
 			&& iWorld.getBaseLightLevel(blockPos, 0) > 8;
 	}

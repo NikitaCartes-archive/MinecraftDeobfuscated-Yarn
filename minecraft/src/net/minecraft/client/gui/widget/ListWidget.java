@@ -156,7 +156,6 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			int k = this.getScrollbarPosition();
 			int l = k + 6;
 			this.capYPosition();
-			RenderSystem.disableLighting();
 			RenderSystem.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -165,19 +164,19 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			float g = 32.0F;
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2165, 0.0)
-				.texture((double)((float)this.field_2180 / 32.0F), (double)((float)(this.field_2165 + (int)this.field_2175) / 32.0F))
+				.texture((float)this.field_2180 / 32.0F, (float)(this.field_2165 + (int)this.field_2175) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2165, 0.0)
-				.texture((double)((float)this.field_2181 / 32.0F), (double)((float)(this.field_2165 + (int)this.field_2175) / 32.0F))
+				.texture((float)this.field_2181 / 32.0F, (float)(this.field_2165 + (int)this.field_2175) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2166, 0.0)
-				.texture((double)((float)this.field_2181 / 32.0F), (double)((float)(this.field_2166 + (int)this.field_2175) / 32.0F))
+				.texture((float)this.field_2181 / 32.0F, (float)(this.field_2166 + (int)this.field_2175) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2166, 0.0)
-				.texture((double)((float)this.field_2180 / 32.0F), (double)((float)(this.field_2166 + (int)this.field_2175) / 32.0F))
+				.texture((float)this.field_2180 / 32.0F, (float)(this.field_2166 + (int)this.field_2175) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			tessellator.draw();
@@ -200,16 +199,16 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			RenderSystem.disableTexture();
 			int o = 4;
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-			bufferBuilder.vertex((double)this.field_2180, (double)(this.field_2166 + 4), 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
-			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2166 + 4), 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
-			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.field_2180, (double)(this.field_2166 + 4), 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2166 + 4), 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2166, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2166, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
 			tessellator.draw();
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2165 - 4), 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
-			bufferBuilder.vertex((double)this.field_2180, (double)(this.field_2165 - 4), 0.0).texture(0.0, 0.0).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.field_2180, (double)this.field_2165, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.field_2181, (double)this.field_2165, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)this.field_2181, (double)(this.field_2165 - 4), 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 0).next();
+			bufferBuilder.vertex((double)this.field_2180, (double)(this.field_2165 - 4), 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 0).next();
 			tessellator.draw();
 			int p = this.getMaxScroll();
 			if (p > 0) {
@@ -221,22 +220,22 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 				}
 
 				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)this.field_2165, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)l, (double)this.field_2165, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)l, (double)this.field_2166, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)k, (double)this.field_2166, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)k, (double)this.field_2165, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)l, (double)this.field_2165, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)l, (double)this.field_2166, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)k, (double)this.field_2166, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
 				tessellator.draw();
 				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
 				tessellator.draw();
 				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
 				tessellator.draw();
 			}
 
@@ -415,16 +414,10 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex((double)this.field_2180, (double)j, 0.0).texture(0.0, (double)((float)j / 32.0F)).color(64, 64, 64, l).next();
-		bufferBuilder.vertex((double)(this.field_2180 + this.width), (double)j, 0.0)
-			.texture((double)((float)this.width / 32.0F), (double)((float)j / 32.0F))
-			.color(64, 64, 64, l)
-			.next();
-		bufferBuilder.vertex((double)(this.field_2180 + this.width), (double)i, 0.0)
-			.texture((double)((float)this.width / 32.0F), (double)((float)i / 32.0F))
-			.color(64, 64, 64, k)
-			.next();
-		bufferBuilder.vertex((double)this.field_2180, (double)i, 0.0).texture(0.0, (double)((float)i / 32.0F)).color(64, 64, 64, k).next();
+		bufferBuilder.vertex((double)this.field_2180, (double)j, 0.0).texture(0.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
+		bufferBuilder.vertex((double)(this.field_2180 + this.width), (double)j, 0.0).texture((float)this.width / 32.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
+		bufferBuilder.vertex((double)(this.field_2180 + this.width), (double)i, 0.0).texture((float)this.width / 32.0F, (float)i / 32.0F).color(64, 64, 64, k).next();
+		bufferBuilder.vertex((double)this.field_2180, (double)i, 0.0).texture(0.0F, (float)i / 32.0F).color(64, 64, 64, k).next();
 		tessellator.draw();
 	}
 

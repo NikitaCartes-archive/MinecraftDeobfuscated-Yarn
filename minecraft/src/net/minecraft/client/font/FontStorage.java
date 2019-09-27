@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4591;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -28,6 +29,7 @@ public class FontStorage implements AutoCloseable {
 	private final TextureManager textureManager;
 	private final Identifier id;
 	private GlyphRenderer blankGlyphRenderer;
+	private GlyphRenderer field_20910;
 	private final List<Font> fonts = Lists.<Font>newArrayList();
 	private final Char2ObjectMap<GlyphRenderer> glyphRendererCache = new Char2ObjectOpenHashMap<>();
 	private final Char2ObjectMap<Glyph> glyphCache = new Char2ObjectOpenHashMap<>();
@@ -51,6 +53,7 @@ public class FontStorage implements AutoCloseable {
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
 		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
+		this.field_20910 = this.getGlyphRenderer(class_4591.INSTANCE);
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {
@@ -119,5 +122,9 @@ public class FontStorage implements AutoCloseable {
 	public GlyphRenderer getObfuscatedGlyphRenderer(Glyph glyph) {
 		CharList charList = this.charactersByWidth.get(MathHelper.ceil(glyph.getAdvance(false)));
 		return charList != null && !charList.isEmpty() ? this.getGlyphRenderer(charList.get(RANDOM.nextInt(charList.size()))) : this.blankGlyphRenderer;
+	}
+
+	public GlyphRenderer method_22943() {
+		return this.field_20910;
 	}
 }

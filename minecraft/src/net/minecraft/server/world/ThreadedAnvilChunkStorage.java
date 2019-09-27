@@ -35,6 +35,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
@@ -197,6 +199,29 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			ChunkHolder chunkHolder = this.getChunkHolder(l);
 			return chunkHolder == null ? LevelPrioritizedQueue.LEVEL_COUNT - 1 : Math.min(chunkHolder.getCompletedLevel(), LevelPrioritizedQueue.LEVEL_COUNT - 1);
 		};
+	}
+
+	@Environment(EnvType.CLIENT)
+	public String method_23272(ChunkPos chunkPos) {
+		ChunkHolder chunkHolder = this.getChunkHolder(chunkPos.toLong());
+		if (chunkHolder == null) {
+			return "null";
+		} else {
+			String string = chunkHolder.getLevel() + "\n";
+			ChunkStatus chunkStatus = chunkHolder.method_23270();
+			Chunk chunk = chunkHolder.getCompletedChunk();
+			if (chunkStatus != null) {
+				string = string + "St: §" + chunkStatus.getIndex() + chunkStatus + '§' + "r\n";
+			}
+
+			if (chunk != null) {
+				string = string + "Ch: §" + chunk.getStatus().getIndex() + chunk.getStatus() + '§' + "r\n";
+			}
+
+			ChunkHolder.LevelType levelType = chunkHolder.method_23271();
+			string = string + "§" + levelType.ordinal() + levelType;
+			return string + '§' + "r";
+		}
 	}
 
 	private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> createChunkRegionFuture(ChunkPos chunkPos, int i, IntFunction<ChunkStatus> intFunction) {
@@ -445,7 +470,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			try {
 				CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
 				if (compoundTag != null) {
-					boolean bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
+					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
 					if (bl) {
 						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, chunkPos, compoundTag);
 						chunk.setLastSaveTime(this.world.getTime());

@@ -114,9 +114,9 @@ public class AddServerScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.buttonAdd.active = !this.addressField.getText().isEmpty()
-			&& this.addressField.getText().split(":").length > 0
-			&& !this.serverNameField.getText().isEmpty();
+		String string = this.addressField.getText();
+		boolean bl = !string.isEmpty() && string.split(":").length > 0 && string.indexOf(32) == -1;
+		this.buttonAdd.active = bl && !this.serverNameField.getText().isEmpty();
 	}
 
 	@Override

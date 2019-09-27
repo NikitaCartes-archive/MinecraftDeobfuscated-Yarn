@@ -52,14 +52,14 @@ public class StructureFeatures {
 				int i = compoundTag.getInt("ChunkX");
 				int j = compoundTag.getInt("ChunkZ");
 				int k = compoundTag.getInt("references");
-				BlockBox blockBox = compoundTag.containsKey("BB") ? new BlockBox(compoundTag.getIntArray("BB")) : BlockBox.empty();
+				BlockBox blockBox = compoundTag.contains("BB") ? new BlockBox(compoundTag.getIntArray("BB")) : BlockBox.empty();
 				ListTag listTag = compoundTag.getList("Children", 10);
 
 				try {
 					StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, blockBox, k, chunkGenerator.getSeed());
 
 					for (int l = 0; l < listTag.size(); l++) {
-						CompoundTag compoundTag2 = listTag.getCompoundTag(l);
+						CompoundTag compoundTag2 = listTag.getCompound(l);
 						String string2 = compoundTag2.getString("id");
 						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
 						if (structurePieceType == null) {

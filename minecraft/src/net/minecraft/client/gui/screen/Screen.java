@@ -23,7 +23,6 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -134,8 +133,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public void renderTooltip(List<String> list, int i, int j) {
 		if (!list.isEmpty()) {
 			RenderSystem.disableRescaleNormal();
-			GuiLighting.disable();
-			RenderSystem.disableLighting();
 			RenderSystem.disableDepthTest();
 			int k = 0;
 
@@ -188,9 +185,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 			this.setBlitOffset(0);
 			this.itemRenderer.zOffset = 0.0F;
-			RenderSystem.enableLighting();
 			RenderSystem.enableDepthTest();
-			GuiLighting.enable();
 			RenderSystem.enableRescaleNormal();
 		}
 	}
@@ -224,7 +219,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 							list.add(text2.asFormattedString());
 						}
 
-						if (compoundTag.containsKey("type", 8)) {
+						if (compoundTag.contains("type", 8)) {
 							String string = compoundTag.getString("type");
 							list.add("Type: " + string);
 						}
@@ -238,8 +233,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
 				this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), i, j);
 			}
-
-			RenderSystem.disableLighting();
 		}
 	}
 
@@ -355,7 +348,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public void renderDirtBackground(int i) {
-		RenderSystem.disableLighting();
 		RenderSystem.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -363,13 +355,13 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0, (double)((float)this.height / 32.0F + (float)i)).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0F, (float)this.height / 32.0F + (float)i).color(64, 64, 64, 255).next();
 		bufferBuilder.vertex((double)this.width, (double)this.height, 0.0)
-			.texture((double)((float)this.width / 32.0F), (double)((float)this.height / 32.0F + (float)i))
+			.texture((float)this.width / 32.0F, (float)this.height / 32.0F + (float)i)
 			.color(64, 64, 64, 255)
 			.next();
-		bufferBuilder.vertex((double)this.width, 0.0, 0.0).texture((double)((float)this.width / 32.0F), (double)i).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, (double)i).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex((double)this.width, 0.0, 0.0).texture((float)this.width / 32.0F, (float)i).color(64, 64, 64, 255).next();
+		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0F, (float)i).color(64, 64, 64, 255).next();
 		tessellator.draw();
 	}
 
@@ -392,20 +384,20 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public static boolean hasControlDown() {
 		return MinecraftClient.IS_SYSTEM_MAC
-			? InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 343)
-				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 347)
-			: InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 341)
-				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 345);
+			? InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 343)
+				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 347)
+			: InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 341)
+				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 345);
 	}
 
 	public static boolean hasShiftDown() {
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340)
-			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344);
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340)
+			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344);
 	}
 
 	public static boolean hasAltDown() {
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 342)
-			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 346);
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 342)
+			|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 346);
 	}
 
 	public static boolean isCut(int i) {

@@ -120,8 +120,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		return 10.0F;
 	}
 
-	public static boolean method_20675(EntityType<GhastEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && method_20636(entityType, iWorld, spawnType, blockPos, random);
+	public static boolean canSpawn(EntityType<GhastEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("ExplosionPower", 99)) {
+		if (compoundTag.contains("ExplosionPower", 99)) {
 			this.fireballStrength = compoundTag.getInt("ExplosionPower");
 		}
 	}
@@ -177,7 +177,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void start() {
-			Random random = this.ghast.getRand();
+			Random random = this.ghast.getRandom();
 			double d = this.ghast.x + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
 			double e = this.ghast.y + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
 			double f = this.ghast.z + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
@@ -198,7 +198,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		public void tick() {
 			if (this.state == MoveControl.State.MOVE_TO) {
 				if (this.field_7276-- <= 0) {
-					this.field_7276 = this.field_7276 + this.ghast.getRand().nextInt(5) + 2;
+					this.field_7276 = this.field_7276 + this.ghast.getRandom().nextInt(5) + 2;
 					Vec3d vec3d = new Vec3d(this.targetX - this.ghast.x, this.targetY - this.ghast.y, this.targetZ - this.ghast.z);
 					double d = vec3d.length();
 					vec3d = vec3d.normalize();

@@ -92,25 +92,6 @@ public class BasicBakedModel implements BakedModel {
 			this(jsonUnbakedModel.useAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.getTransformations(), modelItemPropertyOverrideList);
 		}
 
-		public Builder(BlockState blockState, BakedModel bakedModel, Sprite sprite, Random random, long l) {
-			this(bakedModel.useAmbientOcclusion(), bakedModel.hasDepthInGui(), bakedModel.getTransformation(), bakedModel.getItemPropertyOverrides());
-			this.particleTexture = bakedModel.getSprite();
-
-			for (Direction direction : Direction.values()) {
-				random.setSeed(l);
-
-				for (BakedQuad bakedQuad : bakedModel.getQuads(blockState, direction, random)) {
-					this.addQuad(direction, new RetexturedBakedQuad(bakedQuad, sprite));
-				}
-			}
-
-			random.setSeed(l);
-
-			for (BakedQuad bakedQuad2 : bakedModel.getQuads(blockState, null, random)) {
-				this.addQuad(new RetexturedBakedQuad(bakedQuad2, sprite));
-			}
-		}
-
 		private Builder(boolean bl, boolean bl2, ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
 			for (Direction direction : Direction.values()) {
 				this.faceQuads.put(direction, Lists.newArrayList());

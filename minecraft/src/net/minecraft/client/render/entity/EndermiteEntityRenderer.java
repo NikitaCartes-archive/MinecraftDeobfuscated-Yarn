@@ -18,7 +18,7 @@ public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, 
 		return 180.0F;
 	}
 
-	protected Identifier method_3920(EndermiteEntity endermiteEntity) {
+	public Identifier method_3920(EndermiteEntity endermiteEntity) {
 		return SKIN;
 	}
 }

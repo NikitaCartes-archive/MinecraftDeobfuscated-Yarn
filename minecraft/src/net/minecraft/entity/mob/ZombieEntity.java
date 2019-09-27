@@ -69,8 +69,8 @@ public class ZombieEntity extends HostileEntity {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_7427 = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CONVERTING_IN_WATER = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final Predicate<Difficulty> field_19015 = difficulty -> difficulty == Difficulty.HARD;
-	private final BreakDoorGoal breakDoorsGoal = new BreakDoorGoal(this, field_19015);
+	private static final Predicate<Difficulty> DOOR_BREAK_DIFFICULTY_CHECKER = difficulty -> difficulty == Difficulty.HARD;
+	private final BreakDoorGoal breakDoorsGoal = new BreakDoorGoal(this, DOOR_BREAK_DIFFICULTY_CHECKER);
 	private boolean canBreakDoors;
 	private int inWaterTime;
 	private int ticksUntilWaterConversion;
@@ -163,7 +163,7 @@ public class ZombieEntity extends HostileEntity {
 		return super.getCurrentExperience(playerEntity);
 	}
 
-	public void setChild(boolean bl) {
+	public void setBaby(boolean bl) {
 		this.getDataTracker().set(BABY, bl);
 		if (this.world != null && !this.world.isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
@@ -253,8 +253,8 @@ public class ZombieEntity extends HostileEntity {
 			zombieEntity.copyPositionAndRotation(this);
 			zombieEntity.setCanPickUpLoot(this.canPickUpLoot());
 			zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
-			zombieEntity.method_7205(zombieEntity.world.getLocalDifficulty(new BlockPos(zombieEntity)).getClampedLocalDifficulty());
-			zombieEntity.setChild(this.isBaby());
+			zombieEntity.applyAttributeModifiers(zombieEntity.world.getLocalDifficulty(new BlockPos(zombieEntity)).getClampedLocalDifficulty());
+			zombieEntity.setBaby(this.isBaby());
 			zombieEntity.setAiDisabled(this.isAiDisabled());
 
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
@@ -398,12 +398,12 @@ public class ZombieEntity extends HostileEntity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.getBoolean("IsBaby")) {
-			this.setChild(true);
+			this.setBaby(true);
 		}
 
 		this.setCanBreakDoors(compoundTag.getBoolean("CanBreakDoors"));
 		this.inWaterTime = compoundTag.getInt("InWaterTime");
-		if (compoundTag.containsKey("DrownedConversionTime", 99) && compoundTag.getInt("DrownedConversionTime") > -1) {
+		if (compoundTag.contains("DrownedConversionTime", 99) && compoundTag.getInt("DrownedConversionTime") > -1) {
 			this.setTicksUntilWaterConversion(compoundTag.getInt("DrownedConversionTime"));
 		}
 	}
@@ -421,13 +421,13 @@ public class ZombieEntity extends HostileEntity {
 			zombieVillagerEntity.copyPositionAndRotation(villagerEntity);
 			villagerEntity.remove();
 			zombieVillagerEntity.initialize(
-				this.world, this.world.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), SpawnType.CONVERSION, new ZombieEntity.class_1644(false), null
+				this.world, this.world.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), SpawnType.CONVERSION, new ZombieEntity.Data(false), null
 			);
 			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
 			zombieVillagerEntity.method_21649(villagerEntity.method_21651().serialize(NbtOps.INSTANCE).getValue());
 			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
 			zombieVillagerEntity.setXp(villagerEntity.getExperience());
-			zombieVillagerEntity.setChild(villagerEntity.isBaby());
+			zombieVillagerEntity.setBaby(villagerEntity.isBaby());
 			zombieVillagerEntity.setAiDisabled(villagerEntity.isAiDisabled());
 			if (villagerEntity.hasCustomName()) {
 				zombieVillagerEntity.setCustomName(villagerEntity.getCustomName());
@@ -458,13 +458,13 @@ public class ZombieEntity extends HostileEntity {
 		float f = localDifficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
 		if (entityData == null) {
-			entityData = new ZombieEntity.class_1644(iWorld.getRandom().nextFloat() < 0.05F);
+			entityData = new ZombieEntity.Data(iWorld.getRandom().nextFloat() < 0.05F);
 		}
 
-		if (entityData instanceof ZombieEntity.class_1644) {
-			ZombieEntity.class_1644 lv = (ZombieEntity.class_1644)entityData;
-			if (lv.field_7439) {
-				this.setChild(true);
+		if (entityData instanceof ZombieEntity.Data) {
+			ZombieEntity.Data data = (ZombieEntity.Data)entityData;
+			if (data.baby) {
+				this.setBaby(true);
 				if ((double)iWorld.getRandom().nextFloat() < 0.05) {
 					List<ChickenEntity> list = iWorld.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
 					if (!list.isEmpty()) {
@@ -497,11 +497,11 @@ public class ZombieEntity extends HostileEntity {
 			}
 		}
 
-		this.method_7205(f);
+		this.applyAttributeModifiers(f);
 		return entityData;
 	}
 
-	protected void method_7205(float f) {
+	protected void applyAttributeModifiers(float f) {
 		this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE)
 			.addModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADDITION));
 		double d = this.random.nextDouble() * 1.5 * (double)f;
@@ -544,6 +544,14 @@ public class ZombieEntity extends HostileEntity {
 		return new ItemStack(Items.ZOMBIE_HEAD);
 	}
 
+	public class Data implements EntityData {
+		public final boolean baby;
+
+		private Data(boolean bl) {
+			this.baby = bl;
+		}
+	}
+
 	class DestroyEggGoal extends StepAndDestroyBlockGoal {
 		DestroyEggGoal(MobEntityWithAi mobEntityWithAi, double d, int i) {
 			super(Blocks.TURTLE_EGG, mobEntityWithAi, d, i);
@@ -562,14 +570,6 @@ public class ZombieEntity extends HostileEntity {
 		@Override
 		public double getDesiredSquaredDistanceToTarget() {
 			return 1.14;
-		}
-	}
-
-	public class class_1644 implements EntityData {
-		public final boolean field_7439;
-
-		private class_1644(boolean bl) {
-			this.field_7439 = bl;
 		}
 	}
 }

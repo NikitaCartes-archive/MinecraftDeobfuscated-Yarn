@@ -1,14 +1,16 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class VillagerResemblingModel<T extends Entity> extends EntityModel<T> implements ModelWithHead, ModelWithHat {
+public class VillagerResemblingModel<T extends Entity> extends class_4595<T> implements ModelWithHead, ModelWithHat {
 	protected ModelPart head;
 	protected ModelPart headOverlay;
 	protected final ModelPart hat;
@@ -63,13 +65,8 @@ public class VillagerResemblingModel<T extends Entity> extends EntityModel<T> im
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		this.head.render(k);
-		this.body.render(k);
-		this.leftLeg.render(k);
-		this.rightLeg.render(k);
-		this.arms.render(k);
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.head, this.body, this.leftLeg, this.rightLeg, this.arms);
 	}
 
 	@Override

@@ -94,7 +94,7 @@ public class BiMapPalette<T> implements Palette<T> {
 		this.map.clear();
 
 		for (int i = 0; i < listTag.size(); i++) {
-			this.map.add((T)this.elementDeserializer.apply(listTag.getCompoundTag(i)));
+			this.map.add((T)this.elementDeserializer.apply(listTag.getCompound(i)));
 		}
 	}
 

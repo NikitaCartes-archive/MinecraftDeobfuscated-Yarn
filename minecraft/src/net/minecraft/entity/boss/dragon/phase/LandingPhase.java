@@ -26,7 +26,7 @@ public class LandingPhase extends AbstractPhase {
 		double f = this.dragon.partHead.z;
 
 		for (int i = 0; i < 8; i++) {
-			Random random = this.dragon.getRand();
+			Random random = this.dragon.getRandom();
 			double g = d + random.nextGaussian() / 2.0;
 			double h = e + random.nextGaussian() / 2.0;
 			double j = f + random.nextGaussian() / 2.0;

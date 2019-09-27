@@ -21,14 +21,14 @@ public class EmptyMapItem extends NetworkSyncedItem {
 		}
 
 		if (itemStack2.isEmpty()) {
-			return TypedActionResult.method_22427(itemStack);
+			return TypedActionResult.successWithSwing(itemStack);
 		} else {
 			if (!playerEntity.inventory.insertStack(itemStack.copy())) {
 				playerEntity.dropItem(itemStack, false);
 			}
 
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-			return TypedActionResult.method_22427(itemStack2);
+			return TypedActionResult.successWithSwing(itemStack2);
 		}
 	}
 }

@@ -88,7 +88,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 		return 0.5F - arg.getBrightness(blockPos);
 	}
 
-	public static boolean method_20679(IWorld iWorld, BlockPos blockPos, Random random) {
+	public static boolean isSpawnDark(IWorld iWorld, BlockPos blockPos, Random random) {
 		if (iWorld.getLightLevel(LightType.SKY, blockPos) > random.nextInt(32)) {
 			return false;
 		} else {
@@ -97,14 +97,14 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 		}
 	}
 
-	public static boolean method_20680(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL
-			&& method_20679(iWorld, blockPos, random)
-			&& method_20636(entityType, iWorld, spawnType, blockPos, random);
+	public static boolean canSpawnInDark(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getDifficulty() != Difficulty.PEACEFUL && isSpawnDark(iWorld, blockPos, random) && canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
 	}
 
-	public static boolean method_20681(EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL && method_20636(entityType, iWorld, spawnType, blockPos, random);
+	public static boolean canSpawnIgnoreLightLevel(
+		EntityType<? extends HostileEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random
+	) {
+		return iWorld.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override

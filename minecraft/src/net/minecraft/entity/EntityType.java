@@ -561,7 +561,7 @@ public class EntityType<T extends Entity> {
 	}
 
 	public static void loadFromEntityTag(World world, @Nullable PlayerEntity playerEntity, @Nullable Entity entity, @Nullable CompoundTag compoundTag) {
-		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
+		if (compoundTag != null && compoundTag.contains("EntityTag", 10)) {
 			MinecraftServer minecraftServer = world.getServer();
 			if (minecraftServer != null && entity != null) {
 				if (world.isClient
@@ -671,11 +671,11 @@ public class EntityType<T extends Entity> {
 	@Nullable
 	public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> function) {
 		return (Entity)loadEntityFromTag(compoundTag, world).map(function).map(entity -> {
-			if (compoundTag.containsKey("Passengers", 9)) {
+			if (compoundTag.contains("Passengers", 9)) {
 				ListTag listTag = compoundTag.getList("Passengers", 10);
 
 				for (int i = 0; i < listTag.size(); i++) {
-					Entity entity2 = loadEntityWithPassengers(listTag.getCompoundTag(i), world, function);
+					Entity entity2 = loadEntityWithPassengers(listTag.getCompound(i), world, function);
 					if (entity2 != null) {
 						entity2.startRiding(entity, true);
 					}

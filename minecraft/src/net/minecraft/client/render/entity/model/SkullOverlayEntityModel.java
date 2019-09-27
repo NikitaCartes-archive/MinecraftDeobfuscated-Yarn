@@ -2,6 +2,8 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
 
 @Environment(EnvType.CLIENT)
@@ -15,10 +17,10 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void render(float f, float g, float h, float i, float j, float k) {
-		super.render(f, g, h, i, j, k);
+	public void render(class_4587 arg, class_4588 arg2, float f, float g, float h, float i, int j) {
+		super.render(arg, arg2, f, g, h, i, j);
 		this.field_3377.yaw = this.skull.yaw;
 		this.field_3377.pitch = this.skull.pitch;
-		this.field_3377.render(k);
+		this.field_3377.method_22698(arg, arg2, i, j, null);
 	}
 }

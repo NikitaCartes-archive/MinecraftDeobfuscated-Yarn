@@ -1,13 +1,14 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.VisibleRegion;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4604;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -23,114 +24,93 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		return super.method_4055(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
 	}
 
-	public boolean method_4068(T mobEntity, VisibleRegion visibleRegion, double d, double e, double f) {
-		if (super.isVisible(mobEntity, visibleRegion, d, e, f)) {
+	public boolean method_4068(T mobEntity, class_4604 arg, double d, double e, double f) {
+		if (super.isVisible(mobEntity, arg, d, e, f)) {
 			return true;
 		} else {
 			Entity entity = mobEntity.getHoldingEntity();
-			return entity != null ? visibleRegion.intersects(entity.getVisibilityBoundingBox()) : false;
+			return entity != null ? arg.method_23093(entity.getVisibilityBoundingBox()) : false;
 		}
 	}
 
-	public void method_4072(T mobEntity, double d, double e, double f, float g, float h) {
-		super.method_4054(mobEntity, d, e, f, g, h);
-		if (!this.renderOutlines) {
-			this.method_4073(mobEntity, d, e, f, g, h);
-		}
-	}
-
-	protected void method_4073(T mobEntity, double d, double e, double f, float g, float h) {
+	public void method_4072(T mobEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+		super.method_4054(mobEntity, d, e, f, g, h, arg, arg2);
 		Entity entity = mobEntity.getHoldingEntity();
 		if (entity != null) {
-			e -= (1.6 - (double)mobEntity.getHeight()) * 0.5;
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			double i = (double)(MathHelper.lerp(h * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
-			double j = (double)(MathHelper.lerp(h * 0.5F, entity.pitch, entity.prevPitch) * (float) (Math.PI / 180.0));
-			double k = Math.cos(i);
-			double l = Math.sin(i);
-			double m = Math.sin(j);
-			if (entity instanceof AbstractDecorationEntity) {
-				k = 0.0;
-				l = 0.0;
-				m = -1.0;
-			}
+			method_4073(mobEntity, h, arg, arg2, entity);
+		}
+	}
 
-			double n = Math.cos(j);
-			double o = MathHelper.lerp((double)h, entity.prevX, entity.x) - k * 0.7 - l * 0.5 * n;
-			double p = MathHelper.lerp((double)h, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.y + (double)entity.getStandingEyeHeight() * 0.7)
-				- m * 0.5
-				- 0.25;
-			double q = MathHelper.lerp((double)h, entity.prevZ, entity.z) - l * 0.7 + k * 0.5 * n;
-			double r = (double)(MathHelper.lerp(h, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
-			k = Math.cos(r) * (double)mobEntity.getWidth() * 0.4;
-			l = Math.sin(r) * (double)mobEntity.getWidth() * 0.4;
-			double s = MathHelper.lerp((double)h, mobEntity.prevX, mobEntity.x) + k;
-			double t = MathHelper.lerp((double)h, mobEntity.prevY, mobEntity.y);
-			double u = MathHelper.lerp((double)h, mobEntity.prevZ, mobEntity.z) + l;
-			d += k;
-			f += l;
-			double v = (double)((float)(o - s));
-			double w = (double)((float)(p - t));
-			double x = (double)((float)(q - u));
-			RenderSystem.disableTexture();
-			RenderSystem.disableLighting();
-			RenderSystem.disableCull();
-			int y = 24;
-			double z = 0.025;
-			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+	public static void method_4073(MobEntity mobEntity, float f, class_4587 arg, class_4597 arg2, Entity entity) {
+		arg.method_22903();
+		double d = (double)(MathHelper.lerp(f * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
+		double e = (double)(MathHelper.lerp(f * 0.5F, entity.pitch, entity.prevPitch) * (float) (Math.PI / 180.0));
+		double g = Math.cos(d);
+		double h = Math.sin(d);
+		double i = Math.sin(e);
+		if (entity instanceof AbstractDecorationEntity) {
+			g = 0.0;
+			h = 0.0;
+			i = -1.0;
+		}
 
-			for (int aa = 0; aa <= 24; aa++) {
-				float ab = 0.5F;
-				float ac = 0.4F;
-				float ad = 0.3F;
-				if (aa % 2 == 0) {
-					ab *= 0.7F;
-					ac *= 0.7F;
-					ad *= 0.7F;
-				}
+		double j = Math.cos(e);
+		double k = MathHelper.lerp((double)f, entity.prevX, entity.x) - g * 0.7 - h * 0.5 * j;
+		double l = MathHelper.lerp((double)f, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.y + (double)entity.getStandingEyeHeight() * 0.7)
+			- i * 0.5
+			- 0.25;
+		double m = MathHelper.lerp((double)f, entity.prevZ, entity.z) - h * 0.7 + g * 0.5 * j;
+		double n = (double)(MathHelper.lerp(f, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
+		g = Math.cos(n) * (double)mobEntity.getWidth() * 0.4;
+		h = Math.sin(n) * (double)mobEntity.getWidth() * 0.4;
+		double o = MathHelper.lerp((double)f, mobEntity.prevX, mobEntity.x) + g;
+		double p = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.y);
+		double q = MathHelper.lerp((double)f, mobEntity.prevZ, mobEntity.z) + h;
+		arg.method_22904(g, -(1.6 - (double)mobEntity.getHeight()) * 0.5, h);
+		float r = (float)(k - o);
+		float s = (float)(l - p);
+		float t = (float)(m - q);
+		float u = 0.025F;
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.LEASH);
+		Matrix4f matrix4f = arg.method_22910();
+		float v = MathHelper.method_22858(r * r + t * t) * 0.025F / 2.0F;
+		float w = t * v;
+		float x = r * v;
+		method_23186(lv, matrix4f, r, s, t, 0.025F, 0.025F, w, x);
+		method_23186(lv, matrix4f, r, s, t, 0.025F, 0.0F, w, x);
+		arg.method_22909();
+	}
 
-				float ae = (float)aa / 24.0F;
-				bufferBuilder.vertex(d + v * (double)ae + 0.0, e + w * (double)(ae * ae + ae) * 0.5 + (double)((24.0F - (float)aa) / 18.0F + 0.125F), f + x * (double)ae)
-					.color(ab, ac, ad, 1.0F)
-					.next();
-				bufferBuilder.vertex(
-						d + v * (double)ae + 0.025, e + w * (double)(ae * ae + ae) * 0.5 + (double)((24.0F - (float)aa) / 18.0F + 0.125F) + 0.025, f + x * (double)ae
-					)
-					.color(ab, ac, ad, 1.0F)
-					.next();
-			}
+	public static void method_23186(class_4588 arg, Matrix4f matrix4f, float f, float g, float h, float i, float j, float k, float l) {
+		int m = 24;
 
-			tessellator.draw();
-			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+		for (int n = 0; n < 24; n++) {
+			method_23187(arg, matrix4f, f, g, h, i, j, 24, n, false, k, l);
+			method_23187(arg, matrix4f, f, g, h, i, j, 24, n + 1, true, k, l);
+		}
+	}
 
-			for (int aa = 0; aa <= 24; aa++) {
-				float ab = 0.5F;
-				float ac = 0.4F;
-				float ad = 0.3F;
-				if (aa % 2 == 0) {
-					ab *= 0.7F;
-					ac *= 0.7F;
-					ad *= 0.7F;
-				}
+	public static void method_23187(class_4588 arg, Matrix4f matrix4f, float f, float g, float h, float i, float j, int k, int l, boolean bl, float m, float n) {
+		float o = 0.5F;
+		float p = 0.4F;
+		float q = 0.3F;
+		if (l % 2 == 0) {
+			o *= 0.7F;
+			p *= 0.7F;
+			q *= 0.7F;
+		}
 
-				float ae = (float)aa / 24.0F;
-				bufferBuilder.vertex(
-						d + v * (double)ae + 0.0, e + w * (double)(ae * ae + ae) * 0.5 + (double)((24.0F - (float)aa) / 18.0F + 0.125F) + 0.025, f + x * (double)ae
-					)
-					.color(ab, ac, ad, 1.0F)
-					.next();
-				bufferBuilder.vertex(
-						d + v * (double)ae + 0.025, e + w * (double)(ae * ae + ae) * 0.5 + (double)((24.0F - (float)aa) / 18.0F + 0.125F), f + x * (double)ae + 0.025
-					)
-					.color(ab, ac, ad, 1.0F)
-					.next();
-			}
+		float r = (float)l / (float)k;
+		float s = f * r;
+		float t = g * (r * r + r) * 0.5F + ((float)k - (float)l) / ((float)k * 0.75F) + 0.125F;
+		float u = h * r;
+		if (!bl) {
+			arg.method_22918(matrix4f, s + m, t + i - j, u - n).method_22915(o, p, q, 1.0F).next();
+		}
 
-			tessellator.draw();
-			RenderSystem.enableLighting();
-			RenderSystem.enableTexture();
-			RenderSystem.enableCull();
+		arg.method_22918(matrix4f, s - m, t + j, u + n).method_22915(o, p, q, 1.0F).next();
+		if (bl) {
+			arg.method_22918(matrix4f, s + m, t + i - j, u - n).method_22915(o, p, q, 1.0F).next();
 		}
 	}
 }

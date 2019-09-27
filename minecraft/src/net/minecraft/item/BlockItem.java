@@ -117,7 +117,7 @@ public class BlockItem extends Item {
 			for (String string : compoundTag2.getKeys()) {
 				Property<?> property = stateManager.getProperty(string);
 				if (property != null) {
-					String string2 = compoundTag2.getTag(string).asString();
+					String string2 = compoundTag2.get(string).asString();
 					blockState2 = with(blockState2, property, string2);
 				}
 			}

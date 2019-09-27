@@ -249,7 +249,7 @@ public class OcelotEntity extends AnimalEntity {
 		return TAMING_INGREDIENT.method_8093(itemStack);
 	}
 
-	public static boolean method_20666(EntityType<OcelotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<OcelotEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		return random.nextInt(3) != 0;
 	}
 
@@ -261,7 +261,7 @@ public class OcelotEntity extends AnimalEntity {
 				return false;
 			}
 
-			BlockState blockState = arg.getBlockState(blockPos.down());
+			BlockState blockState = arg.getBlockState(blockPos.method_10074());
 			Block block = blockState.getBlock();
 			if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
 				return true;

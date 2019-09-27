@@ -347,14 +347,14 @@ public abstract class MobEntity extends LivingEntity {
 		ListTag listTag3 = new ListTag();
 
 		for (float f : this.armorDropChances) {
-			listTag3.add(new FloatTag(f));
+			listTag3.add(FloatTag.of(f));
 		}
 
 		compoundTag.put("ArmorDropChances", listTag3);
 		ListTag listTag4 = new ListTag();
 
 		for (float g : this.handDropChances) {
-			listTag4.add(new FloatTag(g));
+			listTag4.add(FloatTag.of(g));
 		}
 
 		compoundTag.put("HandDropChances", listTag4);
@@ -371,6 +371,8 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			compoundTag.put("Leash", compoundTag3);
+		} else if (this.leashTag != null) {
+			compoundTag.put("Leash", this.leashTag.method_10553());
 		}
 
 		compoundTag.putBoolean("LeftHanded", this.isLeftHanded());
@@ -389,28 +391,28 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("CanPickUpLoot", 1)) {
+		if (compoundTag.contains("CanPickUpLoot", 1)) {
 			this.setCanPickUpLoot(compoundTag.getBoolean("CanPickUpLoot"));
 		}
 
 		this.persistent = compoundTag.getBoolean("PersistenceRequired");
-		if (compoundTag.containsKey("ArmorItems", 9)) {
+		if (compoundTag.contains("ArmorItems", 9)) {
 			ListTag listTag = compoundTag.getList("ArmorItems", 10);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
+				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
 			}
 		}
 
-		if (compoundTag.containsKey("HandItems", 9)) {
+		if (compoundTag.contains("HandItems", 9)) {
 			ListTag listTag = compoundTag.getList("HandItems", 10);
 
 			for (int i = 0; i < this.handItems.size(); i++) {
-				this.handItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
+				this.handItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
 			}
 		}
 
-		if (compoundTag.containsKey("ArmorDropChances", 9)) {
+		if (compoundTag.contains("ArmorDropChances", 9)) {
 			ListTag listTag = compoundTag.getList("ArmorDropChances", 5);
 
 			for (int i = 0; i < listTag.size(); i++) {
@@ -418,7 +420,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 		}
 
-		if (compoundTag.containsKey("HandDropChances", 9)) {
+		if (compoundTag.contains("HandDropChances", 9)) {
 			ListTag listTag = compoundTag.getList("HandDropChances", 5);
 
 			for (int i = 0; i < listTag.size(); i++) {
@@ -426,12 +428,12 @@ public abstract class MobEntity extends LivingEntity {
 			}
 		}
 
-		if (compoundTag.containsKey("Leash", 10)) {
+		if (compoundTag.contains("Leash", 10)) {
 			this.leashTag = compoundTag.getCompound("Leash");
 		}
 
 		this.setLeftHanded(compoundTag.getBoolean("LeftHanded"));
-		if (compoundTag.containsKey("DeathLootTable", 8)) {
+		if (compoundTag.contains("DeathLootTable", 8)) {
 			this.lootTable = new Identifier(compoundTag.getString("DeathLootTable"));
 			this.lootTableSeed = compoundTag.getLong("DeathLootTableSeed");
 		}
@@ -670,8 +672,8 @@ public abstract class MobEntity extends LivingEntity {
 		return f + i;
 	}
 
-	public static boolean method_20636(EntityType<? extends MobEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		BlockPos blockPos2 = blockPos.down();
+	public static boolean canMobSpawn(EntityType<? extends MobEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		BlockPos blockPos2 = blockPos.method_10074();
 		return spawnType == SpawnType.SPAWNER || iWorld.getBlockState(blockPos2).allowsSpawning(iWorld, blockPos2, entityType);
 	}
 
@@ -1089,7 +1091,7 @@ public abstract class MobEntity extends LivingEntity {
 				if (entity != null) {
 					this.attachLeash(entity, true);
 				}
-			} else if (this.leashTag.containsKey("X", 99) && this.leashTag.containsKey("Y", 99) && this.leashTag.containsKey("Z", 99)) {
+			} else if (this.leashTag.contains("X", 99) && this.leashTag.contains("Y", 99) && this.leashTag.contains("Z", 99)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
 				this.attachLeash(LeadKnotEntity.getOrCreate(this.world, blockPos), true);
 			} else {

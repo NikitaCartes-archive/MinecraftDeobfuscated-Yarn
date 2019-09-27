@@ -62,7 +62,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 				} else {
 					Direction direction = Direction.Type.HORIZONTAL.random(random);
 					BlockPos blockPos2 = blockPos.offset(direction);
-					Block block = serverWorld.getBlockState(blockPos2.down()).getBlock();
+					Block block = serverWorld.getBlockState(blockPos2.method_10074()).getBlock();
 					if (serverWorld.getBlockState(blockPos2).isAir()
 						&& (block == Blocks.FARMLAND || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.GRASS_BLOCK)) {
 						serverWorld.setBlockState(blockPos2, this.gourdBlock.getDefaultState());

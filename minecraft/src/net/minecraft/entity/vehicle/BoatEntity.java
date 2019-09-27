@@ -251,9 +251,6 @@ public class BoatEntity extends Entity {
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0F);
 		}
 
-		this.prevX = this.x;
-		this.prevY = this.y;
-		this.prevZ = this.z;
 		super.tick();
 		this.method_7555();
 		if (this.isLogicalSideForUpdatingMovement()) {
@@ -373,6 +370,7 @@ public class BoatEntity extends Entity {
 	private void method_7555() {
 		if (this.isLogicalSideForUpdatingMovement()) {
 			this.field_7708 = 0;
+			this.updateTrackedPosition(this.x, this.y, this.z);
 		}
 
 		if (this.field_7708 > 0) {
@@ -688,7 +686,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		if (compoundTag.containsKey("Type", 8)) {
+		if (compoundTag.contains("Type", 8)) {
 			this.setBoatType(BoatEntity.Type.getType(compoundTag.getString("Type")));
 		}
 	}
@@ -733,7 +731,7 @@ public class BoatEntity extends Entity {
 				}
 
 				this.fallDistance = 0.0F;
-			} else if (!this.world.getFluidState(new BlockPos(this).down()).matches(FluidTags.WATER) && d < 0.0) {
+			} else if (!this.world.getFluidState(new BlockPos(this).method_10074()).matches(FluidTags.WATER) && d < 0.0) {
 				this.fallDistance = (float)((double)this.fallDistance - d);
 			}
 		}

@@ -169,9 +169,9 @@ public class TurtleEntity extends AnimalEntity {
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
-	public static boolean method_20671(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		return blockPos.getY() < iWorld.getSeaLevel() + 4
-			&& iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND
+			&& iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND
 			&& iWorld.getBaseLightLevel(blockPos, 0) > 8;
 	}
 
@@ -285,7 +285,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (!this.isLandBound() && arg.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return arg.getBlockState(blockPos.down()).getBlock() == Blocks.SAND ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
+			return arg.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
 		}
 	}
 
@@ -294,7 +294,7 @@ public class TurtleEntity extends AnimalEntity {
 		super.tickMovement();
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
 			BlockPos blockPos = new BlockPos(this);
-			if (this.world.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
+			if (this.world.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND) {
 				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
 			}
 		}
@@ -405,7 +405,7 @@ public class TurtleEntity extends AnimalEntity {
 			} else if (this.turtle.hasEgg()) {
 				return true;
 			} else {
-				return this.turtle.getRand().nextInt(700) != 0 ? false : !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 64.0);
+				return this.turtle.getRandom().nextInt(700) != 0 ? false : !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 64.0);
 			}
 		}
 
@@ -537,7 +537,7 @@ public class TurtleEntity extends AnimalEntity {
 			this.turtle.setHasEgg(true);
 			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
-			Random random = this.animal.getRand();
+			Random random = this.animal.getRandom();
 			if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, random.nextInt(7) + 1));
 			}
@@ -709,7 +709,7 @@ public class TurtleEntity extends AnimalEntity {
 				}
 			}
 
-			return !this.world.getBlockState(blockPos.down()).isAir();
+			return !this.world.getBlockState(blockPos.method_10074()).isAir();
 		}
 	}
 

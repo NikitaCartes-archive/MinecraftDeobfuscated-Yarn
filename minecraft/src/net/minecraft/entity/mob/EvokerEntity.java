@@ -93,11 +93,6 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
-	}
-
-	@Override
 	public boolean isTeammate(Entity entity) {
 		if (entity == null) {
 			return false;
@@ -192,7 +187,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			double j = 0.0;
 
 			do {
-				BlockPos blockPos2 = blockPos.down();
+				BlockPos blockPos2 = blockPos.method_10074();
 				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
 				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
@@ -207,7 +202,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 					break;
 				}
 
-				blockPos = blockPos.down();
+				blockPos = blockPos.method_10074();
 			} while (blockPos.getY() >= MathHelper.floor(f) - 1);
 
 			if (bl) {

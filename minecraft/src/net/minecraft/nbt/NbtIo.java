@@ -150,16 +150,14 @@ public class NbtIo {
 	private static Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		byte b = dataInput.readByte();
 		if (b == 0) {
-			return new EndTag();
+			return EndTag.INSTANCE;
 		} else {
 			dataInput.readUTF();
-			Tag tag = Tag.createTag(b);
 
 			try {
-				tag.read(dataInput, i, positionTracker);
-				return tag;
-			} catch (IOException var8) {
-				CrashReport crashReport = CrashReport.create(var8, "Loading NBT data");
+				return TagReaders.of(b).read(dataInput, i, positionTracker);
+			} catch (IOException var7) {
+				CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
 				CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
 				crashReportSection.add("Tag type", b);
 				throw new CrashException(crashReport);

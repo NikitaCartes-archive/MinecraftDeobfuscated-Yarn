@@ -158,7 +158,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		this.dataTracker.set(ATTACHED_FACE, Direction.byId(compoundTag.getByte("AttachFace")));
 		this.dataTracker.set(PEEK_AMOUNT, compoundTag.getByte("Peek"));
 		this.dataTracker.set(COLOR, compoundTag.getByte("Color"));
-		if (compoundTag.containsKey("APX")) {
+		if (compoundTag.contains("APX")) {
 			int i = compoundTag.getInt("APX");
 			int j = compoundTag.getInt("APY");
 			int k = compoundTag.getInt("APZ");
@@ -263,15 +263,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				}
 			}
 
-			this.x = (double)blockPos.getX() + 0.5;
-			this.y = (double)blockPos.getY();
-			this.z = (double)blockPos.getZ() + 0.5;
-			this.prevX = this.x;
-			this.prevY = this.y;
-			this.prevZ = this.z;
-			this.prevRenderX = this.x;
-			this.prevRenderY = this.y;
-			this.prevRenderZ = this.z;
+			this.method_22862((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 			double d = 0.5 - (double)MathHelper.sin((0.5F + this.field_7337) * (float) Math.PI) * 0.5;
 			double e = 0.5 - (double)MathHelper.sin((0.5F + this.field_7339) * (float) Math.PI) * 0.5;
 			Direction direction3 = this.getAttachedFace().getOpposite();
@@ -374,15 +366,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					this.field_7340 = 6;
 				}
 
-				this.x = (double)blockPos.getX() + 0.5;
-				this.y = (double)blockPos.getY();
-				this.z = (double)blockPos.getZ() + 0.5;
-				this.prevX = this.x;
-				this.prevY = this.y;
-				this.prevZ = this.z;
-				this.prevRenderX = this.x;
-				this.prevRenderY = this.y;
-				this.prevRenderZ = this.z;
+				this.method_22862((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
 			}
 		}
 

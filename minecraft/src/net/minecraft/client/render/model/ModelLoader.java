@@ -32,6 +32,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4590;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -92,8 +93,17 @@ public class ModelLoader {
 		new Identifier("entity/shulker/shulker_black")
 	);
 	public static final Identifier field_20847 = new Identifier("entity/banner_base");
+	public static final Identifier field_21014 = new Identifier("entity/signs/oak");
+	public static final Identifier field_21015 = new Identifier("entity/signs/spruce");
+	public static final Identifier field_21016 = new Identifier("entity/signs/birch");
+	public static final Identifier field_21017 = new Identifier("entity/signs/acacia");
+	public static final Identifier field_21018 = new Identifier("entity/signs/jungle");
+	public static final Identifier field_21019 = new Identifier("entity/signs/dark_oak");
 	public static final List<Identifier> field_20848 = (List<Identifier>)IntStream.range(0, 10)
 		.mapToObj(i -> new Identifier("block/destroy_stage_" + i))
+		.collect(Collectors.toList());
+	public static final List<Identifier> field_21020 = (List<Identifier>)field_20848.stream()
+		.map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png"))
 		.collect(Collectors.toList());
 	private static final Set<Identifier> DEFAULT_TEXTURES = SystemUtil.consume(Sets.<Identifier>newHashSet(), hashSet -> {
 		hashSet.add(WATER_FLOW);
@@ -125,6 +135,12 @@ public class ModelLoader {
 			hashSet.add(bannerPattern.method_22536());
 		}
 
+		hashSet.add(field_21014);
+		hashSet.add(field_21015);
+		hashSet.add(field_21016);
+		hashSet.add(field_21017);
+		hashSet.add(field_21018);
+		hashSet.add(field_21019);
 		hashSet.addAll(field_20848);
 		hashSet.add(new Identifier("item/empty_armor_slot_helmet"));
 		hashSet.add(new Identifier("item/empty_armor_slot_chestplate"));
@@ -163,7 +179,7 @@ public class ModelLoader {
 	private final Set<Identifier> modelsToLoad = Sets.<Identifier>newHashSet();
 	private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
 	private final Map<Identifier, UnbakedModel> unbakedModels = Maps.<Identifier, UnbakedModel>newHashMap();
-	private final Map<Triple<Identifier, ModelRotation, Boolean>, BakedModel> bakedModelCache = Maps.<Triple<Identifier, ModelRotation, Boolean>, BakedModel>newHashMap();
+	private final Map<Triple<Identifier, class_4590, Boolean>, BakedModel> bakedModelCache = Maps.<Triple<Identifier, class_4590, Boolean>, BakedModel>newHashMap();
 	private final Map<Identifier, UnbakedModel> modelsToBake = Maps.<Identifier, UnbakedModel>newHashMap();
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
 	private final SpriteAtlasTexture.Data spriteAtlasData;
@@ -501,7 +517,7 @@ public class ModelLoader {
 
 	@Nullable
 	public BakedModel bake(Identifier identifier, ModelBakeSettings modelBakeSettings) {
-		Triple<Identifier, ModelRotation, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
+		Triple<Identifier, class_4590, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
 		if (this.bakedModelCache.containsKey(triple)) {
 			return (BakedModel)this.bakedModelCache.get(triple);
 		} else {
@@ -510,11 +526,11 @@ public class ModelLoader {
 				JsonUnbakedModel jsonUnbakedModel = (JsonUnbakedModel)unbakedModel;
 				if (jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
 					return ITEM_MODEL_GENERATOR.create(this.spriteAtlas::getSprite, jsonUnbakedModel)
-						.bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelBakeSettings);
+						.bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelBakeSettings, identifier);
 				}
 			}
 
-			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelBakeSettings);
+			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelBakeSettings, identifier);
 			this.bakedModelCache.put(triple, bakedModel);
 			return bakedModel;
 		}

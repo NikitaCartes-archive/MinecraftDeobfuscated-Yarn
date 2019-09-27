@@ -1,4 +1,4 @@
-package net.minecraft.datafixer.fixes;
+package net.minecraft.datafixers.fixes;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;

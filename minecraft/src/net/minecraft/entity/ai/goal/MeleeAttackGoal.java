@@ -95,12 +95,12 @@ public class MeleeAttackGoal extends Goal {
 			&& (
 				this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0
 					|| livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0
-					|| this.mob.getRand().nextFloat() < 0.05F
+					|| this.mob.getRandom().nextFloat() < 0.05F
 			)) {
 			this.targetX = livingEntity.x;
 			this.targetY = livingEntity.getBoundingBox().minY;
 			this.targetZ = livingEntity.z;
-			this.field_6501 = 4 + this.mob.getRand().nextInt(7);
+			this.field_6501 = 4 + this.mob.getRandom().nextInt(7);
 			if (d > 1024.0) {
 				this.field_6501 += 10;
 			} else if (d > 256.0) {

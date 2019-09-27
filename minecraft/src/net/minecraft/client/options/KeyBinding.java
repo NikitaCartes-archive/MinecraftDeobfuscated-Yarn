@@ -51,7 +51,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	public static void updatePressedStates() {
 		for (KeyBinding keyBinding : keysById.values()) {
 			if (keyBinding.keyCode.getCategory() == InputUtil.Type.KEYSYM && keyBinding.keyCode.getKeyCode() != InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
-				keyBinding.pressed = InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), keyBinding.keyCode.getKeyCode());
+				keyBinding.pressed = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), keyBinding.keyCode.getKeyCode());
 			}
 		}
 	}

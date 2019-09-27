@@ -47,8 +47,6 @@ public class PostProcessShader implements AutoCloseable {
 		RenderSystem.disableDepthTest();
 		RenderSystem.disableAlphaTest();
 		RenderSystem.disableFog();
-		RenderSystem.disableLighting();
-		RenderSystem.disableColorMaterial();
 		RenderSystem.enableTexture();
 		RenderSystem.bindTexture(0);
 	}
@@ -79,7 +77,7 @@ public class PostProcessShader implements AutoCloseable {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		this.program
 			.getUniformByNameOrDummy("ScreenSize")
-			.set((float)minecraftClient.method_22683().getFramebufferWidth(), (float)minecraftClient.method_22683().getFramebufferHeight());
+			.set((float)minecraftClient.getWindow().getFramebufferWidth(), (float)minecraftClient.getWindow().getFramebufferHeight());
 		this.program.enable();
 		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
 		this.output.beginWrite(false);

@@ -120,7 +120,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world)
 					.put(LootContextParameters.POSITION, new BlockPos(villagerEntity))
 					.put(LootContextParameters.THIS_ENTITY, villagerEntity)
-					.setRandom(villagerEntity.getRand());
+					.setRandom(villagerEntity.getRandom());
 				return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
 			} else {
 				return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));

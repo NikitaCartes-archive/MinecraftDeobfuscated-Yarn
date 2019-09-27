@@ -83,7 +83,7 @@ public class PillagerSpawner {
 	}
 
 	private boolean spawnOneEntity(World world, BlockPos blockPos, Random random, boolean bl) {
-		if (!PatrolEntity.method_20739(EntityType.PILLAGER, world, SpawnType.PATROL, blockPos, random)) {
+		if (!PatrolEntity.canSpawn(EntityType.PILLAGER, world, SpawnType.PATROL, blockPos, random)) {
 			return false;
 		} else {
 			PatrolEntity patrolEntity = EntityType.PILLAGER.create(world);

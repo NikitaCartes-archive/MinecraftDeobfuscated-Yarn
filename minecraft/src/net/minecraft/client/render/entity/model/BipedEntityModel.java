@@ -1,8 +1,10 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
@@ -11,7 +13,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> implements ModelWithArms, ModelWithHead {
+public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> implements ModelWithArms, ModelWithHead {
 	public ModelPart head;
 	public ModelPart headwear;
 	public ModelPart body;
@@ -34,6 +36,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 	}
 
 	public BipedEntityModel(float f, float g, int i, int j) {
+		super(true, 16.0F, 0.0F);
 		this.textureWidth = i;
 		this.textureHeight = j;
 		this.head = new ModelPart(this, 0, 0);
@@ -61,39 +64,14 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 		this.leftLeg.setRotationPoint(1.9F, 12.0F + g, 0.0F);
 	}
 
-	public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17087(livingEntity, f, g, h, i, j, k);
-		RenderSystem.pushMatrix();
-		if (this.isChild) {
-			float l = 2.0F;
-			RenderSystem.scalef(0.75F, 0.75F, 0.75F);
-			RenderSystem.translatef(0.0F, 16.0F * k, 0.0F);
-			this.head.render(k);
-			RenderSystem.popMatrix();
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
-			RenderSystem.translatef(0.0F, 24.0F * k, 0.0F);
-			this.body.render(k);
-			this.rightArm.render(k);
-			this.leftArm.render(k);
-			this.rightLeg.render(k);
-			this.leftLeg.render(k);
-			this.headwear.render(k);
-		} else {
-			if (livingEntity.isInSneakingPose()) {
-				RenderSystem.translatef(0.0F, 0.2F, 0.0F);
-			}
+	@Override
+	protected Iterable<ModelPart> method_22946() {
+		return ImmutableList.<ModelPart>of(this.head);
+	}
 
-			this.head.render(k);
-			this.body.render(k);
-			this.rightArm.render(k);
-			this.leftArm.render(k);
-			this.rightLeg.render(k);
-			this.leftLeg.render(k);
-			this.headwear.render(k);
-		}
-
-		RenderSystem.popMatrix();
+	@Override
+	protected Iterable<ModelPart> method_22948() {
+		return ImmutableList.<ModelPart>of(this.body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.headwear);
 	}
 
 	public void method_17086(T livingEntity, float f, float g, float h) {
@@ -228,9 +206,12 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.leftArm.pitch += 0.4F;
 			this.rightLeg.rotationPointZ = 4.0F;
 			this.leftLeg.rotationPointZ = 4.0F;
-			this.rightLeg.rotationPointY = 9.0F;
-			this.leftLeg.rotationPointY = 9.0F;
-			this.head.rotationPointY = 1.0F;
+			this.rightLeg.rotationPointY = 12.2F;
+			this.leftLeg.rotationPointY = 12.2F;
+			this.head.rotationPointY = 4.2F;
+			this.body.rotationPointY = 3.2F;
+			this.leftArm.rotationPointY = 5.2F;
+			this.rightArm.rotationPointY = 5.2F;
 		} else {
 			this.body.pitch = 0.0F;
 			this.rightLeg.rotationPointZ = 0.1F;
@@ -238,6 +219,9 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 			this.rightLeg.rotationPointY = 12.0F;
 			this.leftLeg.rotationPointY = 12.0F;
 			this.head.rotationPointY = 0.0F;
+			this.body.rotationPointY = 0.0F;
+			this.leftArm.rotationPointY = 2.0F;
+			this.rightArm.rotationPointY = 2.0F;
 		}
 
 		this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
@@ -359,8 +343,8 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm) {
-		this.getArm(arm).applyTransform(f);
+	public void setArmAngle(float f, Arm arm, class_4587 arg) {
+		this.getArm(arm).method_22703(arg, f);
 	}
 
 	protected ModelPart getArm(Arm arm) {

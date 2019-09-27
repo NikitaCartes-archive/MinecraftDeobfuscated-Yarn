@@ -41,12 +41,12 @@ public class BookEditScreen extends Screen {
 	private int highlightTo;
 	private long lastClickTime;
 	private int lastClickIndex = -1;
-	private PageTurnWidget buttonPreviousPage;
-	private PageTurnWidget buttonNextPage;
-	private ButtonWidget buttonDone;
-	private ButtonWidget buttonSign;
-	private ButtonWidget buttonFinalize;
-	private ButtonWidget buttonCancel;
+	private PageTurnWidget nextPageButton;
+	private PageTurnWidget previousPageButton;
+	private ButtonWidget doneButton;
+	private ButtonWidget signButton;
+	private ButtonWidget finalizeButton;
+	private ButtonWidget cancelButton;
 	private final Hand hand;
 
 	public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
@@ -81,21 +81,21 @@ public class BookEditScreen extends Screen {
 	@Override
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.buttonSign = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton"), buttonWidget -> {
+		this.signButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton"), buttonWidget -> {
 			this.signing = true;
 			this.updateButtons();
 		}));
-		this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
+		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.minecraft.openScreen(null);
 			this.finalizeBook(false);
 		}));
-		this.buttonFinalize = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
+		this.finalizeButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
 			if (this.signing) {
 				this.finalizeBook(true);
 				this.minecraft.openScreen(null);
 			}
 		}));
-		this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+		this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
 			if (this.signing) {
 				this.signing = false;
 			}
@@ -104,8 +104,8 @@ public class BookEditScreen extends Screen {
 		}));
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.buttonPreviousPage = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
-		this.buttonNextPage = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
+		this.nextPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
+		this.previousPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
 		this.updateButtons();
 	}
 
@@ -155,13 +155,13 @@ public class BookEditScreen extends Screen {
 	}
 
 	private void updateButtons() {
-		this.buttonNextPage.visible = !this.signing && this.currentPage > 0;
-		this.buttonPreviousPage.visible = !this.signing;
-		this.buttonDone.visible = !this.signing;
-		this.buttonSign.visible = !this.signing;
-		this.buttonCancel.visible = this.signing;
-		this.buttonFinalize.visible = this.signing;
-		this.buttonFinalize.active = !this.title.trim().isEmpty();
+		this.previousPageButton.visible = !this.signing && this.currentPage > 0;
+		this.nextPageButton.visible = !this.signing;
+		this.doneButton.visible = !this.signing;
+		this.signButton.visible = !this.signing;
+		this.cancelButton.visible = this.signing;
+		this.finalizeButton.visible = this.signing;
+		this.finalizeButton.active = !this.title.trim().isEmpty();
 	}
 
 	private void removeEmptyPages() {
@@ -176,14 +176,14 @@ public class BookEditScreen extends Screen {
 		if (this.dirty) {
 			this.removeEmptyPages();
 			ListTag listTag = new ListTag();
-			this.pages.stream().map(StringTag::new).forEach(listTag::add);
+			this.pages.stream().map(StringTag::of).forEach(listTag::add);
 			if (!this.pages.isEmpty()) {
 				this.itemStack.putSubTag("pages", listTag);
 			}
 
 			if (bl) {
-				this.itemStack.putSubTag("author", new StringTag(this.player.getGameProfile().getName()));
-				this.itemStack.putSubTag("title", new StringTag(this.title.trim()));
+				this.itemStack.putSubTag("author", StringTag.of(this.player.getGameProfile().getName()));
+				this.itemStack.putSubTag("title", StringTag.of(this.title.trim()));
 			}
 
 			this.minecraft.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
@@ -269,10 +269,10 @@ public class BookEditScreen extends Screen {
 					this.applyUpArrowKey(string);
 					return true;
 				case 266:
-					this.buttonNextPage.onPress();
+					this.previousPageButton.onPress();
 					return true;
 				case 267:
-					this.buttonPreviousPage.onPress();
+					this.nextPageButton.onPress();
 					return true;
 				case 268:
 					this.moveCursorToTop(string);

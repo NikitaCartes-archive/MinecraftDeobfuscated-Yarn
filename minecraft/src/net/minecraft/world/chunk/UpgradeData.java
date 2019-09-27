@@ -44,12 +44,12 @@ public class UpgradeData {
 
 	public UpgradeData(CompoundTag compoundTag) {
 		this();
-		if (compoundTag.containsKey("Indices", 10)) {
+		if (compoundTag.contains("Indices", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Indices");
 
 			for (int i = 0; i < this.indices.length; i++) {
 				String string = String.valueOf(i);
-				if (compoundTag2.containsKey(string, 11)) {
+				if (compoundTag2.contains(string, 11)) {
 					this.indices[i] = compoundTag2.getIntArray(string);
 				}
 			}

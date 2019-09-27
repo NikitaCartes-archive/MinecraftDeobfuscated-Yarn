@@ -114,7 +114,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		super.mobTick();
 	}
 
-	public static boolean method_20682(EntityType<ZombiePigmanEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<ZombiePigmanEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
 	}
 

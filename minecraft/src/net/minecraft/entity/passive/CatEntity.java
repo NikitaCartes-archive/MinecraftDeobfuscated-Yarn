@@ -97,7 +97,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public Identifier getTexture() {
-		return (Identifier)TEXTURES.get(this.getCatType());
+		return (Identifier)TEXTURES.getOrDefault(this.getCatType(), TEXTURES.get(0));
 	}
 
 	@Override
@@ -176,7 +176,7 @@ public class CatEntity extends TameableEntity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		this.setCatType(compoundTag.getInt("CatType"));
-		if (compoundTag.containsKey("CollarColor", 99)) {
+		if (compoundTag.contains("CollarColor", 99)) {
 			this.setCollarColor(DyeColor.byId(compoundTag.getInt("CollarColor")));
 		}
 	}
@@ -551,7 +551,7 @@ public class CatEntity extends TameableEntity {
 		}
 
 		private void dropMorningGifts() {
-			Random random = this.cat.getRand();
+			Random random = this.cat.getRandom();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			mutable.set(this.cat);
 			this.cat
@@ -617,9 +617,9 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void tick() {
 			super.tick();
-			if (this.player == null && this.mob.getRand().nextInt(600) == 0) {
+			if (this.player == null && this.mob.getRandom().nextInt(600) == 0) {
 				this.player = this.closestPlayer;
-			} else if (this.mob.getRand().nextInt(500) == 0) {
+			} else if (this.mob.getRandom().nextInt(500) == 0) {
 				this.player = null;
 			}
 		}

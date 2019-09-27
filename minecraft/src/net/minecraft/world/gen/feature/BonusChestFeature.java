@@ -26,7 +26,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 			(blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 1;
 			blockState = iWorld.getBlockState(blockPos)
 		) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		if (blockPos.getY() < 1) {

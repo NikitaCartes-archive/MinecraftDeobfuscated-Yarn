@@ -334,7 +334,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.radiusGrowth = compoundTag.getFloat("RadiusPerTick");
 		this.setRadius(compoundTag.getFloat("Radius"));
 		this.ownerUuid = compoundTag.getUuid("OwnerUUID");
-		if (compoundTag.containsKey("Particle", 8)) {
+		if (compoundTag.contains("Particle", 8)) {
 			try {
 				this.setParticleType(ParticleArgumentType.readParameters(new StringReader(compoundTag.getString("Particle"))));
 			} catch (CommandSyntaxException var5) {
@@ -342,20 +342,20 @@ public class AreaEffectCloudEntity extends Entity {
 			}
 		}
 
-		if (compoundTag.containsKey("Color", 99)) {
+		if (compoundTag.contains("Color", 99)) {
 			this.setColor(compoundTag.getInt("Color"));
 		}
 
-		if (compoundTag.containsKey("Potion", 8)) {
+		if (compoundTag.contains("Potion", 8)) {
 			this.setPotion(PotionUtil.getPotion(compoundTag));
 		}
 
-		if (compoundTag.containsKey("Effects", 9)) {
+		if (compoundTag.contains("Effects", 9)) {
 			ListTag listTag = compoundTag.getList("Effects", 10);
 			this.effects.clear();
 
 			for (int i = 0; i < listTag.size(); i++) {
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(listTag.getCompoundTag(i));
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(listTag.getCompound(i));
 				if (statusEffectInstance != null) {
 					this.addEffect(statusEffectInstance);
 				}

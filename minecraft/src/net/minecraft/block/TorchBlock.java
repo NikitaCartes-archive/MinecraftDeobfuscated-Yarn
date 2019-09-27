@@ -36,7 +36,7 @@ public class TorchBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return sideCoversSmallSquare(arg, blockPos.down(), Direction.UP);
+		return sideCoversSmallSquare(arg, blockPos.method_10074(), Direction.UP);
 	}
 
 	@Environment(EnvType.CLIENT)

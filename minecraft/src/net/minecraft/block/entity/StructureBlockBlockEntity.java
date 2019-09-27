@@ -113,7 +113,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.powered = compoundTag.getBoolean("powered");
 		this.showAir = compoundTag.getBoolean("showair");
 		this.showBoundingBox = compoundTag.getBoolean("showboundingbox");
-		if (compoundTag.containsKey("integrity")) {
+		if (compoundTag.contains("integrity")) {
 			this.integrity = compoundTag.getFloat("integrity");
 		} else {
 			this.integrity = 1.0F;

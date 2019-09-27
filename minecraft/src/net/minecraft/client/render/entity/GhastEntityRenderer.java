@@ -1,8 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.model.GhastEntityModel;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.util.Identifier;
@@ -16,15 +16,14 @@ public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEnt
 		super(entityRenderDispatcher, new GhastEntityModel<>(), 1.5F);
 	}
 
-	protected Identifier method_3972(GhastEntity ghastEntity) {
+	public Identifier method_3972(GhastEntity ghastEntity) {
 		return ghastEntity.isShooting() ? ANGRY_SKIN : SKIN;
 	}
 
-	protected void method_3973(GhastEntity ghastEntity, float f) {
+	protected void method_3973(GhastEntity ghastEntity, class_4587 arg, float f) {
 		float g = 1.0F;
 		float h = 4.5F;
 		float i = 4.5F;
-		RenderSystem.scalef(4.5F, 4.5F, 4.5F);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		arg.method_22905(4.5F, 4.5F, 4.5F);
 	}
 }

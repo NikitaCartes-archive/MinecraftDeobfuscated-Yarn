@@ -80,7 +80,7 @@ public class CrossbowItem extends RangedWeaponItem {
 		if (isCharged(itemStack)) {
 			shootAll(world, playerEntity, hand, itemStack, getSpeed(itemStack), 1.0F);
 			setCharged(itemStack, false);
-			return TypedActionResult.method_22428(itemStack);
+			return TypedActionResult.successWithoutSwing(itemStack);
 		} else if (!playerEntity.getArrowType(itemStack).isEmpty()) {
 			if (!isCharged(itemStack)) {
 				this.charged = false;
@@ -88,9 +88,9 @@ public class CrossbowItem extends RangedWeaponItem {
 				playerEntity.setCurrentHand(hand);
 			}
 
-			return TypedActionResult.method_22428(itemStack);
+			return TypedActionResult.successWithoutSwing(itemStack);
 		} else {
-			return TypedActionResult.method_22431(itemStack);
+			return TypedActionResult.fail(itemStack);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class CrossbowItem extends RangedWeaponItem {
 	private static void putProjectile(ItemStack itemStack, ItemStack itemStack2) {
 		CompoundTag compoundTag = itemStack.getOrCreateTag();
 		ListTag listTag;
-		if (compoundTag.containsKey("ChargedProjectiles", 9)) {
+		if (compoundTag.contains("ChargedProjectiles", 9)) {
 			listTag = compoundTag.getList("ChargedProjectiles", 10);
 		} else {
 			listTag = new ListTag();
@@ -187,11 +187,11 @@ public class CrossbowItem extends RangedWeaponItem {
 	private static List<ItemStack> getProjectiles(ItemStack itemStack) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 		CompoundTag compoundTag = itemStack.getTag();
-		if (compoundTag != null && compoundTag.containsKey("ChargedProjectiles", 9)) {
+		if (compoundTag != null && compoundTag.contains("ChargedProjectiles", 9)) {
 			ListTag listTag = compoundTag.getList("ChargedProjectiles", 10);
 			if (listTag != null) {
 				for (int i = 0; i < listTag.size(); i++) {
-					CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+					CompoundTag compoundTag2 = listTag.getCompound(i);
 					list.add(ItemStack.fromTag(compoundTag2));
 				}
 			}
@@ -267,7 +267,7 @@ public class CrossbowItem extends RangedWeaponItem {
 
 	public static void shootAll(World world, LivingEntity livingEntity, Hand hand, ItemStack itemStack, float f, float g) {
 		List<ItemStack> list = getProjectiles(itemStack);
-		float[] fs = getSoundPitches(livingEntity.getRand());
+		float[] fs = getSoundPitches(livingEntity.getRandom());
 
 		for (int i = 0; i < list.size(); i++) {
 			ItemStack itemStack2 = (ItemStack)list.get(i);

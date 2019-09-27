@@ -1,6 +1,8 @@
 package net.minecraft.world.chunk.light;
 
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -80,6 +82,19 @@ public class LightingProvider implements LightingView {
 		} else {
 			return (ChunkLightingView)(this.skyLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.skyLightProvider);
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public String method_22876(LightType lightType, ChunkSectionPos chunkSectionPos) {
+		if (lightType == LightType.BLOCK) {
+			if (this.blockLightProvider != null) {
+				return this.blockLightProvider.method_22875(chunkSectionPos.asLong());
+			}
+		} else if (this.skyLightProvider != null) {
+			return this.skyLightProvider.method_22875(chunkSectionPos.asLong());
+		}
+
+		return "n/a";
 	}
 
 	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {

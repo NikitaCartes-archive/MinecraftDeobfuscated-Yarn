@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -16,15 +17,15 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, zombieEntityModel2, zombieEntityModel3));
 	}
 
-	protected Identifier method_4163(ZombieEntity zombieEntity) {
+	public Identifier method_4163(ZombieEntity zombieEntity) {
 		return SKIN;
 	}
 
-	protected void method_17144(T zombieEntity, float f, float g, float h) {
+	protected void method_17144(T zombieEntity, class_4587 arg, float f, float g, float h) {
 		if (zombieEntity.isConvertingInWater()) {
 			g += (float)(Math.cos((double)zombieEntity.age * 3.25) * Math.PI * 0.25);
 		}
 
-		super.setupTransforms(zombieEntity, f, g, h);
+		super.setupTransforms(zombieEntity, arg, f, g, h);
 	}
 }

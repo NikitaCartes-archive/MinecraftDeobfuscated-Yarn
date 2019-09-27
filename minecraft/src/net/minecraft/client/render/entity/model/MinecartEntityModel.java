@@ -1,13 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class MinecartEntityModel<T extends Entity> extends EntityModel<T> {
-	private final ModelPart[] field_3432 = new ModelPart[7];
+public class MinecartEntityModel<T extends Entity> extends class_4595<T> {
+	private final ModelPart[] field_3432 = new ModelPart[6];
 
 	public MinecartEntityModel() {
 		this.field_3432[0] = new ModelPart(this, 0, 10);
@@ -40,11 +42,12 @@ public class MinecartEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
+	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		this.field_3432[5].rotationPointY = 4.0F - h;
+	}
 
-		for (int l = 0; l < 6; l++) {
-			this.field_3432[l].render(k);
-		}
+	@Override
+	public Iterable<ModelPart> method_22960() {
+		return Arrays.asList(this.field_3432);
 	}
 }

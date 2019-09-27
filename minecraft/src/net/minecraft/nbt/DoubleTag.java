@@ -8,13 +8,36 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class DoubleTag extends AbstractNumberTag {
-	private double value;
+	public static final DoubleTag ZERO = new DoubleTag(0.0);
+	public static final TagReader<DoubleTag> READER = new TagReader<DoubleTag>() {
+		public DoubleTag method_23242(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+			positionTracker.add(128L);
+			return DoubleTag.of(dataInput.readDouble());
+		}
 
-	DoubleTag() {
+		@Override
+		public String getCrashReportName() {
+			return "DOUBLE";
+		}
+
+		@Override
+		public String getCommandFeedbackName() {
+			return "TAG_Double";
+		}
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+	};
+	private final double value;
+
+	private DoubleTag(double d) {
+		this.value = d;
 	}
 
-	public DoubleTag(double d) {
-		this.value = d;
+	public static DoubleTag of(double d) {
+		return d == 0.0 ? ZERO : new DoubleTag(d);
 	}
 
 	@Override
@@ -23,14 +46,13 @@ public class DoubleTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-		positionTracker.add(128L);
-		this.value = dataInput.readDouble();
+	public byte getType() {
+		return 6;
 	}
 
 	@Override
-	public byte getType() {
-		return 6;
+	public TagReader<DoubleTag> getReader() {
+		return READER;
 	}
 
 	@Override
@@ -39,7 +61,7 @@ public class DoubleTag extends AbstractNumberTag {
 	}
 
 	public DoubleTag method_10585() {
-		return new DoubleTag(this.value);
+		return this;
 	}
 
 	public boolean equals(Object object) {

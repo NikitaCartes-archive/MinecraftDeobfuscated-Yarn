@@ -33,7 +33,7 @@ public class NoteBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		return this.getDefaultState()
-			.with(INSTRUMENT, Instrument.fromBlockState(itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().down())));
+			.with(INSTRUMENT, Instrument.fromBlockState(itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().method_10074())));
 	}
 
 	@Override

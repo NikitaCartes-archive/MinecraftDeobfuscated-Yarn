@@ -26,7 +26,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
 		this.lock = ContainerLock.deserialize(compoundTag);
-		if (compoundTag.containsKey("CustomName", 8)) {
+		if (compoundTag.contains("CustomName", 8)) {
 			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 	}

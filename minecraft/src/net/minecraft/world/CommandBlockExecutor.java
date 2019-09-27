@@ -62,15 +62,15 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	public void deserialize(CompoundTag compoundTag) {
 		this.command = compoundTag.getString("Command");
 		this.successCount = compoundTag.getInt("SuccessCount");
-		if (compoundTag.containsKey("CustomName", 8)) {
+		if (compoundTag.contains("CustomName", 8)) {
 			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
-		if (compoundTag.containsKey("TrackOutput", 1)) {
+		if (compoundTag.contains("TrackOutput", 1)) {
 			this.trackOutput = compoundTag.getBoolean("TrackOutput");
 		}
 
-		if (compoundTag.containsKey("LastOutput", 8) && this.trackOutput) {
+		if (compoundTag.contains("LastOutput", 8) && this.trackOutput) {
 			try {
 				this.lastOutput = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
 			} catch (Throwable var3) {
@@ -80,11 +80,11 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			this.lastOutput = null;
 		}
 
-		if (compoundTag.containsKey("UpdateLastExecution")) {
+		if (compoundTag.contains("UpdateLastExecution")) {
 			this.updateLastExecution = compoundTag.getBoolean("UpdateLastExecution");
 		}
 
-		if (this.updateLastExecution && compoundTag.containsKey("LastExecution")) {
+		if (this.updateLastExecution && compoundTag.contains("LastExecution")) {
 			this.lastExecution = compoundTag.getLong("LastExecution");
 		} else {
 			this.lastExecution = -1L;

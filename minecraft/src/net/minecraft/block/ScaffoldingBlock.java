@@ -134,7 +134,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	private boolean shouldBeBottom(BlockView blockView, BlockPos blockPos, int i) {
-		return i > 0 && blockView.getBlockState(blockPos.down()).getBlock() != this;
+		return i > 0 && blockView.getBlockState(blockPos.method_10074()).getBlock() != this;
 	}
 
 	public static int calculateDistance(BlockView blockView, BlockPos blockPos) {

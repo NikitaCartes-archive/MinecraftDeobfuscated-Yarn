@@ -53,9 +53,6 @@ public class EnderCrystalEntity extends Entity {
 
 	@Override
 	public void tick() {
-		this.prevX = this.x;
-		this.prevY = this.y;
-		this.prevZ = this.z;
 		this.field_7034++;
 		if (!this.world.isClient) {
 			BlockPos blockPos = new BlockPos(this);
@@ -76,11 +73,11 @@ public class EnderCrystalEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		if (compoundTag.containsKey("BeamTarget", 10)) {
+		if (compoundTag.contains("BeamTarget", 10)) {
 			this.setBeamTarget(NbtHelper.toBlockPos(compoundTag.getCompound("BeamTarget")));
 		}
 
-		if (compoundTag.containsKey("ShowBottom", 1)) {
+		if (compoundTag.contains("ShowBottom", 1)) {
 			this.setShowBottom(compoundTag.getBoolean("ShowBottom"));
 		}
 	}

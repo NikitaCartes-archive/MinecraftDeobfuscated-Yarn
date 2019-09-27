@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.TextComponentUtil;
+import net.minecraft.client.util.Texts;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -133,7 +133,7 @@ public class DeathScreen extends Screen {
 			int m = k;
 			if (i >= k && i <= l) {
 				for (Text text : this.message) {
-					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.getRenderChatMessage(text.asString(), false));
+					m += this.minecraft.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false));
 					if (m > i) {
 						return text;
 					}

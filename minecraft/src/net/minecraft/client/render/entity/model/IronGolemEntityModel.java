@@ -1,12 +1,14 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(EnvType.CLIENT)
-public class IronGolemEntityModel<T extends IronGolemEntity> extends EntityModel<T> {
+public class IronGolemEntityModel<T extends IronGolemEntity> extends class_4595<T> {
 	private final ModelPart field_3415;
 	private final ModelPart field_3413;
 	public final ModelPart field_3414;
@@ -48,14 +50,9 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends EntityModel
 		this.field_3416.addCuboid(-3.5F, -3.0F, -3.0F, 6.0F, 16.0F, 5.0F, f);
 	}
 
-	public void method_17096(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17097(ironGolemEntity, f, g, h, i, j, k);
-		this.field_3415.render(k);
-		this.field_3413.render(k);
-		this.field_3411.render(k);
-		this.field_3416.render(k);
-		this.field_3414.render(k);
-		this.field_3412.render(k);
+	@Override
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3415, this.field_3413, this.field_3411, this.field_3416, this.field_3414, this.field_3412);
 	}
 
 	public void method_17097(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {
@@ -89,6 +86,6 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends EntityModel
 	}
 
 	public ModelPart method_2809() {
-		return this.field_3414;
+		return this.field_3412;
 	}
 }

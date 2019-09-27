@@ -110,7 +110,7 @@ public final class ItemStack {
 	private ItemStack(CompoundTag compoundTag) {
 		this.item = Registry.ITEM.get(new Identifier(compoundTag.getString("id")));
 		this.count = compoundTag.getByte("Count");
-		if (compoundTag.containsKey("tag", 10)) {
+		if (compoundTag.contains("tag", 10)) {
 			this.tag = compoundTag.getCompound("tag");
 			this.getItem().postProcessTag(compoundTag);
 		}
@@ -257,7 +257,7 @@ public final class ItemStack {
 	public <T extends LivingEntity> void damage(int i, T livingEntity, Consumer<T> consumer) {
 		if (!livingEntity.world.isClient && (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).abilities.creativeMode)) {
 			if (this.isDamageable()) {
-				if (this.damage(i, livingEntity.getRand(), livingEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)livingEntity : null)) {
+				if (this.damage(i, livingEntity.getRandom(), livingEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)livingEntity : null)) {
 					consumer.accept(livingEntity);
 					Item item = this.getItem();
 					this.decrement(1);
@@ -412,7 +412,7 @@ public final class ItemStack {
 	}
 
 	public CompoundTag getOrCreateSubTag(String string) {
-		if (this.tag != null && this.tag.containsKey(string, 10)) {
+		if (this.tag != null && this.tag.contains(string, 10)) {
 			return this.tag.getCompound(string);
 		} else {
 			CompoundTag compoundTag = new CompoundTag();
@@ -423,11 +423,11 @@ public final class ItemStack {
 
 	@Nullable
 	public CompoundTag getSubTag(String string) {
-		return this.tag != null && this.tag.containsKey(string, 10) ? this.tag.getCompound(string) : null;
+		return this.tag != null && this.tag.contains(string, 10) ? this.tag.getCompound(string) : null;
 	}
 
 	public void removeSubTag(String string) {
-		if (this.tag != null && this.tag.containsKey(string)) {
+		if (this.tag != null && this.tag.contains(string)) {
 			this.tag.remove(string);
 			if (this.tag.isEmpty()) {
 				this.tag = null;
@@ -445,7 +445,7 @@ public final class ItemStack {
 
 	public Text getName() {
 		CompoundTag compoundTag = this.getSubTag("display");
-		if (compoundTag != null && compoundTag.containsKey("Name", 8)) {
+		if (compoundTag != null && compoundTag.contains("Name", 8)) {
 			try {
 				Text text = Text.Serializer.fromJson(compoundTag.getString("Name"));
 				if (text != null) {
@@ -488,7 +488,7 @@ public final class ItemStack {
 
 	public boolean hasCustomName() {
 		CompoundTag compoundTag = this.getSubTag("display");
-		return compoundTag != null && compoundTag.containsKey("Name", 8);
+		return compoundTag != null && compoundTag.contains("Name", 8);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -505,7 +505,7 @@ public final class ItemStack {
 		}
 
 		int i = 0;
-		if (this.hasTag() && this.tag.containsKey("HideFlags", 99)) {
+		if (this.hasTag() && this.tag.contains("HideFlags", 99)) {
 			i = this.tag.getInt("HideFlags");
 		}
 
@@ -518,9 +518,9 @@ public final class ItemStack {
 				appendEnchantments(list, this.getEnchantments());
 			}
 
-			if (this.tag.containsKey("display", 10)) {
+			if (this.tag.contains("display", 10)) {
 				CompoundTag compoundTag = this.tag.getCompound("display");
-				if (compoundTag.containsKey("color", 3)) {
+				if (compoundTag.contains("color", 3)) {
 					if (tooltipContext.isAdvanced()) {
 						list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.GRAY));
 					} else {
@@ -616,7 +616,7 @@ public final class ItemStack {
 			list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
 		}
 
-		if (this.hasTag() && this.tag.containsKey("CanDestroy", 9) && (i & 8) == 0) {
+		if (this.hasTag() && this.tag.contains("CanDestroy", 9) && (i & 8) == 0) {
 			ListTag listTag2 = this.tag.getList("CanDestroy", 8);
 			if (!listTag2.isEmpty()) {
 				list.add(new LiteralText(""));
@@ -628,7 +628,7 @@ public final class ItemStack {
 			}
 		}
 
-		if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9) && (i & 16) == 0) {
+		if (this.hasTag() && this.tag.contains("CanPlaceOn", 9) && (i & 16) == 0) {
 			ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
 			if (!listTag2.isEmpty()) {
 				list.add(new LiteralText(""));
@@ -657,7 +657,7 @@ public final class ItemStack {
 	@Environment(EnvType.CLIENT)
 	public static void appendEnchantments(List<Text> list, ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			Registry.ENCHANTMENT
 				.getOrEmpty(Identifier.tryParse(compoundTag.getString("id")))
 				.ifPresent(enchantment -> list.add(enchantment.getName(compoundTag.getInt("lvl"))));
@@ -706,7 +706,7 @@ public final class ItemStack {
 
 	public void addEnchantment(Enchantment enchantment, int i) {
 		this.getOrCreateTag();
-		if (!this.tag.containsKey("Enchantments", 9)) {
+		if (!this.tag.contains("Enchantments", 9)) {
 			this.tag.put("Enchantments", new ListTag());
 		}
 
@@ -718,7 +718,7 @@ public final class ItemStack {
 	}
 
 	public boolean hasEnchantments() {
-		return this.tag != null && this.tag.containsKey("Enchantments", 9) ? !this.tag.getList("Enchantments", 10).isEmpty() : false;
+		return this.tag != null && this.tag.contains("Enchantments", 9) ? !this.tag.getList("Enchantments", 10).isEmpty() : false;
 	}
 
 	public void putSubTag(String string, net.minecraft.nbt.Tag tag) {
@@ -739,7 +739,7 @@ public final class ItemStack {
 	}
 
 	public int getRepairCost() {
-		return this.hasTag() && this.tag.containsKey("RepairCost", 3) ? this.tag.getInt("RepairCost") : 0;
+		return this.hasTag() && this.tag.contains("RepairCost", 3) ? this.tag.getInt("RepairCost") : 0;
 	}
 
 	public void setRepairCost(int i) {
@@ -748,15 +748,15 @@ public final class ItemStack {
 
 	public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap;
-		if (this.hasTag() && this.tag.containsKey("AttributeModifiers", 9)) {
+		if (this.hasTag() && this.tag.contains("AttributeModifiers", 9)) {
 			multimap = HashMultimap.create();
 			ListTag listTag = this.tag.getList("AttributeModifiers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag = listTag.getCompoundTag(i);
+				CompoundTag compoundTag = listTag.getCompound(i);
 				EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(compoundTag);
 				if (entityAttributeModifier != null
-					&& (!compoundTag.containsKey("Slot", 8) || compoundTag.getString("Slot").equals(equipmentSlot.getName()))
+					&& (!compoundTag.contains("Slot", 8) || compoundTag.getString("Slot").equals(equipmentSlot.getName()))
 					&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
 					&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
 					multimap.put(compoundTag.getString("AttributeName"), entityAttributeModifier);
@@ -772,7 +772,7 @@ public final class ItemStack {
 
 	public void addAttributeModifier(String string, EntityAttributeModifier entityAttributeModifier, @Nullable EquipmentSlot equipmentSlot) {
 		this.getOrCreateTag();
-		if (!this.tag.containsKey("AttributeModifiers", 9)) {
+		if (!this.tag.contains("AttributeModifiers", 9)) {
 			this.tag.put("AttributeModifiers", new ListTag());
 		}
 
@@ -819,7 +819,7 @@ public final class ItemStack {
 			return this.lastDestroyResult;
 		} else {
 			this.lastDestroyPos = cachedBlockPosition;
-			if (this.hasTag() && this.tag.containsKey("CanDestroy", 9)) {
+			if (this.hasTag() && this.tag.contains("CanDestroy", 9)) {
 				ListTag listTag = this.tag.getList("CanDestroy", 8);
 
 				for (int i = 0; i < listTag.size(); i++) {
@@ -846,7 +846,7 @@ public final class ItemStack {
 			return this.lastPlaceOnResult;
 		} else {
 			this.lastPlaceOnPos = cachedBlockPosition;
-			if (this.hasTag() && this.tag.containsKey("CanPlaceOn", 9)) {
+			if (this.hasTag() && this.tag.contains("CanPlaceOn", 9)) {
 				ListTag listTag = this.tag.getList("CanPlaceOn", 8);
 
 				for (int i = 0; i < listTag.size(); i++) {

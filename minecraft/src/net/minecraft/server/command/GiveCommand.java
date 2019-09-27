@@ -72,7 +72,7 @@ public class GiveCommand {
 							SoundEvents.ENTITY_ITEM_PICKUP,
 							SoundCategory.PLAYERS,
 							0.2F,
-							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F
+							((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
 					serverPlayerEntity.playerContainer.sendContentUpdates();
 				} else {

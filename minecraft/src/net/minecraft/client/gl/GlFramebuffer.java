@@ -217,10 +217,10 @@ public class GlFramebuffer {
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)g, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)f, (double)g, 0.0).texture((double)h, 0.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)f, 0.0, 0.0).texture((double)h, (double)k).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0, (double)k).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(0.0, (double)g, 0.0).texture(0.0F, 0.0F).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)f, (double)g, 0.0).texture(h, 0.0F).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)f, 0.0, 0.0).texture(h, k).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0F, k).color(255, 255, 255, 255).next();
 		tessellator.draw();
 		this.endRead();
 		GlStateManager.depthMask(true);

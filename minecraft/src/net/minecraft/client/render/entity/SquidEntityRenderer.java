@@ -1,9 +1,10 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.model.SquidEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -16,18 +17,18 @@ public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEnt
 		super(entityRenderDispatcher, new SquidEntityModel<>(), 0.7F);
 	}
 
-	protected Identifier method_4127(SquidEntity squidEntity) {
+	public Identifier method_4127(SquidEntity squidEntity) {
 		return SKIN;
 	}
 
-	protected void method_4126(SquidEntity squidEntity, float f, float g, float h) {
+	protected void method_4126(SquidEntity squidEntity, class_4587 arg, float f, float g, float h) {
 		float i = MathHelper.lerp(h, squidEntity.field_6905, squidEntity.field_6907);
 		float j = MathHelper.lerp(h, squidEntity.field_6906, squidEntity.field_6903);
-		RenderSystem.translatef(0.0F, 0.5F, 0.0F);
-		RenderSystem.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
-		RenderSystem.rotatef(i, 1.0F, 0.0F, 0.0F);
-		RenderSystem.rotatef(j, 0.0F, 1.0F, 0.0F);
-		RenderSystem.translatef(0.0F, -1.2F, 0.0F);
+		arg.method_22904(0.0, 0.5, 0.0);
+		arg.method_22907(Vector3f.field_20705.method_23214(180.0F - g, true));
+		arg.method_22907(Vector3f.field_20703.method_23214(i, true));
+		arg.method_22907(Vector3f.field_20705.method_23214(j, true));
+		arg.method_22904(0.0, -1.2F, 0.0);
 	}
 
 	protected float method_4125(SquidEntity squidEntity, float f) {

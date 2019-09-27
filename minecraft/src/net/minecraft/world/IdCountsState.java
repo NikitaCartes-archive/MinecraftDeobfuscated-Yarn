@@ -18,7 +18,7 @@ public class IdCountsState extends PersistentState {
 		this.idCounts.clear();
 
 		for (String string : compoundTag.getKeys()) {
-			if (compoundTag.containsKey(string, 99)) {
+			if (compoundTag.contains(string, 99)) {
 				this.idCounts.put(string, compoundTag.getInt(string));
 			}
 		}

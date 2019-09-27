@@ -318,7 +318,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		@Override
 		public void get(Tag tag, List<Tag> list) {
 			if (tag instanceof CompoundTag) {
-				Tag tag2 = ((CompoundTag)tag).getTag(this.name);
+				Tag tag2 = ((CompoundTag)tag).get(this.name);
 				if (this.predicate.test(tag2)) {
 					list.add(tag2);
 				}
@@ -329,7 +329,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		public void getOrInit(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				Tag tag2 = compoundTag.getTag(this.name);
+				Tag tag2 = compoundTag.get(this.name);
 				if (tag2 == null) {
 					Tag var6 = this.filter.method_10553();
 					compoundTag.put(this.name, var6);
@@ -349,7 +349,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		public int set(Tag tag, Supplier<Tag> supplier) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				Tag tag2 = compoundTag.getTag(this.name);
+				Tag tag2 = compoundTag.get(this.name);
 				if (this.predicate.test(tag2)) {
 					Tag tag3 = (Tag)supplier.get();
 					if (!tag3.equals(tag2)) {
@@ -366,7 +366,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		public int clear(Tag tag) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				Tag tag2 = compoundTag.getTag(this.name);
+				Tag tag2 = compoundTag.get(this.name);
 				if (this.predicate.test(tag2)) {
 					compoundTag.remove(this.name);
 					return 1;
@@ -485,7 +485,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		@Override
 		public void get(Tag tag, List<Tag> list) {
 			if (tag instanceof CompoundTag) {
-				Tag tag2 = ((CompoundTag)tag).getTag(this.name);
+				Tag tag2 = ((CompoundTag)tag).get(this.name);
 				if (tag2 != null) {
 					list.add(tag2);
 				}
@@ -497,8 +497,8 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
 				Tag tag2;
-				if (compoundTag.containsKey(this.name)) {
-					tag2 = compoundTag.getTag(this.name);
+				if (compoundTag.contains(this.name)) {
+					tag2 = compoundTag.get(this.name);
 				} else {
 					tag2 = (Tag)supplier.get();
 					compoundTag.put(this.name, tag2);
@@ -531,7 +531,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		public int clear(Tag tag) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				if (compoundTag.containsKey(this.name)) {
+				if (compoundTag.contains(this.name)) {
 					compoundTag.remove(this.name);
 					return 1;
 				}

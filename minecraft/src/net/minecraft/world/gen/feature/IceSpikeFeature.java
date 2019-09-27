@@ -21,7 +21,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
@@ -85,7 +85,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 						}
 
 						this.setBlockState(iWorld, blockPos2, Blocks.PACKED_ICE.getDefaultState());
-						blockPos2 = blockPos2.down();
+						blockPos2 = blockPos2.method_10074();
 						if (--p <= 0) {
 							blockPos2 = blockPos2.down(random.nextInt(5) + 1);
 							p = random.nextInt(5);

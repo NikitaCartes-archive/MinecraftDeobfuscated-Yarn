@@ -57,7 +57,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		String string;
-		if (compoundTag.containsKey("OwnerUUID", 8)) {
+		if (compoundTag.contains("OwnerUUID", 8)) {
 			string = compoundTag.getString("OwnerUUID");
 		} else {
 			String string2 = compoundTag.getString("Owner");

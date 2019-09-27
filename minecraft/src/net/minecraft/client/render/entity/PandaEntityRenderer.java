@@ -1,13 +1,13 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.PandaHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
@@ -30,13 +30,12 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 		this.addFeature(new PandaHeldItemFeatureRenderer(this));
 	}
 
-	@Nullable
-	protected Identifier method_4083(PandaEntity pandaEntity) {
+	public Identifier method_4083(PandaEntity pandaEntity) {
 		return (Identifier)SKIN_MAP.getOrDefault(pandaEntity.getProductGene(), SKIN_MAP.get(PandaEntity.Gene.NORMAL));
 	}
 
-	protected void method_4085(PandaEntity pandaEntity, float f, float g, float h) {
-		super.setupTransforms(pandaEntity, f, g, h);
+	protected void method_4085(PandaEntity pandaEntity, class_4587 arg, float f, float g, float h) {
+		super.setupTransforms(pandaEntity, arg, f, g, h);
 		if (pandaEntity.playingTicks > 0) {
 			int i = pandaEntity.playingTicks;
 			int j = i + 1;
@@ -46,44 +45,42 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 				float m = (float)(90 * i) / 7.0F;
 				float n = (float)(90 * j) / 7.0F;
 				float o = this.method_4086(m, n, j, h, 8.0F);
-				RenderSystem.translatef(0.0F, (l + 0.2F) * (o / 90.0F), 0.0F);
-				RenderSystem.rotatef(-o, 1.0F, 0.0F, 0.0F);
+				arg.method_22904(0.0, (double)((l + 0.2F) * (o / 90.0F)), 0.0);
+				arg.method_22907(Vector3f.field_20703.method_23214(-o, true));
 			} else if (i < 16) {
 				float m = ((float)i - 8.0F) / 7.0F;
 				float n = 90.0F + 90.0F * m;
 				float p = 90.0F + 90.0F * ((float)j - 8.0F) / 7.0F;
 				float o = this.method_4086(n, p, j, h, 16.0F);
-				RenderSystem.translatef(0.0F, l + 0.2F + (l - 0.2F) * (o - 90.0F) / 90.0F, 0.0F);
-				RenderSystem.rotatef(-o, 1.0F, 0.0F, 0.0F);
+				arg.method_22904(0.0, (double)(l + 0.2F + (l - 0.2F) * (o - 90.0F) / 90.0F), 0.0);
+				arg.method_22907(Vector3f.field_20703.method_23214(-o, true));
 			} else if ((float)i < 24.0F) {
 				float m = ((float)i - 16.0F) / 7.0F;
 				float n = 180.0F + 90.0F * m;
 				float p = 180.0F + 90.0F * ((float)j - 16.0F) / 7.0F;
 				float o = this.method_4086(n, p, j, h, 24.0F);
-				RenderSystem.translatef(0.0F, l + l * (270.0F - o) / 90.0F, 0.0F);
-				RenderSystem.rotatef(-o, 1.0F, 0.0F, 0.0F);
+				arg.method_22904(0.0, (double)(l + l * (270.0F - o) / 90.0F), 0.0);
+				arg.method_22907(Vector3f.field_20703.method_23214(-o, true));
 			} else if (i < 32) {
 				float m = ((float)i - 24.0F) / 7.0F;
 				float n = 270.0F + 90.0F * m;
 				float p = 270.0F + 90.0F * ((float)j - 24.0F) / 7.0F;
 				float o = this.method_4086(n, p, j, h, 32.0F);
-				RenderSystem.translatef(0.0F, l * ((360.0F - o) / 90.0F), 0.0F);
-				RenderSystem.rotatef(-o, 1.0F, 0.0F, 0.0F);
+				arg.method_22904(0.0, (double)(l * ((360.0F - o) / 90.0F)), 0.0);
+				arg.method_22907(Vector3f.field_20703.method_23214(-o, true));
 			}
-		} else {
-			RenderSystem.rotatef(0.0F, 1.0F, 0.0F, 0.0F);
 		}
 
 		float q = pandaEntity.getScaredAnimationProgress(h);
 		if (q > 0.0F) {
-			RenderSystem.translatef(0.0F, 0.8F * q, 0.0F);
-			RenderSystem.rotatef(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0F), 1.0F, 0.0F, 0.0F);
-			RenderSystem.translatef(0.0F, -1.0F * q, 0.0F);
+			arg.method_22904(0.0, (double)(0.8F * q), 0.0);
+			arg.method_22907(Vector3f.field_20703.method_23214(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0F), true));
+			arg.method_22904(0.0, (double)(-1.0F * q), 0.0);
 			if (pandaEntity.method_6524()) {
 				float r = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * 0.05F);
-				RenderSystem.rotatef(r, 0.0F, 1.0F, 0.0F);
+				arg.method_22907(Vector3f.field_20705.method_23214(r, true));
 				if (pandaEntity.isBaby()) {
-					RenderSystem.translatef(0.0F, 0.8F, 0.55F);
+					arg.method_22904(0.0, 0.8F, 0.55F);
 				}
 			}
 		}
@@ -91,8 +88,8 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 		float r = pandaEntity.getLieOnBackAnimationProgress(h);
 		if (r > 0.0F) {
 			float k = pandaEntity.isBaby() ? 0.5F : 1.3F;
-			RenderSystem.translatef(0.0F, k * r, 0.0F);
-			RenderSystem.rotatef(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0F), 1.0F, 0.0F, 0.0F);
+			arg.method_22904(0.0, (double)(k * r), 0.0);
+			arg.method_22907(Vector3f.field_20703.method_23214(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0F), true));
 		}
 	}
 

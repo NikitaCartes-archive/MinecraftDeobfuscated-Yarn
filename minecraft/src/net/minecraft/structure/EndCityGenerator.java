@@ -328,7 +328,7 @@ public class EndCityGenerator {
 		@Override
 		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
 			if (string.startsWith("Chest")) {
-				BlockPos blockPos2 = blockPos.down();
+				BlockPos blockPos2 = blockPos.method_10074();
 				if (blockBox.contains(blockPos2)) {
 					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.END_CITY_TREASURE_CHEST);
 				}

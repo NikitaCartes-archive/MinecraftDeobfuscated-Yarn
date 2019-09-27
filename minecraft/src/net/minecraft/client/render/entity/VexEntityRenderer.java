@@ -1,8 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.model.VexEntityModel;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Identifier;
@@ -16,11 +16,11 @@ public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityM
 		super(entityRenderDispatcher, new VexEntityModel(), 0.3F);
 	}
 
-	protected Identifier method_4144(VexEntity vexEntity) {
+	public Identifier method_4144(VexEntity vexEntity) {
 		return vexEntity.isCharging() ? CHARGING_TEXTURE : TEXTURE;
 	}
 
-	protected void method_4143(VexEntity vexEntity, float f) {
-		RenderSystem.scalef(0.4F, 0.4F, 0.4F);
+	protected void method_4143(VexEntity vexEntity, class_4587 arg, float f) {
+		arg.method_22905(0.4F, 0.4F, 0.4F);
 	}
 }

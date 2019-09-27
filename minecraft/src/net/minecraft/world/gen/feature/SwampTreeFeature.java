@@ -61,8 +61,8 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 
 			if (!bl) {
 				return false;
-			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.setToDirt(modifiableTestableWorld, blockPos.down());
+			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
 
 				for (int j = blockPos.getY() - 3 + i; j <= blockPos.getY() + i; j++) {
 					int kx = j - (blockPos.getY() + i);
@@ -137,9 +137,9 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 		this.setBlockState(modifiableTestableWorld, blockPos, blockState);
 		int i = 4;
 
-		for (BlockPos var6 = blockPos.down(); isAir(modifiableTestableWorld, var6) && i > 0; i--) {
+		for (BlockPos var6 = blockPos.method_10074(); isAir(modifiableTestableWorld, var6) && i > 0; i--) {
 			this.setBlockState(modifiableTestableWorld, var6, blockState);
-			var6 = var6.down();
+			var6 = var6.method_10074();
 		}
 	}
 }

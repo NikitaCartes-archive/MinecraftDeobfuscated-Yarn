@@ -1,11 +1,11 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.DrownedOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.DrownedEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.Identifier;
@@ -20,17 +20,16 @@ public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntit
 		this.addFeature(new DrownedOverlayFeatureRenderer<>(this));
 	}
 
-	@Nullable
 	@Override
-	protected Identifier method_4163(ZombieEntity zombieEntity) {
+	public Identifier method_4163(ZombieEntity zombieEntity) {
 		return SKIN;
 	}
 
-	protected void method_4164(DrownedEntity drownedEntity, float f, float g, float h) {
+	protected void method_4164(DrownedEntity drownedEntity, class_4587 arg, float f, float g, float h) {
+		super.method_17144(drownedEntity, arg, f, g, h);
 		float i = drownedEntity.getLeaningPitch(h);
-		super.method_17144(drownedEntity, f, g, h);
 		if (i > 0.0F) {
-			RenderSystem.rotatef(MathHelper.lerp(i, drownedEntity.pitch, -10.0F - drownedEntity.pitch), 1.0F, 0.0F, 0.0F);
+			arg.method_22907(Vector3f.field_20703.method_23214(MathHelper.lerp(i, drownedEntity.pitch, -10.0F - drownedEntity.pitch), true));
 		}
 	}
 }

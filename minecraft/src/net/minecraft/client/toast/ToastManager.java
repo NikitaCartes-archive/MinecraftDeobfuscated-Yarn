@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
@@ -25,11 +24,9 @@ public class ToastManager extends DrawableHelper {
 
 	public void draw() {
 		if (!this.client.options.hudHidden) {
-			GuiLighting.disable();
-
 			for (int i = 0; i < this.visibleEntries.length; i++) {
 				ToastManager.Entry<?> entry = this.visibleEntries[i];
-				if (entry != null && entry.draw(this.client.method_22683().getScaledWidth(), i)) {
+				if (entry != null && entry.draw(this.client.getWindow().getScaledWidth(), i)) {
 					this.visibleEntries[i] = null;
 				}
 

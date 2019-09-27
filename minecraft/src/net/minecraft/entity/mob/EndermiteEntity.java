@@ -149,8 +149,8 @@ public class EndermiteEntity extends HostileEntity {
 		}
 	}
 
-	public static boolean method_20674(EntityType<EndermiteEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		if (method_20681(entityType, iWorld, spawnType, blockPos, random)) {
+	public static boolean canSpawn(EntityType<EndermiteEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		if (canSpawnIgnoreLightLevel(entityType, iWorld, spawnType, blockPos, random)) {
 			PlayerEntity playerEntity = iWorld.getClosestPlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 5.0, true);
 			return playerEntity == null;
 		} else {

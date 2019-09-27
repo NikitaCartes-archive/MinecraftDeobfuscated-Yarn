@@ -1,34 +1,39 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BlazeEntityModel<T extends Entity> extends EntityModel<T> {
-	private final ModelPart[] rods = new ModelPart[12];
-	private final ModelPart head;
+public class BlazeEntityModel<T extends Entity> extends class_4595<T> {
+	private final ModelPart[] rods;
+	private final ModelPart head = new ModelPart(this, 0, 0);
+	private final ImmutableList<ModelPart> field_20921;
 
 	public BlazeEntityModel() {
+		this.head.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+		this.rods = new ModelPart[12];
+
 		for (int i = 0; i < this.rods.length; i++) {
 			this.rods[i] = new ModelPart(this, 0, 16);
 			this.rods[i].addCuboid(0.0F, 0.0F, 0.0F, 2.0F, 8.0F, 2.0F);
 		}
 
-		this.head = new ModelPart(this, 0, 0);
-		this.head.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
+		Builder<ModelPart> builder = ImmutableList.builder();
+		builder.add(this.head);
+		builder.addAll(Arrays.asList(this.rods));
+		this.field_20921 = builder.build();
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		this.head.render(k);
-
-		for (ModelPart modelPart : this.rods) {
-			modelPart.render(k);
-		}
+	public Iterable<ModelPart> method_22960() {
+		return this.field_20921;
 	}
 
 	@Override

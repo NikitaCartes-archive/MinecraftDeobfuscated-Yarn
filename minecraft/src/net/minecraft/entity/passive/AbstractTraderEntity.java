@@ -178,14 +178,14 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Offers", 10)) {
+		if (compoundTag.contains("Offers", 10)) {
 			this.offers = new TraderOfferList(compoundTag.getCompound("Offers"));
 		}
 
 		ListTag listTag = compoundTag.getList("Inventory", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompoundTag(i));
+			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.inventory.add(itemStack);
 			}

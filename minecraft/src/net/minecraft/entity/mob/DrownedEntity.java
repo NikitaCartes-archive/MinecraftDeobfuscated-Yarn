@@ -91,17 +91,17 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		return entityData;
 	}
 
-	public static boolean method_20673(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Biome biome = iWorld.getBiome(blockPos);
 		boolean bl = iWorld.getDifficulty() != Difficulty.PEACEFUL
-			&& method_20679(iWorld, blockPos, random)
+			&& isSpawnDark(iWorld, blockPos, random)
 			&& (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
 		return biome != Biomes.RIVER && biome != Biomes.FROZEN_RIVER
-			? random.nextInt(40) == 0 && method_20672(iWorld, blockPos) && bl
+			? random.nextInt(40) == 0 && isValidSpawnDepth(iWorld, blockPos) && bl
 			: random.nextInt(15) == 0 && bl;
 	}
 
-	private static boolean method_20672(IWorld iWorld, BlockPos blockPos) {
+	private static boolean isValidSpawnDepth(IWorld iWorld, BlockPos blockPos) {
 		return blockPos.getY() < iWorld.getSeaLevel() - 5;
 	}
 
@@ -238,7 +238,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		double g = livingEntity.z - this.z;
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		tridentEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(tridentEntity);
 	}
 
@@ -422,7 +422,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 		@Nullable
 		private Vec3d getWanderTarget() {
-			Random random = this.mob.getRand();
+			Random random = this.mob.getRandom();
 			BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
 
 			for (int i = 0; i < 10; i++) {

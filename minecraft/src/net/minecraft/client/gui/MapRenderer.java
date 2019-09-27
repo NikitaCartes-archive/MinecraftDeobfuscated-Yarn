@@ -7,14 +7,19 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
@@ -34,8 +39,8 @@ public class MapRenderer implements AutoCloseable {
 		this.getMapTexture(mapState).updateTexture();
 	}
 
-	public void draw(MapState mapState, boolean bl) {
-		this.getMapTexture(mapState).draw(bl);
+	public void draw(class_4587 arg, class_4597 arg2, MapState mapState, boolean bl) {
+		this.getMapTexture(mapState).draw(arg, arg2, bl);
 	}
 
 	private MapRenderer.MapTexture getMapTexture(MapState mapState) {
@@ -98,12 +103,13 @@ public class MapRenderer implements AutoCloseable {
 			this.texture.upload();
 		}
 
-		private void draw(boolean bl) {
+		private void draw(class_4587 arg, class_4597 arg2, boolean bl) {
 			int i = 0;
 			int j = 0;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			float f = 0.0F;
+			Matrix4f matrix4f = arg.method_22910();
 			MapRenderer.this.textureManager.bindTexture(this.id);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
@@ -111,10 +117,10 @@ public class MapRenderer implements AutoCloseable {
 			);
 			RenderSystem.disableAlphaTest();
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
-			bufferBuilder.vertex(0.0, 128.0, -0.01F).texture(0.0, 1.0).next();
-			bufferBuilder.vertex(128.0, 128.0, -0.01F).texture(1.0, 1.0).next();
-			bufferBuilder.vertex(128.0, 0.0, -0.01F).texture(1.0, 0.0).next();
-			bufferBuilder.vertex(0.0, 0.0, -0.01F).texture(0.0, 0.0).next();
+			bufferBuilder.method_22918(matrix4f, 0.0F, 128.0F, -0.01F).texture(0.0F, 1.0F).next();
+			bufferBuilder.method_22918(matrix4f, 128.0F, 128.0F, -0.01F).texture(1.0F, 1.0F).next();
+			bufferBuilder.method_22918(matrix4f, 128.0F, 0.0F, -0.01F).texture(1.0F, 0.0F).next();
+			bufferBuilder.method_22918(matrix4f, 0.0F, 0.0F, -0.01F).texture(0.0F, 0.0F).next();
 			tessellator.draw();
 			RenderSystem.enableAlphaTest();
 			RenderSystem.disableBlend();
@@ -123,47 +129,46 @@ public class MapRenderer implements AutoCloseable {
 			for (MapIcon mapIcon : this.mapState.icons.values()) {
 				if (!bl || mapIcon.isAlwaysRendered()) {
 					MapRenderer.this.textureManager.bindTexture(MapRenderer.MAP_ICONS_TEXTURE);
-					RenderSystem.pushMatrix();
-					RenderSystem.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F, -0.02F);
-					RenderSystem.rotatef((float)(mapIcon.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
-					RenderSystem.scalef(4.0F, 4.0F, 3.0F);
-					RenderSystem.translatef(-0.125F, 0.125F, 0.0F);
+					arg.method_22903();
+					arg.method_22904((double)(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F), (double)(0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F), -0.02F);
+					arg.method_22907(Vector3f.field_20707.method_23214((float)(mapIcon.getRotation() * 360) / 16.0F, true));
+					arg.method_22905(4.0F, 4.0F, 3.0F);
+					arg.method_22904(-0.125, 0.125, 0.0);
 					byte b = mapIcon.getTypeId();
 					float g = (float)(b % 16 + 0) / 16.0F;
 					float h = (float)(b / 16 + 0) / 16.0F;
 					float l = (float)(b % 16 + 1) / 16.0F;
 					float m = (float)(b / 16 + 1) / 16.0F;
-					bufferBuilder.begin(7, VertexFormats.POSITION_UV);
-					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+					Matrix4f matrix4f2 = arg.method_22910();
+					bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 					float n = -0.001F;
-					bufferBuilder.vertex(-1.0, 1.0, (double)((float)k * -0.001F)).texture((double)g, (double)h).next();
-					bufferBuilder.vertex(1.0, 1.0, (double)((float)k * -0.001F)).texture((double)l, (double)h).next();
-					bufferBuilder.vertex(1.0, -1.0, (double)((float)k * -0.001F)).texture((double)l, (double)m).next();
-					bufferBuilder.vertex(-1.0, -1.0, (double)((float)k * -0.001F)).texture((double)g, (double)m).next();
-					tessellator.draw();
-					RenderSystem.popMatrix();
+					bufferBuilder.method_22918(matrix4f2, -1.0F, 1.0F, (float)k * -0.001F).texture(g, h).color(255, 255, 255, 255).next();
+					bufferBuilder.method_22918(matrix4f2, 1.0F, 1.0F, (float)k * -0.001F).texture(l, h).color(255, 255, 255, 255).next();
+					bufferBuilder.method_22918(matrix4f2, 1.0F, -1.0F, (float)k * -0.001F).texture(l, m).color(255, 255, 255, 255).next();
+					bufferBuilder.method_22918(matrix4f2, -1.0F, -1.0F, (float)k * -0.001F).texture(g, m).color(255, 255, 255, 255).next();
+					bufferBuilder.end();
+					BufferRenderer.draw(bufferBuilder);
+					arg.method_22909();
 					if (mapIcon.getText() != null) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 						String string = mapIcon.getText().asFormattedString();
 						float o = (float)textRenderer.getStringWidth(string);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
-						RenderSystem.pushMatrix();
-						RenderSystem.translatef(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F, -0.025F);
-						RenderSystem.scalef(p, p, 1.0F);
-						DrawableHelper.fill(-1, -1, (int)o, 9 - 1, Integer.MIN_VALUE);
-						RenderSystem.translatef(0.0F, 0.0F, -0.1F);
-						textRenderer.draw(string, 0.0F, 0.0F, -1);
-						RenderSystem.popMatrix();
+						arg.method_22903();
+						arg.method_22904(
+							(double)(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F), (double)(0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F), -0.025F
+						);
+						arg.method_22905(p, p, 1.0F);
+						DrawableHelper.fill(arg.method_22910(), -1, -1, (int)o, 9 - 1, Integer.MIN_VALUE);
+						arg.method_22904(0.0, 0.0, -0.1F);
+						RenderSystem.enableAlphaTest();
+						textRenderer.method_22942(string, 0.0F, 0.0F, -1, false, arg.method_22910(), arg2, false, 0, 15728880);
+						arg.method_22909();
 					}
 
 					k++;
 				}
 			}
-
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, 0.0F, -0.04F);
-			RenderSystem.scalef(1.0F, 1.0F, 1.0F);
-			RenderSystem.popMatrix();
 		}
 
 		public void close() {

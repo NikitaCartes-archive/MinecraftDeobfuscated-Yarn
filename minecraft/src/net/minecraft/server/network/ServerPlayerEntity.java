@@ -217,7 +217,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("playerGameType", 99)) {
+		if (compoundTag.contains("playerGameType", 99)) {
 			if (this.getServer().shouldForceGameMode()) {
 				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode());
 			} else {
@@ -225,13 +225,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 		}
 
-		if (compoundTag.containsKey("enteredNetherPosition", 10)) {
+		if (compoundTag.contains("enteredNetherPosition", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("enteredNetherPosition");
 			this.enteredNetherPos = new Vec3d(compoundTag2.getDouble("x"), compoundTag2.getDouble("y"), compoundTag2.getDouble("z"));
 		}
 
 		this.seenCredits = compoundTag.getBoolean("seenCredits");
-		if (compoundTag.containsKey("recipeBook", 10)) {
+		if (compoundTag.contains("recipeBook", 10)) {
 			this.recipeBook.fromTag(compoundTag.getCompound("recipeBook"));
 		}
 
@@ -796,7 +796,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (this.world.isChunkLoaded(blockPos)) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isAir()) {
-				BlockPos blockPos2 = blockPos.down();
+				BlockPos blockPos2 = blockPos.method_10074();
 				BlockState blockState2 = this.world.getBlockState(blockPos2);
 				Block block = blockState2.getBlock();
 				if (block.matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock) {

@@ -35,7 +35,7 @@ public class ChorusFlowerBlock extends Block {
 				if (i < 5) {
 					boolean bl = false;
 					boolean bl2 = false;
-					BlockState blockState2 = serverWorld.getBlockState(blockPos.down());
+					BlockState blockState2 = serverWorld.getBlockState(blockPos.method_10074());
 					Block block = blockState2.getBlock();
 					if (block == Blocks.END_STONE) {
 						bl = true;
@@ -75,7 +75,7 @@ public class ChorusFlowerBlock extends Block {
 						for (int l = 0; l < j; l++) {
 							Direction direction = Direction.Type.HORIZONTAL.random(random);
 							BlockPos blockPos3 = blockPos.offset(direction);
-							if (serverWorld.isAir(blockPos3) && serverWorld.isAir(blockPos3.down()) && isSurroundedByAir(serverWorld, blockPos3, direction.getOpposite())) {
+							if (serverWorld.isAir(blockPos3) && serverWorld.isAir(blockPos3.method_10074()) && isSurroundedByAir(serverWorld, blockPos3, direction.getOpposite())) {
 								this.grow(serverWorld, blockPos3, i + 1);
 								bl3 = true;
 							}
@@ -127,7 +127,7 @@ public class ChorusFlowerBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockState blockState2 = arg.getBlockState(blockPos.down());
+		BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
 		Block block = blockState2.getBlock();
 		if (block != this.plantBlock && block != Blocks.END_STONE) {
 			if (!blockState2.isAir()) {
@@ -179,7 +179,7 @@ public class ChorusFlowerBlock extends Block {
 			}
 
 			iWorld.setBlockState(blockPos3, chorusPlantBlock.withConnectionProperties(iWorld, blockPos3), 2);
-			iWorld.setBlockState(blockPos3.down(), chorusPlantBlock.withConnectionProperties(iWorld, blockPos3.down()), 2);
+			iWorld.setBlockState(blockPos3.method_10074(), chorusPlantBlock.withConnectionProperties(iWorld, blockPos3.method_10074()), 2);
 		}
 
 		boolean bl = false;
@@ -195,7 +195,7 @@ public class ChorusFlowerBlock extends Block {
 				if (Math.abs(blockPos4.getX() - blockPos2.getX()) < i
 					&& Math.abs(blockPos4.getZ() - blockPos2.getZ()) < i
 					&& iWorld.isAir(blockPos4)
-					&& iWorld.isAir(blockPos4.down())
+					&& iWorld.isAir(blockPos4.method_10074())
 					&& isSurroundedByAir(iWorld, blockPos4, direction.getOpposite())) {
 					bl = true;
 					iWorld.setBlockState(blockPos4, chorusPlantBlock.withConnectionProperties(iWorld, blockPos4), 2);

@@ -37,15 +37,15 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 					double d = livingEntity.x - this.dragon.partHead.x;
 					double e = livingEntity.z - this.dragon.partHead.z;
 					double h = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(d, e) * 180.0F / (float)Math.PI - (double)this.dragon.yaw), -100.0, 100.0);
-					this.dragon.turningSpeed *= 0.8F;
+					this.dragon.field_20865 *= 0.8F;
 					float i = MathHelper.sqrt(d * d + e * e) + 1.0F;
 					float j = i;
 					if (i > 40.0F) {
 						i = 40.0F;
 					}
 
-					this.dragon.turningSpeed = (float)((double)this.dragon.turningSpeed + h * (double)(0.7F / i / j));
-					this.dragon.yaw = this.dragon.yaw + this.dragon.turningSpeed;
+					this.dragon.field_20865 = (float)((double)this.dragon.field_20865 + h * (double)(0.7F / i / j));
+					this.dragon.yaw = this.dragon.yaw + this.dragon.field_20865;
 				}
 			}
 		} else if (this.ticks >= 100) {

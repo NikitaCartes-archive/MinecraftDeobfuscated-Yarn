@@ -171,7 +171,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	private static void updateNeighborAlways(World world, BlockPos blockPos, BlockState blockState) {
-		world.updateNeighborsAlways(blockPos.down(), blockState.getBlock());
+		world.updateNeighborsAlways(blockPos.method_10074(), blockState.getBlock());
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public class LecternBlock extends BlockWithEntity {
 			}
 
 			if ((Boolean)blockState.get(POWERED)) {
-				world.updateNeighborsAlways(blockPos.down(), this);
+				world.updateNeighborsAlways(blockPos.method_10074(), this);
 			}
 
 			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);

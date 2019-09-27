@@ -267,7 +267,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	public void updateNeighborsAlways(BlockPos blockPos, Block block) {
 		this.updateNeighbor(blockPos.west(), block, blockPos);
 		this.updateNeighbor(blockPos.east(), block, blockPos);
-		this.updateNeighbor(blockPos.down(), block, blockPos);
+		this.updateNeighbor(blockPos.method_10074(), block, blockPos);
 		this.updateNeighbor(blockPos.up(), block, blockPos);
 		this.updateNeighbor(blockPos.north(), block, blockPos);
 		this.updateNeighbor(blockPos.south(), block, blockPos);
@@ -283,7 +283,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 
 		if (direction != Direction.DOWN) {
-			this.updateNeighbor(blockPos.down(), block, blockPos);
+			this.updateNeighbor(blockPos.method_10074(), block, blockPos);
 		}
 
 		if (direction != Direction.UP) {
@@ -966,7 +966,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public int getReceivedStrongRedstonePower(BlockPos blockPos) {
 		int i = 0;
-		i = Math.max(i, this.getStrongRedstonePower(blockPos.down(), Direction.DOWN));
+		i = Math.max(i, this.getStrongRedstonePower(blockPos.method_10074(), Direction.DOWN));
 		if (i >= 15) {
 			return i;
 		} else {
@@ -1007,7 +1007,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean isReceivingRedstonePower(BlockPos blockPos) {
-		if (this.getEmittedRedstonePower(blockPos.down(), Direction.DOWN) > 0) {
+		if (this.getEmittedRedstonePower(blockPos.method_10074(), Direction.DOWN) > 0) {
 			return true;
 		} else if (this.getEmittedRedstonePower(blockPos.up(), Direction.UP) > 0) {
 			return true;

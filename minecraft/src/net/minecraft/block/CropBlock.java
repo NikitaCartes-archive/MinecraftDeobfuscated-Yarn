@@ -99,7 +99,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	protected static float getAvailableMoisture(Block block, BlockView blockView, BlockPos blockPos) {
 		float f = 1.0F;
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos2 = blockPos.method_10074();
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {

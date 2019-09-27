@@ -68,7 +68,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					)
 					&& blockPos.getY() > 0
 			) {
-				blockPos = blockPos.down();
+				blockPos = blockPos.method_10074();
 			}
 
 			i = blockPos.up().getY();
@@ -165,7 +165,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	public static double getHeight(BlockView blockView, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos2 = blockPos.method_10074();
 		VoxelShape voxelShape = blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2);
 		return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
 	}
@@ -355,7 +355,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 		if (pathNodeType == PathNodeType.RAIL
 			&& !(blockView.getBlockState(blockPos).getBlock() instanceof AbstractRailBlock)
-			&& !(blockView.getBlockState(blockPos.down()).getBlock() instanceof AbstractRailBlock)) {
+			&& !(blockView.getBlockState(blockPos.method_10074()).getBlock() instanceof AbstractRailBlock)) {
 			pathNodeType = PathNodeType.FENCE;
 		}
 

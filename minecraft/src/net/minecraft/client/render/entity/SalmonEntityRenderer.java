@@ -1,10 +1,10 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.model.SalmonEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -17,13 +17,12 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 		super(entityRenderDispatcher, new SalmonEntityModel<>(), 0.4F);
 	}
 
-	@Nullable
-	protected Identifier method_4101(SalmonEntity salmonEntity) {
+	public Identifier method_4101(SalmonEntity salmonEntity) {
 		return SKIN;
 	}
 
-	protected void method_4100(SalmonEntity salmonEntity, float f, float g, float h) {
-		super.setupTransforms(salmonEntity, f, g, h);
+	protected void method_4100(SalmonEntity salmonEntity, class_4587 arg, float f, float g, float h) {
+		super.setupTransforms(salmonEntity, arg, f, g, h);
 		float i = 1.0F;
 		float j = 1.0F;
 		if (!salmonEntity.isInsideWater()) {
@@ -32,11 +31,11 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 		}
 
 		float k = i * 4.3F * MathHelper.sin(j * 0.6F * f);
-		RenderSystem.rotatef(k, 0.0F, 1.0F, 0.0F);
-		RenderSystem.translatef(0.0F, 0.0F, -0.4F);
+		arg.method_22907(Vector3f.field_20705.method_23214(k, true));
+		arg.method_22904(0.0, 0.0, -0.4F);
 		if (!salmonEntity.isInsideWater()) {
-			RenderSystem.translatef(0.2F, 0.1F, 0.0F);
-			RenderSystem.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
+			arg.method_22904(0.2F, 0.1F, 0.0);
+			arg.method_22907(Vector3f.field_20707.method_23214(90.0F, true));
 		}
 	}
 }

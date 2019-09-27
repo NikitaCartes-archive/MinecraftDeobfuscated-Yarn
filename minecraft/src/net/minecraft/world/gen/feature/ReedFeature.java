@@ -23,7 +23,7 @@ public class ReedFeature extends Feature<DefaultFeatureConfig> {
 		for (int j = 0; j < 20; j++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
 			if (iWorld.isAir(blockPos2)) {
-				BlockPos blockPos3 = blockPos2.down();
+				BlockPos blockPos3 = blockPos2.method_10074();
 				if (iWorld.getFluidState(blockPos3.west()).matches(FluidTags.WATER)
 					|| iWorld.getFluidState(blockPos3.east()).matches(FluidTags.WATER)
 					|| iWorld.getFluidState(blockPos3.north()).matches(FluidTags.WATER)

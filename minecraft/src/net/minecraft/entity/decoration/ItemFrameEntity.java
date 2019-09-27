@@ -302,7 +302,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 			this.setHeldItemStack(itemStack, false);
 			this.setRotation(compoundTag.getByte("ItemRotation"), false);
-			if (compoundTag.containsKey("ItemDropChance", 99)) {
+			if (compoundTag.contains("ItemDropChance", 99)) {
 				this.itemDropChance = compoundTag.getFloat("ItemDropChance");
 			}
 		}

@@ -129,7 +129,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public void setAuto(boolean bl) {
 		boolean bl2 = this.auto;
 		this.auto = bl;
-		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+		if (!bl2 && bl && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 			Block block = this.getCachedState().getBlock();
 			if (block instanceof CommandBlock) {
 				this.updateConditionMet();
@@ -165,7 +165,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		this.needsUpdatePacket = bl;
 	}
 
-	public CommandBlockBlockEntity.Type getType() {
+	public CommandBlockBlockEntity.Type getCommandBlockType() {
 		Block block = this.getCachedState().getBlock();
 		if (block == Blocks.COMMAND_BLOCK) {
 			return CommandBlockBlockEntity.Type.REDSTONE;

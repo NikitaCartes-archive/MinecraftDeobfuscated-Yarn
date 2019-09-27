@@ -1,8 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.WitherArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.entity.boss.WitherEntity;
@@ -18,18 +18,18 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 		this.addFeature(new WitherArmorFeatureRenderer(this));
 	}
 
-	protected Identifier method_4153(WitherEntity witherEntity) {
+	public Identifier method_4153(WitherEntity witherEntity) {
 		int i = witherEntity.getInvulTimer();
 		return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVINCIBLE_SKIN : SKIN;
 	}
 
-	protected void method_4152(WitherEntity witherEntity, float f) {
+	protected void method_4152(WitherEntity witherEntity, class_4587 arg, float f) {
 		float g = 2.0F;
 		int i = witherEntity.getInvulTimer();
 		if (i > 0) {
 			g -= ((float)i - f) / 220.0F * 0.5F;
 		}
 
-		RenderSystem.scalef(g, g, g);
+		arg.method_22905(g, g, g);
 	}
 }

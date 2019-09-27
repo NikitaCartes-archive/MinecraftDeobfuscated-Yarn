@@ -32,6 +32,6 @@ public class EggItem extends Item {
 			itemStack.decrement(1);
 		}
 
-		return TypedActionResult.method_22427(itemStack);
+		return TypedActionResult.successWithSwing(itemStack);
 	}
 }

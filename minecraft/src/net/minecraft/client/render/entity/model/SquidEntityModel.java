@@ -1,14 +1,19 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class SquidEntityModel<T extends Entity> extends EntityModel<T> {
+public class SquidEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_3575;
 	private final ModelPart[] field_3574 = new ModelPart[8];
+	private final ImmutableList<ModelPart> field_20942;
 
 	public SquidEntityModel() {
 		int i = -16;
@@ -28,6 +33,11 @@ public class SquidEntityModel<T extends Entity> extends EntityModel<T> {
 			d = (double)j * Math.PI * -2.0 / (double)this.field_3574.length + (Math.PI / 2);
 			this.field_3574[j].yaw = (float)d;
 		}
+
+		Builder<ModelPart> builder = ImmutableList.builder();
+		builder.add(this.field_3575);
+		builder.addAll(Arrays.asList(this.field_3574));
+		this.field_20942 = builder.build();
 	}
 
 	@Override
@@ -38,12 +48,7 @@ public class SquidEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		this.field_3575.render(k);
-
-		for (ModelPart modelPart : this.field_3574) {
-			modelPart.render(k);
-		}
+	public Iterable<ModelPart> method_22960() {
+		return this.field_20942;
 	}
 }

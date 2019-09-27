@@ -1,15 +1,20 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class MagmaCubeEntityModel<T extends SlimeEntity> extends EntityModel<T> {
+public class MagmaCubeEntityModel<T extends SlimeEntity> extends class_4595<T> {
 	private final ModelPart[] field_3427 = new ModelPart[8];
 	private final ModelPart field_3428;
+	private final ImmutableList<ModelPart> field_20934;
 
 	public MagmaCubeEntityModel() {
 		for (int i = 0; i < this.field_3427.length; i++) {
@@ -29,6 +34,13 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends EntityModel<T> 
 
 		this.field_3428 = new ModelPart(this, 0, 16);
 		this.field_3428.addCuboid(-2.0F, 18.0F, -2.0F, 4.0F, 4.0F, 4.0F);
+		Builder<ModelPart> builder = ImmutableList.builder();
+		builder.add(this.field_3428);
+		builder.addAll(Arrays.asList(this.field_3427));
+		this.field_20934 = builder.build();
+	}
+
+	public void method_22958(T slimeEntity, float f, float g, float h, float i, float j, float k) {
 	}
 
 	public void method_17098(T slimeEntity, float f, float g, float h) {
@@ -42,12 +54,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends EntityModel<T> 
 		}
 	}
 
-	public void method_17099(T slimeEntity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(slimeEntity, f, g, h, i, j, k);
-		this.field_3428.render(k);
-
-		for (ModelPart modelPart : this.field_3427) {
-			modelPart.render(k);
-		}
+	public ImmutableList<ModelPart> method_22959() {
+		return this.field_20934;
 	}
 }

@@ -1,12 +1,13 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.EndermanEntity;
 
 @Environment(EnvType.CLIENT)
@@ -15,31 +16,18 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 		super(featureRendererContext);
 	}
 
-	public void method_4179(EndermanEntity endermanEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4179(class_4587 arg, class_4597 arg2, int i, EndermanEntity endermanEntity, float f, float g, float h, float j, float k, float l, float m) {
 		BlockState blockState = endermanEntity.getCarriedBlock();
 		if (blockState != null) {
-			RenderSystem.enableRescaleNormal();
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, 0.6875F, -0.75F);
-			RenderSystem.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
-			RenderSystem.rotatef(45.0F, 0.0F, 1.0F, 0.0F);
-			RenderSystem.translatef(0.25F, 0.1875F, 0.25F);
-			float m = 0.5F;
-			RenderSystem.scalef(-0.5F, -0.5F, 0.5F);
-			int n = endermanEntity.getLightmapCoordinates();
-			int o = n % 65536;
-			int p = n / 65536;
-			RenderSystem.glMultiTexCoord2f(33985, (float)o, (float)p);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, 1.0F);
-			RenderSystem.popMatrix();
-			RenderSystem.disableRescaleNormal();
+			arg.method_22903();
+			arg.method_22904(0.0, 0.6875, -0.75);
+			arg.method_22907(Vector3f.field_20703.method_23214(20.0F, true));
+			arg.method_22907(Vector3f.field_20705.method_23214(45.0F, true));
+			arg.method_22904(0.25, 0.1875, 0.25);
+			float n = 0.5F;
+			arg.method_22905(-0.5F, -0.5F, 0.5F);
+			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, arg, arg2, i, 0, 10);
+			arg.method_22909();
 		}
-	}
-
-	@Override
-	public boolean hasHurtOverlay() {
-		return false;
 	}
 }

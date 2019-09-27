@@ -62,7 +62,7 @@ public class DamageEnchantment extends Enchantment {
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity2 = (LivingEntity)entity;
 			if (this.typeIndex == 2 && livingEntity2.getGroup() == EntityGroup.ARTHROPOD) {
-				int j = 20 + livingEntity.getRand().nextInt(10 * i);
+				int j = 20 + livingEntity.getRandom().nextInt(10 * i);
 				livingEntity2.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, j, 3));
 			}
 		}

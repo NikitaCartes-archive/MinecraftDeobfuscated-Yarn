@@ -1,8 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -17,25 +18,20 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 		super(featureRendererContext);
 	}
 
-	public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4194(class_4587 arg, class_4597 arg2, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l, float m) {
 		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-		if (pandaEntity.isScared() && !itemStack.isEmpty() && !pandaEntity.method_6524()) {
-			float m = -0.6F;
-			float n = 1.4F;
+		if (pandaEntity.isScared() && !pandaEntity.method_6524()) {
+			float n = -0.6F;
+			float o = 1.4F;
 			if (pandaEntity.isEating()) {
-				m -= 0.2F * MathHelper.sin(i * 0.6F) + 0.2F;
-				n -= 0.09F * MathHelper.sin(i * 0.6F);
+				n -= 0.2F * MathHelper.sin(j * 0.6F) + 0.2F;
+				o -= 0.09F * MathHelper.sin(j * 0.6F);
 			}
 
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.1F, n, m);
-			MinecraftClient.getInstance().getItemRenderer().renderHeldItem(itemStack, pandaEntity, ModelTransformation.Type.GROUND, false);
-			RenderSystem.popMatrix();
+			arg.method_22903();
+			arg.method_22904(0.1F, (double)o, (double)n);
+			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, arg, arg2);
+			arg.method_22909();
 		}
-	}
-
-	@Override
-	public boolean hasHurtOverlay() {
-		return false;
 	}
 }

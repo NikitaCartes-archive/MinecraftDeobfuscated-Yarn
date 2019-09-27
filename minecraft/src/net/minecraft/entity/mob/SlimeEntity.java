@@ -276,7 +276,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		return this.getSize() == 1 ? this.getType().getLootTableId() : LootTables.EMPTY;
 	}
 
-	public static boolean method_20685(EntityType<SlimeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<SlimeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && random.nextInt(4) != 1) {
 			return false;
 		} else {
@@ -288,13 +288,13 @@ public class SlimeEntity extends MobEntity implements Monster {
 					&& random.nextFloat() < 0.5F
 					&& random.nextFloat() < iWorld.getMoonSize()
 					&& iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
-					return method_20636(entityType, iWorld, spawnType, blockPos, random);
+					return canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
 				}
 
 				ChunkPos chunkPos = new ChunkPos(blockPos);
 				boolean bl = ChunkRandom.create(chunkPos.x, chunkPos.z, iWorld.getSeed(), 987234911L).nextInt(10) == 0;
 				if (random.nextInt(10) == 0 && bl && blockPos.getY() < 40) {
-					return method_20636(entityType, iWorld, spawnType, blockPos, random);
+					return canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
 				}
 			}
 
@@ -390,7 +390,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 						if (this.slime.makesJumpSound()) {
 							this.slime
 								.playSound(
-									this.slime.getJumpSound(), this.slime.getSoundVolume(), ((this.slime.getRand().nextFloat() - this.slime.getRand().nextFloat()) * 0.2F + 1.0F) * 0.8F
+									this.slime.getJumpSound(),
+									this.slime.getSoundVolume(),
+									((this.slime.getRandom().nextFloat() - this.slime.getRandom().nextFloat()) * 0.2F + 1.0F) * 0.8F
 								);
 						}
 					} else {
@@ -469,7 +471,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public void tick() {
-			if (this.slime.getRand().nextFloat() < 0.8F) {
+			if (this.slime.getRandom().nextFloat() < 0.8F) {
 				this.slime.getJumpControl().setActive();
 			}
 
@@ -516,8 +518,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 		@Override
 		public void tick() {
 			if (--this.field_7401 <= 0) {
-				this.field_7401 = 40 + this.slime.getRand().nextInt(60);
-				this.field_7400 = (float)this.slime.getRand().nextInt(360);
+				this.field_7401 = 40 + this.slime.getRandom().nextInt(60);
+				this.field_7400 = (float)this.slime.getRandom().nextInt(360);
 			}
 
 			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.field_7400, false);

@@ -20,7 +20,7 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 		BlockPos blockPos,
 		SimpleBlockFeatureConfig simpleBlockFeatureConfig
 	) {
-		if (simpleBlockFeatureConfig.placeOn.contains(iWorld.getBlockState(blockPos.down()))
+		if (simpleBlockFeatureConfig.placeOn.contains(iWorld.getBlockState(blockPos.method_10074()))
 			&& simpleBlockFeatureConfig.placeIn.contains(iWorld.getBlockState(blockPos))
 			&& simpleBlockFeatureConfig.placeUnder.contains(iWorld.getBlockState(blockPos.up()))) {
 			iWorld.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);

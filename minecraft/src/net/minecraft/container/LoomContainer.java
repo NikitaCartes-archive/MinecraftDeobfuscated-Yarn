@@ -144,7 +144,7 @@ public class LoomContainer extends Container {
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - 5 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
 				CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-				boolean bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+				boolean bl = compoundTag.contains("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 				if (bl) {
 					this.selectedPattern.set(0);
 				} else {
@@ -236,7 +236,7 @@ public class LoomContainer extends Container {
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
 				CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
 				ListTag listTag;
-				if (compoundTag.containsKey("Patterns", 9)) {
+				if (compoundTag.contains("Patterns", 9)) {
 					listTag = compoundTag.getList("Patterns", 10);
 				} else {
 					listTag = new ListTag();

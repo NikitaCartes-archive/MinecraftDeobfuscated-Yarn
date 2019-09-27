@@ -28,7 +28,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 		blockPos = blockPos.up();
 
 		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		if (!CAN_GENERATE.method_11760(iWorld.getBlockState(blockPos))) {

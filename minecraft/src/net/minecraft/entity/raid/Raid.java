@@ -107,11 +107,11 @@ public class Raid {
 		this.waveCount = compoundTag.getInt("NumGroups");
 		this.status = Raid.Status.fromName(compoundTag.getString("Status"));
 		this.heroesOfTheVillage.clear();
-		if (compoundTag.containsKey("HeroesOfTheVillage", 9)) {
+		if (compoundTag.contains("HeroesOfTheVillage", 9)) {
 			ListTag listTag = compoundTag.getList("HeroesOfTheVillage", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+				CompoundTag compoundTag2 = listTag.getCompound(i);
 				UUID uUID = compoundTag2.getUuid("UUID");
 				this.heroesOfTheVillage.add(uUID);
 			}
@@ -590,7 +590,7 @@ public class Raid {
 				&& this.world.method_14178().shouldTickChunk(new ChunkPos(mutable))
 				&& (
 					SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER)
-						|| this.world.getBlockState(mutable.down()).getBlock() == Blocks.SNOW && this.world.getBlockState(mutable).isAir()
+						|| this.world.getBlockState(mutable.method_10074()).getBlock() == Blocks.SNOW && this.world.getBlockState(mutable).isAir()
 				)) {
 				return mutable;
 			}

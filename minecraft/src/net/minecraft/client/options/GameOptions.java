@@ -342,8 +342,8 @@ public class GameOptions {
 
 					if ("maxFps".equals(string)) {
 						this.maxFps = Integer.parseInt(string2);
-						if (this.client.method_22683() != null) {
-							this.client.method_22683().setFramerateLimit(this.maxFps);
+						if (this.client.getWindow() != null) {
+							this.client.getWindow().setFramerateLimit(this.maxFps);
 						}
 					}
 
@@ -598,8 +598,8 @@ public class GameOptions {
 				printWriter.println("chatOpacity:" + this.chatOpacity);
 				printWriter.println("textBackgroundOpacity:" + this.textBackgroundOpacity);
 				printWriter.println("backgroundForChatOnly:" + this.backgroundForChatOnly);
-				if (this.client.method_22683().getVideoMode().isPresent()) {
-					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.method_22683().getVideoMode().get()).asString());
+				if (this.client.getWindow().getVideoMode().isPresent()) {
+					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.getWindow().getVideoMode().get()).asString());
 				}
 
 				printWriter.println("hideServerAddress:" + this.hideServerAddress);

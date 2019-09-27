@@ -50,8 +50,8 @@ public class SavannaTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 
 			if (!bl) {
 				return false;
-			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.setToDirt(modifiableTestableWorld, blockPos.down());
+			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
 				Direction direction = Direction.Type.HORIZONTAL.random(random);
 				int kx = i - random.nextInt(4) - 1;
 				int n = 3 - random.nextInt(3);

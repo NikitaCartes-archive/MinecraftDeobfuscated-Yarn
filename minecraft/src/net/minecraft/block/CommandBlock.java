@@ -53,7 +53,7 @@ public class CommandBlock extends BlockWithEntity {
 				boolean bl2 = world.isReceivingRedstonePower(blockPos);
 				boolean bl3 = commandBlockBlockEntity.isPowered();
 				commandBlockBlockEntity.setPowered(bl2);
-				if (!bl3 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+				if (!bl3 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 					if (bl2) {
 						commandBlockBlockEntity.updateConditionMet();
 						world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
@@ -70,7 +70,7 @@ public class CommandBlock extends BlockWithEntity {
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			boolean bl = !ChatUtil.isEmpty(commandBlockExecutor.getCommand());
-			CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getType();
+			CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
 			boolean bl2 = commandBlockBlockEntity.isConditionMet();
 			if (type == CommandBlockBlockEntity.Type.AUTO) {
 				commandBlockBlockEntity.updateConditionMet();
@@ -148,7 +148,7 @@ public class CommandBlock extends BlockWithEntity {
 					commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
 				}
 
-				if (commandBlockBlockEntity.getType() == CommandBlockBlockEntity.Type.SEQUENCE) {
+				if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
 					boolean bl = world.isReceivingRedstonePower(blockPos);
 					commandBlockBlockEntity.setPowered(bl);
 				}
@@ -200,7 +200,7 @@ public class CommandBlock extends BlockWithEntity {
 			}
 
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-			if (commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+			if (commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 				break;
 			}
 

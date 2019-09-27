@@ -112,11 +112,11 @@ public class ShipwreckGenerator {
 		@Override
 		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
 			if ("map_chest".equals(string)) {
-				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_MAP_CHEST);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.method_10074(), LootTables.SHIPWRECK_MAP_CHEST);
 			} else if ("treasure_chest".equals(string)) {
-				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_TREASURE_CHEST);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.method_10074(), LootTables.SHIPWRECK_TREASURE_CHEST);
 			} else if ("supply_chest".equals(string)) {
-				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.down(), LootTables.SHIPWRECK_SUPPLY_CHEST);
+				LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos.method_10074(), LootTables.SHIPWRECK_SUPPLY_CHEST);
 			}
 		}
 

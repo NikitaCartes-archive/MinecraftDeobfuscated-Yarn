@@ -6,12 +6,18 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
@@ -76,101 +82,100 @@ public class EnchantingScreen extends AbstractContainerScreen<EnchantingTableCon
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
-		RenderSystem.pushMatrix();
 		RenderSystem.matrixMode(5889);
 		RenderSystem.pushMatrix();
 		RenderSystem.loadIdentity();
-		int m = (int)this.minecraft.method_22683().getScaleFactor();
+		int m = (int)this.minecraft.getWindow().getScaleFactor();
 		RenderSystem.viewport((this.width - 320) / 2 * m, (this.height - 240) / 2 * m, 320 * m, 240 * m);
 		RenderSystem.translatef(-0.34F, 0.23F, 0.0F);
 		RenderSystem.multMatrix(Matrix4f.method_4929(90.0, 1.3333334F, 9.0F, 80.0F));
-		float g = 1.0F;
 		RenderSystem.matrixMode(5888);
-		RenderSystem.loadIdentity();
-		GuiLighting.enable();
-		RenderSystem.translatef(0.0F, 3.3F, -16.0F);
-		RenderSystem.scalef(1.0F, 1.0F, 1.0F);
-		float h = 5.0F;
-		RenderSystem.scalef(5.0F, 5.0F, 5.0F);
-		RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BOOK_TEXURE);
-		RenderSystem.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
-		float n = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
-		RenderSystem.translatef((1.0F - n) * 0.2F, (1.0F - n) * 0.1F, (1.0F - n) * 0.25F);
-		RenderSystem.rotatef(-(1.0F - n) * 90.0F - 90.0F, 0.0F, 1.0F, 0.0F);
-		RenderSystem.rotatef(180.0F, 1.0F, 0.0F, 0.0F);
-		float o = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.25F;
-		float p = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.75F;
+		class_4587 lv = new class_4587();
+		lv.method_22903();
+		lv.method_22910().method_22668();
+		lv.method_22904(0.0, 3.3F, 1984.0);
+		float g = 5.0F;
+		lv.method_22905(5.0F, 5.0F, 5.0F);
+		lv.method_22907(Vector3f.field_20707.method_23214(180.0F, true));
+		lv.method_22907(Vector3f.field_20703.method_23214(20.0F, true));
+		float h = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
+		lv.method_22904((double)((1.0F - h) * 0.2F), (double)((1.0F - h) * 0.1F), (double)((1.0F - h) * 0.25F));
+		lv.method_22907(Vector3f.field_20705.method_23214(-(1.0F - h) * 90.0F - 90.0F, true));
+		lv.method_22907(Vector3f.field_20703.method_23214(180.0F, true));
+		float n = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.25F;
+		float o = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.75F;
+		n = (n - (float)MathHelper.fastFloor((double)n)) * 1.6F - 0.3F;
 		o = (o - (float)MathHelper.fastFloor((double)o)) * 1.6F - 0.3F;
-		p = (p - (float)MathHelper.fastFloor((double)p)) * 1.6F - 0.3F;
+		if (n < 0.0F) {
+			n = 0.0F;
+		}
+
 		if (o < 0.0F) {
 			o = 0.0F;
 		}
 
-		if (p < 0.0F) {
-			p = 0.0F;
+		if (n > 1.0F) {
+			n = 1.0F;
 		}
 
 		if (o > 1.0F) {
 			o = 1.0F;
 		}
 
-		if (p > 1.0F) {
-			p = 1.0F;
-		}
-
 		RenderSystem.enableRescaleNormal();
-		bookModel.setPageAngles(0.0F, o, p, n);
-		bookModel.method_22693(0.0625F);
-		RenderSystem.disableRescaleNormal();
-		GuiLighting.disable();
+		bookModel.setPageAngles(0.0F, n, o, h);
+		class_4597.class_4598 lv2 = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
+		class_4588 lv3 = lv2.getBuffer(BlockRenderLayer.method_23017(BOOK_TEXURE));
+		class_4608.method_23211(lv3);
+		bookModel.render(lv, lv3, 0.0625F, 15728880, null);
+		lv3.method_22923();
+		lv2.method_22993();
+		lv.method_22909();
 		RenderSystem.matrixMode(5889);
-		RenderSystem.viewport(0, 0, this.minecraft.method_22683().getFramebufferWidth(), this.minecraft.method_22683().getFramebufferHeight());
+		RenderSystem.viewport(0, 0, this.minecraft.getWindow().getFramebufferWidth(), this.minecraft.getWindow().getFramebufferHeight());
 		RenderSystem.popMatrix();
 		RenderSystem.matrixMode(5888);
-		RenderSystem.popMatrix();
-		GuiLighting.disable();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		EnchantingPhrases.getInstance().setSeed((long)this.container.getSeed());
-		int q = this.container.getLapisCount();
+		int p = this.container.getLapisCount();
 
-		for (int r = 0; r < 3; r++) {
-			int s = k + 60;
-			int t = s + 20;
+		for (int q = 0; q < 3; q++) {
+			int r = k + 60;
+			int s = r + 20;
 			this.setBlitOffset(0);
 			this.minecraft.getTextureManager().bindTexture(TEXTURE);
-			int u = this.container.enchantmentPower[r];
+			int t = this.container.enchantmentPower[q];
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			if (u == 0) {
-				this.blit(s, l + 14 + 19 * r, 0, 185, 108, 19);
+			if (t == 0) {
+				this.blit(r, l + 14 + 19 * q, 0, 185, 108, 19);
 			} else {
-				String string = "" + u;
-				int v = 86 - this.font.getStringWidth(string);
-				String string2 = EnchantingPhrases.getInstance().generatePhrase(this.font, v);
+				String string = "" + t;
+				int u = 86 - this.font.getStringWidth(string);
+				String string2 = EnchantingPhrases.getInstance().generatePhrase(this.font, u);
 				TextRenderer textRenderer = this.minecraft.getFontManager().getTextRenderer(MinecraftClient.ALT_TEXT_RENDERER_ID);
-				int w = 6839882;
-				if ((q < r + 1 || this.minecraft.player.experienceLevel < u) && !this.minecraft.player.abilities.creativeMode) {
-					this.blit(s, l + 14 + 19 * r, 0, 185, 108, 19);
-					this.blit(s + 1, l + 15 + 19 * r, 16 * r, 239, 16, 16);
-					textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 16711422) >> 1);
-					w = 4226832;
+				int v = 6839882;
+				if ((p < q + 1 || this.minecraft.player.experienceLevel < t) && !this.minecraft.player.abilities.creativeMode) {
+					this.blit(r, l + 14 + 19 * q, 0, 185, 108, 19);
+					this.blit(r + 1, l + 15 + 19 * q, 16 * q, 239, 16, 16);
+					textRenderer.drawStringBounded(string2, s, l + 16 + 19 * q, u, (v & 16711422) >> 1);
+					v = 4226832;
 				} else {
-					int x = i - (k + 60);
-					int y = j - (l + 14 + 19 * r);
-					if (x >= 0 && y >= 0 && x < 108 && y < 19) {
-						this.blit(s, l + 14 + 19 * r, 0, 204, 108, 19);
-						w = 16777088;
+					int w = i - (k + 60);
+					int x = j - (l + 14 + 19 * q);
+					if (w >= 0 && x >= 0 && w < 108 && x < 19) {
+						this.blit(r, l + 14 + 19 * q, 0, 204, 108, 19);
+						v = 16777088;
 					} else {
-						this.blit(s, l + 14 + 19 * r, 0, 166, 108, 19);
+						this.blit(r, l + 14 + 19 * q, 0, 166, 108, 19);
 					}
 
-					this.blit(s + 1, l + 15 + 19 * r, 16 * r, 223, 16, 16);
-					textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, w);
-					w = 8453920;
+					this.blit(r + 1, l + 15 + 19 * q, 16 * q, 223, 16, 16);
+					textRenderer.drawStringBounded(string2, s, l + 16 + 19 * q, u, v);
+					v = 8453920;
 				}
 
 				textRenderer = this.minecraft.textRenderer;
-				textRenderer.drawWithShadow(string, (float)(t + 86 - textRenderer.getStringWidth(string)), (float)(l + 16 + 19 * r + 7), w);
+				textRenderer.drawWithShadow(string, (float)(s + 86 - textRenderer.getStringWidth(string)), (float)(l + 16 + 19 * q + 7), v);
 			}
 		}
 	}

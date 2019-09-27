@@ -1,14 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class DolphinEntityModel<T extends Entity> extends EntityModel<T> {
-	private final ModelPart field_4656;
+public class DolphinEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_4658;
 	private final ModelPart field_4657;
 	private final ModelPart field_4655;
@@ -48,18 +49,18 @@ public class DolphinEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_4655.setRotationPoint(0.0F, 0.0F, 9.0F);
 		this.field_4655.pitch = 0.0F;
 		this.field_4657.addChild(this.field_4655);
-		this.field_4656 = new ModelPart(this, 0, 0);
-		this.field_4656.addCuboid(-4.0F, -3.0F, -3.0F, 8.0F, 7.0F, 6.0F);
-		this.field_4656.setRotationPoint(0.0F, -4.0F, -3.0F);
-		ModelPart modelPart4 = new ModelPart(this, 0, 13);
-		modelPart4.addCuboid(-1.0F, 2.0F, -7.0F, 2.0F, 2.0F, 4.0F);
-		this.field_4656.addChild(modelPart4);
-		this.field_4658.addChild(this.field_4656);
+		ModelPart modelPart4 = new ModelPart(this, 0, 0);
+		modelPart4.addCuboid(-4.0F, -3.0F, -3.0F, 8.0F, 7.0F, 6.0F);
+		modelPart4.setRotationPoint(0.0F, -4.0F, -3.0F);
+		ModelPart modelPart5 = new ModelPart(this, 0, 13);
+		modelPart5.addCuboid(-1.0F, 2.0F, -7.0F, 2.0F, 2.0F, 4.0F);
+		modelPart4.addChild(modelPart5);
+		this.field_4658.addChild(modelPart4);
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.field_4658.render(k);
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_4658);
 	}
 
 	@Override

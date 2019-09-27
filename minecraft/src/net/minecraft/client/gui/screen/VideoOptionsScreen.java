@@ -45,12 +45,12 @@ public class VideoOptionsScreen extends Screen {
 	protected void init() {
 		this.mipmapLevels = this.options.mipmapLevels;
 		this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-		this.list.addSingleOptionEntry(new FullScreenOption(this.minecraft.method_22683()));
+		this.list.addSingleOptionEntry(new FullScreenOption(this.minecraft.getWindow()));
 		this.list.addAll(OPTIONS);
 		this.children.add(this.list);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.minecraft.options.write();
-			this.minecraft.method_22683().method_4475();
+			this.minecraft.getWindow().method_4475();
 			this.minecraft.openScreen(this.parent);
 		}));
 	}

@@ -123,16 +123,19 @@ public class LocationPredicate {
 			return false;
 		} else {
 			BlockPos blockPos = new BlockPos((double)f, (double)g, (double)h);
-			if (!serverWorld.canSetBlock(blockPos)) {
-				return false;
-			} else if (this.biome != null && this.biome != serverWorld.getBiome(blockPos)) {
-				return false;
-			} else if (this.feature != null && !this.feature.isInsideStructure(serverWorld, blockPos)) {
-				return false;
-			} else if (!this.light.test(serverWorld, blockPos)) {
-				return false;
+			boolean bl = serverWorld.canSetBlock(blockPos);
+			if (this.biome == null || bl && this.biome == serverWorld.getBiome(blockPos)) {
+				if (this.feature == null || bl && this.feature.isInsideStructure(serverWorld, blockPos)) {
+					if (!this.light.test(serverWorld, blockPos)) {
+						return false;
+					} else {
+						return !this.block.test(serverWorld, blockPos) ? false : this.fluid.test(serverWorld, blockPos);
+					}
+				} else {
+					return false;
+				}
 			} else {
-				return !this.block.test(serverWorld, blockPos) ? false : this.fluid.test(serverWorld, blockPos);
+				return false;
 			}
 		}
 	}

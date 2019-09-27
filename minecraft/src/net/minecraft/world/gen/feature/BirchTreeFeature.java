@@ -54,8 +54,8 @@ public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 
 			if (!bl) {
 				return false;
-			} else if (isDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.setToDirt(modifiableTestableWorld, blockPos.down());
+			} else if (isDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
 
 				for (int j = blockPos.getY() - 3 + i; j <= blockPos.getY() + i; j++) {
 					int kx = j - (blockPos.getY() + i);

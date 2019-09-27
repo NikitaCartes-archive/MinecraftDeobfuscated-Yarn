@@ -4,9 +4,10 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.MathHelper;
 
@@ -32,12 +33,8 @@ public class BookModel extends Model {
 		this.spine.yaw = (float) (Math.PI / 2);
 	}
 
-	public void method_22693(float f) {
-		this.field_20786.forEach(modelPart -> modelPart.render(f));
-	}
-
-	public void render(BufferBuilder bufferBuilder, float f, int i, int j, Sprite sprite) {
-		this.field_20786.forEach(modelPart -> modelPart.method_22698(bufferBuilder, f, i, j, sprite));
+	public void render(class_4587 arg, class_4588 arg2, float f, int i, Sprite sprite) {
+		this.field_20786.forEach(modelPart -> modelPart.method_22698(arg, arg2, f, i, sprite));
 	}
 
 	public void setPageAngles(float f, float g, float h, float i) {

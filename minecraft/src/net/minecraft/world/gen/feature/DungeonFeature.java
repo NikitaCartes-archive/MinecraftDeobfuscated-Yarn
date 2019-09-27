@@ -73,7 +73,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 							if (iWorld.getBlockState(blockPos2x).getBlock() != Blocks.CHEST) {
 								iWorld.setBlockState(blockPos2x, AIR, 2);
 							}
-						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
+						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.method_10074()).getMaterial().isSolid()) {
 							iWorld.setBlockState(blockPos2x, AIR, 2);
 						} else if (iWorld.getBlockState(blockPos2x).getMaterial().isSolid() && iWorld.getBlockState(blockPos2x).getBlock() != Blocks.CHEST) {
 							if (t == -1 && random.nextInt(4) != 0) {

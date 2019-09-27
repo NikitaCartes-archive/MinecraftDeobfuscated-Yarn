@@ -8,17 +8,23 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
+import net.minecraft.class_4599;
+import net.minecraft.class_4603;
+import net.minecraft.class_4608;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
+import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
@@ -59,6 +65,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private float viewDistance;
 	public final FirstPersonRenderer firstPersonRenderer;
 	private final MapRenderer mapRenderer;
+	private final class_4599 field_20948;
 	private int ticks;
 	private float movementFovMultiplier;
 	private float lastMovementFovMultiplier;
@@ -69,14 +76,17 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private long lastWorldIconUpdate;
 	private long lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
 	private final LightmapTextureManager lightmapTextureManager;
+	private final class_4608 field_20949 = new class_4608();
 	private boolean field_4001;
-	private double field_4005 = 1.0;
-	private double field_3988;
-	private double field_4004;
+	private float field_4005 = 1.0F;
+	private float field_3988;
+	private float field_4004;
+	@Nullable
 	private ItemStack floatingItem;
 	private int floatingItemTimeLeft;
 	private float floatingItemWidth;
 	private float floatingItemHeight;
+	@Nullable
 	private ShaderEffect shader;
 	private static final Identifier[] SHADERS_LOCATIONS = new Identifier[]{
 		new Identifier("shaders/post/notch.json"),
@@ -109,12 +119,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private boolean shadersEnabled;
 	private final Camera camera = new Camera();
 
-	public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager) {
+	public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager, class_4599 arg) {
 		this.client = minecraftClient;
 		this.resourceContainer = resourceManager;
 		this.firstPersonRenderer = minecraftClient.getFirstPersonRenderer();
 		this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
-		this.lightmapTextureManager = new LightmapTextureManager(this);
+		this.lightmapTextureManager = new LightmapTextureManager(this, minecraftClient);
+		this.field_20948 = arg;
 		this.shader = null;
 	}
 
@@ -122,10 +133,6 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.lightmapTextureManager.close();
 		this.mapRenderer.close();
 		this.disableShader();
-	}
-
-	public boolean isShaderEnabled() {
-		return this.shader != null;
 	}
 
 	public void disableShader() {
@@ -163,7 +170,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 		try {
 			this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceContainer, this.client.getFramebuffer(), identifier);
-			this.shader.setupDimensions(this.client.method_22683().getFramebufferWidth(), this.client.method_22683().getFramebufferHeight());
+			this.shader.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			this.shadersEnabled = true;
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to load shader: {}", identifier, var3);
@@ -219,6 +226,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
+	@Nullable
 	public ShaderEffect getShader() {
 		return this.shader;
 	}
@@ -325,13 +333,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	private void bobViewWhenHurt(float f) {
+	private void bobViewWhenHurt(class_4587 arg, float f) {
 		if (this.client.getCameraEntity() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
 			float g = (float)livingEntity.hurtTime - f;
 			if (livingEntity.getHealth() <= 0.0F) {
 				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
-				RenderSystem.rotatef(40.0F - 8000.0F / (h + 200.0F), 0.0F, 0.0F, 1.0F);
+				arg.method_22907(Vector3f.field_20707.method_23214(40.0F - 8000.0F / (h + 200.0F), true));
 			}
 
 			if (g < 0.0F) {
@@ -341,32 +349,32 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			g /= (float)livingEntity.maxHurtTime;
 			g = MathHelper.sin(g * g * g * g * (float) Math.PI);
 			float h = livingEntity.knockbackVelocity;
-			RenderSystem.rotatef(-h, 0.0F, 1.0F, 0.0F);
-			RenderSystem.rotatef(-g * 14.0F, 0.0F, 0.0F, 1.0F);
-			RenderSystem.rotatef(h, 0.0F, 1.0F, 0.0F);
+			arg.method_22907(Vector3f.field_20705.method_23214(-h, true));
+			arg.method_22907(Vector3f.field_20707.method_23214(-g * 14.0F, true));
+			arg.method_22907(Vector3f.field_20705.method_23214(h, true));
 		}
 	}
 
-	private void bobView(float f) {
+	private void bobView(class_4587 arg, float f) {
 		if (this.client.getCameraEntity() instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
 			float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
 			float h = -(playerEntity.horizontalSpeed + g * f);
 			float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
-			RenderSystem.translatef(MathHelper.sin(h * (float) Math.PI) * i * 0.5F, -Math.abs(MathHelper.cos(h * (float) Math.PI) * i), 0.0F);
-			RenderSystem.rotatef(MathHelper.sin(h * (float) Math.PI) * i * 3.0F, 0.0F, 0.0F, 1.0F);
-			RenderSystem.rotatef(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F, 1.0F, 0.0F, 0.0F);
+			arg.method_22904((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
+			arg.method_22907(Vector3f.field_20707.method_23214(MathHelper.sin(h * (float) Math.PI) * i * 3.0F, true));
+			arg.method_22907(Vector3f.field_20703.method_23214(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F, true));
 		}
 	}
 
-	private void renderHand(Camera camera, float f) {
+	private void renderHand(class_4587 arg, Camera camera, float f) {
 		if (!this.field_4001) {
 			this.method_22709(camera, f, false, false, 2.0F);
-			RenderSystem.loadIdentity();
-			RenderSystem.pushMatrix();
-			this.bobViewWhenHurt(f);
+			arg.method_22910().method_22668();
+			arg.method_22903();
+			this.bobViewWhenHurt(arg, f);
 			if (this.client.options.bobView) {
-				this.bobView(f);
+				this.bobView(arg, f);
 			}
 
 			boolean bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
@@ -375,18 +383,18 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				&& !this.client.options.hudHidden
 				&& this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
 				this.lightmapTextureManager.enable();
-				this.firstPersonRenderer.renderFirstPersonItem(f);
+				this.firstPersonRenderer.method_22976(f, arg, this.field_20948.method_23000());
 				this.lightmapTextureManager.disable();
 			}
 
-			RenderSystem.popMatrix();
+			arg.method_22909();
 			if (this.client.options.perspective == 0 && !bl) {
-				this.firstPersonRenderer.renderOverlays(f);
-				this.bobViewWhenHurt(f);
+				class_4603.method_23067(this.client, arg);
+				this.bobViewWhenHurt(arg, f);
 			}
 
 			if (this.client.options.bobView) {
-				this.bobView(f);
+				this.bobView(arg, f);
 			}
 		}
 	}
@@ -394,20 +402,28 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	public void method_22709(Camera camera, float f, boolean bl, boolean bl2, float g) {
 		RenderSystem.matrixMode(5889);
 		RenderSystem.loadIdentity();
-		if (bl2 && this.field_4005 != 1.0) {
-			RenderSystem.translated(this.field_3988, -this.field_4004, 0.0);
-			RenderSystem.scaled(this.field_4005, this.field_4005, 1.0);
+		RenderSystem.multMatrix(this.method_22973(camera, f, bl, bl2, g));
+		RenderSystem.matrixMode(5888);
+	}
+
+	public Matrix4f method_22973(Camera camera, float f, boolean bl, boolean bl2, float g) {
+		class_4587 lv = new class_4587();
+		lv.method_22910().method_22668();
+		if (bl2 && this.field_4005 != 1.0F) {
+			lv.method_22904((double)this.field_3988, (double)(-this.field_4004), 0.0);
+			lv.method_22905(this.field_4005, this.field_4005, 1.0F);
 		}
 
-		RenderSystem.multMatrix(
-			Matrix4f.method_4929(
-				this.getFov(camera, f, bl),
-				(float)this.client.method_22683().getFramebufferWidth() / (float)this.client.method_22683().getFramebufferHeight(),
-				0.05F,
-				this.viewDistance * g
-			)
-		);
-		RenderSystem.matrixMode(5888);
+		lv.method_22910()
+			.method_22672(
+				Matrix4f.method_4929(
+					this.getFov(camera, f, bl),
+					(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
+					0.05F,
+					this.viewDistance * g
+				)
+			);
+		return lv.method_22910();
 	}
 
 	public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -427,16 +443,18 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 
 		if (!this.client.skipGameRender) {
-			int i = (int)(this.client.mouse.getX() * (double)this.client.method_22683().getScaledWidth() / (double)this.client.method_22683().getWidth());
-			int j = (int)(this.client.mouse.getY() * (double)this.client.method_22683().getScaledHeight() / (double)this.client.method_22683().getHeight());
+			int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
+			int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
 			int k = this.client.options.maxFps;
+			class_4587 lv = new class_4587();
+			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			if (bl && this.client.world != null) {
 				this.client.getProfiler().push("level");
 				int m = Math.min(MinecraftClient.getCurrentFps(), k);
 				m = Math.max(m, 60);
 				long n = SystemUtil.getMeasuringTimeNano() - l;
 				long o = Math.max((long)(1000000000 / m / 4) - n, 0L);
-				this.renderWorld(f, SystemUtil.getMeasuringTimeNano() + o);
+				this.renderWorld(f, SystemUtil.getMeasuringTimeNano() + o, lv);
 				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < SystemUtil.getMeasuringTimeMs() - 1000L) {
 					this.lastWorldIconUpdate = SystemUtil.getMeasuringTimeMs();
 					if (!this.client.getServer().hasIconFile()) {
@@ -454,42 +472,45 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				}
 
 				this.client.getFramebuffer().beginWrite(true);
+			}
+
+			Window window = this.client.getWindow();
+			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+			RenderSystem.matrixMode(5889);
+			RenderSystem.loadIdentity();
+			RenderSystem.ortho(
+				0.0, (double)window.getFramebufferWidth() / window.getScaleFactor(), (double)window.getFramebufferHeight() / window.getScaleFactor(), 0.0, 1000.0, 3000.0
+			);
+			RenderSystem.matrixMode(5888);
+			RenderSystem.loadIdentity();
+			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
+			GuiLighting.enableForItems();
+			if (bl && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
 					RenderSystem.defaultAlphaFunc();
-					this.client.method_22683().method_4493(MinecraftClient.IS_SYSTEM_MAC);
-					this.renderFloatingItem(this.client.method_22683().getScaledWidth(), this.client.method_22683().getScaledHeight(), f);
+					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), f);
 					this.client.inGameHud.render(f);
+					RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 				}
 
 				this.client.getProfiler().pop();
-			} else {
-				RenderSystem.viewport(0, 0, this.client.method_22683().getFramebufferWidth(), this.client.method_22683().getFramebufferHeight());
-				RenderSystem.matrixMode(5889);
-				RenderSystem.loadIdentity();
-				RenderSystem.matrixMode(5888);
-				RenderSystem.loadIdentity();
-				this.client.method_22683().method_4493(MinecraftClient.IS_SYSTEM_MAC);
 			}
 
 			if (this.client.overlay != null) {
-				RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-
 				try {
 					this.client.overlay.render(i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var14) {
-					CrashReport crashReport = CrashReport.create(var14, "Rendering overlay");
+				} catch (Throwable var15) {
+					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
 			} else if (this.client.currentScreen != null) {
-				RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-
 				try {
 					this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var13) {
-					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
+				} catch (Throwable var14) {
+					CrashReport crashReport = CrashReport.create(var14, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -501,11 +522,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 						(CrashCallable<String>)(() -> String.format(
 								Locale.ROOT,
 								"Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %f",
-								this.client.method_22683().getScaledWidth(),
-								this.client.method_22683().getScaledHeight(),
-								this.client.method_22683().getFramebufferWidth(),
-								this.client.method_22683().getFramebufferHeight(),
-								this.client.method_22683().getScaleFactor()
+								this.client.getWindow().getScaledWidth(),
+								this.client.getWindow().getScaledHeight(),
+								this.client.getWindow().getFramebufferWidth(),
+								this.client.getWindow().getFramebufferHeight(),
+								this.client.getWindow().getScaleFactor()
 							))
 					);
 					throw new CrashException(crashReport);
@@ -517,7 +538,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private void updateWorldIcon() {
 		if (this.client.worldRenderer.getChunkNumber() > 10 && this.client.worldRenderer.isTerrainRenderComplete() && !this.client.getServer().hasIconFile()) {
 			NativeImage nativeImage = ScreenshotUtils.takeScreenshot(
-				this.client.method_22683().getFramebufferWidth(), this.client.method_22683().getFramebufferHeight(), this.client.getFramebuffer()
+				this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer()
 			);
 			ResourceImpl.RESOURCE_IO_EXECUTOR.execute(() -> {
 				int i = nativeImage.getWidth();
@@ -573,7 +594,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	public void renderWorld(float f, long l) {
+	public void renderWorld(float f, long l, class_4587 arg) {
 		this.lightmapTextureManager.update(f);
 		if (this.client.getCameraEntity() == null) {
 			this.client.setCameraEntity(this.client.player);
@@ -586,10 +607,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		Camera camera = this.camera;
 		this.viewDistance = (float)(this.client.options.viewDistance * 16);
 		this.method_22709(camera, f, true, true, MathHelper.SQUARE_ROOT_OF_TWO);
-		RenderSystem.loadIdentity();
-		this.bobViewWhenHurt(f);
+		this.bobViewWhenHurt(arg, f);
 		if (this.client.options.bobView) {
-			this.bobView(f);
+			this.bobView(arg, f);
 		}
 
 		float g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
@@ -601,9 +621,10 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
 			h *= h;
-			RenderSystem.rotatef(((float)this.ticks + f) * (float)i, 0.0F, 1.0F, 1.0F);
-			RenderSystem.scalef(1.0F / h, 1.0F, 1.0F);
-			RenderSystem.rotatef(-((float)this.ticks + f) * (float)i, 0.0F, 1.0F, 1.0F);
+			Vector3f vector3f = new Vector3f(0.0F, 1.0F, 1.0F);
+			arg.method_22907(vector3f.method_23214(((float)this.ticks + f) * (float)i, true));
+			arg.method_22905(1.0F / h, 1.0F, 1.0F);
+			arg.method_22907(vector3f.method_23214(-((float)this.ticks + f) * (float)i, true));
 		}
 
 		camera.update(
@@ -613,11 +634,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			this.client.options.perspective == 2,
 			f
 		);
-		this.client.worldRenderer.method_22710(f, l, bl, camera, this, this.lightmapTextureManager);
+		arg.method_22907(Vector3f.field_20703.method_23214(camera.getPitch(), true));
+		arg.method_22907(Vector3f.field_20705.method_23214(camera.getYaw() + 180.0F, true));
+		this.client.worldRenderer.render(arg, f, l, bl, camera, this, this.lightmapTextureManager);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-			this.renderHand(camera, f);
+			this.renderHand(arg, camera, f);
 		}
 
 		this.client.getProfiler().pop();
@@ -631,46 +654,6 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	public MapRenderer getMapRenderer() {
 		return this.mapRenderer;
-	}
-
-	public static void renderFloatingText(TextRenderer textRenderer, String string, float f, float g, float h, int i, float j, float k, boolean bl) {
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(f, g, h);
-		RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-		RenderSystem.rotatef(-j, 0.0F, 1.0F, 0.0F);
-		RenderSystem.rotatef(k, 1.0F, 0.0F, 0.0F);
-		RenderSystem.scalef(-0.025F, -0.025F, 0.025F);
-		RenderSystem.disableLighting();
-		RenderSystem.depthMask(false);
-		if (!bl) {
-			RenderSystem.disableDepthTest();
-		}
-
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		int l = textRenderer.getStringWidth(string) / 2;
-		RenderSystem.disableTexture();
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-		float m = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
-		bufferBuilder.vertex((double)(-l - 1), (double)(-1 + i), 0.0).color(0.0F, 0.0F, 0.0F, m).next();
-		bufferBuilder.vertex((double)(-l - 1), (double)(8 + i), 0.0).color(0.0F, 0.0F, 0.0F, m).next();
-		bufferBuilder.vertex((double)(l + 1), (double)(8 + i), 0.0).color(0.0F, 0.0F, 0.0F, m).next();
-		bufferBuilder.vertex((double)(l + 1), (double)(-1 + i), 0.0).color(0.0F, 0.0F, 0.0F, m).next();
-		tessellator.draw();
-		RenderSystem.enableTexture();
-		if (!bl) {
-			textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)i, 553648127);
-			RenderSystem.enableDepthTest();
-		}
-
-		RenderSystem.depthMask(true);
-		textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)i, bl ? 553648127 : -1);
-		RenderSystem.enableLighting();
-		RenderSystem.disableBlend();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.popMatrix();
 	}
 
 	public void showFloatingItem(ItemStack itemStack) {
@@ -695,24 +678,26 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.pushLightingAttributes();
 			RenderSystem.enableDepthTest();
 			RenderSystem.disableCull();
-			GuiLighting.enable();
-			RenderSystem.translatef((float)(i / 2) + o * MathHelper.abs(MathHelper.sin(n * 2.0F)), (float)(j / 2) + p * MathHelper.abs(MathHelper.sin(n * 2.0F)), -50.0F);
+			class_4587 lv = new class_4587();
+			lv.method_22903();
+			lv.method_22904(
+				(double)((float)(i / 2) + o * MathHelper.abs(MathHelper.sin(n * 2.0F))), (double)((float)(j / 2) + p * MathHelper.abs(MathHelper.sin(n * 2.0F))), -50.0
+			);
 			float q = 50.0F + 175.0F * MathHelper.sin(n);
-			RenderSystem.scalef(q, -q, q);
-			RenderSystem.rotatef(900.0F * MathHelper.abs(MathHelper.sin(n)), 0.0F, 1.0F, 0.0F);
-			RenderSystem.rotatef(6.0F * MathHelper.cos(g * 8.0F), 1.0F, 0.0F, 0.0F);
-			RenderSystem.rotatef(6.0F * MathHelper.cos(g * 8.0F), 0.0F, 0.0F, 1.0F);
-			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Type.FIXED);
+			lv.method_22905(q, -q, q);
+			lv.method_22905(q, -q, q);
+			lv.method_22907(Vector3f.field_20705.method_23214(900.0F * MathHelper.abs(MathHelper.sin(n)), true));
+			lv.method_22907(Vector3f.field_20703.method_23214(6.0F * MathHelper.cos(g * 8.0F), true));
+			lv.method_22907(Vector3f.field_20707.method_23214(6.0F * MathHelper.cos(g * 8.0F), true));
+			class_4597.class_4598 lv2 = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
+			this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 15728880, lv, lv2);
+			lv.method_22909();
+			lv2.method_22993();
 			RenderSystem.popAttributes();
 			RenderSystem.popMatrix();
-			GuiLighting.disable();
 			RenderSystem.enableCull();
 			RenderSystem.disableDepthTest();
 		}
-	}
-
-	public MinecraftClient getClient() {
-		return this.client;
 	}
 
 	public float getSkyDarkness(float f) {
@@ -725,5 +710,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	public Camera getCamera() {
 		return this.camera;
+	}
+
+	public LightmapTextureManager method_22974() {
+		return this.lightmapTextureManager;
+	}
+
+	public class_4608 method_22975() {
+		return this.field_20949;
 	}
 }

@@ -101,7 +101,7 @@ public final class SpawnHelper {
 
 								SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
 								if (!canSpawn(location, serverWorld, mutable, entityType)
-									|| !SpawnRestriction.method_20638(entityType, serverWorld, SpawnType.NATURAL, mutable, serverWorld.random)
+									|| !SpawnRestriction.canSpawn(entityType, serverWorld, SpawnType.NATURAL, mutable, serverWorld.random)
 									|| !serverWorld.doesNotCollide(entityType.createSimpleBoundingBox((double)f, (double)k, (double)g))) {
 									break label115;
 								}
@@ -185,7 +185,7 @@ public final class SpawnHelper {
 			BlockState blockState = arg.getBlockState(blockPos);
 			FluidState fluidState = arg.getFluidState(blockPos);
 			BlockPos blockPos2 = blockPos.up();
-			BlockPos blockPos3 = blockPos.down();
+			BlockPos blockPos3 = blockPos.method_10074();
 			switch (location) {
 				case IN_WATER:
 					return fluidState.matches(FluidTags.WATER)
@@ -228,9 +228,7 @@ public final class SpawnHelper {
 							double d = MathHelper.clamp((double)n, (double)k + (double)f, (double)k + 16.0 - (double)f);
 							double e = MathHelper.clamp((double)o, (double)l + (double)f, (double)l + 16.0 - (double)f);
 							if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))
-								|| !SpawnRestriction.method_20638(spawnEntry.type, iWorld, SpawnType.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), iWorld.getRandom())
-								)
-							 {
+								|| !SpawnRestriction.canSpawn(spawnEntry.type, iWorld, SpawnType.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), iWorld.getRandom())) {
 								continue;
 							}
 
@@ -265,8 +263,8 @@ public final class SpawnHelper {
 	}
 
 	private static BlockPos getEntitySpawnPos(class_4538 arg, @Nullable EntityType<?> entityType, int i, int j) {
-		BlockPos blockPos = new BlockPos(i, arg.getTopY(SpawnRestriction.getHeightMapType(entityType), i, j), j);
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos = new BlockPos(i, arg.getTopY(SpawnRestriction.getHeightmapType(entityType), i, j), j);
+		BlockPos blockPos2 = blockPos.method_10074();
 		return arg.getBlockState(blockPos2).canPlaceAtSide(arg, blockPos2, BlockPlacementEnvironment.LAND) ? blockPos2 : blockPos;
 	}
 }

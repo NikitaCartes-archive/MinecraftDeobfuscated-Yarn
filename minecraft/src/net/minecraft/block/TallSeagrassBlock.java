@@ -60,7 +60,7 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
 		if (blockState.get(HALF) == DoubleBlockHalf.UPPER) {
-			BlockState blockState2 = arg.getBlockState(blockPos.down());
+			BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
 			return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
 		} else {
 			FluidState fluidState = arg.getFluidState(blockPos);

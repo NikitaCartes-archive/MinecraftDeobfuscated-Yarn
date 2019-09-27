@@ -64,7 +64,7 @@ public abstract class BaseFluid extends Fluid {
 					float g = 0.0F;
 					if (f == 0.0F) {
 						if (!blockView.getBlockState(pooledMutable).getMaterial().blocksMovement()) {
-							BlockPos blockPos2 = pooledMutable.down();
+							BlockPos blockPos2 = pooledMutable.method_10074();
 							FluidState fluidState3 = blockView.getFluidState(blockPos2);
 							if (this.method_15748(fluidState3)) {
 								f = fluidState3.method_20785();
@@ -120,7 +120,7 @@ public abstract class BaseFluid extends Fluid {
 	protected void method_15725(IWorld iWorld, BlockPos blockPos, FluidState fluidState) {
 		if (!fluidState.isEmpty()) {
 			BlockState blockState = iWorld.getBlockState(blockPos);
-			BlockPos blockPos2 = blockPos.down();
+			BlockPos blockPos2 = blockPos.method_10074();
 			BlockState blockState2 = iWorld.getBlockState(blockPos2);
 			FluidState fluidState2 = this.getUpdatedState(iWorld, blockPos2, blockState2);
 			if (this.method_15738(iWorld, blockPos, blockState, Direction.DOWN, blockPos2, blockState2, iWorld.getFluidState(blockPos2), fluidState2.getFluid())) {
@@ -173,7 +173,7 @@ public abstract class BaseFluid extends Fluid {
 		}
 
 		if (this.isInfinite() && j >= 2) {
-			BlockState blockState3 = arg.getBlockState(blockPos.down());
+			BlockState blockState3 = arg.getBlockState(blockPos.method_10074());
 			FluidState fluidState2 = blockState3.getFluidState();
 			if (blockState3.getMaterial().isSolid() || this.method_15752(fluidState2)) {
 				return this.getStill(false);
@@ -282,7 +282,7 @@ public abstract class BaseFluid extends Fluid {
 				FluidState fluidState = pair.getSecond();
 				if (this.method_15746(arg, this.getFlowing(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) {
 					boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
-						BlockPos blockPos2x = blockPos3.down();
+						BlockPos blockPos2x = blockPos3.method_10074();
 						BlockState blockState2x = arg.getBlockState(blockPos2x);
 						return this.method_15736(arg, this.getFlowing(), blockPos3, blockState2, blockPos2x, blockState2x);
 					});
@@ -363,7 +363,7 @@ public abstract class BaseFluid extends Fluid {
 			FluidState fluidState = pair.getSecond();
 			FluidState fluidState2 = this.getUpdatedState(arg, blockPos2, blockState2);
 			if (this.method_15746(arg, fluidState2.getFluid(), blockPos, blockState, direction, blockPos2, blockState2, fluidState)) {
-				BlockPos blockPos3 = blockPos2.down();
+				BlockPos blockPos3 = blockPos2.method_10074();
 				boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
 					BlockState blockState2x = arg.getBlockState(blockPos3);
 					return this.method_15736(arg, this.getFlowing(), blockPos2, blockState2, blockPos3, blockState2x);

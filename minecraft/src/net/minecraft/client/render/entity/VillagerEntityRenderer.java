@@ -1,8 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
@@ -22,11 +22,11 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
-	protected Identifier method_4151(VillagerEntity villagerEntity) {
+	public Identifier method_4151(VillagerEntity villagerEntity) {
 		return VILLAGER_SKIN;
 	}
 
-	protected void method_4149(VillagerEntity villagerEntity, float f) {
+	protected void method_4149(VillagerEntity villagerEntity, class_4587 arg, float f) {
 		float g = 0.9375F;
 		if (villagerEntity.isBaby()) {
 			g = (float)((double)g * 0.5);
@@ -35,6 +35,6 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 			this.field_4673 = 0.5F;
 		}
 
-		RenderSystem.scalef(g, g, g);
+		arg.method_22905(g, g, g);
 	}
 }

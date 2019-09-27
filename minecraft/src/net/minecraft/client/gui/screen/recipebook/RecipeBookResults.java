@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 
@@ -91,7 +90,6 @@ public class RecipeBookResults {
 			this.client.textRenderer.draw(string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
 		}
 
-		GuiLighting.disable();
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {

@@ -6,19 +6,20 @@ import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
@@ -51,9 +52,11 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ChunkBatcher {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final PriorityBlockingQueue<ChunkBatcher.ChunkRenderer.class_4577> pendingChunks = Queues.newPriorityBlockingQueue();
+	private final PriorityQueue<ChunkBatcher.ChunkRenderer.class_4577> pendingChunks = Queues.newPriorityQueue();
 	private final Queue<BlockLayeredBufferBuilder> field_20827;
 	private final Queue<Runnable> pendingUploads = Queues.<Runnable>newConcurrentLinkedQueue();
+	private volatile int field_20992;
+	private volatile int field_20993;
 	private final BlockLayeredBufferBuilder field_20828;
 	private final MailboxProcessor<Runnable> field_20829;
 	private final Executor field_20830;
@@ -61,7 +64,7 @@ public class ChunkBatcher {
 	private final WorldRenderer field_20832;
 	private Vec3d cameraPosition = Vec3d.ZERO;
 
-	public ChunkBatcher(World world, WorldRenderer worldRenderer, Executor executor, boolean bl) {
+	public ChunkBatcher(World world, WorldRenderer worldRenderer, Executor executor, boolean bl, BlockLayeredBufferBuilder blockLayeredBufferBuilder) {
 		this.field_20831 = world;
 		this.field_20832 = worldRenderer;
 		int i = Math.max(
@@ -70,14 +73,14 @@ public class ChunkBatcher {
 		int j = Runtime.getRuntime().availableProcessors();
 		int k = bl ? j : Math.min(j, 4);
 		int l = Math.max(1, Math.min(k, i));
-		this.field_20828 = new BlockLayeredBufferBuilder();
+		this.field_20828 = blockLayeredBufferBuilder;
 		List<BlockLayeredBufferBuilder> list = Lists.<BlockLayeredBufferBuilder>newArrayListWithExpectedSize(l);
 
 		try {
 			for (int m = 0; m < l; m++) {
 				list.add(new BlockLayeredBufferBuilder());
 			}
-		} catch (OutOfMemoryError var13) {
+		} catch (OutOfMemoryError var14) {
 			LOGGER.warn("Allocated only {}/{} buffers", list.size(), l);
 			int n = Math.min(list.size() * 2 / 3, list.size() - 1);
 
@@ -89,6 +92,7 @@ public class ChunkBatcher {
 		}
 
 		this.field_20827 = Queues.<BlockLayeredBufferBuilder>newArrayDeque(list);
+		this.field_20993 = this.field_20827.size();
 		this.field_20830 = executor;
 		this.field_20829 = MailboxProcessor.create(executor, "Chunk Renderer");
 		this.field_20829.send(this::method_22763);
@@ -103,13 +107,16 @@ public class ChunkBatcher {
 			ChunkBatcher.ChunkRenderer.class_4577 lv = (ChunkBatcher.ChunkRenderer.class_4577)this.pendingChunks.poll();
 			if (lv != null) {
 				BlockLayeredBufferBuilder blockLayeredBufferBuilder = (BlockLayeredBufferBuilder)this.field_20827.poll();
+				this.field_20992 = this.pendingChunks.size();
+				this.field_20993 = this.field_20827.size();
 				CompletableFuture.runAsync(() -> {
 				}, this.field_20830).thenCompose(void_ -> lv.method_22783(blockLayeredBufferBuilder)).whenComplete((unit, throwable) -> {
 					this.field_20829.send(() -> {
 						blockLayeredBufferBuilder.method_22705();
 						this.field_20827.add(blockLayeredBufferBuilder);
+						this.field_20993 = this.field_20827.size();
+						this.method_22763();
 					});
-					this.field_20829.send(this::method_22763);
 					if (throwable != null) {
 						CrashReport crashReport = CrashReport.create(throwable, "Batching chunks");
 						MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().populateCrashReport(crashReport));
@@ -120,7 +127,7 @@ public class ChunkBatcher {
 	}
 
 	public String getDebugString() {
-		return String.format("pC: %03d, pU: %02d, aB: %02d", this.pendingChunks.size(), this.pendingUploads.size(), this.field_20827.size());
+		return String.format("pC: %03d, pU: %02d, aB: %02d", this.field_20992, this.pendingUploads.size(), this.field_20993);
 	}
 
 	public void setCameraPosition(Vec3d vec3d) {
@@ -150,13 +157,16 @@ public class ChunkBatcher {
 	}
 
 	public void method_22756(ChunkBatcher.ChunkRenderer.class_4577 arg) {
-		this.pendingChunks.offer(arg);
-		this.field_20829.send(this::method_22763);
+		this.field_20829.send(() -> {
+			this.pendingChunks.offer(arg);
+			this.field_20992 = this.pendingChunks.size();
+			this.method_22763();
+		});
 	}
 
 	public CompletableFuture<Void> upload(BufferBuilder bufferBuilder, GlBuffer glBuffer) {
-		return MinecraftClient.getInstance().method_20493(() -> {
-		}).thenCompose(void_ -> this.method_22759(bufferBuilder, glBuffer));
+		return CompletableFuture.runAsync(() -> {
+		}, this.pendingUploads::add).thenCompose(void_ -> this.method_22759(bufferBuilder, glBuffer));
 	}
 
 	private CompletableFuture<Void> method_22759(BufferBuilder bufferBuilder, GlBuffer glBuffer) {
@@ -170,10 +180,12 @@ public class ChunkBatcher {
 				lv.method_22782();
 			}
 		}
+
+		this.field_20992 = 0;
 	}
 
 	public boolean isEmpty() {
-		return this.pendingChunks.isEmpty() && this.pendingUploads.isEmpty();
+		return this.field_20992 == 0 && this.pendingUploads.isEmpty();
 	}
 
 	public void stop() {
@@ -284,9 +296,8 @@ public class ChunkBatcher {
 			return d * d + e * e + f * f;
 		}
 
-		private void beginBufferBuilding(BufferBuilder bufferBuilder, BlockPos blockPos) {
+		private void beginBufferBuilding(BufferBuilder bufferBuilder) {
 			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
-			bufferBuilder.setOffset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()));
 		}
 
 		public ChunkBatcher.ChunkRenderData getData() {
@@ -468,6 +479,7 @@ public class ChunkBatcher {
 				Set<BlockEntity> set = Sets.<BlockEntity>newHashSet();
 				ChunkRendererRegion chunkRendererRegion = this.field_20838;
 				this.field_20838 = null;
+				class_4587 lv = new class_4587();
 				if (chunkRendererRegion != null) {
 					BlockModelRenderer.enableBrightnessCache();
 					Random random = new Random();
@@ -483,13 +495,7 @@ public class ChunkBatcher {
 						if (block.hasBlockEntity()) {
 							BlockEntity blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.CHECK);
 							if (blockEntity != null) {
-								BlockEntityRenderer<BlockEntity> blockEntityRenderer = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
-								if (blockEntityRenderer != null) {
-									chunkRenderData.blockEntities.add(blockEntity);
-									if (blockEntityRenderer.method_3563(blockEntity)) {
-										set.add(blockEntity);
-									}
-								}
+								this.method_23087(chunkRenderData, set, blockEntity);
 							}
 						}
 
@@ -498,7 +504,7 @@ public class ChunkBatcher {
 							BlockRenderLayer blockRenderLayer = BlockRenderLayer.method_22716(fluidState);
 							BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(blockRenderLayer);
 							if (chunkRenderData.initialized.add(blockRenderLayer)) {
-								ChunkRenderer.this.beginBufferBuilding(bufferBuilder, blockPos);
+								ChunkRenderer.this.beginBufferBuilding(bufferBuilder);
 							}
 
 							if (blockRenderManager.tesselateFluid(blockPos3, chunkRendererRegion, bufferBuilder, fluidState)) {
@@ -511,19 +517,19 @@ public class ChunkBatcher {
 							BlockRenderLayer blockRenderLayerx = BlockRenderLayer.method_22715(blockState);
 							BufferBuilder bufferBuilderx = blockLayeredBufferBuilder.get(blockRenderLayerx);
 							if (chunkRenderData.initialized.add(blockRenderLayerx)) {
-								ChunkRenderer.this.beginBufferBuilding(bufferBuilderx, blockPos);
+								ChunkRenderer.this.beginBufferBuilding(bufferBuilderx);
 							}
 
-							if (blockRenderManager.tesselateBlock(blockState, blockPos3, chunkRendererRegion, bufferBuilderx, random)) {
+							if (blockRenderManager.tesselateBlock(blockState, blockPos3, chunkRendererRegion, lv, bufferBuilderx, true, random)) {
 								chunkRenderData.empty = false;
 								chunkRenderData.nonEmpty.add(blockRenderLayerx);
 							}
 						}
 					}
 
-					if (chunkRenderData.nonEmpty.contains(BlockRenderLayer.field_9179)) {
-						BufferBuilder bufferBuilder2 = blockLayeredBufferBuilder.get(BlockRenderLayer.field_9179);
-						bufferBuilder2.sortQuads(f, g, h);
+					if (chunkRenderData.nonEmpty.contains(BlockRenderLayer.TRANSLUCENT)) {
+						BufferBuilder bufferBuilder2 = blockLayeredBufferBuilder.get(BlockRenderLayer.TRANSLUCENT);
+						bufferBuilder2.sortQuads(f - (float)blockPos.getX(), g - (float)blockPos.getY(), h - (float)blockPos.getZ());
 						chunkRenderData.bufferState = bufferBuilder2.toBufferState();
 					}
 
@@ -533,6 +539,16 @@ public class ChunkBatcher {
 
 				chunkRenderData.occlusionGraph = chunkOcclusionGraphBuilder.build();
 				return set;
+			}
+
+			private <E extends BlockEntity> void method_23087(ChunkBatcher.ChunkRenderData chunkRenderData, Set<BlockEntity> set, E blockEntity) {
+				BlockEntityRenderer<E> blockEntityRenderer = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
+				if (blockEntityRenderer != null) {
+					chunkRenderData.blockEntities.add(blockEntity);
+					if (blockEntityRenderer.method_3563(blockEntity)) {
+						set.add(blockEntity);
+					}
+				}
 			}
 
 			@Override
@@ -568,18 +584,20 @@ public class ChunkBatcher {
 					float g = (float)vec3d.y;
 					float h = (float)vec3d.z;
 					BufferBuilder.State state = this.field_20841.bufferState;
-					if (state != null && this.field_20841.nonEmpty.contains(BlockRenderLayer.field_9179)) {
-						BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(BlockRenderLayer.field_9179);
-						ChunkRenderer.this.beginBufferBuilding(bufferBuilder, ChunkRenderer.this.origin);
+					if (state != null && this.field_20841.nonEmpty.contains(BlockRenderLayer.TRANSLUCENT)) {
+						BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(BlockRenderLayer.TRANSLUCENT);
+						ChunkRenderer.this.beginBufferBuilding(bufferBuilder);
 						bufferBuilder.restoreState(state);
-						bufferBuilder.sortQuads(f, g, h);
+						bufferBuilder.sortQuads(
+							f - (float)ChunkRenderer.this.origin.getX(), g - (float)ChunkRenderer.this.origin.getY(), h - (float)ChunkRenderer.this.origin.getZ()
+						);
 						this.field_20841.bufferState = bufferBuilder.toBufferState();
 						bufferBuilder.end();
 						if (this.field_20836.get()) {
 							return CompletableFuture.completedFuture(Unit.INSTANCE);
 						} else {
 							CompletableFuture<Unit> completableFuture = ChunkBatcher.this.upload(
-									blockLayeredBufferBuilder.get(BlockRenderLayer.field_9179), ChunkRenderer.this.getGlBuffer(BlockRenderLayer.field_9179)
+									blockLayeredBufferBuilder.get(BlockRenderLayer.TRANSLUCENT), ChunkRenderer.this.getGlBuffer(BlockRenderLayer.TRANSLUCENT)
 								)
 								.thenApply(void_ -> Unit.INSTANCE);
 							return completableFuture.whenComplete((unit, throwable) -> {

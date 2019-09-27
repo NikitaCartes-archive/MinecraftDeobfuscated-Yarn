@@ -58,7 +58,7 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 		Set<ScheduledTick<T>> set = Sets.<ScheduledTick<T>>newHashSet();
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			T object = (T)function2.apply(new Identifier(compoundTag.getString("i")));
 			if (object != null) {
 				set.add(

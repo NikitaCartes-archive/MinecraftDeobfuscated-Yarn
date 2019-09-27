@@ -146,7 +146,7 @@ public class WolfEntity extends TameableEntity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		this.setAngry(compoundTag.getBoolean("Angry"));
-		if (compoundTag.containsKey("CollarColor", 99)) {
+		if (compoundTag.contains("CollarColor", 99)) {
 			this.setCollarColor(DyeColor.byId(compoundTag.getInt("CollarColor")));
 		}
 	}

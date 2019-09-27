@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity;
 @Environment(EnvType.CLIENT)
 public class CowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 	public CowEntityModel() {
-		super(12, 0.0F);
+		super(12, 0.0F, false, 10.0F, 4.0F, 2.0F, 2.0F, 24);
 		this.head = new ModelPart(this, 0, 0);
 		this.head.addCuboid(-4.0F, -4.0F, -6.0F, 8.0F, 8.0F, 6.0F, 0.0F);
 		this.head.setRotationPoint(0.0F, 4.0F, -8.0F);
@@ -26,7 +26,6 @@ public class CowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 		this.leg4.rotationPointX++;
 		this.leg3.rotationPointZ--;
 		this.leg4.rotationPointZ--;
-		this.field_3537 += 2.0F;
 	}
 
 	public ModelPart getHead() {

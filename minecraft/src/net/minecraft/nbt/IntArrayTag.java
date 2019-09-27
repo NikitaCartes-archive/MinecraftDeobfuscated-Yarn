@@ -10,10 +10,31 @@ import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class IntArrayTag extends AbstractListTag<IntTag> {
-	private int[] value;
+	public static final TagReader<IntArrayTag> READER = new TagReader<IntArrayTag>() {
+		public IntArrayTag method_23246(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+			positionTracker.add(192L);
+			int j = dataInput.readInt();
+			positionTracker.add((long)(32 * j));
+			int[] is = new int[j];
 
-	IntArrayTag() {
-	}
+			for (int k = 0; k < j; k++) {
+				is[k] = dataInput.readInt();
+			}
+
+			return new IntArrayTag(is);
+		}
+
+		@Override
+		public String getCrashReportName() {
+			return "INT[]";
+		}
+
+		@Override
+		public String getCommandFeedbackName() {
+			return "TAG_Int";
+		}
+	};
+	private int[] value;
 
 	public IntArrayTag(int[] is) {
 		this.value = is;
@@ -44,20 +65,13 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-		positionTracker.add(192L);
-		int j = dataInput.readInt();
-		positionTracker.add((long)(32 * j));
-		this.value = new int[j];
-
-		for (int k = 0; k < j; k++) {
-			this.value[k] = dataInput.readInt();
-		}
+	public byte getType() {
+		return 11;
 	}
 
 	@Override
-	public byte getType() {
-		return 11;
+	public TagReader<IntArrayTag> getReader() {
+		return READER;
 	}
 
 	@Override
@@ -114,13 +128,13 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	public IntTag method_10589(int i) {
-		return new IntTag(this.value[i]);
+		return IntTag.of(this.value[i]);
 	}
 
 	public IntTag method_17806(int i, IntTag intTag) {
 		int j = this.value[i];
 		this.value[i] = intTag.getInt();
-		return new IntTag(j);
+		return IntTag.of(j);
 	}
 
 	public void method_17808(int i, IntTag intTag) {
@@ -150,7 +164,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	public IntTag method_17807(int i) {
 		int j = this.value[i];
 		this.value = ArrayUtils.remove(this.value, i);
-		return new IntTag(j);
+		return IntTag.of(j);
 	}
 
 	public void clear() {

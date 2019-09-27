@@ -56,11 +56,11 @@ public class ServerInfo {
 
 	public static ServerInfo deserialize(CompoundTag compoundTag) {
 		ServerInfo serverInfo = new ServerInfo(compoundTag.getString("name"), compoundTag.getString("ip"), false);
-		if (compoundTag.containsKey("icon", 8)) {
+		if (compoundTag.contains("icon", 8)) {
 			serverInfo.setIcon(compoundTag.getString("icon"));
 		}
 
-		if (compoundTag.containsKey("acceptTextures", 1)) {
+		if (compoundTag.contains("acceptTextures", 1)) {
 			if (compoundTag.getBoolean("acceptTextures")) {
 				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
 			} else {

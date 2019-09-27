@@ -27,11 +27,11 @@ public class BannerItem extends WallStandingBlockItem {
 	@Environment(EnvType.CLIENT)
 	public static void appendBannerTooltip(ItemStack itemStack, List<Text> list) {
 		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-		if (compoundTag != null && compoundTag.containsKey("Patterns")) {
+		if (compoundTag != null && compoundTag.contains("Patterns")) {
 			ListTag listTag = compoundTag.getList("Patterns", 10);
 
 			for (int i = 0; i < listTag.size() && i < 6; i++) {
-				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+				CompoundTag compoundTag2 = listTag.getCompound(i);
 				DyeColor dyeColor = DyeColor.byId(compoundTag2.getInt("Color"));
 				BannerPattern bannerPattern = BannerPattern.byId(compoundTag2.getString("Pattern"));
 				if (bannerPattern != null) {

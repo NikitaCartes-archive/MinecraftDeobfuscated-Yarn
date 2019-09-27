@@ -42,16 +42,16 @@ public class BucketItem extends Item {
 			world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE
 		);
 		if (hitResult.getType() == HitResult.Type.MISS) {
-			return TypedActionResult.method_22430(itemStack);
+			return TypedActionResult.pass(itemStack);
 		} else if (hitResult.getType() != HitResult.Type.BLOCK) {
-			return TypedActionResult.method_22430(itemStack);
+			return TypedActionResult.pass(itemStack);
 		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			Direction direction = blockHitResult.getSide();
 			BlockPos blockPos2 = blockPos.offset(direction);
 			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos2, direction, itemStack)) {
-				return TypedActionResult.method_22431(itemStack);
+				return TypedActionResult.fail(itemStack);
 			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() instanceof FluidDrainable) {
@@ -64,11 +64,11 @@ public class BucketItem extends Item {
 							Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
 						}
 
-						return TypedActionResult.method_22427(itemStack2);
+						return TypedActionResult.successWithSwing(itemStack2);
 					}
 				}
 
-				return TypedActionResult.method_22431(itemStack);
+				return TypedActionResult.fail(itemStack);
 			} else {
 				BlockState blockState = world.getBlockState(blockPos);
 				BlockPos blockPos3 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER ? blockPos : blockPos2;
@@ -79,9 +79,9 @@ public class BucketItem extends Item {
 					}
 
 					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-					return TypedActionResult.method_22427(this.getEmptiedStack(itemStack, playerEntity));
+					return TypedActionResult.successWithSwing(this.getEmptiedStack(itemStack, playerEntity));
 				} else {
-					return TypedActionResult.method_22431(itemStack);
+					return TypedActionResult.fail(itemStack);
 				}
 			}
 		}

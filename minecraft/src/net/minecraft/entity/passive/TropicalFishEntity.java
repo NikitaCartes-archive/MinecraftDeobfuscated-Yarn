@@ -213,7 +213,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
+		if (compoundTag != null && compoundTag.contains("BucketVariantTag", 3)) {
 			this.setVariant(compoundTag.getInt("BucketVariantTag"));
 			return entityData;
 		} else {

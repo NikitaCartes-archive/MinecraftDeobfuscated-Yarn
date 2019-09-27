@@ -1,5 +1,7 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -30,10 +32,9 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		this.field_3601.addCuboid(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
 	}
 
-	public void method_17126(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17088(vexEntity, f, g, h, i, j, k);
-		this.field_3602.render(k);
-		this.field_3601.render(k);
+	@Override
+	protected Iterable<ModelPart> method_22948() {
+		return Iterables.concat(super.method_22948(), ImmutableList.of(this.field_3602, this.field_3601));
 	}
 
 	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {

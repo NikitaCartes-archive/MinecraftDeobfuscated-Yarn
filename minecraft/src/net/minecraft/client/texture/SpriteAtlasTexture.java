@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class SpriteAtlasTexture extends AbstractTexture implements TickableTexture {
+public class SpriteAtlasTexture extends AbstractTexture implements TextureTickListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier BLOCK_ATLAS_TEX = new Identifier("textures/atlas/blocks.png");
 	public static final Identifier PARTICLE_ATLAS_TEX = new Identifier("textures/atlas/particles.png");
@@ -261,7 +261,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 	}
 
 	public void tickAnimatedSprites() {
-		this.bindTexture();
+		this.method_23207();
 
 		for (Sprite sprite : this.animatedSprites) {
 			sprite.tickAnimation();

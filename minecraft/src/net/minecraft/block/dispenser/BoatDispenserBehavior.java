@@ -29,7 +29,7 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 		if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			g = 1.0;
 		} else {
-			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.down()).matches(FluidTags.WATER)) {
+			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.method_10074()).matches(FluidTags.WATER)) {
 				return this.itemDispenser.dispense(blockPointer, itemStack);
 			}
 

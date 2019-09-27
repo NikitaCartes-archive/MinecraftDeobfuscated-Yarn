@@ -1,10 +1,16 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
@@ -28,5 +34,43 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 		this.field_4639.add(g);
 		this.field_4636.add(h);
 		this.field_4638.add(i);
+	}
+
+	@Override
+	public void method_23109(long l) {
+		Camera camera = this.field_4634.gameRenderer.getCamera();
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double f = camera.getPos().z;
+		RenderSystem.pushMatrix();
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+		RenderSystem.disableTexture();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+
+		for (int i = 0; i < this.field_4640.size(); i++) {
+			BlockPos blockPos = (BlockPos)this.field_4640.get(i);
+			Float float_ = (Float)this.field_4635.get(i);
+			float g = float_ / 2.0F;
+			WorldRenderer.buildBoxOutline(
+				bufferBuilder,
+				(double)((float)blockPos.getX() + 0.5F - g) - d,
+				(double)((float)blockPos.getY() + 0.5F - g) - e,
+				(double)((float)blockPos.getZ() + 0.5F - g) - f,
+				(double)((float)blockPos.getX() + 0.5F + g) - d,
+				(double)((float)blockPos.getY() + 0.5F + g) - e,
+				(double)((float)blockPos.getZ() + 0.5F + g) - f,
+				(Float)this.field_4639.get(i),
+				(Float)this.field_4636.get(i),
+				(Float)this.field_4638.get(i),
+				(Float)this.field_4637.get(i)
+			);
+		}
+
+		tessellator.draw();
+		RenderSystem.enableTexture();
+		RenderSystem.popMatrix();
 	}
 }

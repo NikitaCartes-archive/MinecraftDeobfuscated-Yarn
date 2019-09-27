@@ -69,7 +69,7 @@ public class MapState extends PersistentState {
 			this.xCenter = compoundTag.getInt("xCenter");
 			this.zCenter = compoundTag.getInt("zCenter");
 			this.scale = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
-			this.showIcons = !compoundTag.containsKey("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
+			this.showIcons = !compoundTag.contains("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
 			this.unlimitedTracking = compoundTag.getBoolean("unlimitedTracking");
 			this.locked = compoundTag.getBoolean("locked");
 			this.colors = compoundTag.getByteArray("colors");
@@ -80,7 +80,7 @@ public class MapState extends PersistentState {
 			ListTag listTag = compoundTag.getList("banners", 10);
 
 			for (int j = 0; j < listTag.size(); j++) {
-				MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompoundTag(j));
+				MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompound(j));
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
 				this.addIcon(
 					mapBannerMarker.getIconType(),
@@ -96,7 +96,7 @@ public class MapState extends PersistentState {
 			ListTag listTag2 = compoundTag.getList("frames", 10);
 
 			for (int k = 0; k < listTag2.size(); k++) {
-				MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompoundTag(k));
+				MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompound(k));
 				this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
 				this.addIcon(
 					MapIcon.Type.FRAME,
@@ -203,11 +203,11 @@ public class MapState extends PersistentState {
 		}
 
 		CompoundTag compoundTag = itemStack.getTag();
-		if (compoundTag != null && compoundTag.containsKey("Decorations", 9)) {
+		if (compoundTag != null && compoundTag.contains("Decorations", 9)) {
 			ListTag listTag = compoundTag.getList("Decorations", 10);
 
 			for (int j = 0; j < listTag.size(); j++) {
-				CompoundTag compoundTag2 = listTag.getCompoundTag(j);
+				CompoundTag compoundTag2 = listTag.getCompound(j);
 				if (!this.icons.containsKey(compoundTag2.getString("id"))) {
 					this.addIcon(
 						MapIcon.Type.byId(compoundTag2.getByte("type")),
@@ -225,7 +225,7 @@ public class MapState extends PersistentState {
 
 	public static void addDecorationsTag(ItemStack itemStack, BlockPos blockPos, String string, MapIcon.Type type) {
 		ListTag listTag;
-		if (itemStack.hasTag() && itemStack.getTag().containsKey("Decorations", 9)) {
+		if (itemStack.hasTag() && itemStack.getTag().contains("Decorations", 9)) {
 			listTag = itemStack.getTag().getList("Decorations", 10);
 		} else {
 			listTag = new ListTag();

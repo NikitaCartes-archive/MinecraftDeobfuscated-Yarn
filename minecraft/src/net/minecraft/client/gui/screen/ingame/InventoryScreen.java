@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.container.Slot;
@@ -99,7 +98,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	}
 
 	public static void drawEntity(int i, int j, int k, float f, float g, LivingEntity livingEntity) {
-		RenderSystem.enableColorMaterial();
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef((float)i, (float)j, 50.0F);
 		RenderSystem.scalef((float)(-k), (float)k, (float)k);
@@ -109,9 +107,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		float m = livingEntity.pitch;
 		float n = livingEntity.prevHeadYaw;
 		float o = livingEntity.headYaw;
-		RenderSystem.rotatef(135.0F, 0.0F, 1.0F, 0.0F);
-		GuiLighting.enable();
-		RenderSystem.rotatef(-135.0F, 0.0F, 1.0F, 0.0F);
 		RenderSystem.rotatef(-((float)Math.atan((double)(g / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
 		livingEntity.bodyYaw = (float)Math.atan((double)(f / 40.0F)) * 20.0F;
 		livingEntity.yaw = (float)Math.atan((double)(f / 40.0F)) * 40.0F;
@@ -122,7 +117,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
 		entityRenderDispatcher.method_3945(180.0F);
 		entityRenderDispatcher.setRenderShadows(false);
-		entityRenderDispatcher.render(livingEntity, 0.0, 0.0, 0.0, 0.0F, 1.0F, false);
+		entityRenderDispatcher.render(livingEntity, 1.0F);
 		entityRenderDispatcher.setRenderShadows(true);
 		livingEntity.bodyYaw = h;
 		livingEntity.yaw = l;
@@ -130,11 +125,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		livingEntity.prevHeadYaw = n;
 		livingEntity.headYaw = o;
 		RenderSystem.popMatrix();
-		GuiLighting.disable();
 		RenderSystem.disableRescaleNormal();
-		RenderSystem.activeTexture(33985);
-		RenderSystem.disableTexture();
-		RenderSystem.activeTexture(33984);
 	}
 
 	@Override

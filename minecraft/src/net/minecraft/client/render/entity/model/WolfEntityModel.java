@@ -1,14 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4593;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
+public class WolfEntityModel<T extends WolfEntity> extends class_4593<T> {
 	private final ModelPart head;
 	private final ModelPart field_20788;
 	private final ModelPart field_3623;
@@ -56,36 +57,14 @@ public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 		this.field_20788.setTextureOffset(0, 10).addCuboid(-0.5F, 0.0F, -5.0F, 3.0F, 3.0F, 4.0F, 0.0F);
 	}
 
-	public void method_17132(T wolfEntity, float f, float g, float h, float i, float j, float k) {
-		super.render(wolfEntity, f, g, h, i, j, k);
-		this.method_17133(wolfEntity, f, g, h, i, j, k);
-		if (this.isChild) {
-			float l = 2.0F;
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, 5.0F * k, 2.0F * k);
-			this.head.render(k);
-			RenderSystem.popMatrix();
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
-			RenderSystem.translatef(0.0F, 24.0F * k, 0.0F);
-			this.field_3623.render(k);
-			this.field_3622.render(k);
-			this.field_3620.render(k);
-			this.field_3618.render(k);
-			this.field_3624.render(k);
-			this.field_3617.render(k);
-			this.field_3619.render(k);
-			RenderSystem.popMatrix();
-		} else {
-			this.head.render(k);
-			this.field_3623.render(k);
-			this.field_3622.render(k);
-			this.field_3620.render(k);
-			this.field_3618.render(k);
-			this.field_3624.render(k);
-			this.field_3617.render(k);
-			this.field_3619.render(k);
-		}
+	@Override
+	protected Iterable<ModelPart> method_22946() {
+		return ImmutableList.<ModelPart>of(this.head);
+	}
+
+	@Override
+	protected Iterable<ModelPart> method_22948() {
+		return ImmutableList.<ModelPart>of(this.field_3623, this.field_3622, this.field_3620, this.field_3618, this.field_3624, this.field_3617, this.field_3619);
 	}
 
 	public void method_17131(T wolfEntity, float f, float g, float h) {
@@ -133,7 +112,6 @@ public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 	}
 
 	public void method_17133(T wolfEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(wolfEntity, f, g, h, i, j, k);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3617.pitch = h;

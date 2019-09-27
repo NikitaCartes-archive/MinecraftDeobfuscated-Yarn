@@ -1,90 +1,168 @@
 package net.minecraft.block;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BackgroundRenderer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GuiLighting;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.Texture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class BlockRenderLayer {
-	private static final Set<BlockRenderLayer> field_20801 = Sets.<BlockRenderLayer>newHashSet();
-	public static final BlockRenderLayer field_9178 = method_22717(new BlockRenderLayer("solid", 2097152, () -> {
-	}, () -> {
-	}));
-	public static final BlockRenderLayer CUTOUT_MIPPED = method_22717(new BlockRenderLayer("cutout_mipped", 131072, () -> {
-		RenderSystem.enableAlphaTest();
-		RenderSystem.alphaFunc(516, 0.5F);
-	}, () -> {
+	public static final BlockRenderLayer SOLID = new BlockRenderLayer("solid", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 2097152, false, true, () -> {
+		RenderSystem.enableTexture();
+		MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		RenderSystem.enableCull();
+		RenderSystem.shadeModel(7425);
+		RenderSystem.depthMask(true);
+		RenderSystem.enableDepthTest();
 		RenderSystem.disableAlphaTest();
-		RenderSystem.defaultAlphaFunc();
-	}));
-	public static final BlockRenderLayer field_9174 = method_22717(new BlockRenderLayer("cutout", 131072, () -> {
-		Texture texture = MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		texture.bindTexture();
-		texture.pushFilter(false, false);
+		RenderSystem.depthFunc(515);
+		MinecraftClient.getInstance().gameRenderer.method_22974().enable();
+	}, () -> {
+		MinecraftClient.getInstance().gameRenderer.method_22974().disable();
+		RenderSystem.shadeModel(7424);
+	});
+	public static final BlockRenderLayer CUTOUT_MIPPED = new BlockRenderLayer(
+		"cutout_mipped", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 131072, false, true, () -> {
+			MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			RenderSystem.enableAlphaTest();
+			RenderSystem.alphaFunc(516, 0.5F);
+			RenderSystem.shadeModel(7425);
+			MinecraftClient.getInstance().gameRenderer.method_22974().enable();
+		}, () -> {
+			RenderSystem.disableAlphaTest();
+			RenderSystem.defaultAlphaFunc();
+			MinecraftClient.getInstance().gameRenderer.method_22974().disable();
+			RenderSystem.shadeModel(7424);
+		}
+	);
+	public static final BlockRenderLayer CUTOUT = new BlockRenderLayer("cutout", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 131072, false, true, () -> {
+		AbstractTexture abstractTexture = MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		abstractTexture.method_23207();
+		abstractTexture.pushFilter(false, false);
 		CUTOUT_MIPPED.method_22723();
 	}, () -> {
-		Texture texture = MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		texture.bindTexture();
-		texture.popFilter();
+		AbstractTexture abstractTexture = MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		abstractTexture.method_23207();
+		abstractTexture.popFilter();
 		CUTOUT_MIPPED.method_22724();
-	}));
-	public static final BlockRenderLayer field_9179 = method_22717(new BlockRenderLayer("translucent", 262144, () -> {
+	});
+	public static final BlockRenderLayer TRANSLUCENT = new BlockRenderLayer("translucent", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 262144, false, true, () -> {
+		MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+		RenderSystem.shadeModel(7425);
+		MinecraftClient.getInstance().gameRenderer.method_22974().enable();
+	}, () -> {
+		RenderSystem.disableBlend();
+		MinecraftClient.getInstance().gameRenderer.method_22974().disable();
+		RenderSystem.shadeModel(7424);
+	});
+	public static final BlockRenderLayer TRANSLUCENT_NO_CRUMBLING = new BlockRenderLayer(
+		"translucent_no_crumbling", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, false, TRANSLUCENT::method_22723, TRANSLUCENT::method_22724
+	);
+	public static final BlockRenderLayer LEASH = new BlockRenderLayer("leash", VertexFormats.POSITION_COLOR, 7, 256, false, false, () -> {
+		RenderSystem.disableTexture();
+		RenderSystem.disableCull();
+	}, () -> {
+		RenderSystem.enableTexture();
+		RenderSystem.enableCull();
+	});
+	public static final BlockRenderLayer WATER_MASK = new BlockRenderLayer("water_mask", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, false, () -> {
+		RenderSystem.disableTexture();
+		RenderSystem.colorMask(false, false, false, false);
+	}, () -> {
+		RenderSystem.colorMask(true, true, true, true);
+		RenderSystem.enableTexture();
+	});
+	public static final BlockRenderLayer OUTLINE = new BlockRenderLayer("outline", VertexFormats.POSITION_COLOR, 7, 256, false, false, () -> {
+		RenderSystem.depthFunc(519);
+		RenderSystem.disableTexture();
+		RenderSystem.disableFog();
+		MinecraftClient.getInstance().worldRenderer.method_22990().beginWrite(false);
+	}, () -> {
+		RenderSystem.depthFunc(515);
+		RenderSystem.enableTexture();
+		RenderSystem.enableFog();
+	});
+	public static final BlockRenderLayer GLINT = new BlockRenderLayer(
+		"glint", VertexFormats.POSITION_UV, 7, 256, false, false, () -> method_23010(8.0F), () -> method_23039()
+	);
+	public static final BlockRenderLayer ENTITY_GLINT = new BlockRenderLayer(
+		"entity_glint", VertexFormats.POSITION_UV, 7, 256, false, false, () -> method_23010(0.16F), () -> method_23039()
+	);
+	public static final BlockRenderLayer BEACON_BEAM = new BlockRenderLayer("beacon_beam", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, false, () -> {
+		RenderSystem.defaultAlphaFunc();
+		MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconBlockEntityRenderer.BEAM_TEX);
+		RenderSystem.texParameter(3553, 10242, 10497);
+		RenderSystem.texParameter(3553, 10243, 10497);
+		RenderSystem.disableFog();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.depthMask(false);
 	}, () -> {
-		RenderSystem.disableBlend();
+		RenderSystem.enableFog();
 		RenderSystem.depthMask(true);
-	}));
-	public static final BlockRenderLayer field_20799 = method_22717(new BlockRenderLayer("entity", 262144, () -> {
-		Texture texture = MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		texture.bindTexture();
-		GuiLighting.disable();
-		RenderSystem.blendFunc(770, 771);
+	});
+	public static final BlockRenderLayer LIGHTNING = new BlockRenderLayer("lightning", VertexFormats.POSITION_COLOR, 7, 256, false, false, () -> {
+		RenderSystem.disableTexture();
+		RenderSystem.depthMask(false);
+		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
-		if (MinecraftClient.isAmbientOcclusionEnabled()) {
-			RenderSystem.shadeModel(7425);
-		} else {
-			RenderSystem.shadeModel(7424);
-		}
-	}, () -> GuiLighting.enable()));
-	public static final BlockRenderLayer field_20800 = method_22717(
-		new BlockRenderLayer(
-			"crumbling",
-			262144,
-			() -> {
-				RenderSystem.polygonOffset(-1.0F, -10.0F);
-				RenderSystem.enablePolygonOffset();
-				RenderSystem.defaultAlphaFunc();
-				RenderSystem.enableAlphaTest();
-				RenderSystem.enableBlend();
-				RenderSystem.blendFuncSeparate(
-					GlStateManager.class_4535.DST_COLOR, GlStateManager.class_4534.SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
-				);
-			},
-			() -> {
-				RenderSystem.disableAlphaTest();
-				RenderSystem.polygonOffset(0.0F, 0.0F);
-				RenderSystem.disablePolygonOffset();
-				RenderSystem.enableAlphaTest();
-				RenderSystem.disableBlend();
-			}
-		)
-	);
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE);
+		RenderSystem.shadeModel(7425);
+		RenderSystem.disableAlphaTest();
+	}, () -> {
+		RenderSystem.enableTexture();
+		RenderSystem.depthMask(true);
+		RenderSystem.shadeModel(7424);
+		RenderSystem.enableAlphaTest();
+	});
+	public static final BlockRenderLayer LINES = new BlockRenderLayer("lines", VertexFormats.POSITION_COLOR, 1, 256, false, false, () -> {
+		RenderSystem.disableAlphaTest();
+		RenderSystem.lineWidth(Math.max(2.5F, (float)MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 1920.0F * 2.5F));
+		RenderSystem.disableTexture();
+		RenderSystem.depthMask(false);
+		RenderSystem.matrixMode(5889);
+		RenderSystem.pushMatrix();
+		RenderSystem.scalef(1.0F, 1.0F, 0.999F);
+		RenderSystem.matrixMode(5888);
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+	}, () -> {
+		RenderSystem.matrixMode(5889);
+		RenderSystem.popMatrix();
+		RenderSystem.matrixMode(5888);
+		RenderSystem.depthMask(true);
+		RenderSystem.enableTexture();
+		RenderSystem.enableAlphaTest();
+		RenderSystem.disableBlend();
+	});
 	private static boolean field_20802;
 	private static final Map<Block, BlockRenderLayer> field_20803 = SystemUtil.consume(Maps.<Block, BlockRenderLayer>newHashMap(), hashMap -> {
 		hashMap.put(Blocks.GRASS_BLOCK, CUTOUT_MIPPED);
@@ -98,233 +176,454 @@ public class BlockRenderLayer {
 		hashMap.put(Blocks.ACACIA_LEAVES, CUTOUT_MIPPED);
 		hashMap.put(Blocks.BIRCH_LEAVES, CUTOUT_MIPPED);
 		hashMap.put(Blocks.DARK_OAK_LEAVES, CUTOUT_MIPPED);
-		hashMap.put(Blocks.OAK_SAPLING, field_9174);
-		hashMap.put(Blocks.SPRUCE_SAPLING, field_9174);
-		hashMap.put(Blocks.BIRCH_SAPLING, field_9174);
-		hashMap.put(Blocks.JUNGLE_SAPLING, field_9174);
-		hashMap.put(Blocks.ACACIA_SAPLING, field_9174);
-		hashMap.put(Blocks.DARK_OAK_SAPLING, field_9174);
-		hashMap.put(Blocks.GLASS, field_9174);
-		hashMap.put(Blocks.WHITE_BED, field_9174);
-		hashMap.put(Blocks.ORANGE_BED, field_9174);
-		hashMap.put(Blocks.MAGENTA_BED, field_9174);
-		hashMap.put(Blocks.LIGHT_BLUE_BED, field_9174);
-		hashMap.put(Blocks.YELLOW_BED, field_9174);
-		hashMap.put(Blocks.LIME_BED, field_9174);
-		hashMap.put(Blocks.PINK_BED, field_9174);
-		hashMap.put(Blocks.GRAY_BED, field_9174);
-		hashMap.put(Blocks.LIGHT_GRAY_BED, field_9174);
-		hashMap.put(Blocks.CYAN_BED, field_9174);
-		hashMap.put(Blocks.PURPLE_BED, field_9174);
-		hashMap.put(Blocks.BLUE_BED, field_9174);
-		hashMap.put(Blocks.BROWN_BED, field_9174);
-		hashMap.put(Blocks.GREEN_BED, field_9174);
-		hashMap.put(Blocks.RED_BED, field_9174);
-		hashMap.put(Blocks.BLACK_BED, field_9174);
-		hashMap.put(Blocks.POWERED_RAIL, field_9174);
-		hashMap.put(Blocks.DETECTOR_RAIL, field_9174);
-		hashMap.put(Blocks.COBWEB, field_9174);
-		hashMap.put(Blocks.GRASS, field_9174);
-		hashMap.put(Blocks.FERN, field_9174);
-		hashMap.put(Blocks.DEAD_BUSH, field_9174);
-		hashMap.put(Blocks.SEAGRASS, field_9174);
-		hashMap.put(Blocks.TALL_SEAGRASS, field_9174);
-		hashMap.put(Blocks.DANDELION, field_9174);
-		hashMap.put(Blocks.POPPY, field_9174);
-		hashMap.put(Blocks.BLUE_ORCHID, field_9174);
-		hashMap.put(Blocks.ALLIUM, field_9174);
-		hashMap.put(Blocks.AZURE_BLUET, field_9174);
-		hashMap.put(Blocks.RED_TULIP, field_9174);
-		hashMap.put(Blocks.ORANGE_TULIP, field_9174);
-		hashMap.put(Blocks.WHITE_TULIP, field_9174);
-		hashMap.put(Blocks.PINK_TULIP, field_9174);
-		hashMap.put(Blocks.OXEYE_DAISY, field_9174);
-		hashMap.put(Blocks.CORNFLOWER, field_9174);
-		hashMap.put(Blocks.WITHER_ROSE, field_9174);
-		hashMap.put(Blocks.LILY_OF_THE_VALLEY, field_9174);
-		hashMap.put(Blocks.BROWN_MUSHROOM, field_9174);
-		hashMap.put(Blocks.RED_MUSHROOM, field_9174);
-		hashMap.put(Blocks.TORCH, field_9174);
-		hashMap.put(Blocks.WALL_TORCH, field_9174);
-		hashMap.put(Blocks.FIRE, field_9174);
-		hashMap.put(Blocks.SPAWNER, field_9174);
-		hashMap.put(Blocks.REDSTONE_WIRE, field_9174);
-		hashMap.put(Blocks.WHEAT, field_9174);
-		hashMap.put(Blocks.OAK_DOOR, field_9174);
-		hashMap.put(Blocks.LADDER, field_9174);
-		hashMap.put(Blocks.RAIL, field_9174);
-		hashMap.put(Blocks.IRON_DOOR, field_9174);
-		hashMap.put(Blocks.REDSTONE_TORCH, field_9174);
-		hashMap.put(Blocks.REDSTONE_WALL_TORCH, field_9174);
-		hashMap.put(Blocks.CACTUS, field_9174);
-		hashMap.put(Blocks.SUGAR_CANE, field_9174);
-		hashMap.put(Blocks.REPEATER, field_9174);
-		hashMap.put(Blocks.OAK_TRAPDOOR, field_9174);
-		hashMap.put(Blocks.SPRUCE_TRAPDOOR, field_9174);
-		hashMap.put(Blocks.BIRCH_TRAPDOOR, field_9174);
-		hashMap.put(Blocks.JUNGLE_TRAPDOOR, field_9174);
-		hashMap.put(Blocks.ACACIA_TRAPDOOR, field_9174);
-		hashMap.put(Blocks.DARK_OAK_TRAPDOOR, field_9174);
-		hashMap.put(Blocks.ATTACHED_PUMPKIN_STEM, field_9174);
-		hashMap.put(Blocks.ATTACHED_MELON_STEM, field_9174);
-		hashMap.put(Blocks.PUMPKIN_STEM, field_9174);
-		hashMap.put(Blocks.MELON_STEM, field_9174);
-		hashMap.put(Blocks.VINE, field_9174);
-		hashMap.put(Blocks.LILY_PAD, field_9174);
-		hashMap.put(Blocks.NETHER_WART, field_9174);
-		hashMap.put(Blocks.BREWING_STAND, field_9174);
-		hashMap.put(Blocks.COCOA, field_9174);
-		hashMap.put(Blocks.BEACON, field_9174);
-		hashMap.put(Blocks.FLOWER_POT, field_9174);
-		hashMap.put(Blocks.POTTED_OAK_SAPLING, field_9174);
-		hashMap.put(Blocks.POTTED_SPRUCE_SAPLING, field_9174);
-		hashMap.put(Blocks.POTTED_BIRCH_SAPLING, field_9174);
-		hashMap.put(Blocks.POTTED_JUNGLE_SAPLING, field_9174);
-		hashMap.put(Blocks.POTTED_ACACIA_SAPLING, field_9174);
-		hashMap.put(Blocks.POTTED_DARK_OAK_SAPLING, field_9174);
-		hashMap.put(Blocks.POTTED_FERN, field_9174);
-		hashMap.put(Blocks.POTTED_DANDELION, field_9174);
-		hashMap.put(Blocks.POTTED_POPPY, field_9174);
-		hashMap.put(Blocks.POTTED_BLUE_ORCHID, field_9174);
-		hashMap.put(Blocks.POTTED_ALLIUM, field_9174);
-		hashMap.put(Blocks.POTTED_AZURE_BLUET, field_9174);
-		hashMap.put(Blocks.POTTED_RED_TULIP, field_9174);
-		hashMap.put(Blocks.POTTED_ORANGE_TULIP, field_9174);
-		hashMap.put(Blocks.POTTED_WHITE_TULIP, field_9174);
-		hashMap.put(Blocks.POTTED_PINK_TULIP, field_9174);
-		hashMap.put(Blocks.POTTED_OXEYE_DAISY, field_9174);
-		hashMap.put(Blocks.POTTED_CORNFLOWER, field_9174);
-		hashMap.put(Blocks.POTTED_LILY_OF_THE_VALLEY, field_9174);
-		hashMap.put(Blocks.POTTED_WITHER_ROSE, field_9174);
-		hashMap.put(Blocks.POTTED_RED_MUSHROOM, field_9174);
-		hashMap.put(Blocks.POTTED_BROWN_MUSHROOM, field_9174);
-		hashMap.put(Blocks.POTTED_DEAD_BUSH, field_9174);
-		hashMap.put(Blocks.POTTED_CACTUS, field_9174);
-		hashMap.put(Blocks.CARROTS, field_9174);
-		hashMap.put(Blocks.POTATOES, field_9174);
-		hashMap.put(Blocks.COMPARATOR, field_9174);
-		hashMap.put(Blocks.ACTIVATOR_RAIL, field_9174);
-		hashMap.put(Blocks.IRON_TRAPDOOR, field_9174);
-		hashMap.put(Blocks.SUNFLOWER, field_9174);
-		hashMap.put(Blocks.LILAC, field_9174);
-		hashMap.put(Blocks.ROSE_BUSH, field_9174);
-		hashMap.put(Blocks.PEONY, field_9174);
-		hashMap.put(Blocks.TALL_GRASS, field_9174);
-		hashMap.put(Blocks.LARGE_FERN, field_9174);
-		hashMap.put(Blocks.SPRUCE_DOOR, field_9174);
-		hashMap.put(Blocks.BIRCH_DOOR, field_9174);
-		hashMap.put(Blocks.JUNGLE_DOOR, field_9174);
-		hashMap.put(Blocks.ACACIA_DOOR, field_9174);
-		hashMap.put(Blocks.DARK_OAK_DOOR, field_9174);
-		hashMap.put(Blocks.END_ROD, field_9174);
-		hashMap.put(Blocks.CHORUS_PLANT, field_9174);
-		hashMap.put(Blocks.CHORUS_FLOWER, field_9174);
-		hashMap.put(Blocks.BEETROOTS, field_9174);
-		hashMap.put(Blocks.KELP, field_9174);
-		hashMap.put(Blocks.KELP_PLANT, field_9174);
-		hashMap.put(Blocks.TURTLE_EGG, field_9174);
-		hashMap.put(Blocks.DEAD_TUBE_CORAL, field_9174);
-		hashMap.put(Blocks.DEAD_BRAIN_CORAL, field_9174);
-		hashMap.put(Blocks.DEAD_BUBBLE_CORAL, field_9174);
-		hashMap.put(Blocks.DEAD_FIRE_CORAL, field_9174);
-		hashMap.put(Blocks.DEAD_HORN_CORAL, field_9174);
-		hashMap.put(Blocks.TUBE_CORAL, field_9174);
-		hashMap.put(Blocks.BRAIN_CORAL, field_9174);
-		hashMap.put(Blocks.BUBBLE_CORAL, field_9174);
-		hashMap.put(Blocks.FIRE_CORAL, field_9174);
-		hashMap.put(Blocks.HORN_CORAL, field_9174);
-		hashMap.put(Blocks.DEAD_TUBE_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_BRAIN_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_BUBBLE_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_FIRE_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_HORN_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.TUBE_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.BRAIN_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.BUBBLE_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.FIRE_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.HORN_CORAL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_TUBE_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_BRAIN_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_BUBBLE_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_FIRE_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.DEAD_HORN_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.TUBE_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.BRAIN_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.BUBBLE_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.FIRE_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.HORN_CORAL_WALL_FAN, field_9174);
-		hashMap.put(Blocks.SEA_PICKLE, field_9174);
-		hashMap.put(Blocks.CONDUIT, field_9174);
-		hashMap.put(Blocks.BAMBOO_SAPLING, field_9174);
-		hashMap.put(Blocks.BAMBOO, field_9174);
-		hashMap.put(Blocks.POTTED_BAMBOO, field_9174);
-		hashMap.put(Blocks.SCAFFOLDING, field_9174);
-		hashMap.put(Blocks.STONECUTTER, field_9174);
-		hashMap.put(Blocks.LANTERN, field_9174);
-		hashMap.put(Blocks.CAMPFIRE, field_9174);
-		hashMap.put(Blocks.SWEET_BERRY_BUSH, field_9174);
-		hashMap.put(Blocks.ICE, field_9179);
-		hashMap.put(Blocks.NETHER_PORTAL, field_9179);
-		hashMap.put(Blocks.WHITE_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.ORANGE_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.MAGENTA_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.LIGHT_BLUE_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.YELLOW_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.LIME_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.PINK_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.GRAY_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.LIGHT_GRAY_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.CYAN_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.PURPLE_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.BLUE_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.BROWN_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.GREEN_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.RED_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.BLACK_STAINED_GLASS, field_9179);
-		hashMap.put(Blocks.TRIPWIRE, field_9179);
-		hashMap.put(Blocks.WHITE_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.ORANGE_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.MAGENTA_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.YELLOW_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.LIME_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.PINK_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.GRAY_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.CYAN_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.PURPLE_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.BLUE_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.BROWN_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.GREEN_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.RED_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.BLACK_STAINED_GLASS_PANE, field_9179);
-		hashMap.put(Blocks.SLIME_BLOCK, field_9179);
-		hashMap.put(Blocks.FROSTED_ICE, field_9179);
-		hashMap.put(Blocks.BUBBLE_COLUMN, field_9179);
+		hashMap.put(Blocks.OAK_SAPLING, CUTOUT);
+		hashMap.put(Blocks.SPRUCE_SAPLING, CUTOUT);
+		hashMap.put(Blocks.BIRCH_SAPLING, CUTOUT);
+		hashMap.put(Blocks.JUNGLE_SAPLING, CUTOUT);
+		hashMap.put(Blocks.ACACIA_SAPLING, CUTOUT);
+		hashMap.put(Blocks.DARK_OAK_SAPLING, CUTOUT);
+		hashMap.put(Blocks.GLASS, CUTOUT);
+		hashMap.put(Blocks.WHITE_BED, CUTOUT);
+		hashMap.put(Blocks.ORANGE_BED, CUTOUT);
+		hashMap.put(Blocks.MAGENTA_BED, CUTOUT);
+		hashMap.put(Blocks.LIGHT_BLUE_BED, CUTOUT);
+		hashMap.put(Blocks.YELLOW_BED, CUTOUT);
+		hashMap.put(Blocks.LIME_BED, CUTOUT);
+		hashMap.put(Blocks.PINK_BED, CUTOUT);
+		hashMap.put(Blocks.GRAY_BED, CUTOUT);
+		hashMap.put(Blocks.LIGHT_GRAY_BED, CUTOUT);
+		hashMap.put(Blocks.CYAN_BED, CUTOUT);
+		hashMap.put(Blocks.PURPLE_BED, CUTOUT);
+		hashMap.put(Blocks.BLUE_BED, CUTOUT);
+		hashMap.put(Blocks.BROWN_BED, CUTOUT);
+		hashMap.put(Blocks.GREEN_BED, CUTOUT);
+		hashMap.put(Blocks.RED_BED, CUTOUT);
+		hashMap.put(Blocks.BLACK_BED, CUTOUT);
+		hashMap.put(Blocks.POWERED_RAIL, CUTOUT);
+		hashMap.put(Blocks.DETECTOR_RAIL, CUTOUT);
+		hashMap.put(Blocks.COBWEB, CUTOUT);
+		hashMap.put(Blocks.GRASS, CUTOUT);
+		hashMap.put(Blocks.FERN, CUTOUT);
+		hashMap.put(Blocks.DEAD_BUSH, CUTOUT);
+		hashMap.put(Blocks.SEAGRASS, CUTOUT);
+		hashMap.put(Blocks.TALL_SEAGRASS, CUTOUT);
+		hashMap.put(Blocks.DANDELION, CUTOUT);
+		hashMap.put(Blocks.POPPY, CUTOUT);
+		hashMap.put(Blocks.BLUE_ORCHID, CUTOUT);
+		hashMap.put(Blocks.ALLIUM, CUTOUT);
+		hashMap.put(Blocks.AZURE_BLUET, CUTOUT);
+		hashMap.put(Blocks.RED_TULIP, CUTOUT);
+		hashMap.put(Blocks.ORANGE_TULIP, CUTOUT);
+		hashMap.put(Blocks.WHITE_TULIP, CUTOUT);
+		hashMap.put(Blocks.PINK_TULIP, CUTOUT);
+		hashMap.put(Blocks.OXEYE_DAISY, CUTOUT);
+		hashMap.put(Blocks.CORNFLOWER, CUTOUT);
+		hashMap.put(Blocks.WITHER_ROSE, CUTOUT);
+		hashMap.put(Blocks.LILY_OF_THE_VALLEY, CUTOUT);
+		hashMap.put(Blocks.BROWN_MUSHROOM, CUTOUT);
+		hashMap.put(Blocks.RED_MUSHROOM, CUTOUT);
+		hashMap.put(Blocks.TORCH, CUTOUT);
+		hashMap.put(Blocks.WALL_TORCH, CUTOUT);
+		hashMap.put(Blocks.FIRE, CUTOUT);
+		hashMap.put(Blocks.SPAWNER, CUTOUT);
+		hashMap.put(Blocks.REDSTONE_WIRE, CUTOUT);
+		hashMap.put(Blocks.WHEAT, CUTOUT);
+		hashMap.put(Blocks.OAK_DOOR, CUTOUT);
+		hashMap.put(Blocks.LADDER, CUTOUT);
+		hashMap.put(Blocks.RAIL, CUTOUT);
+		hashMap.put(Blocks.IRON_DOOR, CUTOUT);
+		hashMap.put(Blocks.REDSTONE_TORCH, CUTOUT);
+		hashMap.put(Blocks.REDSTONE_WALL_TORCH, CUTOUT);
+		hashMap.put(Blocks.CACTUS, CUTOUT);
+		hashMap.put(Blocks.SUGAR_CANE, CUTOUT);
+		hashMap.put(Blocks.REPEATER, CUTOUT);
+		hashMap.put(Blocks.OAK_TRAPDOOR, CUTOUT);
+		hashMap.put(Blocks.SPRUCE_TRAPDOOR, CUTOUT);
+		hashMap.put(Blocks.BIRCH_TRAPDOOR, CUTOUT);
+		hashMap.put(Blocks.JUNGLE_TRAPDOOR, CUTOUT);
+		hashMap.put(Blocks.ACACIA_TRAPDOOR, CUTOUT);
+		hashMap.put(Blocks.DARK_OAK_TRAPDOOR, CUTOUT);
+		hashMap.put(Blocks.ATTACHED_PUMPKIN_STEM, CUTOUT);
+		hashMap.put(Blocks.ATTACHED_MELON_STEM, CUTOUT);
+		hashMap.put(Blocks.PUMPKIN_STEM, CUTOUT);
+		hashMap.put(Blocks.MELON_STEM, CUTOUT);
+		hashMap.put(Blocks.VINE, CUTOUT);
+		hashMap.put(Blocks.LILY_PAD, CUTOUT);
+		hashMap.put(Blocks.NETHER_WART, CUTOUT);
+		hashMap.put(Blocks.BREWING_STAND, CUTOUT);
+		hashMap.put(Blocks.COCOA, CUTOUT);
+		hashMap.put(Blocks.BEACON, CUTOUT);
+		hashMap.put(Blocks.FLOWER_POT, CUTOUT);
+		hashMap.put(Blocks.POTTED_OAK_SAPLING, CUTOUT);
+		hashMap.put(Blocks.POTTED_SPRUCE_SAPLING, CUTOUT);
+		hashMap.put(Blocks.POTTED_BIRCH_SAPLING, CUTOUT);
+		hashMap.put(Blocks.POTTED_JUNGLE_SAPLING, CUTOUT);
+		hashMap.put(Blocks.POTTED_ACACIA_SAPLING, CUTOUT);
+		hashMap.put(Blocks.POTTED_DARK_OAK_SAPLING, CUTOUT);
+		hashMap.put(Blocks.POTTED_FERN, CUTOUT);
+		hashMap.put(Blocks.POTTED_DANDELION, CUTOUT);
+		hashMap.put(Blocks.POTTED_POPPY, CUTOUT);
+		hashMap.put(Blocks.POTTED_BLUE_ORCHID, CUTOUT);
+		hashMap.put(Blocks.POTTED_ALLIUM, CUTOUT);
+		hashMap.put(Blocks.POTTED_AZURE_BLUET, CUTOUT);
+		hashMap.put(Blocks.POTTED_RED_TULIP, CUTOUT);
+		hashMap.put(Blocks.POTTED_ORANGE_TULIP, CUTOUT);
+		hashMap.put(Blocks.POTTED_WHITE_TULIP, CUTOUT);
+		hashMap.put(Blocks.POTTED_PINK_TULIP, CUTOUT);
+		hashMap.put(Blocks.POTTED_OXEYE_DAISY, CUTOUT);
+		hashMap.put(Blocks.POTTED_CORNFLOWER, CUTOUT);
+		hashMap.put(Blocks.POTTED_LILY_OF_THE_VALLEY, CUTOUT);
+		hashMap.put(Blocks.POTTED_WITHER_ROSE, CUTOUT);
+		hashMap.put(Blocks.POTTED_RED_MUSHROOM, CUTOUT);
+		hashMap.put(Blocks.POTTED_BROWN_MUSHROOM, CUTOUT);
+		hashMap.put(Blocks.POTTED_DEAD_BUSH, CUTOUT);
+		hashMap.put(Blocks.POTTED_CACTUS, CUTOUT);
+		hashMap.put(Blocks.CARROTS, CUTOUT);
+		hashMap.put(Blocks.POTATOES, CUTOUT);
+		hashMap.put(Blocks.COMPARATOR, CUTOUT);
+		hashMap.put(Blocks.ACTIVATOR_RAIL, CUTOUT);
+		hashMap.put(Blocks.IRON_TRAPDOOR, CUTOUT);
+		hashMap.put(Blocks.SUNFLOWER, CUTOUT);
+		hashMap.put(Blocks.LILAC, CUTOUT);
+		hashMap.put(Blocks.ROSE_BUSH, CUTOUT);
+		hashMap.put(Blocks.PEONY, CUTOUT);
+		hashMap.put(Blocks.TALL_GRASS, CUTOUT);
+		hashMap.put(Blocks.LARGE_FERN, CUTOUT);
+		hashMap.put(Blocks.SPRUCE_DOOR, CUTOUT);
+		hashMap.put(Blocks.BIRCH_DOOR, CUTOUT);
+		hashMap.put(Blocks.JUNGLE_DOOR, CUTOUT);
+		hashMap.put(Blocks.ACACIA_DOOR, CUTOUT);
+		hashMap.put(Blocks.DARK_OAK_DOOR, CUTOUT);
+		hashMap.put(Blocks.END_ROD, CUTOUT);
+		hashMap.put(Blocks.CHORUS_PLANT, CUTOUT);
+		hashMap.put(Blocks.CHORUS_FLOWER, CUTOUT);
+		hashMap.put(Blocks.BEETROOTS, CUTOUT);
+		hashMap.put(Blocks.KELP, CUTOUT);
+		hashMap.put(Blocks.KELP_PLANT, CUTOUT);
+		hashMap.put(Blocks.TURTLE_EGG, CUTOUT);
+		hashMap.put(Blocks.DEAD_TUBE_CORAL, CUTOUT);
+		hashMap.put(Blocks.DEAD_BRAIN_CORAL, CUTOUT);
+		hashMap.put(Blocks.DEAD_BUBBLE_CORAL, CUTOUT);
+		hashMap.put(Blocks.DEAD_FIRE_CORAL, CUTOUT);
+		hashMap.put(Blocks.DEAD_HORN_CORAL, CUTOUT);
+		hashMap.put(Blocks.TUBE_CORAL, CUTOUT);
+		hashMap.put(Blocks.BRAIN_CORAL, CUTOUT);
+		hashMap.put(Blocks.BUBBLE_CORAL, CUTOUT);
+		hashMap.put(Blocks.FIRE_CORAL, CUTOUT);
+		hashMap.put(Blocks.HORN_CORAL, CUTOUT);
+		hashMap.put(Blocks.DEAD_TUBE_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_BRAIN_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_BUBBLE_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_FIRE_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_HORN_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.TUBE_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.BRAIN_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.BUBBLE_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.FIRE_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.HORN_CORAL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_TUBE_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_BRAIN_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_BUBBLE_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_FIRE_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.DEAD_HORN_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.TUBE_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.BRAIN_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.BUBBLE_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.FIRE_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.HORN_CORAL_WALL_FAN, CUTOUT);
+		hashMap.put(Blocks.SEA_PICKLE, CUTOUT);
+		hashMap.put(Blocks.CONDUIT, CUTOUT);
+		hashMap.put(Blocks.BAMBOO_SAPLING, CUTOUT);
+		hashMap.put(Blocks.BAMBOO, CUTOUT);
+		hashMap.put(Blocks.POTTED_BAMBOO, CUTOUT);
+		hashMap.put(Blocks.SCAFFOLDING, CUTOUT);
+		hashMap.put(Blocks.STONECUTTER, CUTOUT);
+		hashMap.put(Blocks.LANTERN, CUTOUT);
+		hashMap.put(Blocks.CAMPFIRE, CUTOUT);
+		hashMap.put(Blocks.SWEET_BERRY_BUSH, CUTOUT);
+		hashMap.put(Blocks.ICE, TRANSLUCENT);
+		hashMap.put(Blocks.NETHER_PORTAL, TRANSLUCENT);
+		hashMap.put(Blocks.WHITE_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.ORANGE_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.MAGENTA_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.LIGHT_BLUE_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.YELLOW_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.LIME_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.PINK_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.GRAY_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.LIGHT_GRAY_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.CYAN_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.PURPLE_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.BLUE_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.BROWN_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.GREEN_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.RED_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.BLACK_STAINED_GLASS, TRANSLUCENT);
+		hashMap.put(Blocks.TRIPWIRE, TRANSLUCENT);
+		hashMap.put(Blocks.WHITE_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.ORANGE_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.MAGENTA_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.YELLOW_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.LIME_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.PINK_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.GRAY_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.CYAN_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.PURPLE_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.BLUE_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.BROWN_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.GREEN_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.RED_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.BLACK_STAINED_GLASS_PANE, TRANSLUCENT);
+		hashMap.put(Blocks.SLIME_BLOCK, TRANSLUCENT);
+		hashMap.put(Blocks.FROSTED_ICE, TRANSLUCENT);
+		hashMap.put(Blocks.BUBBLE_COLUMN, TRANSLUCENT);
 	});
 	private static final Map<Fluid, BlockRenderLayer> field_20804 = SystemUtil.consume(Maps.<Fluid, BlockRenderLayer>newHashMap(), hashMap -> {
-		hashMap.put(Fluids.FLOWING_WATER, field_9179);
-		hashMap.put(Fluids.WATER, field_9179);
+		hashMap.put(Fluids.FLOWING_WATER, TRANSLUCENT);
+		hashMap.put(Fluids.WATER, TRANSLUCENT);
 	});
 	private final String field_20805;
+	private final VertexFormat field_20972;
+	private final int field_20973;
 	private final int field_20806;
 	private final Runnable field_20807;
 	private final Runnable field_20808;
+	private final boolean field_20974;
+	private final boolean field_20975;
 
-	private static BlockRenderLayer method_22717(BlockRenderLayer blockRenderLayer) {
-		field_20801.add(blockRenderLayer);
-		return blockRenderLayer;
+	public static BlockRenderLayer method_23017(Identifier identifier) {
+		return method_23019(identifier, false, true, false);
 	}
 
-	BlockRenderLayer(String string, int i, Runnable runnable, Runnable runnable2) {
+	public static BlockRenderLayer method_23019(Identifier identifier, boolean bl, boolean bl2, boolean bl3) {
+		return method_23020(identifier, bl, bl2, bl3, 0.1F, false);
+	}
+
+	public static BlockRenderLayer method_23020(Identifier identifier, boolean bl, boolean bl2, boolean bl3, float f, boolean bl4) {
+		return new BlockRenderLayer.class_4601<>(
+			"new_entity", VertexFormats.POSITION_UV_NORMAL_2, 256, new BlockRenderLayer.class_4600(identifier, bl, bl2, bl3, f, bl4), true, false, arg -> {
+				RenderSystem.disableCull();
+				RenderSystem.enableRescaleNormal();
+				RenderSystem.shadeModel(arg.field_20979 ? 7425 : 7424);
+				MinecraftClient.getInstance().gameRenderer.method_22974().enable();
+				MinecraftClient.getInstance().gameRenderer.method_22975().method_23209();
+				MinecraftClient.getInstance().getTextureManager().bindTexture(arg.field_20976);
+				RenderSystem.texParameter(3553, 10241, 9728);
+				RenderSystem.texParameter(3553, 10240, 9728);
+				RenderSystem.enableBlend();
+				RenderSystem.defaultBlendFunc();
+				RenderSystem.enableDepthTest();
+				if (arg.field_20977) {
+					RenderSystem.depthMask(false);
+					RenderSystem.enableBlend();
+					RenderSystem.blendColor(1.0F, 1.0F, 1.0F, 0.15F);
+					RenderSystem.blendFunc(GlStateManager.class_4535.CONSTANT_ALPHA, GlStateManager.class_4534.ONE_MINUS_CONSTANT_ALPHA);
+				}
+
+				if (arg.field_20980 <= 0.0F) {
+					RenderSystem.disableAlphaTest();
+				} else {
+					RenderSystem.enableAlphaTest();
+					RenderSystem.alphaFunc(516, arg.field_20980);
+				}
+
+				if (arg.field_20978) {
+					GuiLighting.method_22890();
+				}
+
+				if (arg.field_20981) {
+					RenderSystem.depthFunc(514);
+				}
+			}, arg -> {
+				RenderSystem.shadeModel(7424);
+				MinecraftClient.getInstance().gameRenderer.method_22974().disable();
+				MinecraftClient.getInstance().gameRenderer.method_22975().method_23213();
+				RenderSystem.enableCull();
+				RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
+				if (arg.field_20977) {
+					RenderSystem.defaultBlendFunc();
+					RenderSystem.blendColor(1.0F, 1.0F, 1.0F, 1.0F);
+					RenderSystem.depthMask(true);
+				}
+
+				if (arg.field_20978) {
+					GuiLighting.disable();
+				}
+
+				if (arg.field_20981) {
+					RenderSystem.depthFunc(515);
+				}
+
+				RenderSystem.disableAlphaTest();
+				RenderSystem.defaultAlphaFunc();
+			}
+		);
+	}
+
+	public static BlockRenderLayer method_23026(Identifier identifier) {
+		return new BlockRenderLayer.class_4601<>("eyes", VertexFormats.POSITION_UV_NORMAL_2, 256, identifier, false, false, identifierx -> {
+			MinecraftClient.getInstance().getTextureManager().bindTexture(identifierx);
+			RenderSystem.enableBlend();
+			RenderSystem.disableAlphaTest();
+			RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
+			RenderSystem.depthMask(false);
+			BackgroundRenderer.setFogBlack(true);
+			RenderSystem.enableDepthTest();
+		}, identifierx -> {
+			RenderSystem.depthMask(true);
+			RenderSystem.disableBlend();
+			RenderSystem.enableAlphaTest();
+			BackgroundRenderer.setFogBlack(false);
+			RenderSystem.defaultBlendFunc();
+		});
+	}
+
+	public static BlockRenderLayer method_23018(Identifier identifier, float f, float g) {
+		BlockRenderLayer blockRenderLayer = method_23017(identifier);
+		return new BlockRenderLayer.class_4601<>(
+			"power_swirl", VertexFormats.POSITION_UV_NORMAL_2, 256, new BlockRenderLayer.class_4602(identifier, f, g), false, false, arg -> {
+				blockRenderLayer.method_22723();
+				RenderSystem.matrixMode(5890);
+				RenderSystem.pushMatrix();
+				RenderSystem.loadIdentity();
+				RenderSystem.translatef(arg.field_20984, arg.field_20985, 0.0F);
+				RenderSystem.matrixMode(5888);
+				RenderSystem.enableBlend();
+				RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
+				BackgroundRenderer.setFogBlack(true);
+			}, arg -> {
+				blockRenderLayer.method_22724();
+				BackgroundRenderer.setFogBlack(false);
+				RenderSystem.matrixMode(5890);
+				RenderSystem.popMatrix();
+				RenderSystem.matrixMode(5888);
+				RenderSystem.disableBlend();
+				RenderSystem.depthMask(true);
+			}
+		);
+	}
+
+	public static BlockRenderLayer method_23011(int i) {
+		return new BlockRenderLayer.class_4601<>(
+			"crumbling",
+			VertexFormats.POSITION_COLOR_UV_NORMAL,
+			256,
+			i,
+			false,
+			false,
+			integer -> {
+				MinecraftClient.getInstance().getTextureManager().bindTexture((Identifier)ModelLoader.field_21020.get(integer));
+				RenderSystem.polygonOffset(-1.0F, -10.0F);
+				RenderSystem.enablePolygonOffset();
+				RenderSystem.defaultAlphaFunc();
+				RenderSystem.enableAlphaTest();
+				RenderSystem.enableBlend();
+				RenderSystem.depthMask(false);
+				RenderSystem.blendFuncSeparate(
+					GlStateManager.class_4535.DST_COLOR, GlStateManager.class_4534.SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+				);
+			},
+			integer -> {
+				RenderSystem.disableAlphaTest();
+				RenderSystem.polygonOffset(0.0F, 0.0F);
+				RenderSystem.disablePolygonOffset();
+				RenderSystem.disableBlend();
+				RenderSystem.depthMask(true);
+			}
+		);
+	}
+
+	public static BlockRenderLayer method_23028(Identifier identifier) {
+		return new BlockRenderLayer.class_4601<>("text", VertexFormats.field_20888, 256, identifier, false, false, identifierx -> {
+			MinecraftClient.getInstance().getTextureManager().bindTexture(identifierx);
+			RenderSystem.enableAlphaTest();
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+		}, identifierx -> {
+		});
+	}
+
+	public static BlockRenderLayer method_23030(Identifier identifier) {
+		BlockRenderLayer blockRenderLayer = method_23028(identifier);
+		return new BlockRenderLayer.class_4601<>("text_see_through", VertexFormats.field_20888, 256, identifier, false, false, identifierx -> {
+			blockRenderLayer.method_22723();
+			RenderSystem.disableDepthTest();
+			RenderSystem.depthMask(false);
+		}, identifierx -> {
+			blockRenderLayer.method_22724();
+			RenderSystem.enableDepthTest();
+			RenderSystem.depthMask(true);
+		});
+	}
+
+	public static BlockRenderLayer method_23021(int i) {
+		return new BlockRenderLayer.class_4601<>(
+			"portal",
+			VertexFormats.POSITION_COLOR,
+			256,
+			i,
+			false,
+			false,
+			integer -> {
+				RenderSystem.enableBlend();
+				if (integer >= 2) {
+					RenderSystem.blendFunc(GlStateManager.class_4535.ONE.value, GlStateManager.class_4534.ONE.value);
+					MinecraftClient.getInstance().getTextureManager().bindTexture(EndPortalBlockEntityRenderer.PORTAL_TEX);
+					BackgroundRenderer.setFogBlack(true);
+				} else {
+					RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA.value, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA.value);
+					MinecraftClient.getInstance().getTextureManager().bindTexture(EndPortalBlockEntityRenderer.SKY_TEX);
+				}
+
+				RenderSystem.matrixMode(5890);
+				RenderSystem.pushMatrix();
+				RenderSystem.loadIdentity();
+				RenderSystem.translatef(0.5F, 0.5F, 0.0F);
+				RenderSystem.scalef(0.5F, 0.5F, 1.0F);
+				RenderSystem.translatef(
+					17.0F / (float)integer.intValue(), (2.0F + (float)integer.intValue() / 1.5F) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F
+				);
+				RenderSystem.rotatef(((float)(integer * integer) * 4321.0F + (float)integer.intValue() * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
+				RenderSystem.scalef(4.5F - (float)integer.intValue() / 4.0F, 4.5F - (float)integer.intValue() / 4.0F, 1.0F);
+				RenderSystem.mulTextureByProjModelView();
+				RenderSystem.matrixMode(5888);
+				RenderSystem.setupEndPortalTexGen();
+			},
+			integer -> {
+				RenderSystem.defaultBlendFunc();
+				RenderSystem.matrixMode(5890);
+				RenderSystem.popMatrix();
+				RenderSystem.matrixMode(5888);
+				RenderSystem.clearTexGen();
+				BackgroundRenderer.setFogBlack(false);
+			}
+		);
+	}
+
+	public BlockRenderLayer(String string, VertexFormat vertexFormat, int i, int j, boolean bl, boolean bl2, Runnable runnable, Runnable runnable2) {
 		this.field_20805 = string;
-		this.field_20806 = i;
+		this.field_20972 = vertexFormat;
+		this.field_20973 = i;
+		this.field_20806 = j;
 		this.field_20807 = runnable;
 		this.field_20808 = runnable2;
+		this.field_20974 = bl;
+		this.field_20975 = bl2;
 	}
 
 	public static void method_22719(boolean bl) {
 		field_20802 = bl;
+	}
+
+	public void method_23012(BufferBuilder bufferBuilder) {
+		if (bufferBuilder.method_22893()) {
+			bufferBuilder.end();
+			this.method_22723();
+			BufferRenderer.draw(bufferBuilder);
+			this.method_22724();
+		}
 	}
 
 	public String toString() {
@@ -334,20 +633,20 @@ public class BlockRenderLayer {
 	public static BlockRenderLayer method_22715(BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block instanceof LeavesBlock) {
-			return field_20802 ? CUTOUT_MIPPED : field_9178;
+			return field_20802 ? CUTOUT_MIPPED : SOLID;
 		} else {
 			BlockRenderLayer blockRenderLayer = (BlockRenderLayer)field_20803.get(block);
-			return blockRenderLayer != null ? blockRenderLayer : field_9178;
+			return blockRenderLayer != null ? blockRenderLayer : SOLID;
 		}
 	}
 
 	public static BlockRenderLayer method_22716(FluidState fluidState) {
 		BlockRenderLayer blockRenderLayer = (BlockRenderLayer)field_20804.get(fluidState.getFluid());
-		return blockRenderLayer != null ? blockRenderLayer : field_9178;
+		return blockRenderLayer != null ? blockRenderLayer : SOLID;
 	}
 
-	public static Set<BlockRenderLayer> method_22720() {
-		return ImmutableSet.of(field_9178, CUTOUT_MIPPED, field_9174, field_9179);
+	public static List<BlockRenderLayer> method_22720() {
+		return ImmutableList.of(SOLID, CUTOUT_MIPPED, CUTOUT, TRANSLUCENT);
 	}
 
 	public int method_22722() {
@@ -360,5 +659,160 @@ public class BlockRenderLayer {
 
 	public void method_22724() {
 		this.field_20808.run();
+	}
+
+	public VertexFormat method_23031() {
+		return this.field_20972;
+	}
+
+	public int method_23033() {
+		return this.field_20973;
+	}
+
+	public boolean method_23035() {
+		return this.field_20974;
+	}
+
+	public boolean method_23037() {
+		return this.field_20975;
+	}
+
+	public boolean equals(@Nullable Object object) {
+		if (this == object) {
+			return true;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			BlockRenderLayer blockRenderLayer = (BlockRenderLayer)object;
+			return this.field_20805.equals(blockRenderLayer.field_20805);
+		} else {
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		return this.field_20805.hashCode();
+	}
+
+	private static void method_23010(float f) {
+		RenderSystem.enableTexture();
+		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+		textureManager.bindTexture(ItemRenderer.field_21010);
+		RenderSystem.texParameter(3553, 10241, 9728);
+		RenderSystem.texParameter(3553, 10240, 9728);
+		RenderSystem.texParameter(3553, 10242, 10497);
+		RenderSystem.texParameter(3553, 10243, 10497);
+		RenderSystem.depthMask(false);
+		RenderSystem.depthFunc(514);
+		RenderSystem.enableBlend();
+		RenderSystem.disableAlphaTest();
+		MinecraftClient.getInstance().gameRenderer.method_22974().disable();
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
+		RenderSystem.matrixMode(5890);
+		RenderSystem.pushMatrix();
+		RenderSystem.loadIdentity();
+		long l = SystemUtil.getMeasuringTimeMs() * 8L;
+		float g = (float)(l % 110000L) / 110000.0F;
+		float h = (float)(l % 30000L) / 30000.0F;
+		RenderSystem.translatef(-g, h, 0.0F);
+		RenderSystem.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
+		RenderSystem.scalef(f, f, f);
+	}
+
+	private static void method_23039() {
+		RenderSystem.popMatrix();
+		RenderSystem.matrixMode(5888);
+		RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
+		RenderSystem.depthFunc(515);
+		RenderSystem.depthMask(true);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static final class class_4600 {
+		private final Identifier field_20976;
+		private final boolean field_20977;
+		private final boolean field_20978;
+		private final boolean field_20979;
+		private final float field_20980;
+		private final boolean field_20981;
+
+		public class_4600(Identifier identifier, boolean bl, boolean bl2, boolean bl3, float f, boolean bl4) {
+			this.field_20976 = identifier;
+			this.field_20977 = bl;
+			this.field_20978 = bl2;
+			this.field_20979 = bl3;
+			this.field_20980 = f;
+			this.field_20981 = bl4;
+		}
+
+		public boolean equals(Object object) {
+			if (this == object) {
+				return true;
+			} else if (object != null && this.getClass() == object.getClass()) {
+				BlockRenderLayer.class_4600 lv = (BlockRenderLayer.class_4600)object;
+				return this.field_20977 == lv.field_20977 && this.field_20978 == lv.field_20978 && this.field_20976.equals(lv.field_20976);
+			} else {
+				return false;
+			}
+		}
+
+		public int hashCode() {
+			return Objects.hash(new Object[]{this.field_20976, this.field_20977, this.field_20978});
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_4601<S> extends BlockRenderLayer {
+		private final S field_20982;
+
+		public class_4601(String string, VertexFormat vertexFormat, int i, S object, boolean bl, boolean bl2, Consumer<S> consumer, Consumer<S> consumer2) {
+			super(string, vertexFormat, 7, i, bl, bl2, () -> consumer.accept(object), () -> consumer2.accept(object));
+			this.field_20982 = object;
+		}
+
+		@Override
+		public boolean equals(@Nullable Object object) {
+			if (!super.equals(object)) {
+				return false;
+			} else if (this.getClass() != object.getClass()) {
+				return false;
+			} else {
+				BlockRenderLayer.class_4601<?> lv = (BlockRenderLayer.class_4601<?>)object;
+				return this.field_20982.equals(lv.field_20982);
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(new Object[]{super.hashCode(), this.field_20982});
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static final class class_4602 {
+		private final Identifier field_20983;
+		private final float field_20984;
+		private final float field_20985;
+
+		public class_4602(Identifier identifier, float f, float g) {
+			this.field_20983 = identifier;
+			this.field_20984 = f;
+			this.field_20985 = g;
+		}
+
+		public boolean equals(Object object) {
+			if (this == object) {
+				return true;
+			} else if (object != null && this.getClass() == object.getClass()) {
+				BlockRenderLayer.class_4602 lv = (BlockRenderLayer.class_4602)object;
+				return Float.compare(lv.field_20984, this.field_20984) == 0
+					&& Float.compare(lv.field_20985, this.field_20985) == 0
+					&& this.field_20983.equals(lv.field_20983);
+			} else {
+				return false;
+			}
+		}
+
+		public int hashCode() {
+			return Objects.hash(new Object[]{this.field_20983, this.field_20984, this.field_20985});
+		}
 	}
 }

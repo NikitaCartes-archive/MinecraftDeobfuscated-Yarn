@@ -32,7 +32,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	public BlockState withConnectionProperties(BlockView blockView, BlockPos blockPos) {
-		Block block = blockView.getBlockState(blockPos.down()).getBlock();
+		Block block = blockView.getBlockState(blockPos.method_10074()).getBlock();
 		Block block2 = blockView.getBlockState(blockPos.up()).getBlock();
 		Block block3 = blockView.getBlockState(blockPos.north()).getBlock();
 		Block block4 = blockView.getBlockState(blockPos.east()).getBlock();
@@ -70,7 +70,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockState blockState2 = arg.getBlockState(blockPos.down());
+		BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
 		boolean bl = !arg.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -81,7 +81,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 					return false;
 				}
 
-				Block block2 = arg.getBlockState(blockPos2.down()).getBlock();
+				Block block2 = arg.getBlockState(blockPos2.method_10074()).getBlock();
 				if (block2 == this || block2 == Blocks.END_STONE) {
 					return true;
 				}

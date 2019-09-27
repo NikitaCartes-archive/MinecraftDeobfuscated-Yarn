@@ -373,6 +373,18 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			);
 	}
 
+	private static LootTable.Builder method_23229(Block block, Item item) {
+		return LootTable.builder()
+			.withPool(
+				method_10393(
+					block,
+					LootPool.builder()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(ItemEntry.builder(item).method_438(SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336F))))
+				)
+			);
+	}
+
 	private static LootTable.Builder method_10372(ItemConvertible itemConvertible) {
 		return LootTable.builder()
 			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemConvertible)));
@@ -1138,7 +1150,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			)
 		);
 		this.method_16293(Blocks.MELON_STEM, blockx -> method_10387(blockx, Items.MELON_SEEDS));
+		this.method_16293(Blocks.ATTACHED_MELON_STEM, blockx -> method_23229(blockx, Items.MELON_SEEDS));
 		this.method_16293(Blocks.PUMPKIN_STEM, blockx -> method_10387(blockx, Items.PUMPKIN_SEEDS));
+		this.method_16293(Blocks.ATTACHED_PUMPKIN_STEM, blockx -> method_23229(blockx, Items.PUMPKIN_SEEDS));
 		this.method_16293(
 			Blocks.CHORUS_FLOWER,
 			blockx -> LootTable.builder()
@@ -1369,8 +1383,6 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16238(Blocks.INFESTED_CRACKED_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS);
 		this.method_16238(Blocks.INFESTED_CHISELED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
 		this.method_16258(Blocks.CAKE, method_10395());
-		this.method_16258(Blocks.ATTACHED_PUMPKIN_STEM, method_10395());
-		this.method_16258(Blocks.ATTACHED_MELON_STEM, method_10395());
 		this.method_16258(Blocks.FROSTED_ICE, method_10395());
 		this.method_16258(Blocks.SPAWNER, method_10395());
 		Set<Identifier> set = Sets.<Identifier>newHashSet();

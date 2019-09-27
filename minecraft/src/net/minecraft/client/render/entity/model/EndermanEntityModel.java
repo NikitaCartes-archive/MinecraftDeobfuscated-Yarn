@@ -107,5 +107,9 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 			float n = 1.0F;
 			this.head.rotationPointY -= 5.0F;
 		}
+
+		float n = -14.0F;
+		this.rightArm.setRotationPoint(-5.0F, -12.0F, 0.0F);
+		this.leftArm.setRotationPoint(5.0F, -12.0F, 0.0F);
 	}
 }

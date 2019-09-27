@@ -10,7 +10,7 @@ public class SheepWoolEntityModel<T extends SheepEntity> extends QuadrupedEntity
 	private float field_3541;
 
 	public SheepWoolEntityModel() {
-		super(12, 0.0F);
+		super(12, 0.0F, false, 8.0F, 4.0F, 2.0F, 2.0F, 24);
 		this.head = new ModelPart(this, 0, 0);
 		this.head.addCuboid(-3.0F, -4.0F, -4.0F, 6.0F, 6.0F, 6.0F, 0.6F);
 		this.head.setRotationPoint(0.0F, 6.0F, -8.0F);

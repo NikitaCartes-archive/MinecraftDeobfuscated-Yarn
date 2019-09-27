@@ -3,7 +3,9 @@ package net.minecraft.client.render.block.entity;
 import java.util.Calendar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4576;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,17 +16,14 @@ import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
-public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProgress> extends class_4576<T> {
+public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProgress> extends BlockEntityRenderer<T> {
 	public static final Identifier TRAPPED_DOUBLE_TEX = new Identifier("entity/chest/trapped_double");
 	public static final Identifier CHRISTMAS_DOUBLE_TEX = new Identifier("entity/chest/christmas_double");
 	public static final Identifier NORMAL_DOUBLE_TEX = new Identifier("entity/chest/normal_double");
@@ -40,7 +39,8 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	private final ModelPart field_20822;
 	private boolean isChristmas;
 
-	public ChestBlockEntityRenderer() {
+	public ChestBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+		super(blockEntityRenderDispatcher);
 		Calendar calendar = Calendar.getInstance();
 		if (calendar.get(2) + 1 == 12 && calendar.get(5) >= 24 && calendar.get(5) <= 26) {
 			this.isChristmas = true;
@@ -67,50 +67,49 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	}
 
 	@Override
-	protected void method_22738(
-		T blockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, int j, int k
-	) {
+	public void render(T blockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
 		BlockState blockState = blockEntity.hasWorld() ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
-		if (chestType != ChestType.LEFT) {
-			boolean bl = chestType != ChestType.SINGLE;
-			Identifier identifier;
-			if (i >= 0) {
-				identifier = (Identifier)ModelLoader.field_20848.get(i);
-			} else if (this.isChristmas) {
-				identifier = bl ? CHRISTMAS_DOUBLE_TEX : CHRISTMAS_TEX;
-			} else if (blockEntity instanceof TrappedChestBlockEntity) {
-				identifier = bl ? TRAPPED_DOUBLE_TEX : TRAPPED_TEX;
-			} else if (blockEntity instanceof EnderChestBlockEntity) {
-				identifier = ENDER_TEX;
-			} else {
-				identifier = bl ? NORMAL_DOUBLE_TEX : NORMAL_TEX;
-			}
-
-			bufferBuilder.method_22629();
-			float h = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
-			bufferBuilder.method_22626(0.5, 0.5, 0.5);
-			bufferBuilder.method_22622(new Quaternion(Vector3f.field_20705, -h, true));
-			bufferBuilder.method_22626(-0.5, -0.5, -0.5);
-			float l = blockEntity.getAnimationProgress(g);
-			l = 1.0F - l;
-			l = 1.0F - l * l * l;
-			Sprite sprite = this.method_22739(identifier);
-			if (bl) {
-				this.method_22749(bufferBuilder, this.field_20820, this.field_20822, this.field_20821, l, j, k, sprite);
-			} else {
-				this.method_22749(bufferBuilder, this.field_20817, this.field_20819, this.field_20818, l, j, k, sprite);
-			}
-
-			bufferBuilder.method_22630();
+		boolean bl = chestType != ChestType.SINGLE;
+		Identifier identifier;
+		if (this.isChristmas) {
+			identifier = bl ? CHRISTMAS_DOUBLE_TEX : CHRISTMAS_TEX;
+		} else if (blockEntity instanceof TrappedChestBlockEntity) {
+			identifier = bl ? TRAPPED_DOUBLE_TEX : TRAPPED_TEX;
+		} else if (blockEntity instanceof EnderChestBlockEntity) {
+			identifier = ENDER_TEX;
+		} else {
+			identifier = bl ? NORMAL_DOUBLE_TEX : NORMAL_TEX;
 		}
+
+		arg.method_22903();
+		float h = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
+		arg.method_22904(0.5, 0.5, 0.5);
+		arg.method_22907(Vector3f.field_20705.method_23214(-h, true));
+		arg.method_22904(-0.5, -0.5, -0.5);
+		float j = blockEntity.getAnimationProgress(g);
+		j = 1.0F - j;
+		j = 1.0F - j * j * j;
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
+		Sprite sprite = this.method_23082(identifier);
+		if (bl) {
+			if (chestType == ChestType.LEFT) {
+				arg.method_22904(-1.0, 0.0, 0.0);
+			}
+
+			this.method_22749(arg, lv, this.field_20820, this.field_20822, this.field_20821, j, i, sprite);
+		} else {
+			this.method_22749(arg, lv, this.field_20817, this.field_20819, this.field_20818, j, i, sprite);
+		}
+
+		arg.method_22909();
 	}
 
-	private void method_22749(BufferBuilder bufferBuilder, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j, Sprite sprite) {
+	private void method_22749(class_4587 arg, class_4588 arg2, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, Sprite sprite) {
 		modelPart.pitch = -(f * (float) (Math.PI / 2));
 		modelPart2.pitch = modelPart.pitch;
-		modelPart.method_22698(bufferBuilder, 0.0625F, i, j, sprite);
-		modelPart2.method_22698(bufferBuilder, 0.0625F, i, j, sprite);
-		modelPart3.method_22698(bufferBuilder, 0.0625F, i, j, sprite);
+		modelPart.method_22698(arg, arg2, 0.0625F, i, sprite);
+		modelPart2.method_22698(arg, arg2, 0.0625F, i, sprite);
+		modelPart3.method_22698(arg, arg2, 0.0625F, i, sprite);
 	}
 }

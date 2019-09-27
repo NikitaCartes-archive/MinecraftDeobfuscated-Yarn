@@ -2,6 +2,8 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
 
@@ -21,9 +23,9 @@ public class SkullEntityModel extends Model {
 		this.skull.setRotationPoint(0.0F, 0.0F, 0.0F);
 	}
 
-	public void render(float f, float g, float h, float i, float j, float k) {
-		this.skull.yaw = i * (float) (Math.PI / 180.0);
-		this.skull.pitch = j * (float) (Math.PI / 180.0);
-		this.skull.render(k);
+	public void render(class_4587 arg, class_4588 arg2, float f, float g, float h, float i, int j) {
+		this.skull.yaw = g * (float) (Math.PI / 180.0);
+		this.skull.pitch = h * (float) (Math.PI / 180.0);
+		this.skull.method_22698(arg, arg2, i, j, null);
 	}
 }

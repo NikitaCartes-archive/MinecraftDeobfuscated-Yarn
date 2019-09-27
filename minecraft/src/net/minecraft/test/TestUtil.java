@@ -127,7 +127,7 @@ public class TestUtil {
 		}
 
 		stringBuffer.append("-------------------\n");
-		listTag.add(new StringTag(stringBuffer.toString() + string2));
+		listTag.add(StringTag.of(stringBuffer.toString() + string2));
 		itemStack.putSubTag("pages", listTag);
 		return itemStack;
 	}

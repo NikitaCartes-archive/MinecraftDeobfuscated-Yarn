@@ -70,7 +70,6 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		RenderSystem.disableLighting();
 		RenderSystem.disableBlend();
 		this.font.draw(this.title.asFormattedString(), 60.0F, 6.0F, 4210752);
 		int k = this.container.getLevelCost();
@@ -94,8 +93,6 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 				this.font.drawWithShadow(string, (float)m, 69.0F, l);
 			}
 		}
-
-		RenderSystem.enableLighting();
 	}
 
 	private void onRenamed(String string) {
@@ -116,7 +113,6 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 		this.renderBackground();
 		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
-		RenderSystem.disableLighting();
 		RenderSystem.disableBlend();
 		this.nameField.render(i, j, f);
 	}

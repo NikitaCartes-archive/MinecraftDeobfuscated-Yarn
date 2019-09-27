@@ -48,7 +48,7 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Duration")) {
+		if (compoundTag.contains("Duration")) {
 			this.duration = compoundTag.getInt("Duration");
 		}
 	}

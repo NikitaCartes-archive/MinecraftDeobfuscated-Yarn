@@ -50,8 +50,8 @@ public class PineTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 			if (!bl) {
 				return false;
-			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.setToDirt(modifiableTestableWorld, blockPos.down());
+			} else if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
 				int m = 0;
 
 				for (int n = blockPos.getY() + i; n >= blockPos.getY() + j; n--) {

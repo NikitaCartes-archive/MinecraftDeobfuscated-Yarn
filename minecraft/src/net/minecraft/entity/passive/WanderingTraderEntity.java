@@ -157,11 +157,11 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("DespawnDelay", 99)) {
+		if (compoundTag.contains("DespawnDelay", 99)) {
 			this.despawnDelay = compoundTag.getInt("DespawnDelay");
 		}
 
-		if (compoundTag.containsKey("WanderTarget")) {
+		if (compoundTag.contains("WanderTarget")) {
 			this.wanderTarget = NbtHelper.toBlockPos(compoundTag.getCompound("WanderTarget"));
 		}
 

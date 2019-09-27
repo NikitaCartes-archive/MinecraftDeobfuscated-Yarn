@@ -539,7 +539,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.GRASS_BLOCK) {
+					&& this.world.getBlockState(new BlockPos(this).method_10074()).getBlock() == Blocks.GRASS_BLOCK) {
 					this.setEatingGrass(true);
 				}
 
@@ -784,7 +784,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		this.setTemper(compoundTag.getInt("Temper"));
 		this.setTame(compoundTag.getBoolean("Tame"));
 		String string;
-		if (compoundTag.containsKey("OwnerUUID", 8)) {
+		if (compoundTag.contains("OwnerUUID", 8)) {
 			string = compoundTag.getString("OwnerUUID");
 		} else {
 			String string2 = compoundTag.getString("Owner");
@@ -800,7 +800,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
 		}
 
-		if (compoundTag.containsKey("SaddleItem", 10)) {
+		if (compoundTag.contains("SaddleItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"));
 			if (itemStack.getItem() == Items.SADDLE) {
 				this.items.setInvStack(0, itemStack);

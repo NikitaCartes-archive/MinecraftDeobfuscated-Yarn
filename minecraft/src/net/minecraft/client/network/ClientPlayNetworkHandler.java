@@ -577,12 +577,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.world, this.getPlayerListEntry(playerSpawnS2CPacket.getPlayerUuid()).getProfile()
 		);
 		otherClientPlayerEntity.setEntityId(i);
-		otherClientPlayerEntity.prevX = d;
-		otherClientPlayerEntity.prevRenderX = d;
-		otherClientPlayerEntity.prevY = e;
-		otherClientPlayerEntity.prevRenderY = e;
-		otherClientPlayerEntity.prevZ = f;
-		otherClientPlayerEntity.prevRenderZ = f;
+		otherClientPlayerEntity.method_22862(d, e, f);
 		otherClientPlayerEntity.updateTrackedPosition(d, e, f);
 		otherClientPlayerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
 		this.world.addPlayer(i, otherClientPlayerEntity);
@@ -668,56 +663,74 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerPositionLook(PlayerPositionLookS2CPacket playerPositionLookS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playerPositionLookS2CPacket, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		double d = playerPositionLookS2CPacket.getX();
-		double e = playerPositionLookS2CPacket.getY();
-		double f = playerPositionLookS2CPacket.getZ();
-		float g = playerPositionLookS2CPacket.getYaw();
-		float h = playerPositionLookS2CPacket.getPitch();
 		Vec3d vec3d = playerEntity.getVelocity();
-		double i = vec3d.x;
-		double j = vec3d.y;
-		double k = vec3d.z;
-		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X)) {
-			playerEntity.prevRenderX += d;
-			d += playerEntity.x;
+		boolean bl = playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X);
+		boolean bl2 = playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Y);
+		boolean bl3 = playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Z);
+		double d;
+		double e;
+		if (bl) {
+			d = vec3d.getX();
+			e = playerEntity.x + playerPositionLookS2CPacket.getX();
+			playerEntity.prevRenderX = playerEntity.prevRenderX + playerPositionLookS2CPacket.getX();
+			playerEntity.x = e;
+			playerEntity.prevX = e;
 		} else {
-			playerEntity.prevRenderX = d;
-			i = 0.0;
+			d = 0.0;
+			e = playerPositionLookS2CPacket.getX();
+			playerEntity.prevRenderX = e;
+			playerEntity.x = e;
+			playerEntity.prevX = e;
 		}
 
-		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Y)) {
-			playerEntity.prevRenderY += e;
-			e += playerEntity.y;
+		double f;
+		double g;
+		if (bl2) {
+			f = vec3d.getY();
+			g = playerEntity.y + playerPositionLookS2CPacket.getY();
+			playerEntity.prevRenderY = playerEntity.prevRenderY + playerPositionLookS2CPacket.getY();
+			playerEntity.y = g;
+			playerEntity.prevY = g;
 		} else {
-			playerEntity.prevRenderY = e;
-			j = 0.0;
+			f = 0.0;
+			g = playerPositionLookS2CPacket.getY();
+			playerEntity.prevRenderY = g;
+			playerEntity.y = g;
+			playerEntity.prevY = g;
 		}
 
-		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Z)) {
-			playerEntity.prevRenderZ += f;
-			f += playerEntity.z;
+		double h;
+		double i;
+		if (bl3) {
+			h = vec3d.getZ();
+			i = playerEntity.z + playerPositionLookS2CPacket.getZ();
+			playerEntity.prevRenderZ = playerEntity.prevRenderZ + playerPositionLookS2CPacket.getZ();
+			playerEntity.z = i;
+			playerEntity.prevZ = i;
 		} else {
-			playerEntity.prevRenderZ = f;
-			k = 0.0;
+			h = 0.0;
+			i = playerPositionLookS2CPacket.getZ();
+			playerEntity.prevRenderZ = i;
+			playerEntity.z = i;
+			playerEntity.prevZ = i;
 		}
 
-		playerEntity.setVelocity(i, j, k);
+		playerEntity.setVelocity(d, f, h);
+		float j = playerPositionLookS2CPacket.getYaw();
+		float k = playerPositionLookS2CPacket.getPitch();
 		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X_ROT)) {
-			h += playerEntity.pitch;
+			k += playerEntity.pitch;
 		}
 
 		if (playerPositionLookS2CPacket.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Y_ROT)) {
-			g += playerEntity.yaw;
+			j += playerEntity.yaw;
 		}
 
-		playerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
+		playerEntity.setPositionAnglesAndUpdate(e, g, i, j, k);
 		this.connection.send(new TeleportConfirmC2SPacket(playerPositionLookS2CPacket.getTeleportId()));
 		this.connection
 			.send(new PlayerMoveC2SPacket.Both(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false));
 		if (!this.field_3698) {
-			this.client.player.prevX = this.client.player.x;
-			this.client.player.prevY = this.client.player.y;
-			this.client.player.prevZ = this.client.player.z;
 			this.field_3698 = true;
 			this.client.openScreen(null);
 		}
@@ -851,7 +864,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				((ItemEntity)entity).getStack().setCount(itemPickupAnimationS2CPacket.getStackAmount());
 			}
 
-			this.client.particleManager.addParticle(new ItemPickupParticle(this.world, entity, livingEntity, 0.5F));
+			this.client
+				.particleManager
+				.addParticle(new ItemPickupParticle(this.client.getEntityRenderManager(), this.client.method_22940(), this.world, entity, livingEntity));
 			this.world.removeEntity(itemPickupAnimationS2CPacket.getEntityId());
 		}
 	}
@@ -1203,7 +1218,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(blockEntityUpdateS2CPacket, this, this.client);
 		if (this.client.world.isChunkLoaded(blockEntityUpdateS2CPacket.getPos())) {
 			BlockEntity blockEntity = this.client.world.getBlockEntity(blockEntityUpdateS2CPacket.getPos());
-			int i = blockEntityUpdateS2CPacket.getActionId();
+			int i = blockEntityUpdateS2CPacket.getBlockEntityType();
 			boolean bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
 			if (i == 1 && blockEntity instanceof MobSpawnerBlockEntity
 				|| bl
@@ -1222,7 +1237,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			}
 
 			if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
-				((CommandBlockScreen)this.client.currentScreen).method_2457();
+				((CommandBlockScreen)this.client.currentScreen).updateCommandBlock();
 			}
 		}
 	}

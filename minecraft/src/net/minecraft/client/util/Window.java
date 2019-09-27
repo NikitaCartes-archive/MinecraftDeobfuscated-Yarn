@@ -53,7 +53,6 @@ public final class Window implements AutoCloseable {
 	private double scaleFactor;
 	private String phase = "";
 	private boolean field_5186;
-	private double field_5189 = Double.MIN_VALUE;
 	private int framerateLimit;
 	private boolean field_16517;
 
@@ -126,19 +125,6 @@ public final class Window implements AutoCloseable {
 				biConsumer.accept(i, string);
 			}
 		}
-	}
-
-	public void method_4493(boolean bl) {
-		RenderSystem.assertThread(RenderSystem::isOnGameThread);
-		RenderSystem.clear(256, bl);
-		RenderSystem.matrixMode(5889);
-		RenderSystem.loadIdentity();
-		RenderSystem.ortho(
-			0.0, (double)this.getFramebufferWidth() / this.getScaleFactor(), (double)this.getFramebufferHeight() / this.getScaleFactor(), 0.0, 1000.0, 3000.0
-		);
-		RenderSystem.matrixMode(5888);
-		RenderSystem.loadIdentity();
-		RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
 	}
 
 	public void setIcon(InputStream inputStream, InputStream inputStream2) {
@@ -293,24 +279,12 @@ public final class Window implements AutoCloseable {
 		return this.framerateLimit;
 	}
 
-	public void setFullscreen(boolean bl) {
-		GLFW.glfwSwapBuffers(this.handle);
-		pollEvents();
+	public void setFullscreen() {
+		RenderSystem.flipFrame(this.handle);
 		if (this.fullscreen != this.field_5177) {
 			this.field_5177 = this.fullscreen;
 			this.method_4485(this.field_16517);
 		}
-	}
-
-	public void waitForFramerateLimit() {
-		double d = this.field_5189 + 1.0 / (double)this.getFramerateLimit();
-
-		double e;
-		for (e = GLFW.glfwGetTime(); e < d; e = GLFW.glfwGetTime()) {
-			GLFW.glfwWaitEventsTimeout(d - e);
-		}
-
-		this.field_5189 = e;
 	}
 
 	public Optional<VideoMode> getVideoMode() {
@@ -376,7 +350,7 @@ public final class Window implements AutoCloseable {
 			this.method_4479();
 			this.windowEventHandler.onResolutionChanged();
 			this.setVsync(bl);
-			this.windowEventHandler.updateDisplay(false);
+			this.setFullscreen();
 		} catch (Exception var3) {
 			LOGGER.error("Couldn't toggle fullscreen", (Throwable)var3);
 		}
@@ -418,10 +392,6 @@ public final class Window implements AutoCloseable {
 
 	public int getFramebufferHeight() {
 		return this.framebufferHeight;
-	}
-
-	public static void pollEvents() {
-		GLFW.glfwPollEvents();
 	}
 
 	public int getWidth() {

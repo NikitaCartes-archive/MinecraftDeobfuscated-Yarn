@@ -254,7 +254,7 @@ public class BlazeEntity extends HostileEntity {
 
 							for (int i = 0; i < 1; i++) {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-									this.blaze.world, this.blaze, e + this.blaze.getRand().nextGaussian() * (double)h, f, g + this.blaze.getRand().nextGaussian() * (double)h
+									this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h
 								);
 								smallFireballEntity.y = this.blaze.y + (double)(this.blaze.getHeight() / 2.0F) + 0.5;
 								this.blaze.world.spawnEntity(smallFireballEntity);

@@ -1,8 +1,9 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelA;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelB;
@@ -17,20 +18,11 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 		super(featureRendererContext);
 	}
 
-	public void method_4205(TropicalFishEntity tropicalFishEntity, float f, float g, float h, float i, float j, float k, float l) {
-		if (!tropicalFishEntity.isInvisible()) {
-			EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB);
-			this.bindTexture(tropicalFishEntity.getVarietyId());
-			float[] fs = tropicalFishEntity.getPatternColorComponents();
-			RenderSystem.color3f(fs[0], fs[1], fs[2]);
-			this.getModel().copyStateTo(entityModel);
-			entityModel.animateModel(tropicalFishEntity, f, g, h);
-			entityModel.render(tropicalFishEntity, f, g, i, j, k, l);
-		}
-	}
-
-	@Override
-	public boolean hasHurtOverlay() {
-		return true;
+	public void method_4205(
+		class_4587 arg, class_4597 arg2, int i, TropicalFishEntity tropicalFishEntity, float f, float g, float h, float j, float k, float l, float m
+	) {
+		EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB);
+		float[] fs = tropicalFishEntity.getPatternColorComponents();
+		method_23196(this.getModel(), entityModel, tropicalFishEntity.getVarietyId(), arg, arg2, i, tropicalFishEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
 	}
 }

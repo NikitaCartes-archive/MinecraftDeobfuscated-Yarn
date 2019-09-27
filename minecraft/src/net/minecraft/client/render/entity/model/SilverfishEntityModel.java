@@ -1,15 +1,20 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SilverfishEntityModel<T extends Entity> extends EntityModel<T> {
+public class SilverfishEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart[] field_3560;
 	private final ModelPart[] field_3557;
+	private final ImmutableList<ModelPart> field_20941;
 	private final float[] field_3561 = new float[7];
 	private static final int[][] field_3558 = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
 	private static final int[][] field_3559 = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
@@ -41,19 +46,14 @@ public class SilverfishEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3557[2] = new ModelPart(this, 20, 18);
 		this.field_3557[2].addCuboid(-3.0F, 0.0F, (float)field_3558[4][2] * -0.5F, 6.0F, 5.0F, (float)field_3558[1][2]);
 		this.field_3557[2].setRotationPoint(0.0F, 19.0F, this.field_3561[1]);
+		Builder<ModelPart> builder = ImmutableList.builder();
+		builder.addAll(Arrays.asList(this.field_3560));
+		builder.addAll(Arrays.asList(this.field_3557));
+		this.field_20941 = builder.build();
 	}
 
-	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-
-		for (ModelPart modelPart : this.field_3560) {
-			modelPart.render(k);
-		}
-
-		for (ModelPart modelPart : this.field_3557) {
-			modelPart.render(k);
-		}
+	public ImmutableList<ModelPart> method_22969() {
+		return this.field_20941;
 	}
 
 	@Override

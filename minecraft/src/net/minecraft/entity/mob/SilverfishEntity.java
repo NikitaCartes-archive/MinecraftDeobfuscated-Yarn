@@ -117,11 +117,11 @@ public class SilverfishEntity extends HostileEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return InfestedBlock.isInfestable(arg.getBlockState(blockPos.down())) ? 10.0F : super.getPathfindingFavor(blockPos, arg);
+		return InfestedBlock.isInfestable(arg.getBlockState(blockPos.method_10074())) ? 10.0F : super.getPathfindingFavor(blockPos, arg);
 	}
 
-	public static boolean method_20684(EntityType<SilverfishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		if (method_20681(entityType, iWorld, spawnType, blockPos, random)) {
+	public static boolean canSpawn(EntityType<SilverfishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		if (canSpawnIgnoreLightLevel(entityType, iWorld, spawnType, blockPos, random)) {
 			PlayerEntity playerEntity = iWorld.getClosestPlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 5.0, true);
 			return playerEntity == null;
 		} else {
@@ -158,7 +158,7 @@ public class SilverfishEntity extends HostileEntity {
 			this.delay--;
 			if (this.delay <= 0) {
 				World world = this.silverfish.world;
-				Random random = this.silverfish.getRand();
+				Random random = this.silverfish.getRandom();
 				BlockPos blockPos = new BlockPos(this.silverfish);
 
 				for (int i = 0; i <= 5 && i >= -5; i = (i <= 0 ? 1 : 0) - i) {
@@ -201,7 +201,7 @@ public class SilverfishEntity extends HostileEntity {
 			} else if (!this.mob.getNavigation().isIdle()) {
 				return false;
 			} else {
-				Random random = this.mob.getRand();
+				Random random = this.mob.getRandom();
 				if (this.mob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) && random.nextInt(10) == 0) {
 					this.direction = Direction.random(random);
 					BlockPos blockPos = new BlockPos(this.mob.x, this.mob.y + 0.5, this.mob.z).offset(this.direction);

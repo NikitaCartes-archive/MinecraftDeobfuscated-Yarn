@@ -1,14 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class FoxEntityModel<T extends FoxEntity> extends EntityModel<T> {
+public class FoxEntityModel<T extends FoxEntity> extends class_4592<T> {
 	public final ModelPart head;
 	private final ModelPart leftEar;
 	private final ModelPart rightEar;
@@ -22,6 +23,7 @@ public class FoxEntityModel<T extends FoxEntity> extends EntityModel<T> {
 	private float field_18025;
 
 	public FoxEntityModel() {
+		super(true, 8.0F, 3.35F);
 		this.textureWidth = 48;
 		this.textureHeight = 32;
 		this.head = new ModelPart(this, 1, 5);
@@ -120,40 +122,17 @@ public class FoxEntityModel<T extends FoxEntity> extends EntityModel<T> {
 		}
 	}
 
-	public void method_18331(T foxEntity, float f, float g, float h, float i, float j, float k) {
-		super.render(foxEntity, f, g, h, i, j, k);
-		this.method_18332(foxEntity, f, g, h, i, j, k);
-		if (this.isChild) {
-			RenderSystem.pushMatrix();
-			float l = 0.75F;
-			RenderSystem.scalef(0.75F, 0.75F, 0.75F);
-			RenderSystem.translatef(0.0F, 8.0F * k, 3.35F * k);
-			this.head.render(k);
-			RenderSystem.popMatrix();
-			RenderSystem.pushMatrix();
-			float m = 0.5F;
-			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
-			RenderSystem.translatef(0.0F, 24.0F * k, 0.0F);
-			this.body.render(k);
-			this.frontLeftLeg.render(k);
-			this.frontRightLeg.render(k);
-			this.rearLeftLeg.render(k);
-			this.rearRightLeg.render(k);
-			RenderSystem.popMatrix();
-		} else {
-			RenderSystem.pushMatrix();
-			this.head.render(k);
-			this.body.render(k);
-			this.frontLeftLeg.render(k);
-			this.frontRightLeg.render(k);
-			this.rearLeftLeg.render(k);
-			this.rearRightLeg.render(k);
-			RenderSystem.popMatrix();
-		}
+	@Override
+	protected Iterable<ModelPart> method_22946() {
+		return ImmutableList.<ModelPart>of(this.head);
+	}
+
+	@Override
+	protected Iterable<ModelPart> method_22948() {
+		return ImmutableList.<ModelPart>of(this.body, this.frontLeftLeg, this.frontRightLeg, this.rearLeftLeg, this.rearRightLeg);
 	}
 
 	public void method_18332(T foxEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(foxEntity, f, g, h, i, j, k);
 		if (!foxEntity.isSleeping() && !foxEntity.isWalking() && !foxEntity.isInSneakingPose()) {
 			this.head.pitch = j * (float) (Math.PI / 180.0);
 			this.head.yaw = i * (float) (Math.PI / 180.0);

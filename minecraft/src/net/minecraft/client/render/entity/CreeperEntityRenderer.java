@@ -1,8 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.CreeperChargeFeatureRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -18,7 +18,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		this.addFeature(new CreeperChargeFeatureRenderer(this));
 	}
 
-	protected void method_3900(CreeperEntity creeperEntity, float f) {
+	protected void method_3900(CreeperEntity creeperEntity, class_4587 arg, float f) {
 		float g = creeperEntity.getClientFuseTime(f);
 		float h = 1.0F + MathHelper.sin(g * 100.0F) * g * 0.01F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
@@ -26,21 +26,15 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		g *= g;
 		float i = (1.0F + g * 0.4F) * h;
 		float j = (1.0F + g * 0.1F) / h;
-		RenderSystem.scalef(i, j, i);
+		arg.method_22905(i, j, i);
 	}
 
-	protected int method_3898(CreeperEntity creeperEntity, float f, float g) {
-		float h = creeperEntity.getClientFuseTime(g);
-		if ((int)(h * 10.0F) % 2 == 0) {
-			return 0;
-		} else {
-			int i = (int)(h * 0.2F * 255.0F);
-			i = MathHelper.clamp(i, 0, 255);
-			return i << 24 | 822083583;
-		}
+	protected float method_23154(CreeperEntity creeperEntity, float f) {
+		float g = creeperEntity.getClientFuseTime(f);
+		return (int)(g * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(g, 0.0F, 1.0F);
 	}
 
-	protected Identifier method_3899(CreeperEntity creeperEntity) {
+	public Identifier method_3899(CreeperEntity creeperEntity) {
 		return SKIN;
 	}
 }

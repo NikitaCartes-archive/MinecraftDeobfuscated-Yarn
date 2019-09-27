@@ -57,7 +57,7 @@ public interface class_4538 extends BlockRenderView, CollisionView, class_4543.c
 			if (!this.isSkyVisible(blockPos2)) {
 				return false;
 			} else {
-				for (BlockPos var4 = blockPos2.down(); var4.getY() > blockPos.getY(); var4 = var4.down()) {
+				for (BlockPos var4 = blockPos2.method_10074(); var4.getY() > blockPos.getY(); var4 = var4.method_10074()) {
 					BlockState blockState = this.getBlockState(var4);
 					if (blockState.getOpacity(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
 						return false;

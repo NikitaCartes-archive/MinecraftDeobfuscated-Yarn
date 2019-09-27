@@ -147,7 +147,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public float pushSpeedReduction;
 	protected final Random random = new Random();
 	public int age;
-	private int fireTime = -this.getBurningDuration();
+	private int fireTicks = -this.getBurningDuration();
 	protected boolean insideWater;
 	protected double waterHeight;
 	protected boolean inWater;
@@ -166,11 +166,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public int chunkX;
 	public int chunkY;
 	public int chunkZ;
-	@Environment(EnvType.CLIENT)
 	public long trackedX;
-	@Environment(EnvType.CLIENT)
 	public long trackedY;
-	@Environment(EnvType.CLIENT)
 	public long trackedZ;
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
@@ -213,6 +210,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
 	}
 
+	@Environment(EnvType.CLIENT)
+	public int method_22861() {
+		AbstractTeam abstractTeam = this.getScoreboardTeam();
+		return abstractTeam != null && abstractTeam.getColor().getColorValue() != null ? abstractTeam.getColor().getColorValue() : 16777215;
+	}
+
 	public boolean isSpectator() {
 		return false;
 	}
@@ -227,7 +230,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void updateTrackedPosition(double d, double e, double f) {
 		this.trackedX = EntityS2CPacket.encodePacketCoordinate(d);
 		this.trackedY = EntityS2CPacket.encodePacketCoordinate(e);
@@ -353,9 +355,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 
 		this.prevHorizontalSpeed = this.horizontalSpeed;
-		this.prevX = this.x;
-		this.prevY = this.y;
-		this.prevZ = this.z;
 		this.prevPitch = this.pitch;
 		this.prevYaw = this.yaw;
 		this.tickPortal();
@@ -363,18 +362,18 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.updateInWater();
 		if (this.world.isClient) {
 			this.extinguish();
-		} else if (this.fireTime > 0) {
+		} else if (this.fireTicks > 0) {
 			if (this.isFireImmune()) {
-				this.fireTime -= 4;
-				if (this.fireTime < 0) {
+				this.fireTicks -= 4;
+				if (this.fireTicks < 0) {
 					this.extinguish();
 				}
 			} else {
-				if (this.fireTime % 20 == 0) {
+				if (this.fireTicks % 20 == 0) {
 					this.damage(DamageSource.ON_FIRE, 1.0F);
 				}
 
-				this.fireTime--;
+				this.fireTicks--;
 			}
 		}
 
@@ -388,7 +387,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 
 		if (!this.world.isClient) {
-			this.setFlag(0, this.fireTime > 0);
+			this.setFlag(0, this.fireTicks > 0);
 		}
 
 		this.firstUpdate = false;
@@ -418,21 +417,21 @@ public abstract class Entity implements Nameable, CommandOutput {
 			j = ProtectionEnchantment.transformFireDuration((LivingEntity)this, j);
 		}
 
-		if (this.fireTime < j) {
-			this.fireTime = j;
+		if (this.fireTicks < j) {
+			this.fireTicks = j;
 		}
 	}
 
-	public void setFireTime(int i) {
-		this.fireTime = i;
+	public void setFireTicks(int i) {
+		this.fireTicks = i;
 	}
 
-	public int getFireTime() {
-		return this.fireTime;
+	public int getFireTicks() {
+		return this.fireTicks;
 	}
 
 	public void extinguish() {
-		this.fireTime = 0;
+		this.fireTicks = 0;
 	}
 
 	protected void destroy() {
@@ -485,7 +484,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isAir()) {
-				BlockPos blockPos2 = blockPos.down();
+				BlockPos blockPos2 = blockPos.method_10074();
 				BlockState blockState2 = this.world.getBlockState(blockPos2);
 				Block block = blockState2.getBlock();
 				if (block.matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock) {
@@ -556,20 +555,20 @@ public abstract class Entity implements Nameable, CommandOutput {
 			boolean bl = this.isTouchingWater();
 			if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
 				if (!bl) {
-					this.fireTime++;
-					if (this.fireTime == 0) {
+					this.fireTicks++;
+					if (this.fireTicks == 0) {
 						this.setOnFireFor(8);
 					}
 				}
 
 				this.burn(1);
-			} else if (this.fireTime <= 0) {
-				this.fireTime = -this.getBurningDuration();
+			} else if (this.fireTicks <= 0) {
+				this.fireTicks = -this.getBurningDuration();
 			}
 
 			if (bl && this.isOnFire()) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
-				this.fireTime = -this.getBurningDuration();
+				this.fireTicks = -this.getBurningDuration();
 			}
 
 			this.world.getProfiler().pop();
@@ -1076,22 +1075,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		h = MathHelper.clamp(h, -90.0F, 90.0F);
-		this.yaw = g;
-		this.pitch = h;
+		this.setPosition(this.x, this.y, this.z);
+		this.yaw = g % 360.0F;
+		this.pitch = MathHelper.clamp(h, -90.0F, 90.0F) % 360.0F;
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
-		double i = (double)(this.prevYaw - g);
-		if (i < -180.0) {
-			this.prevYaw += 360.0F;
-		}
-
-		if (i >= 180.0) {
-			this.prevYaw -= 360.0F;
-		}
-
-		this.setPosition(this.x, this.y, this.z);
-		this.setRotation(g, h);
 	}
 
 	public void setPositionAndAngles(BlockPos blockPos, float f, float g) {
@@ -1099,6 +1087,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void setPositionAndAngles(double d, double e, double f, float g, float h) {
+		this.method_22862(d, e, f);
+		this.yaw = g;
+		this.pitch = h;
+		this.setPosition(this.x, this.y, this.z);
+	}
+
+	public void method_22862(double d, double e, double f) {
 		this.x = d;
 		this.y = e;
 		this.z = f;
@@ -1108,9 +1103,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevRenderX = this.x;
 		this.prevRenderY = this.y;
 		this.prevRenderZ = this.z;
-		this.yaw = g;
-		this.pitch = h;
-		this.setPosition(this.x, this.y, this.z);
 	}
 
 	public float distanceTo(Entity entity) {
@@ -1299,7 +1291,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			compoundTag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
 			compoundTag.put("Rotation", this.toListTag(this.yaw, this.pitch));
 			compoundTag.putFloat("FallDistance", this.fallDistance);
-			compoundTag.putShort("Fire", (short)this.fireTime);
+			compoundTag.putShort("Fire", (short)this.fireTicks);
 			compoundTag.putShort("Air", (short)this.getBreath());
 			compoundTag.putBoolean("OnGround", this.onGround);
 			compoundTag.putInt("Dimension", this.dimension.getRawId());
@@ -1331,7 +1323,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				ListTag listTag = new ListTag();
 
 				for (String string : this.scoreboardTags) {
-					listTag.add(new StringTag(string));
+					listTag.add(StringTag.of(string));
 				}
 
 				compoundTag.put("Tags", listTag);
@@ -1371,15 +1363,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			double e = listTag2.getDouble(1);
 			double f = listTag2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-			this.x = listTag.getDouble(0);
-			this.y = listTag.getDouble(1);
-			this.z = listTag.getDouble(2);
-			this.prevRenderX = this.x;
-			this.prevRenderY = this.y;
-			this.prevRenderZ = this.z;
-			this.prevX = this.x;
-			this.prevY = this.y;
-			this.prevZ = this.z;
+			this.method_22862(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 			this.yaw = listTag3.getFloat(0);
 			this.pitch = listTag3.getFloat(1);
 			this.prevYaw = this.yaw;
@@ -1387,10 +1371,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.setHeadYaw(this.yaw);
 			this.setYaw(this.yaw);
 			this.fallDistance = compoundTag.getFloat("FallDistance");
-			this.fireTime = compoundTag.getShort("Fire");
+			this.fireTicks = compoundTag.getShort("Fire");
 			this.setBreath(compoundTag.getShort("Air"));
 			this.onGround = compoundTag.getBoolean("OnGround");
-			if (compoundTag.containsKey("Dimension")) {
+			if (compoundTag.contains("Dimension")) {
 				this.dimension = DimensionType.byRawId(compoundTag.getInt("Dimension"));
 			}
 
@@ -1406,7 +1390,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			} else if (Double.isFinite((double)this.yaw) && Double.isFinite((double)this.pitch)) {
 				this.setPosition(this.x, this.y, this.z);
 				this.setRotation(this.yaw, this.pitch);
-				if (compoundTag.containsKey("CustomName", 8)) {
+				if (compoundTag.contains("CustomName", 8)) {
 					this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
 				}
 
@@ -1414,7 +1398,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.setSilent(compoundTag.getBoolean("Silent"));
 				this.setNoGravity(compoundTag.getBoolean("NoGravity"));
 				this.setGlowing(compoundTag.getBoolean("Glowing"));
-				if (compoundTag.containsKey("Tags", 9)) {
+				if (compoundTag.contains("Tags", 9)) {
 					this.scoreboardTags.clear();
 					ListTag listTag4 = compoundTag.getList("Tags", 8);
 					int i = Math.min(listTag4.size(), 1024);
@@ -1458,7 +1442,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		ListTag listTag = new ListTag();
 
 		for (double d : ds) {
-			listTag.add(new DoubleTag(d));
+			listTag.add(DoubleTag.of(d));
 		}
 
 		return listTag;
@@ -1468,7 +1452,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		ListTag listTag = new ListTag();
 
 		for (float f : fs) {
-			listTag.add(new FloatTag(f));
+			listTag.add(FloatTag.of(f));
 		}
 
 		return listTag;
@@ -1754,7 +1738,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public boolean isOnFire() {
 		boolean bl = this.world != null && this.world.isClient;
-		return !this.isFireImmune() && (this.fireTime > 0 || bl && this.getFlag(0));
+		return !this.isFireImmune() && (this.fireTicks > 0 || bl && this.getFlag(0));
 	}
 
 	public boolean hasVehicle() {
@@ -1892,8 +1876,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void onStruckByLightning(LightningEntity lightningEntity) {
-		this.fireTime++;
-		if (this.fireTime == 0) {
+		this.fireTicks++;
+		if (this.fireTicks == 0) {
 			this.setOnFireFor(8);
 		}
 
@@ -2157,7 +2141,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Environment(EnvType.CLIENT)
 	public boolean doesRenderOnFire() {
-		return this.isOnFire();
+		return this.isOnFire() && !this.isSpectator();
 	}
 
 	public void setUuid(UUID uUID) {

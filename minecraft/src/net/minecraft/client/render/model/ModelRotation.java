@@ -1,13 +1,12 @@
 package net.minecraft.client.render.model;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4590;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 
@@ -31,7 +30,6 @@ public enum ModelRotation implements ModelBakeSettings {
 	X270_Y270(270, 270);
 
 	private static final Map<Integer, ModelRotation> BY_INDEX = (Map<Integer, ModelRotation>)Arrays.stream(values())
-		.sorted(Comparator.comparingInt(modelRotation -> modelRotation.index))
 		.collect(Collectors.toMap(modelRotation -> modelRotation.index, modelRotation -> modelRotation));
 	private final int index;
 	private final Quaternion quaternion;
@@ -52,47 +50,8 @@ public enum ModelRotation implements ModelBakeSettings {
 	}
 
 	@Override
-	public ModelRotation getRotation() {
-		return this;
-	}
-
-	public Quaternion getQuaternion() {
-		return this.quaternion;
-	}
-
-	public Direction apply(Direction direction) {
-		Direction direction2 = direction;
-
-		for (int i = 0; i < this.xRotations; i++) {
-			direction2 = direction2.rotateClockwise(Direction.Axis.X);
-		}
-
-		if (direction2.getAxis() != Direction.Axis.Y) {
-			for (int i = 0; i < this.yRotations; i++) {
-				direction2 = direction2.rotateClockwise(Direction.Axis.Y);
-			}
-		}
-
-		return direction2;
-	}
-
-	public int method_4706(Direction direction, int i) {
-		int j = i;
-		if (direction.getAxis() == Direction.Axis.X) {
-			j = (i + this.xRotations) % 4;
-		}
-
-		Direction direction2 = direction;
-
-		for (int k = 0; k < this.xRotations; k++) {
-			direction2 = direction2.rotateClockwise(Direction.Axis.X);
-		}
-
-		if (direction2.getAxis() == Direction.Axis.Y) {
-			j = (j + this.yRotations) % 4;
-		}
-
-		return j;
+	public class_4590 getRotation() {
+		return new class_4590(null, this.quaternion, null, null);
 	}
 
 	public static ModelRotation get(int i, int j) {

@@ -98,11 +98,11 @@ public class VexEntity extends HostileEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("BoundX")) {
+		if (compoundTag.contains("BoundX")) {
 			this.bounds = new BlockPos(compoundTag.getInt("BoundX"), compoundTag.getInt("BoundY"), compoundTag.getInt("BoundZ"));
 		}
 
-		if (compoundTag.containsKey("LifeTicks")) {
+		if (compoundTag.contains("LifeTicks")) {
 			this.setLifeTicks(compoundTag.getInt("LifeTicks"));
 		}
 	}

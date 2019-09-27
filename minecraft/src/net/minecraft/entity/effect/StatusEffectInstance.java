@@ -203,12 +203,12 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			int k = compoundTag.getInt("Duration");
 			boolean bl = compoundTag.getBoolean("Ambient");
 			boolean bl2 = true;
-			if (compoundTag.containsKey("ShowParticles", 1)) {
+			if (compoundTag.contains("ShowParticles", 1)) {
 				bl2 = compoundTag.getBoolean("ShowParticles");
 			}
 
 			boolean bl3 = bl2;
-			if (compoundTag.containsKey("ShowIcon", 1)) {
+			if (compoundTag.contains("ShowIcon", 1)) {
 				bl3 = compoundTag.getBoolean("ShowIcon");
 			}
 

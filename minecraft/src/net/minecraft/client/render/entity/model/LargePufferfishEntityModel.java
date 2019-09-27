@@ -1,13 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class LargePufferfishEntityModel<T extends Entity> extends EntityModel<T> {
+public class LargePufferfishEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_3493;
 	private final ModelPart field_3499;
 	private final ModelPart field_3494;
@@ -76,21 +78,22 @@ public class LargePufferfishEntityModel<T extends Entity> extends EntityModel<T>
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		this.field_3493.render(k);
-		this.field_3499.render(k);
-		this.field_3494.render(k);
-		this.field_3490.render(k);
-		this.field_3496.render(k);
-		this.field_3495.render(k);
-		this.field_3489.render(k);
-		this.field_3497.render(k);
-		this.field_3491.render(k);
-		this.field_3492.render(k);
-		this.field_3487.render(k);
-		this.field_3498.render(k);
-		this.field_3488.render(k);
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(
+			this.field_3493,
+			this.field_3499,
+			this.field_3494,
+			this.field_3490,
+			this.field_3496,
+			this.field_3495,
+			this.field_3489,
+			this.field_3488,
+			this.field_3491,
+			this.field_3492,
+			this.field_3487,
+			this.field_3498,
+			this.field_3488
+		);
 	}
 
 	@Override

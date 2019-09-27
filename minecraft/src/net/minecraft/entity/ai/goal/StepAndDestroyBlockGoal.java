@@ -75,7 +75,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		World world = this.stepAndDestroyMob.world;
 		BlockPos blockPos = new BlockPos(this.stepAndDestroyMob);
 		BlockPos blockPos2 = this.tweakToProperPos(blockPos, world);
-		Random random = this.stepAndDestroyMob.getRand();
+		Random random = this.stepAndDestroyMob.getRandom();
 		if (this.hasReached() && blockPos2 != null) {
 			if (this.counter > 0) {
 				Vec3d vec3d = this.stepAndDestroyMob.getVelocity();
@@ -129,7 +129,9 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		if (blockView.getBlockState(blockPos).getBlock() == this.targetBlock) {
 			return blockPos;
 		} else {
-			BlockPos[] blockPoss = new BlockPos[]{blockPos.down(), blockPos.west(), blockPos.east(), blockPos.north(), blockPos.south(), blockPos.down().down()};
+			BlockPos[] blockPoss = new BlockPos[]{
+				blockPos.method_10074(), blockPos.west(), blockPos.east(), blockPos.north(), blockPos.south(), blockPos.method_10074().method_10074()
+			};
 
 			for (BlockPos blockPos2 : blockPoss) {
 				if (blockView.getBlockState(blockPos2).getBlock() == this.targetBlock) {

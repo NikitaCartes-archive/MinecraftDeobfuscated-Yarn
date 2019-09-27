@@ -7,9 +7,30 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class EndTag implements Tag {
-	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-		positionTracker.add(64L);
+	public static final TagReader<EndTag> READER = new TagReader<EndTag>() {
+		public EndTag method_23243(DataInput dataInput, int i, PositionTracker positionTracker) {
+			positionTracker.add(64L);
+			return EndTag.INSTANCE;
+		}
+
+		@Override
+		public String getCrashReportName() {
+			return "END";
+		}
+
+		@Override
+		public String getCommandFeedbackName() {
+			return "TAG_End";
+		}
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+	};
+	public static final EndTag INSTANCE = new EndTag();
+
+	private EndTag() {
 	}
 
 	@Override
@@ -22,24 +43,21 @@ public class EndTag implements Tag {
 	}
 
 	@Override
+	public TagReader<EndTag> getReader() {
+		return READER;
+	}
+
+	@Override
 	public String toString() {
 		return "END";
 	}
 
 	public EndTag method_10586() {
-		return new EndTag();
+		return this;
 	}
 
 	@Override
 	public Text toText(String string, int i) {
 		return new LiteralText("");
-	}
-
-	public boolean equals(Object object) {
-		return object instanceof EndTag;
-	}
-
-	public int hashCode() {
-		return this.getType();
 	}
 }

@@ -1,11 +1,14 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.Identifier;
 
@@ -17,41 +20,28 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		super(entityRenderDispatcher);
 	}
 
-	public void method_3906(DragonFireballEntity dragonFireballEntity, double d, double e, double f, float g, float h) {
-		RenderSystem.pushMatrix();
-		this.bindEntityTexture(dragonFireballEntity);
-		RenderSystem.translatef((float)d, (float)e, (float)f);
-		RenderSystem.enableRescaleNormal();
-		RenderSystem.scalef(2.0F, 2.0F, 2.0F);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+	public void method_3906(DragonFireballEntity dragonFireballEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+		arg.method_22903();
+		arg.method_22905(2.0F, 2.0F, 2.0F);
 		float i = 1.0F;
 		float j = 0.5F;
 		float k = 0.25F;
-		RenderSystem.rotatef(180.0F - this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
-		RenderSystem.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
-		if (this.renderOutlines) {
-			RenderSystem.enableColorMaterial();
-			RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(dragonFireballEntity));
-		}
-
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
-		bufferBuilder.vertex(-0.5, -0.25, 0.0).texture(0.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
-		bufferBuilder.vertex(0.5, -0.25, 0.0).texture(1.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
-		bufferBuilder.vertex(0.5, 0.75, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
-		bufferBuilder.vertex(-0.5, 0.75, 0.0).texture(0.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
-		tessellator.draw();
-		if (this.renderOutlines) {
-			RenderSystem.tearDownSolidRenderingTextureCombine();
-			RenderSystem.disableColorMaterial();
-		}
-
-		RenderSystem.disableRescaleNormal();
-		RenderSystem.popMatrix();
-		super.render(dragonFireballEntity, d, e, f, g, h);
+		arg.method_22907(Vector3f.field_20705.method_23214(180.0F - this.renderManager.cameraYaw, true));
+		arg.method_22907(Vector3f.field_20703.method_23214((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, true));
+		Matrix4f matrix4f = arg.method_22910();
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(SKIN));
+		class_4608.method_23211(lv);
+		int l = dragonFireballEntity.getLightmapCoordinates();
+		lv.method_22918(matrix4f, -0.5F, -0.25F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 1.0F).method_22916(l).method_22914(0.0F, 1.0F, 0.0F).next();
+		lv.method_22918(matrix4f, 0.5F, -0.25F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 1.0F).method_22916(l).method_22914(0.0F, 1.0F, 0.0F).next();
+		lv.method_22918(matrix4f, 0.5F, 0.75F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 0.0F).method_22916(l).method_22914(0.0F, 1.0F, 0.0F).next();
+		lv.method_22918(matrix4f, -0.5F, 0.75F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 0.0F).method_22916(l).method_22914(0.0F, 1.0F, 0.0F).next();
+		arg.method_22909();
+		lv.method_22923();
+		super.render(dragonFireballEntity, d, e, f, g, h, arg, arg2);
 	}
 
-	protected Identifier method_3905(DragonFireballEntity dragonFireballEntity) {
+	public Identifier method_3905(DragonFireballEntity dragonFireballEntity) {
 		return SKIN;
 	}
 }

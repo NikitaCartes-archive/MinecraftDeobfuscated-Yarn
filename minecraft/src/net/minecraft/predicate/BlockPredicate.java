@@ -36,6 +36,8 @@ public class BlockPredicate {
 	public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
 		if (this == ANY) {
 			return true;
+		} else if (!serverWorld.canSetBlock(blockPos)) {
+			return false;
 		} else {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			Block block = blockState.getBlock();

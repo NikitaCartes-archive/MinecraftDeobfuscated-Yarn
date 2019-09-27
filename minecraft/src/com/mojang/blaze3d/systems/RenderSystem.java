@@ -8,9 +8,9 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Tessellator;
@@ -26,12 +26,13 @@ public class RenderSystem {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ConcurrentLinkedQueue<RenderCall> recordingQueue = Queues.newConcurrentLinkedQueue();
 	private static final Tessellator RENDER_THREAD_TESSELATOR = new Tessellator();
-	private static final float DEFAULTALPHACUTOFF = 0.1F;
+	public static final float DEFAULTALPHACUTOFF = 0.1F;
 	private static boolean isReplayingQueue;
 	private static Thread gameThread;
 	private static Thread renderThread;
 	private static int MAX_SUPPORTED_TEXTURE_SIZE = -1;
 	private static boolean isInInit;
+	private static double lastDrawTime = Double.MIN_VALUE;
 
 	public static void initRenderThread() {
 		if (renderThread == null && gameThread != Thread.currentThread()) {
@@ -74,6 +75,40 @@ public class RenderSystem {
 
 	public static boolean isInInitPhase() {
 		return true;
+	}
+
+	public static void recordRenderCall(RenderCall renderCall) {
+		recordingQueue.add(renderCall);
+	}
+
+	public static void flipFrame(long l) {
+		GLFW.glfwPollEvents();
+		replayQueue();
+		Tessellator.getInstance().getBufferBuilder().clear();
+		GLFW.glfwSwapBuffers(l);
+		GLFW.glfwPollEvents();
+	}
+
+	public static void replayQueue() {
+		isReplayingQueue = true;
+
+		while (!recordingQueue.isEmpty()) {
+			RenderCall renderCall = (RenderCall)recordingQueue.poll();
+			renderCall.execute();
+		}
+
+		isReplayingQueue = false;
+	}
+
+	public static void limitDisplayFPS(int i) {
+		double d = lastDrawTime + 1.0 / (double)i;
+
+		double e;
+		for (e = GLFW.glfwGetTime(); e < d; e = GLFW.glfwGetTime()) {
+			GLFW.glfwWaitEventsTimeout(d - e);
+		}
+
+		lastDrawTime = e;
 	}
 
 	public static void pushLightingAttributes() {
@@ -193,14 +228,9 @@ public class RenderSystem {
 		GlStateManager.blendEquation(i);
 	}
 
-	public static void setupSolidRenderingTextureCombine(int i) {
+	public static void blendColor(float f, float g, float h, float i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.setupSolidRenderingTextureCombine(i);
-	}
-
-	public static void tearDownSolidRenderingTextureCombine() {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.tearDownSolidRenderingTextureCombine();
+		GlStateManager.method_22883(f, g, h, i);
 	}
 
 	public static void enableFog() {
@@ -313,31 +343,6 @@ public class RenderSystem {
 		GlStateManager.logicOp(logicOp.glValue);
 	}
 
-	public static void logicOp(int i) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.logicOp(i);
-	}
-
-	public static void enableTexGen(GlStateManager.TexCoord texCoord) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.enableTexGen(texCoord);
-	}
-
-	public static void disableTexGen(GlStateManager.TexCoord texCoord) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.disableTexGen(texCoord);
-	}
-
-	public static void texGenMode(GlStateManager.TexCoord texCoord, int i) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.texGenMode(texCoord, i);
-	}
-
-	public static void texGenParam(GlStateManager.TexCoord texCoord, int i, FloatBuffer floatBuffer) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.texGenParam(texCoord, i, floatBuffer);
-	}
-
 	public static void activeTexture(int i) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.activeTexture(i);
@@ -364,36 +369,6 @@ public class RenderSystem {
 
 	public static void bindTexture(int i) {
 		GlStateManager.bindTexture(i);
-	}
-
-	public static void texImage2D(int i, int j, int k, int l, int m, int n, int o, int p, @Nullable IntBuffer intBuffer) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.texImage2D(i, j, k, l, m, n, o, p, intBuffer);
-	}
-
-	public static void texSubImage2D(int i, int j, int k, int l, int m, int n, int o, int p, long q) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.texSubImage2D(i, j, k, l, m, n, o, p, q);
-	}
-
-	public static void copyTexSubImage2D(int i, int j, int k, int l, int m, int n, int o, int p) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.copyTexSubImage2D(i, j, k, l, m, n, o, p);
-	}
-
-	public static void getTexImage(int i, int j, int k, int l, long m) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.getTexImage(i, j, k, l, m);
-	}
-
-	public static void enableNormalize() {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.enableNormalize();
-	}
-
-	public static void disableNormalize() {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.disableNormalize();
 	}
 
 	public static void shadeModel(int i) {
@@ -476,16 +451,6 @@ public class RenderSystem {
 		GlStateManager.popMatrix();
 	}
 
-	public static void getMatrix(int i, FloatBuffer floatBuffer) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.getMatrix(i, floatBuffer);
-	}
-
-	public static void getMatrix4f(int i, Consumer<Matrix4f> consumer) {
-		assertThread(RenderSystem::isOnGameThread);
-		consumer.accept(GlStateManager.getMatrix4f(i));
-	}
-
 	public static void ortho(double d, double e, double f, double g, double h, double i) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.ortho(d, e, f, g, h, i);
@@ -494,11 +459,6 @@ public class RenderSystem {
 	public static void rotatef(float f, float g, float h, float i) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.rotatef(f, g, h, i);
-	}
-
-	public static void rotated(double d, double e, double f, double g) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.rotated(d, e, f, g);
 	}
 
 	public static void scalef(float f, float g, float h) {
@@ -518,12 +478,7 @@ public class RenderSystem {
 
 	public static void translated(double d, double e, double f) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.translated(d, e, f);
-	}
-
-	public static void multMatrix(FloatBuffer floatBuffer) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.multMatrix(floatBuffer);
+		GlStateManager.rotated(d, e, f);
 	}
 
 	public static void multMatrix(Matrix4f matrix4f) {
@@ -570,11 +525,6 @@ public class RenderSystem {
 		GlStateManager.readPixels(i, j, k, l, m, n, byteBuffer);
 	}
 
-	public static void getError(Consumer<Integer> consumer) {
-		assertThread(RenderSystem::isOnGameThread);
-		consumer.accept(GlStateManager.getError());
-	}
-
 	public static void getString(int i, Consumer<String> consumer) {
 		assertThread(RenderSystem::isOnGameThread);
 		consumer.accept(GlStateManager.getString(i));
@@ -603,18 +553,6 @@ public class RenderSystem {
 	public static void setErrorCallback(GLFWErrorCallbackI gLFWErrorCallbackI) {
 		assertThread(RenderSystem::isInInitPhase);
 		GLX._setGlfwErrorCallback(gLFWErrorCallbackI);
-	}
-
-	public static void pollEvents() {
-	}
-
-	public static void recordRenderCall(RenderCall renderCall) {
-		recordingQueue.add(renderCall);
-	}
-
-	public static void glClientActiveTexture(int i) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.clientActiveTexture(i);
 	}
 
 	public static void renderCrosshair(int i) {
@@ -670,54 +608,6 @@ public class RenderSystem {
 		}
 
 		return MAX_SUPPORTED_TEXTURE_SIZE;
-	}
-
-	public static void flipFrame() {
-		GLFW.glfwPollEvents();
-		isReplayingQueue = true;
-
-		while (!recordingQueue.isEmpty()) {
-			RenderCall renderCall = (RenderCall)recordingQueue.poll();
-			renderCall.execute();
-		}
-
-		isReplayingQueue = false;
-		Tessellator.getInstance().getBufferBuilder().clear();
-	}
-
-	public static void glBindFramebuffer(int i, int j) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.bindFramebuffer(i, j);
-	}
-
-	public static void glDeleteRenderbuffers(int i) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.deleteRenderbuffers(i);
-	}
-
-	public static void glDeleteFramebuffers(int i) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.deleteFramebuffers(i);
-	}
-
-	public static void glFramebufferTexture2D(int i, int j, int k, int l, int m) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.framebufferTexture2D(i, j, k, l, m);
-	}
-
-	public static void glBindRenderbuffer(int i, int j) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.bindRenderbuffer(i, j);
-	}
-
-	public static void glRenderbufferStorage(int i, int j, int k, int l) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.renderbufferStorage(i, j, k, l);
-	}
-
-	public static void glFramebufferRenderbuffer(int i, int j, int k, int l) {
-		assertThread(RenderSystem::isOnGameThreadOrInit);
-		GlStateManager.framebufferRenderbuffer(i, j, k, l);
 	}
 
 	public static void glBindBuffer(int i, Supplier<Integer> supplier) {
@@ -794,42 +684,39 @@ public class RenderSystem {
 		GlStateManager.uniformMatrix4(i, bl, floatBuffer);
 	}
 
-	public static void glUseProgram(int i) {
+	public static void setupOverlayColor(IntSupplier intSupplier, int i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.useProgram(i);
-	}
-
-	public static void setupOverlayColor(int i, boolean bl) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_22610(i, bl);
+		GlStateManager.method_22610(intSupplier.getAsInt(), i);
 	}
 
 	public static void teardownOverlayColor() {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_22614();
+		GlStateManager.method_22618();
 	}
 
-	public static void enableUsualDiffuseLighting() {
+	public static void setupLevelDiffuseLighting() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.method_22616();
 	}
 
-	public static void enableGuiDiffuseLighting() {
+	public static void setupGuiDiffuseLighting() {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.method_22617();
 	}
 
-	public static void disableDiffuseLighting() {
+	public static void mulTextureByProjModelView() {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_22618();
+		GlStateManager.method_22889();
 	}
 
-	public static void setProfile(RenderSystem.class_4564 arg) {
-		arg.begin();
+	public static void setupEndPortalTexGen() {
+		assertThread(RenderSystem::isOnGameThread);
+		GlStateManager.method_22887();
 	}
 
-	public static void unsetProfile(RenderSystem.class_4564 arg) {
-		arg.end();
+	public static void clearTexGen() {
+		assertThread(RenderSystem::isOnGameThread);
+		GlStateManager.method_22888();
 	}
 
 	public static void beginInitialization() {
@@ -839,7 +726,7 @@ public class RenderSystem {
 	public static void finishInitialization() {
 		isInInit = false;
 		if (!recordingQueue.isEmpty()) {
-			flipFrame();
+			replayQueue();
 		}
 
 		if (!recordingQueue.isEmpty()) {
@@ -868,57 +755,5 @@ public class RenderSystem {
 
 	public static void defaultAlphaFunc() {
 		alphaFunc(516, 0.1F);
-	}
-
-	private static void setupDefaultGlState() {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_22615();
-	}
-
-	@Environment(EnvType.CLIENT)
-	public interface class_4564 {
-		RenderSystem.class_4564 field_20744 = new RenderSystem.class_4564() {
-			@Override
-			public void begin() {
-				RenderSystem.setupDefaultGlState();
-			}
-
-			@Override
-			public void end() {
-			}
-		};
-		RenderSystem.class_4564 field_20745 = new RenderSystem.class_4564() {
-			@Override
-			public void begin() {
-				RenderSystem.enableBlend();
-				RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-			}
-
-			@Override
-			public void end() {
-				RenderSystem.disableBlend();
-			}
-		};
-		RenderSystem.class_4564 field_20746 = new RenderSystem.class_4564() {
-			@Override
-			public void begin() {
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 0.15F);
-				RenderSystem.depthMask(false);
-				RenderSystem.enableBlend();
-				RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
-				RenderSystem.alphaFunc(516, 0.003921569F);
-			}
-
-			@Override
-			public void end() {
-				RenderSystem.disableBlend();
-				RenderSystem.defaultAlphaFunc();
-				RenderSystem.depthMask(true);
-			}
-		};
-
-		void begin();
-
-		void end();
 	}
 }

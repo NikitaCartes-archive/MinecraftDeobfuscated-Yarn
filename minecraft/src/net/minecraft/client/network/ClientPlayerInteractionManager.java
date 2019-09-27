@@ -294,13 +294,13 @@ public class ClientPlayerInteractionManager {
 
 	public TypedActionResult<ItemStack> interactItem(PlayerEntity playerEntity, World world, Hand hand) {
 		if (this.gameMode == GameMode.SPECTATOR) {
-			return TypedActionResult.method_22430(null);
+			return TypedActionResult.pass(null);
 		} else {
 			this.syncSelectedSlot();
 			this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-				return TypedActionResult.method_22430(itemStack);
+				return TypedActionResult.pass(itemStack);
 			} else {
 				int i = itemStack.getCount();
 				TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);

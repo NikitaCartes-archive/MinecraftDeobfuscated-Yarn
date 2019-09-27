@@ -1,297 +1,214 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4538;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4604;
+import net.minecraft.class_4608;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.VisibleRegion;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.EnderEyeEntity;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ExperienceOrbEntity;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.FireworkEntity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.TntEntity;
-import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
-import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.decoration.LeadKnotEntity;
-import net.minecraft.entity.decoration.painting.PaintingEntity;
-import net.minecraft.entity.mob.BlazeEntity;
-import net.minecraft.entity.mob.CaveSpiderEntity;
-import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.mob.DrownedEntity;
-import net.minecraft.entity.mob.ElderGuardianEntity;
-import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.mob.EndermiteEntity;
-import net.minecraft.entity.mob.EvokerEntity;
-import net.minecraft.entity.mob.EvokerFangsEntity;
-import net.minecraft.entity.mob.GhastEntity;
-import net.minecraft.entity.mob.GiantEntity;
-import net.minecraft.entity.mob.GuardianEntity;
-import net.minecraft.entity.mob.HuskEntity;
-import net.minecraft.entity.mob.IllusionerEntity;
-import net.minecraft.entity.mob.MagmaCubeEntity;
-import net.minecraft.entity.mob.PhantomEntity;
-import net.minecraft.entity.mob.PillagerEntity;
-import net.minecraft.entity.mob.RavagerEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.mob.SilverfishEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.entity.mob.SkeletonHorseEntity;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.entity.mob.SpiderEntity;
-import net.minecraft.entity.mob.StrayEntity;
-import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.entity.mob.VindicatorEntity;
-import net.minecraft.entity.mob.WitchEntity;
-import net.minecraft.entity.mob.WitherSkeletonEntity;
-import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.mob.ZombieHorseEntity;
-import net.minecraft.entity.mob.ZombiePigmanEntity;
-import net.minecraft.entity.mob.ZombieVillagerEntity;
-import net.minecraft.entity.passive.BatEntity;
-import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.entity.passive.CodEntity;
-import net.minecraft.entity.passive.CowEntity;
-import net.minecraft.entity.passive.DolphinEntity;
-import net.minecraft.entity.passive.DonkeyEntity;
-import net.minecraft.entity.passive.FoxEntity;
-import net.minecraft.entity.passive.HorseEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.LlamaEntity;
-import net.minecraft.entity.passive.MooshroomEntity;
-import net.minecraft.entity.passive.MuleEntity;
-import net.minecraft.entity.passive.OcelotEntity;
-import net.minecraft.entity.passive.PandaEntity;
-import net.minecraft.entity.passive.ParrotEntity;
-import net.minecraft.entity.passive.PigEntity;
-import net.minecraft.entity.passive.PolarBearEntity;
-import net.minecraft.entity.passive.PufferfishEntity;
-import net.minecraft.entity.passive.RabbitEntity;
-import net.minecraft.entity.passive.SalmonEntity;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.entity.passive.SquidEntity;
-import net.minecraft.entity.passive.TraderLlamaEntity;
-import net.minecraft.entity.passive.TropicalFishEntity;
-import net.minecraft.entity.passive.TurtleEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WanderingTraderEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.DragonFireballEntity;
-import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.entity.projectile.LlamaSpitEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.entity.projectile.SmallFireballEntity;
-import net.minecraft.entity.projectile.SpectralArrowEntity;
-import net.minecraft.entity.projectile.TridentEntity;
-import net.minecraft.entity.projectile.WitherSkullEntity;
-import net.minecraft.entity.thrown.SnowballEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
-import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
-import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
-import net.minecraft.entity.vehicle.TntMinecartEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.resource.ReloadableResourceManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher {
-	private final Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> renderers = Maps.<Class<? extends Entity>, EntityRenderer<? extends Entity>>newHashMap();
+	private static final Identifier field_21009 = new Identifier("textures/misc/shadow.png");
+	private final Map<EntityType<?>, EntityRenderer<?>> renderers = Maps.<EntityType<?>, EntityRenderer<?>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> modelRenderers = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
-	private TextRenderer textRenderer;
-	private double renderPosX;
-	private double renderPosY;
-	private double renderPosZ;
+	private final TextRenderer textRenderer;
 	public final TextureManager textureManager;
-	public World world;
-	public Camera camera;
+	private World world;
+	private Camera camera;
 	public Entity targetedEntity;
 	public float cameraYaw;
 	public float cameraPitch;
-	public GameOptions gameOptions;
-	private boolean renderOutlines;
+	public final GameOptions gameOptions;
 	private boolean renderShadows = true;
 	private boolean renderHitboxes;
 
-	private <T extends Entity> void register(Class<T> class_, EntityRenderer<? super T> entityRenderer) {
-		this.renderers.put(class_, entityRenderer);
+	private <T extends Entity> void register(EntityType<T> entityType, EntityRenderer<? super T> entityRenderer) {
+		this.renderers.put(entityType, entityRenderer);
 	}
 
-	public EntityRenderDispatcher(TextureManager textureManager, ItemRenderer itemRenderer, ReloadableResourceManager reloadableResourceManager) {
+	private void method_23167(ItemRenderer itemRenderer, ReloadableResourceManager reloadableResourceManager) {
+		this.register(EntityType.AREA_EFFECT_CLOUD, new AreaEffectCloudEntityRenderer(this));
+		this.register(EntityType.ARMOR_STAND, new ArmorStandEntityRenderer(this));
+		this.register(EntityType.ARROW, new ArrowEntityRenderer(this));
+		this.register(EntityType.BAT, new BatEntityRenderer(this));
+		this.register(EntityType.BEE, new BeeEntityRenderer(this));
+		this.register(EntityType.BLAZE, new BlazeEntityRenderer(this));
+		this.register(EntityType.BOAT, new BoatEntityRenderer(this));
+		this.register(EntityType.CAT, new CatEntityRenderer(this));
+		this.register(EntityType.CAVE_SPIDER, new CaveSpiderEntityRenderer(this));
+		this.register(EntityType.CHEST_MINECART, new MinecartEntityRenderer<>(this));
+		this.register(EntityType.CHICKEN, new ChickenEntityRenderer(this));
+		this.register(EntityType.COD, new CodEntityRenderer(this));
+		this.register(EntityType.COMMAND_BLOCK_MINECART, new MinecartEntityRenderer<>(this));
+		this.register(EntityType.COW, new CowEntityRenderer(this));
+		this.register(EntityType.CREEPER, new CreeperEntityRenderer(this));
+		this.register(EntityType.DOLPHIN, new DolphinEntityRenderer(this));
+		this.register(EntityType.DONKEY, new DonkeyEntityRenderer<>(this, 0.87F));
+		this.register(EntityType.DRAGON_FIREBALL, new DragonFireballEntityRenderer(this));
+		this.register(EntityType.DROWNED, new DrownedEntityRenderer(this));
+		this.register(EntityType.EGG, new FlyingItemEntityRenderer<>(this, itemRenderer));
+		this.register(EntityType.ELDER_GUARDIAN, new ElderGuardianEntityRenderer(this));
+		this.register(EntityType.END_CRYSTAL, new EnderCrystalEntityRenderer(this));
+		this.register(EntityType.ENDER_DRAGON, new EnderDragonEntityRenderer(this));
+		this.register(EntityType.ENDERMAN, new EndermanEntityRenderer(this));
+		this.register(EntityType.ENDERMITE, new EndermiteEntityRenderer(this));
+		this.register(EntityType.ENDER_PEARL, new FlyingItemEntityRenderer<>(this, itemRenderer));
+		this.register(EntityType.EVOKER_FANGS, new EvokerFangsEntityRenderer(this));
+		this.register(EntityType.EVOKER, new EvokerIllagerEntityRenderer<>(this));
+		this.register(EntityType.EXPERIENCE_BOTTLE, new FlyingItemEntityRenderer<>(this, itemRenderer));
+		this.register(EntityType.EXPERIENCE_ORB, new ExperienceOrbEntityRenderer(this));
+		this.register(EntityType.EYE_OF_ENDER, new FlyingItemEntityRenderer<>(this, itemRenderer));
+		this.register(EntityType.FALLING_BLOCK, new FallingBlockEntityRenderer(this));
+		this.register(EntityType.FIREBALL, new FlyingItemEntityRenderer<>(this, itemRenderer, 3.0F));
+		this.register(EntityType.FIREWORK_ROCKET, new FireworkEntityRenderer(this, itemRenderer));
+		this.register(EntityType.FISHING_BOBBER, new FishingBobberEntityRenderer(this));
+		this.register(EntityType.FOX, new FoxEntityRenderer(this));
+		this.register(EntityType.FURNACE_MINECART, new MinecartEntityRenderer<>(this));
+		this.register(EntityType.GHAST, new GhastEntityRenderer(this));
+		this.register(EntityType.GIANT, new GiantEntityRenderer(this, 6.0F));
+		this.register(EntityType.GUARDIAN, new GuardianEntityRenderer(this));
+		this.register(EntityType.HOPPER_MINECART, new MinecartEntityRenderer<>(this));
+		this.register(EntityType.HORSE, new HorseEntityRenderer(this));
+		this.register(EntityType.HUSK, new HuskEntityRenderer(this));
+		this.register(EntityType.ILLUSIONER, new IllusionerEntityRenderer(this));
+		this.register(EntityType.IRON_GOLEM, new IronGolemEntityRenderer(this));
+		this.register(EntityType.ITEM_FRAME, new ItemFrameEntityRenderer(this, itemRenderer));
+		this.register(EntityType.ITEM, new ItemEntityRenderer(this, itemRenderer));
+		this.register(EntityType.LEASH_KNOT, new LeashKnotEntityRenderer(this));
+		this.register(EntityType.LIGHTNING_BOLT, new LightningEntityRenderer(this));
+		this.register(EntityType.LLAMA, new LlamaEntityRenderer(this));
+		this.register(EntityType.LLAMA_SPIT, new LlamaSpitEntityRenderer(this));
+		this.register(EntityType.MAGMA_CUBE, new MagmaCubeEntityRenderer(this));
+		this.register(EntityType.MINECART, new MinecartEntityRenderer<>(this));
+		this.register(EntityType.MOOSHROOM, new MooshroomEntityRenderer(this));
+		this.register(EntityType.MULE, new DonkeyEntityRenderer<>(this, 0.92F));
+		this.register(EntityType.OCELOT, new OcelotEntityRenderer(this));
+		this.register(EntityType.PAINTING, new PaintingEntityRenderer(this));
+		this.register(EntityType.PANDA, new PandaEntityRenderer(this));
+		this.register(EntityType.PARROT, new ParrotEntityRenderer(this));
+		this.register(EntityType.PHANTOM, new PhantomEntityRenderer(this));
+		this.register(EntityType.PIG, new PigEntityRenderer(this));
+		this.register(EntityType.PILLAGER, new PillagerEntityRenderer(this));
+		this.register(EntityType.POLAR_BEAR, new PolarBearEntityRenderer(this));
+		this.register(EntityType.POTION, new FlyingItemEntityRenderer<>(this, itemRenderer));
+		this.register(EntityType.PUFFERFISH, new PufferfishEntityRenderer(this));
+		this.register(EntityType.RABBIT, new RabbitEntityRenderer(this));
+		this.register(EntityType.RAVAGER, new RavagerEntityRenderer(this));
+		this.register(EntityType.SALMON, new SalmonEntityRenderer(this));
+		this.register(EntityType.SHEEP, new SheepEntityRenderer(this));
+		this.register(EntityType.SHULKER_BULLET, new ShulkerBulletEntityRenderer(this));
+		this.register(EntityType.SHULKER, new ShulkerEntityRenderer(this));
+		this.register(EntityType.SILVERFISH, new SilverfishEntityRenderer(this));
+		this.register(EntityType.SKELETON_HORSE, new ZombieHorseEntityRenderer(this));
+		this.register(EntityType.SKELETON, new SkeletonEntityRenderer(this));
+		this.register(EntityType.SLIME, new SlimeEntityRenderer(this));
+		this.register(EntityType.SMALL_FIREBALL, new FlyingItemEntityRenderer<>(this, itemRenderer, 0.75F));
+		this.register(EntityType.SNOWBALL, new FlyingItemEntityRenderer<>(this, itemRenderer));
+		this.register(EntityType.SNOW_GOLEM, new SnowGolemEntityRenderer(this));
+		this.register(EntityType.SPAWNER_MINECART, new MinecartEntityRenderer<>(this));
+		this.register(EntityType.SPECTRAL_ARROW, new SpectralArrowEntityRenderer(this));
+		this.register(EntityType.SPIDER, new SpiderEntityRenderer<>(this));
+		this.register(EntityType.SQUID, new SquidEntityRenderer(this));
+		this.register(EntityType.STRAY, new StrayEntityRenderer(this));
+		this.register(EntityType.TNT_MINECART, new TntMinecartEntityRenderer(this));
+		this.register(EntityType.TNT, new TntEntityRenderer(this));
+		this.register(EntityType.TRADER_LLAMA, new LlamaEntityRenderer(this));
+		this.register(EntityType.TRIDENT, new TridentEntityRenderer(this));
+		this.register(EntityType.TROPICAL_FISH, new TropicalFishEntityRenderer(this));
+		this.register(EntityType.TURTLE, new TurtleEntityRenderer(this));
+		this.register(EntityType.VEX, new VexEntityRenderer(this));
+		this.register(EntityType.VILLAGER, new VillagerEntityRenderer(this, reloadableResourceManager));
+		this.register(EntityType.VINDICATOR, new VindicatorEntityRenderer(this));
+		this.register(EntityType.WANDERING_TRADER, new WanderingTraderEntityRenderer(this));
+		this.register(EntityType.WITCH, new WitchEntityRenderer(this));
+		this.register(EntityType.WITHER, new WitherEntityRenderer(this));
+		this.register(EntityType.WITHER_SKELETON, new WitherSkeletonEntityRenderer(this));
+		this.register(EntityType.WITHER_SKULL, new WitherSkullEntityRenderer(this));
+		this.register(EntityType.WOLF, new WolfEntityRenderer(this));
+		this.register(EntityType.ZOMBIE_HORSE, new ZombieHorseEntityRenderer(this));
+		this.register(EntityType.ZOMBIE, new ZombieEntityRenderer(this));
+		this.register(EntityType.ZOMBIE_PIGMAN, new ZombiePigmanEntityRenderer(this));
+		this.register(EntityType.ZOMBIE_VILLAGER, new ZombieVillagerEntityRenderer(this, reloadableResourceManager));
+	}
+
+	public EntityRenderDispatcher(
+		TextureManager textureManager,
+		ItemRenderer itemRenderer,
+		ReloadableResourceManager reloadableResourceManager,
+		TextRenderer textRenderer,
+		GameOptions gameOptions
+	) {
 		this.textureManager = textureManager;
-		this.register(CaveSpiderEntity.class, new CaveSpiderEntityRenderer(this));
-		this.register(SpiderEntity.class, new SpiderEntityRenderer(this));
-		this.register(PigEntity.class, new PigEntityRenderer(this));
-		this.register(SheepEntity.class, new SheepEntityRenderer(this));
-		this.register(CowEntity.class, new CowEntityRenderer(this));
-		this.register(MooshroomEntity.class, new MooshroomEntityRenderer(this));
-		this.register(WolfEntity.class, new WolfEntityRenderer(this));
-		this.register(ChickenEntity.class, new ChickenEntityRenderer(this));
-		this.register(OcelotEntity.class, new OcelotEntityRenderer(this));
-		this.register(RabbitEntity.class, new RabbitEntityRenderer(this));
-		this.register(ParrotEntity.class, new ParrotEntityRenderer(this));
-		this.register(TurtleEntity.class, new TurtleEntityRenderer(this));
-		this.register(SilverfishEntity.class, new SilverfishEntityRenderer(this));
-		this.register(EndermiteEntity.class, new EndermiteEntityRenderer(this));
-		this.register(CreeperEntity.class, new CreeperEntityRenderer(this));
-		this.register(EndermanEntity.class, new EndermanEntityRenderer(this));
-		this.register(SnowGolemEntity.class, new SnowGolemEntityRenderer(this));
-		this.register(SkeletonEntity.class, new SkeletonEntityRenderer(this));
-		this.register(WitherSkeletonEntity.class, new WitherSkeletonEntityRenderer(this));
-		this.register(StrayEntity.class, new StrayEntityRenderer(this));
-		this.register(WitchEntity.class, new WitchEntityRenderer(this));
-		this.register(BlazeEntity.class, new BlazeEntityRenderer(this));
-		this.register(ZombiePigmanEntity.class, new ZombiePigmanEntityRenderer(this));
-		this.register(ZombieEntity.class, new ZombieEntityRenderer(this));
-		this.register(ZombieVillagerEntity.class, new ZombieVillagerEntityRenderer(this, reloadableResourceManager));
-		this.register(HuskEntity.class, new HuskEntityRenderer(this));
-		this.register(DrownedEntity.class, new DrownedEntityRenderer(this));
-		this.register(SlimeEntity.class, new SlimeEntityRenderer(this));
-		this.register(MagmaCubeEntity.class, new MagmaCubeEntityRenderer(this));
-		this.register(GiantEntity.class, new GiantEntityRenderer(this, 6.0F));
-		this.register(GhastEntity.class, new GhastEntityRenderer(this));
-		this.register(SquidEntity.class, new SquidEntityRenderer(this));
-		this.register(VillagerEntity.class, new VillagerEntityRenderer(this, reloadableResourceManager));
-		this.register(WanderingTraderEntity.class, new WanderingTraderEntityRenderer(this));
-		this.register(IronGolemEntity.class, new IronGolemEntityRenderer(this));
-		this.register(BatEntity.class, new BatEntityRenderer(this));
-		this.register(GuardianEntity.class, new GuardianEntityRenderer(this));
-		this.register(ElderGuardianEntity.class, new ElderGuardianEntityRenderer(this));
-		this.register(ShulkerEntity.class, new ShulkerEntityRenderer(this));
-		this.register(PolarBearEntity.class, new PolarBearEntityRenderer(this));
-		this.register(EvokerEntity.class, new EvokerIllagerEntityRenderer(this));
-		this.register(VindicatorEntity.class, new VindicatorEntityRenderer(this));
-		this.register(PillagerEntity.class, new PillagerEntityRenderer(this));
-		this.register(RavagerEntity.class, new RavagerEntityRenderer(this));
-		this.register(VexEntity.class, new VexEntityRenderer(this));
-		this.register(IllusionerEntity.class, new IllusionerEntityRenderer(this));
-		this.register(PhantomEntity.class, new PhantomEntityRenderer(this));
-		this.register(PufferfishEntity.class, new PufferfishEntityRenderer(this));
-		this.register(SalmonEntity.class, new SalmonEntityRenderer(this));
-		this.register(CodEntity.class, new CodEntityRenderer(this));
-		this.register(TropicalFishEntity.class, new TropicalFishEntityRenderer(this));
-		this.register(DolphinEntity.class, new DolphinEntityRenderer(this));
-		this.register(PandaEntity.class, new PandaEntityRenderer(this));
-		this.register(CatEntity.class, new CatEntityRenderer(this));
-		this.register(FoxEntity.class, new FoxEntityRenderer(this));
-		this.register(BeeEntity.class, new BeeEntityRenderer(this));
-		this.register(EnderDragonEntity.class, new EnderDragonEntityRenderer(this));
-		this.register(EnderCrystalEntity.class, new EnderCrystalEntityRenderer(this));
-		this.register(WitherEntity.class, new WitherEntityRenderer(this));
-		this.register(Entity.class, new DefaultEntityRenderer(this));
-		this.register(PaintingEntity.class, new PaintingEntityRenderer(this));
-		this.register(ItemFrameEntity.class, new ItemFrameEntityRenderer(this, itemRenderer));
-		this.register(LeadKnotEntity.class, new LeashKnotEntityRenderer(this));
-		this.register(ArrowEntity.class, new ArrowEntityRenderer(this));
-		this.register(SpectralArrowEntity.class, new SpectralArrowEntityRenderer(this));
-		this.register(TridentEntity.class, new TridentEntityRenderer(this));
-		this.register(SnowballEntity.class, new FlyingItemEntityRenderer(this, itemRenderer));
-		this.register(ThrownEnderpearlEntity.class, new FlyingItemEntityRenderer(this, itemRenderer));
-		this.register(EnderEyeEntity.class, new FlyingItemEntityRenderer(this, itemRenderer));
-		this.register(ThrownEggEntity.class, new FlyingItemEntityRenderer(this, itemRenderer));
-		this.register(ThrownPotionEntity.class, new FlyingItemEntityRenderer(this, itemRenderer));
-		this.register(ThrownExperienceBottleEntity.class, new FlyingItemEntityRenderer(this, itemRenderer));
-		this.register(FireworkEntity.class, new FireworkEntityRenderer(this, itemRenderer));
-		this.register(FireballEntity.class, new FlyingItemEntityRenderer(this, itemRenderer, 3.0F));
-		this.register(SmallFireballEntity.class, new FlyingItemEntityRenderer(this, itemRenderer, 0.75F));
-		this.register(DragonFireballEntity.class, new DragonFireballEntityRenderer(this));
-		this.register(WitherSkullEntity.class, new WitherSkullEntityRenderer(this));
-		this.register(ShulkerBulletEntity.class, new ShulkerBulletEntityRenderer(this));
-		this.register(ItemEntity.class, new ItemEntityRenderer(this, itemRenderer));
-		this.register(ExperienceOrbEntity.class, new ExperienceOrbEntityRenderer(this));
-		this.register(TntEntity.class, new TntEntityRenderer(this));
-		this.register(FallingBlockEntity.class, new FallingBlockEntityRenderer(this));
-		this.register(ArmorStandEntity.class, new ArmorStandEntityRenderer(this));
-		this.register(EvokerFangsEntity.class, new EvokerFangsEntityRenderer(this));
-		this.register(TntMinecartEntity.class, new TntMinecartEntityRenderer(this));
-		this.register(SpawnerMinecartEntity.class, new MinecartEntityRenderer(this));
-		this.register(AbstractMinecartEntity.class, new MinecartEntityRenderer(this));
-		this.register(BoatEntity.class, new BoatEntityRenderer(this));
-		this.register(FishingBobberEntity.class, new FishingBobberEntityRenderer(this));
-		this.register(AreaEffectCloudEntity.class, new AreaEffectCloudEntityRenderer(this));
-		this.register(HorseEntity.class, new HorseEntityRenderer(this));
-		this.register(SkeletonHorseEntity.class, new ZombieHorseEntityRenderer(this));
-		this.register(ZombieHorseEntity.class, new ZombieHorseEntityRenderer(this));
-		this.register(MuleEntity.class, new DonkeyEntityRenderer(this, 0.92F));
-		this.register(DonkeyEntity.class, new DonkeyEntityRenderer(this, 0.87F));
-		this.register(LlamaEntity.class, new LlamaEntityRenderer(this));
-		this.register(TraderLlamaEntity.class, new LlamaEntityRenderer(this));
-		this.register(LlamaSpitEntity.class, new LlamaSpitEntityRenderer(this));
-		this.register(LightningEntity.class, new LightningEntityRenderer(this));
+		this.textRenderer = textRenderer;
+		this.gameOptions = gameOptions;
+		this.method_23167(itemRenderer, reloadableResourceManager);
 		this.playerRenderer = new PlayerEntityRenderer(this);
 		this.modelRenderers.put("default", this.playerRenderer);
 		this.modelRenderers.put("slim", new PlayerEntityRenderer(this, true));
-	}
 
-	public void setRenderPosition(double d, double e, double f) {
-		this.renderPosX = d;
-		this.renderPosY = e;
-		this.renderPosZ = f;
-	}
-
-	public <T extends Entity, U extends EntityRenderer<T>> U getRenderer(Class<? extends Entity> class_) {
-		EntityRenderer<? extends Entity> entityRenderer = (EntityRenderer<? extends Entity>)this.renderers.get(class_);
-		if (entityRenderer == null && class_ != Entity.class) {
-			entityRenderer = this.getRenderer(class_.getSuperclass());
-			this.renderers.put(class_, entityRenderer);
+		for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+			if (entityType != EntityType.PLAYER && !this.renderers.containsKey(entityType)) {
+				throw new IllegalStateException("No renderer registered for " + Registry.ENTITY_TYPE.getId(entityType));
+			}
 		}
-
-		return (U)entityRenderer;
 	}
 
-	@Nullable
-	public <T extends Entity, U extends EntityRenderer<T>> U getRenderer(T entity) {
+	public <T extends Entity> EntityRenderer<? super T> getRenderer(T entity) {
 		if (entity instanceof AbstractClientPlayerEntity) {
 			String string = ((AbstractClientPlayerEntity)entity).getModel();
 			PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.modelRenderers.get(string);
-			return (U)(playerEntityRenderer != null ? playerEntityRenderer : this.playerRenderer);
+			return playerEntityRenderer != null ? playerEntityRenderer : this.playerRenderer;
 		} else {
-			return this.getRenderer(entity.getClass());
+			return (EntityRenderer<? super T>)this.renderers.get(entity.getType());
 		}
 	}
 
-	public void configure(World world, TextRenderer textRenderer, Camera camera, Entity entity, GameOptions gameOptions) {
+	public void configure(World world, Camera camera, Entity entity) {
 		this.world = world;
-		this.gameOptions = gameOptions;
 		this.camera = camera;
 		this.targetedEntity = entity;
-		this.textRenderer = textRenderer;
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()) {
 			Direction direction = ((LivingEntity)camera.getFocusedEntity()).getSleepingDirection();
 			if (direction != null) {
@@ -308,10 +225,6 @@ public class EntityRenderDispatcher {
 		this.cameraYaw = f;
 	}
 
-	public boolean shouldRenderShadows() {
-		return this.renderShadows;
-	}
-
 	public void setRenderShadows(boolean bl) {
 		this.renderShadows = bl;
 	}
@@ -324,69 +237,47 @@ public class EntityRenderDispatcher {
 		return this.renderHitboxes;
 	}
 
-	public boolean hasSecondPass(Entity entity) {
-		return this.getRenderer(entity).hasSecondPass();
+	public <E extends Entity> boolean shouldRender(E entity, class_4604 arg, double d, double e, double f) {
+		EntityRenderer<? super E> entityRenderer = this.getRenderer(entity);
+		return entityRenderer.isVisible(entity, arg, d, e, f);
 	}
 
-	public boolean shouldRender(Entity entity, VisibleRegion visibleRegion, double d, double e, double f) {
-		EntityRenderer<Entity> entityRenderer = this.getRenderer(entity);
-		return entityRenderer != null && entityRenderer.isVisible(entity, visibleRegion, d, e, f);
+	public void render(Entity entity, float f) {
+		class_4597.class_4598 lv = MinecraftClient.getInstance().method_22940().method_23000();
+		this.render(entity, 0.0, 0.0, 0.0, 0.0F, f, new class_4587(), lv);
+		lv.method_22993();
 	}
 
-	public void render(Entity entity, float f, boolean bl) {
-		if (entity.age == 0) {
-			entity.prevRenderX = entity.x;
-			entity.prevRenderY = entity.y;
-			entity.prevRenderZ = entity.z;
-		}
-
-		double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-		double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-		double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
-		float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
-		int i = entity.getLightmapCoordinates();
-		if (entity.isOnFire()) {
-			i = 15728880;
-		}
-
-		int j = i % 65536;
-		int k = i / 65536;
-		RenderSystem.glMultiTexCoord2f(33985, (float)j, (float)k);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.render(entity, d - this.renderPosX, e - this.renderPosY, g - this.renderPosZ, h, f, bl);
-	}
-
-	public void render(Entity entity, double d, double e, double f, float g, float h, boolean bl) {
-		EntityRenderer<Entity> entityRenderer = null;
+	public <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+		EntityRenderer<? super E> entityRenderer = this.getRenderer(entity);
 
 		try {
-			entityRenderer = this.getRenderer(entity);
-			if (entityRenderer != null && this.textureManager != null) {
-				try {
-					entityRenderer.setRenderOutlines(this.renderOutlines);
-					entityRenderer.render(entity, d, e, f, g, h);
-				} catch (Throwable var17) {
-					throw new CrashException(CrashReport.create(var17, "Rendering entity in world"));
-				}
-
-				try {
-					if (!this.renderOutlines) {
-						entityRenderer.postRender(entity, d, e, f, g, h);
-					}
-				} catch (Throwable var18) {
-					throw new CrashException(CrashReport.create(var18, "Post-rendering entity in world"));
-				}
-
-				if (this.renderHitboxes && !entity.isInvisible() && !bl && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-					try {
-						this.renderHitbox(entity, d, e, f, g, h);
-					} catch (Throwable var16) {
-						throw new CrashException(CrashReport.create(var16, "Rendering entity hitbox in world"));
-					}
+			Vec3d vec3d = entityRenderer.method_23169(entity, d, e, f, h);
+			double i = d + vec3d.getX();
+			double j = e + vec3d.getY();
+			double k = f + vec3d.getZ();
+			arg.method_22903();
+			arg.method_22904(i, j, k);
+			entityRenderer.render(entity, i, j, k, g, h, arg, arg2);
+			if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.field_4673 > 0.0F && !entity.isInvisible()) {
+				double l = this.squaredDistanceToCamera(entity.x, entity.y, entity.z);
+				float m = (float)((1.0 - l / 256.0) * (double)entityRenderer.field_4672);
+				if (m > 0.0F) {
+					method_23166(arg, arg2, entity, m, h, this.world, entityRenderer.field_4673);
 				}
 			}
-		} catch (Throwable var19) {
-			CrashReport crashReport = CrashReport.create(var19, "Rendering entity in world");
+
+			if (entity.doesRenderOnFire()) {
+				this.method_23165(arg, arg2, entity);
+			}
+
+			if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
+				this.renderHitbox(arg, arg2.getBuffer(BlockRenderLayer.LINES), entity, h);
+			}
+
+			arg.method_22909();
+		} catch (Throwable var23) {
+			CrashReport crashReport = CrashReport.create(var23, "Rendering entity in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being rendered");
 			entity.populateCrashReport(crashReportSection);
 			CrashReportSection crashReportSection2 = crashReport.addElement("Renderer details");
@@ -398,82 +289,36 @@ public class EntityRenderDispatcher {
 		}
 	}
 
-	public void renderSecondPass(Entity entity, float f) {
-		if (entity.age == 0) {
-			entity.prevRenderX = entity.x;
-			entity.prevRenderY = entity.y;
-			entity.prevRenderZ = entity.z;
-		}
-
-		double d = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-		double e = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-		double g = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
-		float h = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
-		int i = entity.getLightmapCoordinates();
-		if (entity.isOnFire()) {
-			i = 15728880;
-		}
-
-		int j = i % 65536;
-		int k = i / 65536;
-		RenderSystem.glMultiTexCoord2f(33985, (float)j, (float)k);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		EntityRenderer<Entity> entityRenderer = this.getRenderer(entity);
-		if (entityRenderer != null && this.textureManager != null) {
-			entityRenderer.renderSecondPass(entity, d - this.renderPosX, e - this.renderPosY, g - this.renderPosZ, h, f);
-		}
-	}
-
-	private void renderHitbox(Entity entity, double d, double e, double f, float g, float h) {
-		RenderSystem.depthMask(false);
-		RenderSystem.disableTexture();
-		RenderSystem.disableLighting();
-		RenderSystem.disableCull();
-		RenderSystem.disableBlend();
-		float i = entity.getWidth() / 2.0F;
-		Box box = entity.getBoundingBox();
-		WorldRenderer.drawBoxOutline(
-			box.minX - entity.x + d,
-			box.minY - entity.y + e,
-			box.minZ - entity.z + f,
-			box.maxX - entity.x + d,
-			box.maxY - entity.y + e,
-			box.maxZ - entity.z + f,
-			1.0F,
-			1.0F,
-			1.0F,
-			1.0F
-		);
+	private void renderHitbox(class_4587 arg, class_4588 arg2, Entity entity, float f) {
+		float g = entity.getWidth() / 2.0F;
+		this.method_23164(arg, arg2, entity, 1.0F, 1.0F, 1.0F);
 		if (entity instanceof EnderDragonEntity) {
+			double d = entity.x - MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
+			double e = entity.y - MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
+			double h = entity.z - MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
+
 			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
-				double j = (enderDragonPart.x - enderDragonPart.prevX) * (double)h;
-				double k = (enderDragonPart.y - enderDragonPart.prevY) * (double)h;
-				double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
-				Box box2 = enderDragonPart.getBoundingBox();
-				WorldRenderer.drawBoxOutline(
-					box2.minX - this.renderPosX + j,
-					box2.minY - this.renderPosY + k,
-					box2.minZ - this.renderPosZ + l,
-					box2.maxX - this.renderPosX + j,
-					box2.maxY - this.renderPosY + k,
-					box2.maxZ - this.renderPosZ + l,
-					0.25F,
-					1.0F,
-					0.0F,
-					1.0F
-				);
+				arg.method_22903();
+				double i = d + MathHelper.lerp((double)f, enderDragonPart.prevRenderX, enderDragonPart.x);
+				double j = e + MathHelper.lerp((double)f, enderDragonPart.prevRenderY, enderDragonPart.y);
+				double k = h + MathHelper.lerp((double)f, enderDragonPart.prevRenderZ, enderDragonPart.z);
+				arg.method_22904(i, j, k);
+				this.method_23164(arg, arg2, enderDragonPart, 0.25F, 1.0F, 0.0F);
+				arg.method_22909();
 			}
 		}
 
 		if (entity instanceof LivingEntity) {
-			float m = 0.01F;
-			WorldRenderer.drawBoxOutline(
-				d - (double)i,
-				e + (double)entity.getStandingEyeHeight() - 0.01F,
-				f - (double)i,
-				d + (double)i,
-				e + (double)entity.getStandingEyeHeight() + 0.01F,
-				f + (double)i,
+			float l = 0.01F;
+			WorldRenderer.method_22980(
+				arg,
+				arg2,
+				(double)(-g),
+				(double)(entity.getStandingEyeHeight() - 0.01F),
+				(double)(-g),
+				(double)g,
+				(double)(entity.getStandingEyeHeight() + 0.01F),
+				(double)g,
 				1.0F,
 				0.0F,
 				0.0F,
@@ -481,18 +326,134 @@ public class EntityRenderDispatcher {
 			);
 		}
 
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		Vec3d vec3d = entity.getRotationVec(h);
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex(d, e + (double)entity.getStandingEyeHeight(), f).color(0, 0, 255, 255).next();
-		bufferBuilder.vertex(d + vec3d.x * 2.0, e + (double)entity.getStandingEyeHeight() + vec3d.y * 2.0, f + vec3d.z * 2.0).color(0, 0, 255, 255).next();
-		tessellator.draw();
-		RenderSystem.enableTexture();
-		RenderSystem.enableLighting();
-		RenderSystem.enableCull();
-		RenderSystem.disableBlend();
-		RenderSystem.depthMask(true);
+		Vec3d vec3d = entity.getRotationVec(f);
+		Matrix4f matrix4f = arg.method_22910();
+		arg2.method_22918(matrix4f, 0.0F, entity.getStandingEyeHeight(), 0.0F).color(0, 0, 255, 255).next();
+		arg2.method_22918(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0))
+			.color(0, 0, 255, 255)
+			.next();
+	}
+
+	private void method_23164(class_4587 arg, class_4588 arg2, Entity entity, float f, float g, float h) {
+		Box box = entity.getBoundingBox().offset(-entity.x, -entity.y, -entity.z);
+		WorldRenderer.method_22982(arg, arg2, box, f, g, h, 1.0F);
+	}
+
+	private void method_23165(class_4587 arg, class_4597 arg2, Entity entity) {
+		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
+		Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.FIRE_0);
+		Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.FIRE_1);
+		arg.method_22903();
+		float f = entity.getWidth() * 1.4F;
+		arg.method_22905(f, f, f);
+		float g = 0.5F;
+		float h = 0.0F;
+		float i = entity.getHeight() / f;
+		float j = (float)(entity.y - entity.getBoundingBox().minY);
+		arg.method_22907(Vector3f.field_20705.method_23214(-this.cameraYaw, true));
+		arg.method_22904(0.0, 0.0, (double)(-0.3F + (float)((int)i) * 0.02F));
+		float k = 0.0F;
+		int l = 0;
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.CUTOUT);
+
+		for (Matrix4f matrix4f = arg.method_22910(); i > 0.0F; l++) {
+			Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
+			float m = sprite3.getMinU();
+			float n = sprite3.getMinV();
+			float o = sprite3.getMaxU();
+			float p = sprite3.getMaxV();
+			if (l / 2 % 2 == 0) {
+				float q = o;
+				o = m;
+				m = q;
+			}
+
+			method_23161(matrix4f, lv, g - 0.0F, 0.0F - j, k, o, p);
+			method_23161(matrix4f, lv, -g - 0.0F, 0.0F - j, k, m, p);
+			method_23161(matrix4f, lv, -g - 0.0F, 1.4F - j, k, m, n);
+			method_23161(matrix4f, lv, g - 0.0F, 1.4F - j, k, o, n);
+			i -= 0.45F;
+			j -= 0.45F;
+			g *= 0.9F;
+			k += 0.03F;
+		}
+
+		arg.method_22909();
+	}
+
+	private static void method_23161(Matrix4f matrix4f, class_4588 arg, float f, float g, float h, float i, float j) {
+		arg.method_22918(matrix4f, f, g, h).color(255, 255, 255, 255).texture(i, j).method_22916(240).method_22914(0.0F, 1.0F, 0.0F).next();
+	}
+
+	private static void method_23166(class_4587 arg, class_4597 arg2, Entity entity, float f, float g, class_4538 arg3, float h) {
+		float i = h;
+		if (entity instanceof MobEntity) {
+			MobEntity mobEntity = (MobEntity)entity;
+			if (mobEntity.isBaby()) {
+				i = h * 0.5F;
+			}
+		}
+
+		double d = MathHelper.lerp((double)g, entity.prevRenderX, entity.x);
+		double e = MathHelper.lerp((double)g, entity.prevRenderY, entity.y);
+		double j = MathHelper.lerp((double)g, entity.prevRenderZ, entity.z);
+		int k = MathHelper.floor(d - (double)i);
+		int l = MathHelper.floor(d + (double)i);
+		int m = MathHelper.floor(e - (double)i);
+		int n = MathHelper.floor(e);
+		int o = MathHelper.floor(j - (double)i);
+		int p = MathHelper.floor(j + (double)i);
+		Matrix4f matrix4f = arg.method_22910();
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(field_21009));
+		class_4608.method_23211(lv);
+
+		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(k, m, o), new BlockPos(l, n, p))) {
+			method_23163(matrix4f, lv, arg3, blockPos, d, e, j, i, f);
+		}
+
+		lv.method_22923();
+	}
+
+	private static void method_23163(Matrix4f matrix4f, class_4588 arg, class_4538 arg2, BlockPos blockPos, double d, double e, double f, float g, float h) {
+		BlockPos blockPos2 = blockPos.method_10074();
+		BlockState blockState = arg2.getBlockState(blockPos2);
+		if (blockState.getRenderType() != BlockRenderType.INVISIBLE && arg2.getLightLevel(blockPos) > 3) {
+			if (blockState.method_21743(arg2, blockPos2)) {
+				VoxelShape voxelShape = blockState.getOutlineShape(arg2, blockPos.method_10074());
+				if (!voxelShape.isEmpty()) {
+					float i = (float)(((double)h - (e - (double)blockPos.getY()) / 2.0) * 0.5 * (double)arg2.getBrightness(blockPos));
+					if (i >= 0.0F) {
+						if (i > 1.0F) {
+							i = 1.0F;
+						}
+
+						Box box = voxelShape.getBoundingBox();
+						double j = (double)blockPos.getX() + box.minX;
+						double k = (double)blockPos.getX() + box.maxX;
+						double l = (double)blockPos.getY() + box.minY;
+						double m = (double)blockPos.getZ() + box.minZ;
+						double n = (double)blockPos.getZ() + box.maxZ;
+						float o = (float)(j - d);
+						float p = (float)(k - d);
+						float q = (float)(l - e + 0.015625);
+						float r = (float)(m - f);
+						float s = (float)(n - f);
+						float t = -o / 2.0F / g + 0.5F;
+						float u = -p / 2.0F / g + 0.5F;
+						float v = -r / 2.0F / g + 0.5F;
+						float w = -s / 2.0F / g + 0.5F;
+						method_23162(matrix4f, arg, i, o, q, r, t, v);
+						method_23162(matrix4f, arg, i, o, q, s, t, w);
+						method_23162(matrix4f, arg, i, p, q, s, u, w);
+						method_23162(matrix4f, arg, i, p, q, r, u, v);
+					}
+				}
+			}
+		}
+	}
+
+	private static void method_23162(Matrix4f matrix4f, class_4588 arg, float f, float g, float h, float i, float j, float k) {
+		arg.method_22918(matrix4f, g, h, i).method_22915(1.0F, 1.0F, 1.0F, f).texture(j, k).method_22916(15728880).method_22914(0.0F, 1.0F, 0.0F).next();
 	}
 
 	public void setWorld(@Nullable World world) {
@@ -502,15 +463,15 @@ public class EntityRenderDispatcher {
 		}
 	}
 
+	public double method_23168(Entity entity) {
+		return this.camera.getPos().squaredDistanceTo(entity.getPos());
+	}
+
 	public double squaredDistanceToCamera(double d, double e, double f) {
 		return this.camera.getPos().squaredDistanceTo(d, e, f);
 	}
 
 	public TextRenderer getTextRenderer() {
 		return this.textRenderer;
-	}
-
-	public void setRenderOutlines(boolean bl) {
-		this.renderOutlines = bl;
 	}
 }

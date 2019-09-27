@@ -1,10 +1,11 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.PhantomEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.PhantomEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.util.Identifier;
 
@@ -17,19 +18,19 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 		this.addFeature(new PhantomEyesFeatureRenderer<>(this));
 	}
 
-	protected Identifier method_4090(PhantomEntity phantomEntity) {
+	public Identifier method_4090(PhantomEntity phantomEntity) {
 		return SKIN;
 	}
 
-	protected void method_4088(PhantomEntity phantomEntity, float f) {
+	protected void method_4088(PhantomEntity phantomEntity, class_4587 arg, float f) {
 		int i = phantomEntity.getPhantomSize();
 		float g = 1.0F + 0.15F * (float)i;
-		RenderSystem.scalef(g, g, g);
-		RenderSystem.translatef(0.0F, 1.3125F, 0.1875F);
+		arg.method_22905(g, g, g);
+		arg.method_22904(0.0, 1.3125, 0.1875);
 	}
 
-	protected void method_4089(PhantomEntity phantomEntity, float f, float g, float h) {
-		super.setupTransforms(phantomEntity, f, g, h);
-		RenderSystem.rotatef(phantomEntity.pitch, 1.0F, 0.0F, 0.0F);
+	protected void method_4089(PhantomEntity phantomEntity, class_4587 arg, float f, float g, float h) {
+		super.setupTransforms(phantomEntity, arg, f, g, h);
+		arg.method_22907(Vector3f.field_20703.method_23214(phantomEntity.pitch, true));
 	}
 }

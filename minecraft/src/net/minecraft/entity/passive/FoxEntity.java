@@ -204,7 +204,6 @@ public class FoxEntity extends AnimalEntity {
 			this.jumping = false;
 			this.sidewaysSpeed = 0.0F;
 			this.forwardSpeed = 0.0F;
-			this.turningSpeed = 0.0F;
 		}
 
 		super.tickMovement();
@@ -388,7 +387,7 @@ public class FoxEntity extends AnimalEntity {
 		ListTag listTag = compoundTag.getList("TrustedUUIDs", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompoundTag(i)));
+			this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompound(i)));
 		}
 
 		this.setSleeping(compoundTag.getBoolean("Sleeping"));
@@ -798,7 +797,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if (this.reciprocalChance > 0 && this.mob.getRand().nextInt(this.reciprocalChance) != 0) {
+			if (this.reciprocalChance > 0 && this.mob.getRandom().nextInt(this.reciprocalChance) != 0) {
 				return false;
 			} else {
 				for (UUID uUID : FoxEntity.this.getTrustedUuids()) {
@@ -1145,7 +1144,7 @@ public class FoxEntity extends AnimalEntity {
 			if (!FoxEntity.this.isWalking()) {
 				Vec3d vec3d = FoxEntity.this.getVelocity();
 				if (vec3d.y * vec3d.y < 0.03F && FoxEntity.this.pitch != 0.0F) {
-					FoxEntity.this.pitch = this.updatePitch(FoxEntity.this.pitch, 0.0F, 0.2F);
+					FoxEntity.this.pitch = MathHelper.method_22859(FoxEntity.this.pitch, 0.0F, 0.2F);
 				} else {
 					double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
 					double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 180.0F / (float)Math.PI;
@@ -1226,7 +1225,7 @@ public class FoxEntity extends AnimalEntity {
 				this.world.spawnEntity(foxEntity);
 				this.world.sendEntityStatus(this.animal, (byte)18);
 				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-					this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
+					this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRandom().nextInt(7) + 1));
 				}
 			}
 		}
@@ -1300,7 +1299,7 @@ public class FoxEntity extends AnimalEntity {
 				return false;
 			} else if (!FoxEntity.this.wantsToPickupItem()) {
 				return false;
-			} else if (FoxEntity.this.getRand().nextInt(10) != 0) {
+			} else if (FoxEntity.this.getRandom().nextInt(10) != 0) {
 				return false;
 			} else {
 				List<ItemEntity> list = FoxEntity.this.world
@@ -1342,7 +1341,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			return FoxEntity.this.getAttacker() == null
-				&& FoxEntity.this.getRand().nextFloat() < 0.02F
+				&& FoxEntity.this.getRandom().nextFloat() < 0.02F
 				&& !FoxEntity.this.isSleeping()
 				&& FoxEntity.this.getTarget() == null
 				&& FoxEntity.this.getNavigation().isIdle()
@@ -1359,7 +1358,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		public void start() {
 			this.chooseNewAngle();
-			this.counter = 2 + FoxEntity.this.getRand().nextInt(3);
+			this.counter = 2 + FoxEntity.this.getRandom().nextInt(3);
 			FoxEntity.this.setSitting(true);
 			FoxEntity.this.getNavigation().stop();
 		}
@@ -1388,10 +1387,10 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		private void chooseNewAngle() {
-			double d = (Math.PI * 2) * FoxEntity.this.getRand().nextDouble();
+			double d = (Math.PI * 2) * FoxEntity.this.getRandom().nextDouble();
 			this.lookX = Math.cos(d);
 			this.lookZ = Math.sin(d);
-			this.timer = 80 + FoxEntity.this.getRand().nextInt(20);
+			this.timer = 80 + FoxEntity.this.getRandom().nextInt(20);
 		}
 	}
 

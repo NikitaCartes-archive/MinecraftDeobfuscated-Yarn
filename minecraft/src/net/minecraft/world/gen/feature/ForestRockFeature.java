@@ -19,14 +19,14 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
-			if (!iWorld.isAir(blockPos.down())) {
-				Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+			if (!iWorld.isAir(blockPos.method_10074())) {
+				Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
 				if (block == Blocks.GRASS_BLOCK || Block.isNaturalDirt(block) || Block.isNaturalStone(block)) {
 					break;
 				}
 			}
 
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		if (blockPos.getY() <= 3) {

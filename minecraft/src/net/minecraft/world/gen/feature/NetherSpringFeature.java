@@ -47,7 +47,7 @@ public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 				i++;
 			}
 
-			if (iWorld.getBlockState(blockPos.down()) == NETHERRACK) {
+			if (iWorld.getBlockState(blockPos.method_10074()) == NETHERRACK) {
 				i++;
 			}
 
@@ -68,7 +68,7 @@ public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 				j++;
 			}
 
-			if (iWorld.isAir(blockPos.down())) {
+			if (iWorld.isAir(blockPos.method_10074())) {
 				j++;
 			}
 

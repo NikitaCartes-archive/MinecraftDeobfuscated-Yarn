@@ -53,16 +53,13 @@ public class TranslatableText extends BaseText implements ParsableText {
 			this.translations.clear();
 		}
 
-		try {
-			this.setTranslation(LANGUAGE.translate(this.key));
-		} catch (TranslationException var6) {
-			this.translations.clear();
+		String string = LANGUAGE.translate(this.key);
 
-			try {
-				this.setTranslation(EMPTY_LANGUAGE.translate(this.key));
-			} catch (TranslationException var5) {
-				throw var6;
-			}
+		try {
+			this.setTranslation(string);
+		} catch (TranslationException var5) {
+			this.translations.clear();
+			this.translations.add(new LiteralText(string));
 		}
 	}
 

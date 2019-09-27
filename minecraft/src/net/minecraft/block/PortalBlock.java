@@ -55,7 +55,7 @@ public class PortalBlock extends Block {
 			&& serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)
 			&& random.nextInt(2000) < serverWorld.getDifficulty().getId()) {
 			while (serverWorld.getBlockState(blockPos).getBlock() == this) {
-				blockPos = blockPos.down();
+				blockPos = blockPos.method_10074();
 			}
 
 			if (serverWorld.getBlockState(blockPos).allowsSpawning(serverWorld, blockPos, EntityType.ZOMBIE_PIGMAN)) {
@@ -190,7 +190,7 @@ public class PortalBlock extends Block {
 
 			for (Direction.AxisDirection axisDirection : Direction.AxisDirection.values()) {
 				BlockPattern.Result result = new BlockPattern.Result(
-					direction.getDirection() == axisDirection ? blockPos2 : blockPos2.offset(areaHelper.negativeDir, areaHelper.getWidth() - 1),
+					direction.getDirection() == axisDirection ? blockPos2 : blockPos2.method_10079(areaHelper.negativeDir, areaHelper.getWidth() - 1),
 					Direction.get(axisDirection, axis),
 					Direction.UP,
 					loadingCache,
@@ -218,7 +218,7 @@ public class PortalBlock extends Block {
 			}
 
 			return new BlockPattern.Result(
-				direction.getDirection() == axisDirection2 ? blockPos2 : blockPos2.offset(areaHelper.negativeDir, areaHelper.getWidth() - 1),
+				direction.getDirection() == axisDirection2 ? blockPos2 : blockPos2.method_10079(areaHelper.negativeDir, areaHelper.getWidth() - 1),
 				Direction.get(axisDirection2, axis),
 				Direction.UP,
 				loadingCache,
@@ -253,13 +253,13 @@ public class PortalBlock extends Block {
 
 			BlockPos blockPos2 = blockPos;
 
-			while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.validStateInsidePortal(iWorld.getBlockState(blockPos.down()))) {
-				blockPos = blockPos.down();
+			while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.validStateInsidePortal(iWorld.getBlockState(blockPos.method_10074()))) {
+				blockPos = blockPos.method_10074();
 			}
 
 			int i = this.distanceToPortalEdge(blockPos, this.positiveDir) - 1;
 			if (i >= 0) {
-				this.lowerCorner = blockPos.offset(this.positiveDir, i);
+				this.lowerCorner = blockPos.method_10079(this.positiveDir, i);
 				this.width = this.distanceToPortalEdge(this.lowerCorner, this.negativeDir);
 				if (this.width < 2 || this.width > 21) {
 					this.lowerCorner = null;
@@ -275,13 +275,13 @@ public class PortalBlock extends Block {
 		protected int distanceToPortalEdge(BlockPos blockPos, Direction direction) {
 			int i;
 			for (i = 0; i < 22; i++) {
-				BlockPos blockPos2 = blockPos.offset(direction, i);
-				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos2)) || this.world.getBlockState(blockPos2.down()).getBlock() != Blocks.OBSIDIAN) {
+				BlockPos blockPos2 = blockPos.method_10079(direction, i);
+				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos2)) || this.world.getBlockState(blockPos2.method_10074()).getBlock() != Blocks.OBSIDIAN) {
 					break;
 				}
 			}
 
-			Block block = this.world.getBlockState(blockPos.offset(direction, i)).getBlock();
+			Block block = this.world.getBlockState(blockPos.method_10079(direction, i)).getBlock();
 			return block == Blocks.OBSIDIAN ? i : 0;
 		}
 
@@ -297,7 +297,7 @@ public class PortalBlock extends Block {
 			label56:
 			for (this.height = 0; this.height < 21; this.height++) {
 				for (int i = 0; i < this.width; i++) {
-					BlockPos blockPos = this.lowerCorner.offset(this.negativeDir, i).up(this.height);
+					BlockPos blockPos = this.lowerCorner.method_10079(this.negativeDir, i).up(this.height);
 					BlockState blockState = this.world.getBlockState(blockPos);
 					if (!this.validStateInsidePortal(blockState)) {
 						break label56;
@@ -323,7 +323,7 @@ public class PortalBlock extends Block {
 			}
 
 			for (int i = 0; i < this.width; i++) {
-				if (this.world.getBlockState(this.lowerCorner.offset(this.negativeDir, i).up(this.height)).getBlock() != Blocks.OBSIDIAN) {
+				if (this.world.getBlockState(this.lowerCorner.method_10079(this.negativeDir, i).up(this.height)).getBlock() != Blocks.OBSIDIAN) {
 					this.height = 0;
 					break;
 				}
@@ -350,7 +350,7 @@ public class PortalBlock extends Block {
 
 		public void createPortal() {
 			for (int i = 0; i < this.width; i++) {
-				BlockPos blockPos = this.lowerCorner.offset(this.negativeDir, i);
+				BlockPos blockPos = this.lowerCorner.method_10079(this.negativeDir, i);
 
 				for (int j = 0; j < this.height; j++) {
 					this.world.setBlockState(blockPos.up(j), Blocks.NETHER_PORTAL.getDefaultState().with(PortalBlock.AXIS, this.axis), 18);

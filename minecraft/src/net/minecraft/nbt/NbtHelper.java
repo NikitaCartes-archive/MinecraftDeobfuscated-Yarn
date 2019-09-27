@@ -32,11 +32,11 @@ public final class NbtHelper {
 	public static GameProfile toGameProfile(CompoundTag compoundTag) {
 		String string = null;
 		String string2 = null;
-		if (compoundTag.containsKey("Name", 8)) {
+		if (compoundTag.contains("Name", 8)) {
 			string = compoundTag.getString("Name");
 		}
 
-		if (compoundTag.containsKey("Id", 8)) {
+		if (compoundTag.contains("Id", 8)) {
 			string2 = compoundTag.getString("Id");
 		}
 
@@ -49,16 +49,16 @@ public final class NbtHelper {
 			}
 
 			GameProfile gameProfile = new GameProfile(uUID, string);
-			if (compoundTag.containsKey("Properties", 10)) {
+			if (compoundTag.contains("Properties", 10)) {
 				CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
 
 				for (String string3 : compoundTag2.getKeys()) {
 					ListTag listTag = compoundTag2.getList(string3, 10);
 
 					for (int i = 0; i < listTag.size(); i++) {
-						CompoundTag compoundTag3 = listTag.getCompoundTag(i);
+						CompoundTag compoundTag3 = listTag.getCompound(i);
 						String string4 = compoundTag3.getString("Value");
-						if (compoundTag3.containsKey("Signature", 8)) {
+						if (compoundTag3.contains("Signature", 8)) {
 							gameProfile.getProperties().put(string3, new com.mojang.authlib.properties.Property(string3, string4, compoundTag3.getString("Signature")));
 						} else {
 							gameProfile.getProperties().put(string3, new com.mojang.authlib.properties.Property(string3, string4));
@@ -122,8 +122,8 @@ public final class NbtHelper {
 			CompoundTag compoundTag2 = (CompoundTag)tag2;
 
 			for (String string : compoundTag.getKeys()) {
-				Tag tag3 = compoundTag.getTag(string);
-				if (!matches(tag3, compoundTag2.getTag(string), bl)) {
+				Tag tag3 = compoundTag.get(string);
+				if (!matches(tag3, compoundTag2.get(string), bl)) {
 					return false;
 				}
 			}
@@ -182,12 +182,12 @@ public final class NbtHelper {
 	}
 
 	public static BlockState toBlockState(CompoundTag compoundTag) {
-		if (!compoundTag.containsKey("Name", 8)) {
+		if (!compoundTag.contains("Name", 8)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			Block block = Registry.BLOCK.get(new Identifier(compoundTag.getString("Name")));
 			BlockState blockState = block.getDefaultState();
-			if (compoundTag.containsKey("Properties", 10)) {
+			if (compoundTag.contains("Properties", 10)) {
 				CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
 				StateManager<Block, BlockState> stateManager = block.getStateFactory();
 

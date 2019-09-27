@@ -97,7 +97,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	private boolean method_20640(BlockPos blockPos, ServerWorld serverWorld) {
 		BlockState blockState = serverWorld.getBlockState(blockPos);
 		Block block = blockState.getBlock();
-		Block block2 = serverWorld.getBlockState(blockPos.down()).getBlock();
+		Block block2 = serverWorld.getBlockState(blockPos.method_10074()).getBlock();
 		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860
 			|| blockState.isAir() && block2 instanceof FarmlandBlock && this.field_18859;
 	}
@@ -120,7 +120,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		if (this.field_18858 != null && l > this.field_18861) {
 			BlockState blockState = serverWorld.getBlockState(this.field_18858);
 			Block block = blockState.getBlock();
-			Block block2 = serverWorld.getBlockState(this.field_18858.down()).getBlock();
+			Block block2 = serverWorld.getBlockState(this.field_18858.method_10074()).getBlock();
 			if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.field_18860) {
 				serverWorld.breakBlock(this.field_18858, true, villagerEntity);
 			}

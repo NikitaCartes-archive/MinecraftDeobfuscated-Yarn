@@ -1,7 +1,9 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
@@ -10,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class GuardianEntityModel extends EntityModel<GuardianEntity> {
+public class GuardianEntityModel extends class_4595<GuardianEntity> {
 	private static final float[] field_17131 = new float[]{1.75F, 0.25F, 0.0F, 0.0F, 0.5F, 0.5F, 0.5F, 0.5F, 1.25F, 0.75F, 0.0F, 0.0F};
 	private static final float[] field_17132 = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.25F, 1.75F, 1.25F, 0.75F, 0.0F, 0.0F, 0.0F, 0.0F};
 	private static final float[] field_17133 = new float[]{0.0F, 0.0F, 0.25F, 1.75F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.75F, 1.25F};
@@ -55,9 +57,9 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 		this.field_3378[1].addChild(this.field_3378[2]);
 	}
 
-	public void method_17082(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17083(guardianEntity, f, g, h, i, j, k);
-		this.field_3379.render(k);
+	@Override
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3379);
 	}
 
 	public void method_17083(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {

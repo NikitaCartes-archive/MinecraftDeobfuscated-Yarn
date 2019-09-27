@@ -100,9 +100,6 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 	@Override
 	public void tick() {
-		this.prevRenderX = this.x;
-		this.prevRenderY = this.y;
-		this.prevRenderZ = this.z;
 		super.tick();
 		if (this.shake > 0) {
 			this.shake--;
@@ -204,7 +201,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		compoundTag.putInt("yTile", this.blockY);
 		compoundTag.putInt("zTile", this.blockZ);
 		compoundTag.putByte("shake", (byte)this.shake);
-		compoundTag.putByte("inGround", (byte)(this.inGround ? 1 : 0));
+		compoundTag.putBoolean("inGround", this.inGround);
 		if (this.ownerUuid != null) {
 			compoundTag.put("owner", NbtHelper.fromUuid(this.ownerUuid));
 		}
@@ -216,9 +213,9 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		this.blockY = compoundTag.getInt("yTile");
 		this.blockZ = compoundTag.getInt("zTile");
 		this.shake = compoundTag.getByte("shake") & 255;
-		this.inGround = compoundTag.getByte("inGround") == 1;
+		this.inGround = compoundTag.getBoolean("inGround");
 		this.owner = null;
-		if (compoundTag.containsKey("owner", 10)) {
+		if (compoundTag.contains("owner", 10)) {
 			this.ownerUuid = NbtHelper.toUuid(compoundTag.getCompound("owner"));
 		}
 	}

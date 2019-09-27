@@ -50,7 +50,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("PatrolTarget")) {
+		if (compoundTag.contains("PatrolTarget")) {
 			this.patrolTarget = NbtHelper.toBlockPos(compoundTag.getCompound("PatrolTarget"));
 		}
 
@@ -88,8 +88,8 @@ public abstract class PatrolEntity extends HostileEntity {
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
-	public static boolean method_20739(EntityType<? extends PatrolEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getLightLevel(LightType.BLOCK, blockPos) > 8 ? false : method_20681(entityType, iWorld, spawnType, blockPos, random);
+	public static boolean canSpawn(EntityType<? extends PatrolEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+		return iWorld.getLightLevel(LightType.BLOCK, blockPos) > 8 ? false : canSpawnIgnoreLightLevel(entityType, iWorld, spawnType, blockPos, random);
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		private boolean wander() {
-			Random random = this.actor.getRand();
+			Random random = this.actor.getRandom();
 			BlockPos blockPos = this.actor
 				.world
 				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));

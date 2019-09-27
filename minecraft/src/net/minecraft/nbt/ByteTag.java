@@ -7,13 +7,41 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class ByteTag extends AbstractNumberTag {
-	private byte value;
+	public static final TagReader<ByteTag> READER = new TagReader<ByteTag>() {
+		public ByteTag method_23235(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+			positionTracker.add(72L);
+			return ByteTag.of(dataInput.readByte());
+		}
 
-	ByteTag() {
+		@Override
+		public String getCrashReportName() {
+			return "BYTE";
+		}
+
+		@Override
+		public String getCommandFeedbackName() {
+			return "TAG_Byte";
+		}
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+	};
+	public static final ByteTag ZERO = of((byte)0);
+	public static final ByteTag ONE = of((byte)1);
+	private final byte value;
+
+	private ByteTag(byte b) {
+		this.value = b;
 	}
 
-	public ByteTag(byte b) {
-		this.value = b;
+	public static ByteTag of(byte b) {
+		return ByteTag.Cache.VALUES[128 + b];
+	}
+
+	public static ByteTag of(boolean bl) {
+		return bl ? ONE : ZERO;
 	}
 
 	@Override
@@ -22,14 +50,13 @@ public class ByteTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-		positionTracker.add(72L);
-		this.value = dataInput.readByte();
+	public byte getType() {
+		return 1;
 	}
 
 	@Override
-	public byte getType() {
-		return 1;
+	public TagReader<ByteTag> getReader() {
+		return READER;
 	}
 
 	@Override
@@ -38,7 +65,7 @@ public class ByteTag extends AbstractNumberTag {
 	}
 
 	public ByteTag method_10530() {
-		return new ByteTag(this.value);
+		return this;
 	}
 
 	public boolean equals(Object object) {
@@ -88,5 +115,15 @@ public class ByteTag extends AbstractNumberTag {
 	@Override
 	public Number getNumber() {
 		return this.value;
+	}
+
+	static class Cache {
+		private static final ByteTag[] VALUES = new ByteTag[256];
+
+		static {
+			for (int i = 0; i < VALUES.length; i++) {
+				VALUES[i] = new ByteTag((byte)(i - 128));
+			}
+		}
 	}
 }

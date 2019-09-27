@@ -43,7 +43,7 @@ public class Inventories {
 		ListTag listTag = compoundTag.getList("Items", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+			CompoundTag compoundTag2 = listTag.getCompound(i);
 			int j = compoundTag2.getByte("Slot") & 255;
 			if (j >= 0 && j < defaultedList.size()) {
 				defaultedList.set(j, ItemStack.fromTag(compoundTag2));

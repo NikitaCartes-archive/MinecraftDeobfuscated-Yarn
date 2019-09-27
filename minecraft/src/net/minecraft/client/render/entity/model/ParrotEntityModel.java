@@ -1,13 +1,17 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ParrotEntityModel extends EntityModel<ParrotEntity> {
+public class ParrotEntityModel extends class_4595<ParrotEntity> {
 	private final ModelPart field_3458;
 	private final ModelPart field_3460;
 	private final ModelPart field_3459;
@@ -62,8 +66,9 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		this.field_3457.setRotationPoint(-1.0F, 22.0F, -1.05F);
 	}
 
-	public void method_17109(ParrotEntity parrotEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17105(k);
+	@Override
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3458, this.field_3459, this.field_3455, this.field_3460, this.field_3452, this.field_3450, this.field_3457);
 	}
 
 	public void method_17112(ParrotEntity parrotEntity, float f, float g, float h, float i, float j, float k) {
@@ -74,20 +79,10 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 		this.method_17110(method_17107(parrotEntity));
 	}
 
-	public void method_17106(float f, float g, float h, float i, float j, int k) {
+	public void method_17106(class_4587 arg, class_4588 arg2, int i, float f, float g, float h, float j, float k, int l) {
 		this.method_17110(ParrotEntityModel.Pose.ON_SHOULDER);
-		this.method_17111(ParrotEntityModel.Pose.ON_SHOULDER, k, f, g, 0.0F, h, i);
-		this.method_17105(j);
-	}
-
-	private void method_17105(float f) {
-		this.field_3458.render(f);
-		this.field_3459.render(f);
-		this.field_3455.render(f);
-		this.field_3460.render(f);
-		this.field_3452.render(f);
-		this.field_3450.render(f);
-		this.field_3457.render(f);
+		this.method_17111(ParrotEntityModel.Pose.ON_SHOULDER, l, f, g, 0.0F, h, j);
+		this.method_22960().forEach(modelPart -> modelPart.method_22698(arg, arg2, k, i, null));
 	}
 
 	private void method_17111(ParrotEntityModel.Pose pose, int i, float f, float g, float h, float j, float k) {

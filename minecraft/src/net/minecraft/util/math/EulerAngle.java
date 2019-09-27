@@ -20,9 +20,9 @@ public class EulerAngle {
 
 	public ListTag serialize() {
 		ListTag listTag = new ListTag();
-		listTag.add(new FloatTag(this.pitch));
-		listTag.add(new FloatTag(this.yaw));
-		listTag.add(new FloatTag(this.roll));
+		listTag.add(FloatTag.of(this.pitch));
+		listTag.add(FloatTag.of(this.yaw));
+		listTag.add(FloatTag.of(this.roll));
 		return listTag;
 	}
 

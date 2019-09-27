@@ -21,7 +21,7 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 		super(entityRenderDispatcher, new ParrotEntityModel(), 0.3F);
 	}
 
-	protected Identifier method_4080(ParrotEntity parrotEntity) {
+	public Identifier method_4080(ParrotEntity parrotEntity) {
 		return SKINS[parrotEntity.getVariant()];
 	}
 

@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
@@ -74,11 +73,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		int l = this.top;
 		this.drawBackground(f, i, j);
 		RenderSystem.disableRescaleNormal();
-		GuiLighting.disable();
-		RenderSystem.disableLighting();
 		RenderSystem.disableDepthTest();
 		super.render(i, j, f);
-		GuiLighting.enableForItems();
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef((float)k, (float)l, 0.0F);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -86,7 +82,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		this.focusedSlot = null;
 		int m = 240;
 		int n = 240;
-		RenderSystem.glMultiTexCoord2f(33985, 240.0F, 240.0F);
+		RenderSystem.glMultiTexCoord2f(33986, 240.0F, 240.0F);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		for (int o = 0; o < this.container.slotList.size(); o++) {
@@ -97,21 +93,17 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 
 			if (this.isPointOverSlot(slot, (double)i, (double)j) && slot.doDrawHoveringEffect()) {
 				this.focusedSlot = slot;
-				RenderSystem.disableLighting();
 				RenderSystem.disableDepthTest();
 				int p = slot.xPosition;
 				int q = slot.yPosition;
 				RenderSystem.colorMask(true, true, true, false);
 				this.fillGradient(p, q, p + 16, q + 16, -2130706433, -2130706433);
 				RenderSystem.colorMask(true, true, true, true);
-				RenderSystem.enableLighting();
 				RenderSystem.enableDepthTest();
 			}
 		}
 
-		GuiLighting.disable();
 		this.drawForeground(i, j);
-		GuiLighting.enableForItems();
 		PlayerInventory playerInventory = this.minecraft.player.inventory;
 		ItemStack itemStack = this.touchDragStack.isEmpty() ? playerInventory.getCursorStack() : this.touchDragStack;
 		if (!itemStack.isEmpty()) {
@@ -147,9 +139,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		}
 
 		RenderSystem.popMatrix();
-		RenderSystem.enableLighting();
 		RenderSystem.enableDepthTest();
-		GuiLighting.enable();
 	}
 
 	protected void drawMouseoverTooltip(int i, int j) {
@@ -210,10 +200,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			String string2 = slot.getBackgroundSprite();
 			if (string2 != null) {
 				Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
-				RenderSystem.disableLighting();
 				this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 				blit(i, j, this.getBlitOffset(), 16, 16, sprite);
-				RenderSystem.enableLighting();
 				bl2 = true;
 			}
 		}
@@ -311,8 +299,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 							} else {
 								boolean bl3 = m != -999
 									&& (
-										InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340)
-											|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344)
+										InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340)
+											|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344)
 									);
 								SlotActionType slotActionType = SlotActionType.PICKUP;
 								if (bl3) {
@@ -485,8 +473,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				} else {
 					boolean bl2 = l != -999
 						&& (
-							InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340)
-								|| InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344)
+							InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340)
+								|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344)
 						);
 					if (bl2) {
 						this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;

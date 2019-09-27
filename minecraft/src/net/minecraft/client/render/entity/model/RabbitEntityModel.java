@@ -1,8 +1,10 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.util.math.MathHelper;
@@ -91,47 +93,42 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		modelPart.roll = h;
 	}
 
-	public void method_17116(T rabbitEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17117(rabbitEntity, f, g, h, i, j, k);
+	@Override
+	public void method_17116(class_4587 arg, class_4588 arg2, int i, float f, float g, float h) {
 		if (this.isChild) {
-			float l = 1.5F;
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.56666666F, 0.56666666F, 0.56666666F);
-			RenderSystem.translatef(0.0F, 22.0F * k, 2.0F * k);
-			this.field_3529.render(k);
-			this.field_3520.render(k);
-			this.field_3523.render(k);
-			this.field_3530.render(k);
-			RenderSystem.popMatrix();
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.4F, 0.4F, 0.4F);
-			RenderSystem.translatef(0.0F, 36.0F * k, 0.0F);
-			this.field_3525.render(k);
-			this.field_3532.render(k);
-			this.field_3526.render(k);
-			this.field_3522.render(k);
-			this.field_3528.render(k);
-			this.field_3527.render(k);
-			this.field_3521.render(k);
-			this.field_3524.render(k);
-			RenderSystem.popMatrix();
+			float j = 1.5F;
+			arg.method_22903();
+			arg.method_22905(0.56666666F, 0.56666666F, 0.56666666F);
+			arg.method_22904(0.0, 1.375, 0.125);
+			ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530)
+				.forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
+			arg.method_22909();
+			arg.method_22903();
+			arg.method_22905(0.4F, 0.4F, 0.4F);
+			arg.method_22904(0.0, 2.25, 0.0);
+			ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524)
+				.forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
+			arg.method_22909();
 		} else {
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.6F, 0.6F, 0.6F);
-			RenderSystem.translatef(0.0F, 16.0F * k, 0.0F);
-			this.field_3525.render(k);
-			this.field_3532.render(k);
-			this.field_3526.render(k);
-			this.field_3522.render(k);
-			this.field_3528.render(k);
-			this.field_3527.render(k);
-			this.field_3521.render(k);
-			this.field_3529.render(k);
-			this.field_3523.render(k);
-			this.field_3520.render(k);
-			this.field_3524.render(k);
-			this.field_3530.render(k);
-			RenderSystem.popMatrix();
+			arg.method_22903();
+			arg.method_22905(0.6F, 0.6F, 0.6F);
+			arg.method_22904(0.0, 1.0, 0.0);
+			ImmutableList.of(
+					this.field_3525,
+					this.field_3532,
+					this.field_3526,
+					this.field_3522,
+					this.field_3528,
+					this.field_3527,
+					this.field_3521,
+					this.field_3529,
+					this.field_3523,
+					this.field_3520,
+					this.field_3524,
+					this.field_3530
+				)
+				.forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
+			arg.method_22909();
 		}
 	}
 

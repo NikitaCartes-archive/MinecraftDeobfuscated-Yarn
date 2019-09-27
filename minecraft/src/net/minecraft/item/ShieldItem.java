@@ -51,7 +51,7 @@ public class ShieldItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.setCurrentHand(hand);
-		return TypedActionResult.method_22428(itemStack);
+		return TypedActionResult.successWithoutSwing(itemStack);
 	}
 
 	@Override

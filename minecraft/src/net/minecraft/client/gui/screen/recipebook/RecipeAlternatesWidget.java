@@ -12,7 +12,6 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.container.AbstractFurnaceContainer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -126,7 +125,6 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 	public void render(int i, int j, float f) {
 		if (this.visible) {
 			this.time += f;
-			GuiLighting.enableForItems();
 			RenderSystem.enableBlend();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(BG_TEX);
@@ -141,7 +139,6 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 			int q = 208;
 			this.renderGrid(l, m, 24, 4, 82, 208);
 			RenderSystem.disableBlend();
-			GuiLighting.disable();
 
 			for (RecipeAlternatesWidget.AlternateButtonWidget alternateButtonWidget : this.alternateButtons) {
 				alternateButtonWidget.render(i, j, f);
@@ -219,7 +216,6 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 
 		@Override
 		public void renderButton(int i, int j, float f) {
-			GuiLighting.enableForItems();
 			RenderSystem.enableAlphaTest();
 			RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(RecipeAlternatesWidget.BG_TEX);
 			int k = 152;
@@ -240,16 +236,13 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 				int m = (int)((float)(this.x + inputSlot.field_3119) / 0.42F - 3.0F);
 				int n = (int)((float)(this.y + inputSlot.field_3118) / 0.42F - 3.0F);
 				RenderSystem.scalef(0.42F, 0.42F, 1.0F);
-				RenderSystem.enableLighting();
 				RecipeAlternatesWidget.this.client
 					.getItemRenderer()
 					.renderGuiItem(inputSlot.field_3120[MathHelper.floor(RecipeAlternatesWidget.this.time / 30.0F) % inputSlot.field_3120.length], m, n);
-				RenderSystem.disableLighting();
 				RenderSystem.popMatrix();
 			}
 
 			RenderSystem.disableAlphaTest();
-			GuiLighting.disable();
 		}
 
 		@Environment(EnvType.CLIENT)

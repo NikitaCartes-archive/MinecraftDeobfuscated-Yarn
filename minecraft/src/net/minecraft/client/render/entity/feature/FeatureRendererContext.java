@@ -10,7 +10,5 @@ import net.minecraft.util.Identifier;
 public interface FeatureRendererContext<T extends Entity, M extends EntityModel<T>> {
 	M getModel();
 
-	void bindTexture(Identifier identifier);
-
-	void applyLightmapCoordinates(T entity);
+	Identifier getTexture(T entity);
 }

@@ -59,7 +59,7 @@ public abstract class StructurePiece {
 
 	public StructurePiece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
 		this(structurePieceType, compoundTag.getInt("GD"));
-		if (compoundTag.containsKey("BB")) {
+		if (compoundTag.contains("BB")) {
 			this.boundingBox = new BlockBox(compoundTag.getIntArray("BB"));
 		}
 

@@ -1,13 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BatEntityModel extends EntityModel<BatEntity> {
+public class BatEntityModel extends class_4595<BatEntity> {
 	private final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart rightWing;
@@ -48,10 +50,9 @@ public class BatEntityModel extends EntityModel<BatEntity> {
 		this.leftWing.addChild(this.leftWingTip);
 	}
 
-	public void method_17068(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17069(batEntity, f, g, h, i, j, k);
-		this.head.render(k);
-		this.body.render(k);
+	@Override
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.head, this.body);
 	}
 
 	public void method_17069(BatEntity batEntity, float f, float g, float h, float i, float j, float k) {

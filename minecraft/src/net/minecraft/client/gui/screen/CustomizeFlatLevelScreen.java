@@ -13,7 +13,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.datafixers.NbtOps;
@@ -238,9 +237,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				this.method_19373(i + 1, j + 1);
 				RenderSystem.enableRescaleNormal();
 				if (!itemStack.isEmpty()) {
-					GuiLighting.enableForItems();
 					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, i + 2, j + 2);
-					GuiLighting.disable();
 				}
 
 				RenderSystem.disableRescaleNormal();

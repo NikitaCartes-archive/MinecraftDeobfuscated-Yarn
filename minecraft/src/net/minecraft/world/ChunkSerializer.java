@@ -63,10 +63,8 @@ public class ChunkSerializer {
 			LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", chunkPos, chunkPos, chunkPos2);
 		}
 
-		class_4548 lv = new class_4548(chunkPos, biomeSource, compoundTag2.containsKey("Biomes", 11) ? compoundTag2.getIntArray("Biomes") : null);
-		UpgradeData upgradeData = compoundTag2.containsKey("UpgradeData", 10)
-			? new UpgradeData(compoundTag2.getCompound("UpgradeData"))
-			: UpgradeData.NO_UPGRADE_DATA;
+		class_4548 lv = new class_4548(chunkPos, biomeSource, compoundTag2.contains("Biomes", 11) ? compoundTag2.getIntArray("Biomes") : null);
+		UpgradeData upgradeData = compoundTag2.contains("UpgradeData", 10) ? new UpgradeData(compoundTag2.getCompound("UpgradeData")) : UpgradeData.NO_UPGRADE_DATA;
 		ChunkTickScheduler<Block> chunkTickScheduler = new ChunkTickScheduler<>(
 			block -> block == null || block.getDefaultState().isAir(), chunkPos, compoundTag2.getList("ToBeTicked", 9)
 		);
@@ -85,9 +83,9 @@ public class ChunkSerializer {
 		}
 
 		for (int j = 0; j < listTag.size(); j++) {
-			CompoundTag compoundTag3 = listTag.getCompoundTag(j);
+			CompoundTag compoundTag3 = listTag.getCompound(j);
 			int k = compoundTag3.getByte("Y");
-			if (compoundTag3.containsKey("Palette", 9) && compoundTag3.containsKey("BlockStates", 12)) {
+			if (compoundTag3.contains("Palette", 9) && compoundTag3.contains("BlockStates", 12)) {
 				ChunkSection chunkSection = new ChunkSection(k << 4);
 				chunkSection.getContainer().read(compoundTag3.getList("Palette", 10), compoundTag3.getLongArray("BlockStates"));
 				chunkSection.calculateCounts();
@@ -99,11 +97,11 @@ public class ChunkSerializer {
 			}
 
 			if (bl) {
-				if (compoundTag3.containsKey("BlockLight", 7)) {
+				if (compoundTag3.contains("BlockLight", 7)) {
 					lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
 				}
 
-				if (bl2 && compoundTag3.containsKey("SkyLight", 7)) {
+				if (bl2 && compoundTag3.contains("SkyLight", 7)) {
 					lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
 				}
 			}
@@ -114,14 +112,14 @@ public class ChunkSerializer {
 		Chunk chunk;
 		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			TickScheduler<Block> tickScheduler;
-			if (compoundTag2.containsKey("TileTicks", 9)) {
+			if (compoundTag2.contains("TileTicks", 9)) {
 				tickScheduler = SimpleTickScheduler.fromNbt(compoundTag2.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get);
 			} else {
 				tickScheduler = chunkTickScheduler;
 			}
 
 			TickScheduler<Fluid> tickScheduler2;
-			if (compoundTag2.containsKey("LiquidTicks", 9)) {
+			if (compoundTag2.contains("LiquidTicks", 9)) {
 				tickScheduler2 = SimpleTickScheduler.fromNbt(compoundTag2.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get);
 			} else {
 				tickScheduler2 = chunkTickScheduler2;
@@ -155,7 +153,7 @@ public class ChunkSerializer {
 
 		for (Heightmap.Type type : chunk.getStatus().getHeightmapTypes()) {
 			String string = type.getName();
-			if (compoundTag4.containsKey(string, 12)) {
+			if (compoundTag4.contains(string, 12)) {
 				chunk.setHeightmap(type, compoundTag4.getLongArray(string));
 			} else {
 				enumSet.add(type);
@@ -173,7 +171,7 @@ public class ChunkSerializer {
 		ListTag listTag2 = compoundTag2.getList("PostProcessing", 9);
 
 		for (int m = 0; m < listTag2.size(); m++) {
-			ListTag listTag3 = listTag2.getListTag(m);
+			ListTag listTag3 = listTag2.getList(m);
 
 			for (int n = 0; n < listTag3.size(); n++) {
 				chunk.markBlockForPostProcessing(listTag3.getShort(n), m);
@@ -187,20 +185,20 @@ public class ChunkSerializer {
 			ListTag listTag3 = compoundTag2.getList("Entities", 10);
 
 			for (int n = 0; n < listTag3.size(); n++) {
-				protoChunk2.addEntity(listTag3.getCompoundTag(n));
+				protoChunk2.addEntity(listTag3.getCompound(n));
 			}
 
 			ListTag listTag4 = compoundTag2.getList("TileEntities", 10);
 
 			for (int o = 0; o < listTag4.size(); o++) {
-				CompoundTag compoundTag6 = listTag4.getCompoundTag(o);
+				CompoundTag compoundTag6 = listTag4.getCompound(o);
 				chunk.addPendingBlockEntityTag(compoundTag6);
 			}
 
 			ListTag listTag5 = compoundTag2.getList("Lights", 9);
 
 			for (int p = 0; p < listTag5.size(); p++) {
-				ListTag listTag6 = listTag5.getListTag(p);
+				ListTag listTag6 = listTag5.getList(p);
 
 				for (int q = 0; q < listTag6.size(); q++) {
 					protoChunk2.addLightSource(listTag6.getShort(q), p);
@@ -362,7 +360,7 @@ public class ChunkSerializer {
 		World world = worldChunk.getWorld();
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+			CompoundTag compoundTag2 = listTag.getCompound(i);
 			EntityType.loadEntityWithPassengers(compoundTag2, world, entity -> {
 				worldChunk.addEntity(entity);
 				return entity;
@@ -373,7 +371,7 @@ public class ChunkSerializer {
 		ListTag listTag2 = compoundTag.getList("TileEntities", 10);
 
 		for (int j = 0; j < listTag2.size(); j++) {
-			CompoundTag compoundTag3 = listTag2.getCompoundTag(j);
+			CompoundTag compoundTag3 = listTag2.getCompound(j);
 			boolean bl = compoundTag3.getBoolean("keepPacked");
 			if (bl) {
 				worldChunk.addPendingBlockEntityTag(compoundTag3);
@@ -434,7 +432,7 @@ public class ChunkSerializer {
 			ListTag listTag2 = new ListTag();
 			if (shortList != null) {
 				for (Short short_ : shortList) {
-					listTag2.add(new ShortTag(short_));
+					listTag2.add(ShortTag.of(short_));
 				}
 			}
 

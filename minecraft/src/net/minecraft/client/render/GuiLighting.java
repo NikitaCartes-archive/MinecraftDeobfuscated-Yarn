@@ -6,15 +6,21 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class GuiLighting {
+	public static void method_22890() {
+		RenderSystem.enableLighting();
+		RenderSystem.enableColorMaterial();
+	}
+
 	public static void disable() {
-		RenderSystem.disableDiffuseLighting();
+		RenderSystem.disableLighting();
+		RenderSystem.disableColorMaterial();
 	}
 
 	public static void enable() {
-		RenderSystem.enableUsualDiffuseLighting();
+		RenderSystem.setupLevelDiffuseLighting();
 	}
 
 	public static void enableForItems() {
-		RenderSystem.enableGuiDiffuseLighting();
+		RenderSystem.setupGuiDiffuseLighting();
 	}
 }

@@ -67,8 +67,8 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 
 			if (!bl) {
 				return false;
-			} else if (isDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.setToDirt(modifiableTestableWorld, blockPos.down());
+			} else if (isDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) && blockPos.getY() < 256 - i - 1) {
+				this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
 				int j = 3;
 				int kx = 0;
 
@@ -185,9 +185,9 @@ public class OakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 		this.makeVine(modifiableTestableWorld, blockPos, booleanProperty);
 		int i = 4;
 
-		for (BlockPos var5 = blockPos.down(); isAir(modifiableTestableWorld, var5) && i > 0; i--) {
+		for (BlockPos var5 = blockPos.method_10074(); isAir(modifiableTestableWorld, var5) && i > 0; i--) {
 			this.makeVine(modifiableTestableWorld, var5, booleanProperty);
-			var5 = var5.down();
+			var5 = var5.method_10074();
 		}
 	}
 }

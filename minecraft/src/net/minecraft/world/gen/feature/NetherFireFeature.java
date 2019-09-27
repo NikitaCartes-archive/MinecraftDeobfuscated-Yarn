@@ -19,7 +19,7 @@ public class NetherFireFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		for (int i = 0; i < 64; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos2.down()).getBlock() == Blocks.NETHERRACK) {
+			if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos2.method_10074()).getBlock() == Blocks.NETHERRACK) {
 				iWorld.setBlockState(blockPos2, Blocks.FIRE.getDefaultState(), 2);
 			}
 		}

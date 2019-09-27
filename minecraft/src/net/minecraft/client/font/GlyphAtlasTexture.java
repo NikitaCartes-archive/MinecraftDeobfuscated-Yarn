@@ -38,7 +38,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		} else {
 			GlyphAtlasTexture.Slot slot = this.rootSlot.findSlotFor(renderableGlyph);
 			if (slot != null) {
-				this.bindTexture();
+				this.method_23207();
 				renderableGlyph.upload(slot.x, slot.y);
 				float f = 256.0F;
 				float g = 256.0F;

@@ -40,8 +40,8 @@ public class SplashScreen extends Overlay {
 
 	@Override
 	public void render(int i, int j, float f) {
-		int k = this.client.method_22683().getScaledWidth();
-		int l = this.client.method_22683().getScaledHeight();
+		int k = this.client.getWindow().getScaledWidth();
+		int l = this.client.getWindow().getScaledHeight();
 		long m = SystemUtil.getMeasuringTimeMs();
 		if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
 			this.field_18220 = m;
@@ -71,8 +71,8 @@ public class SplashScreen extends Overlay {
 			o = 1.0F;
 		}
 
-		int n = (this.client.method_22683().getScaledWidth() - 256) / 2;
-		int p = (this.client.method_22683().getScaledHeight() - 256) / 2;
+		int n = (this.client.getWindow().getScaledWidth() - 256) / 2;
+		int p = (this.client.getWindow().getScaledHeight() - 256) / 2;
 		this.client.getTextureManager().bindTexture(LOGO);
 		RenderSystem.enableBlend();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, o);
@@ -92,7 +92,7 @@ public class SplashScreen extends Overlay {
 			this.field_17771 = SystemUtil.getMeasuringTimeMs();
 			this.field_18218.run();
 			if (this.client.currentScreen != null) {
-				this.client.currentScreen.init(this.client, this.client.method_22683().getScaledWidth(), this.client.method_22683().getScaledHeight());
+				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
 			}
 		}
 	}

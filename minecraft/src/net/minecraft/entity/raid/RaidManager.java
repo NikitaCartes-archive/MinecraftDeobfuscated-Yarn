@@ -151,7 +151,7 @@ public class RaidManager extends PersistentState {
 		ListTag listTag = compoundTag.getList("Raids", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+			CompoundTag compoundTag2 = listTag.getCompound(i);
 			Raid raid = new Raid(this.world, compoundTag2);
 			this.raids.put(raid.getRaidId(), raid);
 		}

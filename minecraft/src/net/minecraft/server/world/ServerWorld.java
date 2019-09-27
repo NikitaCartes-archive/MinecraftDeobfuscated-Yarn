@@ -433,7 +433,7 @@ public class ServerWorld extends World {
 		profiler.swap("iceandsnow");
 		if (this.random.nextInt(16) == 0) {
 			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(j, 0, k, 15));
-			BlockPos blockPos2 = blockPos.down();
+			BlockPos blockPos2 = blockPos.method_10074();
 			Biome biome = this.getBiome(blockPos);
 			if (biome.canSetSnow(this, blockPos2)) {
 				this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
@@ -569,9 +569,7 @@ public class ServerWorld extends World {
 
 	public void tickEntity(Entity entity) {
 		if (entity instanceof PlayerEntity || this.method_14178().shouldTickEntity(entity)) {
-			entity.prevRenderX = entity.x;
-			entity.prevRenderY = entity.y;
-			entity.prevRenderZ = entity.z;
+			entity.method_22862(entity.x, entity.y, entity.z);
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
 			if (entity.updateNeeded) {
@@ -594,9 +592,7 @@ public class ServerWorld extends World {
 		if (entity2.removed || entity2.getVehicle() != entity) {
 			entity2.stopRiding();
 		} else if (entity2 instanceof PlayerEntity || this.method_14178().shouldTickEntity(entity2)) {
-			entity2.prevRenderX = entity2.x;
-			entity2.prevRenderY = entity2.y;
-			entity2.prevRenderZ = entity2.z;
+			entity2.method_22862(entity2.x, entity2.y, entity2.z);
 			entity2.prevYaw = entity2.yaw;
 			entity2.prevPitch = entity2.pitch;
 			if (entity2.updateNeeded) {

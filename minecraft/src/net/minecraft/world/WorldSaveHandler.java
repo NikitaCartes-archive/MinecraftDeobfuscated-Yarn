@@ -162,7 +162,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 		}
 
 		if (compoundTag != null) {
-			int i = compoundTag.containsKey("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
+			int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
 			playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
 		}
 

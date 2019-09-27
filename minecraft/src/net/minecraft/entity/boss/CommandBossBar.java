@@ -166,7 +166,7 @@ public class CommandBossBar extends ServerBossBar {
 		ListTag listTag = compoundTag.getList("Players", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			commandBossBar.addPlayer(NbtHelper.toUuid(listTag.getCompoundTag(i)));
+			commandBossBar.addPlayer(NbtHelper.toUuid(listTag.getCompound(i)));
 		}
 
 		return commandBossBar;

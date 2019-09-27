@@ -244,15 +244,15 @@ public class ItemEntity extends Entity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		this.health = compoundTag.getShort("Health");
 		this.age = compoundTag.getShort("Age");
-		if (compoundTag.containsKey("PickupDelay")) {
+		if (compoundTag.contains("PickupDelay")) {
 			this.pickupDelay = compoundTag.getShort("PickupDelay");
 		}
 
-		if (compoundTag.containsKey("Owner", 10)) {
+		if (compoundTag.contains("Owner", 10)) {
 			this.owner = NbtHelper.toUuid(compoundTag.getCompound("Owner"));
 		}
 
-		if (compoundTag.containsKey("Thrower", 10)) {
+		if (compoundTag.contains("Thrower", 10)) {
 			this.thrower = NbtHelper.toUuid(compoundTag.getCompound("Thrower"));
 		}
 

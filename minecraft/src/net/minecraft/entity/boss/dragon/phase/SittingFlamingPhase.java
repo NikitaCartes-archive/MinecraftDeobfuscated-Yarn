@@ -29,9 +29,9 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			double f = this.dragon.partHead.z;
 
 			for (int i = 0; i < 8; i++) {
-				double g = d + this.dragon.getRand().nextGaussian() / 2.0;
-				double h = e + this.dragon.getRand().nextGaussian() / 2.0;
-				double j = f + this.dragon.getRand().nextGaussian() / 2.0;
+				double g = d + this.dragon.getRandom().nextGaussian() / 2.0;
+				double h = e + this.dragon.getRandom().nextGaussian() / 2.0;
+				double j = f + this.dragon.getRandom().nextGaussian() / 2.0;
 
 				for (int k = 0; k < 6; k++) {
 					this.dragon.world.addParticle(ParticleTypes.DRAGON_BREATH, g, h, j, -vec3d.x * 0.08F * (double)k, -vec3d.y * 0.6F, -vec3d.z * 0.08F * (double)k);

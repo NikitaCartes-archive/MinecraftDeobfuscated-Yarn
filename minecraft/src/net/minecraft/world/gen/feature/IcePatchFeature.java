@@ -21,7 +21,7 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig
 	) {
 		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {

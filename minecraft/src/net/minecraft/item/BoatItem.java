@@ -29,7 +29,7 @@ public class BoatItem extends Item {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.ANY);
 		if (hitResult.getType() == HitResult.Type.MISS) {
-			return TypedActionResult.method_22430(itemStack);
+			return TypedActionResult.pass(itemStack);
 		} else {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F);
 			double d = 5.0;
@@ -40,7 +40,7 @@ public class BoatItem extends Item {
 				for (Entity entity : list) {
 					Box box = entity.getBoundingBox().expand((double)entity.getTargetingMargin());
 					if (box.contains(vec3d2)) {
-						return TypedActionResult.method_22430(itemStack);
+						return TypedActionResult.pass(itemStack);
 					}
 				}
 			}
@@ -50,7 +50,7 @@ public class BoatItem extends Item {
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
 				if (!world.doesNotCollide(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
-					return TypedActionResult.method_22431(itemStack);
+					return TypedActionResult.fail(itemStack);
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
@@ -60,10 +60,10 @@ public class BoatItem extends Item {
 					}
 
 					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-					return TypedActionResult.method_22427(itemStack);
+					return TypedActionResult.successWithSwing(itemStack);
 				}
 			} else {
-				return TypedActionResult.method_22430(itemStack);
+				return TypedActionResult.pass(itemStack);
 			}
 		}
 	}

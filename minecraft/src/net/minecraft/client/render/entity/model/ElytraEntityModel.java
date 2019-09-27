@@ -1,15 +1,16 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
+public class ElytraEntityModel<T extends LivingEntity> extends class_4592<T> {
 	private final ModelPart field_3364;
 	private final ModelPart field_3365 = new ModelPart(this, 22, 0);
 
@@ -20,24 +21,17 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 		this.field_3364.addCuboid(0.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, 1.0F);
 	}
 
-	public void method_17078(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		RenderSystem.disableRescaleNormal();
-		RenderSystem.disableCull();
-		if (livingEntity.isBaby()) {
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
-			RenderSystem.translatef(0.0F, 1.5F, -0.1F);
-			this.field_3365.render(k);
-			this.field_3364.render(k);
-			RenderSystem.popMatrix();
-		} else {
-			this.field_3365.render(k);
-			this.field_3364.render(k);
-		}
+	@Override
+	protected Iterable<ModelPart> method_22946() {
+		return ImmutableList.<ModelPart>of();
+	}
+
+	@Override
+	protected Iterable<ModelPart> method_22948() {
+		return ImmutableList.<ModelPart>of(this.field_3365, this.field_3364);
 	}
 
 	public void method_17079(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(livingEntity, f, g, h, i, j, k);
 		float l = (float) (Math.PI / 12);
 		float m = (float) (-Math.PI / 12);
 		float n = 0.0F;

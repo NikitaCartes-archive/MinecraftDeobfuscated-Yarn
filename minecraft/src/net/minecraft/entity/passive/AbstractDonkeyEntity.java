@@ -105,7 +105,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			this.method_6721();
 
 			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+				CompoundTag compoundTag2 = listTag.getCompound(i);
 				int j = compoundTag2.getByte("Slot") & 255;
 				if (j >= 2 && j < this.items.getInvSize()) {
 					this.items.setInvStack(j, ItemStack.fromTag(compoundTag2));

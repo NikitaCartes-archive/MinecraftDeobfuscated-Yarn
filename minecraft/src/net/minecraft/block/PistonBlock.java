@@ -113,7 +113,7 @@ public class PistonBlock extends FacingBlock {
 				world.addBlockAction(blockPos, this, 0, direction.getId());
 			}
 		} else if (!bl && (Boolean)blockState.get(EXTENDED)) {
-			BlockPos blockPos2 = blockPos.offset(direction, 2);
+			BlockPos blockPos2 = blockPos.method_10079(direction, 2);
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			int i = 1;
 			if (blockState2.getBlock() == Blocks.MOVING_PISTON && blockState2.get(FACING) == direction) {

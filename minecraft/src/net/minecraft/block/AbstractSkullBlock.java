@@ -14,12 +14,6 @@ public abstract class AbstractSkullBlock extends BlockWithEntity {
 		this.type = skullType;
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-		return true;
-	}
-
 	@Override
 	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new SkullBlockEntity();

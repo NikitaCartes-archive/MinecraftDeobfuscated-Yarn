@@ -194,11 +194,13 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
-		return this.bake(modelLoader, this, function, modelBakeSettings);
+	public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
+		return this.bake(modelLoader, this, function, modelBakeSettings, identifier);
 	}
 
-	public BakedModel bake(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
+	public BakedModel bake(
+		ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier
+	) {
 		Sprite sprite = (Sprite)function.apply(new Identifier(this.resolveTexture("particle")));
 		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
 			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(modelLoader, jsonUnbakedModel), sprite);
@@ -210,10 +212,11 @@ public class JsonUnbakedModel implements UnbakedModel {
 					ModelElementFace modelElementFace = (ModelElementFace)modelElement.faces.get(direction);
 					Sprite sprite2 = (Sprite)function.apply(new Identifier(this.resolveTexture(modelElementFace.textureId)));
 					if (modelElementFace.cullFace == null) {
-						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings));
+						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings, identifier));
 					} else {
 						builder.addQuad(
-							modelBakeSettings.getRotation().apply(modelElementFace.cullFace), createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings)
+							Direction.method_23225(modelBakeSettings.getRotation().method_22936(), modelElementFace.cullFace),
+							createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings, identifier)
 						);
 					}
 				}
@@ -224,10 +227,10 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	private static BakedQuad createQuad(
-		ModelElement modelElement, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings
+		ModelElement modelElement, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings, Identifier identifier
 	) {
 		return QUAD_FACTORY.bake(
-			modelElement.from, modelElement.to, modelElementFace, sprite, direction, modelBakeSettings, modelElement.rotation, modelElement.shade
+			modelElement.from, modelElement.to, modelElementFace, sprite, direction, modelBakeSettings, modelElement.rotation, modelElement.shade, identifier
 		);
 	}
 

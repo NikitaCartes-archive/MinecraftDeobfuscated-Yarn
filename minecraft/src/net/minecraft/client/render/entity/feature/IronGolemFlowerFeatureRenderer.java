@@ -1,12 +1,13 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(EnvType.CLIENT)
@@ -15,29 +16,19 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 		super(featureRendererContext);
 	}
 
-	public void method_4188(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+	public void method_4188(class_4587 arg, class_4597 arg2, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l, float m) {
 		if (ironGolemEntity.method_6502() != 0) {
-			RenderSystem.enableRescaleNormal();
-			RenderSystem.pushMatrix();
-			RenderSystem.rotatef(5.0F + 180.0F * this.getModel().method_2809().pitch / (float) Math.PI, 1.0F, 0.0F, 0.0F);
-			RenderSystem.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
-			RenderSystem.translatef(-0.9375F, -0.625F, -0.9375F);
-			float m = 0.5F;
-			RenderSystem.scalef(0.5F, -0.5F, 0.5F);
-			int n = ironGolemEntity.getLightmapCoordinates();
-			int o = n % 65536;
-			int p = n / 65536;
-			RenderSystem.glMultiTexCoord2f(33985, (float)o, (float)p);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.POPPY.getDefaultState(), 1.0F);
-			RenderSystem.popMatrix();
-			RenderSystem.disableRescaleNormal();
+			arg.method_22903();
+			arg.method_22905(-1.0F, -1.0F, 1.0F);
+			arg.method_22907(Vector3f.field_20703.method_23214(5.0F + 180.0F * this.getModel().method_2809().pitch / (float) Math.PI, true));
+			arg.method_22907(Vector3f.field_20703.method_23214(90.0F, true));
+			arg.method_22904(0.6875, -0.3125, 1.0625);
+			float n = 0.5F;
+			arg.method_22905(0.5F, 0.5F, 0.5F);
+			arg.method_22907(Vector3f.field_20703.method_23214(180.0F, true));
+			arg.method_22904(-0.5, -0.5, 0.5);
+			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.POPPY.getDefaultState(), arg, arg2, i, 0, 10);
+			arg.method_22909();
 		}
-	}
-
-	@Override
-	public boolean hasHurtOverlay() {
-		return false;
 	}
 }

@@ -5,6 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
@@ -14,126 +17,118 @@ import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.entity.model.SignBlockEntityModel;
-import net.minecraft.client.util.TextComponentUtil;
+import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity> {
-	private static final Identifier OAK_TEX = new Identifier("textures/entity/signs/oak.png");
-	private static final Identifier SPRUCE_TEX = new Identifier("textures/entity/signs/spruce.png");
-	private static final Identifier BIRCH_TEX = new Identifier("textures/entity/signs/birch.png");
-	private static final Identifier ACACIA_TEX = new Identifier("textures/entity/signs/acacia.png");
-	private static final Identifier JUNGLE_TEX = new Identifier("textures/entity/signs/jungle.png");
-	private static final Identifier DARK_OAK_TEX = new Identifier("textures/entity/signs/dark_oak.png");
-	private final SignBlockEntityModel model = new SignBlockEntityModel();
+	private final ModelPart field_20990 = new ModelPart(64, 32, 0, 0);
+	private final ModelPart field_20991;
 
-	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
+	public SignBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+		super(blockEntityRenderDispatcher);
+		this.field_20990.addCuboid(-12.0F, -14.0F, -1.0F, 24.0F, 12.0F, 2.0F, 0.0F);
+		this.field_20991 = new ModelPart(64, 32, 0, 14);
+		this.field_20991.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 14.0F, 2.0F, 0.0F);
+	}
+
+	public void method_23083(SignBlockEntity signBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
 		BlockState blockState = signBlockEntity.getCachedState();
-		RenderSystem.pushMatrix();
+		arg.method_22903();
 		float h = 0.6666667F;
 		if (blockState.getBlock() instanceof SignBlock) {
-			RenderSystem.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			RenderSystem.rotatef(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
-			this.model.getSignpostModel().visible = true;
+			arg.method_22904(0.5, 0.5, 0.5);
+			arg.method_22907(Vector3f.field_20705.method_23214(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), true));
+			this.field_20991.visible = true;
 		} else {
-			RenderSystem.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			RenderSystem.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
-			RenderSystem.translatef(0.0F, -0.3125F, -0.4375F);
-			this.model.getSignpostModel().visible = false;
+			arg.method_22904(0.5, 0.5, 0.5);
+			arg.method_22907(Vector3f.field_20705.method_23214(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), true));
+			arg.method_22904(0.0, -0.3125, -0.4375);
+			this.field_20991.visible = false;
 		}
 
-		if (i >= 0) {
-			this.bindTexture((Identifier)DESTROY_STAGE_TEXTURES.get(i));
-			RenderSystem.matrixMode(5890);
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(4.0F, 2.0F, 1.0F);
-			RenderSystem.translatef(0.0625F, 0.0625F, 0.0625F);
-			RenderSystem.matrixMode(5888);
-		} else {
-			this.bindTexture(this.getModelTexture(blockState.getBlock()));
-		}
-
-		RenderSystem.enableRescaleNormal();
-		RenderSystem.pushMatrix();
-		RenderSystem.scalef(0.6666667F, -0.6666667F, -0.6666667F);
-		this.model.render();
-		RenderSystem.popMatrix();
-		TextRenderer textRenderer = this.getFontRenderer();
+		Sprite sprite = this.method_23082(this.getModelTexture(blockState.getBlock()));
+		arg.method_22903();
+		arg.method_22905(0.6666667F, -0.6666667F, -0.6666667F);
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
+		this.field_20990.method_22698(arg, lv, 0.0625F, i, sprite);
+		this.field_20991.method_22698(arg, lv, 0.0625F, i, sprite);
+		arg.method_22909();
+		TextRenderer textRenderer = this.field_20989.getFontRenderer();
 		float j = 0.010416667F;
-		RenderSystem.translatef(0.0F, 0.33333334F, 0.046666667F);
-		RenderSystem.scalef(0.010416667F, -0.010416667F, 0.010416667F);
-		RenderSystem.normal3f(0.0F, 0.0F, -0.010416667F);
-		RenderSystem.depthMask(false);
+		arg.method_22904(0.0, 0.33333334F, 0.046666667F);
+		arg.method_22905(0.010416667F, -0.010416667F, 0.010416667F);
 		int k = signBlockEntity.getTextColor().getSignColor();
-		if (i < 0) {
-			for (int l = 0; l < 4; l++) {
-				String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
-					List<Text> list = TextComponentUtil.wrapLines(text, 90, textRenderer, false, true);
-					return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
-				});
-				if (string != null) {
-					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);
-					if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
-						int m = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
-						int n = textRenderer.isRightToLeft() ? -1 : 1;
-						int o = (m - textRenderer.getStringWidth(string) / 2) * n;
-						int p = l * 10 - signBlockEntity.text.length * 5;
-						if (signBlockEntity.isCaretVisible()) {
-							if (signBlockEntity.getSelectionStart() < string.length()) {
-								DrawableHelper.fill(o, p - 1, o + 1, p + 9, 0xFF000000 | k);
-							} else {
-								textRenderer.draw("_", (float)o, (float)p, k);
-							}
-						}
 
-						if (signBlockEntity.getSelectionEnd() != signBlockEntity.getSelectionStart()) {
-							int q = Math.min(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
-							int r = Math.max(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
-							int s = (textRenderer.getStringWidth(string.substring(0, q)) - textRenderer.getStringWidth(string) / 2) * n;
-							int t = (textRenderer.getStringWidth(string.substring(0, r)) - textRenderer.getStringWidth(string) / 2) * n;
-							this.method_16210(Math.min(s, t), p, Math.max(s, t), p + 9);
+		for (int l = 0; l < 4; l++) {
+			String string = signBlockEntity.getTextBeingEditedOnRow(l, text -> {
+				List<Text> list = Texts.wrapLines(text, 90, textRenderer, false, true);
+				return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
+			});
+			if (string != null) {
+				float m = (float)(-textRenderer.getStringWidth(string) / 2);
+				textRenderer.method_22942(string, m, (float)(l * 10 - signBlockEntity.text.length * 5), k, false, arg.method_22910(), arg2, false, 0, i);
+				if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
+					int n = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
+					int o = textRenderer.isRightToLeft() ? -1 : 1;
+					int p = (n - textRenderer.getStringWidth(string) / 2) * o;
+					int q = l * 10 - signBlockEntity.text.length * 5;
+					if (signBlockEntity.isCaretVisible()) {
+						if (signBlockEntity.getSelectionStart() < string.length()) {
+							DrawableHelper.fill(p, q - 1, p + 1, q + 9, 0xFF000000 | k);
+						} else {
+							textRenderer.method_22942("_", (float)p, (float)q, k, false, arg.method_22910(), arg2, false, 0, i);
 						}
+					}
+
+					if (signBlockEntity.getSelectionEnd() != signBlockEntity.getSelectionStart()) {
+						int r = Math.min(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
+						int s = Math.max(signBlockEntity.getSelectionStart(), signBlockEntity.getSelectionEnd());
+						int t = (textRenderer.getStringWidth(string.substring(0, r)) - textRenderer.getStringWidth(string) / 2) * o;
+						int u = (textRenderer.getStringWidth(string.substring(0, s)) - textRenderer.getStringWidth(string) / 2) * o;
+						RenderSystem.pushMatrix();
+						RenderSystem.multMatrix(arg.method_22910());
+						this.method_16210(Math.min(t, u), q, Math.max(t, u), q + 9);
+						RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+						RenderSystem.popMatrix();
 					}
 				}
 			}
 		}
 
-		RenderSystem.depthMask(true);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.popMatrix();
-		if (i >= 0) {
-			RenderSystem.matrixMode(5890);
-			RenderSystem.popMatrix();
-			RenderSystem.matrixMode(5888);
-		}
+		arg.method_22909();
 	}
 
 	private Identifier getModelTexture(Block block) {
 		if (block == Blocks.OAK_SIGN || block == Blocks.OAK_WALL_SIGN) {
-			return OAK_TEX;
+			return ModelLoader.field_21014;
 		} else if (block == Blocks.SPRUCE_SIGN || block == Blocks.SPRUCE_WALL_SIGN) {
-			return SPRUCE_TEX;
+			return ModelLoader.field_21015;
 		} else if (block == Blocks.BIRCH_SIGN || block == Blocks.BIRCH_WALL_SIGN) {
-			return BIRCH_TEX;
+			return ModelLoader.field_21016;
 		} else if (block == Blocks.ACACIA_SIGN || block == Blocks.ACACIA_WALL_SIGN) {
-			return ACACIA_TEX;
+			return ModelLoader.field_21017;
 		} else if (block == Blocks.JUNGLE_SIGN || block == Blocks.JUNGLE_WALL_SIGN) {
-			return JUNGLE_TEX;
+			return ModelLoader.field_21018;
 		} else {
-			return block != Blocks.DARK_OAK_SIGN && block != Blocks.DARK_OAK_WALL_SIGN ? OAK_TEX : DARK_OAK_TEX;
+			return block != Blocks.DARK_OAK_SIGN && block != Blocks.DARK_OAK_WALL_SIGN ? ModelLoader.field_21014 : ModelLoader.field_21019;
 		}
 	}
 
 	private void method_16210(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
+		RenderSystem.color4f(0.0F, 0.0F, 1.0F, 1.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
@@ -142,7 +137,8 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();
 		bufferBuilder.vertex((double)i, (double)j, 0.0).next();
-		tessellator.draw();
+		bufferBuilder.end();
+		BufferRenderer.draw(bufferBuilder);
 		RenderSystem.disableColorLogicOp();
 		RenderSystem.enableTexture();
 	}
