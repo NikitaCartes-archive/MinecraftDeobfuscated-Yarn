@@ -299,9 +299,9 @@ public class Structure {
             Vec3d vec3d = Structure.method_15176(structureEntityInfo.pos, blockMirror, blockRotation, blockPos2);
             Vec3d vec3d2 = vec3d.add(blockPos.getX(), blockPos.getY(), blockPos.getZ());
             ListTag listTag = new ListTag();
-            listTag.add(new DoubleTag(vec3d2.x));
-            listTag.add(new DoubleTag(vec3d2.y));
-            listTag.add(new DoubleTag(vec3d2.z));
+            listTag.add(DoubleTag.of(vec3d2.x));
+            listTag.add(DoubleTag.of(vec3d2.y));
+            listTag.add(DoubleTag.of(vec3d2.z));
             compoundTag.put("Pos", listTag);
             compoundTag.remove("UUIDMost");
             compoundTag.remove("UUIDLeast");
@@ -473,7 +473,7 @@ public class Structure {
 
     private void method_16186(BlockRotation blockRotation, int i, int j, BlockBox blockBox, Direction direction, Direction direction2) {
         BlockPos blockPos = BlockPos.ORIGIN;
-        blockPos = blockRotation == BlockRotation.CLOCKWISE_90 || blockRotation == BlockRotation.COUNTERCLOCKWISE_90 ? blockPos.offset(blockRotation.rotate(direction), j) : (blockRotation == BlockRotation.CLOCKWISE_180 ? blockPos.offset(direction2, i) : blockPos.offset(direction, i));
+        blockPos = blockRotation == BlockRotation.CLOCKWISE_90 || blockRotation == BlockRotation.COUNTERCLOCKWISE_90 ? blockPos.method_10079(blockRotation.rotate(direction), j) : (blockRotation == BlockRotation.CLOCKWISE_180 ? blockPos.method_10079(direction2, i) : blockPos.method_10079(direction, i));
         blockBox.offset(blockPos.getX(), 0, blockPos.getZ());
     }
 
@@ -549,22 +549,22 @@ public class Structure {
         ListTag listTag = compoundTag.getList("size", 3);
         this.size = new BlockPos(listTag.getInt(0), listTag.getInt(1), listTag.getInt(2));
         ListTag listTag2 = compoundTag.getList("blocks", 10);
-        if (compoundTag.containsKey("palettes", 9)) {
+        if (compoundTag.contains("palettes", 9)) {
             listTag3 = compoundTag.getList("palettes", 9);
             for (i = 0; i < listTag3.size(); ++i) {
-                this.method_15177(listTag3.getListTag(i), listTag2);
+                this.method_15177(listTag3.getList(i), listTag2);
             }
         } else {
             this.method_15177(compoundTag.getList("palette", 10), listTag2);
         }
         listTag3 = compoundTag.getList("entities", 10);
         for (i = 0; i < listTag3.size(); ++i) {
-            CompoundTag compoundTag2 = listTag3.getCompoundTag(i);
+            CompoundTag compoundTag2 = listTag3.getCompound(i);
             ListTag listTag4 = compoundTag2.getList("pos", 6);
             Vec3d vec3d = new Vec3d(listTag4.getDouble(0), listTag4.getDouble(1), listTag4.getDouble(2));
             ListTag listTag5 = compoundTag2.getList("blockPos", 3);
             BlockPos blockPos = new BlockPos(listTag5.getInt(0), listTag5.getInt(1), listTag5.getInt(2));
-            if (!compoundTag2.containsKey("nbt")) continue;
+            if (!compoundTag2.contains("nbt")) continue;
             CompoundTag compoundTag3 = compoundTag2.getCompound("nbt");
             this.entities.add(new StructureEntityInfo(vec3d, blockPos, compoundTag3));
         }
@@ -575,14 +575,14 @@ public class Structure {
         class_3500 lv = new class_3500();
         ArrayList<StructureBlockInfo> list = Lists.newArrayList();
         for (i = 0; i < listTag.size(); ++i) {
-            lv.method_15186(NbtHelper.toBlockState(listTag.getCompoundTag(i)), i);
+            lv.method_15186(NbtHelper.toBlockState(listTag.getCompound(i)), i);
         }
         for (i = 0; i < listTag2.size(); ++i) {
-            CompoundTag compoundTag = listTag2.getCompoundTag(i);
+            CompoundTag compoundTag = listTag2.getCompound(i);
             ListTag listTag3 = compoundTag.getList("pos", 3);
             BlockPos blockPos = new BlockPos(listTag3.getInt(0), listTag3.getInt(1), listTag3.getInt(2));
             BlockState blockState = lv.method_15185(compoundTag.getInt("state"));
-            CompoundTag compoundTag2 = compoundTag.containsKey("nbt") ? compoundTag.getCompound("nbt") : null;
+            CompoundTag compoundTag2 = compoundTag.contains("nbt") ? compoundTag.getCompound("nbt") : null;
             list.add(new StructureBlockInfo(blockPos, blockState, compoundTag2));
         }
         list.sort(Comparator.comparingInt(structureBlockInfo -> structureBlockInfo.pos.getY()));
@@ -592,7 +592,7 @@ public class Structure {
     private ListTag createIntListTag(int ... is) {
         ListTag listTag = new ListTag();
         for (int i : is) {
-            listTag.add(new IntTag(i));
+            listTag.add(IntTag.of(i));
         }
         return listTag;
     }
@@ -600,7 +600,7 @@ public class Structure {
     private ListTag createDoubleListTag(double ... ds) {
         ListTag listTag = new ListTag();
         for (double d : ds) {
-            listTag.add(new DoubleTag(d));
+            listTag.add(DoubleTag.of(d));
         }
         return listTag;
     }

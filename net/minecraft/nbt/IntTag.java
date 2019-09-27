@@ -9,18 +9,50 @@ import java.io.IOException;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagReader;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class IntTag
 extends AbstractNumberTag {
-    private int value;
+    public static final TagReader<IntTag> READER = new TagReader<IntTag>(){
 
-    IntTag() {
+        public IntTag method_23248(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            positionTracker.add(96L);
+            return IntTag.of(dataInput.readInt());
+        }
+
+        @Override
+        public String getCrashReportName() {
+            return "INT";
+        }
+
+        @Override
+        public String getCommandFeedbackName() {
+            return "TAG_Int";
+        }
+
+        @Override
+        public boolean isImmutable() {
+            return true;
+        }
+
+        @Override
+        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            return this.method_23248(dataInput, i, positionTracker);
+        }
+    };
+    private final int value;
+
+    private IntTag(int i) {
+        this.value = i;
     }
 
-    public IntTag(int i) {
-        this.value = i;
+    public static IntTag of(int i) {
+        if (i >= -128 && i <= 1024) {
+            return Cache.VALUES[i + 128];
+        }
+        return new IntTag(i);
     }
 
     @Override
@@ -29,14 +61,12 @@ extends AbstractNumberTag {
     }
 
     @Override
-    public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-        positionTracker.add(96L);
-        this.value = dataInput.readInt();
-    }
-
-    @Override
     public byte getType() {
         return 3;
+    }
+
+    public TagReader<IntTag> getReader() {
+        return READER;
     }
 
     @Override
@@ -45,7 +75,7 @@ extends AbstractNumberTag {
     }
 
     public IntTag method_10592() {
-        return new IntTag(this.value);
+        return this;
     }
 
     public boolean equals(Object object) {
@@ -102,6 +132,16 @@ extends AbstractNumberTag {
     @Override
     public /* synthetic */ Tag copy() {
         return this.method_10592();
+    }
+
+    static class Cache {
+        static final IntTag[] VALUES = new IntTag[1153];
+
+        static {
+            for (int i = 0; i < VALUES.length; ++i) {
+                Cache.VALUES[i] = new IntTag(-128 + i);
+            }
+        }
     }
 }
 

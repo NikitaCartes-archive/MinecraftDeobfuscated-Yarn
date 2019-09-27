@@ -192,6 +192,10 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         return LootTable.builder().withPool(BlockLootTableGenerator.method_10393(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(item).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.06666667f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, false))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.13333334f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, true))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.2f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 2))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.26666668f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 3))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.33333334f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 4))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.4f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 5))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.46666667f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 6))))).method_438((LootFunction.Builder)SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336f)).method_524(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 7)))))));
     }
 
+    private static LootTable.Builder method_23229(Block block, Item item) {
+        return LootTable.builder().withPool(BlockLootTableGenerator.method_10393(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(item).method_438(SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336f))))));
+    }
+
     private static LootTable.Builder method_10372(ItemConvertible itemConvertible) {
         return LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemConvertible)));
     }
@@ -752,7 +756,9 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.method_16293(Blocks.LARGE_FERN, block -> BlockLootTableGenerator.method_10380(Blocks.FERN, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)))).method_421(RandomChanceLootCondition.builder(0.125f))));
         this.method_16258(Blocks.TALL_GRASS, BlockLootTableGenerator.method_10380(Blocks.GRASS, ((LeafEntry.Builder)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(Blocks.TALL_GRASS, ItemEntry.builder(Items.WHEAT_SEEDS))).method_421(BlockStatePropertyLootCondition.builder(Blocks.TALL_GRASS).method_22584(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER)))).method_421(RandomChanceLootCondition.builder(0.125f))));
         this.method_16293(Blocks.MELON_STEM, block -> BlockLootTableGenerator.method_10387(block, Items.MELON_SEEDS));
+        this.method_16293(Blocks.ATTACHED_MELON_STEM, block -> BlockLootTableGenerator.method_23229(block, Items.MELON_SEEDS));
         this.method_16293(Blocks.PUMPKIN_STEM, block -> BlockLootTableGenerator.method_10387(block, Items.PUMPKIN_SEEDS));
+        this.method_16293(Blocks.ATTACHED_PUMPKIN_STEM, block -> BlockLootTableGenerator.method_23229(block, Items.PUMPKIN_SEEDS));
         this.method_16293(Blocks.CHORUS_FLOWER, block -> LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.method_10392(block, ItemEntry.builder(block))).method_421(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS)))));
         this.method_16293(Blocks.FERN, BlockLootTableGenerator::method_10371);
         this.method_16293(Blocks.GRASS, BlockLootTableGenerator::method_10371);
@@ -830,8 +836,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.method_16238(Blocks.INFESTED_CRACKED_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS);
         this.method_16238(Blocks.INFESTED_CHISELED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
         this.method_16258(Blocks.CAKE, BlockLootTableGenerator.method_10395());
-        this.method_16258(Blocks.ATTACHED_PUMPKIN_STEM, BlockLootTableGenerator.method_10395());
-        this.method_16258(Blocks.ATTACHED_MELON_STEM, BlockLootTableGenerator.method_10395());
         this.method_16258(Blocks.FROSTED_ICE, BlockLootTableGenerator.method_10395());
         this.method_16258(Blocks.SPAWNER, BlockLootTableGenerator.method_10395());
         HashSet<Identifier> set = Sets.newHashSet();

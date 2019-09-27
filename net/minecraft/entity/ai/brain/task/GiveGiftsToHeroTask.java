@@ -112,7 +112,7 @@ extends Task<VillagerEntity> {
         VillagerProfession villagerProfession = villagerEntity.getVillagerData().getProfession();
         if (GIFTS.containsKey(villagerProfession)) {
             LootTable lootTable = villagerEntity.world.getServer().getLootManager().getSupplier(GIFTS.get(villagerProfession));
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world).put(LootContextParameters.POSITION, new BlockPos(villagerEntity)).put(LootContextParameters.THIS_ENTITY, villagerEntity).setRandom(villagerEntity.getRand());
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world).put(LootContextParameters.POSITION, new BlockPos(villagerEntity)).put(LootContextParameters.THIS_ENTITY, villagerEntity).setRandom(villagerEntity.getRandom());
             return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
         }
         return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));

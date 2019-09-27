@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 
@@ -35,13 +36,15 @@ extends SkullEntityModel {
     }
 
     @Override
-    public void render(float f, float g, float h, float i, float j, float k) {
+    public void render(class_4587 arg, class_4588 arg2, float f, float g, float h, float i, int j) {
         this.jaw.pitch = (float)(Math.sin(f * (float)Math.PI * 0.2f) + 1.0) * 0.2f;
-        this.head.yaw = i * ((float)Math.PI / 180);
-        this.head.pitch = j * ((float)Math.PI / 180);
-        RenderSystem.translatef(0.0f, -0.374375f, 0.0f);
-        RenderSystem.scalef(0.75f, 0.75f, 0.75f);
-        this.head.render(k);
+        this.head.yaw = g * ((float)Math.PI / 180);
+        this.head.pitch = h * ((float)Math.PI / 180);
+        arg.method_22903();
+        arg.method_22904(0.0, -0.374375f, 0.0);
+        arg.method_22905(0.75f, 0.75f, 0.75f);
+        this.head.method_22698(arg, arg2, i, j, null);
+        arg.method_22909();
     }
 }
 

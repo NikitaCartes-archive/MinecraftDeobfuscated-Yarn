@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.PlayerContainer;
@@ -106,7 +105,6 @@ implements RecipeBookProvider {
     }
 
     public static void drawEntity(int i, int j, int k, float f, float g, LivingEntity livingEntity) {
-        RenderSystem.enableColorMaterial();
         RenderSystem.pushMatrix();
         RenderSystem.translatef(i, j, 50.0f);
         RenderSystem.scalef(-k, k, k);
@@ -116,9 +114,6 @@ implements RecipeBookProvider {
         float m = livingEntity.pitch;
         float n = livingEntity.prevHeadYaw;
         float o = livingEntity.headYaw;
-        RenderSystem.rotatef(135.0f, 0.0f, 1.0f, 0.0f);
-        GuiLighting.enable();
-        RenderSystem.rotatef(-135.0f, 0.0f, 1.0f, 0.0f);
         RenderSystem.rotatef(-((float)Math.atan(g / 40.0f)) * 20.0f, 1.0f, 0.0f, 0.0f);
         livingEntity.bodyYaw = (float)Math.atan(f / 40.0f) * 20.0f;
         livingEntity.yaw = (float)Math.atan(f / 40.0f) * 40.0f;
@@ -129,7 +124,7 @@ implements RecipeBookProvider {
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
         entityRenderDispatcher.method_3945(180.0f);
         entityRenderDispatcher.setRenderShadows(false);
-        entityRenderDispatcher.render(livingEntity, 0.0, 0.0, 0.0, 0.0f, 1.0f, false);
+        entityRenderDispatcher.render(livingEntity, 1.0f);
         entityRenderDispatcher.setRenderShadows(true);
         livingEntity.bodyYaw = h;
         livingEntity.yaw = l;
@@ -137,11 +132,7 @@ implements RecipeBookProvider {
         livingEntity.prevHeadYaw = n;
         livingEntity.headYaw = o;
         RenderSystem.popMatrix();
-        GuiLighting.disable();
         RenderSystem.disableRescaleNormal();
-        RenderSystem.activeTexture(33985);
-        RenderSystem.disableTexture();
-        RenderSystem.activeTexture(33984);
     }
 
     @Override

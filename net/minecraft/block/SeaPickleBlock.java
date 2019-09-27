@@ -74,7 +74,7 @@ Waterloggable {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         return this.canPlantOnTop(arg.getBlockState(blockPos2), arg, blockPos2);
     }
 
@@ -139,7 +139,7 @@ Waterloggable {
 
     @Override
     public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
-        if (!this.isDry(blockState) && serverWorld.getBlockState(blockPos.down()).matches(BlockTags.CORAL_BLOCKS)) {
+        if (!this.isDry(blockState) && serverWorld.getBlockState(blockPos.method_10074()).matches(BlockTags.CORAL_BLOCKS)) {
             int i = 5;
             int j = 1;
             int k = 2;
@@ -152,7 +152,7 @@ Waterloggable {
                     for (int r = q - 2; r < q; ++r) {
                         BlockState blockState2;
                         BlockPos blockPos2 = new BlockPos(m + o, r, blockPos.getZ() - n + p);
-                        if (blockPos2 == blockPos || random.nextInt(6) != 0 || serverWorld.getBlockState(blockPos2).getBlock() != Blocks.WATER || !(blockState2 = serverWorld.getBlockState(blockPos2.down())).matches(BlockTags.CORAL_BLOCKS)) continue;
+                        if (blockPos2 == blockPos || random.nextInt(6) != 0 || serverWorld.getBlockState(blockPos2).getBlock() != Blocks.WATER || !(blockState2 = serverWorld.getBlockState(blockPos2.method_10074())).matches(BlockTags.CORAL_BLOCKS)) continue;
                         serverWorld.setBlockState(blockPos2, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, random.nextInt(4) + 1), 3);
                     }
                 }

@@ -5,12 +5,12 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.ModelRotation;
+import net.minecraft.class_4590;
 
 @Environment(value=EnvType.CLIENT)
 public interface ModelBakeSettings {
-    default public ModelRotation getRotation() {
-        return ModelRotation.X0_Y0;
+    default public class_4590 getRotation() {
+        return class_4590.method_22931();
     }
 
     default public boolean isUvLocked() {

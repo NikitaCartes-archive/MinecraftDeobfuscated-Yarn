@@ -76,12 +76,6 @@ extends BlockWithEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
-    public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-        return true;
-    }
-
-    @Override
     public BlockRenderType getRenderType(BlockState blockState) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
@@ -188,10 +182,10 @@ extends BlockWithEntity {
         super.buildTooltip(itemStack, blockView, list, tooltipContext);
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
         if (compoundTag != null) {
-            if (compoundTag.containsKey("LootTable", 8)) {
+            if (compoundTag.contains("LootTable", 8)) {
                 list.add(new LiteralText("???????"));
             }
-            if (compoundTag.containsKey("Items", 9)) {
+            if (compoundTag.contains("Items", 9)) {
                 DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
                 Inventories.fromTag(compoundTag, defaultedList);
                 int i = 0;

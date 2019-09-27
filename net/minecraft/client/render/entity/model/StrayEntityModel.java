@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
@@ -78,11 +79,11 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm) {
+    public void setArmAngle(float f, Arm arm, class_4587 arg) {
         float g = arm == Arm.RIGHT ? 1.0f : -1.0f;
         ModelPart modelPart = this.getArm(arm);
         modelPart.rotationPointX += g;
-        modelPart.applyTransform(f);
+        modelPart.method_22703(arg, f);
         modelPart.rotationPointX -= g;
     }
 }

@@ -3,14 +3,14 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.Identifier;
 
@@ -30,15 +30,18 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         return wolfEntity.method_6714();
     }
 
-    public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h) {
+    public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
         if (wolfEntity.isWet()) {
             float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
-            RenderSystem.color3f(i, i, i);
+            ((WolfEntityModel)this.model).method_22955(i, i, i);
         }
-        super.method_4072(wolfEntity, d, e, f, g, h);
+        super.method_4072(wolfEntity, d, e, f, g, h, arg, arg2);
+        if (wolfEntity.isWet()) {
+            ((WolfEntityModel)this.model).method_22955(1.0f, 1.0f, 1.0f);
+        }
     }
 
-    protected Identifier method_4165(WolfEntity wolfEntity) {
+    public Identifier method_4165(WolfEntity wolfEntity) {
         if (wolfEntity.isTamed()) {
             return TAMED_SKIN;
         }
@@ -46,11 +49,6 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
             return ANGRY_SKIN;
         }
         return WILD_SKIN;
-    }
-
-    @Override
-    protected /* synthetic */ float getAge(LivingEntity livingEntity, float f) {
-        return this.method_4167((WolfEntity)livingEntity, f);
     }
 }
 

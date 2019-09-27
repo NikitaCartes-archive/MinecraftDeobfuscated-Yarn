@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class GlBuffer {
@@ -54,8 +55,12 @@ public class GlBuffer {
         GlBuffer.unbind();
     }
 
-    public void draw(int i) {
+    public void draw(Matrix4f matrix4f, int i) {
+        RenderSystem.pushMatrix();
+        RenderSystem.loadIdentity();
+        RenderSystem.multMatrix(matrix4f);
         RenderSystem.drawArrays(i, 0, this.vertexCount);
+        RenderSystem.popMatrix();
     }
 
     public static void unbind() {

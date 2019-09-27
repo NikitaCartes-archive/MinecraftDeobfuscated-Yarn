@@ -3,19 +3,18 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4593;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class WolfEntityModel<T extends WolfEntity>
-extends EntityModel<T> {
+extends class_4593<T> {
     private final ModelPart head;
     private final ModelPart field_20788;
     private final ModelPart field_3623;
@@ -63,36 +62,14 @@ extends EntityModel<T> {
         this.field_20788.setTextureOffset(0, 10).addCuboid(-0.5f, 0.0f, -5.0f, 3.0f, 3.0f, 4.0f, 0.0f);
     }
 
-    public void method_17132(T wolfEntity, float f, float g, float h, float i, float j, float k) {
-        super.render(wolfEntity, f, g, h, i, j, k);
-        this.method_17133(wolfEntity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 2.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0.0f, 5.0f * k, 2.0f * k);
-            this.head.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
-            this.field_3623.render(k);
-            this.field_3622.render(k);
-            this.field_3620.render(k);
-            this.field_3618.render(k);
-            this.field_3624.render(k);
-            this.field_3617.render(k);
-            this.field_3619.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.head.render(k);
-            this.field_3623.render(k);
-            this.field_3622.render(k);
-            this.field_3620.render(k);
-            this.field_3618.render(k);
-            this.field_3624.render(k);
-            this.field_3617.render(k);
-            this.field_3619.render(k);
-        }
+    @Override
+    protected Iterable<ModelPart> method_22946() {
+        return ImmutableList.of(this.head);
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.field_3623, this.field_3622, this.field_3620, this.field_3618, this.field_3624, this.field_3617, this.field_3619);
     }
 
     public void method_17131(T wolfEntity, float f, float g, float h) {
@@ -134,20 +111,9 @@ extends EntityModel<T> {
     }
 
     public void method_17133(T wolfEntity, float f, float g, float h, float i, float j, float k) {
-        super.setAngles(wolfEntity, f, g, h, i, j, k);
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = i * ((float)Math.PI / 180);
         this.field_3617.pitch = h;
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17133((WolfEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17132((WolfEntity)entity, f, g, h, i, j, k);
     }
 }
 

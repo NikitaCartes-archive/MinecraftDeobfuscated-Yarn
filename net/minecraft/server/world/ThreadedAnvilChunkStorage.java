@@ -39,6 +39,8 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
@@ -200,6 +202,26 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
             return Math.min(chunkHolder.getCompletedLevel(), LevelPrioritizedQueue.LEVEL_COUNT - 1);
         };
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public String method_23272(ChunkPos chunkPos) {
+        ChunkHolder chunkHolder = this.getChunkHolder(chunkPos.toLong());
+        if (chunkHolder == null) {
+            return "null";
+        }
+        String string = chunkHolder.getLevel() + "\n";
+        ChunkStatus chunkStatus = chunkHolder.method_23270();
+        Chunk chunk = chunkHolder.getCompletedChunk();
+        if (chunkStatus != null) {
+            string = string + "St: \u00a7" + chunkStatus.getIndex() + chunkStatus + '\u00a7' + "r\n";
+        }
+        if (chunk != null) {
+            string = string + "Ch: \u00a7" + chunk.getStatus().getIndex() + chunk.getStatus() + '\u00a7' + "r\n";
+        }
+        ChunkHolder.LevelType levelType = chunkHolder.method_23271();
+        string = string + "\u00a7" + levelType.ordinal() + (Object)((Object)levelType);
+        return string + '\u00a7' + "r";
     }
 
     private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> createChunkRegionFuture(ChunkPos chunkPos, final int i, IntFunction<ChunkStatus> intFunction) {
@@ -412,7 +434,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
                 if (compoundTag != null) {
                     boolean bl;
-                    boolean bl2 = bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
+                    boolean bl2 = bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
                     if (bl) {
                         ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, chunkPos, compoundTag);
                         chunk.setLastSaveTime(this.world.getTime());

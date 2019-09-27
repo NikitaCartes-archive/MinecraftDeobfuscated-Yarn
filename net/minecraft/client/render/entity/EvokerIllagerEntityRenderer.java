@@ -5,6 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.IllagerEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
@@ -21,15 +23,15 @@ extends IllagerEntityRenderer<T> {
         super(entityRenderDispatcher, new EvilVillagerEntityModel(0.0f, 0.0f, 64, 64), 0.5f);
         this.addFeature(new HeldItemFeatureRenderer<T, EvilVillagerEntityModel<T>>(this){
 
-            public void method_17147(T spellcastingIllagerEntity, float f, float g, float h, float i, float j, float k, float l) {
+            public void method_23170(class_4587 arg, class_4597 arg2, int i, T spellcastingIllagerEntity, float f, float g, float h, float j, float k, float l, float m) {
                 if (((SpellcastingIllagerEntity)spellcastingIllagerEntity).isSpellcasting()) {
-                    super.method_17162(spellcastingIllagerEntity, f, g, h, i, j, k, l);
+                    super.method_17162(arg, arg2, i, spellcastingIllagerEntity, f, g, h, j, k, l, m);
                 }
             }
         });
     }
 
-    protected Identifier method_3961(T spellcastingIllagerEntity) {
+    public Identifier method_3961(T spellcastingIllagerEntity) {
         return EVOKER_TEXTURE;
     }
 }

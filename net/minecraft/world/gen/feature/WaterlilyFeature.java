@@ -24,7 +24,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean method_14202(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockPos blockPos3;
         BlockPos blockPos2 = blockPos;
-        while (blockPos2.getY() > 0 && iWorld.isAir(blockPos3 = blockPos2.down())) {
+        while (blockPos2.getY() > 0 && iWorld.isAir(blockPos3 = blockPos2.method_10074())) {
             blockPos2 = blockPos3;
         }
         for (int i = 0; i < 10; ++i) {

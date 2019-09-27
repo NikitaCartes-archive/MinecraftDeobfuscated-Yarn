@@ -68,7 +68,7 @@ implements UnbakedModel {
 
     @Override
     @Nullable
-    public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
+    public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
         if (this.getVariants().isEmpty()) {
             return null;
         }

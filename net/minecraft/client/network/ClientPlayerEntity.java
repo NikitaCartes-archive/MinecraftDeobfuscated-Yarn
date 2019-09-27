@@ -830,7 +830,7 @@ extends AbstractClientPlayerEntity {
                 return;
             }
         }
-        float n = (float)MathHelper.fastInverseSqrt(i);
+        float n = MathHelper.method_22858(i);
         Vec3d vec3d4 = vec3d3.multiply(n);
         Vec3d vec3d5 = this.getRotationVecClient();
         l = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);

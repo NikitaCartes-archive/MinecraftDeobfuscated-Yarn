@@ -14,7 +14,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.options.ChatVisibility;
-import net.minecraft.client.util.TextComponentUtil;
+import net.minecraft.client.util.Texts;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -127,7 +127,7 @@ extends DrawableHelper {
             this.removeMessage(i);
         }
         int k = MathHelper.floor((double)this.getWidth() / this.getChatScale());
-        List<Text> list = TextComponentUtil.wrapLines(text, k, this.client.textRenderer, false, false);
+        List<Text> list = Texts.wrapLines(text, k, this.client.textRenderer, false, false);
         boolean bl2 = this.isChatFocused();
         for (Text text2 : list) {
             if (bl2 && this.scrolledLines > 0) {
@@ -190,7 +190,7 @@ extends DrawableHelper {
         }
         double f = this.getChatScale();
         double g = d - 2.0;
-        double h = (double)this.client.method_22683().getScaledHeight() - e - 40.0;
+        double h = (double)this.client.getWindow().getScaledHeight() - e - 40.0;
         g = MathHelper.floor(g / f);
         h = MathHelper.floor(h / f);
         if (g < 0.0 || h < 0.0) {
@@ -203,7 +203,7 @@ extends DrawableHelper {
                 ChatHudLine chatHudLine = this.visibleMessages.get(j);
                 int k = 0;
                 for (Text text : chatHudLine.getText()) {
-                    if (!(text instanceof LiteralText) || !((double)(k += this.client.textRenderer.getStringWidth(TextComponentUtil.getRenderChatMessage(((LiteralText)text).getRawString(), false))) > g)) continue;
+                    if (!(text instanceof LiteralText) || !((double)(k += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(((LiteralText)text).getRawString(), false))) > g)) continue;
                     return text;
                 }
             }

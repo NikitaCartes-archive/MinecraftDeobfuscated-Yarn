@@ -93,7 +93,7 @@ extends Container {
                 AnvilContainer.this.levelCost.set(0);
                 blockContext.run((world, blockPos) -> {
                     BlockState blockState = world.getBlockState((BlockPos)blockPos);
-                    if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.ANVIL) && playerEntity.getRand().nextFloat() < 0.12f) {
+                    if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.ANVIL) && playerEntity.getRandom().nextFloat() < 0.12f) {
                         BlockState blockState2 = AnvilBlock.getLandingState(blockState);
                         if (blockState2 == null) {
                             world.removeBlock((BlockPos)blockPos, false);

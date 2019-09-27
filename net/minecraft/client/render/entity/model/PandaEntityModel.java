@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -21,7 +20,7 @@ extends QuadrupedEntityModel<T> {
     private float playAnimationProgress;
 
     public PandaEntityModel(int i, float f) {
-        super(i, f);
+        super(i, f, true, 23.0f, 0.3f, 1.2f, 3.0f, 49);
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.head = new ModelPart(this, 0, 6);
@@ -115,38 +114,6 @@ extends QuadrupedEntityModel<T> {
             this.leg2.pitch = 0.5f * MathHelper.sin(h * 0.5f);
             this.leg3.pitch = 0.5f * MathHelper.sin(h * 0.5f);
             this.leg4.pitch = -0.5f * MathHelper.sin(h * 0.5f);
-        }
-    }
-
-    public void method_17104(T pandaEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17103(pandaEntity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 3.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0.0f, this.field_3540 * k, this.field_3537 * k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            float m = 0.6f;
-            RenderSystem.scalef(0.5555555f, 0.5555555f, 0.5555555f);
-            RenderSystem.translatef(0.0f, 23.0f * k, 0.3f);
-            this.head.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.33333334f, 0.33333334f, 0.33333334f);
-            RenderSystem.translatef(0.0f, 49.0f * k, 0.0f);
-            this.body.render(k);
-            this.leg1.render(k);
-            this.leg2.render(k);
-            this.leg3.render(k);
-            this.leg4.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.head.render(k);
-            this.body.render(k);
-            this.leg1.render(k);
-            this.leg2.render(k);
-            this.leg3.render(k);
-            this.leg4.render(k);
         }
     }
 }

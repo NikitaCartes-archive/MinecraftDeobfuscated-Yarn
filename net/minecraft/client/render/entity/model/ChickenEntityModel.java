@@ -3,17 +3,17 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class ChickenEntityModel<T extends Entity>
-extends EntityModel<T> {
+extends class_4592<T> {
     private final ModelPart head;
     private final ModelPart body;
     private final ModelPart leftLeg;
@@ -52,35 +52,13 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 2.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0.0f, 5.0f * k, 2.0f * k);
-            this.head.render(k);
-            this.beak.render(k);
-            this.wattle.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
-            this.body.render(k);
-            this.leftLeg.render(k);
-            this.rightLeg.render(k);
-            this.leftWing.render(k);
-            this.rightWing.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.head.render(k);
-            this.beak.render(k);
-            this.wattle.render(k);
-            this.body.render(k);
-            this.leftLeg.render(k);
-            this.rightLeg.render(k);
-            this.leftWing.render(k);
-            this.rightWing.render(k);
-        }
+    protected Iterable<ModelPart> method_22946() {
+        return ImmutableList.of(this.head, this.beak, this.wattle);
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.body, this.leftLeg, this.rightLeg, this.leftWing, this.rightWing);
     }
 
     @Override

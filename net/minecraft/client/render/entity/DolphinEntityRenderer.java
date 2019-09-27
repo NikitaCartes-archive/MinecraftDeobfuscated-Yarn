@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -23,17 +22,8 @@ extends MobEntityRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         this.addFeature(new DolphinHeldItemFeatureRenderer(this));
     }
 
-    protected Identifier method_3903(DolphinEntity dolphinEntity) {
+    public Identifier method_3903(DolphinEntity dolphinEntity) {
         return SKIN;
-    }
-
-    protected void method_3901(DolphinEntity dolphinEntity, float f) {
-        float g = 1.0f;
-        RenderSystem.scalef(1.0f, 1.0f, 1.0f);
-    }
-
-    protected void method_3902(DolphinEntity dolphinEntity, float f, float g, float h) {
-        super.setupTransforms(dolphinEntity, f, g, h);
     }
 }
 

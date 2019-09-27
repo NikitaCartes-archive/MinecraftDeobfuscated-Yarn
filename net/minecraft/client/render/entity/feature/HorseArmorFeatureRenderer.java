@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
@@ -23,30 +24,29 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18658(HorseEntity horseEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_18658(class_4587 arg, class_4597 arg2, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
+        float q;
+        float p;
+        float o;
         ItemStack itemStack = horseEntity.getArmorType();
-        if (itemStack.getItem() instanceof HorseArmorItem) {
-            HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
-            ((HorseEntityModel)this.getModel()).copyStateTo(this.model);
-            this.model.method_17084(horseEntity, f, g, h);
-            this.bindTexture(horseArmorItem.getEntityTexture());
-            if (horseArmorItem instanceof DyeableHorseArmorItem) {
-                int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
-                float n = (float)(m >> 16 & 0xFF) / 255.0f;
-                float o = (float)(m >> 8 & 0xFF) / 255.0f;
-                float p = (float)(m & 0xFF) / 255.0f;
-                RenderSystem.color4f(n, o, p, 1.0f);
-                this.model.method_17085(horseEntity, f, g, i, j, k, l);
-                return;
-            }
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.model.method_17085(horseEntity, f, g, i, j, k, l);
+        if (!(itemStack.getItem() instanceof HorseArmorItem)) {
+            return;
         }
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return false;
+        HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
+        ((HorseEntityModel)this.getModel()).copyStateTo(this.model);
+        this.model.method_17084(horseEntity, f, g, h);
+        this.model.method_17085(horseEntity, f, g, j, k, l, m);
+        if (horseArmorItem instanceof DyeableHorseArmorItem) {
+            int n = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
+            o = (float)(n >> 16 & 0xFF) / 255.0f;
+            p = (float)(n >> 8 & 0xFF) / 255.0f;
+            q = (float)(n & 0xFF) / 255.0f;
+        } else {
+            o = 1.0f;
+            p = 1.0f;
+            q = 1.0f;
+        }
+        HorseArmorFeatureRenderer.method_23197(this.model, horseArmorItem.getEntityTexture(), arg, arg2, i, o, p, q);
     }
 }
 

@@ -65,7 +65,7 @@ extends Screen {
 
     private void initListSelectLogic() {
         int i;
-        if (this.generatorOptionsTag.containsKey("chunk_generator", 10) && this.generatorOptionsTag.getCompound("chunk_generator").containsKey("type", 8)) {
+        if (this.generatorOptionsTag.contains("chunk_generator", 10) && this.generatorOptionsTag.getCompound("chunk_generator").contains("type", 8)) {
             Identifier identifier = new Identifier(this.generatorOptionsTag.getCompound("chunk_generator").getString("type"));
             for (i = 0; i < CHUNK_GENERATOR_TYPES.size(); ++i) {
                 if (!CHUNK_GENERATOR_TYPES.get(i).equals(identifier)) continue;
@@ -73,7 +73,7 @@ extends Screen {
                 break;
             }
         }
-        if (this.generatorOptionsTag.containsKey("biome_source", 10) && this.generatorOptionsTag.getCompound("biome_source").containsKey("biomes", 9)) {
+        if (this.generatorOptionsTag.contains("biome_source", 10) && this.generatorOptionsTag.getCompound("biome_source").contains("biomes", 9)) {
             ListTag listTag = this.generatorOptionsTag.getCompound("biome_source").getList("biomes", 8);
             for (i = 0; i < listTag.size(); ++i) {
                 Identifier identifier2 = new Identifier(listTag.getString(i));
@@ -90,7 +90,7 @@ extends Screen {
         compoundTag2.putString("type", Registry.BIOME_SOURCE_TYPE.getId(BiomeSourceType.FIXED).toString());
         CompoundTag compoundTag3 = new CompoundTag();
         ListTag listTag = new ListTag();
-        listTag.add(new StringTag(((BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList.getSelected()).biome.toString()));
+        listTag.add(StringTag.of(((BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList.getSelected()).biome.toString()));
         compoundTag3.put("biomes", listTag);
         compoundTag2.put("options", compoundTag3);
         CompoundTag compoundTag4 = new CompoundTag();

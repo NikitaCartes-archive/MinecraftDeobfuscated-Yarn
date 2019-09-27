@@ -19,7 +19,7 @@ extends ProjectileEntityRenderer<SpectralArrowEntity> {
         super(entityRenderDispatcher);
     }
 
-    protected Identifier method_4120(SpectralArrowEntity spectralArrowEntity) {
+    public Identifier method_4120(SpectralArrowEntity spectralArrowEntity) {
         return SKIN;
     }
 }

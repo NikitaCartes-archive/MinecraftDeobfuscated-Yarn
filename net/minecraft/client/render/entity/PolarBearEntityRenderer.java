@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.PolarBearEntityModel;
@@ -21,13 +21,13 @@ extends MobEntityRenderer<PolarBearEntity, PolarBearEntityModel<PolarBearEntity>
         super(entityRenderDispatcher, new PolarBearEntityModel(), 0.9f);
     }
 
-    protected Identifier method_4097(PolarBearEntity polarBearEntity) {
+    public Identifier method_4097(PolarBearEntity polarBearEntity) {
         return SKIN;
     }
 
-    protected void method_4099(PolarBearEntity polarBearEntity, float f) {
-        RenderSystem.scalef(1.2f, 1.2f, 1.2f);
-        super.scale(polarBearEntity, f);
+    protected void method_4099(PolarBearEntity polarBearEntity, class_4587 arg, float f) {
+        arg.method_22905(1.2f, 1.2f, 1.2f);
+        super.scale(polarBearEntity, arg, f);
     }
 }
 

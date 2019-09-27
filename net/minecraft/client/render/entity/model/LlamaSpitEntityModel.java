@@ -3,15 +3,16 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class LlamaSpitEntityModel<T extends Entity>
-extends EntityModel<T> {
+extends class_4595<T> {
     private final ModelPart field_3433 = new ModelPart(this);
 
     public LlamaSpitEntityModel() {
@@ -31,9 +32,12 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        this.field_3433.render(k);
+    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+    }
+
+    @Override
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3433);
     }
 }
 

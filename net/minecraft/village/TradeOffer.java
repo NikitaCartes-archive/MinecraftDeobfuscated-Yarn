@@ -25,14 +25,14 @@ public class TradeOffer {
         this.secondBuyItem = ItemStack.fromTag(compoundTag.getCompound("buyB"));
         this.sellItem = ItemStack.fromTag(compoundTag.getCompound("sell"));
         this.uses = compoundTag.getInt("uses");
-        this.maxUses = compoundTag.containsKey("maxUses", 99) ? compoundTag.getInt("maxUses") : 4;
-        if (compoundTag.containsKey("rewardExp", 1)) {
+        this.maxUses = compoundTag.contains("maxUses", 99) ? compoundTag.getInt("maxUses") : 4;
+        if (compoundTag.contains("rewardExp", 1)) {
             this.rewardingPlayerExperience = compoundTag.getBoolean("rewardExp");
         }
-        if (compoundTag.containsKey("xp", 3)) {
+        if (compoundTag.contains("xp", 3)) {
             this.traderExperience = compoundTag.getInt("xp");
         }
-        if (compoundTag.containsKey("priceMultiplier", 5)) {
+        if (compoundTag.contains("priceMultiplier", 5)) {
             this.priceMultiplier = compoundTag.getFloat("priceMultiplier");
         }
         this.specialPrice = compoundTag.getInt("specialPrice");

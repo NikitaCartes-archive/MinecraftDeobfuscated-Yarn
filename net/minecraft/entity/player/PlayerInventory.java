@@ -410,7 +410,7 @@ Nameable {
         this.armor.clear();
         this.offHand.clear();
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            CompoundTag compoundTag = listTag.getCompound(i);
             int j = compoundTag.getByte("Slot") & 0xFF;
             ItemStack itemStack = ItemStack.fromTag(compoundTag);
             if (itemStack.isEmpty()) continue;

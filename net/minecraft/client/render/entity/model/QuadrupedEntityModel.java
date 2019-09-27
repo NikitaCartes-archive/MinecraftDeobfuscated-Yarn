@@ -3,27 +3,26 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class QuadrupedEntityModel<T extends Entity>
-extends EntityModel<T> {
+extends class_4592<T> {
     protected ModelPart head = new ModelPart(this, 0, 0);
     protected ModelPart body;
     protected ModelPart leg1;
     protected ModelPart leg2;
     protected ModelPart leg3;
     protected ModelPart leg4;
-    protected float field_3540 = 8.0f;
-    protected float field_3537 = 4.0f;
 
-    public QuadrupedEntityModel(int i, float f) {
+    public QuadrupedEntityModel(int i, float f, boolean bl, float g, float h, float j, float k, int l) {
+        super(bl, g, h, j, k, l);
         this.head.addCuboid(-4.0f, -4.0f, -8.0f, 8.0f, 8.0f, 8.0f, f);
         this.head.setRotationPoint(0.0f, 18 - i, -6.0f);
         this.body = new ModelPart(this, 28, 8);
@@ -44,31 +43,13 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 2.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0.0f, this.field_3540 * k, this.field_3537 * k);
-            this.head.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
-            this.body.render(k);
-            this.leg1.render(k);
-            this.leg2.render(k);
-            this.leg3.render(k);
-            this.leg4.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.head.render(k);
-            this.body.render(k);
-            this.leg1.render(k);
-            this.leg2.render(k);
-            this.leg3.render(k);
-            this.leg4.render(k);
-        }
+    protected Iterable<ModelPart> method_22946() {
+        return ImmutableList.of(this.head);
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.body, this.leg1, this.leg2, this.leg3, this.leg4);
     }
 
     @Override

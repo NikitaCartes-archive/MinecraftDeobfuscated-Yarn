@@ -148,7 +148,7 @@ RangedAttackMob {
         super.readCustomDataFromTag(compoundTag);
         ListTag listTag = compoundTag.getList("Inventory", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            ItemStack itemStack = ItemStack.fromTag(listTag.getCompoundTag(i));
+            ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
             if (itemStack.isEmpty()) continue;
             this.inventory.add(itemStack);
         }
@@ -157,7 +157,7 @@ RangedAttackMob {
 
     @Override
     public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-        Block block = arg.getBlockState(blockPos.down()).getBlock();
+        Block block = arg.getBlockState(blockPos.method_10074()).getBlock();
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }
@@ -233,7 +233,7 @@ RangedAttackMob {
         double h = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - entity.y + g * (double)0.2f;
         Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, h, e), f);
         projectile.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.6f, 14 - this.world.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
     }
 
     private Vector3f getProjectileVelocity(Vec3d vec3d, float f) {

@@ -79,7 +79,7 @@ public class FeatureUpdater {
         CompoundTag compoundTag4 = compoundTag3.getCompound("References");
         for (String string : this.field_17659) {
             StructureFeature structureFeature = (StructureFeature)Feature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-            if (compoundTag4.containsKey(string, 12) || structureFeature == null) continue;
+            if (compoundTag4.contains(string, 12) || structureFeature == null) continue;
             int i = structureFeature.getRadius();
             LongArrayList longList = new LongArrayList();
             for (int j = chunkPos.x - i; j <= chunkPos.x + i; ++j) {
@@ -152,7 +152,7 @@ public class FeatureUpdater {
                 CompoundTag compoundTag2 = compoundTag.getCompound(string22);
                 long l = ChunkPos.toLong(compoundTag2.getInt("ChunkX"), compoundTag2.getInt("ChunkZ"));
                 ListTag listTag = compoundTag2.getList("Children", 10);
-                if (!listTag.isEmpty() && (string4 = ANCIENT_TO_OLD.get(string3 = listTag.getCompoundTag(0).getString("id"))) != null) {
+                if (!listTag.isEmpty() && (string4 = ANCIENT_TO_OLD.get(string3 = listTag.getCompound(0).getString("id"))) != null) {
                     compoundTag2.putString("id", string4);
                 }
                 string3 = compoundTag2.getString("id");

@@ -131,7 +131,7 @@ extends FacingBlock {
         } else if (!bl && blockState.get(EXTENDED).booleanValue()) {
             PistonBlockEntity pistonBlockEntity;
             BlockEntity blockEntity;
-            BlockPos blockPos2 = blockPos.offset(direction, 2);
+            BlockPos blockPos2 = blockPos.method_10079(direction, 2);
             BlockState blockState2 = world.getBlockState(blockPos2);
             int i = 1;
             if (blockState2.getBlock() == Blocks.MOVING_PISTON && blockState2.get(FACING) == direction && (blockEntity = world.getBlockEntity(blockPos2)) instanceof PistonBlockEntity && (pistonBlockEntity = (PistonBlockEntity)blockEntity).isExtending() && (pistonBlockEntity.getProgress(0.0f) < 0.5f || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInsideTick())) {

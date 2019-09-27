@@ -3,17 +3,21 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
@@ -31,16 +35,15 @@ extends EntityRenderer<T> {
         this.field_4673 = 0.7f;
     }
 
-    public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h) {
-        BlockState blockState;
-        RenderSystem.pushMatrix();
-        this.bindEntityTexture(abstractMinecartEntity);
+    public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+        super.render(abstractMinecartEntity, d, e, f, g, h, arg, arg2);
+        arg.method_22903();
         long l = (long)((Entity)abstractMinecartEntity).getEntityId() * 493286711L;
         l = l * l * 4392167121L + l * 98761L;
         float i = (((float)(l >> 16 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         float j = (((float)(l >> 20 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         float k = (((float)(l >> 24 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
-        RenderSystem.translatef(i, j, k);
+        arg.method_22904(i, j, k);
         double m = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderX, ((AbstractMinecartEntity)abstractMinecartEntity).x);
         double n = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderY, ((AbstractMinecartEntity)abstractMinecartEntity).y);
         double o = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderZ, ((AbstractMinecartEntity)abstractMinecartEntity).z);
@@ -56,9 +59,7 @@ extends EntityRenderer<T> {
             if (vec3d3 == null) {
                 vec3d3 = vec3d;
             }
-            d += vec3d.x - m;
-            e += (vec3d2.y + vec3d3.y) / 2.0 - n;
-            f += vec3d.z - o;
+            arg.method_22904(vec3d.x - m, (vec3d2.y + vec3d3.y) / 2.0 - n, vec3d.z - o);
             Vec3d vec3d4 = vec3d3.add(-vec3d2.x, -vec3d2.y, -vec3d2.z);
             if (vec3d4.length() != 0.0) {
                 vec3d4 = vec3d4.normalize();
@@ -66,51 +67,43 @@ extends EntityRenderer<T> {
                 q = (float)(Math.atan(vec3d4.y) * 73.0);
             }
         }
-        RenderSystem.translatef((float)d, (float)e + 0.375f, (float)f);
-        RenderSystem.rotatef(180.0f - g, 0.0f, 1.0f, 0.0f);
-        RenderSystem.rotatef(-q, 0.0f, 0.0f, 1.0f);
+        arg.method_22904(0.0, 0.375, 0.0);
+        arg.method_22907(Vector3f.field_20705.method_23214(180.0f - g, true));
+        arg.method_22907(Vector3f.field_20707.method_23214(-q, true));
         float r = (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleTicks() - h;
         float s = ((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleStrength() - h;
         if (s < 0.0f) {
             s = 0.0f;
         }
         if (r > 0.0f) {
-            RenderSystem.rotatef(MathHelper.sin(r) * r * s / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleSide(), 1.0f, 0.0f, 0.0f);
+            arg.method_22907(Vector3f.field_20703.method_23214(MathHelper.sin(r) * r * s / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleSide(), true));
         }
         int t = ((AbstractMinecartEntity)abstractMinecartEntity).getBlockOffset();
-        if (this.renderOutlines) {
-            RenderSystem.enableColorMaterial();
-            RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(abstractMinecartEntity));
+        int u = ((Entity)abstractMinecartEntity).getLightmapCoordinates();
+        BlockState blockState = ((AbstractMinecartEntity)abstractMinecartEntity).getContainedBlock();
+        if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
+            arg.method_22903();
+            float v = 0.75f;
+            arg.method_22905(0.75f, 0.75f, 0.75f);
+            arg.method_22904(-0.5, (float)(t - 8) / 16.0f, 0.5);
+            this.renderBlock(abstractMinecartEntity, h, blockState, arg, arg2, u);
+            arg.method_22909();
         }
-        if ((blockState = ((AbstractMinecartEntity)abstractMinecartEntity).getContainedBlock()).getRenderType() != BlockRenderType.INVISIBLE) {
-            RenderSystem.pushMatrix();
-            this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-            float u = 0.75f;
-            RenderSystem.scalef(0.75f, 0.75f, 0.75f);
-            RenderSystem.translatef(-0.5f, (float)(t - 8) / 16.0f, 0.5f);
-            this.renderBlock(abstractMinecartEntity, h, blockState);
-            RenderSystem.popMatrix();
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.bindEntityTexture(abstractMinecartEntity);
-        }
-        RenderSystem.scalef(-1.0f, -1.0f, 1.0f);
-        this.model.render(abstractMinecartEntity, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        RenderSystem.popMatrix();
-        if (this.renderOutlines) {
-            RenderSystem.tearDownSolidRenderingTextureCombine();
-            RenderSystem.disableColorMaterial();
-        }
-        super.render(abstractMinecartEntity, d, e, f, g, h);
+        arg.method_22905(-1.0f, -1.0f, 1.0f);
+        this.model.setAngles(abstractMinecartEntity, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
+        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(this.method_4065(abstractMinecartEntity)));
+        class_4608.method_23211(lv);
+        this.model.method_22957(arg, lv, u);
+        lv.method_22923();
+        arg.method_22909();
     }
 
-    protected Identifier method_4065(T abstractMinecartEntity) {
+    public Identifier method_4065(T abstractMinecartEntity) {
         return SKIN;
     }
 
-    protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState) {
-        RenderSystem.pushMatrix();
-        MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, ((Entity)abstractMinecartEntity).getBrightnessAtEyes());
-        RenderSystem.popMatrix();
+    protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState, class_4587 arg, class_4597 arg2, int i) {
+        MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, arg, arg2, i, 0, 10);
     }
 }
 

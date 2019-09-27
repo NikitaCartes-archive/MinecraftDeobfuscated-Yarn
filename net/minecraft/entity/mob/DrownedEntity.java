@@ -97,17 +97,17 @@ implements RangedAttackMob {
         return entityData;
     }
 
-    public static boolean method_20673(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         boolean bl;
         Biome biome = iWorld.getBiome(blockPos);
-        boolean bl2 = bl = iWorld.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.method_20679(iWorld, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
+        boolean bl2 = bl = iWorld.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(iWorld, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
         if (biome == Biomes.RIVER || biome == Biomes.FROZEN_RIVER) {
             return random.nextInt(15) == 0 && bl;
         }
-        return random.nextInt(40) == 0 && DrownedEntity.method_20672(iWorld, blockPos) && bl;
+        return random.nextInt(40) == 0 && DrownedEntity.isValidSpawnDepth(iWorld, blockPos) && bl;
     }
 
-    private static boolean method_20672(IWorld iWorld, BlockPos blockPos) {
+    private static boolean isValidSpawnDepth(IWorld iWorld, BlockPos blockPos) {
         return blockPos.getY() < iWorld.getSeaLevel() - 5;
     }
 
@@ -253,7 +253,7 @@ implements RangedAttackMob {
         double g = livingEntity.z - this.z;
         double h = MathHelper.sqrt(d * d + g * g);
         tridentEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
-        this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(tridentEntity);
     }
 
@@ -367,7 +367,7 @@ implements RangedAttackMob {
 
         @Nullable
         private Vec3d getWanderTarget() {
-            Random random = this.mob.getRand();
+            Random random = this.mob.getRandom();
             BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
             for (int i = 0; i < 10; ++i) {
                 BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);

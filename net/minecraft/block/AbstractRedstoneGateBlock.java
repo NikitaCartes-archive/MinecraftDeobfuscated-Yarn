@@ -41,7 +41,7 @@ extends HorizontalFacingBlock {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return AbstractRedstoneGateBlock.topCoversMediumSquare(arg, blockPos.down());
+        return AbstractRedstoneGateBlock.topCoversMediumSquare(arg, blockPos.method_10074());
     }
 
     @Override

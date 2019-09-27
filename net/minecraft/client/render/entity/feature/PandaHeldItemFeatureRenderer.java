@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -23,26 +24,21 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4194(class_4587 arg, class_4597 arg2, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l, float m) {
         ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-        if (!pandaEntity.isScared() || itemStack.isEmpty() || pandaEntity.method_6524()) {
+        if (!pandaEntity.isScared() || pandaEntity.method_6524()) {
             return;
         }
-        float m = -0.6f;
-        float n = 1.4f;
+        float n = -0.6f;
+        float o = 1.4f;
         if (pandaEntity.isEating()) {
-            m -= 0.2f * MathHelper.sin(i * 0.6f) + 0.2f;
-            n -= 0.09f * MathHelper.sin(i * 0.6f);
+            n -= 0.2f * MathHelper.sin(j * 0.6f) + 0.2f;
+            o -= 0.09f * MathHelper.sin(j * 0.6f);
         }
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(0.1f, n, m);
-        MinecraftClient.getInstance().getItemRenderer().renderHeldItem(itemStack, pandaEntity, ModelTransformation.Type.GROUND, false);
-        RenderSystem.popMatrix();
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return false;
+        arg.method_22903();
+        arg.method_22904(0.1f, o, n);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, arg, arg2);
+        arg.method_22909();
     }
 }
 

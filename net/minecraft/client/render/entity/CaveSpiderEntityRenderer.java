@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.SpiderEntityRenderer;
 import net.minecraft.entity.mob.CaveSpiderEntity;
@@ -21,11 +21,11 @@ extends SpiderEntityRenderer<CaveSpiderEntity> {
         this.field_4673 *= 0.7f;
     }
 
-    protected void method_3886(CaveSpiderEntity caveSpiderEntity, float f) {
-        RenderSystem.scalef(0.7f, 0.7f, 0.7f);
+    protected void method_3886(CaveSpiderEntity caveSpiderEntity, class_4587 arg, float f) {
+        arg.method_22905(0.7f, 0.7f, 0.7f);
     }
 
-    protected Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
+    public Identifier method_3885(CaveSpiderEntity caveSpiderEntity) {
         return SKIN;
     }
 }

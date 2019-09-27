@@ -20,7 +20,7 @@ extends MobEntityRenderer<RavagerEntity, RavagerEntityModel> {
         super(entityRenderDispatcher, new RavagerEntityModel(), 1.1f);
     }
 
-    protected Identifier method_3984(RavagerEntity ravagerEntity) {
+    public Identifier method_3984(RavagerEntity ravagerEntity) {
         return SKIN;
     }
 }

@@ -71,6 +71,14 @@ extends LandPathNodeMaker {
 
     @Override
     public int getSuccessors(PathNode[] pathNodes, PathNode pathNode) {
+        PathNode pathNode27;
+        PathNode pathNode26;
+        PathNode pathNode25;
+        PathNode pathNode24;
+        PathNode pathNode23;
+        PathNode pathNode22;
+        PathNode pathNode21;
+        PathNode pathNode20;
         PathNode pathNode19;
         PathNode pathNode18;
         PathNode pathNode17;
@@ -90,61 +98,93 @@ extends LandPathNodeMaker {
         PathNode pathNode3;
         int i = 0;
         PathNode pathNode2 = this.getNode(pathNode.x, pathNode.y, pathNode.z + 1);
-        if (pathNode2 != null && !pathNode2.visited) {
+        if (this.method_22878(pathNode2)) {
             pathNodes[i++] = pathNode2;
         }
-        if ((pathNode3 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z)) != null && !pathNode3.visited) {
+        if (this.method_22878(pathNode3 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z))) {
             pathNodes[i++] = pathNode3;
         }
-        if ((pathNode4 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z)) != null && !pathNode4.visited) {
+        if (this.method_22878(pathNode4 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z))) {
             pathNodes[i++] = pathNode4;
         }
-        if ((pathNode5 = this.getNode(pathNode.x, pathNode.y, pathNode.z - 1)) != null && !pathNode5.visited) {
+        if (this.method_22878(pathNode5 = this.getNode(pathNode.x, pathNode.y, pathNode.z - 1))) {
             pathNodes[i++] = pathNode5;
         }
-        if ((pathNode6 = this.getNode(pathNode.x, pathNode.y + 1, pathNode.z)) != null && !pathNode6.visited) {
+        if (this.method_22878(pathNode6 = this.getNode(pathNode.x, pathNode.y + 1, pathNode.z))) {
             pathNodes[i++] = pathNode6;
         }
-        if ((pathNode7 = this.getNode(pathNode.x, pathNode.y - 1, pathNode.z)) != null && !pathNode7.visited) {
+        if (this.method_22878(pathNode7 = this.getNode(pathNode.x, pathNode.y - 1, pathNode.z))) {
             pathNodes[i++] = pathNode7;
         }
-        if ((pathNode8 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z - 1)) != null && !pathNode8.visited && pathNode5 != null && pathNode5.penalty >= 0.0f && pathNode4 != null && pathNode4.penalty >= 0.0f) {
+        if (this.method_22878(pathNode8 = this.getNode(pathNode.x, pathNode.y + 1, pathNode.z + 1)) && this.method_22877(pathNode2) && this.method_22877(pathNode6)) {
             pathNodes[i++] = pathNode8;
         }
-        if ((pathNode9 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z + 1)) != null && !pathNode9.visited && pathNode2 != null && pathNode2.penalty >= 0.0f && pathNode4 != null && pathNode4.penalty >= 0.0f) {
+        if (this.method_22878(pathNode9 = this.getNode(pathNode.x - 1, pathNode.y + 1, pathNode.z)) && this.method_22877(pathNode3) && this.method_22877(pathNode6)) {
             pathNodes[i++] = pathNode9;
         }
-        if ((pathNode10 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z - 1)) != null && !pathNode10.visited && pathNode5 != null && pathNode5.penalty >= 0.0f && pathNode3 != null && pathNode3.penalty >= 0.0f) {
+        if (this.method_22878(pathNode10 = this.getNode(pathNode.x + 1, pathNode.y + 1, pathNode.z)) && this.method_22877(pathNode4) && this.method_22877(pathNode6)) {
             pathNodes[i++] = pathNode10;
         }
-        if ((pathNode11 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z + 1)) != null && !pathNode11.visited && pathNode2 != null && pathNode2.penalty >= 0.0f && pathNode3 != null && pathNode3.penalty >= 0.0f) {
+        if (this.method_22878(pathNode11 = this.getNode(pathNode.x, pathNode.y + 1, pathNode.z - 1)) && this.method_22877(pathNode5) && this.method_22877(pathNode6)) {
             pathNodes[i++] = pathNode11;
         }
-        if ((pathNode12 = this.getNode(pathNode.x + 1, pathNode.y + 1, pathNode.z - 1)) != null && !pathNode12.visited && pathNode8 != null && pathNode8.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
+        if (this.method_22878(pathNode12 = this.getNode(pathNode.x, pathNode.y - 1, pathNode.z + 1)) && this.method_22877(pathNode2) && this.method_22877(pathNode7)) {
             pathNodes[i++] = pathNode12;
         }
-        if ((pathNode13 = this.getNode(pathNode.x + 1, pathNode.y + 1, pathNode.z + 1)) != null && !pathNode13.visited && pathNode9 != null && pathNode9.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
+        if (this.method_22878(pathNode13 = this.getNode(pathNode.x - 1, pathNode.y - 1, pathNode.z)) && this.method_22877(pathNode3) && this.method_22877(pathNode7)) {
             pathNodes[i++] = pathNode13;
         }
-        if ((pathNode14 = this.getNode(pathNode.x - 1, pathNode.y + 1, pathNode.z - 1)) != null && !pathNode14.visited && pathNode10 != null && pathNode10.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
+        if (this.method_22878(pathNode14 = this.getNode(pathNode.x + 1, pathNode.y - 1, pathNode.z)) && this.method_22877(pathNode4) && this.method_22877(pathNode7)) {
             pathNodes[i++] = pathNode14;
         }
-        if ((pathNode15 = this.getNode(pathNode.x - 1, pathNode.y + 1, pathNode.z + 1)) != null && !pathNode15.visited && pathNode11 != null && pathNode11.penalty >= 0.0f && pathNode6 != null && pathNode6.penalty >= 0.0f) {
+        if (this.method_22878(pathNode15 = this.getNode(pathNode.x, pathNode.y - 1, pathNode.z - 1)) && this.method_22877(pathNode5) && this.method_22877(pathNode7)) {
             pathNodes[i++] = pathNode15;
         }
-        if ((pathNode16 = this.getNode(pathNode.x + 1, pathNode.y - 1, pathNode.z - 1)) != null && !pathNode16.visited && pathNode8 != null && pathNode8.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
+        if (this.method_22878(pathNode16 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z - 1)) && this.method_22877(pathNode5) && this.method_22877(pathNode4)) {
             pathNodes[i++] = pathNode16;
         }
-        if ((pathNode17 = this.getNode(pathNode.x + 1, pathNode.y - 1, pathNode.z + 1)) != null && !pathNode17.visited && pathNode9 != null && pathNode9.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
+        if (this.method_22878(pathNode17 = this.getNode(pathNode.x + 1, pathNode.y, pathNode.z + 1)) && this.method_22877(pathNode2) && this.method_22877(pathNode4)) {
             pathNodes[i++] = pathNode17;
         }
-        if ((pathNode18 = this.getNode(pathNode.x - 1, pathNode.y - 1, pathNode.z - 1)) != null && !pathNode18.visited && pathNode10 != null && pathNode10.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
+        if (this.method_22878(pathNode18 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z - 1)) && this.method_22877(pathNode5) && this.method_22877(pathNode3)) {
             pathNodes[i++] = pathNode18;
         }
-        if ((pathNode19 = this.getNode(pathNode.x - 1, pathNode.y - 1, pathNode.z + 1)) != null && !pathNode19.visited && pathNode11 != null && pathNode11.penalty >= 0.0f && pathNode7 != null && pathNode7.penalty >= 0.0f) {
+        if (this.method_22878(pathNode19 = this.getNode(pathNode.x - 1, pathNode.y, pathNode.z + 1)) && this.method_22877(pathNode2) && this.method_22877(pathNode3)) {
             pathNodes[i++] = pathNode19;
         }
+        if (this.method_22878(pathNode20 = this.getNode(pathNode.x + 1, pathNode.y + 1, pathNode.z - 1)) && this.method_22877(pathNode16) && this.method_22877(pathNode11) && this.method_22877(pathNode10)) {
+            pathNodes[i++] = pathNode20;
+        }
+        if (this.method_22878(pathNode21 = this.getNode(pathNode.x + 1, pathNode.y + 1, pathNode.z + 1)) && this.method_22877(pathNode17) && this.method_22877(pathNode8) && this.method_22877(pathNode10)) {
+            pathNodes[i++] = pathNode21;
+        }
+        if (this.method_22878(pathNode22 = this.getNode(pathNode.x - 1, pathNode.y + 1, pathNode.z - 1)) && this.method_22877(pathNode18) && this.method_22877(pathNode11) && this.method_22877(pathNode9)) {
+            pathNodes[i++] = pathNode22;
+        }
+        if (this.method_22878(pathNode23 = this.getNode(pathNode.x - 1, pathNode.y + 1, pathNode.z + 1)) && this.method_22877(pathNode19) && this.method_22877(pathNode8) && this.method_22877(pathNode9)) {
+            pathNodes[i++] = pathNode23;
+        }
+        if (this.method_22878(pathNode24 = this.getNode(pathNode.x + 1, pathNode.y - 1, pathNode.z - 1)) && this.method_22877(pathNode16) && this.method_22877(pathNode15) && this.method_22877(pathNode14)) {
+            pathNodes[i++] = pathNode24;
+        }
+        if (this.method_22878(pathNode25 = this.getNode(pathNode.x + 1, pathNode.y - 1, pathNode.z + 1)) && this.method_22877(pathNode17) && this.method_22877(pathNode12) && this.method_22877(pathNode14)) {
+            pathNodes[i++] = pathNode25;
+        }
+        if (this.method_22878(pathNode26 = this.getNode(pathNode.x - 1, pathNode.y - 1, pathNode.z - 1)) && this.method_22877(pathNode18) && this.method_22877(pathNode15) && this.method_22877(pathNode13)) {
+            pathNodes[i++] = pathNode26;
+        }
+        if (this.method_22878(pathNode27 = this.getNode(pathNode.x - 1, pathNode.y - 1, pathNode.z + 1)) && this.method_22877(pathNode19) && this.method_22877(pathNode12) && this.method_22877(pathNode13)) {
+            pathNodes[i++] = pathNode27;
+        }
         return i;
+    }
+
+    private boolean method_22877(@Nullable PathNode pathNode) {
+        return pathNode != null && pathNode.penalty >= 0.0f;
+    }
+
+    private boolean method_22878(@Nullable PathNode pathNode) {
+        return pathNode != null && !pathNode.visited;
     }
 
     @Override

@@ -39,13 +39,13 @@ extends AbstractFireballEntity {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 Entity entity = ((EntityHitResult)hitResult).getEntity();
                 if (!entity.isFireImmune()) {
-                    int i = entity.getFireTime();
+                    int i = entity.getFireTicks();
                     entity.setOnFireFor(5);
                     boolean bl = entity.damage(DamageSource.explosiveProjectile(this, this.owner), 5.0f);
                     if (bl) {
                         this.dealDamage(this.owner, entity);
                     } else {
-                        entity.setFireTime(i);
+                        entity.setFireTicks(i);
                     }
                 }
             } else if ((this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && this.world.isAir(blockPos = (blockHitResult = (BlockHitResult)hitResult).getBlockPos().offset(blockHitResult.getSide()))) {

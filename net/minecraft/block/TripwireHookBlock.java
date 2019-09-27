@@ -110,7 +110,7 @@ extends Block {
         int j = 0;
         BlockState[] blockStates = new BlockState[42];
         for (int k = 1; k < 42; ++k) {
-            blockPos2 = blockPos.offset(direction, k);
+            blockPos2 = blockPos.method_10079(direction, k);
             BlockState blockState3 = world.getBlockState(blockPos2);
             if (blockState3.getBlock() == Blocks.TRIPWIRE_HOOK) {
                 if (blockState3.get(FACING) != direction.getOpposite()) break;
@@ -135,7 +135,7 @@ extends Block {
         }
         BlockState blockState4 = (BlockState)((BlockState)this.getDefaultState().with(ATTACHED, bl5)).with(POWERED, bl6 &= (bl5 &= j > 1));
         if (j > 0) {
-            blockPos2 = blockPos.offset(direction, j);
+            blockPos2 = blockPos.method_10079(direction, j);
             Direction direction2 = direction.getOpposite();
             world.setBlockState(blockPos2, (BlockState)blockState4.with(FACING, direction2), 3);
             this.updateNeighborsOnAxis(world, blockPos2, direction2);
@@ -150,7 +150,7 @@ extends Block {
         }
         if (bl3 != bl5) {
             for (int l = 1; l < j; ++l) {
-                BlockPos blockPos3 = blockPos.offset(direction, l);
+                BlockPos blockPos3 = blockPos.method_10079(direction, l);
                 BlockState blockState5 = blockStates[l];
                 if (blockState5 == null) continue;
                 world.setBlockState(blockPos3, (BlockState)blockState5.with(ATTACHED, bl5), 3);

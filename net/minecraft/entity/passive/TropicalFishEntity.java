@@ -184,7 +184,7 @@ extends SchoolingFishEntity {
         int j;
         int i;
         entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-        if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
+        if (compoundTag != null && compoundTag.contains("BucketVariantTag", 3)) {
             this.setVariant(compoundTag.getInt("BucketVariantTag"));
             return entityData;
         }

@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -73,11 +72,7 @@ extends ToggleButtonWidget {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.blit(m, this.y, k, l, this.width, this.height);
         RenderSystem.enableDepthTest();
-        GuiLighting.enableForItems();
-        RenderSystem.disableLighting();
         this.renderIcons(minecraftClient.getItemRenderer());
-        RenderSystem.enableLighting();
-        GuiLighting.disable();
         if (this.bounce > 0.0f) {
             RenderSystem.popMatrix();
             this.bounce -= f;

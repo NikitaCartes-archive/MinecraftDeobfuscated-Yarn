@@ -193,7 +193,7 @@ public abstract class EntityNavigation {
         }
         vec3d = this.currentPath.getNodePosition(this.entity);
         BlockPos blockPos = new BlockPos(vec3d);
-        this.entity.getMoveControl().moveTo(vec3d.x, this.world.getBlockState(blockPos.down()).isAir() ? vec3d.y : LandPathNodeMaker.getHeight(this.world, blockPos), vec3d.z, this.speed);
+        this.entity.getMoveControl().moveTo(vec3d.x, this.world.getBlockState(blockPos.method_10074()).isAir() ? vec3d.y : LandPathNodeMaker.getHeight(this.world, blockPos), vec3d.z, this.speed);
     }
 
     protected void method_6339() {
@@ -268,7 +268,7 @@ public abstract class EntityNavigation {
     protected abstract boolean canPathDirectlyThrough(Vec3d var1, Vec3d var2, int var3, int var4, int var5);
 
     public boolean isValidPosition(BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         return this.world.getBlockState(blockPos2).isFullOpaque(this.world, blockPos2);
     }
 

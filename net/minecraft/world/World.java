@@ -253,7 +253,7 @@ AutoCloseable {
     public void updateNeighborsAlways(BlockPos blockPos, Block block) {
         this.updateNeighbor(blockPos.west(), block, blockPos);
         this.updateNeighbor(blockPos.east(), block, blockPos);
-        this.updateNeighbor(blockPos.down(), block, blockPos);
+        this.updateNeighbor(blockPos.method_10074(), block, blockPos);
         this.updateNeighbor(blockPos.up(), block, blockPos);
         this.updateNeighbor(blockPos.north(), block, blockPos);
         this.updateNeighbor(blockPos.south(), block, blockPos);
@@ -267,7 +267,7 @@ AutoCloseable {
             this.updateNeighbor(blockPos.east(), block, blockPos);
         }
         if (direction != Direction.DOWN) {
-            this.updateNeighbor(blockPos.down(), block, blockPos);
+            this.updateNeighbor(blockPos.method_10074(), block, blockPos);
         }
         if (direction != Direction.UP) {
             this.updateNeighbor(blockPos.up(), block, blockPos);
@@ -888,7 +888,7 @@ AutoCloseable {
 
     public int getReceivedStrongRedstonePower(BlockPos blockPos) {
         int i = 0;
-        if ((i = Math.max(i, this.getStrongRedstonePower(blockPos.down(), Direction.DOWN))) >= 15) {
+        if ((i = Math.max(i, this.getStrongRedstonePower(blockPos.method_10074(), Direction.DOWN))) >= 15) {
             return i;
         }
         if ((i = Math.max(i, this.getStrongRedstonePower(blockPos.up(), Direction.UP))) >= 15) {
@@ -922,7 +922,7 @@ AutoCloseable {
     }
 
     public boolean isReceivingRedstonePower(BlockPos blockPos) {
-        if (this.getEmittedRedstonePower(blockPos.down(), Direction.DOWN) > 0) {
+        if (this.getEmittedRedstonePower(blockPos.method_10074(), Direction.DOWN) > 0) {
             return true;
         }
         if (this.getEmittedRedstonePower(blockPos.up(), Direction.UP) > 0) {

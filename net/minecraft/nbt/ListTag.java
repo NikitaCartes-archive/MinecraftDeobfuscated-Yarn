@@ -4,10 +4,12 @@
 package net.minecraft.nbt;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.nbt.AbstractListTag;
@@ -19,13 +21,60 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagReader;
+import net.minecraft.nbt.TagReaders;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class ListTag
 extends AbstractListTag<Tag> {
-    private List<Tag> value = Lists.newArrayList();
-    private byte type = 0;
+    public static final TagReader<ListTag> READER = new TagReader<ListTag>(){
+
+        public ListTag method_23249(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            positionTracker.add(296L);
+            if (i > 512) {
+                throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
+            }
+            byte b = dataInput.readByte();
+            int j = dataInput.readInt();
+            if (b == 0 && j > 0) {
+                throw new RuntimeException("Missing type on ListTag");
+            }
+            positionTracker.add(32L * (long)j);
+            TagReader<?> tagReader = TagReaders.of(b);
+            ArrayList<?> list = Lists.newArrayListWithCapacity(j);
+            for (int k = 0; k < j; ++k) {
+                list.add(tagReader.read(dataInput, i + 1, positionTracker));
+            }
+            return new ListTag(list, b);
+        }
+
+        @Override
+        public String getCrashReportName() {
+            return "LIST";
+        }
+
+        @Override
+        public String getCommandFeedbackName() {
+            return "TAG_List";
+        }
+
+        @Override
+        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            return this.method_23249(dataInput, i, positionTracker);
+        }
+    };
+    private final List<Tag> value;
+    private byte type;
+
+    private ListTag(List<Tag> list, byte b) {
+        this.value = list;
+        this.type = b;
+    }
+
+    public ListTag() {
+        this(Lists.newArrayList(), 0);
+    }
 
     @Override
     public void write(DataOutput dataOutput) throws IOException {
@@ -38,28 +87,12 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-        positionTracker.add(296L);
-        if (i > 512) {
-            throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
-        }
-        this.type = dataInput.readByte();
-        int j = dataInput.readInt();
-        if (this.type == 0 && j > 0) {
-            throw new RuntimeException("Missing type on ListTag");
-        }
-        positionTracker.add(32L * (long)j);
-        this.value = Lists.newArrayListWithCapacity(j);
-        for (int k = 0; k < j; ++k) {
-            Tag tag = Tag.createTag(this.type);
-            tag.read(dataInput, i + 1, positionTracker);
-            this.value.add(tag);
-        }
-    }
-
-    @Override
     public byte getType() {
         return 9;
+    }
+
+    public TagReader<ListTag> getReader() {
+        return READER;
     }
 
     @Override
@@ -92,7 +125,7 @@ extends AbstractListTag<Tag> {
         return this.value.isEmpty();
     }
 
-    public CompoundTag getCompoundTag(int i) {
+    public CompoundTag getCompound(int i) {
         Tag tag;
         if (i >= 0 && i < this.value.size() && (tag = this.value.get(i)).getType() == 10) {
             return (CompoundTag)tag;
@@ -100,7 +133,7 @@ extends AbstractListTag<Tag> {
         return new CompoundTag();
     }
 
-    public ListTag getListTag(int i) {
+    public ListTag getList(int i) {
         Tag tag;
         if (i >= 0 && i < this.value.size() && (tag = this.value.get(i)).getType() == 9) {
             return (ListTag)tag;
@@ -214,13 +247,9 @@ extends AbstractListTag<Tag> {
     }
 
     public ListTag method_10612() {
-        ListTag listTag = new ListTag();
-        listTag.type = this.type;
-        for (Tag tag : this.value) {
-            Tag tag2 = tag.copy();
-            listTag.value.add(tag2);
-        }
-        return listTag;
+        List<Tag> iterable = TagReaders.of(this.type).isImmutable() ? this.value : Iterables.transform(this.value, Tag::copy);
+        ArrayList<Tag> list = Lists.newArrayList(iterable);
+        return new ListTag(list, this.type);
     }
 
     @Override
@@ -260,7 +289,7 @@ extends AbstractListTag<Tag> {
         return text;
     }
 
-    public int getListType() {
+    public int getElementType() {
         return this.type;
     }
 

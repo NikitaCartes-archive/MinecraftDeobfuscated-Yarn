@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
@@ -25,15 +26,15 @@ extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<Zomb
         this.addFeature(new VillagerClothingFeatureRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>>(this, reloadableResourceManager, "zombie_villager"));
     }
 
-    protected Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
+    public Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
         return SKIN;
     }
 
-    protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, float f, float g, float h) {
+    protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, class_4587 arg, float f, float g, float h) {
         if (zombieVillagerEntity.isConverting()) {
             g += (float)(Math.cos((double)zombieVillagerEntity.age * 3.25) * Math.PI * 0.25);
         }
-        super.setupTransforms(zombieVillagerEntity, f, g, h);
+        super.setupTransforms(zombieVillagerEntity, arg, f, g, h);
     }
 }
 

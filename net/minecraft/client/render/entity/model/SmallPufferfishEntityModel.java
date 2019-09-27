@@ -3,16 +3,17 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class SmallPufferfishEntityModel<T extends Entity>
-extends EntityModel<T> {
+extends class_4595<T> {
     private final ModelPart field_3505;
     private final ModelPart field_3507;
     private final ModelPart field_3506;
@@ -45,14 +46,8 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        this.field_3505.render(k);
-        this.field_3507.render(k);
-        this.field_3506.render(k);
-        this.field_3508.render(k);
-        this.field_3504.render(k);
-        this.field_3503.render(k);
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3505, this.field_3507, this.field_3506, this.field_3508, this.field_3504, this.field_3503);
     }
 
     @Override

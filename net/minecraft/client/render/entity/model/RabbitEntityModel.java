@@ -3,12 +3,13 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -97,47 +98,26 @@ extends EntityModel<T> {
         modelPart.roll = h;
     }
 
-    public void method_17116(T rabbitEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17117(rabbitEntity, f, g, h, i, j, k);
+    @Override
+    public void method_17116(class_4587 arg, class_4588 arg2, int i, float f, float g, float h) {
         if (this.isChild) {
-            float l = 1.5f;
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.56666666f, 0.56666666f, 0.56666666f);
-            RenderSystem.translatef(0.0f, 22.0f * k, 2.0f * k);
-            this.field_3529.render(k);
-            this.field_3520.render(k);
-            this.field_3523.render(k);
-            this.field_3530.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.4f, 0.4f, 0.4f);
-            RenderSystem.translatef(0.0f, 36.0f * k, 0.0f);
-            this.field_3525.render(k);
-            this.field_3532.render(k);
-            this.field_3526.render(k);
-            this.field_3522.render(k);
-            this.field_3528.render(k);
-            this.field_3527.render(k);
-            this.field_3521.render(k);
-            this.field_3524.render(k);
-            RenderSystem.popMatrix();
+            float j = 1.5f;
+            arg.method_22903();
+            arg.method_22905(0.56666666f, 0.56666666f, 0.56666666f);
+            arg.method_22904(0.0, 1.375, 0.125);
+            ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530).forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625f, i, null, f, g, h));
+            arg.method_22909();
+            arg.method_22903();
+            arg.method_22905(0.4f, 0.4f, 0.4f);
+            arg.method_22904(0.0, 2.25, 0.0);
+            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524).forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625f, i, null, f, g, h));
+            arg.method_22909();
         } else {
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.6f, 0.6f, 0.6f);
-            RenderSystem.translatef(0.0f, 16.0f * k, 0.0f);
-            this.field_3525.render(k);
-            this.field_3532.render(k);
-            this.field_3526.render(k);
-            this.field_3522.render(k);
-            this.field_3528.render(k);
-            this.field_3527.render(k);
-            this.field_3521.render(k);
-            this.field_3529.render(k);
-            this.field_3523.render(k);
-            this.field_3520.render(k);
-            this.field_3524.render(k);
-            this.field_3530.render(k);
-            RenderSystem.popMatrix();
+            arg.method_22903();
+            arg.method_22905(0.6f, 0.6f, 0.6f);
+            arg.method_22904(0.0, 1.0, 0.0);
+            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3529, this.field_3523, this.field_3520, this.field_3524, this.field_3530, new ModelPart[0]).forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625f, i, null, f, g, h));
+            arg.method_22909();
         }
     }
 
@@ -163,16 +143,6 @@ extends EntityModel<T> {
     public void method_17115(T rabbitEntity, float f, float g, float h) {
         super.animateModel(rabbitEntity, f, g, h);
         this.field_3531 = MathHelper.sin(((RabbitEntity)rabbitEntity).method_6605(h) * (float)Math.PI);
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17117((RabbitEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17116((RabbitEntity)entity, f, g, h, i, j, k);
     }
 }
 

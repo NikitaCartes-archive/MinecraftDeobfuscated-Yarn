@@ -67,13 +67,13 @@ class_4543.class_4544 {
         if (!this.isSkyVisible(blockPos2)) {
             return false;
         }
-        blockPos2 = blockPos2.down();
+        blockPos2 = blockPos2.method_10074();
         while (blockPos2.getY() > blockPos.getY()) {
             BlockState blockState = this.getBlockState(blockPos2);
             if (blockState.getOpacity(this, blockPos2) > 0 && !blockState.getMaterial().isLiquid()) {
                 return false;
             }
-            blockPos2 = blockPos2.down();
+            blockPos2 = blockPos2.method_10074();
         }
         return true;
     }

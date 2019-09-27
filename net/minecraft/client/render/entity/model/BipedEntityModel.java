@@ -3,11 +3,12 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.entity.Entity;
@@ -19,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class BipedEntityModel<T extends LivingEntity>
-extends EntityModel<T>
+extends class_4592<T>
 implements ModelWithArms,
 ModelWithHead {
     public ModelPart head;
@@ -44,6 +45,7 @@ ModelWithHead {
     }
 
     public BipedEntityModel(float f, float g, int i, int j) {
+        super(true, 16.0f, 0.0f);
         this.textureWidth = i;
         this.textureHeight = j;
         this.head = new ModelPart(this, 0, 0);
@@ -71,37 +73,14 @@ ModelWithHead {
         this.leftLeg.setRotationPoint(1.9f, 12.0f + g, 0.0f);
     }
 
-    public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17087(livingEntity, f, g, h, i, j, k);
-        RenderSystem.pushMatrix();
-        if (this.isChild) {
-            float l = 2.0f;
-            RenderSystem.scalef(0.75f, 0.75f, 0.75f);
-            RenderSystem.translatef(0.0f, 16.0f * k, 0.0f);
-            this.head.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
-            this.body.render(k);
-            this.rightArm.render(k);
-            this.leftArm.render(k);
-            this.rightLeg.render(k);
-            this.leftLeg.render(k);
-            this.headwear.render(k);
-        } else {
-            if (((Entity)livingEntity).isInSneakingPose()) {
-                RenderSystem.translatef(0.0f, 0.2f, 0.0f);
-            }
-            this.head.render(k);
-            this.body.render(k);
-            this.rightArm.render(k);
-            this.leftArm.render(k);
-            this.rightLeg.render(k);
-            this.leftLeg.render(k);
-            this.headwear.render(k);
-        }
-        RenderSystem.popMatrix();
+    @Override
+    protected Iterable<ModelPart> method_22946() {
+        return ImmutableList.of(this.head);
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.headwear);
     }
 
     public void method_17086(T livingEntity, float f, float g, float h) {
@@ -224,9 +203,12 @@ ModelWithHead {
             this.leftArm.pitch += 0.4f;
             this.rightLeg.rotationPointZ = 4.0f;
             this.leftLeg.rotationPointZ = 4.0f;
-            this.rightLeg.rotationPointY = 9.0f;
-            this.leftLeg.rotationPointY = 9.0f;
-            this.head.rotationPointY = 1.0f;
+            this.rightLeg.rotationPointY = 12.2f;
+            this.leftLeg.rotationPointY = 12.2f;
+            this.head.rotationPointY = 4.2f;
+            this.body.rotationPointY = 3.2f;
+            this.leftArm.rotationPointY = 5.2f;
+            this.rightArm.rotationPointY = 5.2f;
         } else {
             this.body.pitch = 0.0f;
             this.rightLeg.rotationPointZ = 0.1f;
@@ -234,6 +216,9 @@ ModelWithHead {
             this.rightLeg.rotationPointY = 12.0f;
             this.leftLeg.rotationPointY = 12.0f;
             this.head.rotationPointY = 0.0f;
+            this.body.rotationPointY = 0.0f;
+            this.leftArm.rotationPointY = 2.0f;
+            this.rightArm.rotationPointY = 2.0f;
         }
         this.rightArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
         this.leftArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
@@ -345,8 +330,8 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm) {
-        this.getArm(arm).applyTransform(f);
+    public void setArmAngle(float f, Arm arm, class_4587 arg) {
+        this.getArm(arm).method_22703(arg, f);
     }
 
     protected ModelPart getArm(Arm arm) {

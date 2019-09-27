@@ -67,7 +67,7 @@ extends BlockWithEntity {
         boolean bl2 = world.isReceivingRedstonePower(blockPos);
         boolean bl3 = commandBlockBlockEntity.isPowered();
         commandBlockBlockEntity.setPowered(bl2);
-        if (bl3 || commandBlockBlockEntity.isAuto() || commandBlockBlockEntity.getType() == CommandBlockBlockEntity.Type.SEQUENCE) {
+        if (bl3 || commandBlockBlockEntity.isAuto() || commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
             return;
         }
         if (bl2) {
@@ -83,7 +83,7 @@ extends BlockWithEntity {
             CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
             CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
             boolean bl = !ChatUtil.isEmpty(commandBlockExecutor.getCommand());
-            CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getType();
+            CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
             boolean bl2 = commandBlockBlockEntity.isConditionMet();
             if (type == CommandBlockBlockEntity.Type.AUTO) {
                 commandBlockBlockEntity.updateConditionMet();
@@ -160,7 +160,7 @@ extends BlockWithEntity {
                 commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
                 commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
             }
-            if (commandBlockBlockEntity.getType() == CommandBlockBlockEntity.Type.SEQUENCE) {
+            if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
                 boolean bl = world.isReceivingRedstonePower(blockPos);
                 commandBlockBlockEntity.setPowered(bl);
             }
@@ -202,7 +202,7 @@ extends BlockWithEntity {
             mutable.setOffset(direction);
             BlockState blockState = world.getBlockState(mutable);
             Block block = blockState.getBlock();
-            if (block != Blocks.CHAIN_COMMAND_BLOCK || !((blockEntity = world.getBlockEntity(mutable)) instanceof CommandBlockBlockEntity) || (commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity).getType() != CommandBlockBlockEntity.Type.SEQUENCE) break;
+            if (block != Blocks.CHAIN_COMMAND_BLOCK || !((blockEntity = world.getBlockEntity(mutable)) instanceof CommandBlockBlockEntity) || (commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity).getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) break;
             if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
                 CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
                 if (commandBlockBlockEntity.updateConditionMet()) {

@@ -48,7 +48,7 @@ Tickable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        if (compoundTag.containsKey("CustomName", 8)) {
+        if (compoundTag.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
     }

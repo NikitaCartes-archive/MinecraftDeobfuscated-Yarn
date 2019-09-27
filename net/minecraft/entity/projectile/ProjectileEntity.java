@@ -57,7 +57,7 @@ public abstract class ProjectileEntity
 extends Entity
 implements Projectile {
     private static final TrackedData<Byte> PROJECTILE_FLAGS = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
-    protected static final TrackedData<Optional<UUID>> field_7580 = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    protected static final TrackedData<Optional<UUID>> OPTIONAL_UUID = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
     @Nullable
     private BlockState inBlockState;
@@ -67,10 +67,10 @@ implements Projectile {
     public int shake;
     public UUID ownerUuid;
     private int life;
-    private int field_7577;
+    private int flyingTick;
     private double damage = 2.0;
-    private int field_7575;
-    private SoundEvent sound = this.getSound();
+    private int punch;
+    private SoundEvent sound = this.getHitSound();
     private IntOpenHashSet piercedEntities;
     private List<Entity> piercingKilledEntities;
 
@@ -108,7 +108,7 @@ implements Projectile {
     @Override
     protected void initDataTracker() {
         this.dataTracker.startTracking(PROJECTILE_FLAGS, (byte)0);
-        this.dataTracker.startTracking(field_7580, Optional.empty());
+        this.dataTracker.startTracking(OPTIONAL_UUID, Optional.empty());
         this.dataTracker.startTracking(PIERCE_LEVEL, (byte)0);
     }
 
@@ -187,7 +187,7 @@ implements Projectile {
                 this.inGround = false;
                 this.setVelocity(vec3d.multiply(this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f));
                 this.life = 0;
-                this.field_7577 = 0;
+                this.flyingTick = 0;
             } else if (!this.world.isClient) {
                 this.age();
             }
@@ -195,7 +195,7 @@ implements Projectile {
             return;
         }
         this.inGroundTime = 0;
-        ++this.field_7577;
+        ++this.flyingTick;
         Vec3d vec3d2 = new Vec3d(this.x, this.y, this.z);
         Vec3d vec3d3 = vec3d2.add(vec3d);
         HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
@@ -290,7 +290,7 @@ implements Projectile {
             this.x -= vec3d2.x;
             this.y -= vec3d2.y;
             this.z -= vec3d2.z;
-            this.playSound(this.method_20011(), 1.0f, 1.2f / (this.random.nextFloat() * 0.2f + 0.9f));
+            this.playSound(this.getSound(), 1.0f, 1.2f / (this.random.nextFloat() * 0.2f + 0.9f));
             this.inGround = true;
             this.shake = 7;
             this.setCritical(false);
@@ -342,7 +342,7 @@ implements Projectile {
                 ((LivingEntity)entity2).onAttacking(entity);
             }
         }
-        int j = entity.getFireTime();
+        int j = entity.getFireTicks();
         if (this.isOnFire() && !(entity instanceof EndermanEntity)) {
             entity.setOnFireFor(5);
         }
@@ -353,7 +353,7 @@ implements Projectile {
                 if (!this.world.isClient && this.getPierceLevel() <= 0) {
                     livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
                 }
-                if (this.field_7575 > 0 && (vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.field_7575 * 0.6)).lengthSquared() > 0.0) {
+                if (this.punch > 0 && (vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.punch * 0.6)).lengthSquared() > 0.0) {
                     livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
                 }
                 if (!this.world.isClient && entity2 instanceof LivingEntity) {
@@ -381,11 +381,11 @@ implements Projectile {
                 this.remove();
             }
         } else {
-            entity.setFireTime(j);
+            entity.setFireTicks(j);
             this.setVelocity(this.getVelocity().multiply(-0.1));
             this.yaw += 180.0f;
             this.prevYaw += 180.0f;
-            this.field_7577 = 0;
+            this.flyingTick = 0;
             if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
                 if (this.pickupType == PickupPermission.ALLOWED) {
                     this.dropStack(this.asItemStack(), 0.1f);
@@ -395,11 +395,11 @@ implements Projectile {
         }
     }
 
-    protected SoundEvent getSound() {
+    protected SoundEvent getHitSound() {
         return SoundEvents.ENTITY_ARROW_HIT;
     }
 
-    protected final SoundEvent method_20011() {
+    protected final SoundEvent getSound() {
         return this.sound;
     }
 
@@ -408,7 +408,7 @@ implements Projectile {
 
     @Nullable
     protected EntityHitResult getEntityCollision(Vec3d vec3d, Vec3d vec3d2) {
-        return ProjectileUtil.getEntityCollision(this.world, this, vec3d, vec3d2, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !(entity.isSpectator() || !entity.isAlive() || !entity.collides() || entity == this.getOwner() && this.field_7577 < 5 || this.piercedEntities != null && this.piercedEntities.contains(entity.getEntityId())));
+        return ProjectileUtil.getEntityCollision(this.world, this, vec3d, vec3d2, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !(entity.isSpectator() || !entity.isAlive() || !entity.collides() || entity == this.getOwner() && this.flyingTick < 5 || this.piercedEntities != null && this.piercedEntities.contains(entity.getEntityId())));
     }
 
     @Override
@@ -418,7 +418,7 @@ implements Projectile {
             compoundTag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
         }
         compoundTag.putByte("shake", (byte)this.shake);
-        compoundTag.putByte("inGround", (byte)(this.inGround ? 1 : 0));
+        compoundTag.putBoolean("inGround", this.inGround);
         compoundTag.putByte("pickup", (byte)this.pickupType.ordinal());
         compoundTag.putDouble("damage", this.damage);
         compoundTag.putBoolean("crit", this.isCritical());
@@ -433,17 +433,17 @@ implements Projectile {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         this.life = compoundTag.getShort("life");
-        if (compoundTag.containsKey("inBlockState", 10)) {
+        if (compoundTag.contains("inBlockState", 10)) {
             this.inBlockState = NbtHelper.toBlockState(compoundTag.getCompound("inBlockState"));
         }
         this.shake = compoundTag.getByte("shake") & 0xFF;
-        boolean bl = this.inGround = compoundTag.getByte("inGround") == 1;
-        if (compoundTag.containsKey("damage", 99)) {
+        this.inGround = compoundTag.getBoolean("inGround");
+        if (compoundTag.contains("damage", 99)) {
             this.damage = compoundTag.getDouble("damage");
         }
-        if (compoundTag.containsKey("pickup", 99)) {
+        if (compoundTag.contains("pickup", 99)) {
             this.pickupType = PickupPermission.fromOrdinal(compoundTag.getByte("pickup"));
-        } else if (compoundTag.containsKey("player", 99)) {
+        } else if (compoundTag.contains("player", 99)) {
             this.pickupType = compoundTag.getBoolean("player") ? PickupPermission.ALLOWED : PickupPermission.DISALLOWED;
         }
         this.setCritical(compoundTag.getBoolean("crit"));
@@ -451,8 +451,8 @@ implements Projectile {
         if (compoundTag.containsUuid("OwnerUUID")) {
             this.ownerUuid = compoundTag.getUuid("OwnerUUID");
         }
-        if (compoundTag.containsKey("SoundEvent", 8)) {
-            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(this.getSound());
+        if (compoundTag.contains("SoundEvent", 8)) {
+            this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(this.getHitSound());
         }
         this.setShotFromCrossbow(compoundTag.getBoolean("ShotFromCrossbow"));
     }
@@ -503,8 +503,8 @@ implements Projectile {
         return this.damage;
     }
 
-    public void method_7449(int i) {
-        this.field_7575 = i;
+    public void setPunch(int i) {
+        this.punch = i;
     }
 
     @Override
@@ -548,7 +548,7 @@ implements Projectile {
         return this.dataTracker.get(PIERCE_LEVEL);
     }
 
-    public void method_7435(LivingEntity livingEntity, float f) {
+    public void applyEnchantmentEffects(LivingEntity livingEntity, float f) {
         int i = EnchantmentHelper.getEquipmentLevel(Enchantments.POWER, livingEntity);
         int j = EnchantmentHelper.getEquipmentLevel(Enchantments.PUNCH, livingEntity);
         this.setDamage((double)(f * 2.0f) + (this.random.nextGaussian() * 0.25 + (double)((float)this.world.getDifficulty().getId() * 0.11f)));
@@ -556,7 +556,7 @@ implements Projectile {
             this.setDamage(this.getDamage() + (double)i * 0.5 + 0.5);
         }
         if (j > 0) {
-            this.method_7449(j);
+            this.setPunch(j);
         }
         if (EnchantmentHelper.getEquipmentLevel(Enchantments.FLAME, livingEntity) > 0) {
             this.setOnFireFor(100);

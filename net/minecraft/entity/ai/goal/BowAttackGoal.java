@@ -92,10 +92,10 @@ extends Goal {
             ++this.field_6568;
         }
         if (this.field_6568 >= 20) {
-            if ((double)((LivingEntity)this.actor).getRand().nextFloat() < 0.3) {
+            if ((double)((LivingEntity)this.actor).getRandom().nextFloat() < 0.3) {
                 boolean bl4 = this.field_6573 = !this.field_6573;
             }
-            if ((double)((LivingEntity)this.actor).getRand().nextFloat() < 0.3) {
+            if ((double)((LivingEntity)this.actor).getRandom().nextFloat() < 0.3) {
                 this.field_6571 = !this.field_6571;
             }
             this.field_6568 = 0;

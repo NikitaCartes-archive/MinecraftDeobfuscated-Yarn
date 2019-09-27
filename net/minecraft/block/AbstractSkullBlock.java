@@ -6,7 +6,6 @@ package net.minecraft.block;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -20,12 +19,6 @@ extends BlockWithEntity {
     public AbstractSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
         super(settings);
         this.type = skullType;
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-        return true;
     }
 
     @Override

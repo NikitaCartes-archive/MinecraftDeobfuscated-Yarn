@@ -156,7 +156,7 @@ extends HostileEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         BlockState blockState = null;
-        if (compoundTag.containsKey("carriedBlockState", 10) && (blockState = NbtHelper.toBlockState(compoundTag.getCompound("carriedBlockState"))).isAir()) {
+        if (compoundTag.contains("carriedBlockState", 10) && (blockState = NbtHelper.toBlockState(compoundTag.getCompound("carriedBlockState"))).isAir()) {
             blockState = null;
         }
         this.setCarriedBlock(blockState);
@@ -325,14 +325,14 @@ extends HostileEntity {
             if (!this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 return false;
             }
-            return this.enderman.getRand().nextInt(20) == 0;
+            return this.enderman.getRandom().nextInt(20) == 0;
         }
 
         @Override
         public void tick() {
             boolean bl;
             Vec3d vec3d2;
-            Random random = this.enderman.getRand();
+            Random random = this.enderman.getRandom();
             World world = this.enderman.world;
             int i = MathHelper.floor(this.enderman.x - 2.0 + random.nextDouble() * 4.0);
             int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 3.0);
@@ -366,19 +366,19 @@ extends HostileEntity {
             if (!this.enderman.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
                 return false;
             }
-            return this.enderman.getRand().nextInt(2000) == 0;
+            return this.enderman.getRandom().nextInt(2000) == 0;
         }
 
         @Override
         public void tick() {
-            Random random = this.enderman.getRand();
+            Random random = this.enderman.getRandom();
             World iWorld = this.enderman.world;
             int i = MathHelper.floor(this.enderman.x - 1.0 + random.nextDouble() * 2.0);
             int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 2.0);
             int k = MathHelper.floor(this.enderman.z - 1.0 + random.nextDouble() * 2.0);
             BlockPos blockPos = new BlockPos(i, j, k);
             BlockState blockState = iWorld.getBlockState(blockPos);
-            BlockPos blockPos2 = blockPos.down();
+            BlockPos blockPos2 = blockPos.method_10074();
             BlockState blockState2 = iWorld.getBlockState(blockPos2);
             BlockState blockState3 = this.enderman.getCarriedBlock();
             if (blockState3 != null && this.method_7033(iWorld, blockPos, blockState3, blockState, blockState2, blockPos2)) {

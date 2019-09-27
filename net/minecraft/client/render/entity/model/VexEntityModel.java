@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
@@ -37,10 +37,9 @@ extends BipedEntityModel<VexEntity> {
         this.field_3601.addCuboid(0.0f, 0.0f, 0.0f, 20.0f, 12.0f, 1.0f);
     }
 
-    public void method_17126(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
-        super.method_17088(vexEntity, f, g, h, i, j, k);
-        this.field_3602.render(k);
-        this.field_3601.render(k);
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return Iterables.concat(super.method_22948(), ImmutableList.of(this.field_3602, this.field_3601));
     }
 
     public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
@@ -63,26 +62,6 @@ extends BipedEntityModel<VexEntity> {
         this.field_3601.pitch = 0.47123894f;
         this.field_3602.pitch = 0.47123894f;
         this.field_3602.roll = 0.47123894f;
-    }
-
-    @Override
-    public /* synthetic */ void method_17087(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17127((VexEntity)livingEntity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void method_17088(LivingEntity livingEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17126((VexEntity)livingEntity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17127((VexEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17126((VexEntity)entity, f, g, h, i, j, k);
     }
 }
 

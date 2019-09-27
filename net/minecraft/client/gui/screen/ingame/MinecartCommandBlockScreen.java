@@ -25,7 +25,7 @@ extends AbstractCommandBlockScreen {
     }
 
     @Override
-    int method_2364() {
+    int getTrackOutputButtonHeight() {
         return 150;
     }
 

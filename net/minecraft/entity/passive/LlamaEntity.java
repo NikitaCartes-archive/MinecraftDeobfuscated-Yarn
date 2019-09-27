@@ -105,7 +105,7 @@ implements RangedAttackMob {
         this.setStrength(compoundTag.getInt("Strength"));
         super.readCustomDataFromTag(compoundTag);
         this.setVariant(compoundTag.getInt("Variant"));
-        if (compoundTag.containsKey("DecorItem", 10)) {
+        if (compoundTag.contains("DecorItem", 10)) {
             this.items.setInvStack(1, ItemStack.fromTag(compoundTag.getCompound("DecorItem")));
         }
         this.updateSaddle();

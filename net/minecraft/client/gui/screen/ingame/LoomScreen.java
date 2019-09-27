@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.class_4587;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
@@ -88,7 +89,7 @@ extends AbstractContainerScreen<LoomContainer> {
             RenderSystem.translatef(k + 139, l + 52, 0.0f);
             RenderSystem.scalef(24.0f, -24.0f, 1.0f);
             this.field_20785.method_22534(true);
-            BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.field_20785);
+            BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.field_20785, new class_4587(), 0xF000F0);
             this.field_20785.method_22534(false);
             RenderSystem.popMatrix();
         } else if (this.hasTooManyPatterns) {
@@ -123,7 +124,7 @@ extends AbstractContainerScreen<LoomContainer> {
     }
 
     private void method_22692(int i, int j, int k) {
-        this.minecraft.getSpriteAtlas().bindTexture();
+        this.minecraft.getSpriteAtlas().method_23207();
         RenderSystem.texParameter(3553, 10241, 9728);
         BannerBlockEntity bannerBlockEntity = new BannerBlockEntity();
         bannerBlockEntity.method_22534(true);
@@ -136,9 +137,9 @@ extends AbstractContainerScreen<LoomContainer> {
         RenderSystem.translatef((float)j + 0.5f, k + 16, 0.0f);
         RenderSystem.scalef(6.0f, -6.0f, 1.0f);
         RenderSystem.translatef(0.5f, 0.5f, 0.0f);
-        BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity);
+        BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new class_4587(), 0xF000F0);
         RenderSystem.popMatrix();
-        this.minecraft.getSpriteAtlas().bindTexture();
+        this.minecraft.getSpriteAtlas().method_23207();
     }
 
     @Override
@@ -212,7 +213,7 @@ extends AbstractContainerScreen<LoomContainer> {
         ItemStack itemStack3 = ((LoomContainer)this.container).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomContainer)this.container).getPatternSlot().getStack();
         CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
-        boolean bl = this.hasTooManyPatterns = compoundTag.containsKey("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+        boolean bl = this.hasTooManyPatterns = compoundTag.contains("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
         if (this.hasTooManyPatterns) {
             this.field_20785 = null;
         }

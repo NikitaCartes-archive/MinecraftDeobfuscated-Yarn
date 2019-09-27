@@ -62,7 +62,7 @@ implements Fertilizable {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         BlockState blockState2 = arg.getBlockState(blockPos2);
         Block block = blockState2.getBlock();
         if (block == Blocks.MYCELIUM || block == Blocks.PODZOL) {

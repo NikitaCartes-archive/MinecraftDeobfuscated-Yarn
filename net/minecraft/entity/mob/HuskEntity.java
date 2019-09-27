@@ -25,8 +25,8 @@ extends ZombieEntity {
         super((EntityType<? extends ZombieEntity>)entityType, world);
     }
 
-    public static boolean method_20677(EntityType<HuskEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return HuskEntity.method_20680(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.isSkyVisible(blockPos));
+    public static boolean canSpawn(EntityType<HuskEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return HuskEntity.canSpawnInDark(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.isSkyVisible(blockPos));
     }
 
     @Override

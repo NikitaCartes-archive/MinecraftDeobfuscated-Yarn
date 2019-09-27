@@ -35,7 +35,7 @@ public class PistonHandler {
             this.posTo = blockPos.offset(direction);
         } else {
             this.direction = direction.getOpposite();
-            this.posTo = blockPos.offset(direction, 2);
+            this.posTo = blockPos.method_10079(direction, 2);
         }
     }
 
@@ -82,7 +82,7 @@ public class PistonHandler {
             return false;
         }
         while (block == Blocks.SLIME_BLOCK) {
-            BlockPos blockPos2 = blockPos.offset(this.direction.getOpposite(), i);
+            BlockPos blockPos2 = blockPos.method_10079(this.direction.getOpposite(), i);
             blockState = this.world.getBlockState(blockPos2);
             block = blockState.getBlock();
             if (blockState.isAir() || !PistonBlock.isMovable(blockState, this.world, blockPos2, this.direction, false, this.direction.getOpposite()) || blockPos2.equals(this.posFrom)) break;
@@ -91,14 +91,14 @@ public class PistonHandler {
         }
         int j = 0;
         for (k = i - 1; k >= 0; --k) {
-            this.movedBlocks.add(blockPos.offset(this.direction.getOpposite(), k));
+            this.movedBlocks.add(blockPos.method_10079(this.direction.getOpposite(), k));
             ++j;
         }
         k = 1;
         while (true) {
             BlockPos blockPos3;
             int l;
-            if ((l = this.movedBlocks.indexOf(blockPos3 = blockPos.offset(this.direction, k))) > -1) {
+            if ((l = this.movedBlocks.indexOf(blockPos3 = blockPos.method_10079(this.direction, k))) > -1) {
                 this.method_11539(j, l);
                 for (int m = 0; m <= l + j; ++m) {
                     BlockPos blockPos4 = this.movedBlocks.get(m);

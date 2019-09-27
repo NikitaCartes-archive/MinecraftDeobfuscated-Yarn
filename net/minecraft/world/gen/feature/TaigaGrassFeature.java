@@ -30,7 +30,7 @@ extends Feature<DefaultFeatureConfig> {
         BlockState blockState = this.getGrass(random);
         BlockState blockState2 = iWorld.getBlockState(blockPos);
         while ((blockState2.isAir() || blockState2.matches(BlockTags.LEAVES)) && blockPos.getY() > 0) {
-            blockPos = blockPos.down();
+            blockPos = blockPos.method_10074();
             blockState2 = iWorld.getBlockState(blockPos);
         }
         int i = 0;

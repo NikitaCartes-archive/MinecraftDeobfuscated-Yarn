@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
@@ -28,11 +28,11 @@ extends MobEntityRenderer<GiantEntity, BipedEntityModel<GiantEntity>> {
         this.addFeature(new ArmorBipedFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>, GiantEntityModel>(this, new GiantEntityModel(0.5f, true), new GiantEntityModel(1.0f, true)));
     }
 
-    protected void method_3980(GiantEntity giantEntity, float f) {
-        RenderSystem.scalef(this.scale, this.scale, this.scale);
+    protected void method_3980(GiantEntity giantEntity, class_4587 arg, float f) {
+        arg.method_22905(this.scale, this.scale, this.scale);
     }
 
-    protected Identifier method_3981(GiantEntity giantEntity) {
+    public Identifier method_3981(GiantEntity giantEntity) {
         return SKIN;
     }
 }

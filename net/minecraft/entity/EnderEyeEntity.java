@@ -114,9 +114,6 @@ implements FlyingItemEntity {
 
     @Override
     public void tick() {
-        this.prevRenderX = this.x;
-        this.prevRenderY = this.y;
-        this.prevRenderZ = this.z;
         super.tick();
         Vec3d vec3d = this.getVelocity();
         this.x += vec3d.x;

@@ -97,7 +97,7 @@ extends Block {
         if (random.nextInt(15) != 1) {
             return;
         }
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         BlockState blockState2 = world.getBlockState(blockPos2);
         if (blockState2.isOpaque() && blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) {
             return;

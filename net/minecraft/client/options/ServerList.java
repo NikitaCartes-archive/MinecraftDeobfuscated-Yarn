@@ -36,7 +36,7 @@ public class ServerList {
             }
             ListTag listTag = compoundTag.getList("servers", 10);
             for (int i = 0; i < listTag.size(); ++i) {
-                this.servers.add(ServerInfo.deserialize(listTag.getCompoundTag(i)));
+                this.servers.add(ServerInfo.deserialize(listTag.getCompound(i)));
             }
         } catch (Exception exception) {
             LOGGER.error("Couldn't load server list", (Throwable)exception);

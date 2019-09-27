@@ -3,13 +3,14 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.IronGolemFlowerFeatureRenderer;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.Identifier;
 
@@ -23,19 +24,19 @@ extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>
         this.addFeature(new IronGolemFlowerFeatureRenderer(this));
     }
 
-    protected Identifier method_3987(IronGolemEntity ironGolemEntity) {
+    public Identifier method_3987(IronGolemEntity ironGolemEntity) {
         return SKIN;
     }
 
-    protected void method_3986(IronGolemEntity ironGolemEntity, float f, float g, float h) {
-        super.setupTransforms(ironGolemEntity, f, g, h);
+    protected void method_3986(IronGolemEntity ironGolemEntity, class_4587 arg, float f, float g, float h) {
+        super.setupTransforms(ironGolemEntity, arg, f, g, h);
         if ((double)ironGolemEntity.limbDistance < 0.01) {
             return;
         }
         float i = 13.0f;
         float j = ironGolemEntity.limbAngle - ironGolemEntity.limbDistance * (1.0f - h) + 6.0f;
         float k = (Math.abs(j % 13.0f - 6.5f) - 3.25f) / 3.25f;
-        RenderSystem.rotatef(6.5f * k, 0.0f, 0.0f, 1.0f);
+        arg.method_22907(Vector3f.field_20707.method_23214(6.5f * k, true));
     }
 }
 

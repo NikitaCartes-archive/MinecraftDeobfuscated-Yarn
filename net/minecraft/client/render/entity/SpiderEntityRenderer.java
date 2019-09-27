@@ -26,7 +26,7 @@ extends MobEntityRenderer<T, SpiderEntityModel<T>> {
         return 180.0f;
     }
 
-    protected Identifier method_4123(T spiderEntity) {
+    public Identifier method_4123(T spiderEntity) {
         return SKIN;
     }
 }

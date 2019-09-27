@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.api.EnvironmentInterface;
+import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4582;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -55,9 +58,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
+@EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=class_4582.class)})
 public class WitherEntity
 extends HostileEntity
-implements RangedAttackMob {
+implements class_4582,
+RangedAttackMob {
     private static final TrackedData<Integer> TRACKED_ENTITY_ID_1 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> TRACKED_ENTITY_ID_2 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> TRACKED_ENTITY_ID_3 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -486,6 +491,7 @@ implements RangedAttackMob {
         this.dataTracker.set(TRACKED_ENTITY_IDS.get(i), j);
     }
 
+    @Override
     public boolean isAtHalfHealth() {
         return this.getHealth() <= this.getMaximumHealth() / 2.0f;
     }

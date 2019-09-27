@@ -145,9 +145,7 @@ extends World {
         if (!(entity instanceof PlayerEntity) && !this.method_2935().shouldTickEntity(entity)) {
             return;
         }
-        entity.prevRenderX = entity.x;
-        entity.prevRenderY = entity.y;
-        entity.prevRenderZ = entity.z;
+        entity.method_22862(entity.x, entity.y, entity.z);
         entity.prevYaw = entity.yaw;
         entity.prevPitch = entity.pitch;
         if (entity.updateNeeded || entity.isSpectator()) {
@@ -172,9 +170,7 @@ extends World {
         if (!(entity2 instanceof PlayerEntity) && !this.method_2935().shouldTickEntity(entity2)) {
             return;
         }
-        entity2.prevRenderX = entity2.x;
-        entity2.prevRenderY = entity2.y;
-        entity2.prevRenderZ = entity2.z;
+        entity2.method_22862(entity2.x, entity2.y, entity2.z);
         entity2.prevYaw = entity2.yaw;
         entity2.prevPitch = entity2.pitch;
         if (entity2.updateNeeded) {
@@ -324,7 +320,7 @@ extends World {
             ParticleEffect particleEffect = fluidState.getParticle();
             if (particleEffect != null && this.random.nextInt(10) == 0) {
                 boolean bl2 = blockState.isSideSolidFullSquare(this, mutable, Direction.DOWN);
-                BlockPos blockPos = mutable.down();
+                BlockPos blockPos = mutable.method_10074();
                 this.addParticle(blockPos, this.getBlockState(blockPos), particleEffect, bl2);
             }
         }
@@ -348,7 +344,7 @@ extends World {
             if (e > 0.0) {
                 this.addParticle(blockPos, particleEffect, voxelShape, (double)blockPos.getY() + e - 0.05);
             } else {
-                BlockPos blockPos2 = blockPos.down();
+                BlockPos blockPos2 = blockPos.method_10074();
                 BlockState blockState2 = this.getBlockState(blockPos2);
                 VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos2);
                 double f = voxelShape2.getMaximum(Direction.Axis.Y);

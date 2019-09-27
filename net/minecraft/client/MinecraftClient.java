@@ -40,6 +40,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_4599;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -226,6 +227,7 @@ WindowEventHandler {
     private final Window window;
     private final RenderTickCounter renderTickCounter = new RenderTickCounter(20.0f, 0L);
     private final Snooper snooper = new Snooper("client", this, SystemUtil.getMeasuringTimeMs());
+    private final class_4599 field_20909;
     public final WorldRenderer worldRenderer;
     private final EntityRenderDispatcher entityRenderManager;
     private final ItemRenderer itemRenderer;
@@ -311,6 +313,8 @@ WindowEventHandler {
     private CrashReport crashReport;
     private static int currentFps;
     public String fpsDebugString = "";
+    public boolean field_20907;
+    public boolean field_20908;
     public boolean field_1730 = true;
     private boolean windowFocused;
     private final Queue<Runnable> renderTaskQueue = Queues.newConcurrentLinkedQueue();
@@ -416,7 +420,7 @@ WindowEventHandler {
         this.window.setPhase("Post startup");
         this.spriteAtlas = new SpriteAtlasTexture("textures");
         this.spriteAtlas.setMipLevel(this.options.mipmapLevels);
-        this.textureManager.registerTextureUpdateable(SpriteAtlasTexture.BLOCK_ATLAS_TEX, this.spriteAtlas);
+        this.textureManager.registerTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX, this.spriteAtlas);
         this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         this.spriteAtlas.setFilter(false, this.options.mipmapLevels > 0);
         this.blockColorMap = BlockColors.create();
@@ -424,14 +428,15 @@ WindowEventHandler {
         this.bakedModelManager = new BakedModelManager(this.spriteAtlas, this.blockColorMap);
         this.resourceManager.registerListener(this.bakedModelManager);
         this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
-        this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager);
+        this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
         this.firstPersonRenderer = new FirstPersonRenderer(this);
         this.resourceManager.registerListener(this.itemRenderer);
-        this.gameRenderer = new GameRenderer(this, this.resourceManager);
+        this.field_20909 = new class_4599();
+        this.gameRenderer = new GameRenderer(this, this.resourceManager, this.field_20909);
         this.resourceManager.registerListener(this.gameRenderer);
         this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockStateMaps(), this.blockColorMap);
         this.resourceManager.registerListener(this.blockRenderManager);
-        this.worldRenderer = new WorldRenderer(this);
+        this.worldRenderer = new WorldRenderer(this, this.field_20909);
         this.resourceManager.registerListener(this.worldRenderer);
         this.initializeSearchableContainers();
         this.resourceManager.registerListener(this.searchManager);
@@ -725,6 +730,7 @@ WindowEventHandler {
 
     private void render(boolean bl) {
         boolean bl2;
+        int i;
         Runnable runnable;
         this.window.setPhase("Pre render");
         long l = SystemUtil.getMeasuringTimeNano();
@@ -749,14 +755,12 @@ WindowEventHandler {
         long m = SystemUtil.getMeasuringTimeNano();
         this.profiler.push("tick");
         if (bl) {
-            for (int i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); ++i) {
+            for (i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); ++i) {
                 this.tick();
             }
         }
         this.mouse.updateMouse();
         this.window.setPhase("Render");
-        RenderSystem.pollEvents();
-        long n = SystemUtil.getMeasuringTimeNano() - m;
         this.profiler.swap("sound");
         this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
         this.profiler.pop();
@@ -787,7 +791,11 @@ WindowEventHandler {
         this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
         RenderSystem.popMatrix();
         this.profiler.startTick();
-        this.updateDisplay(true);
+        this.window.setFullscreen();
+        i = this.getFramerateLimit();
+        if ((double)i < Option.FRAMERATE_LIMIT.getMax()) {
+            RenderSystem.limitDisplayFPS(i);
+        }
         Thread.yield();
         this.window.setPhase("Post render");
         ++this.fpsCounter;
@@ -800,9 +808,9 @@ WindowEventHandler {
             }
             this.paused = bl2;
         }
-        long o = SystemUtil.getMeasuringTimeNano();
-        this.metricsData.pushSample(o - this.lastMetricsSampleTime);
-        this.lastMetricsSampleTime = o;
+        long n = SystemUtil.getMeasuringTimeNano();
+        this.metricsData.pushSample(n - this.lastMetricsSampleTime);
+        this.lastMetricsSampleTime = n;
         while (SystemUtil.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             currentFps = this.fpsCounter;
             Object[] objectArray = new Object[5];
@@ -819,19 +827,6 @@ WindowEventHandler {
             this.snooper.method_5482();
         }
         this.profiler.endTick();
-    }
-
-    @Override
-    public void updateDisplay(boolean bl) {
-        RenderSystem.flipFrame();
-        this.profiler.push("display_update");
-        this.window.setFullscreen(this.options.fullscreen);
-        this.profiler.pop();
-        if (bl && this.isFramerateLimited()) {
-            this.profiler.push("fpslimit_wait");
-            this.window.waitForFramerateLimit();
-            this.profiler.pop();
-        }
     }
 
     @Override
@@ -852,10 +847,6 @@ WindowEventHandler {
             return 60;
         }
         return this.window.getFramerateLimit();
-    }
-
-    private boolean isFramerateLimited() {
-        return (double)this.getFramerateLimit() < Option.FRAMERATE_LIMIT.getMax();
     }
 
     public void cleanUpAfterCrash() {
@@ -907,7 +898,6 @@ WindowEventHandler {
         ProfilerTiming profilerTiming = list.remove(0);
         RenderSystem.clear(256, IS_SYSTEM_MAC);
         RenderSystem.matrixMode(5889);
-        RenderSystem.enableColorMaterial();
         RenderSystem.loadIdentity();
         RenderSystem.ortho(0.0, this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), 0.0, 1000.0, 3000.0);
         RenderSystem.matrixMode(5888);
@@ -1108,7 +1098,7 @@ WindowEventHandler {
                 }
             }
             if (itemStack.isEmpty() || (typedActionResult = this.interactionManager.interactItem(this.player, this.world, hand)).getResult() != ActionResult.SUCCESS) continue;
-            if (typedActionResult.method_22429()) {
+            if (typedActionResult.shouldSwingArm()) {
                 this.player.swingHand(hand);
             }
             this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
@@ -1158,8 +1148,7 @@ WindowEventHandler {
             this.inGameHud.resetDebugHudChunk();
         }
         if (this.overlay == null && (this.currentScreen == null || this.currentScreen.passEvents)) {
-            this.profiler.swap("GLFW events");
-            RenderSystem.pollEvents();
+            this.profiler.swap("Keybindings");
             this.handleInputEvents();
             if (this.attackCooldown > 0) {
                 --this.attackCooldown;
@@ -1181,7 +1170,7 @@ WindowEventHandler {
                 }
                 this.world.tickEntities();
             }
-        } else if (this.gameRenderer.isShaderEnabled()) {
+        } else if (this.gameRenderer.getShader() != null) {
             this.gameRenderer.disableShader();
         }
         if (!this.paused) {
@@ -1560,7 +1549,7 @@ WindowEventHandler {
 
     private ItemStack addBlockEntityNbt(ItemStack itemStack, BlockEntity blockEntity) {
         CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
-        if (itemStack.getItem() instanceof SkullItem && compoundTag.containsKey("Owner")) {
+        if (itemStack.getItem() instanceof SkullItem && compoundTag.contains("Owner")) {
             CompoundTag compoundTag2 = compoundTag.getCompound("Owner");
             itemStack.getOrCreateTag().put("SkullOwner", compoundTag2);
             return itemStack;
@@ -1568,7 +1557,7 @@ WindowEventHandler {
         itemStack.putSubTag("BlockEntityTag", compoundTag);
         CompoundTag compoundTag2 = new CompoundTag();
         ListTag listTag = new ListTag();
-        listTag.add(new StringTag("\"(+NBT)\""));
+        listTag.add(StringTag.of("\"(+NBT)\""));
         compoundTag2.put("Lore", listTag);
         itemStack.putSubTag("display", compoundTag2);
         return itemStack;
@@ -1923,8 +1912,12 @@ WindowEventHandler {
         return false;
     }
 
-    public Window method_22683() {
+    public Window getWindow() {
         return this.window;
+    }
+
+    public class_4599 method_22940() {
+        return this.field_20909;
     }
 
     private static /* synthetic */ ResourcePack method_1528(Supplier supplier) {

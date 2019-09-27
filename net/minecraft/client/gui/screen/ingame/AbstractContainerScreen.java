@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.ContainerProvider;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.InputUtil;
@@ -83,11 +82,8 @@ implements ContainerProvider<T> {
         int l = this.top;
         this.drawBackground(f, i, j);
         RenderSystem.disableRescaleNormal();
-        GuiLighting.disable();
-        RenderSystem.disableLighting();
         RenderSystem.disableDepthTest();
         super.render(i, j, f);
-        GuiLighting.enableForItems();
         RenderSystem.pushMatrix();
         RenderSystem.translatef(k, l, 0.0f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -95,7 +91,7 @@ implements ContainerProvider<T> {
         this.focusedSlot = null;
         int m = 240;
         int n = 240;
-        RenderSystem.glMultiTexCoord2f(33985, 240.0f, 240.0f);
+        RenderSystem.glMultiTexCoord2f(33986, 240.0f, 240.0f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         for (int o = 0; o < ((Container)this.container).slotList.size(); ++o) {
             Slot slot = ((Container)this.container).slotList.get(o);
@@ -104,19 +100,15 @@ implements ContainerProvider<T> {
             }
             if (!this.isPointOverSlot(slot, i, j) || !slot.doDrawHoveringEffect()) continue;
             this.focusedSlot = slot;
-            RenderSystem.disableLighting();
             RenderSystem.disableDepthTest();
             p = slot.xPosition;
             q = slot.yPosition;
             RenderSystem.colorMask(true, true, true, false);
             this.fillGradient(p, q, p + 16, q + 16, -2130706433, -2130706433);
             RenderSystem.colorMask(true, true, true, true);
-            RenderSystem.enableLighting();
             RenderSystem.enableDepthTest();
         }
-        GuiLighting.disable();
         this.drawForeground(i, j);
-        GuiLighting.enableForItems();
         PlayerInventory playerInventory = this.minecraft.player.inventory;
         ItemStack itemStack2 = itemStack = this.touchDragStack.isEmpty() ? playerInventory.getCursorStack() : this.touchDragStack;
         if (!itemStack.isEmpty()) {
@@ -148,9 +140,7 @@ implements ContainerProvider<T> {
             this.drawItem(this.touchDropReturningStack, s, t, null);
         }
         RenderSystem.popMatrix();
-        RenderSystem.enableLighting();
         RenderSystem.enableDepthTest();
-        GuiLighting.enable();
     }
 
     protected void drawMouseoverTooltip(int i, int j) {
@@ -208,10 +198,8 @@ implements ContainerProvider<T> {
         this.itemRenderer.zOffset = 100.0f;
         if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (string2 = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.minecraft.getSpriteAtlas().getSprite(string2);
-            RenderSystem.disableLighting();
             this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
             AbstractContainerScreen.blit(i, j, this.getBlitOffset(), 16, 16, sprite);
-            RenderSystem.enableLighting();
             bl2 = true;
         }
         if (!bl2) {
@@ -297,7 +285,7 @@ implements ContainerProvider<T> {
                         if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
                             this.onMouseClick(slot, m, i, SlotActionType.CLONE);
                         } else {
-                            boolean bl3 = m != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344));
+                            boolean bl3 = m != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344));
                             SlotActionType slotActionType = SlotActionType.PICKUP;
                             if (bl3) {
                                 this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
@@ -443,7 +431,7 @@ implements ContainerProvider<T> {
                     this.onMouseClick(slot, l, i, SlotActionType.CLONE);
                 } else {
                     boolean bl2;
-                    boolean bl3 = bl2 = l != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 344));
+                    boolean bl3 = bl2 = l != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344));
                     if (bl2) {
                         this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
                     }

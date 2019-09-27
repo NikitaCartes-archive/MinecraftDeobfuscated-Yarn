@@ -21,7 +21,7 @@ implements SnbtProvider.class_4460 {
     }
 
     private static CompoundTag method_16880(CompoundTag compoundTag) {
-        if (!compoundTag.containsKey("DataVersion", 99)) {
+        if (!compoundTag.contains("DataVersion", 99)) {
             compoundTag.putInt("DataVersion", 500);
         }
         return compoundTag;

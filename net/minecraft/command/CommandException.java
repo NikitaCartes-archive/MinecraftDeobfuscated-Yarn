@@ -15,7 +15,7 @@ extends RuntimeException {
         this.message = text;
     }
 
-    public Text getMessage() {
+    public Text getTextMessage() {
         return this.message;
     }
 }

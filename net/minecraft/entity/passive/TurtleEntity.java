@@ -173,8 +173,8 @@ extends AnimalEntity {
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
-    public static boolean method_20671(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.SAND && iWorld.getBaseLightLevel(blockPos, 0) > 8;
+    public static boolean canSpawn(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+        return blockPos.getY() < iWorld.getSeaLevel() + 4 && iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND && iWorld.getBaseLightLevel(blockPos, 0) > 8;
     }
 
     @Override
@@ -296,7 +296,7 @@ extends AnimalEntity {
         if (!this.isLandBound() && arg.getFluidState(blockPos).matches(FluidTags.WATER)) {
             return 10.0f;
         }
-        if (arg.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
+        if (arg.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND) {
             return 10.0f;
         }
         return arg.getBrightness(blockPos) - 0.5f;
@@ -306,7 +306,7 @@ extends AnimalEntity {
     public void tickMovement() {
         BlockPos blockPos;
         super.tickMovement();
-        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && this.world.getBlockState((blockPos = new BlockPos(this)).down()).getBlock() == Blocks.SAND) {
+        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && this.world.getBlockState((blockPos = new BlockPos(this)).method_10074()).getBlock() == Blocks.SAND) {
             this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
         }
     }
@@ -365,7 +365,7 @@ extends AnimalEntity {
             if (this.entity instanceof TurtleEntity && (turtleEntity = (TurtleEntity)this.entity).isActivelyTravelling()) {
                 return this.world.getBlockState(blockPos).getBlock() == Blocks.WATER;
             }
-            return !this.world.getBlockState(blockPos.down()).isAir();
+            return !this.world.getBlockState(blockPos.method_10074()).isAir();
         }
     }
 
@@ -547,7 +547,7 @@ extends AnimalEntity {
             this.turtle.setHasEgg(true);
             this.animal.resetLoveTicks();
             this.mate.resetLoveTicks();
-            Random random = this.animal.getRand();
+            Random random = this.animal.getRandom();
             if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
                 this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, random.nextInt(7) + 1));
             }
@@ -630,7 +630,7 @@ extends AnimalEntity {
             if (this.turtle.hasEgg()) {
                 return true;
             }
-            if (this.turtle.getRand().nextInt(700) != 0) {
+            if (this.turtle.getRandom().nextInt(700) != 0) {
                 return false;
             }
             return !this.turtle.getHomePos().isWithinDistance(this.turtle.getPos(), 64.0);

@@ -21,7 +21,7 @@ implements AutoCloseable {
 
     public SpriteAtlasHolder(TextureManager textureManager, Identifier identifier, String string) {
         this.atlas = new SpriteAtlasTexture(string);
-        textureManager.registerTextureUpdateable(identifier, this.atlas);
+        textureManager.registerTexture(identifier, this.atlas);
     }
 
     protected abstract Iterable<Identifier> getSprites();

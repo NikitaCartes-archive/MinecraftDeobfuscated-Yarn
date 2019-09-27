@@ -184,7 +184,7 @@ implements ArgumentType<NbtPath> {
         @Override
         public void get(Tag tag, List<Tag> list) {
             Tag tag2;
-            if (tag instanceof CompoundTag && this.predicate.test(tag2 = ((CompoundTag)tag).getTag(this.name))) {
+            if (tag instanceof CompoundTag && this.predicate.test(tag2 = ((CompoundTag)tag).get(this.name))) {
                 list.add(tag2);
             }
         }
@@ -193,7 +193,7 @@ implements ArgumentType<NbtPath> {
         public void getOrInit(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
             if (tag instanceof CompoundTag) {
                 CompoundTag compoundTag = (CompoundTag)tag;
-                Tag tag2 = compoundTag.getTag(this.name);
+                Tag tag2 = compoundTag.get(this.name);
                 if (tag2 == null) {
                     tag2 = this.filter.method_10553();
                     compoundTag.put(this.name, tag2);
@@ -214,7 +214,7 @@ implements ArgumentType<NbtPath> {
             Tag tag3;
             CompoundTag compoundTag;
             Tag tag2;
-            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).getTag(this.name)) && !(tag3 = supplier.get()).equals(tag2)) {
+            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).get(this.name)) && !(tag3 = supplier.get()).equals(tag2)) {
                 compoundTag.put(this.name, tag3);
                 return 1;
             }
@@ -225,7 +225,7 @@ implements ArgumentType<NbtPath> {
         public int clear(Tag tag) {
             CompoundTag compoundTag;
             Tag tag2;
-            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).getTag(this.name))) {
+            if (tag instanceof CompoundTag && this.predicate.test(tag2 = (compoundTag = (CompoundTag)tag).get(this.name))) {
                 compoundTag.remove(this.name);
                 return 1;
             }
@@ -457,7 +457,7 @@ implements ArgumentType<NbtPath> {
         @Override
         public void get(Tag tag, List<Tag> list) {
             Tag tag2;
-            if (tag instanceof CompoundTag && (tag2 = ((CompoundTag)tag).getTag(this.name)) != null) {
+            if (tag instanceof CompoundTag && (tag2 = ((CompoundTag)tag).get(this.name)) != null) {
                 list.add(tag2);
             }
         }
@@ -467,8 +467,8 @@ implements ArgumentType<NbtPath> {
             if (tag instanceof CompoundTag) {
                 Tag tag2;
                 CompoundTag compoundTag = (CompoundTag)tag;
-                if (compoundTag.containsKey(this.name)) {
-                    tag2 = compoundTag.getTag(this.name);
+                if (compoundTag.contains(this.name)) {
+                    tag2 = compoundTag.get(this.name);
                 } else {
                     tag2 = supplier.get();
                     compoundTag.put(this.name, tag2);
@@ -498,7 +498,7 @@ implements ArgumentType<NbtPath> {
         @Override
         public int clear(Tag tag) {
             CompoundTag compoundTag;
-            if (tag instanceof CompoundTag && (compoundTag = (CompoundTag)tag).containsKey(this.name)) {
+            if (tag instanceof CompoundTag && (compoundTag = (CompoundTag)tag).contains(this.name)) {
                 compoundTag.remove(this.name);
                 return 1;
             }

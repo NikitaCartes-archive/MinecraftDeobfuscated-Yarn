@@ -7,26 +7,10 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.block.entity.BedBlockEntity;
-import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.CampfireBlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.ConduitBlockEntity;
-import net.minecraft.block.entity.EnchantingTableBlockEntity;
-import net.minecraft.block.entity.EndGatewayBlockEntity;
-import net.minecraft.block.entity.EndPortalBlockEntity;
-import net.minecraft.block.entity.EnderChestBlockEntity;
-import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.block.entity.PistonBlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -60,56 +44,44 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BlockEntityRenderDispatcher {
-    private final Map<Class<? extends BlockEntity>, BlockEntityRenderer<? extends BlockEntity>> renderers = Maps.newHashMap();
+    private final Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = Maps.newHashMap();
     public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
+    private final BufferBuilder field_20988 = new BufferBuilder(256);
     private TextRenderer fontRenderer;
-    public static double renderOffsetX;
-    public static double renderOffsetY;
-    public static double renderOffsetZ;
     public TextureManager textureManager;
     public World world;
     public Camera cameraEntity;
     public HitResult hitResult;
 
     private BlockEntityRenderDispatcher() {
-        this.renderers.put(SignBlockEntity.class, new SignBlockEntityRenderer());
-        this.renderers.put(MobSpawnerBlockEntity.class, new MobSpawnerBlockEntityRenderer());
-        this.renderers.put(PistonBlockEntity.class, new PistonBlockEntityRenderer());
-        this.renderers.put(ChestBlockEntity.class, new ChestBlockEntityRenderer());
-        this.renderers.put(EnderChestBlockEntity.class, new ChestBlockEntityRenderer());
-        this.renderers.put(EnchantingTableBlockEntity.class, new EnchantingTableBlockEntityRenderer());
-        this.renderers.put(LecternBlockEntity.class, new LecternBlockEntityRenderer());
-        this.renderers.put(EndPortalBlockEntity.class, new EndPortalBlockEntityRenderer());
-        this.renderers.put(EndGatewayBlockEntity.class, new EndGatewayBlockEntityRenderer());
-        this.renderers.put(BeaconBlockEntity.class, new BeaconBlockEntityRenderer());
-        this.renderers.put(SkullBlockEntity.class, new SkullBlockEntityRenderer());
-        this.renderers.put(BannerBlockEntity.class, new BannerBlockEntityRenderer());
-        this.renderers.put(StructureBlockBlockEntity.class, new StructureBlockBlockEntityRenderer());
-        this.renderers.put(ShulkerBoxBlockEntity.class, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel()));
-        this.renderers.put(BedBlockEntity.class, new BedBlockEntityRenderer());
-        this.renderers.put(ConduitBlockEntity.class, new ConduitBlockEntityRenderer());
-        this.renderers.put(BellBlockEntity.class, new BellBlockEntityRenderer());
-        this.renderers.put(CampfireBlockEntity.class, new CampfireBlockEntityRenderer());
-        for (BlockEntityRenderer<? extends BlockEntity> blockEntityRenderer : this.renderers.values()) {
-            blockEntityRenderer.setRenderManager(this);
-        }
+        this.method_23078(BlockEntityType.SIGN, new SignBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.MOB_SPAWNER, new MobSpawnerBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.PISTON, new PistonBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.CHEST, new ChestBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.ENDER_CHEST, new ChestBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.TRAPPED_CHEST, new ChestBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.ENCHANTING_TABLE, new EnchantingTableBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.LECTERN, new LecternBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.END_PORTAL, new EndPortalBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.END_GATEWAY, new EndGatewayBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.BEACON, new BeaconBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.SKULL, new SkullBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.BANNER, new BannerBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.STRUCTURE_BLOCK, new StructureBlockBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.SHULKER_BOX, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel(), this));
+        this.method_23078(BlockEntityType.BED, new BedBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.CONDUIT, new ConduitBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.BELL, new BellBlockEntityRenderer(this));
+        this.method_23078(BlockEntityType.CAMPFIRE, new CampfireBlockEntityRenderer(this));
     }
 
-    public <T extends BlockEntity> BlockEntityRenderer<T> get(Class<? extends BlockEntity> class_) {
-        BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.renderers.get(class_);
-        if (blockEntityRenderer == null && class_ != BlockEntity.class) {
-            blockEntityRenderer = this.get(class_.getSuperclass());
-            this.renderers.put(class_, blockEntityRenderer);
-        }
-        return blockEntityRenderer;
+    private <E extends BlockEntity> void method_23078(BlockEntityType<E> blockEntityType, BlockEntityRenderer<E> blockEntityRenderer) {
+        this.renderers.put(blockEntityType, blockEntityRenderer);
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityRenderer<T> get(@Nullable BlockEntity blockEntity) {
-        if (blockEntity == null) {
-            return null;
-        }
-        return this.get(blockEntity.getClass());
+    public <E extends BlockEntity> BlockEntityRenderer<E> get(E blockEntity) {
+        return this.renderers.get(blockEntity.getType());
     }
 
     public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult hitResult) {
@@ -122,15 +94,7 @@ public class BlockEntityRenderDispatcher {
         this.hitResult = hitResult;
     }
 
-    public void renderEntity(BlockEntity blockEntity, float f, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder) {
-        this.render(blockEntity, f, -1, blockRenderLayer, bufferBuilder);
-    }
-
-    public void method_22743(BlockEntity blockEntity, float f, int i, BufferBuilder bufferBuilder) {
-        this.render(blockEntity, f, i, BlockRenderLayer.field_20800, bufferBuilder);
-    }
-
-    private void render(BlockEntity blockEntity, float f, int i, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder) {
+    public <E extends BlockEntity> void render(E blockEntity, float f, class_4587 arg, class_4597 arg2, double d, double e, double g) {
         if (!(blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z) < blockEntity.getSquaredRenderDistance())) {
             return;
         }
@@ -142,15 +106,29 @@ public class BlockEntityRenderDispatcher {
             return;
         }
         BlockPos blockPos = blockEntity.getPos();
-        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> blockEntityRenderer.method_22747(blockEntity, (double)blockPos.getX() - renderOffsetX, (double)blockPos.getY() - renderOffsetY, (double)blockPos.getZ() - renderOffsetZ, f, i, bufferBuilder, blockRenderLayer, blockPos));
+        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> BlockEntityRenderDispatcher.method_23079(blockEntityRenderer, blockEntity, (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - g, f, arg, arg2));
     }
 
-    public void renderEntity(BlockEntity blockEntity) {
+    private static <T extends BlockEntity> void method_23079(BlockEntityRenderer<T> blockEntityRenderer, T blockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2) {
+        World world = blockEntity.getWorld();
+        int i = world != null ? world.getLightmapIndex(blockEntity.getPos()) : 0xF000F0;
+        blockEntityRenderer.render(blockEntity, d, e, f, g, arg, arg2, i);
+    }
+
+    @Deprecated
+    public <E extends BlockEntity> void renderEntity(E blockEntity, class_4587 arg, int i) {
+        class_4597.class_4598 lv = class_4597.method_22991(this.field_20988);
+        this.method_23077(blockEntity, arg, lv, i);
+        lv.method_22993();
+    }
+
+    public <E extends BlockEntity> boolean method_23077(E blockEntity, class_4587 arg, class_4597 arg2, int i) {
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
         if (blockEntityRenderer == null) {
-            return;
+            return true;
         }
-        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0f, -1, BlockRenderLayer.field_20799));
+        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0f, arg, arg2, i));
+        return false;
     }
 
     private static void renderEntity(BlockEntity blockEntity, Runnable runnable) {

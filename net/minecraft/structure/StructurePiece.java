@@ -52,7 +52,7 @@ public abstract class StructurePiece {
     public StructurePiece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
         this(structurePieceType, compoundTag.getInt("GD"));
         int i;
-        if (compoundTag.containsKey("BB")) {
+        if (compoundTag.contains("BB")) {
             this.boundingBox = new BlockBox(compoundTag.getIntArray("BB"));
         }
         this.setOrientation((i = compoundTag.getInt("O")) == -1 ? null : Direction.fromHorizontal(i));

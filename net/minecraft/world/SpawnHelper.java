@@ -80,7 +80,7 @@ public final class SpawnHelper {
                     if (spawnEntry == null) continue block2;
                     q = spawnEntry.minGroupSize + serverWorld.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
                 }
-                if (spawnEntry.type.getCategory() == EntityCategory.MISC || !spawnEntry.type.method_20814() && d > 16384.0 || !(entityType = spawnEntry.type).isSummonable() || !SpawnHelper.containsSpawnEntry(chunkGenerator, entityCategory, spawnEntry, mutable) || !SpawnHelper.canSpawn(location = SpawnRestriction.getLocation(entityType), serverWorld, mutable, entityType) || !SpawnRestriction.method_20638(entityType, serverWorld, SpawnType.NATURAL, mutable, serverWorld.random) || !serverWorld.doesNotCollide(entityType.createSimpleBoundingBox(f, k, g))) continue;
+                if (spawnEntry.type.getCategory() == EntityCategory.MISC || !spawnEntry.type.method_20814() && d > 16384.0 || !(entityType = spawnEntry.type).isSummonable() || !SpawnHelper.containsSpawnEntry(chunkGenerator, entityCategory, spawnEntry, mutable) || !SpawnHelper.canSpawn(location = SpawnRestriction.getLocation(entityType), serverWorld, mutable, entityType) || !SpawnRestriction.canSpawn(entityType, serverWorld, SpawnType.NATURAL, mutable, serverWorld.random) || !serverWorld.doesNotCollide(entityType.createSimpleBoundingBox(f, k, g))) continue;
                 try {
                     Object entity = entityType.create(serverWorld);
                     if (!(entity instanceof MobEntity)) {
@@ -153,7 +153,7 @@ public final class SpawnHelper {
         BlockState blockState = arg.getBlockState(blockPos);
         FluidState fluidState = arg.getFluidState(blockPos);
         BlockPos blockPos2 = blockPos.up();
-        BlockPos blockPos3 = blockPos.down();
+        BlockPos blockPos3 = blockPos.method_10074();
         switch (location) {
             case IN_WATER: {
                 return fluidState.matches(FluidTags.WATER) && arg.getFluidState(blockPos3).matches(FluidTags.WATER) && !arg.getBlockState(blockPos2).isSimpleFullBlock(arg, blockPos2);
@@ -191,7 +191,7 @@ public final class SpawnHelper {
                         float f = spawnEntry.type.getWidth();
                         double d = MathHelper.clamp((double)n, (double)k + (double)f, (double)k + 16.0 - (double)f);
                         double e = MathHelper.clamp((double)o, (double)l + (double)f, (double)l + 16.0 - (double)f);
-                        if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.method_20638(spawnEntry.type, iWorld, SpawnType.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), iWorld.getRandom())) continue;
+                        if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.canSpawn(spawnEntry.type, iWorld, SpawnType.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), iWorld.getRandom())) continue;
                         try {
                             entity = spawnEntry.type.create(iWorld.getWorld());
                         } catch (Exception exception) {
@@ -217,8 +217,8 @@ public final class SpawnHelper {
     }
 
     private static BlockPos getEntitySpawnPos(class_4538 arg, @Nullable EntityType<?> entityType, int i, int j) {
-        BlockPos blockPos = new BlockPos(i, arg.getTopY(SpawnRestriction.getHeightMapType(entityType), i, j), j);
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos = new BlockPos(i, arg.getTopY(SpawnRestriction.getHeightmapType(entityType), i, j), j);
+        BlockPos blockPos2 = blockPos.method_10074();
         if (arg.getBlockState(blockPos2).canPlaceAtSide(arg, blockPos2, BlockPlacementEnvironment.LAND)) {
             return blockPos2;
         }

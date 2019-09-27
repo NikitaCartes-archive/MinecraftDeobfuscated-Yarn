@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 public class BlockEntityUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private BlockPos pos;
-    private int actionId;
+    private int blockEntityType;
     private CompoundTag tag;
 
     public BlockEntityUpdateS2CPacket() {
@@ -23,21 +23,21 @@ implements Packet<ClientPlayPacketListener> {
 
     public BlockEntityUpdateS2CPacket(BlockPos blockPos, int i, CompoundTag compoundTag) {
         this.pos = blockPos;
-        this.actionId = i;
+        this.blockEntityType = i;
         this.tag = compoundTag;
     }
 
     @Override
     public void read(PacketByteBuf packetByteBuf) throws IOException {
         this.pos = packetByteBuf.readBlockPos();
-        this.actionId = packetByteBuf.readUnsignedByte();
+        this.blockEntityType = packetByteBuf.readUnsignedByte();
         this.tag = packetByteBuf.readCompoundTag();
     }
 
     @Override
     public void write(PacketByteBuf packetByteBuf) throws IOException {
         packetByteBuf.writeBlockPos(this.pos);
-        packetByteBuf.writeByte((byte)this.actionId);
+        packetByteBuf.writeByte((byte)this.blockEntityType);
         packetByteBuf.writeCompoundTag(this.tag);
     }
 
@@ -51,8 +51,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getActionId() {
-        return this.actionId;
+    public int getBlockEntityType() {
+        return this.blockEntityType;
     }
 
     @Environment(value=EnvType.CLIENT)

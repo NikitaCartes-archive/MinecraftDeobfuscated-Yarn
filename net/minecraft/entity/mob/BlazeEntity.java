@@ -222,7 +222,7 @@ extends HostileEntity {
                         float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5f;
                         this.blaze.world.playLevelEvent(null, 1018, new BlockPos(this.blaze), 0);
                         for (int i = 0; i < 1; ++i) {
-                            SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRand().nextGaussian() * (double)h, f, g + this.blaze.getRand().nextGaussian() * (double)h);
+                            SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
                             smallFireballEntity.y = this.blaze.y + (double)(this.blaze.getHeight() / 2.0f) + 0.5;
                             this.blaze.world.spawnEntity(smallFireballEntity);
                         }

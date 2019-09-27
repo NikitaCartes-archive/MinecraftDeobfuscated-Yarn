@@ -44,7 +44,7 @@ extends Feature<NetherSpringFeatureConfig> {
         if (iWorld.getBlockState(blockPos.south()) == NETHERRACK) {
             ++i;
         }
-        if (iWorld.getBlockState(blockPos.down()) == NETHERRACK) {
+        if (iWorld.getBlockState(blockPos.method_10074()) == NETHERRACK) {
             ++i;
         }
         int j = 0;
@@ -60,7 +60,7 @@ extends Feature<NetherSpringFeatureConfig> {
         if (iWorld.isAir(blockPos.south())) {
             ++j;
         }
-        if (iWorld.isAir(blockPos.down())) {
+        if (iWorld.isAir(blockPos.method_10074())) {
             ++j;
         }
         if (!netherSpringFeatureConfig.insideRock && i == 4 && j == 1 || i == 5) {

@@ -36,7 +36,7 @@ extends Block {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-        return (BlockState)this.getDefaultState().with(INSTRUMENT, Instrument.fromBlockState(itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().down())));
+        return (BlockState)this.getDefaultState().with(INSTRUMENT, Instrument.fromBlockState(itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().method_10074())));
     }
 
     @Override

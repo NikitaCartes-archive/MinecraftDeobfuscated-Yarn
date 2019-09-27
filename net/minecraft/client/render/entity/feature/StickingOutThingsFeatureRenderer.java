@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -25,42 +25,32 @@ extends FeatureRenderer<T, M> {
 
     protected abstract int getThingCount(T var1);
 
-    protected abstract void renderThing(Entity var1, float var2, float var3, float var4, float var5);
+    protected abstract void renderThing(class_4587 var1, class_4597 var2, Entity var3, float var4, float var5, float var6, float var7);
 
-    protected void beforeRendering(T livingEntity) {
-        GuiLighting.disable();
-    }
-
-    protected void afterRendering() {
-        GuiLighting.enable();
-    }
-
-    public void method_22132(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-        int m = this.getThingCount(livingEntity);
+    public void method_22132(class_4587 arg, class_4597 arg2, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+        int n = this.getThingCount(livingEntity);
         Random random = new Random(((Entity)livingEntity).getEntityId());
-        if (m <= 0) {
+        if (n <= 0) {
             return;
         }
-        this.beforeRendering(livingEntity);
-        for (int n = 0; n < m; ++n) {
-            RenderSystem.pushMatrix();
+        for (int o = 0; o < n; ++o) {
+            arg.method_22903();
             ModelPart modelPart = ((PlayerEntityModel)this.getModel()).method_22697(random);
             ModelPart.Cuboid cuboid = modelPart.method_22700(random);
-            modelPart.applyTransform(0.0625f);
-            float o = random.nextFloat();
+            modelPart.method_22703(arg, 0.0625f);
             float p = random.nextFloat();
             float q = random.nextFloat();
-            float r = MathHelper.lerp(o, cuboid.xMin, cuboid.xMax) / 16.0f;
-            float s = MathHelper.lerp(p, cuboid.yMin, cuboid.yMax) / 16.0f;
-            float t = MathHelper.lerp(q, cuboid.zMin, cuboid.zMax) / 16.0f;
-            RenderSystem.translatef(r, s, t);
-            o = -1.0f * (o * 2.0f - 1.0f);
+            float r = random.nextFloat();
+            float s = MathHelper.lerp(p, cuboid.xMin, cuboid.xMax) / 16.0f;
+            float t = MathHelper.lerp(q, cuboid.yMin, cuboid.yMax) / 16.0f;
+            float u = MathHelper.lerp(r, cuboid.zMin, cuboid.zMax) / 16.0f;
+            arg.method_22904(s, t, u);
             p = -1.0f * (p * 2.0f - 1.0f);
             q = -1.0f * (q * 2.0f - 1.0f);
-            this.renderThing((Entity)livingEntity, o, p, q, h);
-            RenderSystem.popMatrix();
+            r = -1.0f * (r * 2.0f - 1.0f);
+            this.renderThing(arg, arg2, (Entity)livingEntity, p, q, r, h);
+            arg.method_22909();
         }
-        this.afterRendering();
     }
 }
 

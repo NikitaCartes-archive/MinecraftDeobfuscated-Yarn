@@ -37,6 +37,9 @@ public class FluidPredicate {
         if (this == ANY) {
             return true;
         }
+        if (!serverWorld.canSetBlock(blockPos)) {
+            return false;
+        }
         FluidState fluidState = serverWorld.getFluidState(blockPos);
         Fluid fluid = fluidState.getFluid();
         if (this.tag != null && !this.tag.contains(fluid)) {

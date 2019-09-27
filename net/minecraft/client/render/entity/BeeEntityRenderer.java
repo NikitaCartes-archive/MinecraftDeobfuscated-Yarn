@@ -10,7 +10,6 @@ import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.BeeEntityModel;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BeeEntityRenderer
@@ -24,8 +23,7 @@ extends MobEntityRenderer<BeeEntity, BeeEntityModel<BeeEntity>> {
         super(entityRenderDispatcher, new BeeEntityModel(), 0.4f);
     }
 
-    @Nullable
-    protected Identifier method_22129(BeeEntity beeEntity) {
+    public Identifier method_22129(BeeEntity beeEntity) {
         if (beeEntity.isAngry()) {
             if (beeEntity.hasNectar()) {
                 return ANGRY_NECTAR_SKIN;

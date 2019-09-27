@@ -139,7 +139,7 @@ public class TestUtil {
             stringBuffer.append("(optional)\n");
         }
         stringBuffer.append("-------------------\n");
-        listTag.add(new StringTag(stringBuffer.toString() + string22));
+        listTag.add(StringTag.of(stringBuffer.toString() + string22));
         itemStack.putSubTag("pages", listTag);
         return itemStack;
     }

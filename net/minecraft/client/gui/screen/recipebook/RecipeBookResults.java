@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeDisplayListener;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 import org.jetbrains.annotations.Nullable;
@@ -93,7 +92,6 @@ public class RecipeBookResults {
             int m = this.client.textRenderer.getStringWidth(string);
             this.client.textRenderer.draw(string, i - m / 2 + 73, j + 141, -1);
         }
-        GuiLighting.disable();
         this.hoveredResultButton = null;
         for (AnimatedResultButton animatedResultButton : this.resultButtons) {
             animatedResultButton.render(k, l, f);

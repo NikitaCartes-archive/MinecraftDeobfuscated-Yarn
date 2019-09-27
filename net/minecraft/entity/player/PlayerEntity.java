@@ -494,7 +494,7 @@ extends LivingEntity {
     }
 
     private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
-        if (compoundTag != null && !compoundTag.containsKey("Silent") || !compoundTag.getBoolean("Silent")) {
+        if (compoundTag != null && !compoundTag.contains("Silent") || !compoundTag.getBoolean("Silent")) {
             String string = compoundTag.getString("id");
             EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> ParrotEntity.playMobSound(this.world, this));
         }
@@ -671,19 +671,19 @@ extends LivingEntity {
             this.enchantmentTableSeed = this.random.nextInt();
         }
         this.setScore(compoundTag.getInt("Score"));
-        if (compoundTag.containsKey("SpawnX", 99) && compoundTag.containsKey("SpawnY", 99) && compoundTag.containsKey("SpawnZ", 99)) {
+        if (compoundTag.contains("SpawnX", 99) && compoundTag.contains("SpawnY", 99) && compoundTag.contains("SpawnZ", 99)) {
             this.spawnPosition = new BlockPos(compoundTag.getInt("SpawnX"), compoundTag.getInt("SpawnY"), compoundTag.getInt("SpawnZ"));
             this.spawnForced = compoundTag.getBoolean("SpawnForced");
         }
         this.hungerManager.deserialize(compoundTag);
         this.abilities.deserialize(compoundTag);
-        if (compoundTag.containsKey("EnderItems", 9)) {
+        if (compoundTag.contains("EnderItems", 9)) {
             this.enderChestInventory.readTags(compoundTag.getList("EnderItems", 10));
         }
-        if (compoundTag.containsKey("ShoulderEntityLeft", 10)) {
+        if (compoundTag.contains("ShoulderEntityLeft", 10)) {
             this.setShoulderEntityLeft(compoundTag.getCompound("ShoulderEntityLeft"));
         }
-        if (compoundTag.containsKey("ShoulderEntityRight", 10)) {
+        if (compoundTag.contains("ShoulderEntityRight", 10)) {
             this.setShoulderEntityRight(compoundTag.getCompound("ShoulderEntityRight"));
         }
     }
@@ -1648,19 +1648,6 @@ extends LivingEntity {
                 ((ServerWorld)this.world).method_18768((Entity)entity);
             });
         }
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public boolean canSeePlayer(PlayerEntity playerEntity) {
-        if (!this.isInvisible()) {
-            return false;
-        }
-        if (playerEntity.isSpectator()) {
-            return false;
-        }
-        AbstractTeam abstractTeam = this.getScoreboardTeam();
-        return abstractTeam == null || playerEntity == null || playerEntity.getScoreboardTeam() != abstractTeam || !abstractTeam.shouldShowFriendlyInvisibles();
     }
 
     @Override

@@ -35,7 +35,6 @@ import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -143,8 +142,8 @@ extends DrawableHelper {
     public void render(float f) {
         int j;
         float g;
-        this.scaledWidth = this.client.method_22683().getScaledWidth();
-        this.scaledHeight = this.client.method_22683().getScaledHeight();
+        this.scaledWidth = this.client.getWindow().getScaledWidth();
+        this.scaledHeight = this.client.getWindow().getScaledHeight();
         TextRenderer textRenderer = this.getFontRenderer();
         RenderSystem.enableBlend();
         if (MinecraftClient.isFancyGraphicsEnabled()) {
@@ -309,7 +308,6 @@ extends DrawableHelper {
             }
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.disableLighting();
         RenderSystem.enableAlphaTest();
     }
 
@@ -457,7 +455,6 @@ extends DrawableHelper {
         RenderSystem.enableRescaleNormal();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        GuiLighting.enableForItems();
         for (m = 0; m < 9; ++m) {
             n = i - 90 + m * 20 + 2;
             o = this.scaledHeight - 16 - 3;
@@ -483,7 +480,6 @@ extends DrawableHelper {
             this.blit(o, n, 0, 94, 18, 18);
             this.blit(o, n + 18 - p, 18, 112 - p, 18, p);
         }
-        GuiLighting.disable();
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
     }
@@ -844,10 +840,10 @@ extends DrawableHelper {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_UV);
-        bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0, 1.0).next();
-        bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0, 1.0).next();
-        bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
-        bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
+        bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0f, 1.0f).next();
+        bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0f, 1.0f).next();
+        bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0f, 0.0f).next();
+        bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0f, 0.0f).next();
         tessellator.draw();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
@@ -881,10 +877,10 @@ extends DrawableHelper {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_UV);
-        bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0, 1.0).next();
-        bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0, 1.0).next();
-        bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
-        bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0, 0.0).next();
+        bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).texture(0.0f, 1.0f).next();
+        bufferBuilder.vertex(this.scaledWidth, this.scaledHeight, -90.0).texture(1.0f, 1.0f).next();
+        bufferBuilder.vertex(this.scaledWidth, 0.0, -90.0).texture(1.0f, 0.0f).next();
+        bufferBuilder.vertex(0.0, 0.0, -90.0).texture(0.0f, 0.0f).next();
         tessellator.draw();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();

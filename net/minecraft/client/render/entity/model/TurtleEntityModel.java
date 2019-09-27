@@ -3,7 +3,8 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -18,7 +19,7 @@ extends QuadrupedEntityModel<T> {
     private final ModelPart field_3594;
 
     public TurtleEntityModel(float f) {
-        super(12, f);
+        super(12, f, true, 120.0f, 0.0f, 6.0f, 6.0f, 120);
         this.textureWidth = 128;
         this.textureHeight = 64;
         this.head = new ModelPart(this, 3, 0);
@@ -46,41 +47,13 @@ extends QuadrupedEntityModel<T> {
         this.leg4.setRotationPoint(5.0f, 21.0f, -4.0f);
     }
 
-    public void method_17124(T turtleEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17125(turtleEntity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 6.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.16666667f, 0.16666667f, 0.16666667f);
-            RenderSystem.translatef(0.0f, 120.0f * k, 0.0f);
-            this.head.render(k);
-            this.body.render(k);
-            this.leg1.render(k);
-            this.leg2.render(k);
-            this.leg3.render(k);
-            this.leg4.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            RenderSystem.pushMatrix();
-            if (((TurtleEntity)turtleEntity).hasEgg()) {
-                RenderSystem.translatef(0.0f, -0.08f, 0.0f);
-            }
-            this.head.render(k);
-            this.body.render(k);
-            RenderSystem.pushMatrix();
-            this.leg1.render(k);
-            this.leg2.render(k);
-            RenderSystem.popMatrix();
-            this.leg3.render(k);
-            this.leg4.render(k);
-            if (((TurtleEntity)turtleEntity).hasEgg()) {
-                this.field_3594.render(k);
-            }
-            RenderSystem.popMatrix();
-        }
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return Iterables.concat(super.method_22948(), ImmutableList.of(this.field_3594));
     }
 
     public void method_17125(T turtleEntity, float f, float g, float h, float i, float j, float k) {
+        float l;
         super.setAngles(turtleEntity, f, g, h, i, j, k);
         this.leg1.pitch = MathHelper.cos(f * 0.6662f * 0.6f) * 0.5f * g;
         this.leg2.pitch = MathHelper.cos(f * 0.6662f * 0.6f + (float)Math.PI) * 0.5f * g;
@@ -94,7 +67,7 @@ extends QuadrupedEntityModel<T> {
         this.leg2.yaw = 0.0f;
         this.field_3594.pitch = 1.5707964f;
         if (!((Entity)turtleEntity).isInsideWater() && ((TurtleEntity)turtleEntity).onGround) {
-            float l = ((TurtleEntity)turtleEntity).isDiggingSand() ? 4.0f : 1.0f;
+            l = ((TurtleEntity)turtleEntity).isDiggingSand() ? 4.0f : 1.0f;
             float m = ((TurtleEntity)turtleEntity).isDiggingSand() ? 2.0f : 1.0f;
             float n = 5.0f;
             this.leg3.yaw = MathHelper.cos(l * f * 5.0f + (float)Math.PI) * 8.0f * g * m;
@@ -106,16 +79,14 @@ extends QuadrupedEntityModel<T> {
             this.leg2.yaw = MathHelper.cos(f * 5.0f) * 3.0f * g;
             this.leg2.pitch = 0.0f;
         }
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17125((TurtleEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17124((TurtleEntity)entity, f, g, h, i, j, k);
+        l = ((TurtleEntity)turtleEntity).hasEgg() ? -1.28f : 0.0f;
+        this.head.rotationPointY = l;
+        this.body.rotationPointY = l;
+        this.leg1.rotationPointY = l;
+        this.leg2.rotationPointY = l;
+        this.leg3.rotationPointY = l;
+        this.leg4.rotationPointY = l;
+        this.field_3594.visible = ((TurtleEntity)turtleEntity).hasEgg();
     }
 }
 

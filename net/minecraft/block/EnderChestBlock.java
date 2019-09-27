@@ -60,12 +60,6 @@ implements Waterloggable {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
-    public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-        return true;
-    }
-
-    @Override
     public BlockRenderType getRenderType(BlockState blockState) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }

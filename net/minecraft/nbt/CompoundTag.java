@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,8 @@ import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagReader;
+import net.minecraft.nbt.TagReaders;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashException;
@@ -46,7 +49,49 @@ public class CompoundTag
 implements Tag {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern PATTERN = Pattern.compile("[A-Za-z0-9._+-]+");
-    private final Map<String, Tag> tags = Maps.newHashMap();
+    public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>(){
+
+        public CompoundTag method_23240(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            byte b;
+            positionTracker.add(384L);
+            if (i > 512) {
+                throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
+            }
+            HashMap<String, Tag> map = Maps.newHashMap();
+            while ((b = CompoundTag.readByte(dataInput, positionTracker)) != 0) {
+                String string = CompoundTag.readString(dataInput, positionTracker);
+                positionTracker.add(224 + 16 * string.length());
+                Tag tag = CompoundTag.read(TagReaders.of(b), string, dataInput, i + 1, positionTracker);
+                if (map.put(string, tag) == null) continue;
+                positionTracker.add(288L);
+            }
+            return new CompoundTag(map);
+        }
+
+        @Override
+        public String getCrashReportName() {
+            return "COMPOUND";
+        }
+
+        @Override
+        public String getCommandFeedbackName() {
+            return "TAG_Compound";
+        }
+
+        @Override
+        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            return this.method_23240(dataInput, i, positionTracker);
+        }
+    };
+    private final Map<String, Tag> tags;
+
+    private CompoundTag(Map<String, Tag> map) {
+        this.tags = map;
+    }
+
+    public CompoundTag() {
+        this(Maps.newHashMap());
+    }
 
     @Override
     public void write(DataOutput dataOutput) throws IOException {
@@ -57,23 +102,6 @@ implements Tag {
         dataOutput.writeByte(0);
     }
 
-    @Override
-    public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-        byte b;
-        positionTracker.add(384L);
-        if (i > 512) {
-            throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
-        }
-        this.tags.clear();
-        while ((b = CompoundTag.readByte(dataInput, positionTracker)) != 0) {
-            String string = CompoundTag.readString(dataInput, positionTracker);
-            positionTracker.add(224 + 16 * string.length());
-            Tag tag = CompoundTag.createTag(b, string, dataInput, i + 1, positionTracker);
-            if (this.tags.put(string, tag) == null) continue;
-            positionTracker.add(288L);
-        }
-    }
-
     public Set<String> getKeys() {
         return this.tags.keySet();
     }
@@ -81,6 +109,10 @@ implements Tag {
     @Override
     public byte getType() {
         return 10;
+    }
+
+    public TagReader<CompoundTag> getReader() {
+        return READER;
     }
 
     public int getSize() {
@@ -93,19 +125,19 @@ implements Tag {
     }
 
     public void putByte(String string, byte b) {
-        this.tags.put(string, new ByteTag(b));
+        this.tags.put(string, ByteTag.of(b));
     }
 
     public void putShort(String string, short s) {
-        this.tags.put(string, new ShortTag(s));
+        this.tags.put(string, ShortTag.of(s));
     }
 
     public void putInt(String string, int i) {
-        this.tags.put(string, new IntTag(i));
+        this.tags.put(string, IntTag.of(i));
     }
 
     public void putLong(String string, long l) {
-        this.tags.put(string, new LongTag(l));
+        this.tags.put(string, LongTag.of(l));
     }
 
     public void putUuid(String string, UUID uUID) {
@@ -118,7 +150,7 @@ implements Tag {
     }
 
     public boolean containsUuid(String string) {
-        return this.containsKey(string + "Most", 99) && this.containsKey(string + "Least", 99);
+        return this.contains(string + "Most", 99) && this.contains(string + "Least", 99);
     }
 
     public void removeUuid(String string) {
@@ -127,15 +159,15 @@ implements Tag {
     }
 
     public void putFloat(String string, float f) {
-        this.tags.put(string, new FloatTag(f));
+        this.tags.put(string, FloatTag.of(f));
     }
 
     public void putDouble(String string, double d) {
-        this.tags.put(string, new DoubleTag(d));
+        this.tags.put(string, DoubleTag.of(d));
     }
 
     public void putString(String string, String string2) {
-        this.tags.put(string, new StringTag(string2));
+        this.tags.put(string, StringTag.of(string2));
     }
 
     public void putByteArray(String string, byte[] bs) {
@@ -159,11 +191,11 @@ implements Tag {
     }
 
     public void putBoolean(String string, boolean bl) {
-        this.putByte(string, bl ? (byte)1 : 0);
+        this.tags.put(string, ByteTag.of(bl));
     }
 
     @Nullable
-    public Tag getTag(String string) {
+    public Tag get(String string) {
         return this.tags.get(string);
     }
 
@@ -175,11 +207,11 @@ implements Tag {
         return tag.getType();
     }
 
-    public boolean containsKey(String string) {
+    public boolean contains(String string) {
         return this.tags.containsKey(string);
     }
 
-    public boolean containsKey(String string, int i) {
+    public boolean contains(String string, int i) {
         byte j = this.getType(string);
         if (j == i) {
             return true;
@@ -192,7 +224,7 @@ implements Tag {
 
     public byte getByte(String string) {
         try {
-            if (this.containsKey(string, 99)) {
+            if (this.contains(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getByte();
             }
         } catch (ClassCastException classCastException) {
@@ -203,7 +235,7 @@ implements Tag {
 
     public short getShort(String string) {
         try {
-            if (this.containsKey(string, 99)) {
+            if (this.contains(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getShort();
             }
         } catch (ClassCastException classCastException) {
@@ -214,7 +246,7 @@ implements Tag {
 
     public int getInt(String string) {
         try {
-            if (this.containsKey(string, 99)) {
+            if (this.contains(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getInt();
             }
         } catch (ClassCastException classCastException) {
@@ -225,7 +257,7 @@ implements Tag {
 
     public long getLong(String string) {
         try {
-            if (this.containsKey(string, 99)) {
+            if (this.contains(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getLong();
             }
         } catch (ClassCastException classCastException) {
@@ -236,7 +268,7 @@ implements Tag {
 
     public float getFloat(String string) {
         try {
-            if (this.containsKey(string, 99)) {
+            if (this.contains(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getFloat();
             }
         } catch (ClassCastException classCastException) {
@@ -247,7 +279,7 @@ implements Tag {
 
     public double getDouble(String string) {
         try {
-            if (this.containsKey(string, 99)) {
+            if (this.contains(string, 99)) {
                 return ((AbstractNumberTag)this.tags.get(string)).getDouble();
             }
         } catch (ClassCastException classCastException) {
@@ -258,7 +290,7 @@ implements Tag {
 
     public String getString(String string) {
         try {
-            if (this.containsKey(string, 8)) {
+            if (this.contains(string, 8)) {
                 return this.tags.get(string).asString();
             }
         } catch (ClassCastException classCastException) {
@@ -269,44 +301,44 @@ implements Tag {
 
     public byte[] getByteArray(String string) {
         try {
-            if (this.containsKey(string, 7)) {
+            if (this.contains(string, 7)) {
                 return ((ByteArrayTag)this.tags.get(string)).getByteArray();
             }
         } catch (ClassCastException classCastException) {
-            throw new CrashException(this.createCrashReport(string, 7, classCastException));
+            throw new CrashException(this.createCrashReport(string, ByteArrayTag.READER, classCastException));
         }
         return new byte[0];
     }
 
     public int[] getIntArray(String string) {
         try {
-            if (this.containsKey(string, 11)) {
+            if (this.contains(string, 11)) {
                 return ((IntArrayTag)this.tags.get(string)).getIntArray();
             }
         } catch (ClassCastException classCastException) {
-            throw new CrashException(this.createCrashReport(string, 11, classCastException));
+            throw new CrashException(this.createCrashReport(string, IntArrayTag.READER, classCastException));
         }
         return new int[0];
     }
 
     public long[] getLongArray(String string) {
         try {
-            if (this.containsKey(string, 12)) {
+            if (this.contains(string, 12)) {
                 return ((LongArrayTag)this.tags.get(string)).getLongArray();
             }
         } catch (ClassCastException classCastException) {
-            throw new CrashException(this.createCrashReport(string, 12, classCastException));
+            throw new CrashException(this.createCrashReport(string, LongArrayTag.READER, classCastException));
         }
         return new long[0];
     }
 
     public CompoundTag getCompound(String string) {
         try {
-            if (this.containsKey(string, 10)) {
+            if (this.contains(string, 10)) {
                 return (CompoundTag)this.tags.get(string);
             }
         } catch (ClassCastException classCastException) {
-            throw new CrashException(this.createCrashReport(string, 10, classCastException));
+            throw new CrashException(this.createCrashReport(string, READER, classCastException));
         }
         return new CompoundTag();
     }
@@ -315,13 +347,13 @@ implements Tag {
         try {
             if (this.getType(string) == 9) {
                 ListTag listTag = (ListTag)this.tags.get(string);
-                if (listTag.isEmpty() || listTag.getListType() == i) {
+                if (listTag.isEmpty() || listTag.getElementType() == i) {
                     return listTag;
                 }
                 return new ListTag();
             }
         } catch (ClassCastException classCastException) {
-            throw new CrashException(this.createCrashReport(string, 9, classCastException));
+            throw new CrashException(this.createCrashReport(string, ListTag.READER, classCastException));
         }
         return new ListTag();
     }
@@ -356,21 +388,18 @@ implements Tag {
         return this.tags.isEmpty();
     }
 
-    private CrashReport createCrashReport(String string, int i, ClassCastException classCastException) {
+    private CrashReport createCrashReport(String string, TagReader<?> tagReader, ClassCastException classCastException) {
         CrashReport crashReport = CrashReport.create(classCastException, "Reading NBT data");
         CrashReportSection crashReportSection = crashReport.addElement("Corrupt NBT tag", 1);
-        crashReportSection.add("Tag type found", () -> TYPES[this.tags.get(string).getType()]);
-        crashReportSection.add("Tag type expected", () -> TYPES[i]);
+        crashReportSection.add("Tag type found", () -> this.tags.get(string).getReader().getCrashReportName());
+        crashReportSection.add("Tag type expected", tagReader::getCrashReportName);
         crashReportSection.add("Tag name", string);
         return crashReport;
     }
 
     public CompoundTag method_10553() {
-        CompoundTag compoundTag = new CompoundTag();
-        for (String string : this.tags.keySet()) {
-            compoundTag.put(string, this.tags.get(string).copy());
-        }
-        return compoundTag;
+        HashMap<String, Tag> map = Maps.newHashMap(Maps.transformValues(this.tags, Tag::copy));
+        return new CompoundTag(map);
     }
 
     public boolean equals(Object object) {
@@ -401,25 +430,23 @@ implements Tag {
         return dataInput.readUTF();
     }
 
-    static Tag createTag(byte b, String string, DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-        Tag tag = Tag.createTag(b);
+    private static Tag read(TagReader<?> tagReader, String string, DataInput dataInput, int i, PositionTracker positionTracker) {
         try {
-            tag.read(dataInput, i, positionTracker);
+            return tagReader.read(dataInput, i, positionTracker);
         } catch (IOException iOException) {
             CrashReport crashReport = CrashReport.create(iOException, "Loading NBT data");
             CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
             crashReportSection.add("Tag name", string);
-            crashReportSection.add("Tag type", b);
+            crashReportSection.add("Tag type", tagReader.getCrashReportName());
             throw new CrashException(crashReport);
         }
-        return tag;
     }
 
     public CompoundTag copyFrom(CompoundTag compoundTag) {
         for (String string : compoundTag.tags.keySet()) {
             Tag tag = compoundTag.tags.get(string);
             if (tag.getType() == 10) {
-                if (this.containsKey(string, 10)) {
+                if (this.contains(string, 10)) {
                     CompoundTag compoundTag2 = this.getCompound(string);
                     compoundTag2.copyFrom((CompoundTag)tag);
                     continue;

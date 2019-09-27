@@ -24,6 +24,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
@@ -94,7 +95,7 @@ extends DrawableHelper {
         this.renderRightText();
         RenderSystem.popMatrix();
         if (this.client.options.debugTpsEnabled) {
-            int i = this.client.method_22683().getScaledWidth();
+            int i = this.client.getWindow().getScaledWidth();
             this.drawMetricsData(this.client.getMetricsData(), 0, i / 2, true);
             IntegratedServer integratedServer = this.client.getServer();
             if (integratedServer != null) {
@@ -129,7 +130,7 @@ extends DrawableHelper {
             if (Strings.isNullOrEmpty(string)) continue;
             int j = this.fontRenderer.fontHeight;
             int k = this.fontRenderer.getStringWidth(string);
-            int l = this.client.method_22683().getScaledWidth() - 2 - k;
+            int l = this.client.getWindow().getScaledWidth() - 2 - k;
             int m = 2 + j * i;
             DebugHud.fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
             this.fontRenderer.draw(string, l, m, 0xE0E0E0);
@@ -137,7 +138,6 @@ extends DrawableHelper {
     }
 
     protected List<String> getLeftText() {
-        BlockPos blockPos2;
         World world;
         String string2;
         IntegratedServer integratedServer = this.client.getServer();
@@ -237,15 +237,16 @@ extends DrawableHelper {
         } else {
             list.add("Outside of world...");
         }
-        if (this.client.gameRenderer != null && this.client.gameRenderer.isShaderEnabled()) {
-            list.add("Shader: " + this.client.gameRenderer.getShader().getName());
+        ShaderEffect shaderEffect = this.client.gameRenderer.getShader();
+        if (shaderEffect != null) {
+            list.add("Shader: " + shaderEffect.getName());
         }
         if (this.blockHit.getType() == HitResult.Type.BLOCK) {
-            blockPos2 = ((BlockHitResult)this.blockHit).getBlockPos();
+            BlockPos blockPos2 = ((BlockHitResult)this.blockHit).getBlockPos();
             list.add(String.format("Looking at block: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
         }
         if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
-            blockPos2 = ((BlockHitResult)this.fluidHit).getBlockPos();
+            BlockPos blockPos2 = ((BlockHitResult)this.fluidHit).getBlockPos();
             list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
         }
         list.add(this.client.getSoundManager().getDebugString());
@@ -295,7 +296,7 @@ extends DrawableHelper {
         long m = Runtime.getRuntime().totalMemory();
         long n = Runtime.getRuntime().freeMemory();
         long o = m - n;
-        ArrayList<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, DebugHud.toMiB(o), DebugHud.toMiB(l)), String.format("Allocated: % 2d%% %03dMB", m * 100L / l, DebugHud.toMiB(m)), "", String.format("CPU: %s", GlDebugInfo.getCpuInfo()), "", String.format("Display: %dx%d (%s)", MinecraftClient.getInstance().method_22683().getFramebufferWidth(), MinecraftClient.getInstance().method_22683().getFramebufferHeight(), GlDebugInfo.getVendor()), GlDebugInfo.getRenderer(), GlDebugInfo.getVersion());
+        ArrayList<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, DebugHud.toMiB(o), DebugHud.toMiB(l)), String.format("Allocated: % 2d%% %03dMB", m * 100L / l, DebugHud.toMiB(m)), "", String.format("CPU: %s", GlDebugInfo.getCpuInfo()), "", String.format("Display: %dx%d (%s)", MinecraftClient.getInstance().getWindow().getFramebufferWidth(), MinecraftClient.getInstance().getWindow().getFramebufferHeight(), GlDebugInfo.getVendor()), GlDebugInfo.getRenderer(), GlDebugInfo.getVersion());
         if (this.client.hasReducedDebugInfo()) {
             return list;
         }
@@ -366,7 +367,7 @@ extends DrawableHelper {
             s = Math.max(s, u);
             q += (long)u;
         }
-        t = this.client.method_22683().getScaledHeight();
+        t = this.client.getWindow().getScaledHeight();
         DebugHud.fill(i, t - 60, i + p, t, -1873784752);
         while (m != l) {
             u = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);

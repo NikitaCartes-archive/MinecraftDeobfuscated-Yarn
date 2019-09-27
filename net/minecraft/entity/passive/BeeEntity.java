@@ -393,7 +393,7 @@ implements Flutterer {
 
             @Override
             public boolean isValidPosition(BlockPos blockPos) {
-                return !this.world.getBlockState(blockPos.down()).isAir();
+                return !this.world.getBlockState(blockPos.method_10074()).isAir();
             }
         };
         birdNavigation.setCanPathThroughDoors(false);

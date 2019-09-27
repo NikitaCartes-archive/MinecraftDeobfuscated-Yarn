@@ -49,7 +49,7 @@ extends ConditionalLootFunction {
         if (blockState != null) {
             CompoundTag compoundTag2;
             CompoundTag compoundTag = itemStack.getOrCreateTag();
-            if (compoundTag.containsKey("BlockStateTag", 10)) {
+            if (compoundTag.contains("BlockStateTag", 10)) {
                 compoundTag2 = compoundTag.getCompound("BlockStateTag");
             } else {
                 compoundTag2 = new CompoundTag();

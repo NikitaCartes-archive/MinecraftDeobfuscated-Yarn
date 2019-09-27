@@ -42,7 +42,7 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         BlockState blockState = iWorld.getBlockState(blockPos2);
         if (blockState.getBlock() == Blocks.GRASS_PATH) {
             return random.nextBoolean();

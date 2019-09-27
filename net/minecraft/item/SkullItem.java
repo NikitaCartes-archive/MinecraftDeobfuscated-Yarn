@@ -28,9 +28,9 @@ extends WallStandingBlockItem {
             CompoundTag compoundTag2;
             String string = null;
             CompoundTag compoundTag = itemStack.getTag();
-            if (compoundTag.containsKey("SkullOwner", 8)) {
+            if (compoundTag.contains("SkullOwner", 8)) {
                 string = compoundTag.getString("SkullOwner");
-            } else if (compoundTag.containsKey("SkullOwner", 10) && (compoundTag2 = compoundTag.getCompound("SkullOwner")).containsKey("Name", 8)) {
+            } else if (compoundTag.contains("SkullOwner", 10) && (compoundTag2 = compoundTag.getCompound("SkullOwner")).contains("Name", 8)) {
                 string = compoundTag2.getString("Name");
             }
             if (string != null) {
@@ -43,7 +43,7 @@ extends WallStandingBlockItem {
     @Override
     public boolean postProcessTag(CompoundTag compoundTag) {
         super.postProcessTag(compoundTag);
-        if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
+        if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
             GameProfile gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
             gameProfile = SkullBlockEntity.loadProperties(gameProfile);
             compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));

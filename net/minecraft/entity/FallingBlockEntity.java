@@ -108,9 +108,6 @@ extends Entity {
             this.remove();
             return;
         }
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
         Block block = this.block.getBlock();
         if (this.timeFalling++ == 0) {
             blockPos = new BlockPos(this);
@@ -155,7 +152,7 @@ extends Entity {
                                 if (this.blockEntityData != null && block instanceof BlockEntityProvider && (blockEntity = this.world.getBlockEntity(blockPos)) != null) {
                                     CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
                                     for (String string : this.blockEntityData.getKeys()) {
-                                        Tag tag = this.blockEntityData.getTag(string);
+                                        Tag tag = this.blockEntityData.get(string);
                                         if ("x".equals(string) || "y".equals(string) || "z".equals(string)) continue;
                                         compoundTag.put(string, tag.copy());
                                     }
@@ -220,17 +217,17 @@ extends Entity {
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
         this.block = NbtHelper.toBlockState(compoundTag.getCompound("BlockState"));
         this.timeFalling = compoundTag.getInt("Time");
-        if (compoundTag.containsKey("HurtEntities", 99)) {
+        if (compoundTag.contains("HurtEntities", 99)) {
             this.hurtEntities = compoundTag.getBoolean("HurtEntities");
             this.fallHurtAmount = compoundTag.getFloat("FallHurtAmount");
             this.fallHurtMax = compoundTag.getInt("FallHurtMax");
         } else if (this.block.matches(BlockTags.ANVIL)) {
             this.hurtEntities = true;
         }
-        if (compoundTag.containsKey("DropItem", 99)) {
+        if (compoundTag.contains("DropItem", 99)) {
             this.dropItem = compoundTag.getBoolean("DropItem");
         }
-        if (compoundTag.containsKey("TileEntityData", 10)) {
+        if (compoundTag.contains("TileEntityData", 10)) {
             this.blockEntityData = compoundTag.getCompound("TileEntityData");
         }
         if (this.block.isAir()) {

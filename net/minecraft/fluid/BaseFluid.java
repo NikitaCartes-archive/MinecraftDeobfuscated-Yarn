@@ -71,7 +71,7 @@ extends Fluid {
                 if (f == 0.0f) {
                     BlockPos blockPos2;
                     FluidState fluidState3;
-                    if (!blockView.getBlockState(pooledMutable).getMaterial().blocksMovement() && this.method_15748(fluidState3 = blockView.getFluidState(blockPos2 = pooledMutable.down())) && (f = fluidState3.method_20785()) > 0.0f) {
+                    if (!blockView.getBlockState(pooledMutable).getMaterial().blocksMovement() && this.method_15748(fluidState3 = blockView.getFluidState(blockPos2 = pooledMutable.method_10074())) && (f = fluidState3.method_20785()) > 0.0f) {
                         g = fluidState.method_20785() - (f - 0.8888889f);
                     }
                 } else if (f > 0.0f) {
@@ -119,7 +119,7 @@ extends Fluid {
             return;
         }
         BlockState blockState = iWorld.getBlockState(blockPos);
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         BlockState blockState2 = iWorld.getBlockState(blockPos2);
         FluidState fluidState2 = this.getUpdatedState(iWorld, blockPos2, blockState2);
         if (this.method_15738(iWorld, blockPos, blockState, Direction.DOWN, blockPos2, blockState2, iWorld.getFluidState(blockPos2), fluidState2.getFluid())) {
@@ -168,7 +168,7 @@ extends Fluid {
             i = Math.max(i, fluidState.getLevel());
         }
         if (this.isInfinite() && j >= 2) {
-            BlockState blockState3 = arg.getBlockState(blockPos.down());
+            BlockState blockState3 = arg.getBlockState(blockPos.method_10074());
             FluidState fluidState2 = blockState3.getFluidState();
             if (blockState3.getMaterial().isSolid() || this.method_15752(fluidState2)) {
                 return this.getStill(false);
@@ -257,7 +257,7 @@ extends Fluid {
             FluidState fluidState = (FluidState)pair.getSecond();
             if (!this.method_15746(arg, this.getFlowing(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) continue;
             boolean bl = short2BooleanMap.computeIfAbsent(s, i -> {
-                BlockPos blockPos2 = blockPos3.down();
+                BlockPos blockPos2 = blockPos3.method_10074();
                 BlockState blockState2 = arg.getBlockState(blockPos2);
                 return this.method_15736(arg, this.getFlowing(), blockPos3, blockState2, blockPos2, blockState2);
             });
@@ -317,7 +317,7 @@ extends Fluid {
             FluidState fluidState = (FluidState)pair.getSecond();
             FluidState fluidState2 = this.getUpdatedState(arg, blockPos2, blockState2);
             if (!this.method_15746(arg, fluidState2.getFluid(), blockPos, blockState, direction, blockPos2, blockState2, fluidState)) continue;
-            BlockPos blockPos3 = blockPos2.down();
+            BlockPos blockPos3 = blockPos2.method_10074();
             boolean bl = short2BooleanMap.computeIfAbsent(s, i -> {
                 BlockState blockState2 = arg.getBlockState(blockPos3);
                 return this.method_15736(arg, this.getFlowing(), blockPos2, blockState2, blockPos3, blockState2);

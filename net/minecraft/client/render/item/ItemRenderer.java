@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render.item;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,6 +12,12 @@ import java.util.Random;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4589;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
@@ -24,10 +31,10 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,13 +42,11 @@ import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +54,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ItemRenderer
 implements SynchronousResourceReloadListener {
-    public static final Identifier ENCHANTMENT_GLINT_TEX = new Identifier("textures/misc/enchanted_item_glint.png");
+    public static final Identifier field_21010 = new Identifier("textures/misc/enchanted_item_glint.png");
     private static final Set<Item> WITHOUT_MODELS = Sets.newHashSet(Items.AIR);
     public float zOffset;
     private final ItemModels models;
@@ -70,129 +75,61 @@ implements SynchronousResourceReloadListener {
         return this.models;
     }
 
-    private void renderItemModel(BakedModel bakedModel, ItemStack itemStack) {
-        this.renderModel(bakedModel, -1, itemStack);
-    }
-
-    private void renderModelWithTint(BakedModel bakedModel, int i) {
-        this.renderModel(bakedModel, i, ItemStack.EMPTY);
-    }
-
-    private void renderModel(BakedModel bakedModel, int i, ItemStack itemStack) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
+    private void method_23182(BakedModel bakedModel, ItemStack itemStack, int i, class_4587 arg, class_4588 arg2) {
         Random random = new Random();
         long l = 42L;
         for (Direction direction : Direction.values()) {
             random.setSeed(42L);
-            this.renderQuads(bufferBuilder, bakedModel.getQuads(null, direction, random), i, itemStack);
+            this.method_23180(arg, arg2, bakedModel.getQuads(null, direction, random), itemStack, i);
         }
         random.setSeed(42L);
-        this.renderQuads(bufferBuilder, bakedModel.getQuads(null, null, random), i, itemStack);
-        tessellator.draw();
+        this.method_23180(arg, arg2, bakedModel.getQuads(null, null, random), itemStack, i);
     }
 
-    public void renderItemAndGlow(ItemStack itemStack, BakedModel bakedModel) {
+    public void method_23179(ItemStack itemStack, ModelTransformation.Type type, boolean bl, class_4587 arg, class_4597 arg2, int i, BakedModel bakedModel) {
         if (itemStack.isEmpty()) {
             return;
         }
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(-0.5f, -0.5f, -0.5f);
-        if (bakedModel.isBuiltin()) {
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.enableRescaleNormal();
-            ItemDynamicRenderer.INSTANCE.render(itemStack);
+        arg.method_22903();
+        if (itemStack.getItem() == Items.TRIDENT && type == ModelTransformation.Type.GUI) {
+            bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
+        }
+        bakedModel.getTransformation().getTransformation(type).method_23075(bl, arg);
+        arg.method_22904(-0.5, -0.5, -0.5);
+        if (bakedModel.isBuiltin() || itemStack.getItem() == Items.TRIDENT && type != ModelTransformation.Type.GUI) {
+            ItemDynamicRenderer.INSTANCE.render(itemStack, arg, arg2, i);
         } else {
-            this.renderItemModel(bakedModel, itemStack);
-            if (itemStack.hasEnchantmentGlint()) {
-                ItemRenderer.renderGlint(this.textureManager, () -> this.renderModelWithTint(bakedModel, -8372020), 8);
-            }
+            class_4588 lv = ItemRenderer.method_23181(arg2, SpriteAtlasTexture.BLOCK_ATLAS_TEX, true, itemStack.hasEnchantmentGlint(), bakedModel.hasDepthInGui());
+            class_4608.method_23211(lv);
+            this.method_23182(bakedModel, itemStack, i, arg, lv);
+            lv.method_22923();
         }
-        RenderSystem.popMatrix();
+        arg.method_22909();
     }
 
-    public static void renderGlint(TextureManager textureManager, Runnable runnable, int i) {
-        RenderSystem.depthMask(false);
-        RenderSystem.depthFunc(514);
-        RenderSystem.disableLighting();
-        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
-        textureManager.bindTexture(ENCHANTMENT_GLINT_TEX);
-        RenderSystem.matrixMode(5890);
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(i, i, i);
-        float f = (float)(SystemUtil.getMeasuringTimeMs() % 3000L) / 3000.0f / (float)i;
-        RenderSystem.translatef(f, 0.0f, 0.0f);
-        RenderSystem.rotatef(-50.0f, 0.0f, 0.0f, 1.0f);
-        runnable.run();
-        RenderSystem.popMatrix();
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(i, i, i);
-        float g = (float)(SystemUtil.getMeasuringTimeMs() % 4873L) / 4873.0f / (float)i;
-        RenderSystem.translatef(-g, 0.0f, 0.0f);
-        RenderSystem.rotatef(10.0f, 0.0f, 0.0f, 1.0f);
-        runnable.run();
-        RenderSystem.popMatrix();
-        RenderSystem.matrixMode(5888);
-        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.enableLighting();
-        RenderSystem.depthFunc(515);
-        RenderSystem.depthMask(true);
-        textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    public static class_4588 method_23181(class_4597 arg, Identifier identifier, boolean bl, boolean bl2, boolean bl3) {
+        if (bl2) {
+            return new class_4589(ImmutableList.of(arg.getBuffer(bl ? BlockRenderLayer.GLINT : BlockRenderLayer.ENTITY_GLINT), arg.getBuffer(BlockRenderLayer.method_23017(identifier))));
+        }
+        return arg.getBuffer(BlockRenderLayer.method_23017(identifier));
     }
 
-    private void postNormalQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad) {
-        Vec3i vec3i = bakedQuad.getFace().getVector();
-        bufferBuilder.postNormal(vec3i.getX(), vec3i.getY(), vec3i.getZ());
-    }
-
-    private void renderQuad(BufferBuilder bufferBuilder, BakedQuad bakedQuad, int i) {
-        bufferBuilder.putVertexData(bakedQuad.getVertexData());
-        bufferBuilder.brightness(0xF000F0, 0xF000F0, 0xF000F0, 0xF000F0);
-        bufferBuilder.setQuadColor(i);
-        this.postNormalQuad(bufferBuilder, bakedQuad);
-    }
-
-    private void renderQuads(BufferBuilder bufferBuilder, List<BakedQuad> list, int i, ItemStack itemStack) {
-        boolean bl = i == -1 && !itemStack.isEmpty();
-        int k = list.size();
-        for (int j = 0; j < k; ++j) {
-            BakedQuad bakedQuad = list.get(j);
-            int l = i;
+    private void method_23180(class_4587 arg, class_4588 arg2, List<BakedQuad> list, ItemStack itemStack, int i) {
+        boolean bl = !itemStack.isEmpty();
+        Matrix4f matrix4f = arg.method_22910();
+        for (BakedQuad bakedQuad : list) {
+            int j = -1;
             if (bl && bakedQuad.hasColor()) {
-                l = this.colorMap.getColorMultiplier(itemStack, bakedQuad.getColorIndex());
-                l |= 0xFF000000;
+                j = this.colorMap.getColorMultiplier(itemStack, bakedQuad.getColorIndex());
             }
-            this.renderQuad(bufferBuilder, bakedQuad, l);
+            float f = (float)(j >> 16 & 0xFF) / 255.0f;
+            float g = (float)(j >> 8 & 0xFF) / 255.0f;
+            float h = (float)(j & 0xFF) / 255.0f;
+            arg2.method_22919(matrix4f, bakedQuad, f, g, h, i);
         }
     }
 
-    public boolean hasDepthInGui(ItemStack itemStack) {
-        BakedModel bakedModel = this.models.getModel(itemStack);
-        if (bakedModel == null) {
-            return false;
-        }
-        return bakedModel.hasDepthInGui();
-    }
-
-    public void renderItem(ItemStack itemStack, ModelTransformation.Type type) {
-        if (itemStack.isEmpty()) {
-            return;
-        }
-        BakedModel bakedModel = this.getModel(itemStack);
-        this.renderItem(itemStack, bakedModel, type, false);
-    }
-
-    public BakedModel getModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
-        BakedModel bakedModel = this.models.getModel(itemStack);
-        Item item = itemStack.getItem();
-        if (!item.hasPropertyGetters()) {
-            return bakedModel;
-        }
-        return this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
-    }
-
-    public BakedModel getHeldItemModel(ItemStack itemStack, World world, LivingEntity livingEntity) {
+    public BakedModel getHeldItemModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
         Item item = itemStack.getItem();
         BakedModel bakedModel = item == Items.TRIDENT ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : this.models.getModel(itemStack);
         if (!item.hasPropertyGetters()) {
@@ -201,55 +138,25 @@ implements SynchronousResourceReloadListener {
         return this.getOverriddenModel(bakedModel, itemStack, world, livingEntity);
     }
 
-    public BakedModel getModel(ItemStack itemStack) {
-        return this.getModel(itemStack, null, null);
-    }
-
     private BakedModel getOverriddenModel(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
         BakedModel bakedModel2 = bakedModel.getItemPropertyOverrides().apply(bakedModel, itemStack, world, livingEntity);
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
     }
 
-    public void renderHeldItem(ItemStack itemStack, LivingEntity livingEntity, ModelTransformation.Type type, boolean bl) {
-        if (itemStack.isEmpty() || livingEntity == null) {
-            return;
-        }
-        BakedModel bakedModel = this.getHeldItemModel(itemStack, livingEntity.world, livingEntity);
-        this.renderItem(itemStack, bakedModel, type, bl);
+    public void method_23178(ItemStack itemStack, ModelTransformation.Type type, int i, class_4587 arg, class_4597 arg2) {
+        this.method_23177(null, itemStack, type, false, arg, arg2, null, i);
     }
 
-    protected void renderItem(ItemStack itemStack, BakedModel bakedModel, ModelTransformation.Type type, boolean bl) {
+    public void method_23177(@Nullable LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl, class_4587 arg, class_4597 arg2, @Nullable World world, int i) {
         if (itemStack.isEmpty()) {
             return;
         }
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).pushFilter(false, false);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.defaultAlphaFunc();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.pushMatrix();
-        ModelTransformation modelTransformation = bakedModel.getTransformation();
-        ModelTransformation.applyGl(modelTransformation.getTransformation(type), bl);
-        if (this.areFacesFlippedBy(modelTransformation.getTransformation(type))) {
-            RenderSystem.cullFace(GlStateManager.FaceSides.FRONT);
-        }
-        this.renderItemAndGlow(itemStack, bakedModel);
-        RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
-        RenderSystem.popMatrix();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.disableBlend();
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
-    }
-
-    private boolean areFacesFlippedBy(Transformation transformation) {
-        return transformation.scale.getX() < 0.0f ^ transformation.scale.getY() < 0.0f ^ transformation.scale.getZ() < 0.0f;
+        BakedModel bakedModel = this.getHeldItemModel(itemStack, world, livingEntity);
+        this.method_23179(itemStack, type, bl, arg, arg2, i, bakedModel);
     }
 
     public void renderGuiItemIcon(ItemStack itemStack, int i, int j) {
-        this.renderGuiItemModel(itemStack, i, j, this.getModel(itemStack));
+        this.renderGuiItemModel(itemStack, i, j, this.getHeldItemModel(itemStack, null, null));
     }
 
     protected void renderGuiItemModel(ItemStack itemStack, int i, int j, BakedModel bakedModel) {
@@ -262,27 +169,19 @@ implements SynchronousResourceReloadListener {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.prepareGuiItemRender(i, j, bakedModel.hasDepthInGui());
-        bakedModel.getTransformation().applyGl(ModelTransformation.Type.GUI);
-        this.renderItemAndGlow(itemStack, bakedModel);
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.disableLighting();
-        RenderSystem.popMatrix();
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
-    }
-
-    private void prepareGuiItemRender(int i, int j, boolean bl) {
         RenderSystem.translatef(i, j, 100.0f + this.zOffset);
         RenderSystem.translatef(8.0f, 8.0f, 0.0f);
         RenderSystem.scalef(1.0f, -1.0f, 1.0f);
         RenderSystem.scalef(16.0f, 16.0f, 16.0f);
-        if (bl) {
-            RenderSystem.enableLighting();
-        } else {
-            RenderSystem.disableLighting();
-        }
+        class_4587 lv = new class_4587();
+        class_4597.class_4598 lv2 = MinecraftClient.getInstance().method_22940().method_23000();
+        this.method_23179(itemStack, ModelTransformation.Type.GUI, false, lv, lv2, 0xF000F0, bakedModel);
+        lv2.method_22993();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableRescaleNormal();
+        RenderSystem.popMatrix();
+        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).popFilter();
     }
 
     public void renderGuiItem(ItemStack itemStack, int i, int j) {
@@ -295,7 +194,7 @@ implements SynchronousResourceReloadListener {
         }
         this.zOffset += 50.0f;
         try {
-            this.renderGuiItemModel(itemStack, i, j, this.getModel(itemStack, null, livingEntity));
+            this.renderGuiItemModel(itemStack, i, j, this.getHeldItemModel(itemStack, null, livingEntity));
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
             CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
@@ -320,16 +219,13 @@ implements SynchronousResourceReloadListener {
         }
         if (itemStack.getCount() != 1 || string != null) {
             String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
-            RenderSystem.disableLighting();
             RenderSystem.disableDepthTest();
             RenderSystem.disableBlend();
             textRenderer.drawWithShadow(string2, i + 19 - 2 - textRenderer.getStringWidth(string2), j + 6 + 3, 0xFFFFFF);
             RenderSystem.enableBlend();
-            RenderSystem.enableLighting();
             RenderSystem.enableDepthTest();
         }
         if (itemStack.isDamaged()) {
-            RenderSystem.disableLighting();
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
             RenderSystem.disableAlphaTest();
@@ -346,19 +242,16 @@ implements SynchronousResourceReloadListener {
             RenderSystem.enableBlend();
             RenderSystem.enableAlphaTest();
             RenderSystem.enableTexture();
-            RenderSystem.enableLighting();
             RenderSystem.enableDepthTest();
         }
         float f = m = (clientPlayerEntity = MinecraftClient.getInstance().player) == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(itemStack.getItem(), MinecraftClient.getInstance().getTickDelta());
         if (m > 0.0f) {
-            RenderSystem.disableLighting();
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
             Tessellator tessellator2 = Tessellator.getInstance();
             BufferBuilder bufferBuilder2 = tessellator2.getBufferBuilder();
             this.renderGuiQuad(bufferBuilder2, i, j + MathHelper.floor(16.0f * (1.0f - m)), 16, MathHelper.ceil(16.0f * m), 255, 255, 255, 127);
             RenderSystem.enableTexture();
-            RenderSystem.enableLighting();
             RenderSystem.enableDepthTest();
         }
     }

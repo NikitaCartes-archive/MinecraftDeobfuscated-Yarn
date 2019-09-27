@@ -47,7 +47,7 @@ extends Item {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         HitResult hitResult = BucketItem.rayTrace(world, playerEntity, this.fluid == Fluids.EMPTY ? RayTraceContext.FluidHandling.SOURCE_ONLY : RayTraceContext.FluidHandling.NONE);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.method_22430(itemStack);
+            return TypedActionResult.pass(itemStack);
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos3;
@@ -56,7 +56,7 @@ extends Item {
             Direction direction = blockHitResult.getSide();
             BlockPos blockPos2 = blockPos.offset(direction);
             if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos2, direction, itemStack)) {
-                return TypedActionResult.method_22431(itemStack);
+                return TypedActionResult.fail(itemStack);
             }
             if (this.fluid == Fluids.EMPTY) {
                 Fluid fluid;
@@ -68,9 +68,9 @@ extends Item {
                     if (!world.isClient) {
                         Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
                     }
-                    return TypedActionResult.method_22427(itemStack2);
+                    return TypedActionResult.successWithSwing(itemStack2);
                 }
-                return TypedActionResult.method_22431(itemStack);
+                return TypedActionResult.fail(itemStack);
             }
             BlockState blockState = world.getBlockState(blockPos);
             BlockPos blockPos4 = blockPos3 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER ? blockPos : blockPos2;
@@ -80,11 +80,11 @@ extends Item {
                     Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos3, itemStack);
                 }
                 playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-                return TypedActionResult.method_22427(this.getEmptiedStack(itemStack, playerEntity));
+                return TypedActionResult.successWithSwing(this.getEmptiedStack(itemStack, playerEntity));
             }
-            return TypedActionResult.method_22431(itemStack);
+            return TypedActionResult.fail(itemStack);
         }
-        return TypedActionResult.method_22430(itemStack);
+        return TypedActionResult.pass(itemStack);
     }
 
     protected ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {

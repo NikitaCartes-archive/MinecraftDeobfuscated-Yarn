@@ -117,7 +117,7 @@ extends BlockEntity {
         Block block;
         boolean bl2 = this.auto;
         this.auto = bl;
-        if (!bl2 && bl && !this.powered && this.world != null && this.getType() != Type.SEQUENCE && (block = this.getCachedState().getBlock()) instanceof CommandBlock) {
+        if (!bl2 && bl && !this.powered && this.world != null && this.getCommandBlockType() != Type.SEQUENCE && (block = this.getCachedState().getBlock()) instanceof CommandBlock) {
             this.updateConditionMet();
             this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
         }
@@ -145,7 +145,7 @@ extends BlockEntity {
         this.needsUpdatePacket = bl;
     }
 
-    public Type getType() {
+    public Type getCommandBlockType() {
         Block block = this.getCachedState().getBlock();
         if (block == Blocks.COMMAND_BLOCK) {
             return Type.REDSTONE;

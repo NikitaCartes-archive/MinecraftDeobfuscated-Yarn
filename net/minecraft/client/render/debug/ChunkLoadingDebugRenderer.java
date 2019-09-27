@@ -3,10 +3,25 @@
  */
 package net.minecraft.client.render.debug;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.world.ClientChunkManager;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ChunkLoadingDebugRenderer
@@ -14,9 +29,92 @@ implements DebugRenderer.Renderer {
     private final MinecraftClient client;
     private double lastUpdateTime = Double.MIN_VALUE;
     private final int field_4511 = 12;
+    @Nullable
+    private class_4605 field_20998;
 
     public ChunkLoadingDebugRenderer(MinecraftClient minecraftClient) {
         this.client = minecraftClient;
+    }
+
+    @Override
+    public void method_23109(long l) {
+        double d = SystemUtil.getMeasuringTimeNano();
+        if (d - this.lastUpdateTime > 3.0E9) {
+            this.lastUpdateTime = d;
+            IntegratedServer integratedServer = this.client.getServer();
+            this.field_20998 = integratedServer != null ? new class_4605(integratedServer) : null;
+        }
+        if (this.field_20998 != null) {
+            RenderSystem.disableFog();
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.lineWidth(2.0f);
+            RenderSystem.disableTexture();
+            RenderSystem.depthMask(false);
+            Map map = this.field_20998.field_21001.getNow(null);
+            double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
+            for (Map.Entry entry : this.field_20998.field_21000.entrySet()) {
+                ChunkPos chunkPos = (ChunkPos)entry.getKey();
+                String string = (String)entry.getValue();
+                if (map != null) {
+                    string = string + (String)map.get(chunkPos);
+                }
+                String[] strings = string.split("\n");
+                int i = 0;
+                for (String string2 : strings) {
+                    DebugRenderer.method_23106(string2, (chunkPos.x << 4) + 8, e + (double)i, (chunkPos.z << 4) + 8, -1, 0.15f);
+                    i -= 2;
+                }
+            }
+            RenderSystem.depthMask(true);
+            RenderSystem.enableTexture();
+            RenderSystem.disableBlend();
+            RenderSystem.enableFog();
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    final class class_4605 {
+        private final Map<ChunkPos, String> field_21000;
+        private final CompletableFuture<Map<ChunkPos, String>> field_21001;
+
+        private class_4605(IntegratedServer integratedServer) {
+            ClientWorld clientWorld = ((ChunkLoadingDebugRenderer)ChunkLoadingDebugRenderer.this).client.world;
+            DimensionType dimensionType = ((ChunkLoadingDebugRenderer)ChunkLoadingDebugRenderer.this).client.world.dimension.getType();
+            ServerWorld serverWorld = integratedServer.getWorld(dimensionType) != null ? integratedServer.getWorld(dimensionType) : null;
+            Camera camera = ((ChunkLoadingDebugRenderer)ChunkLoadingDebugRenderer.this).client.gameRenderer.getCamera();
+            int i = (int)camera.getPos().x >> 4;
+            int j = (int)camera.getPos().z >> 4;
+            ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
+            ClientChunkManager clientChunkManager = clientWorld.method_2935();
+            for (int k = i - 12; k <= i + 12; ++k) {
+                for (int l = j - 12; l <= j + 12; ++l) {
+                    ChunkPos chunkPos = new ChunkPos(k, l);
+                    String string = "";
+                    WorldChunk worldChunk = clientChunkManager.getWorldChunk(k, l, false);
+                    string = string + "Client: ";
+                    if (worldChunk == null) {
+                        string = string + "0n/a\n";
+                    } else {
+                        string = string + (worldChunk.isEmpty() ? " E" : "");
+                        string = string + "\n";
+                    }
+                    builder.put(chunkPos, string);
+                }
+            }
+            this.field_21000 = builder.build();
+            this.field_21001 = integratedServer.supply(() -> {
+                ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
+                ServerChunkManager serverChunkManager = serverWorld.method_14178();
+                for (int k = i - 12; k <= i + 12; ++k) {
+                    for (int l = j - 12; l <= j + 12; ++l) {
+                        ChunkPos chunkPos = new ChunkPos(k, l);
+                        builder.put(chunkPos, "Server: " + serverChunkManager.method_23273(chunkPos));
+                    }
+                }
+                return builder.build();
+            });
+        }
     }
 }
 

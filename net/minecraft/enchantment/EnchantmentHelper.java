@@ -45,7 +45,7 @@ public class EnchantmentHelper {
         Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
         ListTag listTag = itemStack.getEnchantments();
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            CompoundTag compoundTag = listTag.getCompound(i);
             Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
             if (identifier2 == null || !identifier2.equals(identifier)) continue;
             return compoundTag.getInt("lvl");
@@ -61,7 +61,7 @@ public class EnchantmentHelper {
     public static Map<Enchantment, Integer> method_22445(ListTag listTag) {
         LinkedHashMap<Enchantment, Integer> map = Maps.newLinkedHashMap();
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            CompoundTag compoundTag = listTag.getCompound(i);
             Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(compoundTag.getString("id"))).ifPresent(enchantment -> map.put((Enchantment)enchantment, compoundTag.getInt("lvl")));
         }
         return map;
@@ -93,8 +93,8 @@ public class EnchantmentHelper {
         }
         ListTag listTag = itemStack.getEnchantments();
         for (int i = 0; i < listTag.size(); ++i) {
-            String string = listTag.getCompoundTag(i).getString("id");
-            int j = listTag.getCompoundTag(i).getInt("lvl");
+            String string = listTag.getCompound(i).getString("id");
+            int j = listTag.getCompound(i).getInt("lvl");
             Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept((Enchantment)enchantment, j));
         }
     }
@@ -231,7 +231,7 @@ public class EnchantmentHelper {
             if (itemStack.isEmpty() || EnchantmentHelper.getLevel(enchantment, itemStack) <= 0) continue;
             list.add(entry);
         }
-        return list.isEmpty() ? null : (Map.Entry)list.get(livingEntity.getRand().nextInt(list.size()));
+        return list.isEmpty() ? null : (Map.Entry)list.get(livingEntity.getRandom().nextInt(list.size()));
     }
 
     public static int calculateEnchantmentPower(Random random, int i, int j, ItemStack itemStack) {

@@ -22,7 +22,7 @@ extends BipedEntityRenderer<ZombiePigmanEntity, ZombieEntityModel<ZombiePigmanEn
         this.addFeature(new ArmorBipedFeatureRenderer(this, new ZombieEntityModel(0.5f, true), new ZombieEntityModel(1.0f, true)));
     }
 
-    protected Identifier method_4093(ZombiePigmanEntity zombiePigmanEntity) {
+    public Identifier method_4093(ZombiePigmanEntity zombiePigmanEntity) {
         return SKIN;
     }
 }

@@ -253,9 +253,6 @@ extends Entity {
         if (this.getDamageWobbleStrength() > 0.0f) {
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0f);
         }
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
         super.tick();
         this.method_7555();
         if (this.isLogicalSideForUpdatingMovement()) {
@@ -351,6 +348,7 @@ extends Entity {
     private void method_7555() {
         if (this.isLogicalSideForUpdatingMovement()) {
             this.field_7708 = 0;
+            this.updateTrackedPosition(this.x, this.y, this.z);
         }
         if (this.field_7708 <= 0) {
             return;
@@ -627,7 +625,7 @@ extends Entity {
 
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
-        if (compoundTag.containsKey("Type", 8)) {
+        if (compoundTag.contains("Type", 8)) {
             this.setBoatType(Type.getType(compoundTag.getString("Type")));
         }
     }
@@ -670,7 +668,7 @@ extends Entity {
                 }
             }
             this.fallDistance = 0.0f;
-        } else if (!this.world.getFluidState(new BlockPos(this).down()).matches(FluidTags.WATER) && d < 0.0) {
+        } else if (!this.world.getFluidState(new BlockPos(this).method_10074()).matches(FluidTags.WATER) && d < 0.0) {
             this.fallDistance = (float)((double)this.fallDistance - d);
         }
     }

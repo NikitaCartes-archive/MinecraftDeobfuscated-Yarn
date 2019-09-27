@@ -24,7 +24,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.HotbarStorage;
 import net.minecraft.client.options.HotbarStorageEntry;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
@@ -550,7 +549,6 @@ extends AbstractInventoryScreen<CreativeContainer> {
             this.renderTooltip(I18n.translate("inventory.binSlot", new Object[0]), i, j);
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.disableLighting();
         this.drawMouseoverTooltip(i, j);
     }
 
@@ -597,7 +595,6 @@ extends AbstractInventoryScreen<CreativeContainer> {
     @Override
     protected void drawBackground(float f, int i, int j) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        GuiLighting.enableForItems();
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
             this.minecraft.getTextureManager().bindTexture(TEXTURE);
@@ -674,17 +671,14 @@ extends AbstractInventoryScreen<CreativeContainer> {
             k += 64;
             m += this.containerHeight - 4;
         }
-        RenderSystem.disableLighting();
         this.blit(l, m, j, k, 28, 32);
         this.setBlitOffset(100);
         this.itemRenderer.zOffset = 100.0f;
         int n2 = bl2 ? 1 : -1;
-        RenderSystem.enableLighting();
         RenderSystem.enableRescaleNormal();
         ItemStack itemStack = itemGroup.getIcon();
         this.itemRenderer.renderGuiItem(itemStack, l += 6, m += 8 + n2);
         this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, l, m);
-        RenderSystem.disableLighting();
         this.itemRenderer.zOffset = 0.0f;
         this.setBlitOffset(0);
     }

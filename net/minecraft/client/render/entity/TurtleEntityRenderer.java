@@ -5,12 +5,13 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.TurtleEntityModel;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TurtleEntityRenderer
@@ -21,15 +22,14 @@ extends MobEntityRenderer<TurtleEntity, TurtleEntityModel<TurtleEntity>> {
         super(entityRenderDispatcher, new TurtleEntityModel(0.0f), 0.7f);
     }
 
-    public void method_4138(TurtleEntity turtleEntity, double d, double e, double f, float g, float h) {
+    public void method_4138(TurtleEntity turtleEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
         if (turtleEntity.isBaby()) {
             this.field_4673 *= 0.5f;
         }
-        super.method_4072(turtleEntity, d, e, f, g, h);
+        super.method_4072(turtleEntity, d, e, f, g, h, arg, arg2);
     }
 
-    @Nullable
-    protected Identifier method_4139(TurtleEntity turtleEntity) {
+    public Identifier method_4139(TurtleEntity turtleEntity) {
         return SKIN;
     }
 }

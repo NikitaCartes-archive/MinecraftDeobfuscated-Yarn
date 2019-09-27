@@ -499,7 +499,7 @@ JumpingMount {
             this.heal(1.0f);
         }
         if (this.eatsGrass()) {
-            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.GRASS_BLOCK) {
+            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(new BlockPos(this).method_10074()).getBlock() == Blocks.GRASS_BLOCK) {
                 this.setEatingGrass(true);
             }
             if (this.isEatingGrass() && ++this.eatingGrassTicks > 50) {
@@ -717,7 +717,7 @@ JumpingMount {
         this.setBred(compoundTag.getBoolean("Bred"));
         this.setTemper(compoundTag.getInt("Temper"));
         this.setTame(compoundTag.getBoolean("Tame"));
-        if (compoundTag.containsKey("OwnerUUID", 8)) {
+        if (compoundTag.contains("OwnerUUID", 8)) {
             string = compoundTag.getString("OwnerUUID");
         } else {
             String string2 = compoundTag.getString("Owner");
@@ -729,7 +729,7 @@ JumpingMount {
         if ((entityAttributeInstance = this.getAttributes().get("Speed")) != null) {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
         }
-        if (compoundTag.containsKey("SaddleItem", 10) && (itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
+        if (compoundTag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(compoundTag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
             this.items.setInvStack(0, itemStack);
         }
         this.updateSaddle();

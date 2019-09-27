@@ -278,7 +278,7 @@ Tickable {
         super.fromTag(compoundTag);
         this.primary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Primary"));
         this.secondary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Secondary"));
-        if (compoundTag.containsKey("CustomName", 8)) {
+        if (compoundTag.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
         this.lock = ContainerLock.deserialize(compoundTag);

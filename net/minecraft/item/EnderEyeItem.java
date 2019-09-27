@@ -70,7 +70,7 @@ extends Item {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         HitResult hitResult = EnderEyeItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.NONE);
         if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.END_PORTAL_FRAME) {
-            return TypedActionResult.method_22430(itemStack);
+            return TypedActionResult.pass(itemStack);
         }
         playerEntity.setCurrentHand(hand);
         if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).method_14178().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false)) != null) {
@@ -87,9 +87,9 @@ extends Item {
                 itemStack.decrement(1);
             }
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-            return TypedActionResult.method_22427(itemStack);
+            return TypedActionResult.successWithSwing(itemStack);
         }
-        return TypedActionResult.method_22427(itemStack);
+        return TypedActionResult.successWithSwing(itemStack);
     }
 }
 

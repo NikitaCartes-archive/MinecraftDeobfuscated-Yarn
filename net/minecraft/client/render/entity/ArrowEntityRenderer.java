@@ -20,7 +20,7 @@ extends ProjectileEntityRenderer<ArrowEntity> {
         super(entityRenderDispatcher);
     }
 
-    protected Identifier method_4130(ArrowEntity arrowEntity) {
+    public Identifier method_4130(ArrowEntity arrowEntity) {
         return arrowEntity.getColor() > 0 ? TIPPED_SKIN : SKIN;
     }
 }

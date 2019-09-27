@@ -6,6 +6,7 @@ package net.minecraft.client.util.math;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4581;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
@@ -121,17 +122,21 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void reciprocal() {
+    public boolean reciprocal() {
         float f = 0.0f;
         for (int i = 0; i < 3; ++i) {
             f += this.components[i] * this.components[i];
         }
-        float g = (float)MathHelper.fastInverseSqrt(f);
+        if ((double)f < 1.0E-5) {
+            return false;
+        }
+        float g = MathHelper.method_22858(f);
         int j = 0;
         while (j < 3) {
             int n = j++;
             this.components[n] = this.components[n] * g;
         }
+        return true;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -147,6 +152,18 @@ public final class Vector3f {
         this.components[2] = f * j - g * i;
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public void method_23215(class_4581 arg) {
+        float[] fs = Arrays.copyOf(this.components, 3);
+        for (int i = 0; i < 3; ++i) {
+            this.components[i] = 0.0f;
+            for (int j = 0; j < 3; ++j) {
+                int n = i;
+                this.components[n] = this.components[n] + arg.method_22850(i, j) * fs[j];
+            }
+        }
+    }
+
     public void method_19262(Quaternion quaternion) {
         Quaternion quaternion2 = new Quaternion(quaternion);
         quaternion2.copyFrom(new Quaternion(this.getX(), this.getY(), this.getZ(), 0.0f));
@@ -154,6 +171,11 @@ public final class Vector3f {
         quaternion3.reverse();
         quaternion2.copyFrom(quaternion3);
         this.set(quaternion2.getX(), quaternion2.getY(), quaternion2.getZ());
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Quaternion method_23214(float f, boolean bl) {
+        return new Quaternion(this, f, bl);
     }
 }
 

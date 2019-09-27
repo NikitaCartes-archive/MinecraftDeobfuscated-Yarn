@@ -3,16 +3,16 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(value=EnvType.CLIENT)
 public class IronGolemEntityModel<T extends IronGolemEntity>
-extends EntityModel<T> {
+extends class_4595<T> {
     private final ModelPart field_3415;
     private final ModelPart field_3413;
     public final ModelPart field_3414;
@@ -54,14 +54,9 @@ extends EntityModel<T> {
         this.field_3416.addCuboid(-3.5f, -3.0f, -3.0f, 6.0f, 16.0f, 5.0f, f);
     }
 
-    public void method_17096(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17097(ironGolemEntity, f, g, h, i, j, k);
-        this.field_3415.render(k);
-        this.field_3413.render(k);
-        this.field_3411.render(k);
-        this.field_3416.render(k);
-        this.field_3414.render(k);
-        this.field_3412.render(k);
+    @Override
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3415, this.field_3413, this.field_3411, this.field_3416, this.field_3414, this.field_3412);
     }
 
     public void method_17097(T ironGolemEntity, float f, float g, float h, float i, float j, float k) {
@@ -95,17 +90,7 @@ extends EntityModel<T> {
     }
 
     public ModelPart method_2809() {
-        return this.field_3414;
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17097((IronGolemEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17096((IronGolemEntity)entity, f, g, h, i, j, k);
+        return this.field_3412;
     }
 }
 

@@ -46,7 +46,7 @@ implements DynamicOps<Tag> {
     }
 
     public Tag method_10668() {
-        return new EndTag();
+        return EndTag.INSTANCE;
     }
 
     public Type<?> method_10642(Tag tag) {
@@ -102,31 +102,35 @@ implements DynamicOps<Tag> {
     }
 
     public Tag method_10660(Number number) {
-        return new DoubleTag(number.doubleValue());
+        return DoubleTag.of(number.doubleValue());
     }
 
     public Tag method_10640(byte b) {
-        return new ByteTag(b);
+        return ByteTag.of(b);
     }
 
     public Tag method_10635(short s) {
-        return new ShortTag(s);
+        return ShortTag.of(s);
     }
 
     public Tag method_10661(int i) {
-        return new IntTag(i);
+        return IntTag.of(i);
     }
 
     public Tag method_10654(long l) {
-        return new LongTag(l);
+        return LongTag.of(l);
     }
 
     public Tag method_10662(float f) {
-        return new FloatTag(f);
+        return FloatTag.of(f);
     }
 
     public Tag method_10652(double d) {
-        return new DoubleTag(d);
+        return DoubleTag.of(d);
+    }
+
+    public Tag method_23253(boolean bl) {
+        return ByteTag.of(bl);
     }
 
     public Optional<String> method_10656(Tag tag) {
@@ -137,7 +141,7 @@ implements DynamicOps<Tag> {
     }
 
     public Tag method_10639(String string) {
-        return new StringTag(string);
+        return StringTag.of(string);
     }
 
     public Tag method_10653(Tag tag, Tag tag2) {
@@ -149,11 +153,11 @@ implements DynamicOps<Tag> {
                 CompoundTag compoundTag = new CompoundTag();
                 CompoundTag compoundTag2 = (CompoundTag)tag;
                 for (String string : compoundTag2.getKeys()) {
-                    compoundTag.put(string, compoundTag2.getTag(string));
+                    compoundTag.put(string, compoundTag2.get(string));
                 }
                 CompoundTag compoundTag3 = (CompoundTag)tag2;
                 for (String string2 : compoundTag3.getKeys()) {
-                    compoundTag.put(string2, compoundTag3.getTag(string2));
+                    compoundTag.put(string2, compoundTag3.get(string2));
                 }
                 return compoundTag;
             }
@@ -179,7 +183,7 @@ implements DynamicOps<Tag> {
         } else if (tag instanceof CompoundTag) {
             CompoundTag compoundTag2 = (CompoundTag)tag;
             compoundTag = new CompoundTag();
-            compoundTag2.getKeys().forEach(string -> compoundTag.put((String)string, compoundTag2.getTag((String)string)));
+            compoundTag2.getKeys().forEach(string -> compoundTag.put((String)string, compoundTag2.get((String)string)));
         } else {
             return tag;
         }
@@ -198,8 +202,8 @@ implements DynamicOps<Tag> {
             CompoundTag compoundTag = (CompoundTag)tag;
             CompoundTag compoundTag2 = (CompoundTag)tag2;
             CompoundTag compoundTag3 = new CompoundTag();
-            compoundTag.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag.getTag((String)string)));
-            compoundTag2.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag2.getTag((String)string)));
+            compoundTag.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag.get((String)string)));
+            compoundTag2.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag2.get((String)string)));
         }
         if (tag instanceof AbstractListTag && tag2 instanceof AbstractListTag) {
             ListTag listTag = new ListTag();
@@ -213,7 +217,7 @@ implements DynamicOps<Tag> {
     public Optional<Map<Tag, Tag>> method_10669(Tag tag) {
         if (tag instanceof CompoundTag) {
             CompoundTag compoundTag = (CompoundTag)tag;
-            return Optional.of(compoundTag.getKeys().stream().map(string -> Pair.of(this.method_10639((String)string), compoundTag.getTag((String)string))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
+            return Optional.of(compoundTag.getKeys().stream().map(string -> Pair.of(this.method_10639((String)string), compoundTag.get((String)string))).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond)));
         }
         return Optional.empty();
     }
@@ -297,7 +301,7 @@ implements DynamicOps<Tag> {
         if (tag instanceof CompoundTag) {
             CompoundTag compoundTag = (CompoundTag)tag;
             CompoundTag compoundTag2 = new CompoundTag();
-            compoundTag.getKeys().stream().filter(string2 -> !Objects.equals(string2, string3)).forEach(string -> compoundTag2.put((String)string, compoundTag.getTag((String)string)));
+            compoundTag.getKeys().stream().filter(string2 -> !Objects.equals(string2, string3)).forEach(string -> compoundTag2.put((String)string, compoundTag.get((String)string)));
             return compoundTag2;
         }
         return tag;
@@ -385,6 +389,11 @@ implements DynamicOps<Tag> {
     @Override
     public /* synthetic */ Optional getStringValue(Object object) {
         return this.method_10656((Tag)object);
+    }
+
+    @Override
+    public /* synthetic */ Object createBoolean(boolean bl) {
+        return this.method_23253(bl);
     }
 
     @Override

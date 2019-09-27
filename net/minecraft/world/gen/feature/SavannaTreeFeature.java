@@ -60,10 +60,10 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         if (!bl) {
             return false;
         }
-        if (!SavannaTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) || blockPos.getY() >= 256 - i - 1) {
+        if (!SavannaTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) || blockPos.getY() >= 256 - i - 1) {
             return false;
         }
-        this.setToDirt(modifiableTestableWorld, blockPos.down());
+        this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         k = i - random.nextInt(4) - 1;
         int n = 3 - random.nextInt(3);

@@ -11,6 +11,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class DolphinJumpGoal
@@ -27,7 +28,7 @@ extends DiveJumpingGoal {
 
     @Override
     public boolean canStart() {
-        if (this.dolphin.getRand().nextInt(this.chance) != 0) {
+        if (this.dolphin.getRandom().nextInt(this.chance) != 0) {
             return false;
         }
         Direction direction = this.dolphin.getMovementDirection();
@@ -85,7 +86,7 @@ extends DiveJumpingGoal {
         }
         Vec3d vec3d = this.dolphin.getVelocity();
         if (vec3d.y * vec3d.y < (double)0.03f && this.dolphin.pitch != 0.0f) {
-            this.dolphin.pitch = this.updatePitch(this.dolphin.pitch, 0.0f, 0.2f);
+            this.dolphin.pitch = MathHelper.method_22859(this.dolphin.pitch, 0.0f, 0.2f);
         } else {
             double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
             double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 57.2957763671875;

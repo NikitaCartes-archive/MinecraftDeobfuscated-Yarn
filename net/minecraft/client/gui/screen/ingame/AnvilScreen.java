@@ -78,7 +78,6 @@ implements ContainerListener {
 
     @Override
     protected void drawForeground(int i, int j) {
-        RenderSystem.disableLighting();
         RenderSystem.disableBlend();
         this.font.draw(this.title.asFormattedString(), 60.0f, 6.0f, 0x404040);
         int k = ((AnvilContainer)this.container).getLevelCost();
@@ -101,7 +100,6 @@ implements ContainerListener {
                 this.font.drawWithShadow(string, m, 69.0f, l);
             }
         }
-        RenderSystem.enableLighting();
     }
 
     private void onRenamed(String string) {
@@ -122,7 +120,6 @@ implements ContainerListener {
         this.renderBackground();
         super.render(i, j, f);
         this.drawMouseoverTooltip(i, j);
-        RenderSystem.disableLighting();
         RenderSystem.disableBlend();
         this.nameField.render(i, j, f);
     }

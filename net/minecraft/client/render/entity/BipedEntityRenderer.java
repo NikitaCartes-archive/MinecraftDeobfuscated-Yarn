@@ -26,7 +26,7 @@ extends MobEntityRenderer<T, M> {
         this.addFeature(new HeldItemFeatureRenderer(this));
     }
 
-    protected Identifier method_3982(T mobEntity) {
+    public Identifier method_3982(T mobEntity) {
         return SKIN;
     }
 }

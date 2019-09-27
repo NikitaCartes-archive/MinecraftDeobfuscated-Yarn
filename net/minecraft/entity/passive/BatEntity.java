@@ -200,7 +200,7 @@ extends AmbientEntity {
         compoundTag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
     }
 
-    public static boolean method_20661(EntityType<BatEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<BatEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         if (blockPos.getY() >= iWorld.getSeaLevel()) {
             return false;
         }
@@ -214,7 +214,7 @@ extends AmbientEntity {
         if (i > random.nextInt(j)) {
             return false;
         }
-        return BatEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
+        return BatEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
     }
 
     private static boolean isTodayAroundHalloween() {

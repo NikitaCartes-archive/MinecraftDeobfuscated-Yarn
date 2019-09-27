@@ -10,9 +10,5 @@ import net.minecraft.client.model.ModelPart;
 @Environment(value=EnvType.CLIENT)
 public interface ModelWithHead {
     public ModelPart getHead();
-
-    default public void setHeadAngle(float f) {
-        this.getHead().applyTransform(f);
-    }
 }
 

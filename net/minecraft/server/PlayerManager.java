@@ -170,7 +170,7 @@ public abstract class PlayerManager {
         for (StatusEffectInstance statusEffectInstance : serverPlayerEntity.getStatusEffects()) {
             serverPlayNetworkHandler.sendPacket(new EntityPotionEffectS2CPacket(serverPlayerEntity.getEntityId(), statusEffectInstance));
         }
-        if (compoundTag != null && compoundTag.containsKey("RootVehicle", 10) && (entity2 = EntityType.loadEntityWithPassengers((compoundTag2 = compoundTag.getCompound("RootVehicle")).getCompound("Entity"), serverWorld, entity -> {
+        if (compoundTag != null && compoundTag.contains("RootVehicle", 10) && (entity2 = EntityType.loadEntityWithPassengers((compoundTag2 = compoundTag.getCompound("RootVehicle")).getCompound("Entity"), serverWorld, entity -> {
             if (!serverWorld.method_18768((Entity)entity)) {
                 return null;
             }

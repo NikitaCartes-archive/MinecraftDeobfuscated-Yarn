@@ -93,7 +93,7 @@ public abstract class Option {
     });
     public static final DoubleOption FRAMERATE_LIMIT = new DoubleOption("options.framerateLimit", 10.0, 260.0, 10.0f, gameOptions -> gameOptions.maxFps, (gameOptions, double_) -> {
         gameOptions.maxFps = (int)double_.doubleValue();
-        MinecraftClient.getInstance().method_22683().setFramerateLimit(gameOptions.maxFps);
+        MinecraftClient.getInstance().getWindow().setFramerateLimit(gameOptions.maxFps);
     }, (gameOptions, doubleOption) -> {
         double d = doubleOption.get((GameOptions)gameOptions);
         String string = doubleOption.getDisplayPrefix();
@@ -133,7 +133,7 @@ public abstract class Option {
     });
     public static final BooleanOption RAW_MOUSE_INPUT = new BooleanOption("options.rawMouseInput", gameOptions -> gameOptions.field_20308, (gameOptions, boolean_) -> {
         gameOptions.field_20308 = boolean_;
-        Window window = MinecraftClient.getInstance().method_22683();
+        Window window = MinecraftClient.getInstance().getWindow();
         if (window != null) {
             window.method_21668((boolean)boolean_);
         }
@@ -182,7 +182,7 @@ public abstract class Option {
         return cyclingOption.getDisplayPrefix() + I18n.translate("options.graphics.fast", new Object[0]);
     });
     public static final CyclingOption GUI_SCALE = new CyclingOption("options.guiScale", (gameOptions, integer) -> {
-        gameOptions.guiScale = Integer.remainderUnsigned(gameOptions.guiScale + integer, MinecraftClient.getInstance().method_22683().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()) + 1);
+        gameOptions.guiScale = Integer.remainderUnsigned(gameOptions.guiScale + integer, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont()) + 1);
     }, (gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + (gameOptions.guiScale == 0 ? I18n.translate("options.guiScale.auto", new Object[0]) : Integer.valueOf(gameOptions.guiScale)));
     public static final CyclingOption MAIN_HAND = new CyclingOption("options.mainHand", (gameOptions, integer) -> {
         gameOptions.mainArm = gameOptions.mainArm.getOpposite();
@@ -225,8 +225,8 @@ public abstract class Option {
     });
     public static final BooleanOption VSYNC = new BooleanOption("options.vsync", gameOptions -> gameOptions.enableVsync, (gameOptions, boolean_) -> {
         gameOptions.enableVsync = boolean_;
-        if (MinecraftClient.getInstance().method_22683() != null) {
-            MinecraftClient.getInstance().method_22683().setVsync(gameOptions.enableVsync);
+        if (MinecraftClient.getInstance().getWindow() != null) {
+            MinecraftClient.getInstance().getWindow().setVsync(gameOptions.enableVsync);
         }
     });
     public static final BooleanOption ENTITY_SHADOWS = new BooleanOption("options.entityShadows", gameOptions -> gameOptions.entityShadows, (gameOptions, boolean_) -> {
@@ -265,9 +265,9 @@ public abstract class Option {
     public static final BooleanOption FULLSCREEN = new BooleanOption("options.fullscreen", gameOptions -> gameOptions.fullscreen, (gameOptions, boolean_) -> {
         gameOptions.fullscreen = boolean_;
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        if (minecraftClient.method_22683() != null && minecraftClient.method_22683().isFullscreen() != gameOptions.fullscreen) {
-            minecraftClient.method_22683().toggleFullscreen();
-            gameOptions.fullscreen = minecraftClient.method_22683().isFullscreen();
+        if (minecraftClient.getWindow() != null && minecraftClient.getWindow().isFullscreen() != gameOptions.fullscreen) {
+            minecraftClient.getWindow().toggleFullscreen();
+            gameOptions.fullscreen = minecraftClient.getWindow().isFullscreen();
         }
     });
     public static final BooleanOption VIEW_BOBBING = new BooleanOption("options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, boolean_) -> {

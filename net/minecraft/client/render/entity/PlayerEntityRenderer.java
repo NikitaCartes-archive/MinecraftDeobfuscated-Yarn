@@ -3,9 +3,14 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -22,6 +27,7 @@ import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
@@ -57,18 +63,16 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         this.addFeature(new StingerFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
     }
 
-    public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
-        if (abstractClientPlayerEntity.isMainPlayer() && this.renderManager.camera.getFocusedEntity() != abstractClientPlayerEntity) {
-            return;
-        }
-        double i = e;
-        if (abstractClientPlayerEntity.isInSneakingPose()) {
-            i -= 0.125;
-        }
+    public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
         this.setModelPose(abstractClientPlayerEntity);
-        RenderSystem.setProfile(RenderSystem.class_4564.field_20745);
-        super.method_4054(abstractClientPlayerEntity, d, i, f, g, h);
-        RenderSystem.unsetProfile(RenderSystem.class_4564.field_20745);
+        super.method_4054(abstractClientPlayerEntity, d, e, f, g, h, arg, arg2);
+    }
+
+    public Vec3d method_23206(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g) {
+        if (abstractClientPlayerEntity.isInSneakingPose()) {
+            return new Vec3d(0.0, -0.125, 0.0);
+        }
+        return super.method_23169(abstractClientPlayerEntity, d, e, f, g);
     }
 
     private void setModelPose(AbstractClientPlayerEntity abstractClientPlayerEntity) {
@@ -137,67 +141,60 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         return abstractClientPlayerEntity.getSkinTexture();
     }
 
-    protected void method_4217(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
+    protected void method_4217(AbstractClientPlayerEntity abstractClientPlayerEntity, class_4587 arg, float f) {
         float g = 0.9375f;
-        RenderSystem.scalef(0.9375f, 0.9375f, 0.9375f);
+        arg.method_22905(0.9375f, 0.9375f, 0.9375f);
     }
 
-    protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, String string, double g) {
+    protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, String string, class_4587 arg, class_4597 arg2) {
         Scoreboard scoreboard;
         ScoreboardObjective scoreboardObjective;
-        if (g < 100.0 && (scoreboardObjective = (scoreboard = abstractClientPlayerEntity.getScoreboard()).getObjectiveForSlot(2)) != null) {
+        double d = this.renderManager.method_23168(abstractClientPlayerEntity);
+        arg.method_22903();
+        if (d < 100.0 && (scoreboardObjective = (scoreboard = abstractClientPlayerEntity.getScoreboard()).getObjectiveForSlot(2)) != null) {
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
-            this.renderLabel(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().asFormattedString(), d, e, f, 64);
+            super.renderLabelIfPresent(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().asFormattedString(), arg, arg2);
             this.getFontRenderer().getClass();
-            e += (double)(9.0f * 1.15f * 0.025f);
+            arg.method_22904(0.0, 9.0f * 1.15f * 0.025f, 0.0);
         }
-        super.renderLabel(abstractClientPlayerEntity, d, e, f, string, g);
+        super.renderLabelIfPresent(abstractClientPlayerEntity, string, arg, arg2);
+        arg.method_22909();
     }
 
-    public void renderRightArm(AbstractClientPlayerEntity abstractClientPlayerEntity) {
-        float f = 1.0f;
-        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        float g = 0.0625f;
+    public void renderRightArm(class_4587 arg, class_4597 arg2, AbstractClientPlayerEntity abstractClientPlayerEntity) {
+        this.method_23205(arg, arg2, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).rightArm, ((PlayerEntityModel)this.model).rightArmOverlay);
+    }
+
+    public void renderLeftArm(class_4587 arg, class_4597 arg2, AbstractClientPlayerEntity abstractClientPlayerEntity) {
+        this.method_23205(arg, arg2, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).leftArm, ((PlayerEntityModel)this.model).leftArmOverlay);
+    }
+
+    private void method_23205(class_4587 arg, class_4597 arg2, AbstractClientPlayerEntity abstractClientPlayerEntity, ModelPart modelPart, ModelPart modelPart2) {
+        float f = 0.0625f;
         PlayerEntityModel playerEntityModel = (PlayerEntityModel)this.getModel();
         this.setModelPose(abstractClientPlayerEntity);
-        RenderSystem.enableBlend();
+        int i = abstractClientPlayerEntity.getLightmapCoordinates();
+        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(abstractClientPlayerEntity.getSkinTexture()));
+        class_4608.method_23211(lv);
         playerEntityModel.handSwingProgress = 0.0f;
         playerEntityModel.isSneaking = false;
         playerEntityModel.field_3396 = 0.0f;
         playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-        playerEntityModel.rightArm.pitch = 0.0f;
-        playerEntityModel.rightArm.render(0.0625f);
-        playerEntityModel.rightArmOverlay.pitch = 0.0f;
-        playerEntityModel.rightArmOverlay.render(0.0625f);
-        RenderSystem.disableBlend();
+        modelPart.pitch = 0.0f;
+        modelPart.method_22698(arg, lv, 0.0625f, i, null);
+        modelPart2.pitch = 0.0f;
+        modelPart2.method_22698(arg, lv, 0.0625f, i, null);
+        lv.method_22923();
     }
 
-    public void renderLeftArm(AbstractClientPlayerEntity abstractClientPlayerEntity) {
-        float f = 1.0f;
-        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        float g = 0.0625f;
-        PlayerEntityModel playerEntityModel = (PlayerEntityModel)this.getModel();
-        this.setModelPose(abstractClientPlayerEntity);
-        RenderSystem.enableBlend();
-        playerEntityModel.isSneaking = false;
-        playerEntityModel.handSwingProgress = 0.0f;
-        playerEntityModel.field_3396 = 0.0f;
-        playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-        playerEntityModel.leftArm.pitch = 0.0f;
-        playerEntityModel.leftArm.render(0.0625f);
-        playerEntityModel.leftArmOverlay.pitch = 0.0f;
-        playerEntityModel.leftArmOverlay.render(0.0625f);
-        RenderSystem.disableBlend();
-    }
-
-    protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h) {
+    protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, class_4587 arg, float f, float g, float h) {
         float i = abstractClientPlayerEntity.getLeaningPitch(h);
         if (abstractClientPlayerEntity.isFallFlying()) {
-            super.setupTransforms(abstractClientPlayerEntity, f, g, h);
+            super.setupTransforms(abstractClientPlayerEntity, arg, f, g, h);
             float j = (float)abstractClientPlayerEntity.getRoll() + h;
             float k = MathHelper.clamp(j * j / 100.0f, 0.0f, 1.0f);
             if (!abstractClientPlayerEntity.isUsingRiptide()) {
-                RenderSystem.rotatef(k * (-90.0f - abstractClientPlayerEntity.pitch), 1.0f, 0.0f, 0.0f);
+                arg.method_22907(Vector3f.field_20703.method_23214(k * (-90.0f - abstractClientPlayerEntity.pitch), true));
             }
             Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
             Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
@@ -206,18 +203,18 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             if (d > 0.0 && e > 0.0) {
                 double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
                 double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-                RenderSystem.rotatef((float)(Math.signum(m) * Math.acos(l)) * 180.0f / (float)Math.PI, 0.0f, 1.0f, 0.0f);
+                arg.method_22907(Vector3f.field_20705.method_23214((float)(Math.signum(m) * Math.acos(l)), false));
             }
         } else if (i > 0.0f) {
-            super.setupTransforms(abstractClientPlayerEntity, f, g, h);
+            super.setupTransforms(abstractClientPlayerEntity, arg, f, g, h);
             float j = abstractClientPlayerEntity.isInsideWater() ? -90.0f - abstractClientPlayerEntity.pitch : -90.0f;
             float k = MathHelper.lerp(i, 0.0f, j);
-            RenderSystem.rotatef(k, 1.0f, 0.0f, 0.0f);
+            arg.method_22907(Vector3f.field_20703.method_23214(k, true));
             if (abstractClientPlayerEntity.isInSwimmingPose()) {
-                RenderSystem.translatef(0.0f, -1.0f, 0.3f);
+                arg.method_22904(0.0, -1.0, 0.3f);
             }
         } else {
-            super.setupTransforms(abstractClientPlayerEntity, f, g, h);
+            super.setupTransforms(abstractClientPlayerEntity, arg, f, g, h);
         }
     }
 }

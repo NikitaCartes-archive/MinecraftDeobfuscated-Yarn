@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -23,17 +24,8 @@ extends FeatureRenderer<T, M> {
         super(featureRendererContext);
     }
 
-    public void method_4206(T mobEntity, float f, float g, float h, float i, float j, float k, float l) {
-        ((EntityModel)this.getModel()).copyStateTo(this.model);
-        this.model.method_19689(mobEntity, f, g, h);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.bindTexture(SKIN);
-        this.model.method_17088(mobEntity, f, g, i, j, k, l);
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return true;
+    public void method_23204(class_4587 arg, class_4597 arg2, int i, T mobEntity, float f, float g, float h, float j, float k, float l, float m) {
+        FeatureRenderer.method_23195(this.getModel(), this.model, SKIN, arg, arg2, i, mobEntity, f, g, j, k, l, m, h);
     }
 }
 

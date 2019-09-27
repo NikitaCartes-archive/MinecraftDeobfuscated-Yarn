@@ -65,7 +65,7 @@ extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
             if (Feature.NETHER_BRIDGE.isInsideStructure(this.world, blockPos)) {
                 return Feature.NETHER_BRIDGE.getMonsterSpawns();
             }
-            if (Feature.NETHER_BRIDGE.isApproximatelyInsideStructure(this.world, blockPos) && this.world.getBlockState(blockPos.down()).getBlock() == Blocks.NETHER_BRICKS) {
+            if (Feature.NETHER_BRIDGE.isApproximatelyInsideStructure(this.world, blockPos) && this.world.getBlockState(blockPos.method_10074()).getBlock() == Blocks.NETHER_BRICKS) {
                 return Feature.NETHER_BRIDGE.getMonsterSpawns();
             }
         }

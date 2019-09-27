@@ -26,7 +26,7 @@ extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEnti
         return 180.0f;
     }
 
-    protected Identifier method_4108(SilverfishEntity silverfishEntity) {
+    public Identifier method_4108(SilverfishEntity silverfishEntity) {
         return SKIN;
     }
 
@@ -36,7 +36,7 @@ extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEnti
     }
 
     @Override
-    protected /* synthetic */ Identifier getTexture(Entity entity) {
+    public /* synthetic */ Identifier getTexture(Entity entity) {
         return this.method_4108((SilverfishEntity)entity);
     }
 }

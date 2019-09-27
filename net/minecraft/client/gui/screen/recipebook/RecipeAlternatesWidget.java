@@ -16,7 +16,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.container.AbstractFurnaceContainer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -126,7 +125,6 @@ Element {
             return;
         }
         this.time += f;
-        GuiLighting.enableForItems();
         RenderSystem.enableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(BG_TEX);
@@ -141,7 +139,6 @@ Element {
         int q = 208;
         this.renderGrid(l, m, 24, 4, 82, 208);
         RenderSystem.disableBlend();
-        GuiLighting.disable();
         for (AlternateButtonWidget alternateButtonWidget : this.alternateButtons) {
             alternateButtonWidget.render(i, j, f);
         }
@@ -215,7 +212,6 @@ Element {
         @Override
         public void renderButton(int i, int j, float f) {
             int l;
-            GuiLighting.enableForItems();
             RenderSystem.enableAlphaTest();
             RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(BG_TEX);
             int k = 152;
@@ -233,13 +229,10 @@ Element {
                 int m = (int)((float)(this.x + inputSlot.field_3119) / 0.42f - 3.0f);
                 int n2 = (int)((float)(this.y + inputSlot.field_3118) / 0.42f - 3.0f);
                 RenderSystem.scalef(0.42f, 0.42f, 1.0f);
-                RenderSystem.enableLighting();
                 RecipeAlternatesWidget.this.client.getItemRenderer().renderGuiItem(inputSlot.field_3120[MathHelper.floor(RecipeAlternatesWidget.this.time / 30.0f) % inputSlot.field_3120.length], m, n2);
-                RenderSystem.disableLighting();
                 RenderSystem.popMatrix();
             }
             RenderSystem.disableAlphaTest();
-            GuiLighting.disable();
         }
 
         @Environment(value=EnvType.CLIENT)

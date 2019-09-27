@@ -5,9 +5,9 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4588;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.world.World;
 
@@ -23,7 +23,7 @@ extends Particle {
     }
 
     @Override
-    public final void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
+    public final void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
     }
 
     @Override

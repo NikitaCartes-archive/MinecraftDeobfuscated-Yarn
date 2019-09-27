@@ -6,18 +6,21 @@ package net.minecraft.client.render.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockModels;
-import net.minecraft.client.render.block.DynamicBlockRenderer;
 import net.minecraft.client.render.block.FluidRenderer;
+import net.minecraft.client.render.item.ItemDynamicRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BasicBakedModel;
-import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.crash.CrashException;
@@ -31,13 +34,14 @@ public class BlockRenderManager
 implements SynchronousResourceReloadListener {
     private final BlockModels models;
     private final BlockModelRenderer renderer;
-    private final DynamicBlockRenderer dynamicRenderer = new DynamicBlockRenderer();
     private final FluidRenderer fluidRenderer;
     private final Random random = new Random();
+    private final BlockColors field_20987;
 
     public BlockRenderManager(BlockModels blockModels, BlockColors blockColors) {
         this.models = blockModels;
-        this.renderer = new BlockModelRenderer(blockColors);
+        this.field_20987 = blockColors;
+        this.renderer = new BlockModelRenderer(this.field_20987);
         this.fluidRenderer = new FluidRenderer();
     }
 
@@ -45,42 +49,33 @@ implements SynchronousResourceReloadListener {
         return this.models;
     }
 
-    public void tesselateDamage(BufferBuilder bufferBuilder, BlockState blockState, BlockPos blockPos, Sprite sprite, BlockRenderView blockRenderView) {
+    public void tesselateDamage(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, class_4587 arg, class_4588 arg2) {
         if (blockState.getRenderType() != BlockRenderType.MODEL) {
             return;
         }
         BakedModel bakedModel = this.models.getModel(blockState);
         long l = blockState.getRenderingSeed(blockPos);
-        BakedModel bakedModel2 = new BasicBakedModel.Builder(blockState, bakedModel, sprite, this.random, l).build();
-        this.renderer.tesselate(blockRenderView, bakedModel2, blockState, blockPos, bufferBuilder, true, this.random, l);
+        this.renderer.tesselate(blockRenderView, bakedModel, blockState, blockPos, arg, arg2, true, this.random, l);
     }
 
-    public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, BufferBuilder bufferBuilder, Random random) {
+    public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, class_4587 arg, class_4588 arg2, boolean bl, Random random) {
         try {
             BlockRenderType blockRenderType = blockState.getRenderType();
-            if (blockRenderType == BlockRenderType.INVISIBLE) {
+            if (blockRenderType != BlockRenderType.MODEL) {
                 return false;
             }
-            switch (blockRenderType) {
-                case MODEL: {
-                    return this.renderer.tesselate(blockRenderView, this.getModel(blockState), blockState, blockPos, bufferBuilder, true, random, blockState.getRenderingSeed(blockPos));
-                }
-                case ENTITYBLOCK_ANIMATED: {
-                    return false;
-                }
-            }
+            return this.renderer.tesselate(blockRenderView, this.getModel(blockState), blockState, blockPos, arg, arg2, bl, random, blockState.getRenderingSeed(blockPos));
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating block in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
             CrashReportSection.addBlockInfo(crashReportSection, blockPos, blockState);
             throw new CrashException(crashReport);
         }
-        return false;
     }
 
-    public boolean tesselateFluid(BlockPos blockPos, BlockRenderView blockRenderView, BufferBuilder bufferBuilder, FluidState fluidState) {
+    public boolean tesselateFluid(BlockPos blockPos, BlockRenderView blockRenderView, class_4588 arg, FluidState fluidState) {
         try {
-            return this.fluidRenderer.tesselate(blockRenderView, blockPos, bufferBuilder, fluidState);
+            return this.fluidRenderer.tesselate(blockRenderView, blockPos, arg, fluidState);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating liquid in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
@@ -97,7 +92,7 @@ implements SynchronousResourceReloadListener {
         return this.models.getModel(blockState);
     }
 
-    public void renderDynamic(BlockState blockState, float f) {
+    public void renderDynamic(BlockState blockState, class_4587 arg, class_4597 arg2, int i, int j, int k) {
         BlockRenderType blockRenderType = blockState.getRenderType();
         if (blockRenderType == BlockRenderType.INVISIBLE) {
             return;
@@ -105,11 +100,21 @@ implements SynchronousResourceReloadListener {
         switch (blockRenderType) {
             case MODEL: {
                 BakedModel bakedModel = this.getModel(blockState);
-                this.renderer.render(bakedModel, blockState, f, true);
+                arg.method_22903();
+                arg.method_22907(Vector3f.field_20705.method_23214(90.0f, true));
+                int l = this.field_20987.getColorMultiplier(blockState, null, null, 0);
+                float f = (float)(l >> 16 & 0xFF) / 255.0f;
+                float g = (float)(l >> 8 & 0xFF) / 255.0f;
+                float h = (float)(l & 0xFF) / 255.0f;
+                this.renderer.render(arg.method_22910(), arg2.getBuffer(BlockRenderLayer.method_22715(blockState)), blockState, bakedModel, f, g, h, i);
+                arg.method_22909();
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {
-                this.dynamicRenderer.render(blockState.getBlock(), f);
+                arg.method_22903();
+                arg.method_22907(Vector3f.field_20705.method_23214(90.0f, true));
+                ItemDynamicRenderer.INSTANCE.render(new ItemStack(blockState.getBlock()), arg, arg2, i);
+                arg.method_22909();
             }
         }
     }

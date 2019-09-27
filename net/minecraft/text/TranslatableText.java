@@ -67,15 +67,12 @@ implements ParsableText {
             this.languageReloadTimestamp = l;
             this.translations.clear();
         }
+        String string = LANGUAGE.translate(this.key);
         try {
-            this.setTranslation(LANGUAGE.translate(this.key));
+            this.setTranslation(string);
         } catch (TranslationException translationException) {
             this.translations.clear();
-            try {
-                this.setTranslation(EMPTY_LANGUAGE.translate(this.key));
-            } catch (TranslationException translationException2) {
-                throw translationException;
-            }
+            this.translations.add(new LiteralText(string));
         }
     }
 

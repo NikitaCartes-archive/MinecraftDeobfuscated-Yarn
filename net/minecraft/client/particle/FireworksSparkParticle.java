@@ -5,6 +5,7 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4588;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.AnimatedParticle;
 import net.minecraft.client.particle.NoRenderParticle;
@@ -14,7 +15,6 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.nbt.CompoundTag;
@@ -78,9 +78,9 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
+        public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
             this.setColorAlpha(0.6f - ((float)this.age + f - 1.0f) * 0.25f * 0.5f);
-            super.buildGeometry(bufferBuilder, camera, f, g, h, i, j, k);
+            super.buildGeometry(arg, camera, f, g, h, i, j, k);
         }
 
         @Override
@@ -120,9 +120,9 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
+        public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
             if (!this.flicker || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-                super.buildGeometry(bufferBuilder, camera, f, g, h, i, j, k);
+                super.buildGeometry(arg, camera, f, g, h, i, j, k);
             }
         }
 
@@ -168,7 +168,7 @@ public class FireworksSparkParticle {
                 } else {
                     this.maxAge = this.explosions.size() * 2 - 1;
                     for (int j = 0; j < this.explosions.size(); ++j) {
-                        CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
+                        CompoundTag compoundTag2 = this.explosions.getCompound(j);
                         if (!compoundTag2.getBoolean("Flicker")) continue;
                         this.flicker = true;
                         this.maxAge += 15;
@@ -188,7 +188,7 @@ public class FireworksSparkParticle {
                     bl2 = true;
                 } else {
                     for (int i = 0; i < this.explosions.size(); ++i) {
-                        CompoundTag compoundTag = this.explosions.getCompoundTag(i);
+                        CompoundTag compoundTag = this.explosions.getCompound(i);
                         if (FireworkItem.Type.byId(compoundTag.getByte("Type")) != FireworkItem.Type.LARGE_BALL) continue;
                         bl2 = true;
                         break;
@@ -199,7 +199,7 @@ public class FireworksSparkParticle {
             }
             if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
                 int j = this.age / 2;
-                CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
+                CompoundTag compoundTag2 = this.explosions.getCompound(j);
                 FireworkItem.Type type = FireworkItem.Type.byId(compoundTag2.getByte("Type"));
                 boolean bl3 = compoundTag2.getBoolean("Trail");
                 boolean bl4 = compoundTag2.getBoolean("Flicker");

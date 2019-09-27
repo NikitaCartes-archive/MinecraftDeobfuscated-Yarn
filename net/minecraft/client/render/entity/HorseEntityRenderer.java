@@ -26,7 +26,7 @@ extends HorseBaseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         this.addFeature(new HorseArmorFeatureRenderer(this));
     }
 
-    protected Identifier method_3983(HorseEntity horseEntity) {
+    public Identifier method_3983(HorseEntity horseEntity) {
         String string = horseEntity.getTextureLocation();
         Identifier identifier = SKINS.get(string);
         if (identifier == null) {

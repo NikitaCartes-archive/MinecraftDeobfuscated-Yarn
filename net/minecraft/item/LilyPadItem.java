@@ -45,14 +45,14 @@ extends BlockItem {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         HitResult hitResult = LilyPadItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.method_22430(itemStack);
+            return TypedActionResult.pass(itemStack);
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult)hitResult;
             BlockPos blockPos = blockHitResult.getBlockPos();
             Direction direction = blockHitResult.getSide();
             if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos.offset(direction), direction, itemStack)) {
-                return TypedActionResult.method_22431(itemStack);
+                return TypedActionResult.fail(itemStack);
             }
             BlockPos blockPos2 = blockPos.up();
             BlockState blockState = world.getBlockState(blockPos);
@@ -68,10 +68,10 @@ extends BlockItem {
                 }
                 playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
                 world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_LILY_PAD_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                return TypedActionResult.method_22427(itemStack);
+                return TypedActionResult.successWithSwing(itemStack);
             }
         }
-        return TypedActionResult.method_22431(itemStack);
+        return TypedActionResult.fail(itemStack);
     }
 }
 

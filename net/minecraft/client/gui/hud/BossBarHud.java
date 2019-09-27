@@ -31,7 +31,7 @@ extends DrawableHelper {
         if (this.bossBars.isEmpty()) {
             return;
         }
-        int i = this.client.method_22683().getScaledWidth();
+        int i = this.client.getWindow().getScaledWidth();
         int j = 12;
         for (ClientBossBar clientBossBar : this.bossBars.values()) {
             int k = i / 2 - 91;
@@ -44,7 +44,7 @@ extends DrawableHelper {
             int n = i / 2 - m / 2;
             int o = l - 9;
             this.client.textRenderer.drawWithShadow(string, n, o, 0xFFFFFF);
-            if ((j += 10 + this.client.textRenderer.fontHeight) < this.client.method_22683().getScaledHeight() / 3) continue;
+            if ((j += 10 + this.client.textRenderer.fontHeight) < this.client.getWindow().getScaledHeight() / 3) continue;
             break;
         }
     }

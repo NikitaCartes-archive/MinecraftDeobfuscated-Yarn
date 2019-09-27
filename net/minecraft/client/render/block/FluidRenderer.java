@@ -9,9 +9,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.class_4588;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -59,14 +59,15 @@ public class FluidRenderer {
         return false;
     }
 
-    public boolean tesselate(BlockRenderView blockRenderView, BlockPos blockPos, BufferBuilder bufferBuilder, FluidState fluidState) {
-        float al;
-        float ak;
+    public boolean tesselate(BlockRenderView blockRenderView, BlockPos blockPos, class_4588 arg, FluidState fluidState) {
         float aj;
-        float af;
+        float ai;
+        float ah;
         float aa;
         float z;
+        float y;
         float x;
+        float w;
         float v;
         float t;
         boolean bl7;
@@ -94,17 +95,15 @@ public class FluidRenderer {
         float o = this.getNorthWestCornerFluidHeight(blockRenderView, blockPos.south(), fluidState.getFluid());
         float p = this.getNorthWestCornerFluidHeight(blockRenderView, blockPos.east().south(), fluidState.getFluid());
         float q = this.getNorthWestCornerFluidHeight(blockRenderView, blockPos.east(), fluidState.getFluid());
-        double d = blockPos.getX();
-        double e = blockPos.getY();
-        double r = blockPos.getZ();
+        double d = blockPos.getX() & 0xF;
+        double e = blockPos.getY() & 0xF;
+        double r = blockPos.getZ() & 0xF;
         float s = 0.001f;
         if (bl2 && !FluidRenderer.method_3344(blockRenderView, blockPos, Direction.UP, Math.min(Math.min(n, o), Math.min(p, q)))) {
             float ae;
             float ad;
             float ac;
             float ab;
-            float y;
-            float w;
             float u;
             Sprite sprite;
             bl82 = true;
@@ -138,7 +137,7 @@ public class FluidRenderer {
                 z = sprite.getU(8.0f + (ad - ac) * 16.0f);
                 aa = sprite.getV(8.0f + (-ad - ac) * 16.0f);
             }
-            af = (t + v + x + z) / 4.0f;
+            float af = (t + v + x + z) / 4.0f;
             ab = (u + w + y + aa) / 4.0f;
             ac = (float)sprites[0].getWidth() / (sprites[0].getMaxU() - sprites[0].getMinU());
             ad = (float)sprites[0].getHeight() / (sprites[0].getMaxV() - sprites[0].getMinV());
@@ -152,20 +151,18 @@ public class FluidRenderer {
             y = MathHelper.lerp(ae, y, ab);
             aa = MathHelper.lerp(ae, aa, ab);
             int ag = this.method_3343(blockRenderView, blockPos);
-            int ah = ag >> 16 & 0xFFFF;
-            int ai = ag & 0xFFFF;
-            aj = 1.0f * f;
-            ak = 1.0f * g;
-            al = 1.0f * h;
-            bufferBuilder.vertex(d + 0.0, e + (double)n, r + 0.0).color(aj, ak, al, 1.0f).texture(t, u).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(d + 0.0, e + (double)o, r + 1.0).color(aj, ak, al, 1.0f).texture(v, w).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0f).texture(x, y).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0f).texture(z, aa).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+            ah = 1.0f * f;
+            ai = 1.0f * g;
+            aj = 1.0f * h;
+            this.method_23072(arg, d + 0.0, e + (double)n, r + 0.0, ah, ai, aj, t, u, ag);
+            this.method_23072(arg, d + 0.0, e + (double)o, r + 1.0, ah, ai, aj, v, w, ag);
+            this.method_23072(arg, d + 1.0, e + (double)p, r + 1.0, ah, ai, aj, x, y, ag);
+            this.method_23072(arg, d + 1.0, e + (double)q, r + 0.0, ah, ai, aj, z, aa, ag);
             if (fluidState.method_15756(blockRenderView, blockPos.up())) {
-                bufferBuilder.vertex(d + 0.0, e + (double)n, r + 0.0).color(aj, ak, al, 1.0f).texture(t, u).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
-                bufferBuilder.vertex(d + 1.0, e + (double)q, r + 0.0).color(aj, ak, al, 1.0f).texture(z, aa).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
-                bufferBuilder.vertex(d + 1.0, e + (double)p, r + 1.0).color(aj, ak, al, 1.0f).texture(x, y).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
-                bufferBuilder.vertex(d + 0.0, e + (double)o, r + 1.0).color(aj, ak, al, 1.0f).texture(v, w).texture(ah, ai).normal(0.0f, 1.0f, 0.0f).next();
+                this.method_23072(arg, d + 0.0, e + (double)n, r + 0.0, ah, ai, aj, t, u, ag);
+                this.method_23072(arg, d + 1.0, e + (double)q, r + 0.0, ah, ai, aj, z, aa, ag);
+                this.method_23072(arg, d + 1.0, e + (double)p, r + 1.0, ah, ai, aj, x, y, ag);
+                this.method_23072(arg, d + 0.0, e + (double)o, r + 1.0, ah, ai, aj, v, w, ag);
             }
         }
         if (bl3) {
@@ -173,60 +170,58 @@ public class FluidRenderer {
             v = sprites[0].getMaxU();
             x = sprites[0].getMinV();
             z = sprites[0].getMaxV();
-            int am = this.method_3343(blockRenderView, blockPos.down());
-            int an = am >> 16 & 0xFFFF;
-            int ao = am & 0xFFFF;
-            aa = 0.5f * f;
-            float ap = 0.5f * g;
-            af = 0.5f * h;
-            bufferBuilder.vertex(d, e, r + 1.0).color(aa, ap, af, 1.0f).texture(t, z).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(d, e, r).color(aa, ap, af, 1.0f).texture(t, x).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(d + 1.0, e, r).color(aa, ap, af, 1.0f).texture(v, x).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(d + 1.0, e, r + 1.0).color(aa, ap, af, 1.0f).texture(v, z).texture(an, ao).normal(0.0f, 1.0f, 0.0f).next();
+            int ak = this.method_3343(blockRenderView, blockPos.method_10074());
+            w = 0.5f * f;
+            y = 0.5f * g;
+            aa = 0.5f * h;
+            this.method_23072(arg, d, e, r + 1.0, w, y, aa, t, z, ak);
+            this.method_23072(arg, d, e, r, w, y, aa, t, x, ak);
+            this.method_23072(arg, d + 1.0, e, r, w, y, aa, v, x, ak);
+            this.method_23072(arg, d + 1.0, e, r + 1.0, w, y, aa, v, z, ak);
             bl82 = true;
         }
-        for (int aq = 0; aq < 4; ++aq) {
+        for (int al = 0; al < 4; ++al) {
             Block block;
             boolean bl9;
             Direction direction;
-            double au;
-            double at;
-            double as;
-            double ar;
-            if (aq == 0) {
+            double ap;
+            double ao;
+            double an;
+            double am;
+            if (al == 0) {
                 v = n;
                 x = q;
-                ar = d;
-                as = d + 1.0;
-                at = r + (double)0.001f;
-                au = r + (double)0.001f;
+                am = d;
+                an = d + 1.0;
+                ao = r + (double)0.001f;
+                ap = r + (double)0.001f;
                 direction = Direction.NORTH;
                 bl9 = bl4;
-            } else if (aq == 1) {
+            } else if (al == 1) {
                 v = p;
                 x = o;
-                ar = d + 1.0;
-                as = d;
-                at = r + 1.0 - (double)0.001f;
-                au = r + 1.0 - (double)0.001f;
+                am = d + 1.0;
+                an = d;
+                ao = r + 1.0 - (double)0.001f;
+                ap = r + 1.0 - (double)0.001f;
                 direction = Direction.SOUTH;
                 bl9 = bl5;
-            } else if (aq == 2) {
+            } else if (al == 2) {
                 v = o;
                 x = n;
-                ar = d + (double)0.001f;
-                as = d + (double)0.001f;
-                at = r + 1.0;
-                au = r;
+                am = d + (double)0.001f;
+                an = d + (double)0.001f;
+                ao = r + 1.0;
+                ap = r;
                 direction = Direction.WEST;
                 bl9 = bl6;
             } else {
                 v = q;
                 x = p;
-                ar = d + 1.0 - (double)0.001f;
-                as = d + 1.0 - (double)0.001f;
-                at = r;
-                au = r + 1.0;
+                am = d + 1.0 - (double)0.001f;
+                an = d + 1.0 - (double)0.001f;
+                ao = r;
+                ap = r + 1.0;
                 direction = Direction.EAST;
                 bl9 = bl7;
             }
@@ -237,29 +232,31 @@ public class FluidRenderer {
             if (!bl && ((block = blockRenderView.getBlockState(blockPos2).getBlock()) == Blocks.GLASS || block instanceof StainedGlassBlock)) {
                 sprite2 = this.waterOverlaySprite;
             }
-            float av = sprite2.getU(0.0);
-            float aw = sprite2.getU(8.0);
+            ah = sprite2.getU(0.0);
+            ai = sprite2.getU(8.0);
             aj = sprite2.getV((1.0f - v) * 16.0f * 0.5f);
-            ak = sprite2.getV((1.0f - x) * 16.0f * 0.5f);
-            al = sprite2.getV(8.0);
-            int ax = this.method_3343(blockRenderView, blockPos2);
-            int ay = ax >> 16 & 0xFFFF;
-            int az = ax & 0xFFFF;
-            float ba = aq < 2 ? 0.8f : 0.6f;
-            float bb = 1.0f * ba * f;
-            float bc = 1.0f * ba * g;
-            float bd = 1.0f * ba * h;
-            bufferBuilder.vertex(ar, e + (double)v, at).color(bb, bc, bd, 1.0f).texture(av, aj).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(as, e + (double)x, au).color(bb, bc, bd, 1.0f).texture(aw, ak).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0f).texture(aw, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0f).texture(av, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            float aq = sprite2.getV((1.0f - x) * 16.0f * 0.5f);
+            float ar = sprite2.getV(8.0);
+            int as = this.method_3343(blockRenderView, blockPos2);
+            float at = al < 2 ? 0.8f : 0.6f;
+            float au = 1.0f * at * f;
+            float av = 1.0f * at * g;
+            float aw = 1.0f * at * h;
+            this.method_23072(arg, am, e + (double)v, ao, au, av, aw, ah, aj, as);
+            this.method_23072(arg, an, e + (double)x, ap, au, av, aw, ai, aq, as);
+            this.method_23072(arg, an, e + 0.0, ap, au, av, aw, ai, ar, as);
+            this.method_23072(arg, am, e + 0.0, ao, au, av, aw, ah, ar, as);
             if (sprite2 == this.waterOverlaySprite) continue;
-            bufferBuilder.vertex(ar, e + 0.0, at).color(bb, bc, bd, 1.0f).texture(av, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(as, e + 0.0, au).color(bb, bc, bd, 1.0f).texture(aw, al).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(as, e + (double)x, au).color(bb, bc, bd, 1.0f).texture(aw, ak).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(ar, e + (double)v, at).color(bb, bc, bd, 1.0f).texture(av, aj).texture(ay, az).normal(0.0f, 1.0f, 0.0f).next();
+            this.method_23072(arg, am, e + 0.0, ao, au, av, aw, ah, ar, as);
+            this.method_23072(arg, an, e + 0.0, ap, au, av, aw, ai, ar, as);
+            this.method_23072(arg, an, e + (double)x, ap, au, av, aw, ai, aq, as);
+            this.method_23072(arg, am, e + (double)v, ao, au, av, aw, ah, aj, as);
         }
         return bl82;
+    }
+
+    private void method_23072(class_4588 arg, double d, double e, double f, float g, float h, float i, float j, float k, int l) {
+        arg.vertex(d, e, f).method_22915(g, h, i, 1.0f).texture(j, k).method_22916(l).method_22914(0.0f, 1.0f, 0.0f).next();
     }
 
     private int method_3343(BlockRenderView blockRenderView, BlockPos blockPos) {

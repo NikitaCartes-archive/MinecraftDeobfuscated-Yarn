@@ -29,14 +29,6 @@ public class BufferRenderer {
         }
     }
 
-    public static void method_22637(ByteBuffer byteBuffer, int i, VertexFormat vertexFormat, int j) {
-        if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> BufferRenderer.method_22639(byteBuffer, i, vertexFormat, j));
-        } else {
-            BufferRenderer.method_22639(byteBuffer, i, vertexFormat, j);
-        }
-    }
-
     private static void method_22639(ByteBuffer byteBuffer, int i, VertexFormat vertexFormat, int j) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         byteBuffer.clear();

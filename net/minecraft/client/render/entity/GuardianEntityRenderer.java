@@ -3,17 +3,19 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.VisibleRegion;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4604;
+import net.minecraft.class_4608;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
@@ -35,15 +37,15 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         super(entityRenderDispatcher, new GuardianEntityModel(), f);
     }
 
-    public boolean method_3978(GuardianEntity guardianEntity, VisibleRegion visibleRegion, double d, double e, double f) {
+    public boolean method_3978(GuardianEntity guardianEntity, class_4604 arg, double d, double e, double f) {
         LivingEntity livingEntity;
-        if (super.method_4068(guardianEntity, visibleRegion, d, e, f)) {
+        if (super.method_4068(guardianEntity, arg, d, e, f)) {
             return true;
         }
         if (guardianEntity.hasBeamTarget() && (livingEntity = guardianEntity.getBeamTarget()) != null) {
             Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0f);
             Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, guardianEntity.getStandingEyeHeight(), 1.0f);
-            if (visibleRegion.intersects(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
+            if (arg.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
                 return true;
             }
         }
@@ -57,89 +59,83 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         return new Vec3d(e, g, h);
     }
 
-    public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h) {
-        super.method_4072(guardianEntity, d, e, f, g, h);
+    public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+        super.method_4072(guardianEntity, d, e, f, g, h, arg, arg2);
         LivingEntity livingEntity = guardianEntity.getBeamTarget();
         if (livingEntity != null) {
             float i = guardianEntity.getBeamProgress(h);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-            this.bindTexture(EXPLOSION_BEAM_TEX);
-            RenderSystem.texParameter(3553, 10242, 10497);
-            RenderSystem.texParameter(3553, 10243, 10497);
-            RenderSystem.disableLighting();
-            RenderSystem.disableCull();
-            RenderSystem.disableBlend();
-            RenderSystem.depthMask(true);
-            float j = 240.0f;
-            RenderSystem.glMultiTexCoord2f(33985, 240.0f, 240.0f);
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
-            float k = (float)guardianEntity.world.getTime() + h;
-            float l = k * 0.5f % 1.0f;
-            float m = guardianEntity.getStandingEyeHeight();
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)d, (float)e + m, (float)f);
+            float j = (float)guardianEntity.world.getTime() + h;
+            float k = j * 0.5f % 1.0f;
+            float l = guardianEntity.getStandingEyeHeight();
+            arg.method_22903();
+            arg.method_22904(0.0, l, 0.0);
             Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, h);
-            Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, m, h);
+            Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, l, h);
             Vec3d vec3d3 = vec3d.subtract(vec3d2);
-            double n = vec3d3.length() + 1.0;
+            float m = (float)(vec3d3.length() + 1.0);
             vec3d3 = vec3d3.normalize();
-            float o = (float)Math.acos(vec3d3.y);
-            float p = (float)Math.atan2(vec3d3.z, vec3d3.x);
-            RenderSystem.rotatef((1.5707964f - p) * 57.295776f, 0.0f, 1.0f, 0.0f);
-            RenderSystem.rotatef(o * 57.295776f, 1.0f, 0.0f, 0.0f);
-            boolean q = true;
-            double r = (double)k * 0.05 * -1.5;
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-            float s = i * i;
-            int t = 64 + (int)(s * 191.0f);
-            int u = 32 + (int)(s * 191.0f);
-            int v = 128 - (int)(s * 64.0f);
-            double w = 0.2;
-            double x = 0.282;
-            double y = 0.0 + Math.cos(r + 2.356194490192345) * 0.282;
-            double z = 0.0 + Math.sin(r + 2.356194490192345) * 0.282;
-            double aa = 0.0 + Math.cos(r + 0.7853981633974483) * 0.282;
-            double ab = 0.0 + Math.sin(r + 0.7853981633974483) * 0.282;
-            double ac = 0.0 + Math.cos(r + 3.9269908169872414) * 0.282;
-            double ad = 0.0 + Math.sin(r + 3.9269908169872414) * 0.282;
-            double ae = 0.0 + Math.cos(r + 5.497787143782138) * 0.282;
-            double af = 0.0 + Math.sin(r + 5.497787143782138) * 0.282;
-            double ag = 0.0 + Math.cos(r + Math.PI) * 0.2;
-            double ah = 0.0 + Math.sin(r + Math.PI) * 0.2;
-            double ai = 0.0 + Math.cos(r + 0.0) * 0.2;
-            double aj = 0.0 + Math.sin(r + 0.0) * 0.2;
-            double ak = 0.0 + Math.cos(r + 1.5707963267948966) * 0.2;
-            double al = 0.0 + Math.sin(r + 1.5707963267948966) * 0.2;
-            double am = 0.0 + Math.cos(r + 4.71238898038469) * 0.2;
-            double an = 0.0 + Math.sin(r + 4.71238898038469) * 0.2;
-            double ao = n;
-            double ap = 0.0;
-            double aq = 0.4999;
-            double ar = -1.0f + l;
-            double as = n * 2.5 + ar;
-            bufferBuilder.vertex(ag, ao, ah).texture(0.4999, as).color(t, u, v, 255).next();
-            bufferBuilder.vertex(ag, 0.0, ah).texture(0.4999, ar).color(t, u, v, 255).next();
-            bufferBuilder.vertex(ai, 0.0, aj).texture(0.0, ar).color(t, u, v, 255).next();
-            bufferBuilder.vertex(ai, ao, aj).texture(0.0, as).color(t, u, v, 255).next();
-            bufferBuilder.vertex(ak, ao, al).texture(0.4999, as).color(t, u, v, 255).next();
-            bufferBuilder.vertex(ak, 0.0, al).texture(0.4999, ar).color(t, u, v, 255).next();
-            bufferBuilder.vertex(am, 0.0, an).texture(0.0, ar).color(t, u, v, 255).next();
-            bufferBuilder.vertex(am, ao, an).texture(0.0, as).color(t, u, v, 255).next();
-            double at = 0.0;
+            float n = (float)Math.acos(vec3d3.y);
+            float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
+            arg.method_22907(Vector3f.field_20705.method_23214((1.5707964f - o) * 57.295776f, true));
+            arg.method_22907(Vector3f.field_20703.method_23214(n * 57.295776f, true));
+            boolean p = true;
+            float q = j * 0.05f * -1.5f;
+            float r = i * i;
+            int s = 64 + (int)(r * 191.0f);
+            int t = 32 + (int)(r * 191.0f);
+            int u = 128 - (int)(r * 64.0f);
+            float v = 0.2f;
+            float w = 0.282f;
+            float x = MathHelper.cos(q + 2.3561945f) * 0.282f;
+            float y = MathHelper.sin(q + 2.3561945f) * 0.282f;
+            float z = MathHelper.cos(q + 0.7853982f) * 0.282f;
+            float aa = MathHelper.sin(q + 0.7853982f) * 0.282f;
+            float ab = MathHelper.cos(q + 3.926991f) * 0.282f;
+            float ac = MathHelper.sin(q + 3.926991f) * 0.282f;
+            float ad = MathHelper.cos(q + 5.4977875f) * 0.282f;
+            float ae = MathHelper.sin(q + 5.4977875f) * 0.282f;
+            float af = MathHelper.cos(q + (float)Math.PI) * 0.2f;
+            float ag = MathHelper.sin(q + (float)Math.PI) * 0.2f;
+            float ah = MathHelper.cos(q + 0.0f) * 0.2f;
+            float ai = MathHelper.sin(q + 0.0f) * 0.2f;
+            float aj = MathHelper.cos(q + 1.5707964f) * 0.2f;
+            float ak = MathHelper.sin(q + 1.5707964f) * 0.2f;
+            float al = MathHelper.cos(q + 4.712389f) * 0.2f;
+            float am = MathHelper.sin(q + 4.712389f) * 0.2f;
+            float an = m;
+            float ao = 0.0f;
+            float ap = 0.4999f;
+            float aq = -1.0f + k;
+            float ar = m * 2.5f + aq;
+            class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(EXPLOSION_BEAM_TEX));
+            class_4608.method_23211(lv);
+            Matrix4f matrix4f = arg.method_22910();
+            GuardianEntityRenderer.method_23173(lv, matrix4f, af, an, ag, s, t, u, 0.4999f, ar);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, af, 0.0f, ag, s, t, u, 0.4999f, aq);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, ah, 0.0f, ai, s, t, u, 0.0f, aq);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, ah, an, ai, s, t, u, 0.0f, ar);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, aj, an, ak, s, t, u, 0.4999f, ar);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, aj, 0.0f, ak, s, t, u, 0.4999f, aq);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, al, 0.0f, am, s, t, u, 0.0f, aq);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, al, an, am, s, t, u, 0.0f, ar);
+            float as = 0.0f;
             if (guardianEntity.age % 2 == 0) {
-                at = 0.5;
+                as = 0.5f;
             }
-            bufferBuilder.vertex(y, ao, z).texture(0.5, at + 0.5).color(t, u, v, 255).next();
-            bufferBuilder.vertex(aa, ao, ab).texture(1.0, at + 0.5).color(t, u, v, 255).next();
-            bufferBuilder.vertex(ae, ao, af).texture(1.0, at).color(t, u, v, 255).next();
-            bufferBuilder.vertex(ac, ao, ad).texture(0.5, at).color(t, u, v, 255).next();
-            tessellator.draw();
-            RenderSystem.popMatrix();
+            GuardianEntityRenderer.method_23173(lv, matrix4f, x, an, y, s, t, u, 0.5f, as + 0.5f);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, z, an, aa, s, t, u, 1.0f, as + 0.5f);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, ad, an, ae, s, t, u, 1.0f, as);
+            GuardianEntityRenderer.method_23173(lv, matrix4f, ab, an, ac, s, t, u, 0.5f, as);
+            lv.method_22923();
+            arg.method_22909();
         }
     }
 
-    protected Identifier method_3976(GuardianEntity guardianEntity) {
+    private static void method_23173(class_4588 arg, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, float l, float m) {
+        arg.method_22918(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).method_22916(0xF000F0).method_22914(0.0f, 1.0f, 0.0f).next();
+    }
+
+    public Identifier method_3976(GuardianEntity guardianEntity) {
         return SKIN;
     }
 }

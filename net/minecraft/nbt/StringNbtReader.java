@@ -27,6 +27,7 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagReader;
 import net.minecraft.text.TranslatableText;
 
 public class StringNbtReader {
@@ -75,7 +76,7 @@ public class StringNbtReader {
         this.reader.skipWhitespace();
         int i = this.reader.getCursor();
         if (StringReader.isQuotedStringStart(this.reader.peek())) {
-            return new StringTag(this.reader.readQuotedString());
+            return StringTag.of(this.reader.readQuotedString());
         }
         String string = this.reader.readUnquotedString();
         if (string.isEmpty()) {
@@ -88,36 +89,36 @@ public class StringNbtReader {
     private Tag parsePrimitive(String string) {
         try {
             if (FLOAT_PATTERN.matcher(string).matches()) {
-                return new FloatTag(Float.parseFloat(string.substring(0, string.length() - 1)));
+                return FloatTag.of(Float.parseFloat(string.substring(0, string.length() - 1)));
             }
             if (BYTE_PATTERN.matcher(string).matches()) {
-                return new ByteTag(Byte.parseByte(string.substring(0, string.length() - 1)));
+                return ByteTag.of(Byte.parseByte(string.substring(0, string.length() - 1)));
             }
             if (LONG_PATTERN.matcher(string).matches()) {
-                return new LongTag(Long.parseLong(string.substring(0, string.length() - 1)));
+                return LongTag.of(Long.parseLong(string.substring(0, string.length() - 1)));
             }
             if (SHORT_PATTERN.matcher(string).matches()) {
-                return new ShortTag(Short.parseShort(string.substring(0, string.length() - 1)));
+                return ShortTag.of(Short.parseShort(string.substring(0, string.length() - 1)));
             }
             if (INT_PATTERN.matcher(string).matches()) {
-                return new IntTag(Integer.parseInt(string));
+                return IntTag.of(Integer.parseInt(string));
             }
             if (DOUBLE_PATTERN.matcher(string).matches()) {
-                return new DoubleTag(Double.parseDouble(string.substring(0, string.length() - 1)));
+                return DoubleTag.of(Double.parseDouble(string.substring(0, string.length() - 1)));
             }
             if (DOUBLE_PATTERN_IMPLICIT.matcher(string).matches()) {
-                return new DoubleTag(Double.parseDouble(string));
+                return DoubleTag.of(Double.parseDouble(string));
             }
             if ("true".equalsIgnoreCase(string)) {
-                return new ByteTag(1);
+                return ByteTag.ONE;
             }
             if ("false".equalsIgnoreCase(string)) {
-                return new ByteTag(0);
+                return ByteTag.ZERO;
             }
         } catch (NumberFormatException numberFormatException) {
             // empty catch block
         }
-        return new StringTag(string);
+        return StringTag.of(string);
     }
 
     public Tag parseTag() throws CommandSyntaxException {
@@ -170,16 +171,16 @@ public class StringNbtReader {
             throw EXPECTED_VALUE.createWithContext(this.reader);
         }
         ListTag listTag = new ListTag();
-        byte i = -1;
+        TagReader<?> tagReader = null;
         while (this.reader.peek() != ']') {
-            int j = this.reader.getCursor();
+            int i = this.reader.getCursor();
             Tag tag = this.parseTag();
-            byte k = tag.getType();
-            if (i < 0) {
-                i = k;
-            } else if (k != i) {
-                this.reader.setCursor(j);
-                throw LIST_MIXED.createWithContext(this.reader, Tag.idToString(k), Tag.idToString(i));
+            TagReader<?> tagReader2 = tag.getReader();
+            if (tagReader == null) {
+                tagReader = tagReader2;
+            } else if (tagReader2 != tagReader) {
+                this.reader.setCursor(i);
+                throw LIST_MIXED.createWithContext(this.reader, tagReader2.getCommandFeedbackName(), tagReader.getCommandFeedbackName());
             }
             listTag.add(tag);
             if (!this.readComma()) break;
@@ -200,31 +201,31 @@ public class StringNbtReader {
             throw EXPECTED_VALUE.createWithContext(this.reader);
         }
         if (c == 'B') {
-            return new ByteArrayTag(this.readArray((byte)7, (byte)1));
+            return new ByteArrayTag(this.readArray(ByteArrayTag.READER, ByteTag.READER));
         }
         if (c == 'L') {
-            return new LongArrayTag(this.readArray((byte)12, (byte)4));
+            return new LongArrayTag(this.readArray(LongArrayTag.READER, LongTag.READER));
         }
         if (c == 'I') {
-            return new IntArrayTag(this.readArray((byte)11, (byte)3));
+            return new IntArrayTag(this.readArray(IntArrayTag.READER, IntTag.READER));
         }
         this.reader.setCursor(i);
         throw ARRAY_INVALID.createWithContext(this.reader, String.valueOf(c));
     }
 
-    private <T extends Number> List<T> readArray(byte b, byte c) throws CommandSyntaxException {
+    private <T extends Number> List<T> readArray(TagReader<?> tagReader, TagReader<?> tagReader2) throws CommandSyntaxException {
         ArrayList<Number> list = Lists.newArrayList();
         while (this.reader.peek() != ']') {
             int i = this.reader.getCursor();
             Tag tag = this.parseTag();
-            byte j = tag.getType();
-            if (j != c) {
+            TagReader<?> tagReader3 = tag.getReader();
+            if (tagReader3 != tagReader2) {
                 this.reader.setCursor(i);
-                throw ARRAY_MIXED.createWithContext(this.reader, Tag.idToString(j), Tag.idToString(b));
+                throw ARRAY_MIXED.createWithContext(this.reader, tagReader3.getCommandFeedbackName(), tagReader.getCommandFeedbackName());
             }
-            if (c == 1) {
+            if (tagReader2 == ByteTag.READER) {
                 list.add(((AbstractNumberTag)tag).getByte());
-            } else if (c == 4) {
+            } else if (tagReader2 == LongTag.READER) {
                 list.add(((AbstractNumberTag)tag).getLong());
             } else {
                 list.add(((AbstractNumberTag)tag).getInt());

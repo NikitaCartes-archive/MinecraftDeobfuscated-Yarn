@@ -3,17 +3,17 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class OcelotEntityModel<T extends Entity>
-extends EntityModel<T> {
+extends class_4592<T> {
     protected final ModelPart frontLegLeft;
     protected final ModelPart frontLegRight;
     protected final ModelPart backLegLeft;
@@ -25,6 +25,7 @@ extends EntityModel<T> {
     protected int animationState = 1;
 
     public OcelotEntityModel(float f) {
+        super(true, 10.0f, 4.0f);
         this.head.addCuboid("main", -2.5f, -2.0f, -3.0f, 5, 4, 5, f, 0, 0);
         this.head.addCuboid("nose", -1.5f, 0.0f, -4.0f, 3, 2, 2, f, 0, 24);
         this.head.addCuboid("ear1", -2.0f, -3.0f, 0.0f, 1, 1, 2, f, 0, 10);
@@ -55,36 +56,13 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 2.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.75f, 0.75f, 0.75f);
-            RenderSystem.translatef(0.0f, 10.0f * k, 4.0f * k);
-            this.head.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
-            this.body.render(k);
-            this.frontLegLeft.render(k);
-            this.frontLegRight.render(k);
-            this.backLegLeft.render(k);
-            this.backLegRight.render(k);
-            this.tail1.render(k);
-            this.tail2.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.head.render(k);
-            this.body.render(k);
-            this.tail1.render(k);
-            this.tail2.render(k);
-            this.frontLegLeft.render(k);
-            this.frontLegRight.render(k);
-            this.backLegLeft.render(k);
-            this.backLegRight.render(k);
-        }
+    protected Iterable<ModelPart> method_22946() {
+        return ImmutableList.of(this.head);
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.body, this.frontLegLeft, this.frontLegRight, this.backLegLeft, this.backLegRight, this.tail1, this.tail2);
     }
 
     @Override

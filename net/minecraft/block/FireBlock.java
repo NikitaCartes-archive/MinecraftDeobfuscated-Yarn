@@ -76,7 +76,7 @@ extends Block {
     }
 
     public BlockState getStateForPosition(BlockView blockView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         BlockState blockState = blockView.getBlockState(blockPos2);
         if (this.isFlammable(blockState) || blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.UP)) {
             return this.getDefaultState();
@@ -92,7 +92,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         return arg.getBlockState(blockPos2).isSideSolidFullSquare(arg, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(arg, blockPos);
     }
 
@@ -110,7 +110,7 @@ extends Block {
         if (!blockState.canPlaceAt(serverWorld, blockPos)) {
             serverWorld.removeBlock(blockPos, false);
         }
-        Block block = serverWorld.getBlockState(blockPos.down()).getBlock();
+        Block block = serverWorld.getBlockState(blockPos.method_10074()).getBlock();
         boolean bl = serverWorld.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
         int i = blockState.get(AGE);
         if (!bl && serverWorld.isRaining() && this.isRainingAround(serverWorld, blockPos) && random.nextFloat() < 0.2f + (float)i * 0.03f) {
@@ -125,13 +125,13 @@ extends Block {
         if (!bl) {
             serverWorld.method_14196().schedule(blockPos, this, this.getTickRate(serverWorld) + random.nextInt(10));
             if (!this.areBlocksAroundFlammable(serverWorld, blockPos)) {
-                BlockPos blockPos2 = blockPos.down();
+                BlockPos blockPos2 = blockPos.method_10074();
                 if (!serverWorld.getBlockState(blockPos2).isSideSolidFullSquare(serverWorld, blockPos2, Direction.UP) || i > 3) {
                     serverWorld.removeBlock(blockPos, false);
                 }
                 return;
             }
-            if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(serverWorld.getBlockState(blockPos.down()))) {
+            if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(serverWorld.getBlockState(blockPos.method_10074()))) {
                 serverWorld.removeBlock(blockPos, false);
                 return;
             }
@@ -139,7 +139,7 @@ extends Block {
         int k = (bl2 = serverWorld.hasHighHumidity(blockPos)) ? -50 : 0;
         this.trySpreadingFire(serverWorld, blockPos.east(), 300 + k, random, i);
         this.trySpreadingFire(serverWorld, blockPos.west(), 300 + k, random, i);
-        this.trySpreadingFire(serverWorld, blockPos.down(), 250 + k, random, i);
+        this.trySpreadingFire(serverWorld, blockPos.method_10074(), 250 + k, random, i);
         this.trySpreadingFire(serverWorld, blockPos.up(), 250 + k, random, i);
         this.trySpreadingFire(serverWorld, blockPos.north(), 300 + k, random, i);
         this.trySpreadingFire(serverWorld, blockPos.south(), 300 + k, random, i);
@@ -256,7 +256,7 @@ extends Block {
                 if (random.nextInt(24) == 0) {
                     world.playSound((float)blockPos.getX() + 0.5f, (double)((float)blockPos.getY() + 0.5f), (double)((float)blockPos.getZ() + 0.5f), SoundEvents.BLOCK_FIRE_AMBIENT, SoundCategory.BLOCKS, 1.0f + random.nextFloat(), random.nextFloat() * 0.7f + 0.3f, false);
                 }
-                if (!this.isFlammable(blockState2 = world.getBlockState(blockPos2 = blockPos.down())) && !blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) break block11;
+                if (!this.isFlammable(blockState2 = world.getBlockState(blockPos2 = blockPos.method_10074())) && !blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) break block11;
                 for (int i2 = 0; i2 < 3; ++i2) {
                     double d2 = (double)blockPos.getX() + random.nextDouble();
                     double e2 = (double)blockPos.getY() + random.nextDouble() * 0.5 + 0.5;

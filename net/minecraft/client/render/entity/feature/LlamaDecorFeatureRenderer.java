@@ -5,6 +5,8 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.LlamaEntityModel;
@@ -23,22 +25,19 @@ extends FeatureRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4191(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4191(class_4587 arg, class_4597 arg2, int i, LlamaEntity llamaEntity, float f, float g, float h, float j, float k, float l, float m) {
+        Identifier identifier;
         DyeColor dyeColor = llamaEntity.getCarpetColor();
         if (dyeColor != null) {
-            this.bindTexture(LLAMA_DECOR[dyeColor.getId()]);
+            identifier = LLAMA_DECOR[dyeColor.getId()];
         } else if (llamaEntity.isTrader()) {
-            this.bindTexture(TRADER_LLAMA_DECOR);
+            identifier = TRADER_LLAMA_DECOR;
         } else {
             return;
         }
         ((LlamaEntityModel)this.getModel()).copyStateTo(this.model);
-        this.model.method_17100(llamaEntity, f, g, i, j, k, l);
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return false;
+        this.model.method_22962(llamaEntity, f, g, j, k, l, m);
+        LlamaDecorFeatureRenderer.method_23197(this.model, identifier, arg, arg2, i, 1.0f, 1.0f, 1.0f);
     }
 }
 

@@ -171,7 +171,6 @@ extends Entity {
     public float sidewaysSpeed;
     public float upwardSpeed;
     public float forwardSpeed;
-    public float turningSpeed;
     protected int bodyTrackingIncrements;
     protected double serverX;
     protected double serverY;
@@ -426,7 +425,7 @@ extends Entity {
         return false;
     }
 
-    public Random getRand() {
+    public Random getRandom() {
         return this.random;
     }
 
@@ -507,25 +506,25 @@ extends Entity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         this.setAbsorptionAmount(compoundTag.getFloat("AbsorptionAmount"));
-        if (compoundTag.containsKey("Attributes", 9) && this.world != null && !this.world.isClient) {
+        if (compoundTag.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
             EntityAttributes.fromTag(this.getAttributes(), compoundTag.getList("Attributes", 10));
         }
-        if (compoundTag.containsKey("ActiveEffects", 9)) {
+        if (compoundTag.contains("ActiveEffects", 9)) {
             ListTag listTag = compoundTag.getList("ActiveEffects", 10);
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+                CompoundTag compoundTag2 = listTag.getCompound(i);
                 StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(compoundTag2);
                 if (statusEffectInstance == null) continue;
                 this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
             }
         }
-        if (compoundTag.containsKey("Health", 99)) {
+        if (compoundTag.contains("Health", 99)) {
             this.setHealth(compoundTag.getFloat("Health"));
         }
         this.hurtTime = compoundTag.getShort("HurtTime");
         this.deathTime = compoundTag.getShort("DeathTime");
         this.lastAttackedTime = compoundTag.getInt("HurtByTimestamp");
-        if (compoundTag.containsKey("Team", 8)) {
+        if (compoundTag.contains("Team", 8)) {
             boolean bl;
             String string = compoundTag.getString("Team");
             Team team = this.world.getScoreboard().getTeam(string);
@@ -537,7 +536,7 @@ extends Entity {
         if (compoundTag.getBoolean("FallFlying")) {
             this.setFlag(7, true);
         }
-        if (compoundTag.containsKey("SleepingX", 99) && compoundTag.containsKey("SleepingY", 99) && compoundTag.containsKey("SleepingZ", 99)) {
+        if (compoundTag.contains("SleepingX", 99) && compoundTag.contains("SleepingY", 99) && compoundTag.contains("SleepingZ", 99)) {
             BlockPos blockPos = new BlockPos(compoundTag.getInt("SleepingX"), compoundTag.getInt("SleepingY"), compoundTag.getInt("SleepingZ"));
             this.setSleepingPosition(blockPos);
             this.dataTracker.set(POSE, EntityPose.SLEEPING);
@@ -545,8 +544,8 @@ extends Entity {
                 this.setPositionInBed(blockPos);
             }
         }
-        if (compoundTag.containsKey("Brain", 10)) {
-            this.brain = this.deserializeBrain(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.getTag("Brain")));
+        if (compoundTag.contains("Brain", 10)) {
+            this.brain = this.deserializeBrain(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.get("Brain")));
         }
     }
 
@@ -1083,7 +1082,7 @@ extends Entity {
 
     private boolean canEnterTrapdoor(BlockPos blockPos, BlockState blockState) {
         BlockState blockState2;
-        return blockState.get(TrapdoorBlock.OPEN) != false && (blockState2 = this.world.getBlockState(blockPos.down())).getBlock() == Blocks.LADDER && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.FACING);
+        return blockState.get(TrapdoorBlock.OPEN) != false && (blockState2 = this.world.getBlockState(blockPos.method_10074())).getBlock() == Blocks.LADDER && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.FACING);
     }
 
     @Override
@@ -1889,6 +1888,7 @@ extends Entity {
         }
         if (this.isLogicalSideForUpdatingMovement()) {
             this.bodyTrackingIncrements = 0;
+            this.updateTrackedPosition(this.x, this.y, this.z);
         }
         if (this.bodyTrackingIncrements > 0) {
             double d = this.x + (this.serverX - this.x) / (double)this.bodyTrackingIncrements;
@@ -1926,7 +1926,6 @@ extends Entity {
             this.jumping = false;
             this.sidewaysSpeed = 0.0f;
             this.forwardSpeed = 0.0f;
-            this.turningSpeed = 0.0f;
         } else if (this.canMoveVoluntarily()) {
             this.world.getProfiler().push("newAi");
             this.tickNewAi();
@@ -1950,7 +1949,6 @@ extends Entity {
         this.world.getProfiler().push("travel");
         this.sidewaysSpeed *= 0.98f;
         this.forwardSpeed *= 0.98f;
-        this.turningSpeed *= 0.9f;
         this.initAi();
         Box box = this.getBoundingBox();
         this.travel(new Vec3d(this.sidewaysSpeed, this.upwardSpeed, this.forwardSpeed));
@@ -2368,7 +2366,7 @@ extends Entity {
         if (world.isChunkLoaded(blockPos)) {
             boolean bl3 = false;
             while (!bl3 && blockPos.getY() > 0) {
-                BlockPos blockPos2 = blockPos.down();
+                BlockPos blockPos2 = blockPos.method_10074();
                 BlockState blockState = world.getBlockState(blockPos2);
                 if (blockState.getMaterial().blocksMovement()) {
                     bl3 = true;

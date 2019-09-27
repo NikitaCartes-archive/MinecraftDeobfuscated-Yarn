@@ -42,6 +42,7 @@ extends BipedEntityModel<T> {
 
     @Override
     public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
+        float n;
         super.method_17087(livingEntity, f, g, h, i, j, k);
         this.head.visible = true;
         float l = -14.0f;
@@ -100,9 +101,12 @@ extends BipedEntityModel<T> {
         this.headwear.yaw = this.head.yaw;
         this.headwear.roll = this.head.roll;
         if (this.angry) {
-            float n = 1.0f;
+            n = 1.0f;
             this.head.rotationPointY -= 5.0f;
         }
+        n = -14.0f;
+        this.rightArm.setRotationPoint(-5.0f, -12.0f, 0.0f);
+        this.leftArm.setRotationPoint(5.0f, -12.0f, 0.0f);
     }
 }
 

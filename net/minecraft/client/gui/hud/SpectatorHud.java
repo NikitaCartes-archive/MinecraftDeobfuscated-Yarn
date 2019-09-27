@@ -12,7 +12,6 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCloseCallback;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -54,10 +53,10 @@ implements SpectatorMenuCloseCallback {
             this.spectatorMenu.close();
             return;
         }
-        int i = this.client.method_22683().getScaledWidth() / 2;
+        int i = this.client.getWindow().getScaledWidth() / 2;
         int j = this.getBlitOffset();
         this.setBlitOffset(-90);
-        int k = MathHelper.floor((float)this.client.method_22683().getScaledHeight() - 22.0f * g);
+        int k = MathHelper.floor((float)this.client.getWindow().getScaledHeight() - 22.0f * g);
         SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
         this.renderSpectatorMenu(g, i, k, spectatorMenuState);
         this.setBlitOffset(j);
@@ -73,11 +72,9 @@ implements SpectatorMenuCloseCallback {
         if (spectatorMenuState.getSelectedSlot() >= 0) {
             this.blit(i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
         }
-        GuiLighting.enableForItems();
         for (int k = 0; k < 9; ++k) {
-            this.renderSpectatorCommand(k, this.client.method_22683().getScaledWidth() / 2 - 90 + k * 20 + 2, j + 3, f, spectatorMenuState.getCommand(k));
+            this.renderSpectatorCommand(k, this.client.getWindow().getScaledWidth() / 2 - 90 + k * 20 + 2, j + 3, f, spectatorMenuState.getCommand(k));
         }
-        GuiLighting.disable();
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
     }
@@ -106,8 +103,8 @@ implements SpectatorMenuCloseCallback {
             SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
             String string2 = string = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND ? this.spectatorMenu.getCurrentGroup().getPrompt().asFormattedString() : spectatorMenuCommand.getName().asFormattedString();
             if (string != null) {
-                int j = (this.client.method_22683().getScaledWidth() - this.client.textRenderer.getStringWidth(string)) / 2;
-                int k = this.client.method_22683().getScaledHeight() - 35;
+                int j = (this.client.getWindow().getScaledWidth() - this.client.textRenderer.getStringWidth(string)) / 2;
+                int k = this.client.getWindow().getScaledHeight() - 35;
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();

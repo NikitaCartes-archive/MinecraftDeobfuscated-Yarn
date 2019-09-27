@@ -231,11 +231,6 @@ public class Sprite {
         return this.uMin + f * (float)d / 16.0f;
     }
 
-    public float getXFromU(float f) {
-        float g = this.uMax - this.uMin;
-        return (f - this.uMin) / g * 16.0f;
-    }
-
     public float getMinV() {
         return this.vMin;
     }
@@ -247,11 +242,6 @@ public class Sprite {
     public float getV(double d) {
         float f = this.vMax - this.vMin;
         return this.vMin + f * (float)d / 16.0f;
-    }
-
-    public float getYFromV(float f) {
-        float g = this.vMax - this.vMin;
-        return (f - this.vMin) / g * 16.0f;
     }
 
     public Identifier getId() {

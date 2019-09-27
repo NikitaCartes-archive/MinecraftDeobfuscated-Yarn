@@ -52,7 +52,7 @@ extends Goal {
 
     @Override
     public void tick() {
-        if (!this.horse.isTame() && this.horse.getRand().nextInt(50) == 0) {
+        if (!this.horse.isTame() && this.horse.getRandom().nextInt(50) == 0) {
             Entity entity = this.horse.getPassengerList().get(0);
             if (entity == null) {
                 return;
@@ -60,7 +60,7 @@ extends Goal {
             if (entity instanceof PlayerEntity) {
                 int i = this.horse.getTemper();
                 int j = this.horse.getMaxTemper();
-                if (j > 0 && this.horse.getRand().nextInt(j) < i) {
+                if (j > 0 && this.horse.getRandom().nextInt(j) < i) {
                     this.horse.bondWithPlayer((PlayerEntity)entity);
                     return;
                 }

@@ -42,7 +42,7 @@ extends LockableContainerBlockEntity {
     }
 
     protected boolean deserializeLootTable(CompoundTag compoundTag) {
-        if (compoundTag.containsKey("LootTable", 8)) {
+        if (compoundTag.contains("LootTable", 8)) {
             this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
             this.lootTableSeed = compoundTag.getLong("LootTableSeed");
             return true;

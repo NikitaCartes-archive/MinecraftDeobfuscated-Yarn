@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -56,8 +55,6 @@ public class Camera {
             this.setRotation(direction != null ? direction.asRotation() - 180.0f : 0.0f, 0.0f);
             this.moveBy(0.0, 0.3, 0.0);
         }
-        RenderSystem.rotatef(this.pitch, 1.0f, 0.0f, 0.0f);
-        RenderSystem.rotatef(this.yaw + 180.0f, 0.0f, 1.0f, 0.0f);
     }
 
     public void updateEyeHeight() {

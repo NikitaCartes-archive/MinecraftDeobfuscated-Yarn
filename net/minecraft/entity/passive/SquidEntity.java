@@ -183,7 +183,7 @@ extends WaterCreatureEntity {
         this.move(MovementType.SELF, this.getVelocity());
     }
 
-    public static boolean method_20670(EntityType<SquidEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<SquidEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel();
     }
 
@@ -279,10 +279,10 @@ extends WaterCreatureEntity {
             int i = this.squid.getDespawnCounter();
             if (i > 100) {
                 this.squid.setConstantVelocity(0.0f, 0.0f, 0.0f);
-            } else if (this.squid.getRand().nextInt(50) == 0 || !this.squid.insideWater || !this.squid.hasConstantVelocity()) {
-                float f = this.squid.getRand().nextFloat() * ((float)Math.PI * 2);
+            } else if (this.squid.getRandom().nextInt(50) == 0 || !this.squid.insideWater || !this.squid.hasConstantVelocity()) {
+                float f = this.squid.getRandom().nextFloat() * ((float)Math.PI * 2);
                 float g = MathHelper.cos(f) * 0.2f;
-                float h = -0.1f + this.squid.getRand().nextFloat() * 0.2f;
+                float h = -0.1f + this.squid.getRandom().nextFloat() * 0.2f;
                 float j = MathHelper.sin(f) * 0.2f;
                 this.squid.setConstantVelocity(g, h, j);
             }

@@ -25,9 +25,9 @@ extends AbstractPhase {
     @Override
     public void clientTick() {
         if (this.ticks++ % 10 == 0) {
-            float f = (this.dragon.getRand().nextFloat() - 0.5f) * 8.0f;
-            float g = (this.dragon.getRand().nextFloat() - 0.5f) * 4.0f;
-            float h = (this.dragon.getRand().nextFloat() - 0.5f) * 8.0f;
+            float f = (this.dragon.getRandom().nextFloat() - 0.5f) * 8.0f;
+            float g = (this.dragon.getRandom().nextFloat() - 0.5f) * 4.0f;
+            float h = (this.dragon.getRandom().nextFloat() - 0.5f) * 8.0f;
             this.dragon.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.dragon.x + (double)f, this.dragon.y + 2.0 + (double)g, this.dragon.z + (double)h, 0.0, 0.0, 0.0);
         }
     }

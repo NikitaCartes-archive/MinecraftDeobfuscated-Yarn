@@ -242,14 +242,14 @@ public class Keyboard {
 
     public void onKey(long l, int i, int j, int k, int m) {
         boolean bl;
-        if (l != this.client.method_22683().getHandle()) {
+        if (l != this.client.getWindow().getHandle()) {
             return;
         }
         if (this.debugCrashStartTime > 0L) {
-            if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 67) || !InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292)) {
+            if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 67) || !InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292)) {
                 this.debugCrashStartTime = -1L;
             }
-        } else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 67) && InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292)) {
+        } else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 67) && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292)) {
             this.switchF3State = true;
             this.debugCrashStartTime = SystemUtil.getMeasuringTimeMs();
             this.debugCrashLastLogTime = SystemUtil.getMeasuringTimeMs();
@@ -258,15 +258,15 @@ public class Keyboard {
         Screen parentElement = this.client.currentScreen;
         if (!(k != 1 || this.client.currentScreen instanceof ControlsOptionsScreen && ((ControlsOptionsScreen)parentElement).time > SystemUtil.getMeasuringTimeMs() - 20L)) {
             if (this.client.options.keyFullscreen.matchesKey(i, j)) {
-                this.client.method_22683().toggleFullscreen();
-                this.client.options.fullscreen = this.client.method_22683().isFullscreen();
+                this.client.getWindow().toggleFullscreen();
+                this.client.options.fullscreen = this.client.getWindow().isFullscreen();
                 return;
             }
             if (this.client.options.keyScreenshot.matchesKey(i, j)) {
                 if (Screen.hasControlDown()) {
                     // empty if block
                 }
-                ScreenshotUtils.saveScreenshot(this.client.runDirectory, this.client.method_22683().getFramebufferWidth(), this.client.method_22683().getFramebufferHeight(), this.client.getFramebuffer(), text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage((Text)text)));
+                ScreenshotUtils.saveScreenshot(this.client.runDirectory, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), this.client.getFramebuffer(), text -> this.client.execute(() -> this.client.inGameHud.getChatHud().addMessage((Text)text)));
                 return;
             }
         }
@@ -313,10 +313,10 @@ public class Keyboard {
                 boolean bl22 = false;
                 if (this.client.currentScreen == null) {
                     if (i == 256) {
-                        boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292);
+                        boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292);
                         this.client.openPauseMenu(bl3);
                     }
-                    bl22 = InputUtil.isKeyPressed(MinecraftClient.getInstance().method_22683().getHandle(), 292) && this.processF3(i);
+                    bl22 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292) && this.processF3(i);
                     this.switchF3State |= bl22;
                     if (i == 290) {
                         boolean bl3 = this.client.options.hudHidden = !this.client.options.hudHidden;
@@ -342,7 +342,7 @@ public class Keyboard {
     }
 
     private void onChar(long l, int i, int j) {
-        if (l != this.client.method_22683().getHandle()) {
+        if (l != this.client.getWindow().getHandle()) {
             return;
         }
         Screen element = this.client.currentScreen;
@@ -367,15 +367,15 @@ public class Keyboard {
     }
 
     public String getClipboard() {
-        return this.clipboard.getClipboard(this.client.method_22683().getHandle(), (i, l) -> {
+        return this.clipboard.getClipboard(this.client.getWindow().getHandle(), (i, l) -> {
             if (i != 65545) {
-                this.client.method_22683().logGlError(i, l);
+                this.client.getWindow().logGlError(i, l);
             }
         });
     }
 
     public void setClipboard(String string) {
-        this.clipboard.setClipboard(this.client.method_22683().getHandle(), string);
+        this.clipboard.setClipboard(this.client.getWindow().getHandle(), string);
     }
 
     public void pollDebugCrash() {

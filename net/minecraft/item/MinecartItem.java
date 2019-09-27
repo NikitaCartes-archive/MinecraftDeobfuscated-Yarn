@@ -39,9 +39,9 @@ extends Item {
             RailShape railShape2 = railShape = blockState.getBlock() instanceof AbstractRailBlock ? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
             if (blockState.matches(BlockTags.RAILS)) {
                 g = railShape.isAscending() ? 0.6 : 0.1;
-            } else if (blockState.isAir() && world.getBlockState(blockPos.down()).matches(BlockTags.RAILS)) {
+            } else if (blockState.isAir() && world.getBlockState(blockPos.method_10074()).matches(BlockTags.RAILS)) {
                 RailShape railShape22;
-                BlockState blockState2 = world.getBlockState(blockPos.down());
+                BlockState blockState2 = world.getBlockState(blockPos.method_10074());
                 RailShape railShape3 = railShape22 = blockState2.getBlock() instanceof AbstractRailBlock ? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
                 g = direction == Direction.DOWN || !railShape22.isAscending() ? -0.9 : -0.4;
             } else {

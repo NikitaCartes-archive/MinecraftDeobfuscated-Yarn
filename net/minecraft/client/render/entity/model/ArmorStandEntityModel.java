@@ -3,9 +3,11 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -83,35 +85,17 @@ extends ArmorStandArmorEntityModel {
         this.plate.roll = 0.0f;
     }
 
-    public void method_17067(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j, float k) {
-        super.method_17088(armorStandEntity, f, g, h, i, j, k);
-        RenderSystem.pushMatrix();
-        if (this.isChild) {
-            float l = 2.0f;
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
-            this.bodyStickRight.render(k);
-            this.bodyStickLeft.render(k);
-            this.hip.render(k);
-            this.plate.render(k);
-        } else {
-            if (armorStandEntity.isInSneakingPose()) {
-                RenderSystem.translatef(0.0f, 0.2f, 0.0f);
-            }
-            this.bodyStickRight.render(k);
-            this.bodyStickLeft.render(k);
-            this.hip.render(k);
-            this.plate.render(k);
-        }
-        RenderSystem.popMatrix();
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return Iterables.concat(super.method_22948(), ImmutableList.of(this.bodyStickRight, this.bodyStickLeft, this.hip, this.plate));
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm) {
+    public void setArmAngle(float f, Arm arm, class_4587 arg) {
         ModelPart modelPart = this.getArm(arm);
         boolean bl = modelPart.visible;
         modelPart.visible = true;
-        super.setArmAngle(f, arm);
+        super.setArmAngle(f, arm, arg);
         modelPart.visible = bl;
     }
 }

@@ -185,6 +185,9 @@ implements ServerPlayPacketListener {
 
     public void tick() {
         this.syncWithPlayerPosition();
+        this.player.prevX = this.player.x;
+        this.player.prevY = this.player.y;
+        this.player.prevZ = this.player.z;
         this.player.method_14226();
         this.player.setPositionAnglesAndUpdate(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
         ++this.ticks;
@@ -612,14 +615,14 @@ implements ServerPlayPacketListener {
                 if (compoundTag != null) {
                     itemStack3.setTag(compoundTag.method_10553());
                 }
-                itemStack3.putSubTag("author", new StringTag(this.player.getName().getString()));
-                itemStack3.putSubTag("title", new StringTag(itemStack.getTag().getString("title")));
+                itemStack3.putSubTag("author", StringTag.of(this.player.getName().getString()));
+                itemStack3.putSubTag("title", StringTag.of(itemStack.getTag().getString("title")));
                 ListTag listTag = itemStack.getTag().getList("pages", 8);
                 for (int i = 0; i < listTag.size(); ++i) {
                     String string = listTag.getString(i);
                     LiteralText text = new LiteralText(string);
                     string = Text.Serializer.toJson(text);
-                    listTag.method_10606(i, new StringTag(string));
+                    listTag.method_10606(i, StringTag.of(string));
                 }
                 itemStack3.putSubTag("pages", listTag);
                 this.player.setStackInHand(bookUpdateC2SPacket.getHand(), itemStack3);
@@ -1158,7 +1161,7 @@ implements ServerPlayPacketListener {
             boolean bl = creativeInventoryActionC2SPacket.getSlot() < 0;
             ItemStack itemStack = creativeInventoryActionC2SPacket.getItemStack();
             CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-            if (!itemStack.isEmpty() && compoundTag != null && compoundTag.containsKey("x") && compoundTag.containsKey("y") && compoundTag.containsKey("z") && (blockEntity = this.player.world.getBlockEntity(blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")))) != null) {
+            if (!itemStack.isEmpty() && compoundTag != null && compoundTag.contains("x") && compoundTag.contains("y") && compoundTag.contains("z") && (blockEntity = this.player.world.getBlockEntity(blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")))) != null) {
                 CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
                 compoundTag2.remove("x");
                 compoundTag2.remove("y");

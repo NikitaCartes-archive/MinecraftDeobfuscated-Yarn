@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.model.VexEntityModel;
@@ -22,15 +22,15 @@ extends BipedEntityRenderer<VexEntity, VexEntityModel> {
         super(entityRenderDispatcher, new VexEntityModel(), 0.3f);
     }
 
-    protected Identifier method_4144(VexEntity vexEntity) {
+    public Identifier method_4144(VexEntity vexEntity) {
         if (vexEntity.isCharging()) {
             return CHARGING_TEXTURE;
         }
         return TEXTURE;
     }
 
-    protected void method_4143(VexEntity vexEntity, float f) {
-        RenderSystem.scalef(0.4f, 0.4f, 0.4f);
+    protected void method_4143(VexEntity vexEntity, class_4587 arg, float f) {
+        arg.method_22905(0.4f, 0.4f, 0.4f);
     }
 }
 

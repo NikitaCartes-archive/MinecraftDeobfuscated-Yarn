@@ -31,7 +31,7 @@ implements TickScheduler<T> {
         this.shouldExclude = predicate;
         this.pos = chunkPos;
         for (int i = 0; i < listTag.size(); ++i) {
-            ListTag listTag2 = listTag.getListTag(i);
+            ListTag listTag2 = listTag.getList(i);
             for (int j = 0; j < listTag2.size(); ++j) {
                 Chunk.getList(this.scheduledPositions, i).add(listTag2.getShort(j));
             }

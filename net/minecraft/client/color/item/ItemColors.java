@@ -37,7 +37,7 @@ public class ItemColors {
                 return -1;
             }
             CompoundTag compoundTag = itemStack.getSubTag("Explosion");
-            int[] nArray = is = compoundTag != null && compoundTag.containsKey("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
+            int[] nArray = is = compoundTag != null && compoundTag.contains("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
             if (is == null) {
                 return 0x8A8A8A;
             }

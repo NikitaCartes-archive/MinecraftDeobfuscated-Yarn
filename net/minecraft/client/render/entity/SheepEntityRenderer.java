@@ -22,7 +22,7 @@ extends MobEntityRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
         this.addFeature(new SheepWoolFeatureRenderer(this));
     }
 
-    protected Identifier method_4106(SheepEntity sheepEntity) {
+    public Identifier method_4106(SheepEntity sheepEntity) {
         return SKIN;
     }
 }

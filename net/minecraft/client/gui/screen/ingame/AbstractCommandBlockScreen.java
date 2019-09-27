@@ -48,8 +48,8 @@ extends Screen {
     protected ButtonWidget toggleTrackingOutputButton;
     protected boolean trackingOutput;
     protected final List<String> exceptions = Lists.newArrayList();
-    protected int field_2757;
-    protected int field_2756;
+    protected int suggestionStartX;
+    protected int suggestionWidth;
     protected ParseResults<CommandSource> parsedCommand;
     protected CompletableFuture<Suggestions> suggestionsFuture;
     protected SuggestionWindow suggestionWindow;
@@ -66,14 +66,14 @@ extends Screen {
 
     abstract CommandBlockExecutor getCommandExecutor();
 
-    abstract int method_2364();
+    abstract int getTrackOutputButtonHeight();
 
     @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
         this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.commitAndClose()));
         this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.onClose()));
-        this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.width / 2 + 150 - 20, this.method_2364(), 20, 20, "O", buttonWidget -> {
+        this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, "O", buttonWidget -> {
             CommandBlockExecutor commandBlockExecutor;
             commandBlockExecutor.shouldTrackOutput(!(commandBlockExecutor = this.getCommandExecutor()).isTrackingOutput());
             this.updateTrackedOutput();
@@ -83,7 +83,7 @@ extends Screen {
         this.consoleCommandTextField.setRenderTextProvider(this::method_2348);
         this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
         this.children.add(this.consoleCommandTextField);
-        this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.method_2364(), 276, 20, I18n.translate("advMode.previousOutput", new Object[0]));
+        this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, I18n.translate("advMode.previousOutput", new Object[0]));
         this.previousOutputTextField.setMaxLength(32500);
         this.previousOutputTextField.setEditable(false);
         this.previousOutputTextField.setText("-");
@@ -221,8 +221,8 @@ extends Screen {
                 this.exceptions.add(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create().getMessage());
             }
         }
-        this.field_2757 = 0;
-        this.field_2756 = this.width;
+        this.suggestionStartX = 0;
+        this.suggestionWidth = this.width;
         if (this.exceptions.isEmpty()) {
             this.method_2356(Formatting.GRAY);
         }
@@ -252,8 +252,8 @@ extends Screen {
         }
         if (!list.isEmpty()) {
             this.exceptions.addAll(list);
-            this.field_2757 = MathHelper.clamp(this.consoleCommandTextField.getCharacterX(suggestionContext.startPos), 0, this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.getInnerWidth() - i);
-            this.field_2756 = i;
+            this.suggestionStartX = MathHelper.clamp(this.consoleCommandTextField.getCharacterX(suggestionContext.startPos), 0, this.consoleCommandTextField.getCharacterX(0) + this.consoleCommandTextField.getInnerWidth() - i);
+            this.suggestionWidth = i;
         }
     }
 
@@ -265,7 +265,7 @@ extends Screen {
         this.consoleCommandTextField.render(i, j, f);
         int k = 75;
         if (!this.previousOutputTextField.getText().isEmpty()) {
-            this.drawString(this.font, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (k += 5 * this.font.fontHeight + 1 + this.method_2364() - 135) + 4, 0xA0A0A0);
+            this.drawString(this.font, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (k += 5 * this.font.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
             this.previousOutputTextField.render(i, j, f);
         }
         super.render(i, j, f);
@@ -274,8 +274,8 @@ extends Screen {
         } else {
             k = 0;
             for (String string : this.exceptions) {
-                AbstractCommandBlockScreen.fill(this.field_2757 - 1, 72 + 12 * k, this.field_2757 + this.field_2756 + 1, 84 + 12 * k, Integer.MIN_VALUE);
-                this.font.drawWithShadow(string, this.field_2757, 74 + 12 * k, -1);
+                AbstractCommandBlockScreen.fill(this.suggestionStartX - 1, 72 + 12 * k, this.suggestionStartX + this.suggestionWidth + 1, 84 + 12 * k, Integer.MIN_VALUE);
+                this.font.drawWithShadow(string, this.suggestionStartX, 74 + 12 * k, -1);
                 ++k;
             }
         }
@@ -383,8 +383,8 @@ extends Screen {
 
         public boolean mouseScrolled(double d) {
             int j;
-            int i = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getX() * (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getScaledWidth() / (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getWidth());
-            if (this.area.contains(i, j = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getY() * (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getScaledHeight() / (double)AbstractCommandBlockScreen.this.minecraft.method_22683().getHeight()))) {
+            int i = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getX() * (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getScaledWidth() / (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getWidth());
+            if (this.area.contains(i, j = (int)(((AbstractCommandBlockScreen)AbstractCommandBlockScreen.this).minecraft.mouse.getY() * (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getScaledHeight() / (double)AbstractCommandBlockScreen.this.minecraft.getWindow().getHeight()))) {
                 this.inWindowIndex = MathHelper.clamp((int)((double)this.inWindowIndex - d), 0, Math.max(this.suggestions.getList().size() - 7, 0));
                 return true;
             }

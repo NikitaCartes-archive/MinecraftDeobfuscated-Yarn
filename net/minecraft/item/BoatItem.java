@@ -35,7 +35,7 @@ extends Item {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         HitResult hitResult = BoatItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.ANY);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.method_22430(itemStack);
+            return TypedActionResult.pass(itemStack);
         }
         Vec3d vec3d = playerEntity.getRotationVec(1.0f);
         double d = 5.0;
@@ -45,7 +45,7 @@ extends Item {
             for (Entity entity : list) {
                 Box box = entity.getBoundingBox().expand(entity.getTargetingMargin());
                 if (!box.contains(vec3d2)) continue;
-                return TypedActionResult.method_22430(itemStack);
+                return TypedActionResult.pass(itemStack);
             }
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
@@ -53,7 +53,7 @@ extends Item {
             boatEntity.setBoatType(this.type);
             boatEntity.yaw = playerEntity.yaw;
             if (!world.doesNotCollide(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
-                return TypedActionResult.method_22431(itemStack);
+                return TypedActionResult.fail(itemStack);
             }
             if (!world.isClient) {
                 world.spawnEntity(boatEntity);
@@ -62,9 +62,9 @@ extends Item {
                 }
             }
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-            return TypedActionResult.method_22427(itemStack);
+            return TypedActionResult.successWithSwing(itemStack);
         }
-        return TypedActionResult.method_22430(itemStack);
+        return TypedActionResult.pass(itemStack);
     }
 }
 

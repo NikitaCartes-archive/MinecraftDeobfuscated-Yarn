@@ -3,16 +3,17 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class SnowmanEntityModel<T extends Entity>
-extends EntityModel<T> {
+extends class_4595<T> {
     private final ModelPart field_3567;
     private final ModelPart field_3569;
     private final ModelPart field_3568;
@@ -41,7 +42,6 @@ extends EntityModel<T> {
 
     @Override
     public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-        super.setAngles(entity, f, g, h, i, j, k);
         this.field_3568.yaw = i * ((float)Math.PI / 180);
         this.field_3568.pitch = j * ((float)Math.PI / 180);
         this.field_3567.yaw = i * ((float)Math.PI / 180) * 0.25f;
@@ -58,13 +58,8 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        this.field_3567.render(k);
-        this.field_3569.render(k);
-        this.field_3568.render(k);
-        this.field_3566.render(k);
-        this.field_3565.render(k);
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3567, this.field_3569, this.field_3568, this.field_3566, this.field_3565);
     }
 
     public ModelPart method_2834() {

@@ -150,7 +150,7 @@ NameableContainerProvider {
     protected void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        if (compoundTag.containsKey("LootTable", 8)) {
+        if (compoundTag.contains("LootTable", 8)) {
             this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
             this.lootSeed = compoundTag.getLong("LootTableSeed");
         } else {

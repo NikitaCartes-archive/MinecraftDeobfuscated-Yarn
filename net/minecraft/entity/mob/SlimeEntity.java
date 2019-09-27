@@ -274,7 +274,7 @@ implements Monster {
         return this.getSize() == 1 ? this.getType().getLootTableId() : LootTables.EMPTY;
     }
 
-    public static boolean method_20685(EntityType<SlimeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<SlimeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         if (iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && random.nextInt(4) != 1) {
             return false;
         }
@@ -282,12 +282,12 @@ implements Monster {
             boolean bl;
             Biome biome = iWorld.getBiome(blockPos);
             if (biome == Biomes.SWAMP && blockPos.getY() > 50 && blockPos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < iWorld.getMoonSize() && iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
-                return SlimeEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
+                return SlimeEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
             }
             ChunkPos chunkPos = new ChunkPos(blockPos);
             boolean bl2 = bl = ChunkRandom.create(chunkPos.x, chunkPos.z, iWorld.getSeed(), 987234911L).nextInt(10) == 0;
             if (random.nextInt(10) == 0 && bl && blockPos.getY() < 40) {
-                return SlimeEntity.method_20636(entityType, iWorld, spawnType, blockPos, random);
+                return SlimeEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
             }
         }
         return false;
@@ -372,7 +372,7 @@ implements Monster {
 
         @Override
         public void tick() {
-            if (this.slime.getRand().nextFloat() < 0.8f) {
+            if (this.slime.getRandom().nextFloat() < 0.8f) {
                 this.slime.getJumpControl().setActive();
             }
             ((SlimeMoveControl)this.slime.getMoveControl()).move(1.2);
@@ -398,8 +398,8 @@ implements Monster {
         @Override
         public void tick() {
             if (--this.field_7401 <= 0) {
-                this.field_7401 = 40 + this.slime.getRand().nextInt(60);
-                this.field_7400 = this.slime.getRand().nextInt(360);
+                this.field_7401 = 40 + this.slime.getRandom().nextInt(60);
+                this.field_7400 = this.slime.getRandom().nextInt(360);
             }
             ((SlimeMoveControl)this.slime.getMoveControl()).look(this.field_7400, false);
         }
@@ -499,7 +499,7 @@ implements Monster {
                     }
                     this.slime.getJumpControl().setActive();
                     if (this.slime.makesJumpSound()) {
-                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), ((this.slime.getRand().nextFloat() - this.slime.getRand().nextFloat()) * 0.2f + 1.0f) * 0.8f);
+                        this.slime.playSound(this.slime.getJumpSound(), this.slime.getSoundVolume(), ((this.slime.getRandom().nextFloat() - this.slime.getRandom().nextFloat()) * 0.2f + 1.0f) * 0.8f);
                     }
                 } else {
                     this.slime.sidewaysSpeed = 0.0f;

@@ -73,7 +73,7 @@ extends RangedWeaponItem {
                 projectileEntity.setDamage(projectileEntity.getDamage() + (double)k * 0.5 + 0.5);
             }
             if ((l = EnchantmentHelper.getLevel(Enchantments.PUNCH, itemStack)) > 0) {
-                projectileEntity.method_7449(l);
+                projectileEntity.setPunch(l);
             }
             if (EnchantmentHelper.getLevel(Enchantments.FLAME, itemStack) > 0) {
                 projectileEntity.setOnFireFor(100);
@@ -119,12 +119,12 @@ extends RangedWeaponItem {
         boolean bl2 = bl = !playerEntity.getArrowType(itemStack).isEmpty();
         if (playerEntity.abilities.creativeMode || bl) {
             playerEntity.setCurrentHand(hand);
-            return TypedActionResult.method_22428(itemStack);
+            return TypedActionResult.successWithoutSwing(itemStack);
         }
         if (bl) {
-            return TypedActionResult.method_22430(itemStack);
+            return TypedActionResult.pass(itemStack);
         }
-        return TypedActionResult.method_22431(itemStack);
+        return TypedActionResult.fail(itemStack);
     }
 
     @Override

@@ -67,12 +67,12 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        Block block = arg.getBlockState(blockPos.down()).getBlock();
+        Block block = arg.getBlockState(blockPos.method_10074()).getBlock();
         if (block == this) {
             return true;
         }
         if (block == Blocks.GRASS_BLOCK || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.SAND || block == Blocks.RED_SAND) {
-            BlockPos blockPos2 = blockPos.down();
+            BlockPos blockPos2 = blockPos.method_10074();
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 BlockState blockState2 = arg.getBlockState(blockPos2.offset(direction));
                 FluidState fluidState = arg.getFluidState(blockPos2.offset(direction));

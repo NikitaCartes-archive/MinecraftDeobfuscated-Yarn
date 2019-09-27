@@ -28,7 +28,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean method_12869(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         BlockState blockState = iWorld.getBlockState(blockPos);
         while ((blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 0) {
-            blockPos = blockPos.down();
+            blockPos = blockPos.method_10074();
             blockState = iWorld.getBlockState(blockPos);
         }
         BlockState blockState2 = DEAD_BUSH.getDefaultState();

@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.PlayerSkinTexture;
-import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
@@ -64,8 +64,8 @@ public class PlayerSkinProvider {
     public Identifier loadSkin(MinecraftProfileTexture minecraftProfileTexture, MinecraftProfileTexture.Type type, @Nullable SkinTextureAvailableCallback skinTextureAvailableCallback) {
         String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
         Identifier identifier = new Identifier("skins/" + string);
-        Texture texture = this.textureManager.getTexture(identifier);
-        if (texture != null) {
+        AbstractTexture abstractTexture = this.textureManager.getTexture(identifier);
+        if (abstractTexture != null) {
             if (skinTextureAvailableCallback != null) {
                 skinTextureAvailableCallback.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
             }

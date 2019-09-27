@@ -42,14 +42,14 @@ public class BuriedTreasureGenerator {
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
             while (mutable.getY() > 0) {
                 BlockState blockState = iWorld.getBlockState(mutable);
-                BlockState blockState2 = iWorld.getBlockState(mutable.down());
+                BlockState blockState2 = iWorld.getBlockState(mutable.method_10074());
                 if (blockState2 == Blocks.SANDSTONE.getDefaultState() || blockState2 == Blocks.STONE.getDefaultState() || blockState2 == Blocks.ANDESITE.getDefaultState() || blockState2 == Blocks.GRANITE.getDefaultState() || blockState2 == Blocks.DIORITE.getDefaultState()) {
                     BlockState blockState3 = blockState.isAir() || this.isLiquid(blockState) ? Blocks.SAND.getDefaultState() : blockState;
                     for (Direction direction : Direction.values()) {
                         BlockPos blockPos = mutable.offset(direction);
                         BlockState blockState4 = iWorld.getBlockState(blockPos);
                         if (!blockState4.isAir() && !this.isLiquid(blockState4)) continue;
-                        BlockPos blockPos2 = blockPos.down();
+                        BlockPos blockPos2 = blockPos.method_10074();
                         BlockState blockState5 = iWorld.getBlockState(blockPos2);
                         if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
                             iWorld.setBlockState(blockPos, blockState2, 3);

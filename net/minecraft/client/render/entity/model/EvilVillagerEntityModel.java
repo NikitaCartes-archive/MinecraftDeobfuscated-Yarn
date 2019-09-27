@@ -3,13 +3,14 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -18,18 +19,17 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class EvilVillagerEntityModel<T extends IllagerEntity>
-extends EntityModel<T>
+extends class_4595<T>
 implements ModelWithArms,
 ModelWithHead {
-    protected final ModelPart field_3422;
+    private final ModelPart field_3422;
     private final ModelPart field_3419;
-    protected final ModelPart field_3425;
-    protected final ModelPart field_3423;
-    protected final ModelPart field_3420;
-    protected final ModelPart field_3418;
-    private final ModelPart field_3421;
-    protected final ModelPart field_3426;
-    protected final ModelPart field_3417;
+    private final ModelPart field_3425;
+    private final ModelPart field_3423;
+    private final ModelPart field_3420;
+    private final ModelPart field_3418;
+    private final ModelPart field_3426;
+    private final ModelPart field_3417;
     private float field_3424;
 
     public EvilVillagerEntityModel(float f, float g, int i, int j) {
@@ -40,10 +40,10 @@ ModelWithHead {
         this.field_3419.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 12.0f, 8.0f, f + 0.45f);
         this.field_3422.addChild(this.field_3419);
         this.field_3419.visible = false;
-        this.field_3421 = new ModelPart(this).setTextureSize(i, j);
-        this.field_3421.setRotationPoint(0.0f, g - 2.0f, 0.0f);
-        this.field_3421.setTextureOffset(24, 0).addCuboid(-1.0f, -1.0f, -6.0f, 2.0f, 4.0f, 2.0f, f);
-        this.field_3422.addChild(this.field_3421);
+        ModelPart modelPart = new ModelPart(this).setTextureSize(i, j);
+        modelPart.setRotationPoint(0.0f, g - 2.0f, 0.0f);
+        modelPart.setTextureOffset(24, 0).addCuboid(-1.0f, -1.0f, -6.0f, 2.0f, 4.0f, 2.0f, f);
+        this.field_3422.addChild(modelPart);
         this.field_3425 = new ModelPart(this).setTextureSize(i, j);
         this.field_3425.setRotationPoint(0.0f, 0.0f + g, 0.0f);
         this.field_3425.setTextureOffset(16, 20).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, f);
@@ -51,10 +51,10 @@ ModelWithHead {
         this.field_3423 = new ModelPart(this).setTextureSize(i, j);
         this.field_3423.setRotationPoint(0.0f, 0.0f + g + 2.0f, 0.0f);
         this.field_3423.setTextureOffset(44, 22).addCuboid(-8.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, f);
-        ModelPart modelPart = new ModelPart(this, 44, 22).setTextureSize(i, j);
-        modelPart.mirror = true;
-        modelPart.addCuboid(4.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, f);
-        this.field_3423.addChild(modelPart);
+        ModelPart modelPart2 = new ModelPart(this, 44, 22).setTextureSize(i, j);
+        modelPart2.mirror = true;
+        modelPart2.addCuboid(4.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, f);
+        this.field_3423.addChild(modelPart2);
         this.field_3423.setTextureOffset(40, 38).addCuboid(-4.0f, 2.0f, -2.0f, 8.0f, 4.0f, 4.0f, f);
         this.field_3420 = new ModelPart(this, 0, 22).setTextureSize(i, j);
         this.field_3420.setRotationPoint(-2.0f, 12.0f + g, 0.0f);
@@ -72,21 +72,14 @@ ModelWithHead {
         this.field_3417.setRotationPoint(5.0f, 2.0f + g, 0.0f);
     }
 
-    public void method_17093(T illagerEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17094(illagerEntity, f, g, h, i, j, k);
-        this.field_3422.render(k);
-        this.field_3425.render(k);
-        this.field_3420.render(k);
-        this.field_3418.render(k);
-        if (((IllagerEntity)illagerEntity).getState() == IllagerEntity.State.CROSSED) {
-            this.field_3423.render(k);
-        } else {
-            this.field_3426.render(k);
-            this.field_3417.render(k);
-        }
+    @Override
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3422, this.field_3425, this.field_3420, this.field_3418, this.field_3423, this.field_3426, this.field_3417);
     }
 
     public void method_17094(T illagerEntity, float f, float g, float h, float i, float j, float k) {
+        boolean bl;
+        float l;
         this.field_3422.yaw = i * ((float)Math.PI / 180);
         this.field_3422.pitch = j * ((float)Math.PI / 180);
         this.field_3423.rotationPointY = 3.0f;
@@ -121,7 +114,7 @@ ModelWithHead {
         }
         IllagerEntity.State state = ((IllagerEntity)illagerEntity).getState();
         if (state == IllagerEntity.State.ATTACKING) {
-            float l = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
+            l = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
             float m = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
             this.field_3426.roll = 0.0f;
             this.field_3417.roll = 0.0f;
@@ -168,7 +161,7 @@ ModelWithHead {
             this.field_3426.yaw = -0.8f;
             this.field_3426.pitch = -0.97079635f;
             this.field_3417.pitch = -0.97079635f;
-            float l = MathHelper.clamp(this.field_3424, 0.0f, 25.0f);
+            l = MathHelper.clamp(this.field_3424, 0.0f, 25.0f);
             this.field_3417.yaw = MathHelper.lerp(l / 25.0f, 0.4f, 0.85f);
             this.field_3417.pitch = MathHelper.lerp(l / 25.0f, this.field_3417.pitch, -1.5707964f);
         } else if (state == IllagerEntity.State.CELEBRATING) {
@@ -183,6 +176,9 @@ ModelWithHead {
             this.field_3417.roll = -2.3561945f;
             this.field_3417.yaw = 0.0f;
         }
+        this.field_3423.visible = bl = state == IllagerEntity.State.CROSSED;
+        this.field_3417.visible = !bl;
+        this.field_3426.visible = !bl;
     }
 
     public void method_17092(T illagerEntity, float f, float g, float h) {
@@ -207,18 +203,8 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm) {
-        this.method_2813(arm).applyTransform(0.0625f);
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17094((IllagerEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17093((IllagerEntity)entity, f, g, h, i, j, k);
+    public void setArmAngle(float f, Arm arm, class_4587 arg) {
+        this.method_2813(arm).method_22703(arg, 0.0625f);
     }
 }
 

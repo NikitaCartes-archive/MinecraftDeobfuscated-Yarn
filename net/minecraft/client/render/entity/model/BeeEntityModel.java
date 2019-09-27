@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelUtil;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class BeeEntityModel<T extends BeeEntity>
-extends EntityModel<T> {
+extends class_4592<T> {
     private final ModelPart body;
     private final ModelPart mainBody;
     private final ModelPart leftWing;
@@ -30,6 +30,7 @@ extends EntityModel<T> {
     private float bodyPitch;
 
     public BeeEntityModel() {
+        super(false, 24.0f, 0.0f);
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.body = new ModelPart(this);
@@ -135,18 +136,14 @@ extends EntityModel<T> {
         }
     }
 
-    public void method_22113(T beeEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_22112(beeEntity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 2.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 1.5f, 0.0f);
-            this.body.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.body.render(k);
-        }
+    @Override
+    protected Iterable<ModelPart> method_22946() {
+        return ImmutableList.of();
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.body);
     }
 }
 

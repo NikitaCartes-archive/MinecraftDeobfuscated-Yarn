@@ -130,13 +130,13 @@ extends Entity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         ListTag listTag;
-        if (compoundTag.containsKey("power", 9) && (listTag = compoundTag.getList("power", 6)).size() == 3) {
+        if (compoundTag.contains("power", 9) && (listTag = compoundTag.getList("power", 6)).size() == 3) {
             this.posX = listTag.getDouble(0);
             this.posY = listTag.getDouble(1);
             this.posZ = listTag.getDouble(2);
         }
         this.life = compoundTag.getInt("life");
-        if (compoundTag.containsKey("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
+        if (compoundTag.contains("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
             listTag = compoundTag.getList("direction", 6);
             this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
         } else {

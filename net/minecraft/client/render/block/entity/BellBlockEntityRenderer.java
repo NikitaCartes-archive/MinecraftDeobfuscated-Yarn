@@ -7,20 +7,24 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.BellBlockEntity;
-import net.minecraft.class_4576;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class BellBlockEntityRenderer
-extends class_4576<BellBlockEntity> {
+extends BlockEntityRenderer<BellBlockEntity> {
     public static final Identifier BELL_BODY_TEXTURE = new Identifier("entity/bell/bell_body");
     private final ModelPart field_20816 = new ModelPart(32, 32, 0, 0);
 
-    public BellBlockEntityRenderer() {
+    public BellBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+        super(blockEntityRenderDispatcher);
         this.field_20816.addCuboid(-3.0f, -6.0f, -3.0f, 6.0f, 7.0f, 6.0f);
         this.field_20816.setRotationPoint(8.0f, 12.0f, 8.0f);
         ModelPart modelPart = new ModelPart(32, 32, 0, 13);
@@ -29,28 +33,26 @@ extends class_4576<BellBlockEntity> {
         this.field_20816.addChild(modelPart);
     }
 
-    protected void method_17139(BellBlockEntity bellBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, int j, int k) {
+    public void method_17139(BellBlockEntity bellBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
         float h = (float)bellBlockEntity.ringTicks + g;
-        float l = 0.0f;
-        float m = 0.0f;
+        float j = 0.0f;
+        float k = 0.0f;
         if (bellBlockEntity.isRinging) {
-            float n = MathHelper.sin(h / (float)Math.PI) / (4.0f + h / 3.0f);
+            float l = MathHelper.sin(h / (float)Math.PI) / (4.0f + h / 3.0f);
             if (bellBlockEntity.lastSideHit == Direction.NORTH) {
-                l = -n;
+                j = -l;
             } else if (bellBlockEntity.lastSideHit == Direction.SOUTH) {
-                l = n;
+                j = l;
             } else if (bellBlockEntity.lastSideHit == Direction.EAST) {
-                m = -n;
+                k = -l;
             } else if (bellBlockEntity.lastSideHit == Direction.WEST) {
-                m = n;
+                k = l;
             }
         }
-        this.field_20816.pitch = l;
-        this.field_20816.roll = m;
-        bufferBuilder.method_22629();
-        bufferBuilder.method_22631().method_22668();
-        this.field_20816.method_22698(bufferBuilder, 0.0625f, j, k, this.method_22739(BELL_BODY_TEXTURE));
-        bufferBuilder.method_22630();
+        this.field_20816.pitch = j;
+        this.field_20816.roll = k;
+        class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
+        this.field_20816.method_22698(arg, lv, 0.0625f, i, this.method_23082(BELL_BODY_TEXTURE));
     }
 }
 

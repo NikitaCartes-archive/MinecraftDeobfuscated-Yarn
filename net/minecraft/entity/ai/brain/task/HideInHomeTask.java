@@ -43,7 +43,7 @@ extends Task<LivingEntity> {
         Optional<GlobalPos> optional2;
         Brain<?> brain = livingEntity.getBrain();
         Optional<BlockPos> optional = this.homePosition;
-        if (!optional.isPresent() && !(optional = serverWorld.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, new BlockPos(livingEntity), this.maxDistance, livingEntity.getRand())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
+        if (!optional.isPresent() && !(optional = serverWorld.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, new BlockPos(livingEntity), this.maxDistance, livingEntity.getRandom())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
             optional = Optional.of(optional2.get().getPos());
         }
         if (optional.isPresent()) {

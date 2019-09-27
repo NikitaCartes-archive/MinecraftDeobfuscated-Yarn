@@ -41,7 +41,7 @@ extends Task<LivingEntity> {
 
     @Nullable
     private Vec3d findNearbySky(ServerWorld serverWorld, LivingEntity livingEntity) {
-        Random random = livingEntity.getRand();
+        Random random = livingEntity.getRandom();
         BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);

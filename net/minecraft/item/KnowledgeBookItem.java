@@ -36,9 +36,9 @@ extends Item {
         if (!playerEntity.abilities.creativeMode) {
             playerEntity.setStackInHand(hand, ItemStack.EMPTY);
         }
-        if (compoundTag == null || !compoundTag.containsKey("Recipes", 9)) {
+        if (compoundTag == null || !compoundTag.contains("Recipes", 9)) {
             LOGGER.error("Tag not valid: {}", (Object)compoundTag);
-            return TypedActionResult.method_22431(itemStack);
+            return TypedActionResult.fail(itemStack);
         }
         if (!world.isClient) {
             ListTag listTag = compoundTag.getList("Recipes", 8);
@@ -49,14 +49,14 @@ extends Item {
                 Optional<Recipe<?>> optional = recipeManager.get(new Identifier(string));
                 if (!optional.isPresent()) {
                     LOGGER.error("Invalid recipe: {}", (Object)string);
-                    return TypedActionResult.method_22431(itemStack);
+                    return TypedActionResult.fail(itemStack);
                 }
                 list.add(optional.get());
             }
             playerEntity.unlockRecipes(list);
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        return TypedActionResult.method_22427(itemStack);
+        return TypedActionResult.successWithSwing(itemStack);
     }
 }
 

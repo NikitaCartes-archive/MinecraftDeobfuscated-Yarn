@@ -64,20 +64,23 @@ implements Monster {
     private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
     public final double[][] field_7026 = new double[64][3];
     public int field_7010 = -1;
-    public final EnderDragonPart[] parts;
+    private final EnderDragonPart[] parts;
     public final EnderDragonPart partHead;
-    public final EnderDragonPart partNeck;
-    public final EnderDragonPart partBody;
-    public final EnderDragonPart partTail1;
-    public final EnderDragonPart partTail2;
-    public final EnderDragonPart partTail3;
-    public final EnderDragonPart partWingRight;
-    public final EnderDragonPart partWingLeft;
+    private final EnderDragonPart partNeck;
+    private final EnderDragonPart partBody;
+    private final EnderDragonPart partTail1;
+    private final EnderDragonPart partTail2;
+    private final EnderDragonPart partTail3;
+    private final EnderDragonPart partWingRight;
+    private final EnderDragonPart partWingLeft;
     public float field_7019;
     public float field_7030;
     public boolean field_7027;
     public int field_7031;
+    public float field_20865;
+    @Nullable
     public EnderCrystalEntity connectedCrystal;
+    @Nullable
     private final EnderDragonFight fight;
     private final PhaseManager phaseManager;
     private int field_7018 = 100;
@@ -136,8 +139,9 @@ implements Monster {
 
     @Override
     public void tickMovement() {
-        int ac;
-        float m;
+        int ad;
+        float q;
+        float p;
         double k;
         double j;
         double e;
@@ -211,7 +215,7 @@ implements Monster {
                 j = vec3d2.y - this.y;
                 k = vec3d2.z - this.z;
                 double l = e * e + j * j + k * k;
-                m = phase.method_6846();
+                float m = phase.method_6846();
                 double n = MathHelper.sqrt(e * e + k * k);
                 if (n > 0.0) {
                     j = MathHelper.clamp(j / n, (double)(-m), (double)m);
@@ -221,11 +225,11 @@ implements Monster {
                 double o = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(e, k) * 57.2957763671875 - (double)this.yaw), -50.0, 50.0);
                 Vec3d vec3d3 = vec3d2.subtract(this.x, this.y, this.z).normalize();
                 Vec3d vec3d4 = new Vec3d(MathHelper.sin(this.yaw * ((float)Math.PI / 180)), this.getVelocity().y, -MathHelper.cos(this.yaw * ((float)Math.PI / 180))).normalize();
-                float p = Math.max(((float)vec3d4.dotProduct(vec3d3) + 0.5f) / 1.5f, 0.0f);
-                this.turningSpeed *= 0.8f;
-                this.turningSpeed = (float)((double)this.turningSpeed + o * (double)phase.method_6847());
-                this.yaw += this.turningSpeed * 0.1f;
-                float q = (float)(2.0 / (l + 1.0));
+                p = Math.max(((float)vec3d4.dotProduct(vec3d3) + 0.5f) / 1.5f, 0.0f);
+                this.field_20865 *= 0.8f;
+                this.field_20865 = (float)((double)this.field_20865 + o * (double)phase.method_6847());
+                this.yaw += this.field_20865 * 0.1f;
+                q = (float)(2.0 / (l + 1.0));
                 float r = 0.06f;
                 this.updateVelocity(0.06f * (p * q + (1.0f - q)), new Vec3d(0.0, 0.0, -1.0));
                 if (this.field_7027) {
@@ -249,45 +253,39 @@ implements Monster {
         float x = this.yaw * ((float)Math.PI / 180);
         float y = MathHelper.sin(x);
         float z = MathHelper.cos(x);
-        this.partBody.tick();
-        this.partBody.setPositionAndAngles(this.x + (double)(y * 0.5f), this.y, this.z - (double)(z * 0.5f), 0.0f, 0.0f);
-        this.partWingRight.tick();
-        this.partWingRight.setPositionAndAngles(this.x + (double)(z * 4.5f), this.y + 2.0, this.z + (double)(y * 4.5f), 0.0f, 0.0f);
-        this.partWingLeft.tick();
-        this.partWingLeft.setPositionAndAngles(this.x - (double)(z * 4.5f), this.y + 2.0, this.z - (double)(y * 4.5f), 0.0f, 0.0f);
+        this.method_22863(this.partBody, y * 0.5f, 0.0, -z * 0.5f);
+        this.method_22863(this.partWingRight, z * 4.5f, 2.0, y * 4.5f);
+        this.method_22863(this.partWingLeft, z * -4.5f, 2.0, y * -4.5f);
         if (!this.world.isClient && this.hurtTime == 0) {
             this.method_6825(this.world.getEntities(this, this.partWingRight.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.method_6825(this.world.getEntities(this, this.partWingLeft.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.method_6827(this.world.getEntities(this, this.partHead.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.method_6827(this.world.getEntities(this, this.partNeck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
         }
+        float aa = MathHelper.sin(this.yaw * ((float)Math.PI / 180) - this.field_20865 * 0.01f);
+        float ab = MathHelper.cos(this.yaw * ((float)Math.PI / 180) - this.field_20865 * 0.01f);
+        float ac = this.method_6820();
+        this.method_22863(this.partHead, aa * 6.5f * v, ac + w * 6.5f, -ab * 6.5f * v);
+        this.method_22863(this.partNeck, aa * 5.5f * v, ac + w * 5.5f, -ab * 5.5f * v);
         double[] ds = this.method_6817(5, 1.0f);
-        float aa = MathHelper.sin(this.yaw * ((float)Math.PI / 180) - this.turningSpeed * 0.01f);
-        float ab = MathHelper.cos(this.yaw * ((float)Math.PI / 180) - this.turningSpeed * 0.01f);
-        this.partHead.tick();
-        this.partNeck.tick();
-        m = this.method_6820(1.0f);
-        this.partHead.setPositionAndAngles(this.x + (double)(aa * 6.5f * v), this.y + (double)m + (double)(w * 6.5f), this.z - (double)(ab * 6.5f * v), 0.0f, 0.0f);
-        this.partNeck.setPositionAndAngles(this.x + (double)(aa * 5.5f * v), this.y + (double)m + (double)(w * 5.5f), this.z - (double)(ab * 5.5f * v), 0.0f, 0.0f);
-        for (ac = 0; ac < 3; ++ac) {
+        for (ad = 0; ad < 3; ++ad) {
             EnderDragonPart enderDragonPart = null;
-            if (ac == 0) {
+            if (ad == 0) {
                 enderDragonPart = this.partTail1;
             }
-            if (ac == 1) {
+            if (ad == 1) {
                 enderDragonPart = this.partTail2;
             }
-            if (ac == 2) {
+            if (ad == 2) {
                 enderDragonPart = this.partTail3;
             }
-            double[] es = this.method_6817(12 + ac * 2, 1.0f);
-            float ad = this.yaw * ((float)Math.PI / 180) + this.method_6832(es[0] - ds[0]) * ((float)Math.PI / 180);
-            float ae = MathHelper.sin(ad);
-            float af = MathHelper.cos(ad);
-            float ag = 1.5f;
-            float ah = (float)(ac + 1) * 2.0f;
-            enderDragonPart.tick();
-            enderDragonPart.setPositionAndAngles(this.x - (double)((y * 1.5f + ae * ah) * v), this.y + (es[1] - ds[1]) - (double)((ah + 1.5f) * w) + 1.5, this.z + (double)((z * 1.5f + af * ah) * v), 0.0f, 0.0f);
+            double[] es = this.method_6817(12 + ad * 2, 1.0f);
+            float ae = this.yaw * ((float)Math.PI / 180) + this.method_6832(es[0] - ds[0]) * ((float)Math.PI / 180);
+            float af = MathHelper.sin(ae);
+            float ag = MathHelper.cos(ae);
+            p = 1.5f;
+            q = (float)(ad + 1) * 2.0f;
+            this.method_22863(enderDragonPart, -(y * 1.5f + af * q) * v, es[1] - ds[1] - (double)((q + 1.5f) * w) + 1.5, (z * 1.5f + ag * q) * v);
         }
         if (!this.world.isClient) {
             this.field_7027 = this.method_6821(this.partHead.getBoundingBox()) | this.method_6821(this.partNeck.getBoundingBox()) | this.method_6821(this.partBody.getBoundingBox());
@@ -295,23 +293,30 @@ implements Monster {
                 this.fight.updateFight(this);
             }
         }
-        for (ac = 0; ac < this.parts.length; ++ac) {
-            this.parts[ac].prevX = vec3ds[ac].x;
-            this.parts[ac].prevY = vec3ds[ac].y;
-            this.parts[ac].prevZ = vec3ds[ac].z;
+        for (ad = 0; ad < this.parts.length; ++ad) {
+            this.parts[ad].prevX = vec3ds[ad].x;
+            this.parts[ad].prevY = vec3ds[ad].y;
+            this.parts[ad].prevZ = vec3ds[ad].z;
+            this.parts[ad].prevRenderX = vec3ds[ad].x;
+            this.parts[ad].prevRenderY = vec3ds[ad].y;
+            this.parts[ad].prevRenderZ = vec3ds[ad].z;
         }
     }
 
-    private float method_6820(float f) {
-        double d;
+    private void method_22863(EnderDragonPart enderDragonPart, double d, double e, double f) {
+        enderDragonPart.x = this.x + d;
+        enderDragonPart.y = this.y + e;
+        enderDragonPart.z = this.z + f;
+        enderDragonPart.setPosition(enderDragonPart.x, enderDragonPart.y, enderDragonPart.z);
+    }
+
+    private float method_6820() {
         if (this.phaseManager.getCurrent().method_6848()) {
-            d = -1.0;
-        } else {
-            double[] ds = this.method_6817(5, 1.0f);
-            double[] es = this.method_6817(0, 1.0f);
-            d = ds[1] - es[1];
+            return -1.0f;
         }
-        return (float)d;
+        double[] ds = this.method_6817(5, 1.0f);
+        double[] es = this.method_6817(0, 1.0f);
+        return (float)(ds[1] - es[1]);
     }
 
     private void method_6830() {
@@ -352,8 +357,7 @@ implements Monster {
     }
 
     private void method_6827(List<Entity> list) {
-        for (int i = 0; i < list.size(); ++i) {
-            Entity entity = list.get(i);
+        for (Entity entity : list) {
             if (!(entity instanceof LivingEntity)) continue;
             entity.damage(DamageSource.mob(this), 10.0f);
             this.dealDamage(this, entity);
@@ -646,7 +650,7 @@ implements Monster {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("DragonPhase")) {
+        if (compoundTag.contains("DragonPhase")) {
             this.phaseManager.setPhase(PhaseType.getFromId(compoundTag.getInt("DragonPhase")));
         }
     }

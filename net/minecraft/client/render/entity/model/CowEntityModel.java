@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 public class CowEntityModel<T extends Entity>
 extends QuadrupedEntityModel<T> {
     public CowEntityModel() {
-        super(12, 0.0f);
+        super(12, 0.0f, false, 10.0f, 4.0f, 2.0f, 2.0f, 24);
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-4.0f, -4.0f, -6.0f, 8.0f, 8.0f, 6.0f, 0.0f);
         this.head.setRotationPoint(0.0f, 4.0f, -8.0f);
@@ -31,7 +31,6 @@ extends QuadrupedEntityModel<T> {
         this.leg4.rotationPointX += 1.0f;
         this.leg3.rotationPointZ -= 1.0f;
         this.leg4.rotationPointZ -= 1.0f;
-        this.field_3537 += 2.0f;
     }
 
     public ModelPart getHead() {

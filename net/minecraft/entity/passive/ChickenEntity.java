@@ -143,7 +143,7 @@ extends AnimalEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
         this.jockey = compoundTag.getBoolean("IsChickenJockey");
-        if (compoundTag.containsKey("EggLayTime")) {
+        if (compoundTag.contains("EggLayTime")) {
             this.eggLayTime = compoundTag.getInt("EggLayTime");
         }
     }

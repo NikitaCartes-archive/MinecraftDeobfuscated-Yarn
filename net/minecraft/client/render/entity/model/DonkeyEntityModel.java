@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 
 @Environment(value=EnvType.CLIENT)
@@ -46,6 +45,7 @@ extends HorseEntityModel<T> {
     }
 
     public void method_17076(T abstractDonkeyEntity, float f, float g, float h, float i, float j, float k) {
+        super.method_17085(abstractDonkeyEntity, f, g, h, i, j, k);
         if (((AbstractDonkeyEntity)abstractDonkeyEntity).hasChest()) {
             this.field_3349.visible = true;
             this.field_3348.visible = true;
@@ -53,12 +53,6 @@ extends HorseEntityModel<T> {
             this.field_3349.visible = false;
             this.field_3348.visible = false;
         }
-        super.method_17085(abstractDonkeyEntity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17076((AbstractDonkeyEntity)entity, f, g, h, i, j, k);
     }
 }
 

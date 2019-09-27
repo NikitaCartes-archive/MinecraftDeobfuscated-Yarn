@@ -151,7 +151,7 @@ extends Container {
         } else if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
             boolean bl;
             CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-            boolean bl2 = bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+            boolean bl2 = bl = compoundTag.contains("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
             if (bl) {
                 this.selectedPattern.set(0);
             } else {
@@ -213,7 +213,7 @@ extends Container {
                 BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
                 DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
                 CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
-                if (compoundTag.containsKey("Patterns", 9)) {
+                if (compoundTag.contains("Patterns", 9)) {
                     listTag = compoundTag.getList("Patterns", 10);
                 } else {
                     listTag = new ListTag();

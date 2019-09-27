@@ -33,6 +33,7 @@ import net.minecraft.text.SelectorText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.SystemUtil;
@@ -207,12 +208,12 @@ Iterable<Text> {
          * Lifted jumps to return sites
          */
         public Text method_10871(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            void var5_18;
+            void var5_19;
             if (jsonElement.isJsonPrimitive()) {
                 return new LiteralText(jsonElement.getAsString());
             }
             if (jsonElement.isJsonObject()) {
-                void var5_16;
+                void var5_17;
                 String string;
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 if (jsonObject.has("text")) {
@@ -249,33 +250,35 @@ Iterable<Text> {
                     boolean bl = JsonHelper.getBoolean(jsonObject, "interpret", false);
                     if (jsonObject.has("block")) {
                         NbtText.BlockNbtText blockNbtText = new NbtText.BlockNbtText(string, bl, JsonHelper.getString(jsonObject, "block"));
-                    } else {
-                        if (!jsonObject.has("entity")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
+                    } else if (jsonObject.has("entity")) {
                         NbtText.EntityNbtText entityNbtText = new NbtText.EntityNbtText(string, bl, JsonHelper.getString(jsonObject, "entity"));
+                    } else {
+                        if (!jsonObject.has("storage")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
+                        NbtText.StorageNbtText storageNbtText = new NbtText.StorageNbtText(string, bl, new Identifier(JsonHelper.getString(jsonObject, "storage")));
                     }
                 }
                 if (jsonObject.has("extra")) {
                     JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "extra");
                     if (jsonArray2.size() <= 0) throw new JsonParseException("Unexpected empty array of components");
                     for (int j = 0; j < jsonArray2.size(); ++j) {
-                        var5_16.append(this.method_10871(jsonArray2.get(j), type, jsonDeserializationContext));
+                        var5_17.append(this.method_10871(jsonArray2.get(j), type, jsonDeserializationContext));
                     }
                 }
-                var5_16.setStyle((Style)jsonDeserializationContext.deserialize(jsonElement, (Type)((Object)Style.class)));
-                return var5_16;
+                var5_17.setStyle((Style)jsonDeserializationContext.deserialize(jsonElement, (Type)((Object)Style.class)));
+                return var5_17;
             }
             if (!jsonElement.isJsonArray()) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
             JsonArray jsonArray3 = jsonElement.getAsJsonArray();
-            Object var5_17 = null;
+            Object var5_18 = null;
             for (JsonElement jsonElement2 : jsonArray3) {
                 Text text2 = this.method_10871(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
-                if (var5_18 == null) {
+                if (var5_19 == null) {
                     Text text = text2;
                     continue;
                 }
-                var5_18.append(text2);
+                var5_19.append(text2);
             }
-            return var5_18;
+            return var5_19;
         }
 
         private void addStyle(Style style, JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
@@ -385,8 +388,8 @@ Iterable<Text> {
                 Text text = GSON.getAdapter(Text.class).read(jsonReader);
                 stringReader.setCursor(stringReader.getCursor() + Serializer.getPosition(jsonReader));
                 return text;
-            } catch (IOException iOException) {
-                throw new JsonParseException(iOException);
+            } catch (IOException | StackOverflowError throwable) {
+                throw new JsonParseException(throwable);
             }
         }
 

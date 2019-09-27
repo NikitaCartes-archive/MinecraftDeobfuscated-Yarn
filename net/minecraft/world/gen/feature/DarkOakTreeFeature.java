@@ -37,7 +37,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         if (k < 1 || k + i + 1 >= 256) {
             return false;
         }
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         if (!DarkOakTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2)) {
             return false;
         }

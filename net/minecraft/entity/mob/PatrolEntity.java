@@ -57,7 +57,7 @@ extends HostileEntity {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("PatrolTarget")) {
+        if (compoundTag.contains("PatrolTarget")) {
             this.patrolTarget = NbtHelper.toBlockPos(compoundTag.getCompound("PatrolTarget"));
         }
         this.patrolLeader = compoundTag.getBoolean("PatrolLeader");
@@ -89,11 +89,11 @@ extends HostileEntity {
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
-    public static boolean method_20739(EntityType<? extends PatrolEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<? extends PatrolEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         if (iWorld.getLightLevel(LightType.BLOCK, blockPos) > 8) {
             return false;
         }
-        return PatrolEntity.method_20681(entityType, iWorld, spawnType, blockPos, random);
+        return PatrolEntity.canSpawnIgnoreLightLevel(entityType, iWorld, spawnType, blockPos, random);
     }
 
     @Override
@@ -204,7 +204,7 @@ extends HostileEntity {
         }
 
         private boolean wander() {
-            Random random = ((LivingEntity)this.actor).getRand();
+            Random random = ((LivingEntity)this.actor).getRandom();
             BlockPos blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos((Entity)this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
             return ((MobEntity)this.actor).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
         }

@@ -57,9 +57,9 @@ implements Tickable {
     public void fromTag(CompoundTag compoundTag) {
         String string;
         super.fromTag(compoundTag);
-        if (compoundTag.containsKey("Owner", 10)) {
+        if (compoundTag.contains("Owner", 10)) {
             this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("Owner")));
-        } else if (compoundTag.containsKey("ExtraType", 8) && !ChatUtil.isEmpty(string = compoundTag.getString("ExtraType"))) {
+        } else if (compoundTag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = compoundTag.getString("ExtraType"))) {
             this.setOwnerAndType(new GameProfile(null, string));
         }
     }

@@ -5,6 +5,8 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
 
@@ -23,9 +25,9 @@ extends Model {
         this.field_3551.addCuboid(-1.0f, -3.0f, -1.0f, 2.0f, 6.0f, 6.0f, 0.0f);
     }
 
-    public void renderItem() {
-        this.field_3550.render(0.0625f);
-        this.field_3551.render(0.0625f);
+    public void renderItem(class_4587 arg, class_4588 arg2, int i) {
+        this.field_3550.method_22698(arg, arg2, 0.0625f, i, null);
+        this.field_3551.method_22698(arg, arg2, 0.0625f, i, null);
     }
 }
 

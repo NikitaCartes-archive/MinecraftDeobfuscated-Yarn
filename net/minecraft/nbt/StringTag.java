@@ -9,20 +9,54 @@ import java.io.IOException;
 import java.util.Objects;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagReader;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class StringTag
 implements Tag {
-    private String value;
+    public static final TagReader<StringTag> READER = new TagReader<StringTag>(){
 
-    public StringTag() {
-        this("");
-    }
+        public StringTag method_23257(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            positionTracker.add(288L);
+            String string = dataInput.readUTF();
+            positionTracker.add(16 * string.length());
+            return StringTag.of(string);
+        }
 
-    public StringTag(String string) {
+        @Override
+        public String getCrashReportName() {
+            return "STRING";
+        }
+
+        @Override
+        public String getCommandFeedbackName() {
+            return "TAG_String";
+        }
+
+        @Override
+        public boolean isImmutable() {
+            return true;
+        }
+
+        @Override
+        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            return this.method_23257(dataInput, i, positionTracker);
+        }
+    };
+    private static final StringTag EMPTY = new StringTag("");
+    private final String value;
+
+    private StringTag(String string) {
         Objects.requireNonNull(string, "Null string not allowed");
         this.value = string;
+    }
+
+    public static StringTag of(String string) {
+        if (string.isEmpty()) {
+            return EMPTY;
+        }
+        return new StringTag(string);
     }
 
     @Override
@@ -31,15 +65,12 @@ implements Tag {
     }
 
     @Override
-    public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-        positionTracker.add(288L);
-        this.value = dataInput.readUTF();
-        positionTracker.add(16 * this.value.length());
-    }
-
-    @Override
     public byte getType() {
         return 8;
+    }
+
+    public TagReader<StringTag> getReader() {
+        return READER;
     }
 
     @Override
@@ -48,7 +79,7 @@ implements Tag {
     }
 
     public StringTag method_10705() {
-        return new StringTag(this.value);
+        return this;
     }
 
     public boolean equals(Object object) {

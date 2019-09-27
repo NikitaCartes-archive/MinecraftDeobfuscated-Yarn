@@ -38,7 +38,7 @@ public class HotbarStorage {
             if (compoundTag == null) {
                 return;
             }
-            if (!compoundTag.containsKey("DataVersion", 99)) {
+            if (!compoundTag.contains("DataVersion", 99)) {
                 compoundTag.putInt("DataVersion", 1343);
             }
             compoundTag = NbtHelper.update(this.dataFixer, DataFixTypes.HOTBAR, compoundTag, compoundTag.getInt("DataVersion"));

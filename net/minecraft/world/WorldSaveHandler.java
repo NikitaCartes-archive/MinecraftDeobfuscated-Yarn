@@ -153,7 +153,7 @@ implements PlayerSaveHandler {
             LOGGER.warn("Failed to load player data for {}", (Object)playerEntity.getName().getString());
         }
         if (compoundTag != null) {
-            int i = compoundTag.containsKey("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
+            int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
             playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
         }
         return compoundTag;

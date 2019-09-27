@@ -43,6 +43,9 @@ public class BlockPredicate {
         if (this == ANY) {
             return true;
         }
+        if (!serverWorld.canSetBlock(blockPos)) {
+            return false;
+        }
         BlockState blockState = serverWorld.getBlockState(blockPos);
         Block block = blockState.getBlock();
         if (this.tag != null && !this.tag.contains(block)) {

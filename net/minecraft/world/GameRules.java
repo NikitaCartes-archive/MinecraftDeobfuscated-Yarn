@@ -90,7 +90,7 @@ public class GameRules {
 
     public void fromNbt(CompoundTag compoundTag) {
         this.rules.forEach((ruleKey, rule) -> {
-            if (compoundTag.containsKey(((RuleKey)ruleKey).name)) {
+            if (compoundTag.contains(((RuleKey)ruleKey).name)) {
                 rule.setFromString(compoundTag.getString(((RuleKey)ruleKey).name));
             }
         });

@@ -3,16 +3,17 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class SpiderEntityModel<T extends Entity>
-extends EntityModel<T> {
+extends class_4595<T> {
     private final ModelPart field_3583;
     private final ModelPart field_3585;
     private final ModelPart field_3584;
@@ -64,19 +65,8 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        this.field_3583.render(k);
-        this.field_3585.render(k);
-        this.field_3584.render(k);
-        this.field_3580.render(k);
-        this.field_3578.render(k);
-        this.field_3586.render(k);
-        this.field_3577.render(k);
-        this.field_3579.render(k);
-        this.field_3581.render(k);
-        this.field_3576.render(k);
-        this.field_3582.render(k);
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3583, this.field_3585, this.field_3584, this.field_3580, this.field_3578, this.field_3586, this.field_3577, this.field_3579, this.field_3581, this.field_3576, this.field_3582);
     }
 
     @Override

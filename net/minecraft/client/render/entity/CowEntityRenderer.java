@@ -20,7 +20,7 @@ extends MobEntityRenderer<CowEntity, CowEntityModel<CowEntity>> {
         super(entityRenderDispatcher, new CowEntityModel(), 0.7f);
     }
 
-    protected Identifier method_3895(CowEntity cowEntity) {
+    public Identifier method_3895(CowEntity cowEntity) {
         return SKIN;
     }
 }

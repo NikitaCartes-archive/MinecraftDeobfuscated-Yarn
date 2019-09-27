@@ -3,19 +3,19 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(value=EnvType.CLIENT)
 public class ElytraEntityModel<T extends LivingEntity>
-extends EntityModel<T> {
+extends class_4592<T> {
     private final ModelPart field_3364;
     private final ModelPart field_3365 = new ModelPart(this, 22, 0);
 
@@ -26,24 +26,17 @@ extends EntityModel<T> {
         this.field_3364.addCuboid(0.0f, 0.0f, 0.0f, 10.0f, 20.0f, 2.0f, 1.0f);
     }
 
-    public void method_17078(T livingEntity, float f, float g, float h, float i, float j, float k) {
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.disableCull();
-        if (((LivingEntity)livingEntity).isBaby()) {
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 1.5f, -0.1f);
-            this.field_3365.render(k);
-            this.field_3364.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.field_3365.render(k);
-            this.field_3364.render(k);
-        }
+    @Override
+    protected Iterable<ModelPart> method_22946() {
+        return ImmutableList.of();
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.field_3365, this.field_3364);
     }
 
     public void method_17079(T livingEntity, float f, float g, float h, float i, float j, float k) {
-        super.setAngles(livingEntity, f, g, h, i, j, k);
         float l = 0.2617994f;
         float m = -0.2617994f;
         float n = 0.0f;
@@ -83,16 +76,6 @@ extends EntityModel<T> {
         this.field_3364.rotationPointY = this.field_3365.rotationPointY;
         this.field_3364.pitch = this.field_3365.pitch;
         this.field_3364.roll = -this.field_3365.roll;
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17079((LivingEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17078((LivingEntity)entity, f, g, h, i, j, k);
     }
 }
 

@@ -26,7 +26,7 @@ import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderParseException;
 import net.minecraft.client.gl.Uniform;
-import net.minecraft.client.texture.Texture;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -241,8 +241,8 @@ AutoCloseable {
             int j = -1;
             if (object instanceof GlFramebuffer) {
                 j = ((GlFramebuffer)object).colorAttachment;
-            } else if (object instanceof Texture) {
-                j = ((Texture)object).getGlId();
+            } else if (object instanceof AbstractTexture) {
+                j = ((AbstractTexture)object).getGlId();
             } else if (object instanceof Integer) {
                 j = (Integer)object;
             }

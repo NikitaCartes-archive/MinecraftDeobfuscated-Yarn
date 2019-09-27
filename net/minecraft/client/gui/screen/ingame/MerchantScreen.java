@@ -8,7 +8,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -100,7 +99,6 @@ extends AbstractContainerScreen<MerchantContainer> {
             if (tradeOffer.isDisabled()) {
                 this.minecraft.getTextureManager().bindTexture(TEXTURE);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                RenderSystem.disableLighting();
                 MerchantScreen.blit(this.left + 83 + 99, this.top + 35, this.getBlitOffset(), 311.0f, 0.0f, 28, 21, 256, 512);
             }
         }
@@ -130,7 +128,6 @@ extends AbstractContainerScreen<MerchantContainer> {
     }
 
     private void method_20221(int i, int j, TraderOfferList traderOfferList) {
-        GuiLighting.disable();
         int k = traderOfferList.size() + 1 - 7;
         if (k > 1) {
             int l = 139 - (27 + (k - 1) * 139 / k);
@@ -144,7 +141,6 @@ extends AbstractContainerScreen<MerchantContainer> {
         } else {
             MerchantScreen.blit(i + 94, j + 18, this.getBlitOffset(), 6.0f, 199.0f, 6, 27, 256, 512);
         }
-        GuiLighting.enableForItems();
     }
 
     @Override
@@ -159,10 +155,7 @@ extends AbstractContainerScreen<MerchantContainer> {
             int m = l + 16 + 1;
             int n = k + 5 + 5;
             RenderSystem.pushMatrix();
-            GuiLighting.enableForItems();
             RenderSystem.enableRescaleNormal();
-            RenderSystem.enableColorMaterial();
-            RenderSystem.enableLighting();
             this.minecraft.getTextureManager().bindTexture(TEXTURE);
             this.method_20221(k, l, traderOfferList);
             int o = 0;
@@ -191,7 +184,6 @@ extends AbstractContainerScreen<MerchantContainer> {
             }
             int q = this.field_19161;
             tradeOffer2 = (TradeOffer)traderOfferList.get(q);
-            RenderSystem.disableLighting();
             if (((MerchantContainer)this.container).isLevelled()) {
                 this.method_19413(k, l, tradeOffer2);
             }
@@ -205,15 +197,12 @@ extends AbstractContainerScreen<MerchantContainer> {
                 widgetButtonPage.visible = widgetButtonPage.field_19165 < ((MerchantContainer)this.container).getRecipes().size();
             }
             RenderSystem.popMatrix();
-            RenderSystem.enableLighting();
             RenderSystem.enableDepthTest();
-            GuiLighting.enable();
         }
         this.drawMouseoverTooltip(i, j);
     }
 
     private void method_20223(TradeOffer tradeOffer, int i, int j) {
-        GuiLighting.disable();
         RenderSystem.enableBlend();
         this.minecraft.getTextureManager().bindTexture(TEXTURE);
         if (tradeOffer.isDisabled()) {
@@ -221,7 +210,6 @@ extends AbstractContainerScreen<MerchantContainer> {
         } else {
             MerchantScreen.blit(i + 5 + 35 + 20, j + 3, this.getBlitOffset(), 15.0f, 171.0f, 10, 9, 256, 512);
         }
-        GuiLighting.enableForItems();
     }
 
     private void method_20222(ItemStack itemStack, ItemStack itemStack2, int i, int j) {
@@ -233,9 +221,7 @@ extends AbstractContainerScreen<MerchantContainer> {
             this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i + 14, j, itemStack.getCount() == 1 ? "1" : null);
             this.minecraft.getTextureManager().bindTexture(TEXTURE);
             this.setBlitOffset(this.getBlitOffset() + 300);
-            GuiLighting.disable();
             MerchantScreen.blit(i + 7, j + 12, this.getBlitOffset(), 0.0f, 176.0f, 9, 2, 256, 512);
-            GuiLighting.enableForItems();
             this.setBlitOffset(this.getBlitOffset() - 300);
         }
     }

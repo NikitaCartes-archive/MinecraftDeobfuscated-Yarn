@@ -33,7 +33,7 @@ extends Feature<LakeFeatureConfig> {
         int t;
         int j;
         while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
-            blockPos = blockPos.down();
+            blockPos = blockPos.method_10074();
         }
         if (blockPos.getY() <= 4) {
             return false;

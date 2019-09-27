@@ -26,7 +26,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeBookGroup;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
@@ -216,8 +215,6 @@ RecipeGridAligner<Ingredient> {
         if (!this.isOpen()) {
             return;
         }
-        GuiLighting.enableForItems();
-        RenderSystem.disableLighting();
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 100.0f);
         this.client.getTextureManager().bindTexture(TEXTURE);
@@ -226,7 +223,6 @@ RecipeGridAligner<Ingredient> {
         int l = (this.parentHeight - 166) / 2;
         this.blit(k, l, 1, 1, 147, 166);
         this.searchField.render(i, j, f);
-        GuiLighting.disable();
         for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
             recipeGroupButtonWidget.render(i, j, f);
         }

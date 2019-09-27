@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.ParrotEntityModel;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +21,7 @@ extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
         super(entityRenderDispatcher, new ParrotEntityModel(), 0.3f);
     }
 
-    protected Identifier method_4080(ParrotEntity parrotEntity) {
+    public Identifier method_4080(ParrotEntity parrotEntity) {
         return SKINS[parrotEntity.getVariant()];
     }
 
@@ -30,11 +29,6 @@ extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
         float g = MathHelper.lerp(f, parrotEntity.field_6829, parrotEntity.field_6818);
         float h = MathHelper.lerp(f, parrotEntity.field_6827, parrotEntity.field_6819);
         return (MathHelper.sin(g) + 1.0f) * h;
-    }
-
-    @Override
-    public /* synthetic */ float getAge(LivingEntity livingEntity, float f) {
-        return this.method_4081((ParrotEntity)livingEntity, f);
     }
 }
 

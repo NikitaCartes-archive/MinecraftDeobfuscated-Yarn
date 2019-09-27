@@ -5,6 +5,8 @@ package net.minecraft.world.chunk.light;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -188,6 +190,11 @@ implements ChunkLightingView {
     @Override
     public int getLightLevel(BlockPos blockPos) {
         return ((LightStorage)this.lightStorage).getLight(blockPos.asLong());
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public String method_22875(long l) {
+        return "" + ((LightStorage)this.lightStorage).getLevel(l);
     }
 
     public void checkBlock(BlockPos blockPos) {

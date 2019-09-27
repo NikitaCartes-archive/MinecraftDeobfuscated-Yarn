@@ -231,7 +231,7 @@ public class Explosion {
         }
         if (this.createFire) {
             for (BlockPos blockPos : this.affectedBlocks) {
-                if (!this.world.getBlockState(blockPos).isAir() || !this.world.getBlockState(blockPos.down()).isFullOpaque(this.world, blockPos.down()) || this.random.nextInt(3) != 0) continue;
+                if (!this.world.getBlockState(blockPos).isAir() || !this.world.getBlockState(blockPos.method_10074()).isFullOpaque(this.world, blockPos.method_10074()) || this.random.nextInt(3) != 0) continue;
                 this.world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
             }
         }

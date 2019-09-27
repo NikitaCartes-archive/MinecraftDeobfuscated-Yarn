@@ -164,19 +164,19 @@ public class BackgroundRenderer {
         }
     }
 
-    public static void applyFog(Camera camera, int i, float f, boolean bl) {
+    public static void applyFog(Camera camera, class_4596 arg, float f, boolean bl) {
         BackgroundRenderer.setFogBlack(false);
         RenderSystem.normal3f(0.0f, -1.0f, 0.0f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         FluidState fluidState = camera.getSubmergedFluidState();
         if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
             float g = 5.0f;
-            int j = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-            if (j < 20) {
-                g = MathHelper.lerp(1.0f - (float)j / 20.0f, 5.0f, f);
+            int i = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
+            if (i < 20) {
+                g = MathHelper.lerp(1.0f - (float)i / 20.0f, 5.0f, f);
             }
             RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
-            if (i == -1) {
+            if (arg == class_4596.FOG_SKY) {
                 RenderSystem.fogStart(0.0f);
                 RenderSystem.fogEnd(g * 0.8f);
             } else {
@@ -206,7 +206,7 @@ public class BackgroundRenderer {
             RenderSystem.fogDensity(2.0f);
         } else {
             RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
-            if (i == -1) {
+            if (arg == class_4596.FOG_SKY) {
                 RenderSystem.fogStart(0.0f);
                 RenderSystem.fogEnd(f);
             } else {
@@ -219,13 +219,19 @@ public class BackgroundRenderer {
                 RenderSystem.fogEnd(Math.min(f, 192.0f) * 0.5f);
             }
         }
-        RenderSystem.enableColorMaterial();
         RenderSystem.enableFog();
         RenderSystem.colorMaterial(1028, 4608);
     }
 
     public static void setFogBlack(boolean bl) {
         RenderSystem.fog(2918, bl ? blackColorBuffer : colorBuffer);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static enum class_4596 {
+        FOG_SKY,
+        FOG_TERRAIN;
+
     }
 }
 

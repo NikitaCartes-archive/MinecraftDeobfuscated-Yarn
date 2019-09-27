@@ -78,7 +78,7 @@ implements RangedAttackMob {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("Pumpkin")) {
+        if (compoundTag.contains("Pumpkin")) {
             this.setHasPumpkin(compoundTag.getBoolean("Pumpkin"));
         }
     }
@@ -120,7 +120,7 @@ implements RangedAttackMob {
         double h = livingEntity.z - this.z;
         float i = MathHelper.sqrt(e * e + h * h) * 0.2f;
         snowballEntity.setVelocity(e, g + (double)i, h, 1.6f, 12.0f);
-        this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0f, 1.0f / (this.getRand().nextFloat() * 0.4f + 0.8f));
+        this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
         this.world.spawnEntity(snowballEntity);
     }
 

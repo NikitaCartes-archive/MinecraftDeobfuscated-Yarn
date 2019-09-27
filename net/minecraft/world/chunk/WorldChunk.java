@@ -500,7 +500,7 @@ implements Chunk {
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
-            if (!compoundTag.containsKey(string, 12)) continue;
+            if (!compoundTag.contains(string, 12)) continue;
             this.setHeightmap(type, compoundTag.getLongArray(string));
         }
         for (BlockEntity blockEntity : this.blockEntities.values()) {

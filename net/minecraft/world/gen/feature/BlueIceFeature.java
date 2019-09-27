@@ -28,7 +28,7 @@ extends Feature<DefaultFeatureConfig> {
         if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
             return false;
         }
-        if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.down()).getBlock() != Blocks.WATER) {
+        if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.method_10074()).getBlock() != Blocks.WATER) {
             return false;
         }
         boolean bl = false;

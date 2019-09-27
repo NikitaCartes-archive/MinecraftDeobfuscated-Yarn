@@ -22,10 +22,6 @@ public class BakedQuad {
         this.sprite = sprite;
     }
 
-    public Sprite getSprite() {
-        return this.sprite;
-    }
-
     public int[] getVertexData() {
         return this.vertexData;
     }

@@ -25,7 +25,7 @@ extends Goal {
 
     @Override
     public void tick() {
-        if (this.mob.getRand().nextFloat() < 0.8f) {
+        if (this.mob.getRandom().nextFloat() < 0.8f) {
             this.mob.getJumpControl().setActive();
         }
     }

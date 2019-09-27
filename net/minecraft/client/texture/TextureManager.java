@@ -17,14 +17,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.AsyncTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureTickListener;
 import net.minecraft.client.texture.TextureUtil;
-import net.minecraft.client.texture.TickableTexture;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
@@ -42,7 +41,7 @@ implements TextureTickListener,
 ResourceReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Identifier MISSING_IDENTIFIER = new Identifier("");
-    private final Map<Identifier, Texture> textures = Maps.newHashMap();
+    private final Map<Identifier, AbstractTexture> textures = Maps.newHashMap();
     private final List<TextureTickListener> tickListeners = Lists.newArrayList();
     private final Map<String, Integer> dynamicIdCounters = Maps.newHashMap();
     private final ResourceManager resourceContainer;
@@ -60,47 +59,42 @@ ResourceReloadListener {
     }
 
     private void bindTextureInner(Identifier identifier) {
-        Texture texture = this.textures.get(identifier);
-        if (texture == null) {
-            texture = new ResourceTexture(identifier);
-            this.registerTexture(identifier, texture);
+        AbstractTexture abstractTexture = this.textures.get(identifier);
+        if (abstractTexture == null) {
+            abstractTexture = new ResourceTexture(identifier);
+            this.registerTexture(identifier, abstractTexture);
         }
-        texture.bindTexture();
+        abstractTexture.method_23207();
     }
 
-    public boolean registerTextureUpdateable(Identifier identifier, TickableTexture tickableTexture) {
-        if (this.registerTexture(identifier, tickableTexture)) {
-            this.tickListeners.add(tickableTexture);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean registerTexture(Identifier identifier, Texture texture) {
+    public boolean registerTexture(Identifier identifier, AbstractTexture abstractTexture) {
         boolean bl = true;
         try {
-            texture.load(this.resourceContainer);
+            abstractTexture.load(this.resourceContainer);
         } catch (IOException iOException) {
             if (identifier != MISSING_IDENTIFIER) {
                 LOGGER.warn("Failed to load texture: {}", (Object)identifier, (Object)iOException);
             }
-            texture = MissingSprite.getMissingSpriteTexture();
-            this.textures.put(identifier, texture);
+            abstractTexture = MissingSprite.getMissingSpriteTexture();
+            this.textures.put(identifier, abstractTexture);
             bl = false;
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Registering texture");
             CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
-            Texture texture2 = texture;
+            AbstractTexture abstractTexture2 = abstractTexture;
             crashReportSection.add("Resource location", identifier);
-            crashReportSection.add("Texture object class", () -> texture2.getClass().getName());
+            crashReportSection.add("Texture object class", () -> abstractTexture2.getClass().getName());
             throw new CrashException(crashReport);
         }
-        this.textures.put(identifier, texture);
+        this.textures.put(identifier, abstractTexture);
+        if (bl && abstractTexture instanceof TextureTickListener) {
+            this.tickListeners.add((TextureTickListener)((Object)abstractTexture));
+        }
         return bl;
     }
 
     @Nullable
-    public Texture getTexture(Identifier identifier) {
+    public AbstractTexture getTexture(Identifier identifier) {
         return this.textures.get(identifier);
     }
 
@@ -139,9 +133,9 @@ ResourceReloadListener {
     }
 
     public void destroyTexture(Identifier identifier) {
-        Texture texture = this.getTexture(identifier);
-        if (texture != null) {
-            TextureUtil.releaseTextureId(texture.getGlId());
+        AbstractTexture abstractTexture = this.getTexture(identifier);
+        if (abstractTexture != null) {
+            TextureUtil.releaseTextureId(abstractTexture.getGlId());
         }
     }
 
@@ -149,16 +143,16 @@ ResourceReloadListener {
     public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2) {
         return ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             MissingSprite.getMissingSpriteTexture();
-            Iterator<Map.Entry<Identifier, Texture>> iterator = this.textures.entrySet().iterator();
+            Iterator<Map.Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<Identifier, Texture> entry = iterator.next();
+                Map.Entry<Identifier, AbstractTexture> entry = iterator.next();
                 Identifier identifier = entry.getKey();
-                Texture texture = entry.getValue();
-                if (texture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
+                AbstractTexture abstractTexture = entry.getValue();
+                if (abstractTexture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
                     iterator.remove();
                     continue;
                 }
-                texture.registerTexture(this, resourceManager, identifier, executor2);
+                abstractTexture.registerTexture(this, resourceManager, identifier, executor2);
             }
         }, runnable -> RenderSystem.recordRenderCall(runnable::run));
     }

@@ -102,7 +102,7 @@ public class ZombieSiegeManager {
             int l;
             int j = blockPos.getX() + serverWorld.random.nextInt(16) - 8;
             BlockPos blockPos2 = new BlockPos(j, l = serverWorld.getTopY(Heightmap.Type.WORLD_SURFACE, j, k = blockPos.getZ() + serverWorld.random.nextInt(16) - 8), k);
-            if (!serverWorld.isNearOccupiedPointOfInterest(blockPos2) || !HostileEntity.method_20680(EntityType.ZOMBIE, serverWorld, SpawnType.EVENT, blockPos2, serverWorld.random)) continue;
+            if (!serverWorld.isNearOccupiedPointOfInterest(blockPos2) || !HostileEntity.canSpawnInDark(EntityType.ZOMBIE, serverWorld, SpawnType.EVENT, blockPos2, serverWorld.random)) continue;
             return new Vec3d((double)blockPos2.getX() + 0.5, blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
         }
         return null;

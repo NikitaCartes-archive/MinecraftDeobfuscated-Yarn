@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
@@ -25,13 +25,13 @@ extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<Wanderi
         this.addFeature(new VillagerHeldItemFeatureRenderer<WanderingTraderEntity>(this));
     }
 
-    protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {
+    public Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {
         return TEXTURE;
     }
 
-    protected void method_18046(WanderingTraderEntity wanderingTraderEntity, float f) {
+    protected void method_18046(WanderingTraderEntity wanderingTraderEntity, class_4587 arg, float f) {
         float g = 0.9375f;
-        RenderSystem.scalef(0.9375f, 0.9375f, 0.9375f);
+        arg.method_22905(0.9375f, 0.9375f, 0.9375f);
     }
 }
 

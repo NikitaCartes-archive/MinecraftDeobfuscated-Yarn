@@ -60,7 +60,7 @@ implements Tickable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        this.targetUuid = compoundTag.containsKey("target_uuid") ? NbtHelper.toUuid(compoundTag.getCompound("target_uuid")) : null;
+        this.targetUuid = compoundTag.contains("target_uuid") ? NbtHelper.toUuid(compoundTag.getCompound("target_uuid")) : null;
     }
 
     @Override

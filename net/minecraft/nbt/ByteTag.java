@@ -9,18 +9,53 @@ import java.io.IOException;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagReader;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class ByteTag
 extends AbstractNumberTag {
-    private byte value;
+    public static final TagReader<ByteTag> READER = new TagReader<ByteTag>(){
 
-    ByteTag() {
+        public ByteTag method_23235(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            positionTracker.add(72L);
+            return ByteTag.of(dataInput.readByte());
+        }
+
+        @Override
+        public String getCrashReportName() {
+            return "BYTE";
+        }
+
+        @Override
+        public String getCommandFeedbackName() {
+            return "TAG_Byte";
+        }
+
+        @Override
+        public boolean isImmutable() {
+            return true;
+        }
+
+        @Override
+        public /* synthetic */ Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+            return this.method_23235(dataInput, i, positionTracker);
+        }
+    };
+    public static final ByteTag ZERO = ByteTag.of((byte)0);
+    public static final ByteTag ONE = ByteTag.of((byte)1);
+    private final byte value;
+
+    private ByteTag(byte b) {
+        this.value = b;
     }
 
-    public ByteTag(byte b) {
-        this.value = b;
+    public static ByteTag of(byte b) {
+        return Cache.VALUES[128 + b];
+    }
+
+    public static ByteTag of(boolean bl) {
+        return bl ? ONE : ZERO;
     }
 
     @Override
@@ -29,14 +64,12 @@ extends AbstractNumberTag {
     }
 
     @Override
-    public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-        positionTracker.add(72L);
-        this.value = dataInput.readByte();
-    }
-
-    @Override
     public byte getType() {
         return 1;
+    }
+
+    public TagReader<ByteTag> getReader() {
+        return READER;
     }
 
     @Override
@@ -45,7 +78,7 @@ extends AbstractNumberTag {
     }
 
     public ByteTag method_10530() {
-        return new ByteTag(this.value);
+        return this;
     }
 
     public boolean equals(Object object) {
@@ -103,6 +136,16 @@ extends AbstractNumberTag {
     @Override
     public /* synthetic */ Tag copy() {
         return this.method_10530();
+    }
+
+    static class Cache {
+        private static final ByteTag[] VALUES = new ByteTag[256];
+
+        static {
+            for (int i = 0; i < VALUES.length; ++i) {
+                Cache.VALUES[i] = new ByteTag((byte)(i - 128));
+            }
+        }
     }
 }
 

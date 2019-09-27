@@ -22,7 +22,7 @@ extends MobEntityRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> 
         this.addFeature(new SnowmanPumpkinFeatureRenderer(this));
     }
 
-    protected Identifier method_4122(SnowGolemEntity snowGolemEntity) {
+    public Identifier method_4122(SnowGolemEntity snowGolemEntity) {
         return SKIN;
     }
 }

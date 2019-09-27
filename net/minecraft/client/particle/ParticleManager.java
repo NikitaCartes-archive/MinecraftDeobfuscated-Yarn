@@ -118,7 +118,7 @@ implements ResourceReloadListener {
     private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture("textures/particle");
 
     public ParticleManager(World world, TextureManager textureManager) {
-        textureManager.registerTextureUpdateable(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.particleAtlasTexture);
+        textureManager.registerTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.particleAtlasTexture);
         this.world = world;
         this.textureManager = textureManager;
         this.registerDefaultFactories();

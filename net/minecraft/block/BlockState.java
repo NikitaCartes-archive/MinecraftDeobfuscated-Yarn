@@ -136,11 +136,6 @@ implements State<BlockState> {
         return this.getBlock().mirror(this, blockMirror);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public boolean hasBlockEntityBreakingRender() {
-        return this.getBlock().hasBlockEntityBreakingRender(this);
-    }
-
     public BlockRenderType getRenderType() {
         return this.getBlock().getRenderType(this);
     }

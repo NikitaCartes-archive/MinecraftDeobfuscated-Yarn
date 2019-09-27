@@ -23,7 +23,7 @@ extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity2, Hand hand) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (world.isClient) {
-            return TypedActionResult.method_22430(itemStack);
+            return TypedActionResult.pass(itemStack);
         }
         if (playerEntity2.hasVehicle() && playerEntity2.getVehicle() instanceof PigEntity) {
             PigEntity pigEntity = (PigEntity)playerEntity2.getVehicle();
@@ -32,13 +32,13 @@ extends Item {
                 if (itemStack.isEmpty()) {
                     ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
                     itemStack2.setTag(itemStack.getTag());
-                    return TypedActionResult.method_22427(itemStack2);
+                    return TypedActionResult.successWithSwing(itemStack2);
                 }
-                return TypedActionResult.method_22427(itemStack);
+                return TypedActionResult.successWithSwing(itemStack);
             }
         }
         playerEntity2.incrementStat(Stats.USED.getOrCreateStat(this));
-        return TypedActionResult.method_22430(itemStack);
+        return TypedActionResult.pass(itemStack);
     }
 }
 

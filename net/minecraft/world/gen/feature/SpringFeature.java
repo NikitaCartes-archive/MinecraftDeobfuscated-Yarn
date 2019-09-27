@@ -25,7 +25,7 @@ extends Feature<SpringFeatureConfig> {
         if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.up()).getBlock())) {
             return false;
         }
-        if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.down()).getBlock())) {
+        if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.method_10074()).getBlock())) {
             return false;
         }
         BlockState blockState = iWorld.getBlockState(blockPos);

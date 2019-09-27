@@ -49,7 +49,7 @@ implements Nameable {
     public void deserialize(ItemStack itemStack, DyeColor dyeColor) {
         this.patternListTag = null;
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
+        if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
             this.patternListTag = compoundTag.getList("Patterns", 10).method_10612();
         }
         this.baseColor = dyeColor;
@@ -93,7 +93,7 @@ implements Nameable {
     @Override
     public void fromTag(CompoundTag compoundTag) {
         super.fromTag(compoundTag);
-        if (compoundTag.containsKey("CustomName", 8)) {
+        if (compoundTag.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
         this.baseColor = this.hasWorld() ? ((AbstractBannerBlock)this.getCachedState().getBlock()).getColor() : null;
@@ -117,7 +117,7 @@ implements Nameable {
 
     public static int getPatternCount(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (compoundTag != null && compoundTag.containsKey("Patterns")) {
+        if (compoundTag != null && compoundTag.contains("Patterns")) {
             return compoundTag.getList("Patterns", 10).size();
         }
         return 0;
@@ -161,7 +161,7 @@ implements Nameable {
             this.patternCacheKey = "b" + dyeColor.getId();
             if (this.patternListTag != null) {
                 for (int i = 0; i < this.patternListTag.size(); ++i) {
-                    CompoundTag compoundTag = this.patternListTag.getCompoundTag(i);
+                    CompoundTag compoundTag = this.patternListTag.getCompound(i);
                     BannerPattern bannerPattern = BannerPattern.byId(compoundTag.getString("Pattern"));
                     if (bannerPattern == null) continue;
                     this.patterns.add(bannerPattern);
@@ -175,7 +175,7 @@ implements Nameable {
 
     public static void loadFromItemStack(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-        if (compoundTag == null || !compoundTag.containsKey("Patterns", 9)) {
+        if (compoundTag == null || !compoundTag.contains("Patterns", 9)) {
             return;
         }
         ListTag listTag = compoundTag.getList("Patterns", 10);

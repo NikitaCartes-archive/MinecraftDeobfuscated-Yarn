@@ -3,17 +3,17 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class RavagerEntityModel
-extends EntityModel<RavagerEntity> {
+extends class_4595<RavagerEntity> {
     private final ModelPart field_3386;
     private final ModelPart field_3388;
     private final ModelPart field_3387;
@@ -71,14 +71,9 @@ extends EntityModel<RavagerEntity> {
         this.field_3382.setRotationPoint(8.0f, -13.0f, -5.0f);
     }
 
-    public void method_17090(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17091(ravagerEntity, f, g, h, i, j, k);
-        this.field_3384.render(k);
-        this.field_3387.render(k);
-        this.field_3385.render(k);
-        this.field_3383.render(k);
-        this.field_3389.render(k);
-        this.field_3382.render(k);
+    @Override
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3384, this.field_3387, this.field_3385, this.field_3383, this.field_3389, this.field_3382);
     }
 
     public void method_17091(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j, float k) {
@@ -130,16 +125,6 @@ extends EntityModel<RavagerEntity> {
 
     private float method_2801(float f, float g) {
         return (Math.abs(f % g - g * 0.5f) - g * 0.25f) / (g * 0.25f);
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17091((RavagerEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17090((RavagerEntity)entity, f, g, h, i, j, k);
     }
 }
 

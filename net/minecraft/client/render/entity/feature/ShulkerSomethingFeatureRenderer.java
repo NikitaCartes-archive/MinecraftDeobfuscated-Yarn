@@ -3,16 +3,22 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.ShulkerEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class ShulkerSomethingFeatureRenderer
@@ -21,58 +27,52 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4115(ShulkerEntity shulkerEntity, float f, float g, float h, float i, float j, float k, float l) {
-        RenderSystem.pushMatrix();
+    public void method_4115(class_4587 arg, class_4597 arg2, int i, ShulkerEntity shulkerEntity, float f, float g, float h, float j, float k, float l, float m) {
+        arg.method_22903();
         switch (shulkerEntity.getAttachedFace()) {
             case DOWN: {
                 break;
             }
             case EAST: {
-                RenderSystem.rotatef(90.0f, 0.0f, 0.0f, 1.0f);
-                RenderSystem.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
-                RenderSystem.translatef(1.0f, -1.0f, 0.0f);
-                RenderSystem.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
+                arg.method_22907(Vector3f.field_20707.method_23214(90.0f, true));
+                arg.method_22907(Vector3f.field_20703.method_23214(90.0f, true));
+                arg.method_22904(1.0, -1.0, 0.0);
+                arg.method_22907(Vector3f.field_20705.method_23214(180.0f, true));
                 break;
             }
             case WEST: {
-                RenderSystem.rotatef(-90.0f, 0.0f, 0.0f, 1.0f);
-                RenderSystem.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
-                RenderSystem.translatef(-1.0f, -1.0f, 0.0f);
-                RenderSystem.rotatef(180.0f, 0.0f, 1.0f, 0.0f);
+                arg.method_22907(Vector3f.field_20707.method_23214(-90.0f, true));
+                arg.method_22907(Vector3f.field_20703.method_23214(90.0f, true));
+                arg.method_22904(-1.0, -1.0, 0.0);
+                arg.method_22907(Vector3f.field_20705.method_23214(180.0f, true));
                 break;
             }
             case NORTH: {
-                RenderSystem.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
-                RenderSystem.translatef(0.0f, -1.0f, -1.0f);
+                arg.method_22907(Vector3f.field_20703.method_23214(90.0f, true));
+                arg.method_22904(0.0, -1.0, -1.0);
                 break;
             }
             case SOUTH: {
-                RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
-                RenderSystem.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
-                RenderSystem.translatef(0.0f, -1.0f, 1.0f);
+                arg.method_22907(Vector3f.field_20707.method_23214(180.0f, true));
+                arg.method_22907(Vector3f.field_20703.method_23214(90.0f, true));
+                arg.method_22904(0.0, -1.0, 1.0);
                 break;
             }
             case UP: {
-                RenderSystem.rotatef(180.0f, 1.0f, 0.0f, 0.0f);
-                RenderSystem.translatef(0.0f, -2.0f, 0.0f);
+                arg.method_22907(Vector3f.field_20703.method_23214(180.0f, true));
+                arg.method_22904(0.0, -2.0, 0.0);
             }
         }
         ModelPart modelPart = ((ShulkerEntityModel)this.getModel()).method_2830();
-        modelPart.yaw = j * ((float)Math.PI / 180);
-        modelPart.pitch = k * ((float)Math.PI / 180);
+        modelPart.yaw = k * ((float)Math.PI / 180);
+        modelPart.pitch = l * ((float)Math.PI / 180);
         DyeColor dyeColor = shulkerEntity.getColor();
-        if (dyeColor == null) {
-            this.bindTexture(ShulkerEntityRenderer.SKIN);
-        } else {
-            this.bindTexture(ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()]);
-        }
-        modelPart.render(l);
-        RenderSystem.popMatrix();
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return false;
+        Identifier identifier = dyeColor == null ? ShulkerEntityRenderer.SKIN : ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()];
+        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(identifier));
+        LivingEntityRenderer.method_23184(shulkerEntity, lv, 0.0f);
+        modelPart.method_22698(arg, lv, m, i, null);
+        lv.method_22923();
+        arg.method_22909();
     }
 }
 

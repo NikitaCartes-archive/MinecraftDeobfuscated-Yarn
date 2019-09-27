@@ -77,7 +77,7 @@ public class TargetFinder {
     @Nullable
     private static Vec3d findTarget(MobEntityWithAi mobEntityWithAi, int i, int j, int k, @Nullable Vec3d vec3d, boolean bl, double d, ToDoubleFunction<BlockPos> toDoubleFunction, boolean bl2, Predicate<BlockPos> predicate, int l, int m, boolean bl3) {
         EntityNavigation entityNavigation = mobEntityWithAi.getNavigation();
-        Random random = mobEntityWithAi.getRand();
+        Random random = mobEntityWithAi.getRandom();
         boolean bl4 = mobEntityWithAi.hasPositionTarget() ? mobEntityWithAi.getPositionTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getPositionTargetRange() + (float)i) + 1.0) : false;
         boolean bl5 = false;
         double e = Double.NEGATIVE_INFINITY;

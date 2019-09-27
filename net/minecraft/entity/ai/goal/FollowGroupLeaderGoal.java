@@ -20,7 +20,7 @@ extends Goal {
     }
 
     protected int getSurroundingSearchDelay(SchoolingFishEntity schoolingFishEntity) {
-        return 200 + schoolingFishEntity.getRand().nextInt(200) % 20;
+        return 200 + schoolingFishEntity.getRandom().nextInt(200) % 20;
     }
 
     @Override

@@ -219,12 +219,6 @@ implements BlockEntityProvider {
         return EAST_SHAPE;
     }
 
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-        return true;
-    }
-
     public static Optional<Vec3d> findWakeUpPosition(EntityType<?> entityType, class_4538 arg, BlockPos blockPos, int i) {
         Direction direction = arg.getBlockState(blockPos).get(FACING);
         int j = blockPos.getX();
@@ -315,7 +309,7 @@ implements BlockEntityProvider {
     @Override
     @Environment(value=EnvType.CLIENT)
     public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.offset(blockState.get(FACING), blockState.get(PART) == BedPart.HEAD ? 0 : 1);
+        BlockPos blockPos2 = blockPos.method_10079(blockState.get(FACING), blockState.get(PART) == BedPart.HEAD ? 0 : 1);
         return MathHelper.hashCode(blockPos2.getX(), blockPos.getY(), blockPos2.getZ());
     }
 

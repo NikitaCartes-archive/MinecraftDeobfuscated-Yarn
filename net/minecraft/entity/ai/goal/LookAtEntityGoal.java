@@ -37,7 +37,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        if (this.mob.getRand().nextFloat() >= this.chance) {
+        if (this.mob.getRandom().nextFloat() >= this.chance) {
             return false;
         }
         if (this.mob.getTarget() != null) {
@@ -60,7 +60,7 @@ extends Goal {
 
     @Override
     public void start() {
-        this.lookTime = 40 + this.mob.getRand().nextInt(40);
+        this.lookTime = 40 + this.mob.getRandom().nextInt(40);
     }
 
     @Override

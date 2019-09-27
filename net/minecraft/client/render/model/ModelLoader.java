@@ -42,6 +42,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.class_4590;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -87,7 +88,14 @@ public class ModelLoader {
     public static final Identifier field_20845 = new Identifier("entity/shulker/shulker");
     public static final List<Identifier> field_20846 = ImmutableList.of(new Identifier("entity/shulker/shulker_white"), new Identifier("entity/shulker/shulker_orange"), new Identifier("entity/shulker/shulker_magenta"), new Identifier("entity/shulker/shulker_light_blue"), new Identifier("entity/shulker/shulker_yellow"), new Identifier("entity/shulker/shulker_lime"), new Identifier("entity/shulker/shulker_pink"), new Identifier("entity/shulker/shulker_gray"), new Identifier("entity/shulker/shulker_light_gray"), new Identifier("entity/shulker/shulker_cyan"), new Identifier("entity/shulker/shulker_purple"), new Identifier("entity/shulker/shulker_blue"), new Identifier[]{new Identifier("entity/shulker/shulker_brown"), new Identifier("entity/shulker/shulker_green"), new Identifier("entity/shulker/shulker_red"), new Identifier("entity/shulker/shulker_black")});
     public static final Identifier field_20847 = new Identifier("entity/banner_base");
+    public static final Identifier field_21014 = new Identifier("entity/signs/oak");
+    public static final Identifier field_21015 = new Identifier("entity/signs/spruce");
+    public static final Identifier field_21016 = new Identifier("entity/signs/birch");
+    public static final Identifier field_21017 = new Identifier("entity/signs/acacia");
+    public static final Identifier field_21018 = new Identifier("entity/signs/jungle");
+    public static final Identifier field_21019 = new Identifier("entity/signs/dark_oak");
     public static final List<Identifier> field_20848 = IntStream.range(0, 10).mapToObj(i -> new Identifier("block/destroy_stage_" + i)).collect(Collectors.toList());
+    public static final List<Identifier> field_21020 = field_20848.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).collect(Collectors.toList());
     private static final Set<Identifier> DEFAULT_TEXTURES = SystemUtil.consume(Sets.newHashSet(), hashSet -> {
         hashSet.add(WATER_FLOW);
         hashSet.add(LAVA_FLOW);
@@ -116,6 +124,12 @@ public class ModelLoader {
         for (BannerPattern bannerPattern : BannerPattern.values()) {
             hashSet.add(bannerPattern.method_22536());
         }
+        hashSet.add(field_21014);
+        hashSet.add(field_21015);
+        hashSet.add(field_21016);
+        hashSet.add(field_21017);
+        hashSet.add(field_21018);
+        hashSet.add(field_21019);
         hashSet.addAll(field_20848);
         hashSet.add(new Identifier("item/empty_armor_slot_helmet"));
         hashSet.add(new Identifier("item/empty_armor_slot_chestplate"));
@@ -145,7 +159,7 @@ public class ModelLoader {
     private final Set<Identifier> modelsToLoad = Sets.newHashSet();
     private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
     private final Map<Identifier, UnbakedModel> unbakedModels = Maps.newHashMap();
-    private final Map<Triple<Identifier, ModelRotation, Boolean>, BakedModel> bakedModelCache = Maps.newHashMap();
+    private final Map<Triple<Identifier, class_4590, Boolean>, BakedModel> bakedModelCache = Maps.newHashMap();
     private final Map<Identifier, UnbakedModel> modelsToBake = Maps.newHashMap();
     private final Map<Identifier, BakedModel> bakedModels = Maps.newHashMap();
     private final SpriteAtlasTexture.Data spriteAtlasData;
@@ -417,15 +431,15 @@ public class ModelLoader {
     @Nullable
     public BakedModel bake(Identifier identifier, ModelBakeSettings modelBakeSettings) {
         JsonUnbakedModel jsonUnbakedModel;
-        Triple<Identifier, ModelRotation, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
+        Triple<Identifier, class_4590, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }
         UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
         if (unbakedModel instanceof JsonUnbakedModel && (jsonUnbakedModel = (JsonUnbakedModel)unbakedModel).getRootModel() == GENERATION_MARKER) {
-            return ITEM_MODEL_GENERATOR.create(this.spriteAtlas::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelBakeSettings);
+            return ITEM_MODEL_GENERATOR.create(this.spriteAtlas::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelBakeSettings, identifier);
         }
-        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelBakeSettings);
+        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelBakeSettings, identifier);
         this.bakedModelCache.put(triple, bakedModel);
         return bakedModel;
     }

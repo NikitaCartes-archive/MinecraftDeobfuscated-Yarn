@@ -54,7 +54,7 @@ extends ConditionalLootFunction {
                 listTag.clear();
             }
             UnaryOperator<Text> unaryOperator = SetNameLootFunction.applySourceEntity(lootContext, this.entity);
-            this.lore.stream().map(unaryOperator).map(Text.Serializer::toJson).map(StringTag::new).forEach(listTag::add);
+            this.lore.stream().map(unaryOperator).map(Text.Serializer::toJson).map(StringTag::of).forEach(listTag::add);
         }
         return itemStack;
     }
@@ -71,7 +71,7 @@ extends ConditionalLootFunction {
         } else {
             return null;
         }
-        if (compoundTag.containsKey("display", 10)) {
+        if (compoundTag.contains("display", 10)) {
             compoundTag2 = compoundTag.getCompound("display");
         } else if (bl) {
             compoundTag2 = new CompoundTag();
@@ -79,7 +79,7 @@ extends ConditionalLootFunction {
         } else {
             return null;
         }
-        if (compoundTag2.containsKey("Lore", 9)) {
+        if (compoundTag2.contains("Lore", 9)) {
             return compoundTag2.getList("Lore", 8);
         }
         if (bl) {

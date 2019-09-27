@@ -84,7 +84,7 @@ extends RangedWeaponItem {
         if (CrossbowItem.isCharged(itemStack)) {
             CrossbowItem.shootAll(world, playerEntity, hand, itemStack, CrossbowItem.getSpeed(itemStack), 1.0f);
             CrossbowItem.setCharged(itemStack, false);
-            return TypedActionResult.method_22428(itemStack);
+            return TypedActionResult.successWithoutSwing(itemStack);
         }
         if (!playerEntity.getArrowType(itemStack).isEmpty()) {
             if (!CrossbowItem.isCharged(itemStack)) {
@@ -92,9 +92,9 @@ extends RangedWeaponItem {
                 this.loaded = false;
                 playerEntity.setCurrentHand(hand);
             }
-            return TypedActionResult.method_22428(itemStack);
+            return TypedActionResult.successWithoutSwing(itemStack);
         }
-        return TypedActionResult.method_22431(itemStack);
+        return TypedActionResult.fail(itemStack);
     }
 
     @Override
@@ -159,7 +159,7 @@ extends RangedWeaponItem {
 
     private static void putProjectile(ItemStack itemStack, ItemStack itemStack2) {
         CompoundTag compoundTag = itemStack.getOrCreateTag();
-        ListTag listTag = compoundTag.containsKey("ChargedProjectiles", 9) ? compoundTag.getList("ChargedProjectiles", 10) : new ListTag();
+        ListTag listTag = compoundTag.contains("ChargedProjectiles", 9) ? compoundTag.getList("ChargedProjectiles", 10) : new ListTag();
         CompoundTag compoundTag2 = new CompoundTag();
         itemStack2.toTag(compoundTag2);
         listTag.add(compoundTag2);
@@ -170,9 +170,9 @@ extends RangedWeaponItem {
         ListTag listTag;
         ArrayList<ItemStack> list = Lists.newArrayList();
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null && compoundTag.containsKey("ChargedProjectiles", 9) && (listTag = compoundTag.getList("ChargedProjectiles", 10)) != null) {
+        if (compoundTag != null && compoundTag.contains("ChargedProjectiles", 9) && (listTag = compoundTag.getList("ChargedProjectiles", 10)) != null) {
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+                CompoundTag compoundTag2 = listTag.getCompound(i);
                 list.add(ItemStack.fromTag(compoundTag2));
             }
         }
@@ -240,7 +240,7 @@ extends RangedWeaponItem {
 
     public static void shootAll(World world, LivingEntity livingEntity, Hand hand, ItemStack itemStack, float f, float g) {
         List<ItemStack> list = CrossbowItem.getProjectiles(itemStack);
-        float[] fs = CrossbowItem.getSoundPitches(livingEntity.getRand());
+        float[] fs = CrossbowItem.getSoundPitches(livingEntity.getRandom());
         for (int i = 0; i < list.size(); ++i) {
             boolean bl;
             ItemStack itemStack2 = list.get(i);

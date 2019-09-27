@@ -59,7 +59,7 @@ extends AbstractPhase {
         if (this.field_7043 != null && this.field_7043.isFinished()) {
             BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.ORIGIN));
             int n = i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
-            if (this.dragon.getRand().nextInt(i + 3) == 0) {
+            if (this.dragon.getRandom().nextInt(i + 3) == 0) {
                 this.dragon.getPhaseManager().setPhase(PhaseType.LANDING_APPROACH);
                 return;
             }
@@ -68,7 +68,7 @@ extends AbstractPhase {
             if (playerEntity != null) {
                 d = blockPos.getSquaredDistance(playerEntity.getPos(), true) / 512.0;
             }
-            if (!(playerEntity == null || playerEntity.abilities.invulnerable || this.dragon.getRand().nextInt(MathHelper.abs((int)d) + 2) != 0 && this.dragon.getRand().nextInt(i + 2) != 0)) {
+            if (!(playerEntity == null || playerEntity.abilities.invulnerable || this.dragon.getRandom().nextInt(MathHelper.abs((int)d) + 2) != 0 && this.dragon.getRandom().nextInt(i + 2) != 0)) {
                 this.method_6843(playerEntity);
                 return;
             }
@@ -76,7 +76,7 @@ extends AbstractPhase {
         if (this.field_7043 == null || this.field_7043.isFinished()) {
             int j;
             i = j = this.dragon.method_6818();
-            if (this.dragon.getRand().nextInt(8) == 0) {
+            if (this.dragon.getRandom().nextInt(8) == 0) {
                 this.field_7044 = !this.field_7044;
                 i += 6;
             }
@@ -108,7 +108,7 @@ extends AbstractPhase {
             this.field_7043.next();
             double d = vec3d.x;
             double e = vec3d.z;
-            while ((f = vec3d.y + (double)(this.dragon.getRand().nextFloat() * 20.0f)) < vec3d.y) {
+            while ((f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0f)) < vec3d.y) {
             }
             this.field_7045 = new Vec3d(d, f, e);
         }

@@ -3,31 +3,35 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class HorseEntityModel<T extends HorseBaseEntity>
-extends EntityModel<T> {
+extends class_4592<T> {
     protected final ModelPart field_3305;
     protected final ModelPart field_3307;
     private final ModelPart field_3306;
     private final ModelPart field_3303;
     private final ModelPart field_3302;
     private final ModelPart field_3308;
+    private final ModelPart field_20930;
+    private final ModelPart field_20931;
+    private final ModelPart field_20932;
+    private final ModelPart field_20933;
     private final ModelPart field_3300;
     private final ModelPart[] field_3304;
     private final ModelPart[] field_3301;
 
     public HorseEntityModel(float f) {
+        super(true, 16.2f, 1.36f, 2.7272f, 2.0f, 20.0f);
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.field_3305 = new ModelPart(this, 0, 32);
@@ -60,6 +64,21 @@ extends EntityModel<T> {
         this.field_3308 = new ModelPart(this, 48, 21);
         this.field_3308.addCuboid(-1.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, f);
         this.field_3308.setRotationPoint(-4.0f, 6.0f, -12.0f);
+        float g = 5.5f;
+        this.field_20930 = new ModelPart(this, 48, 21);
+        this.field_20930.mirror = true;
+        this.field_20930.method_22971(-3.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, f, f + 5.5f, f);
+        this.field_20930.setRotationPoint(4.0f, 14.0f, 7.0f);
+        this.field_20931 = new ModelPart(this, 48, 21);
+        this.field_20931.method_22971(-1.0f, -1.01f, -1.0f, 4.0f, 11.0f, 4.0f, f, f + 5.5f, f);
+        this.field_20931.setRotationPoint(-4.0f, 14.0f, 7.0f);
+        this.field_20932 = new ModelPart(this, 48, 21);
+        this.field_20932.mirror = true;
+        this.field_20932.method_22971(-3.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, f, f + 5.5f, f);
+        this.field_20932.setRotationPoint(4.0f, 6.0f, -12.0f);
+        this.field_20933 = new ModelPart(this, 48, 21);
+        this.field_20933.method_22971(-1.0f, -1.01f, -1.9f, 4.0f, 11.0f, 4.0f, f, f + 5.5f, f);
+        this.field_20933.setRotationPoint(-4.0f, 6.0f, -12.0f);
         this.field_3300 = new ModelPart(this, 42, 36);
         this.field_3300.addCuboid(-1.5f, 0.0f, 0.0f, 3.0f, 14.0f, 4.0f, f);
         this.field_3300.setRotationPoint(0.0f, -5.0f, 2.0f);
@@ -102,49 +121,31 @@ extends EntityModel<T> {
     }
 
     public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j, float k) {
-        boolean bl = ((PassiveEntity)horseBaseEntity).isBaby();
-        float l = ((LivingEntity)horseBaseEntity).getScaleFactor();
-        boolean bl2 = ((HorseBaseEntity)horseBaseEntity).isSaddled();
-        boolean bl3 = ((Entity)horseBaseEntity).hasPassengers();
+        boolean bl = ((HorseBaseEntity)horseBaseEntity).isSaddled();
+        boolean bl2 = ((Entity)horseBaseEntity).hasPassengers();
         for (ModelPart modelPart : this.field_3304) {
-            modelPart.visible = bl2;
+            modelPart.visible = bl;
         }
         for (ModelPart modelPart : this.field_3301) {
-            modelPart.visible = bl3 && bl2;
+            modelPart.visible = bl2 && bl;
         }
-        if (bl) {
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(l, 0.5f + l * 0.5f, l);
-            RenderSystem.translatef(0.0f, 0.95f * (1.0f - l), 0.0f);
-        }
-        this.field_3306.render(k);
-        this.field_3303.render(k);
-        this.field_3302.render(k);
-        this.field_3308.render(k);
-        if (bl) {
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(l, l, l);
-            RenderSystem.translatef(0.0f, 2.3f * (1.0f - l), 0.0f);
-        }
-        this.field_3305.render(k);
-        if (bl) {
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            float m = l + 0.1f * l;
-            RenderSystem.scalef(m, m, m);
-            RenderSystem.translatef(0.0f, 2.25f * (1.0f - m), 0.1f * (1.4f - m));
-        }
-        this.field_3307.render(k);
-        if (bl) {
-            RenderSystem.popMatrix();
-        }
+        this.field_3305.rotationPointY = 11.0f;
+    }
+
+    @Override
+    public Iterable<ModelPart> method_22946() {
+        return ImmutableList.of(this.field_3307);
+    }
+
+    @Override
+    protected Iterable<ModelPart> method_22948() {
+        return ImmutableList.of(this.field_3305, this.field_3306, this.field_3303, this.field_3302, this.field_3308, this.field_20930, this.field_20931, this.field_20932, this.field_20933);
     }
 
     public void method_17084(T horseBaseEntity, float f, float g, float h) {
         super.animateModel(horseBaseEntity, f, g, h);
-        float i = this.method_2790(((HorseBaseEntity)horseBaseEntity).prevBodyYaw, ((HorseBaseEntity)horseBaseEntity).bodyYaw, h);
-        float j = this.method_2790(((HorseBaseEntity)horseBaseEntity).prevHeadYaw, ((HorseBaseEntity)horseBaseEntity).headYaw, h);
+        float i = MathHelper.method_22859(((HorseBaseEntity)horseBaseEntity).prevBodyYaw, ((HorseBaseEntity)horseBaseEntity).bodyYaw, h);
+        float j = MathHelper.method_22859(((HorseBaseEntity)horseBaseEntity).prevHeadYaw, ((HorseBaseEntity)horseBaseEntity).headYaw, h);
         float k = MathHelper.lerp(h, ((HorseBaseEntity)horseBaseEntity).prevPitch, ((HorseBaseEntity)horseBaseEntity).pitch);
         float l = j - i;
         float m = k * ((float)Math.PI / 180);
@@ -193,21 +194,28 @@ extends EntityModel<T> {
         this.field_3300.rotationPointY = -5.0f + g;
         this.field_3300.rotationPointZ = 2.0f + g * 2.0f;
         this.field_3300.yaw = bl ? MathHelper.cos(r * 0.7f) : 0.0f;
-    }
-
-    private float method_2790(float f, float g, float h) {
-        float i;
-        for (i = g - f; i < -180.0f; i += 360.0f) {
-        }
-        while (i >= 180.0f) {
-            i -= 360.0f;
-        }
-        return f + h * i;
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17085((HorseBaseEntity)entity, f, g, h, i, j, k);
+        this.field_20930.rotationPointY = this.field_3306.rotationPointY;
+        this.field_20930.rotationPointZ = this.field_3306.rotationPointZ;
+        this.field_20930.pitch = this.field_3306.pitch;
+        this.field_20931.rotationPointY = this.field_3303.rotationPointY;
+        this.field_20931.rotationPointZ = this.field_3303.rotationPointZ;
+        this.field_20931.pitch = this.field_3303.pitch;
+        this.field_20932.rotationPointY = this.field_3302.rotationPointY;
+        this.field_20932.rotationPointZ = this.field_3302.rotationPointZ;
+        this.field_20932.pitch = this.field_3302.pitch;
+        this.field_20933.rotationPointY = this.field_3308.rotationPointY;
+        this.field_20933.rotationPointZ = this.field_3308.rotationPointZ;
+        this.field_20933.pitch = this.field_3308.pitch;
+        boolean bl2 = ((PassiveEntity)horseBaseEntity).isBaby();
+        this.field_3306.visible = !bl2;
+        this.field_3303.visible = !bl2;
+        this.field_3302.visible = !bl2;
+        this.field_3308.visible = !bl2;
+        this.field_20930.visible = bl2;
+        this.field_20931.visible = bl2;
+        this.field_20932.visible = bl2;
+        this.field_20933.visible = bl2;
+        this.field_3305.rotationPointY = bl2 ? 10.8f : 0.0f;
     }
 }
 

@@ -20,7 +20,7 @@ extends MobEntityRenderer<BlazeEntity, BlazeEntityModel<BlazeEntity>> {
         super(entityRenderDispatcher, new BlazeEntityModel(), 0.5f);
     }
 
-    protected Identifier method_3881(BlazeEntity blazeEntity) {
+    public Identifier method_3881(BlazeEntity blazeEntity) {
         return SKIN;
     }
 }

@@ -67,7 +67,7 @@ extends PathNodeMaker {
         } else {
             blockPos = new BlockPos(this.entity);
             while ((this.field_20622.getBlockState(blockPos).isAir() || this.field_20622.getBlockState(blockPos).canPlaceAtSide(this.field_20622, blockPos, BlockPlacementEnvironment.LAND)) && blockPos.getY() > 0) {
-                blockPos = blockPos.down();
+                blockPos = blockPos.method_10074();
             }
             i = blockPos.up().getY();
         }
@@ -151,7 +151,7 @@ extends PathNodeMaker {
     }
 
     public static double getHeight(BlockView blockView, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         VoxelShape voxelShape = blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2);
         return (double)blockPos2.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMaximum(Direction.Axis.Y));
     }
@@ -290,7 +290,7 @@ extends PathNodeMaker {
         if (pathNodeType == PathNodeType.DOOR_OPEN && !bl2) {
             pathNodeType = PathNodeType.BLOCKED;
         }
-        if (pathNodeType == PathNodeType.RAIL && !(blockView.getBlockState(blockPos).getBlock() instanceof AbstractRailBlock) && !(blockView.getBlockState(blockPos.down()).getBlock() instanceof AbstractRailBlock)) {
+        if (pathNodeType == PathNodeType.RAIL && !(blockView.getBlockState(blockPos).getBlock() instanceof AbstractRailBlock) && !(blockView.getBlockState(blockPos.method_10074()).getBlock() instanceof AbstractRailBlock)) {
             pathNodeType = PathNodeType.FENCE;
         }
         if (pathNodeType == PathNodeType.LEAVES) {

@@ -38,23 +38,23 @@ extends Item {
             AreaEffectCloudEntity areaEffectCloudEntity2 = list.get(0);
             areaEffectCloudEntity2.setRadius(areaEffectCloudEntity2.getRadius() - 0.5f);
             world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-            return TypedActionResult.method_22427(this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
+            return TypedActionResult.successWithSwing(this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
         }
         HitResult hitResult = GlassBottleItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.method_22430(itemStack);
+            return TypedActionResult.pass(itemStack);
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
             if (!world.canPlayerModifyAt(playerEntity, blockPos)) {
-                return TypedActionResult.method_22430(itemStack);
+                return TypedActionResult.pass(itemStack);
             }
             if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
                 world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
-                return TypedActionResult.method_22427(this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+                return TypedActionResult.successWithSwing(this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
             }
         }
-        return TypedActionResult.method_22430(itemStack);
+        return TypedActionResult.pass(itemStack);
     }
 
     protected ItemStack fill(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {

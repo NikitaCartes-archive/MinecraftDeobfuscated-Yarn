@@ -56,10 +56,10 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         if (!bl) {
             return false;
         }
-        if (!SpruceTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.down()) || blockPos.getY() >= 256 - i - 1) {
+        if (!SpruceTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) || blockPos.getY() >= 256 - i - 1) {
             return false;
         }
-        this.setToDirt(modifiableTestableWorld, blockPos.down());
+        this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
         m = random.nextInt(2);
         n = 1;
         int q = 0;

@@ -3,15 +3,16 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(value=EnvType.CLIENT)
@@ -21,31 +22,21 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         super(featureRendererContext);
     }
 
-    public void method_4188(IronGolemEntity ironGolemEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4188(class_4587 arg, class_4597 arg2, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (ironGolemEntity.method_6502() == 0) {
             return;
         }
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.pushMatrix();
-        RenderSystem.rotatef(5.0f + 180.0f * ((IronGolemEntityModel)this.getModel()).method_2809().pitch / (float)Math.PI, 1.0f, 0.0f, 0.0f);
-        RenderSystem.rotatef(90.0f, 1.0f, 0.0f, 0.0f);
-        RenderSystem.translatef(-0.9375f, -0.625f, -0.9375f);
-        float m = 0.5f;
-        RenderSystem.scalef(0.5f, -0.5f, 0.5f);
-        int n = ironGolemEntity.getLightmapCoordinates();
-        int o = n % 65536;
-        int p = n / 65536;
-        RenderSystem.glMultiTexCoord2f(33985, o, p);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.POPPY.getDefaultState(), 1.0f);
-        RenderSystem.popMatrix();
-        RenderSystem.disableRescaleNormal();
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return false;
+        arg.method_22903();
+        arg.method_22905(-1.0f, -1.0f, 1.0f);
+        arg.method_22907(Vector3f.field_20703.method_23214(5.0f + 180.0f * ((IronGolemEntityModel)this.getModel()).method_2809().pitch / (float)Math.PI, true));
+        arg.method_22907(Vector3f.field_20703.method_23214(90.0f, true));
+        arg.method_22904(0.6875, -0.3125, 1.0625);
+        float n = 0.5f;
+        arg.method_22905(0.5f, 0.5f, 0.5f);
+        arg.method_22907(Vector3f.field_20703.method_23214(180.0f, true));
+        arg.method_22904(-0.5, -0.5, 0.5);
+        MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.POPPY.getDefaultState(), arg, arg2, i, 0, 10);
+        arg.method_22909();
     }
 }
 

@@ -3,19 +3,17 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.PolarBearEntity;
 
 @Environment(value=EnvType.CLIENT)
 public class PolarBearEntityModel<T extends PolarBearEntity>
 extends QuadrupedEntityModel<T> {
     public PolarBearEntityModel() {
-        super(12, 0.0f);
+        super(12, 0.0f, false, 16.0f, 4.0f, 2.25f, 2.0f, 24);
         this.textureWidth = 128;
         this.textureHeight = 64;
         this.head = new ModelPart(this, 0, 0);
@@ -51,37 +49,6 @@ extends QuadrupedEntityModel<T> {
         this.leg4.rotationPointX += 1.0f;
         this.leg3.rotationPointZ -= 1.0f;
         this.leg4.rotationPointZ -= 1.0f;
-        this.field_3537 += 2.0f;
-    }
-
-    public void method_17113(T polarBearEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17114(polarBearEntity, f, g, h, i, j, k);
-        if (this.isChild) {
-            float l = 2.0f;
-            this.field_3540 = 16.0f;
-            this.field_3537 = 4.0f;
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.6666667f, 0.6666667f, 0.6666667f);
-            RenderSystem.translatef(0.0f, this.field_3540 * k, this.field_3537 * k);
-            this.head.render(k);
-            RenderSystem.popMatrix();
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-            RenderSystem.translatef(0.0f, 24.0f * k, 0.0f);
-            this.body.render(k);
-            this.leg1.render(k);
-            this.leg2.render(k);
-            this.leg3.render(k);
-            this.leg4.render(k);
-            RenderSystem.popMatrix();
-        } else {
-            this.head.render(k);
-            this.body.render(k);
-            this.leg1.render(k);
-            this.leg2.render(k);
-            this.leg3.render(k);
-            this.leg4.render(k);
-        }
     }
 
     public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j, float k) {
@@ -106,16 +73,6 @@ extends QuadrupedEntityModel<T> {
             this.head.rotationPointZ = -16.0f * n - 3.0f * m;
         }
         this.head.pitch += m * (float)Math.PI * 0.15f;
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17114((PolarBearEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17113((PolarBearEntity)entity, f, g, h, i, j, k);
     }
 }
 

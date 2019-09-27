@@ -20,7 +20,7 @@ extends MobEntityRenderer<OcelotEntity, OcelotEntityModel<OcelotEntity>> {
         super(entityRenderDispatcher, new OcelotEntityModel(0.0f), 0.4f);
     }
 
-    protected Identifier method_16046(OcelotEntity ocelotEntity) {
+    public Identifier method_16046(OcelotEntity ocelotEntity) {
         return SKIN;
     }
 }

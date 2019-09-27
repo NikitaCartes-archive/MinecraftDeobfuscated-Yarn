@@ -3,13 +3,18 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -19,31 +24,28 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         super(featureRendererContext);
     }
 
-    public void method_4181(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4181(class_4587 arg, class_4597 arg2, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!"deadmau5".equals(abstractClientPlayerEntity.getName().getString()) || !abstractClientPlayerEntity.hasSkinTexture() || abstractClientPlayerEntity.isInvisible()) {
             return;
         }
-        this.bindTexture(abstractClientPlayerEntity.getSkinTexture());
-        for (int m = 0; m < 2; ++m) {
-            float n = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw) - MathHelper.lerp(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
-            float o = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
-            RenderSystem.pushMatrix();
-            RenderSystem.rotatef(n, 0.0f, 1.0f, 0.0f);
-            RenderSystem.rotatef(o, 1.0f, 0.0f, 0.0f);
-            RenderSystem.translatef(0.375f * (float)(m * 2 - 1), 0.0f, 0.0f);
-            RenderSystem.translatef(0.0f, -0.375f, 0.0f);
-            RenderSystem.rotatef(-o, 1.0f, 0.0f, 0.0f);
-            RenderSystem.rotatef(-n, 0.0f, 1.0f, 0.0f);
-            float p = 1.3333334f;
-            RenderSystem.scalef(1.3333334f, 1.3333334f, 1.3333334f);
-            ((PlayerEntityModel)this.getModel()).renderEars(0.0625f);
-            RenderSystem.popMatrix();
+        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(abstractClientPlayerEntity.getSkinTexture()));
+        LivingEntityRenderer.method_23184(abstractClientPlayerEntity, lv, 0.0f);
+        for (int n = 0; n < 2; ++n) {
+            float o = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw) - MathHelper.lerp(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
+            float p = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
+            arg.method_22903();
+            arg.method_22907(Vector3f.field_20705.method_23214(o, true));
+            arg.method_22907(Vector3f.field_20703.method_23214(p, true));
+            arg.method_22904(0.375f * (float)(n * 2 - 1), 0.0, 0.0);
+            arg.method_22904(0.0, -0.375, 0.0);
+            arg.method_22907(Vector3f.field_20703.method_23214(-p, true));
+            arg.method_22907(Vector3f.field_20705.method_23214(-o, true));
+            float q = 1.3333334f;
+            arg.method_22905(1.3333334f, 1.3333334f, 1.3333334f);
+            ((PlayerEntityModel)this.getModel()).renderEars(arg, lv, 0.0625f, i);
+            arg.method_22909();
         }
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return true;
+        lv.method_22923();
     }
 }
 

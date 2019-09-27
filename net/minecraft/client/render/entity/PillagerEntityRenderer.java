@@ -9,7 +9,6 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.IllagerEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EvilVillagerEntityModel;
-import net.minecraft.client.render.entity.model.PillagerEntityModel;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.util.Identifier;
 
@@ -19,11 +18,11 @@ extends IllagerEntityRenderer<PillagerEntity> {
     private static final Identifier SKIN = new Identifier("textures/entity/illager/pillager.png");
 
     public PillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new PillagerEntityModel(0.0f, 0.0f, 64, 64), 0.5f);
+        super(entityRenderDispatcher, new EvilVillagerEntityModel(0.0f, 0.0f, 64, 64), 0.5f);
         this.addFeature(new HeldItemFeatureRenderer<PillagerEntity, EvilVillagerEntityModel<PillagerEntity>>(this));
     }
 
-    protected Identifier method_4092(PillagerEntity pillagerEntity) {
+    public Identifier method_4092(PillagerEntity pillagerEntity) {
         return SKIN;
     }
 }

@@ -30,13 +30,13 @@ extends Feature<DefaultFeatureConfig> {
         BlockState blockState = this.getGrass(random);
         BlockState blockState2 = iWorld.getBlockState(blockPos);
         while ((blockState2.isAir() || blockState2.matches(BlockTags.LEAVES)) && blockPos.getY() > 0) {
-            blockPos = blockPos.down();
+            blockPos = blockPos.method_10074();
             blockState2 = iWorld.getBlockState(blockPos);
         }
         int i = 0;
         for (int j = 0; j < 128; ++j) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-            if (!iWorld.isAir(blockPos2) || iWorld.getBlockState(blockPos2.down()).getBlock() == Blocks.PODZOL || !blockState.canPlaceAt(iWorld, blockPos2)) continue;
+            if (!iWorld.isAir(blockPos2) || iWorld.getBlockState(blockPos2.method_10074()).getBlock() == Blocks.PODZOL || !blockState.canPlaceAt(iWorld, blockPos2)) continue;
             iWorld.setBlockState(blockPos2, blockState, 2);
             ++i;
         }

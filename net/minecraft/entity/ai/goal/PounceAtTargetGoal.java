@@ -37,7 +37,7 @@ extends Goal {
         if (!this.mob.onGround) {
             return false;
         }
-        return this.mob.getRand().nextInt(5) == 0;
+        return this.mob.getRandom().nextInt(5) == 0;
     }
 
     @Override

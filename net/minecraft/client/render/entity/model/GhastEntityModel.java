@@ -3,37 +3,40 @@
  */
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class GhastEntityModel<T extends Entity>
-extends EntityModel<T> {
-    private final ModelPart field_3373;
+extends class_4595<T> {
     private final ModelPart[] field_3372 = new ModelPart[9];
+    private final ImmutableList<ModelPart> field_20929;
 
     public GhastEntityModel() {
-        int i = -16;
-        this.field_3373 = new ModelPart(this, 0, 0);
-        this.field_3373.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 16.0f, 16.0f);
-        this.field_3373.rotationPointY += 8.0f;
+        ImmutableList.Builder builder = ImmutableList.builder();
+        ModelPart modelPart = new ModelPart(this, 0, 0);
+        modelPart.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 16.0f, 16.0f);
+        modelPart.rotationPointY = 17.6f;
+        builder.add(modelPart);
         Random random = new Random(1660L);
-        for (int j = 0; j < this.field_3372.length; ++j) {
-            this.field_3372[j] = new ModelPart(this, 0, 0);
-            float f = (((float)(j % 3) - (float)(j / 3 % 2) * 0.5f + 0.25f) / 2.0f * 2.0f - 1.0f) * 5.0f;
-            float g = ((float)(j / 3) / 2.0f * 2.0f - 1.0f) * 5.0f;
-            int k = random.nextInt(7) + 8;
-            this.field_3372[j].addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, k, 2.0f);
-            this.field_3372[j].rotationPointX = f;
-            this.field_3372[j].rotationPointZ = g;
-            this.field_3372[j].rotationPointY = 15.0f;
+        for (int i = 0; i < this.field_3372.length; ++i) {
+            this.field_3372[i] = new ModelPart(this, 0, 0);
+            float f = (((float)(i % 3) - (float)(i / 3 % 2) * 0.5f + 0.25f) / 2.0f * 2.0f - 1.0f) * 5.0f;
+            float g = ((float)(i / 3) / 2.0f * 2.0f - 1.0f) * 5.0f;
+            int j = random.nextInt(7) + 8;
+            this.field_3372[i].addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, j, 2.0f);
+            this.field_3372[i].rotationPointX = f;
+            this.field_3372[i].rotationPointZ = g;
+            this.field_3372[i].rotationPointY = 24.6f;
+            builder.add(this.field_3372[i]);
         }
+        this.field_20929 = builder.build();
     }
 
     @Override
@@ -44,15 +47,8 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(T entity, float f, float g, float h, float i, float j, float k) {
-        this.setAngles(entity, f, g, h, i, j, k);
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(0.0f, 0.6f, 0.0f);
-        this.field_3373.render(k);
-        for (ModelPart modelPart : this.field_3372) {
-            modelPart.render(k);
-        }
-        RenderSystem.popMatrix();
+    public Iterable<ModelPart> method_22960() {
+        return this.field_20929;
     }
 }
 

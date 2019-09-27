@@ -65,7 +65,7 @@ extends PlantBlock {
     @Override
     public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
         if (blockState.get(HALF) == DoubleBlockHalf.UPPER) {
-            BlockState blockState2 = arg.getBlockState(blockPos.down());
+            BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
             return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
         }
         return super.canPlaceAt(blockState, arg, blockPos);
@@ -84,7 +84,7 @@ extends PlantBlock {
     @Override
     public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
         DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
-        BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.LOWER ? blockPos.up() : blockPos.down();
+        BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.LOWER ? blockPos.up() : blockPos.method_10074();
         BlockState blockState2 = world.getBlockState(blockPos2);
         if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
             world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);

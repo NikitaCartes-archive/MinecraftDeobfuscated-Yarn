@@ -161,7 +161,7 @@ CommandOutput {
     public float pushSpeedReduction;
     protected final Random random = new Random();
     public int age;
-    private int fireTime = -this.getBurningDuration();
+    private int fireTicks = -this.getBurningDuration();
     protected boolean insideWater;
     protected double waterHeight;
     protected boolean inWater;
@@ -180,11 +180,8 @@ CommandOutput {
     public int chunkX;
     public int chunkY;
     public int chunkZ;
-    @Environment(value=EnvType.CLIENT)
     public long trackedX;
-    @Environment(value=EnvType.CLIENT)
     public long trackedY;
-    @Environment(value=EnvType.CLIENT)
     public long trackedZ;
     public boolean ignoreCameraFrustum;
     public boolean velocityDirty;
@@ -226,6 +223,15 @@ CommandOutput {
         this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public int method_22861() {
+        AbstractTeam abstractTeam = this.getScoreboardTeam();
+        if (abstractTeam != null && abstractTeam.getColor().getColorValue() != null) {
+            return abstractTeam.getColor().getColorValue();
+        }
+        return 0xFFFFFF;
+    }
+
     public boolean isSpectator() {
         return false;
     }
@@ -239,7 +245,6 @@ CommandOutput {
         }
     }
 
-    @Environment(value=EnvType.CLIENT)
     public void updateTrackedPosition(double d, double e, double f) {
         this.trackedX = EntityS2CPacket.encodePacketCoordinate(d);
         this.trackedY = EntityS2CPacket.encodePacketCoordinate(e);
@@ -365,9 +370,6 @@ CommandOutput {
             --this.ridingCooldown;
         }
         this.prevHorizontalSpeed = this.horizontalSpeed;
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
         this.prevPitch = this.pitch;
         this.prevYaw = this.yaw;
         this.tickPortal();
@@ -375,17 +377,17 @@ CommandOutput {
         this.updateInWater();
         if (this.world.isClient) {
             this.extinguish();
-        } else if (this.fireTime > 0) {
+        } else if (this.fireTicks > 0) {
             if (this.isFireImmune()) {
-                this.fireTime -= 4;
-                if (this.fireTime < 0) {
+                this.fireTicks -= 4;
+                if (this.fireTicks < 0) {
                     this.extinguish();
                 }
             } else {
-                if (this.fireTime % 20 == 0) {
+                if (this.fireTicks % 20 == 0) {
                     this.damage(DamageSource.ON_FIRE, 1.0f);
                 }
-                --this.fireTime;
+                --this.fireTicks;
             }
         }
         if (this.isInLava()) {
@@ -396,7 +398,7 @@ CommandOutput {
             this.destroy();
         }
         if (!this.world.isClient) {
-            this.setFlag(0, this.fireTime > 0);
+            this.setFlag(0, this.fireTicks > 0);
         }
         this.firstUpdate = false;
         this.world.getProfiler().pop();
@@ -425,21 +427,21 @@ CommandOutput {
         if (this instanceof LivingEntity) {
             j = ProtectionEnchantment.transformFireDuration((LivingEntity)this, j);
         }
-        if (this.fireTime < j) {
-            this.fireTime = j;
+        if (this.fireTicks < j) {
+            this.fireTicks = j;
         }
     }
 
-    public void setFireTime(int i) {
-        this.fireTime = i;
+    public void setFireTicks(int i) {
+        this.fireTicks = i;
     }
 
-    public int getFireTime() {
-        return this.fireTime;
+    public int getFireTicks() {
+        return this.fireTicks;
     }
 
     public void extinguish() {
-        this.fireTime = 0;
+        this.fireTicks = 0;
     }
 
     protected void destroy() {
@@ -488,7 +490,7 @@ CommandOutput {
         int k = MathHelper.floor(this.z);
         BlockPos blockPos = new BlockPos(i, j, k);
         BlockState blockState = this.world.getBlockState(blockPos);
-        if (blockState.isAir() && ((block = (blockState2 = this.world.getBlockState(blockPos2 = blockPos.down())).getBlock()).matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock)) {
+        if (blockState.isAir() && ((block = (blockState2 = this.world.getBlockState(blockPos2 = blockPos.method_10074())).getBlock()).matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock)) {
             blockState = blockState2;
             blockPos = blockPos2;
         }
@@ -546,18 +548,18 @@ CommandOutput {
         boolean bl = this.isTouchingWater();
         if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
             if (!bl) {
-                ++this.fireTime;
-                if (this.fireTime == 0) {
+                ++this.fireTicks;
+                if (this.fireTicks == 0) {
                     this.setOnFireFor(8);
                 }
             }
             this.burn(1);
-        } else if (this.fireTime <= 0) {
-            this.fireTime = -this.getBurningDuration();
+        } else if (this.fireTicks <= 0) {
+            this.fireTicks = -this.getBurningDuration();
         }
         if (bl && this.isOnFire()) {
             this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
-            this.fireTime = -this.getBurningDuration();
+            this.fireTicks = -this.getBurningDuration();
         }
         this.world.getProfiler().pop();
     }
@@ -1009,20 +1011,11 @@ CommandOutput {
         this.prevX = this.x;
         this.prevY = this.y;
         this.prevZ = this.z;
-        h = MathHelper.clamp(h, -90.0f, 90.0f);
-        this.yaw = g;
-        this.pitch = h;
+        this.setPosition(this.x, this.y, this.z);
+        this.yaw = g % 360.0f;
+        this.pitch = MathHelper.clamp(h, -90.0f, 90.0f) % 360.0f;
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
-        double i = this.prevYaw - g;
-        if (i < -180.0) {
-            this.prevYaw += 360.0f;
-        }
-        if (i >= 180.0) {
-            this.prevYaw -= 360.0f;
-        }
-        this.setPosition(this.x, this.y, this.z);
-        this.setRotation(g, h);
     }
 
     public void setPositionAndAngles(BlockPos blockPos, float f, float g) {
@@ -1030,6 +1023,13 @@ CommandOutput {
     }
 
     public void setPositionAndAngles(double d, double e, double f, float g, float h) {
+        this.method_22862(d, e, f);
+        this.yaw = g;
+        this.pitch = h;
+        this.setPosition(this.x, this.y, this.z);
+    }
+
+    public void method_22862(double d, double e, double f) {
         this.x = d;
         this.y = e;
         this.z = f;
@@ -1039,9 +1039,6 @@ CommandOutput {
         this.prevRenderX = this.x;
         this.prevRenderY = this.y;
         this.prevRenderZ = this.z;
-        this.yaw = g;
-        this.pitch = h;
-        this.setPosition(this.x, this.y, this.z);
     }
 
     public float distanceTo(Entity entity) {
@@ -1232,7 +1229,7 @@ CommandOutput {
             compoundTag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
             compoundTag.put("Rotation", this.toListTag(this.yaw, this.pitch));
             compoundTag.putFloat("FallDistance", this.fallDistance);
-            compoundTag.putShort("Fire", (short)this.fireTime);
+            compoundTag.putShort("Fire", (short)this.fireTicks);
             compoundTag.putShort("Air", (short)this.getBreath());
             compoundTag.putBoolean("OnGround", this.onGround);
             compoundTag.putInt("Dimension", this.dimension.getRawId());
@@ -1258,7 +1255,7 @@ CommandOutput {
             if (!this.scoreboardTags.isEmpty()) {
                 listTag = new ListTag();
                 for (String string : this.scoreboardTags) {
-                    listTag.add(new StringTag(string));
+                    listTag.add(StringTag.of(string));
                 }
                 compoundTag.put("Tags", listTag);
             }
@@ -1292,15 +1289,7 @@ CommandOutput {
             double e = listTag2.getDouble(1);
             double f = listTag2.getDouble(2);
             this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-            this.x = listTag.getDouble(0);
-            this.y = listTag.getDouble(1);
-            this.z = listTag.getDouble(2);
-            this.prevRenderX = this.x;
-            this.prevRenderY = this.y;
-            this.prevRenderZ = this.z;
-            this.prevX = this.x;
-            this.prevY = this.y;
-            this.prevZ = this.z;
+            this.method_22862(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
             this.yaw = listTag3.getFloat(0);
             this.pitch = listTag3.getFloat(1);
             this.prevYaw = this.yaw;
@@ -1308,10 +1297,10 @@ CommandOutput {
             this.setHeadYaw(this.yaw);
             this.setYaw(this.yaw);
             this.fallDistance = compoundTag.getFloat("FallDistance");
-            this.fireTime = compoundTag.getShort("Fire");
+            this.fireTicks = compoundTag.getShort("Fire");
             this.setBreath(compoundTag.getShort("Air"));
             this.onGround = compoundTag.getBoolean("OnGround");
-            if (compoundTag.containsKey("Dimension")) {
+            if (compoundTag.contains("Dimension")) {
                 this.dimension = DimensionType.byRawId(compoundTag.getInt("Dimension"));
             }
             this.invulnerable = compoundTag.getBoolean("Invulnerable");
@@ -1328,14 +1317,14 @@ CommandOutput {
             }
             this.setPosition(this.x, this.y, this.z);
             this.setRotation(this.yaw, this.pitch);
-            if (compoundTag.containsKey("CustomName", 8)) {
+            if (compoundTag.contains("CustomName", 8)) {
                 this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
             }
             this.setCustomNameVisible(compoundTag.getBoolean("CustomNameVisible"));
             this.setSilent(compoundTag.getBoolean("Silent"));
             this.setNoGravity(compoundTag.getBoolean("NoGravity"));
             this.setGlowing(compoundTag.getBoolean("Glowing"));
-            if (compoundTag.containsKey("Tags", 9)) {
+            if (compoundTag.contains("Tags", 9)) {
                 this.scoreboardTags.clear();
                 ListTag listTag4 = compoundTag.getList("Tags", 8);
                 int i = Math.min(listTag4.size(), 1024);
@@ -1373,7 +1362,7 @@ CommandOutput {
     protected ListTag toListTag(double ... ds) {
         ListTag listTag = new ListTag();
         for (double d : ds) {
-            listTag.add(new DoubleTag(d));
+            listTag.add(DoubleTag.of(d));
         }
         return listTag;
     }
@@ -1381,7 +1370,7 @@ CommandOutput {
     protected ListTag toListTag(float ... fs) {
         ListTag listTag = new ListTag();
         for (float f : fs) {
-            listTag.add(new FloatTag(f));
+            listTag.add(FloatTag.of(f));
         }
         return listTag;
     }
@@ -1653,7 +1642,7 @@ CommandOutput {
 
     public boolean isOnFire() {
         boolean bl = this.world != null && this.world.isClient;
-        return !this.isFireImmune() && (this.fireTime > 0 || bl && this.getFlag(0));
+        return !this.isFireImmune() && (this.fireTicks > 0 || bl && this.getFlag(0));
     }
 
     public boolean hasVehicle() {
@@ -1794,8 +1783,8 @@ CommandOutput {
     }
 
     public void onStruckByLightning(LightningEntity lightningEntity) {
-        ++this.fireTime;
-        if (this.fireTime == 0) {
+        ++this.fireTicks;
+        if (this.fireTicks == 0) {
             this.setOnFireFor(8);
         }
         this.damage(DamageSource.LIGHTNING_BOLT, 5.0f);
@@ -2022,7 +2011,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public boolean doesRenderOnFire() {
-        return this.isOnFire();
+        return this.isOnFire() && !this.isSpectator();
     }
 
     public void setUuid(UUID uUID) {

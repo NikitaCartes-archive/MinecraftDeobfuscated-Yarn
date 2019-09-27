@@ -61,7 +61,7 @@ extends AbstractTreeFeature<T> {
     }
 
     private boolean replaceGround(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         if (!MegaTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2) || blockPos.getY() < 2) {
             return false;
         }

@@ -310,7 +310,7 @@ extends WaterCreatureEntity {
         return super.interactMob(playerEntity, hand);
     }
 
-    public static boolean method_20664(EntityType<DolphinEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+    public static boolean canSpawn(EntityType<DolphinEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel() && (iWorld.getBiome(blockPos) != Biomes.OCEAN || iWorld.getBiome(blockPos) != Biomes.DEEP_OCEAN) && iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
     }
 

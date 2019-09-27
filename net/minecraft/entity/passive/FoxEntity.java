@@ -193,7 +193,6 @@ extends AnimalEntity {
             this.jumping = false;
             this.sidewaysSpeed = 0.0f;
             this.forwardSpeed = 0.0f;
-            this.turningSpeed = 0.0f;
         }
         super.tickMovement();
         if (this.isAggressive() && this.random.nextFloat() < 0.05f) {
@@ -345,7 +344,7 @@ extends AnimalEntity {
         super.readCustomDataFromTag(compoundTag);
         ListTag listTag = compoundTag.getList("TrustedUUIDs", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompoundTag(i)));
+            this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompound(i)));
         }
         this.setSleeping(compoundTag.getBoolean("Sleeping"));
         this.setType(Type.byName(compoundTag.getString("Type")));
@@ -772,7 +771,7 @@ extends AnimalEntity {
             if (!FoxEntity.this.isWalking()) {
                 Vec3d vec3d = FoxEntity.this.getVelocity();
                 if (vec3d.y * vec3d.y < (double)0.03f && FoxEntity.this.pitch != 0.0f) {
-                    FoxEntity.this.pitch = this.updatePitch(FoxEntity.this.pitch, 0.0f, 0.2f);
+                    FoxEntity.this.pitch = MathHelper.method_22859(FoxEntity.this.pitch, 0.0f, 0.2f);
                 } else {
                     double d = Math.sqrt(Entity.squaredHorizontalLength(vec3d));
                     double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 57.2957763671875;
@@ -977,7 +976,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return FoxEntity.this.getAttacker() == null && FoxEntity.this.getRand().nextFloat() < 0.02f && !FoxEntity.this.isSleeping() && FoxEntity.this.getTarget() == null && FoxEntity.this.getNavigation().isIdle() && !this.canCalmDown() && !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose();
+            return FoxEntity.this.getAttacker() == null && FoxEntity.this.getRandom().nextFloat() < 0.02f && !FoxEntity.this.isSleeping() && FoxEntity.this.getTarget() == null && FoxEntity.this.getNavigation().isIdle() && !this.canCalmDown() && !FoxEntity.this.isChasing() && !FoxEntity.this.isInSneakingPose();
         }
 
         @Override
@@ -988,7 +987,7 @@ extends AnimalEntity {
         @Override
         public void start() {
             this.chooseNewAngle();
-            this.counter = 2 + FoxEntity.this.getRand().nextInt(3);
+            this.counter = 2 + FoxEntity.this.getRandom().nextInt(3);
             FoxEntity.this.setSitting(true);
             FoxEntity.this.getNavigation().stop();
         }
@@ -1009,10 +1008,10 @@ extends AnimalEntity {
         }
 
         private void chooseNewAngle() {
-            double d = Math.PI * 2 * FoxEntity.this.getRand().nextDouble();
+            double d = Math.PI * 2 * FoxEntity.this.getRandom().nextDouble();
             this.lookX = Math.cos(d);
             this.lookZ = Math.sin(d);
-            this.timer = 80 + FoxEntity.this.getRand().nextInt(20);
+            this.timer = 80 + FoxEntity.this.getRandom().nextInt(20);
         }
     }
 
@@ -1155,7 +1154,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            if (this.reciprocalChance > 0 && this.mob.getRand().nextInt(this.reciprocalChance) != 0) {
+            if (this.reciprocalChance > 0 && this.mob.getRandom().nextInt(this.reciprocalChance) != 0) {
                 return false;
             }
             for (UUID uUID : FoxEntity.this.getTrustedUuids()) {
@@ -1228,7 +1227,7 @@ extends AnimalEntity {
             this.world.spawnEntity(foxEntity);
             this.world.sendEntityStatus(this.animal, (byte)18);
             if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-                this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRand().nextInt(7) + 1));
+                this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRandom().nextInt(7) + 1));
             }
         }
     }
@@ -1341,7 +1340,7 @@ extends AnimalEntity {
             if (!FoxEntity.this.wantsToPickupItem()) {
                 return false;
             }
-            if (FoxEntity.this.getRand().nextInt(10) != 0) {
+            if (FoxEntity.this.getRandom().nextInt(10) != 0) {
                 return false;
             }
             List<ItemEntity> list = FoxEntity.this.world.getEntities(ItemEntity.class, FoxEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PICKABLE_DROP_FILTER);

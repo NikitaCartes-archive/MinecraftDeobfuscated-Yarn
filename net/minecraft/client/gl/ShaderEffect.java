@@ -24,7 +24,7 @@ import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.PostProcessShader;
 import net.minecraft.client.gl.ShaderParseException;
-import net.minecraft.client.texture.Texture;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.resource.Resource;
@@ -170,7 +170,7 @@ implements AutoCloseable {
                             }
                             IOUtils.closeQuietly((Closeable)resource);
                             textureManager.bindTexture(identifier);
-                            Texture texture = textureManager.getTexture(identifier);
+                            AbstractTexture abstractTexture = textureManager.getTexture(identifier);
                             int j = JsonHelper.getInt(jsonObject2, "width");
                             int k = JsonHelper.getInt(jsonObject2, "height");
                             boolean bl = JsonHelper.getBoolean(jsonObject2, "bilinear");
@@ -181,7 +181,7 @@ implements AutoCloseable {
                                 RenderSystem.texParameter(3553, 10241, 9728);
                                 RenderSystem.texParameter(3553, 10240, 9728);
                             }
-                            postProcessShader.addAuxTarget(string4, texture.getGlId(), j, k);
+                            postProcessShader.addAuxTarget(string4, abstractTexture.getGlId(), j, k);
                             break block15;
                         }
                         postProcessShader.addAuxTarget(string4, glFramebuffer3, glFramebuffer3.texWidth, glFramebuffer3.texHeight);

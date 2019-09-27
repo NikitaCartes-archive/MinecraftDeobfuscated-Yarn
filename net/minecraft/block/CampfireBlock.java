@@ -105,7 +105,7 @@ implements Waterloggable {
         BlockPos blockPos;
         World iWorld = itemPlacementContext.getWorld();
         boolean bl = iWorld.getFluidState(blockPos = itemPlacementContext.getBlockPos()).getFluid() == Fluids.WATER;
-        return (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, bl)).with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down())))).with(LIT, !bl)).with(FACING, itemPlacementContext.getPlayerFacing());
+        return (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, bl)).with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.method_10074())))).with(LIT, !bl)).with(FACING, itemPlacementContext.getPlayerFacing());
     }
 
     @Override

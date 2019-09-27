@@ -35,7 +35,7 @@ extends Item {
         if (!playerEntity.abilities.creativeMode) {
             itemStack.decrement(1);
         }
-        return TypedActionResult.method_22427(itemStack);
+        return TypedActionResult.successWithSwing(itemStack);
     }
 }
 

@@ -8,7 +8,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -20,7 +19,6 @@ public interface ParticleTextureSheet {
 
         @Override
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-            GuiLighting.disable();
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
@@ -40,7 +38,6 @@ public interface ParticleTextureSheet {
 
         @Override
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-            GuiLighting.disable();
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
@@ -60,8 +57,7 @@ public interface ParticleTextureSheet {
 
         @Override
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
-            GuiLighting.disable();
-            RenderSystem.depthMask(false);
+            RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
@@ -85,7 +81,6 @@ public interface ParticleTextureSheet {
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
             textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
-            GuiLighting.disable();
             bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
         }
 

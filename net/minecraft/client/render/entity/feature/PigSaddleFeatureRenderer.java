@@ -5,6 +5,8 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PigEntityModel;
@@ -21,18 +23,14 @@ extends FeatureRenderer<PigEntity, PigEntityModel<PigEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4196(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
+    public void method_4196(class_4587 arg, class_4597 arg2, int i, PigEntity pigEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!pigEntity.isSaddled()) {
             return;
         }
-        this.bindTexture(SKIN);
         ((PigEntityModel)this.getModel()).copyStateTo(this.model);
-        this.model.render(pigEntity, f, g, i, j, k, l);
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return false;
+        this.model.animateModel(pigEntity, f, g, h);
+        this.model.setAngles(pigEntity, f, g, j, k, l, m);
+        PigSaddleFeatureRenderer.method_23197(this.model, SKIN, arg, arg2, i, 1.0f, 1.0f, 1.0f);
     }
 }
 

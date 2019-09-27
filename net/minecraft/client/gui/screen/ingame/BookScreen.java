@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.ingame.PageTurnWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.TextComponentUtil;
+import net.minecraft.client.util.Texts;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -50,8 +50,8 @@ extends Screen {
     private int pageIndex;
     private List<Text> cachedPage = Collections.emptyList();
     private int cachedPageIndex = -1;
-    private PageTurnWidget lastPageButton;
     private PageTurnWidget nextPageButton;
+    private PageTurnWidget previousPageButton;
     private final boolean pageTurnSound;
 
     public BookScreen(Contents contents) {
@@ -103,8 +103,8 @@ extends Screen {
     protected void addPageButtons() {
         int i = (this.width - 192) / 2;
         int j = 2;
-        this.lastPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
-        this.nextPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
+        this.nextPageButton = this.addButton(new PageTurnWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
+        this.previousPageButton = this.addButton(new PageTurnWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
         this.updatePageButtons();
     }
 
@@ -127,8 +127,8 @@ extends Screen {
     }
 
     private void updatePageButtons() {
-        this.lastPageButton.visible = this.pageIndex < this.getPageCount() - 1;
-        this.nextPageButton.visible = this.pageIndex > 0;
+        this.nextPageButton.visible = this.pageIndex < this.getPageCount() - 1;
+        this.previousPageButton.visible = this.pageIndex > 0;
     }
 
     @Override
@@ -138,11 +138,11 @@ extends Screen {
         }
         switch (i) {
             case 266: {
-                this.nextPageButton.onPress();
+                this.previousPageButton.onPress();
                 return true;
             }
             case 267: {
-                this.lastPageButton.onPress();
+                this.nextPageButton.onPress();
                 return true;
             }
         }
@@ -160,7 +160,7 @@ extends Screen {
         String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
         if (this.cachedPageIndex != this.pageIndex) {
             Text text = this.contents.getPage(this.pageIndex);
-            this.cachedPage = TextComponentUtil.wrapLines(text, 114, this.font, true, true);
+            this.cachedPage = Texts.wrapLines(text, 114, this.font, true, true);
         }
         this.cachedPageIndex = this.pageIndex;
         int m = this.getStringWidth(string);
@@ -170,7 +170,7 @@ extends Screen {
             Text text2 = this.cachedPage.get(o);
             this.font.draw(text2.asFormattedString(), k + 36, 32 + o * this.font.fontHeight, 0);
         }
-        Text text3 = this.getLineAt(i, j);
+        Text text3 = this.getTextAt(i, j);
         if (text3 != null) {
             this.renderComponentHoverEffect(text3, i, j);
         }
@@ -184,7 +184,7 @@ extends Screen {
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         Text text;
-        if (i == 0 && (text = this.getLineAt(d, e)) != null && this.handleComponentClicked(text)) {
+        if (i == 0 && (text = this.getTextAt(d, e)) != null && this.handleComponentClicked(text)) {
             return true;
         }
         return super.mouseClicked(d, e, i);
@@ -213,7 +213,7 @@ extends Screen {
     }
 
     @Nullable
-    public Text getLineAt(double d, double e) {
+    public Text getTextAt(double d, double e) {
         if (this.cachedPage == null) {
             return null;
         }

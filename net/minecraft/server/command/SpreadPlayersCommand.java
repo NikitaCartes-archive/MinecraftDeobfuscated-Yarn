@@ -211,7 +211,7 @@ public class SpreadPlayersCommand {
         public int getY(BlockView blockView) {
             BlockPos blockPos = new BlockPos(this.x, 256.0, this.z);
             while (blockPos.getY() > 0) {
-                if (blockView.getBlockState(blockPos = blockPos.down()).isAir()) continue;
+                if (blockView.getBlockState(blockPos = blockPos.method_10074()).isAir()) continue;
                 return blockPos.getY() + 1;
             }
             return 257;
@@ -220,7 +220,7 @@ public class SpreadPlayersCommand {
         public boolean isSafe(BlockView blockView) {
             BlockPos blockPos = new BlockPos(this.x, 256.0, this.z);
             while (blockPos.getY() > 0) {
-                BlockState blockState = blockView.getBlockState(blockPos = blockPos.down());
+                BlockState blockState = blockView.getBlockState(blockPos = blockPos.method_10074());
                 if (blockState.isAir()) continue;
                 Material material = blockState.getMaterial();
                 return !material.isLiquid() && material != Material.FIRE;

@@ -70,10 +70,10 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         if (!bl) {
             return false;
         }
-        if (!SwampTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) || blockPos.getY() >= 256 - i - 1) {
+        if (!SwampTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) || blockPos.getY() >= 256 - i - 1) {
             return false;
         }
-        this.setToDirt(modifiableTestableWorld, blockPos.down());
+        this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
         for (j = blockPos.getY() - 3 + i; j <= blockPos.getY() + i; ++j) {
             k = j - (blockPos.getY() + i);
             int n = 2 - k / 2;
@@ -123,10 +123,10 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
     private void makeVines(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BooleanProperty booleanProperty) {
         BlockState blockState = (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true);
         this.setBlockState(modifiableTestableWorld, blockPos, blockState);
-        blockPos = blockPos.down();
+        blockPos = blockPos.method_10074();
         for (int i = 4; SwampTreeFeature.isAir(modifiableTestableWorld, blockPos) && i > 0; --i) {
             this.setBlockState(modifiableTestableWorld, blockPos, blockState);
-            blockPos = blockPos.down();
+            blockPos = blockPos.method_10074();
         }
     }
 }

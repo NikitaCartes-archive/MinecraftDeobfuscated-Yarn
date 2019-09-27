@@ -37,7 +37,7 @@ extends Feature<PlantedFeatureConfig> {
         if ((j = blockPos.getY()) < 1 || j + i + 1 >= 256) {
             return false;
         }
-        Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+        Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
         if (!Block.isNaturalDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
             return false;
         }

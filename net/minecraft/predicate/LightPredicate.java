@@ -21,6 +21,12 @@ public class LightPredicate {
     }
 
     public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
+        if (this == ANY) {
+            return true;
+        }
+        if (!serverWorld.canSetBlock(blockPos)) {
+            return false;
+        }
         return this.range.test(serverWorld.getLightLevel(blockPos));
     }
 

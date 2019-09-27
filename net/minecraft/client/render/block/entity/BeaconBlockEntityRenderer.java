@@ -3,118 +3,108 @@
  */
 package net.minecraft.client.render.block.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.BeaconBlockEntity;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class BeaconBlockEntityRenderer
 extends BlockEntityRenderer<BeaconBlockEntity> {
-    private static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
+    public static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
 
-    public void method_3541(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i, BlockRenderLayer blockRenderLayer) {
-        this.render(d, e, f, g, beaconBlockEntity.getBeamSegments(), beaconBlockEntity.getWorld().getTime());
+    public BeaconBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+        super(blockEntityRenderDispatcher);
     }
 
-    private void render(double d, double e, double f, double g, List<BeaconBlockEntity.BeamSegment> list, long l) {
-        RenderSystem.defaultAlphaFunc();
-        this.bindTexture(BEAM_TEX);
-        RenderSystem.disableFog();
-        int i = 0;
-        for (int j = 0; j < list.size(); ++j) {
-            BeaconBlockEntity.BeamSegment beamSegment = list.get(j);
-            BeaconBlockEntityRenderer.renderBeaconLightBeam(d, e, f, g, l, i, j == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
-            i += beamSegment.getHeight();
+    public void method_3541(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+        long l = beaconBlockEntity.getWorld().getTime();
+        List<BeaconBlockEntity.BeamSegment> list = beaconBlockEntity.getBeamSegments();
+        int j = 0;
+        for (int k = 0; k < list.size(); ++k) {
+            BeaconBlockEntity.BeamSegment beamSegment = list.get(k);
+            BeaconBlockEntityRenderer.render(arg, arg2, g, l, j, k == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
+            j += beamSegment.getHeight();
         }
-        RenderSystem.enableFog();
     }
 
-    private static void renderBeaconLightBeam(double d, double e, double f, double g, long l, int i, int j, float[] fs) {
-        BeaconBlockEntityRenderer.renderLightBeam(d, e, f, g, 1.0, l, i, j, fs, 0.2, 0.25);
+    private static void render(class_4587 arg, class_4597 arg2, float f, long l, int i, int j, float[] fs) {
+        BeaconBlockEntityRenderer.renderLightBeam(arg, arg2, BEAM_TEX, f, 1.0f, l, i, j, fs, 0.2f, 0.25f);
     }
 
-    public static void renderLightBeam(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs, double k, double m) {
-        int n = i + j;
-        RenderSystem.texParameter(3553, 10242, 10497);
-        RenderSystem.texParameter(3553, 10243, 10497);
-        RenderSystem.disableLighting();
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(d + 0.5, e, f + 0.5);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        double o = (double)Math.floorMod(l, 40L) + g;
-        double p = j < 0 ? o : -o;
-        double q = MathHelper.fractionalPart(p * 0.2 - (double)MathHelper.floor(p * 0.1));
-        float r = fs[0];
-        float s = fs[1];
-        float t = fs[2];
-        RenderSystem.pushMatrix();
-        RenderSystem.rotated(o * 2.25 - 45.0, 0.0, 1.0, 0.0);
-        double u = 0.0;
-        double v = k;
-        double w = k;
-        double x = 0.0;
-        double y = -k;
-        double z = 0.0;
-        double aa = 0.0;
-        double ab = -k;
-        double ac = 0.0;
-        double ad = 1.0;
-        double ae = -1.0 + q;
-        double af = (double)j * h * (0.5 / k) + ae;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-        BeaconBlockEntityRenderer.method_22741(bufferBuilder, r, s, t, 1.0f, i, n, 0.0, v, w, 0.0, y, 0.0, 0.0, ab, 0.0, 1.0, af, ae);
-        tessellator.draw();
-        RenderSystem.popMatrix();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
-        u = -m;
-        v = -m;
-        w = m;
-        x = -m;
-        y = -m;
-        z = m;
-        aa = m;
-        ab = m;
-        ac = 0.0;
-        ad = 1.0;
-        ae = -1.0 + q;
-        af = (double)j * h + ae;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-        BeaconBlockEntityRenderer.method_22741(bufferBuilder, r, s, t, 0.125f, i, n, u, v, w, x, y, z, aa, ab, 0.0, 1.0, af, ae);
-        tessellator.draw();
-        RenderSystem.popMatrix();
-        RenderSystem.enableLighting();
-        RenderSystem.enableTexture();
-        RenderSystem.depthMask(true);
+    public static void renderLightBeam(class_4587 arg, class_4597 arg2, Identifier identifier, float f, float g, long l, int i, int j, float[] fs, float h, float k) {
+        int m = i + j;
+        arg.method_22903();
+        arg.method_22904(0.5, 0.0, 0.5);
+        float n = (float)Math.floorMod(l, 40L) + f;
+        float o = j < 0 ? n : -n;
+        float p = MathHelper.method_22450(o * 0.2f - (float)MathHelper.floor(o * 0.1f));
+        float q = fs[0];
+        float r = fs[1];
+        float s = fs[2];
+        arg.method_22903();
+        arg.method_22907(Vector3f.field_20705.method_23214(n * 2.25f - 45.0f, true));
+        float t = 0.0f;
+        float u = h;
+        float v = h;
+        float w = 0.0f;
+        float x = -h;
+        float y = 0.0f;
+        float z = 0.0f;
+        float aa = -h;
+        float ab = 0.0f;
+        float ac = 1.0f;
+        float ad = -1.0f + p;
+        float ae = (float)j * g * (0.5f / h) + ad;
+        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(identifier));
+        class_4608.method_23211(lv);
+        BeaconBlockEntityRenderer.method_22741(arg, lv, q, r, s, 1.0f, i, m, 0.0f, u, v, 0.0f, x, 0.0f, 0.0f, aa, 0.0f, 1.0f, ae, ad);
+        lv.method_22923();
+        arg.method_22909();
+        t = -k;
+        u = -k;
+        v = k;
+        w = -k;
+        x = -k;
+        y = k;
+        z = k;
+        aa = k;
+        ab = 0.0f;
+        ac = 1.0f;
+        ad = -1.0f + p;
+        ae = (float)j * g + ad;
+        BeaconBlockEntityRenderer.method_22741(arg, arg2.getBuffer(BlockRenderLayer.BEACON_BEAM), q, r, s, 0.125f, i, m, t, u, v, w, x, y, z, aa, 0.0f, 1.0f, ae, ad);
+        arg.method_22909();
     }
 
-    private static void method_22741(BufferBuilder bufferBuilder, float f, float g, float h, float i, int j, int k, double d, double e, double l, double m, double n, double o, double p, double q, double r, double s, double t, double u) {
-        BeaconBlockEntityRenderer.method_22740(bufferBuilder, f, g, h, i, j, k, d, e, l, m, r, s, t, u);
-        BeaconBlockEntityRenderer.method_22740(bufferBuilder, f, g, h, i, j, k, p, q, n, o, r, s, t, u);
-        BeaconBlockEntityRenderer.method_22740(bufferBuilder, f, g, h, i, j, k, l, m, p, q, r, s, t, u);
-        BeaconBlockEntityRenderer.method_22740(bufferBuilder, f, g, h, i, j, k, n, o, d, e, r, s, t, u);
+    private static void method_22741(class_4587 arg, class_4588 arg2, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u, float v, float w) {
+        Matrix4f matrix4f = arg.method_22910();
+        BeaconBlockEntityRenderer.method_22740(matrix4f, arg2, f, g, h, i, j, k, l, m, n, o, t, u, v, w);
+        BeaconBlockEntityRenderer.method_22740(matrix4f, arg2, f, g, h, i, j, k, r, s, p, q, t, u, v, w);
+        BeaconBlockEntityRenderer.method_22740(matrix4f, arg2, f, g, h, i, j, k, n, o, r, s, t, u, v, w);
+        BeaconBlockEntityRenderer.method_22740(matrix4f, arg2, f, g, h, i, j, k, p, q, l, m, t, u, v, w);
     }
 
-    private static void method_22740(BufferBuilder bufferBuilder, float f, float g, float h, float i, int j, int k, double d, double e, double l, double m, double n, double o, double p, double q) {
-        bufferBuilder.vertex(d, k, e).texture(o, p).color(f, g, h, i).next();
-        bufferBuilder.vertex(d, j, e).texture(o, q).color(f, g, h, i).next();
-        bufferBuilder.vertex(l, j, m).texture(n, q).color(f, g, h, i).next();
-        bufferBuilder.vertex(l, k, m).texture(n, p).color(f, g, h, i).next();
+    private static void method_22740(Matrix4f matrix4f, class_4588 arg, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s) {
+        BeaconBlockEntityRenderer.method_23076(matrix4f, arg, f, g, h, i, k, l, m, q, r);
+        BeaconBlockEntityRenderer.method_23076(matrix4f, arg, f, g, h, i, j, l, m, q, s);
+        BeaconBlockEntityRenderer.method_23076(matrix4f, arg, f, g, h, i, j, n, o, p, s);
+        BeaconBlockEntityRenderer.method_23076(matrix4f, arg, f, g, h, i, k, n, o, p, r);
+    }
+
+    private static void method_23076(Matrix4f matrix4f, class_4588 arg, float f, float g, float h, float i, int j, float k, float l, float m, float n) {
+        arg.method_22918(matrix4f, k, j, l).method_22915(f, g, h, i).texture(m, n).method_22916(0xF000F0).method_22914(0.0f, 1.0f, 0.0f).next();
     }
 
     public boolean method_3542(BeaconBlockEntity beaconBlockEntity) {

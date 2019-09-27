@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.ZombieEntityRenderer;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -20,14 +20,14 @@ extends ZombieEntityRenderer {
         super(entityRenderDispatcher);
     }
 
-    protected void method_3985(ZombieEntity zombieEntity, float f) {
+    protected void method_3985(ZombieEntity zombieEntity, class_4587 arg, float f) {
         float g = 1.0625f;
-        RenderSystem.scalef(1.0625f, 1.0625f, 1.0625f);
-        super.scale(zombieEntity, f);
+        arg.method_22905(1.0625f, 1.0625f, 1.0625f);
+        super.scale(zombieEntity, arg, f);
     }
 
     @Override
-    protected Identifier method_4163(ZombieEntity zombieEntity) {
+    public Identifier method_4163(ZombieEntity zombieEntity) {
         return SKIN;
     }
 }

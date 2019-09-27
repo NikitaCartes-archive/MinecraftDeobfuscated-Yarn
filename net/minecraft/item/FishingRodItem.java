@@ -52,7 +52,7 @@ extends Item {
             }
             playerEntity2.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        return TypedActionResult.method_22427(itemStack);
+        return TypedActionResult.successWithSwing(itemStack);
     }
 
     @Override

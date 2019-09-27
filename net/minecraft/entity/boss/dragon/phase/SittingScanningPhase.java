@@ -38,13 +38,13 @@ extends AbstractSittingPhase {
                     double d = livingEntity.x - this.dragon.partHead.x;
                     double e = livingEntity.z - this.dragon.partHead.z;
                     double h = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(d, e) * 57.2957763671875 - (double)this.dragon.yaw), -100.0, 100.0);
-                    this.dragon.turningSpeed *= 0.8f;
+                    this.dragon.field_20865 *= 0.8f;
                     float j = i = MathHelper.sqrt(d * d + e * e) + 1.0f;
                     if (i > 40.0f) {
                         i = 40.0f;
                     }
-                    this.dragon.turningSpeed = (float)((double)this.dragon.turningSpeed + h * (double)(0.7f / i / j));
-                    this.dragon.yaw += this.dragon.turningSpeed;
+                    this.dragon.field_20865 = (float)((double)this.dragon.field_20865 + h * (double)(0.7f / i / j));
+                    this.dragon.yaw += this.dragon.field_20865;
                 }
             }
         } else if (this.ticks >= 100) {

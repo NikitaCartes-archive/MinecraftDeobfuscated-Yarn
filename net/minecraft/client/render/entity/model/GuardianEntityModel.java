@@ -3,11 +3,12 @@
  */
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.math.MathHelper;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(value=EnvType.CLIENT)
 public class GuardianEntityModel
-extends EntityModel<GuardianEntity> {
+extends class_4595<GuardianEntity> {
     private static final float[] field_17131 = new float[]{1.75f, 0.25f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f, 1.25f, 0.75f, 0.0f, 0.0f};
     private static final float[] field_17132 = new float[]{0.0f, 0.0f, 0.0f, 0.0f, 0.25f, 1.75f, 1.25f, 0.75f, 0.0f, 0.0f, 0.0f, 0.0f};
     private static final float[] field_17133 = new float[]{0.0f, 0.0f, 0.25f, 1.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.75f, 1.25f};
@@ -58,9 +59,9 @@ extends EntityModel<GuardianEntity> {
         this.field_3378[1].addChild(this.field_3378[2]);
     }
 
-    public void method_17082(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
-        this.method_17083(guardianEntity, f, g, h, i, j, k);
-        this.field_3379.render(k);
+    @Override
+    public Iterable<ModelPart> method_22960() {
+        return ImmutableList.of(this.field_3379);
     }
 
     public void method_17083(GuardianEntity guardianEntity, float f, float g, float h, float i, float j, float k) {
@@ -103,16 +104,6 @@ extends EntityModel<GuardianEntity> {
         this.field_3378[2].rotationPointX = 0.5f;
         this.field_3378[2].rotationPointY = 0.5f;
         this.field_3378[2].rotationPointZ = 6.0f;
-    }
-
-    @Override
-    public /* synthetic */ void setAngles(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17083((GuardianEntity)entity, f, g, h, i, j, k);
-    }
-
-    @Override
-    public /* synthetic */ void render(Entity entity, float f, float g, float h, float i, float j, float k) {
-        this.method_17082((GuardianEntity)entity, f, g, h, i, j, k);
     }
 }
 

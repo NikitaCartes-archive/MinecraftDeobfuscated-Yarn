@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.datafixer.fixes;
+package net.minecraft.datafixers.fixes;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -14,9 +14,9 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import net.minecraft.datafixers.TypeReferences;
 
-public class LeavesFix
+public class BiomeFormatFix
 extends DataFix {
-    public LeavesFix(Schema schema, boolean bl) {
+    public BiomeFormatFix(Schema schema, boolean bl) {
         super(schema, bl);
     }
 

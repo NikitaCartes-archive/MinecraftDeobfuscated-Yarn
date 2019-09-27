@@ -88,7 +88,7 @@ extends Task<MobEntity> {
 
     private boolean isAboveBed(ServerWorld serverWorld, MobEntity mobEntity) {
         BlockPos blockPos = new BlockPos(mobEntity);
-        BlockPos blockPos2 = blockPos.down();
+        BlockPos blockPos2 = blockPos.method_10074();
         return this.isBedAt(serverWorld, blockPos) || this.isBedAt(serverWorld, blockPos2);
     }
 

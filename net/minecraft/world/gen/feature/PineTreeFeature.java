@@ -56,10 +56,10 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         if (!bl) {
             return false;
         }
-        if (!PineTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.down()) || blockPos.getY() >= 256 - i - 1) {
+        if (!PineTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) || blockPos.getY() >= 256 - i - 1) {
             return false;
         }
-        this.setToDirt(modifiableTestableWorld, blockPos.down());
+        this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
         m = 0;
         for (n = blockPos.getY() + i; n >= blockPos.getY() + j; --n) {
             for (int q = blockPos.getX() - m; q <= blockPos.getX() + m; ++q) {

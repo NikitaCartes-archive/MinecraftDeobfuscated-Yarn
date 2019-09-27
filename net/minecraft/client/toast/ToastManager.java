@@ -11,7 +11,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -32,10 +31,9 @@ extends DrawableHelper {
         if (this.client.options.hudHidden) {
             return;
         }
-        GuiLighting.disable();
         for (int i = 0; i < this.visibleEntries.length; ++i) {
             Entry<?> entry = this.visibleEntries[i];
-            if (entry != null && entry.draw(this.client.method_22683().getScaledWidth(), i)) {
+            if (entry != null && entry.draw(this.client.getWindow().getScaledWidth(), i)) {
                 this.visibleEntries[i] = null;
             }
             if (this.visibleEntries[i] != null || this.toastQueue.isEmpty()) continue;

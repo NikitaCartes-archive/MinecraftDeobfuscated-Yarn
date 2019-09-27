@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.MagmaCubeEntityModel;
@@ -22,15 +22,15 @@ extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>
         super(entityRenderDispatcher, new MagmaCubeEntityModel(), 0.25f);
     }
 
-    protected Identifier method_4001(MagmaCubeEntity magmaCubeEntity) {
+    public Identifier method_4001(MagmaCubeEntity magmaCubeEntity) {
         return SKIN;
     }
 
-    protected void method_4000(MagmaCubeEntity magmaCubeEntity, float f) {
+    protected void method_4000(MagmaCubeEntity magmaCubeEntity, class_4587 arg, float f) {
         int i = magmaCubeEntity.getSize();
         float g = MathHelper.lerp(f, magmaCubeEntity.lastStretch, magmaCubeEntity.stretch) / ((float)i * 0.5f + 1.0f);
         float h = 1.0f / (g + 1.0f);
-        RenderSystem.scalef(h * (float)i, 1.0f / h * (float)i, h * (float)i);
+        arg.method_22905(h * (float)i, 1.0f / h * (float)i, h * (float)i);
     }
 }
 

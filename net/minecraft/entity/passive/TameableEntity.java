@@ -61,7 +61,7 @@ extends AnimalEntity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         String string;
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("OwnerUUID", 8)) {
+        if (compoundTag.contains("OwnerUUID", 8)) {
             string = compoundTag.getString("OwnerUUID");
         } else {
             String string2 = compoundTag.getString("Owner");

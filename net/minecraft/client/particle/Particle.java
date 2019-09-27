@@ -7,8 +7,8 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4588;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
@@ -124,7 +124,7 @@ public abstract class Particle {
         }
     }
 
-    public abstract void buildGeometry(BufferBuilder var1, Camera var2, float var3, float var4, float var5, float var6, float var7, float var8);
+    public abstract void buildGeometry(class_4588 var1, Camera var2, float var3, float var4, float var5, float var6, float var7, float var8);
 
     public abstract ParticleTextureSheet getType();
 

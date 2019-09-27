@@ -40,8 +40,8 @@ extends Feature<DefaultFeatureConfig> {
                         iWorld.setBlockState(blockPos2, blockState2, 2);
                     }
                 } else if (l > 0) {
-                    BlockPos blockPos3 = blockPos2.down();
-                    if (!blockState.canPlaceAt(iWorld, blockPos3) || iWorld.getBlockState(blockPos3.down()).getBlock() == Blocks.KELP) break;
+                    BlockPos blockPos3 = blockPos2.method_10074();
+                    if (!blockState.canPlaceAt(iWorld, blockPos3) || iWorld.getBlockState(blockPos3.method_10074()).getBlock() == Blocks.KELP) break;
                     iWorld.setBlockState(blockPos3, (BlockState)blockState.with(KelpBlock.AGE, random.nextInt(23)), 2);
                     ++i;
                     break;

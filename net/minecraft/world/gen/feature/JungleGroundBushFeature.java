@@ -28,7 +28,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
 
     @Override
     public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
-        if (JungleGroundBushFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos).down())) {
+        if (JungleGroundBushFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos).method_10074())) {
             blockPos = blockPos.up();
             this.setBlockState(set, modifiableTestableWorld, blockPos, this.log, blockBox);
             for (int i = blockPos.getY(); i <= blockPos.getY() + 2; ++i) {

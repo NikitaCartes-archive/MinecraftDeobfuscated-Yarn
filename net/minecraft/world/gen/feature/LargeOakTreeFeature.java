@@ -154,7 +154,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         if (i == -1) {
             return false;
         }
-        this.setToDirt(modifiableTestableWorld, blockPos.down());
+        this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
         int j = (int)((double)i * 0.618);
         if (j >= i) {
             j = i - 1;
@@ -195,7 +195,7 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
     }
 
     private int getTreeHeight(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox) {
-        if (!LargeOakTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.down())) {
+        if (!LargeOakTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.method_10074())) {
             return -1;
         }
         int j = this.makeOrCheckBranch(set, modifiableTestableWorld, blockPos, blockPos.up(i - 1), false, blockBox);

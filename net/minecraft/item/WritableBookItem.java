@@ -42,14 +42,14 @@ extends Item {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         playerEntity.openEditBookScreen(itemStack, hand);
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-        return TypedActionResult.method_22427(itemStack);
+        return TypedActionResult.successWithSwing(itemStack);
     }
 
     public static boolean isValid(@Nullable CompoundTag compoundTag) {
         if (compoundTag == null) {
             return false;
         }
-        if (!compoundTag.containsKey("pages", 9)) {
+        if (!compoundTag.contains("pages", 9)) {
             return false;
         }
         ListTag listTag = compoundTag.getList("pages", 8);

@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.SkeletonEntityRenderer;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
@@ -21,12 +21,12 @@ extends SkeletonEntityRenderer {
     }
 
     @Override
-    protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
+    public Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
         return SKIN;
     }
 
-    protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, float f) {
-        RenderSystem.scalef(1.2f, 1.2f, 1.2f);
+    protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, class_4587 arg, float f) {
+        arg.method_22905(1.2f, 1.2f, 1.2f);
     }
 }
 

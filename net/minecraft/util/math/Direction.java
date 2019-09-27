@@ -16,10 +16,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,6 +100,40 @@ public enum Direction implements StringIdentifiable
         return new Direction[]{direction, direction2, direction3, direction3.getOpposite(), direction2.getOpposite(), direction.getOpposite()};
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public static Direction method_23225(Matrix4f matrix4f, Direction direction) {
+        Vec3i vec3i = direction.getVector();
+        Vector4f vector4f = new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f);
+        vector4f.method_22674(matrix4f);
+        return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Quaternion method_23224() {
+        Quaternion quaternion = Vector3f.field_20703.method_23214(90.0f, true);
+        switch (this) {
+            case DOWN: {
+                return Vector3f.field_20703.method_23214(180.0f, true);
+            }
+            case UP: {
+                return Vector3f.field_20705.method_23214(0.0f, true);
+            }
+            case NORTH: {
+                quaternion.copyFrom(Vector3f.field_20707.method_23214(180.0f, true));
+                return quaternion;
+            }
+            case SOUTH: {
+                return quaternion;
+            }
+            case WEST: {
+                quaternion.copyFrom(Vector3f.field_20707.method_23214(-90.0f, true));
+                return quaternion;
+            }
+        }
+        quaternion.copyFrom(Vector3f.field_20707.method_23214(90.0f, true));
+        return quaternion;
+    }
+
     public int getId() {
         return this.id;
     }
@@ -110,31 +148,6 @@ public enum Direction implements StringIdentifiable
 
     public Direction getOpposite() {
         return Direction.byId(this.idOpposite);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public Direction rotateClockwise(Axis axis) {
-        switch (axis) {
-            case X: {
-                if (this == WEST || this == EAST) {
-                    return this;
-                }
-                return this.rotateXClockwise();
-            }
-            case Y: {
-                if (this == UP || this == DOWN) {
-                    return this;
-                }
-                return this.rotateYClockwise();
-            }
-            case Z: {
-                if (this == NORTH || this == SOUTH) {
-                    return this;
-                }
-                return this.rotateZClockwise();
-            }
-        }
-        throw new IllegalStateException("Unable to get CW facing for axis " + axis);
     }
 
     public Direction rotateYClockwise() {
@@ -153,44 +166,6 @@ public enum Direction implements StringIdentifiable
             }
         }
         throw new IllegalStateException("Unable to get Y-rotated facing of " + this);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    private Direction rotateXClockwise() {
-        switch (this) {
-            case UP: {
-                return NORTH;
-            }
-            case NORTH: {
-                return DOWN;
-            }
-            case DOWN: {
-                return SOUTH;
-            }
-            case SOUTH: {
-                return UP;
-            }
-        }
-        throw new IllegalStateException("Unable to get X-rotated facing of " + this);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    private Direction rotateZClockwise() {
-        switch (this) {
-            case UP: {
-                return EAST;
-            }
-            case EAST: {
-                return DOWN;
-            }
-            case DOWN: {
-                return WEST;
-            }
-            case WEST: {
-                return UP;
-            }
-        }
-        throw new IllegalStateException("Unable to get Z-rotated facing of " + this);
     }
 
     public Direction rotateYCounterclockwise() {

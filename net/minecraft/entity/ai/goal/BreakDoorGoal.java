@@ -62,7 +62,7 @@ extends DoorInteractGoal {
     @Override
     public void tick() {
         super.tick();
-        if (this.mob.getRand().nextInt(20) == 0) {
+        if (this.mob.getRandom().nextInt(20) == 0) {
             this.mob.world.playLevelEvent(1019, this.doorPos, 0);
             if (!this.mob.isHandSwinging) {
                 this.mob.swingHand(this.mob.getActiveHand());

@@ -37,7 +37,7 @@ extends Goal {
         if (this.mob.world.isDaylight()) {
             return false;
         }
-        if (this.mob.getRand().nextInt(this.searchRange) != 0) {
+        if (this.mob.getRandom().nextInt(this.searchRange) != 0) {
             return false;
         }
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
@@ -75,7 +75,7 @@ extends Goal {
     }
 
     private void findOtherWaypoint() {
-        Random random = this.mob.getRand();
+        Random random = this.mob.getRandom();
         BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
         this.mob.getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
     }

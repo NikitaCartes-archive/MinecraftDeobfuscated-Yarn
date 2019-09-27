@@ -54,8 +54,6 @@ implements AutoCloseable {
         RenderSystem.disableDepthTest();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableFog();
-        RenderSystem.disableLighting();
-        RenderSystem.disableColorMaterial();
         RenderSystem.enableTexture();
         RenderSystem.bindTexture(0);
     }
@@ -80,7 +78,7 @@ implements AutoCloseable {
         this.program.getUniformByNameOrDummy("OutSize").set(g, h);
         this.program.getUniformByNameOrDummy("Time").set(f);
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        this.program.getUniformByNameOrDummy("ScreenSize").set(minecraftClient.method_22683().getFramebufferWidth(), minecraftClient.method_22683().getFramebufferHeight());
+        this.program.getUniformByNameOrDummy("ScreenSize").set(minecraftClient.getWindow().getFramebufferWidth(), minecraftClient.getWindow().getFramebufferHeight());
         this.program.enable();
         this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
         this.output.beginWrite(false);

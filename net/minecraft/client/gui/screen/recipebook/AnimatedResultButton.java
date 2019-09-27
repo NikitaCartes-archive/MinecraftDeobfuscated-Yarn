@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -64,10 +63,8 @@ extends AbstractButtonWidget {
         if (!Screen.hasControlDown()) {
             this.time += f;
         }
-        GuiLighting.enableForItems();
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(BG_TEX);
-        RenderSystem.disableLighting();
         int k = 29;
         if (!this.results.hasCraftableRecipes()) {
             k += 25;
@@ -98,8 +95,6 @@ extends AbstractButtonWidget {
         if (bl) {
             RenderSystem.popMatrix();
         }
-        RenderSystem.enableLighting();
-        GuiLighting.disable();
     }
 
     private List<Recipe<?>> getResults() {

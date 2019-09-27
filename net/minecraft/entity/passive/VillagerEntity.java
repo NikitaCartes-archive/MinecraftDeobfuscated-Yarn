@@ -393,18 +393,18 @@ VillagerDataContainer {
     @Override
     public void readCustomDataFromTag(CompoundTag compoundTag) {
         super.readCustomDataFromTag(compoundTag);
-        if (compoundTag.containsKey("VillagerData", 10)) {
-            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
+        if (compoundTag.contains("VillagerData", 10)) {
+            this.setVillagerData(new VillagerData(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.get("VillagerData"))));
         }
-        if (compoundTag.containsKey("Offers", 10)) {
+        if (compoundTag.contains("Offers", 10)) {
             this.offers = new TraderOfferList(compoundTag.getCompound("Offers"));
         }
-        if (compoundTag.containsKey("FoodLevel", 1)) {
+        if (compoundTag.contains("FoodLevel", 1)) {
             this.foodLevel = compoundTag.getByte("FoodLevel");
         }
         ListTag listTag = compoundTag.getList("Gossips", 10);
         this.gossip.deserialize(new Dynamic<ListTag>(NbtOps.INSTANCE, listTag));
-        if (compoundTag.containsKey("Xp", 3)) {
+        if (compoundTag.contains("Xp", 3)) {
             this.experience = compoundTag.getInt("Xp");
         }
         this.lastRestockTime = compoundTag.getLong("LastRestock");
@@ -809,7 +809,7 @@ VillagerDataContainer {
             double f = 6.0;
             for (int j = 0; j >= -12; --j) {
                 BlockPos blockPos2 = blockPos.add(d, f + (double)j, e);
-                if (!this.world.getBlockState(blockPos2).isAir() && !this.world.getBlockState(blockPos2).getMaterial().isLiquid() || !this.world.getBlockState(blockPos2.down()).getMaterial().blocksLight()) continue;
+                if (!this.world.getBlockState(blockPos2).isAir() && !this.world.getBlockState(blockPos2).getMaterial().isLiquid() || !this.world.getBlockState(blockPos2.method_10074()).getMaterial().blocksLight()) continue;
                 f += (double)j;
                 break;
             }

@@ -116,7 +116,7 @@ extends BlockEntity {
         this.powered = compoundTag.getBoolean("powered");
         this.showAir = compoundTag.getBoolean("showair");
         this.showBoundingBox = compoundTag.getBoolean("showboundingbox");
-        this.integrity = compoundTag.containsKey("integrity") ? compoundTag.getFloat("integrity") : 1.0f;
+        this.integrity = compoundTag.contains("integrity") ? compoundTag.getFloat("integrity") : 1.0f;
         this.seed = compoundTag.getLong("seed");
         this.updateBlockMode();
     }

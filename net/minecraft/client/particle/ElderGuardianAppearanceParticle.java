@@ -7,11 +7,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4588;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.EntityType;
@@ -48,12 +48,11 @@ extends Particle {
     }
 
     @Override
-    public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
+    public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
         if (this.guardian == null) {
             return;
         }
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
-        entityRenderDispatcher.setRenderPosition(Particle.cameraX, Particle.cameraY, Particle.cameraZ);
         float l = 1.0f / ElderGuardianEntity.field_17492;
         float m = ((float)this.age + f) / (float)this.maxAge;
         RenderSystem.depthMask(true);
@@ -61,7 +60,7 @@ extends Particle {
         RenderSystem.enableDepthTest();
         RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
         float n = 240.0f;
-        RenderSystem.glMultiTexCoord2f(33985, 240.0f, 240.0f);
+        RenderSystem.glMultiTexCoord2f(33986, 240.0f, 240.0f);
         RenderSystem.pushMatrix();
         float o = 0.05f + 0.5f * MathHelper.sin(m * (float)Math.PI);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, o);
@@ -74,7 +73,7 @@ extends Particle {
         this.guardian.headYaw = 0.0f;
         this.guardian.prevYaw = 0.0f;
         this.guardian.prevHeadYaw = 0.0f;
-        entityRenderDispatcher.render(this.guardian, 0.0, 0.0, 0.0, 0.0f, f, false);
+        entityRenderDispatcher.render(this.guardian, f);
         RenderSystem.popMatrix();
         RenderSystem.enableDepthTest();
     }

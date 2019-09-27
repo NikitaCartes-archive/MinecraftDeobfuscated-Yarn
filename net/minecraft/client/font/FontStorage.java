@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4591;
 import net.minecraft.client.font.BlankGlyph;
 import net.minecraft.client.font.EmptyGlyphRenderer;
 import net.minecraft.client.font.Font;
@@ -39,6 +40,7 @@ implements AutoCloseable {
     private final TextureManager textureManager;
     private final Identifier id;
     private GlyphRenderer blankGlyphRenderer;
+    private GlyphRenderer field_20910;
     private final List<Font> fonts = Lists.newArrayList();
     private final Char2ObjectMap<GlyphRenderer> glyphRendererCache = new Char2ObjectOpenHashMap<GlyphRenderer>();
     private final Char2ObjectMap<Glyph> glyphCache = new Char2ObjectOpenHashMap<Glyph>();
@@ -61,6 +63,7 @@ implements AutoCloseable {
         this.glyphCache.clear();
         this.charactersByWidth.clear();
         this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
+        this.field_20910 = this.getGlyphRenderer(class_4591.INSTANCE);
         HashSet<Font> set = Sets.newHashSet();
         block1: for (char c = '\u0000'; c < '\uffff'; c = (char)((char)(c + 1))) {
             for (Font font2 : list) {
@@ -122,6 +125,10 @@ implements AutoCloseable {
             return this.getGlyphRenderer(charList.get(RANDOM.nextInt(charList.size())).charValue());
         }
         return this.blankGlyphRenderer;
+    }
+
+    public GlyphRenderer method_22943() {
+        return this.field_20910;
     }
 }
 

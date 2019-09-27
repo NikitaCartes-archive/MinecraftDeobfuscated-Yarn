@@ -3,9 +3,10 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.CatEntityModel;
@@ -22,21 +23,12 @@ extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_16047(CatEntity catEntity, float f, float g, float h, float i, float j, float k, float l) {
-        if (!catEntity.isTamed() || catEntity.isInvisible()) {
+    public void method_16047(class_4587 arg, class_4597 arg2, int i, CatEntity catEntity, float f, float g, float h, float j, float k, float l, float m) {
+        if (!catEntity.isTamed()) {
             return;
         }
-        this.bindTexture(SKIN);
         float[] fs = catEntity.getCollarColor().getColorComponents();
-        RenderSystem.color3f(fs[0], fs[1], fs[2]);
-        ((CatEntityModel)this.getModel()).copyStateTo(this.model);
-        this.model.method_17074(catEntity, f, g, h);
-        this.model.render(catEntity, f, g, i, j, k, l);
-    }
-
-    @Override
-    public boolean hasHurtOverlay() {
-        return true;
+        CatCollarFeatureRenderer.method_23196(this.getModel(), this.model, SKIN, arg, arg2, i, catEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
     }
 }
 

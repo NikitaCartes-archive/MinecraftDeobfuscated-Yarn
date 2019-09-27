@@ -3,9 +3,13 @@
  */
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
@@ -24,41 +28,22 @@ extends EntityRenderer<WitherSkullEntity> {
         super(entityRenderDispatcher);
     }
 
-    private float method_4158(float f, float g, float h) {
-        float i;
-        for (i = g - f; i < -180.0f; i += 360.0f) {
-        }
-        while (i >= 180.0f) {
-            i -= 360.0f;
-        }
-        return f + h * i;
+    public void method_4159(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+        arg.method_22903();
+        float i = 0.0625f;
+        arg.method_22905(-1.0f, -1.0f, 1.0f);
+        float j = MathHelper.method_22859(witherSkullEntity.prevYaw, witherSkullEntity.yaw, h);
+        float k = MathHelper.lerp(h, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
+        int l = witherSkullEntity.getLightmapCoordinates();
+        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(this.method_4160(witherSkullEntity)));
+        class_4608.method_23211(lv);
+        this.model.render(arg, lv, 0.0f, j, k, 0.0625f, l);
+        lv.method_22923();
+        arg.method_22909();
+        super.render(witherSkullEntity, d, e, f, g, h, arg, arg2);
     }
 
-    public void method_4159(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h) {
-        RenderSystem.pushMatrix();
-        RenderSystem.disableCull();
-        float i = this.method_4158(witherSkullEntity.prevYaw, witherSkullEntity.yaw, h);
-        float j = MathHelper.lerp(h, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
-        RenderSystem.translatef((float)d, (float)e, (float)f);
-        float k = 0.0625f;
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.scalef(-1.0f, -1.0f, 1.0f);
-        RenderSystem.enableAlphaTest();
-        this.bindEntityTexture(witherSkullEntity);
-        if (this.renderOutlines) {
-            RenderSystem.enableColorMaterial();
-            RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(witherSkullEntity));
-        }
-        this.model.render(0.0f, 0.0f, 0.0f, i, j, 0.0625f);
-        if (this.renderOutlines) {
-            RenderSystem.tearDownSolidRenderingTextureCombine();
-            RenderSystem.disableColorMaterial();
-        }
-        RenderSystem.popMatrix();
-        super.render(witherSkullEntity, d, e, f, g, h);
-    }
-
-    protected Identifier method_4160(WitherSkullEntity witherSkullEntity) {
+    public Identifier method_4160(WitherSkullEntity witherSkullEntity) {
         return witherSkullEntity.isCharged() ? INVINCIBLE_SKIN : SKIN;
     }
 }

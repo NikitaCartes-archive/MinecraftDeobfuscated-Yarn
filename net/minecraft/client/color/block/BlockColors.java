@@ -40,7 +40,7 @@ public class BlockColors {
             if (blockRenderView == null || blockPos == null) {
                 return -1;
             }
-            return BiomeColors.getGrassColor(blockRenderView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.down() : blockPos);
+            return BiomeColors.getGrassColor(blockRenderView, blockState.get(ReplaceableTallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? blockPos.method_10074() : blockPos);
         }, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
         blockColors.registerColorProperty(ReplaceableTallPlantBlock.HALF, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
         blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {

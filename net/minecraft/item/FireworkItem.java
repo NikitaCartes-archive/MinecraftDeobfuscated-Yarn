@@ -26,6 +26,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,8 @@ extends Item {
         if (!world.isClient) {
             ItemStack itemStack = itemUsageContext.getStack();
             Vec3d vec3d = itemUsageContext.getHitPos();
-            FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x, vec3d.y, vec3d.z, itemStack);
+            Direction direction = itemUsageContext.getSide();
+            FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x + (double)direction.getOffsetX() * 0.15, vec3d.y + (double)direction.getOffsetY() * 0.15, vec3d.z + (double)direction.getOffsetZ() * 0.15, itemStack);
             world.spawnEntity(fireworkEntity);
             itemStack.decrement(1);
         }
@@ -59,9 +61,9 @@ extends Item {
                     itemStack.decrement(1);
                 }
             }
-            return TypedActionResult.method_22427(playerEntity.getStackInHand(hand));
+            return TypedActionResult.successWithSwing(playerEntity.getStackInHand(hand));
         }
-        return TypedActionResult.method_22430(playerEntity.getStackInHand(hand));
+        return TypedActionResult.pass(playerEntity.getStackInHand(hand));
     }
 
     @Override
@@ -72,12 +74,12 @@ extends Item {
         if (compoundTag == null) {
             return;
         }
-        if (compoundTag.containsKey("Flight", 99)) {
+        if (compoundTag.contains("Flight", 99)) {
             list.add(new TranslatableText("item.minecraft.firework_rocket.flight", new Object[0]).append(" ").append(String.valueOf(compoundTag.getByte("Flight"))).formatted(Formatting.GRAY));
         }
         if (!(listTag = compoundTag.getList("Explosions", 10)).isEmpty()) {
             for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompoundTag(i);
+                CompoundTag compoundTag2 = listTag.getCompound(i);
                 ArrayList<Text> list2 = Lists.newArrayList();
                 FireworkChargeItem.appendFireworkTooltip(compoundTag2, list2);
                 if (list2.isEmpty()) continue;

@@ -5,15 +5,20 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4581;
+import net.minecraft.class_4590;
+import net.minecraft.class_4609;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.CubeFace;
 import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
+import net.minecraft.client.render.model.json.ModelRotation;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
@@ -24,40 +29,11 @@ import org.jetbrains.annotations.Nullable;
 public class BakedQuadFactory {
     private static final float field_4260 = 1.0f / (float)Math.cos(0.3926991f) - 1.0f;
     private static final float field_4259 = 1.0f / (float)Math.cos(0.7853981852531433) - 1.0f;
-    private static final class_797[] field_4264 = new class_797[ModelRotation.values().length * Direction.values().length];
-    private static final class_797 field_4258 = new class_797(){
 
-        @Override
-        ModelElementTexture method_3470(float f, float g, float h, float i) {
-            return new ModelElementTexture(new float[]{f, g, h, i}, 0);
-        }
-    };
-    private static final class_797 field_4261 = new class_797(){
-
-        @Override
-        ModelElementTexture method_3470(float f, float g, float h, float i) {
-            return new ModelElementTexture(new float[]{i, 16.0f - f, g, 16.0f - h}, 270);
-        }
-    };
-    private static final class_797 field_4262 = new class_797(){
-
-        @Override
-        ModelElementTexture method_3470(float f, float g, float h, float i) {
-            return new ModelElementTexture(new float[]{16.0f - f, 16.0f - g, 16.0f - h, 16.0f - i}, 0);
-        }
-    };
-    private static final class_797 field_4263 = new class_797(){
-
-        @Override
-        ModelElementTexture method_3470(float f, float g, float h, float i) {
-            return new ModelElementTexture(new float[]{16.0f - g, h, 16.0f - i, f}, 90);
-        }
-    };
-
-    public BakedQuad bake(Vector3f vector3f, Vector3f vector3f2, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation, boolean bl) {
+    public BakedQuad bake(Vector3f vector3f, Vector3f vector3f2, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings, @Nullable ModelRotation modelRotation, boolean bl, Identifier identifier) {
         ModelElementTexture modelElementTexture = modelElementFace.textureData;
         if (modelBakeSettings.isUvLocked()) {
-            modelElementTexture = this.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation());
+            modelElementTexture = BakedQuadFactory.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation(), identifier);
         }
         float[] fs = new float[modelElementTexture.uvs.length];
         System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
@@ -79,14 +55,50 @@ public class BakedQuadFactory {
         return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
     }
 
-    private ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, ModelRotation modelRotation) {
-        return field_4264[BakedQuadFactory.method_3465(modelRotation, direction)].method_3469(modelElementTexture);
+    public static ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, class_4590 arg, Identifier identifier) {
+        float q;
+        float p;
+        float o;
+        float n;
+        Matrix4f matrix4f = class_4609.method_23221(arg, direction, () -> "Unable to resolve UVLock for model: " + identifier).method_22936();
+        float f = modelElementTexture.getU(modelElementTexture.method_3414(0));
+        float g = modelElementTexture.getV(modelElementTexture.method_3414(0));
+        Vector4f vector4f = new Vector4f(f / 16.0f, g / 16.0f, 0.0f, 1.0f);
+        vector4f.method_22674(matrix4f);
+        float h = 16.0f * vector4f.getX();
+        float i = 16.0f * vector4f.getY();
+        float j = modelElementTexture.getU(modelElementTexture.method_3414(2));
+        float k = modelElementTexture.getV(modelElementTexture.method_3414(2));
+        Vector4f vector4f2 = new Vector4f(j / 16.0f, k / 16.0f, 0.0f, 1.0f);
+        vector4f2.method_22674(matrix4f);
+        float l = 16.0f * vector4f2.getX();
+        float m = 16.0f * vector4f2.getY();
+        if (Math.signum(j - f) == Math.signum(l - h)) {
+            n = h;
+            o = l;
+        } else {
+            n = l;
+            o = h;
+        }
+        if (Math.signum(k - g) == Math.signum(m - i)) {
+            p = i;
+            q = m;
+        } else {
+            p = m;
+            q = i;
+        }
+        float r = (float)Math.toRadians(modelElementTexture.rotation);
+        Vector3f vector3f = new Vector3f(MathHelper.cos(r), MathHelper.sin(r), 0.0f);
+        class_4581 lv = new class_4581(matrix4f);
+        vector3f.method_23215(lv);
+        int s = Math.floorMod(-((int)Math.round(Math.toDegrees(Math.atan2(vector3f.getY(), vector3f.getX())) / 90.0)) * 90, 360);
+        return new ModelElementTexture(new float[]{n, p, o, q}, s);
     }
 
-    private int[] method_3458(ModelElementTexture modelElementTexture, Sprite sprite, Direction direction, float[] fs, ModelRotation modelRotation, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation2, boolean bl) {
+    private int[] method_3458(ModelElementTexture modelElementTexture, Sprite sprite, Direction direction, float[] fs, class_4590 arg, @Nullable ModelRotation modelRotation, boolean bl) {
         int[] is = new int[32];
         for (int i = 0; i < 4; ++i) {
-            this.method_3461(is, i, direction, modelElementTexture, fs, sprite, modelRotation, modelRotation2, bl);
+            this.method_3461(is, i, direction, modelElementTexture, fs, sprite, arg, modelRotation, bl);
         }
         return is;
     }
@@ -128,27 +140,27 @@ public class BakedQuadFactory {
         return fs;
     }
 
-    private void method_3461(int[] is, int i, Direction direction, ModelElementTexture modelElementTexture, float[] fs, Sprite sprite, ModelRotation modelRotation, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation2, boolean bl) {
-        Direction direction2 = modelRotation.apply(direction);
+    private void method_3461(int[] is, int i, Direction direction, ModelElementTexture modelElementTexture, float[] fs, Sprite sprite, class_4590 arg, @Nullable ModelRotation modelRotation, boolean bl) {
+        Direction direction2 = Direction.method_23225(arg.method_22936(), direction);
         int j = bl ? this.method_3457(direction2) : -1;
         CubeFace.Corner corner = CubeFace.method_3163(direction).getCorner(i);
         Vector3f vector3f = new Vector3f(fs[corner.xSide], fs[corner.ySide], fs[corner.zSide]);
-        this.method_3463(vector3f, modelRotation2);
-        int k = this.method_3455(vector3f, direction, i, modelRotation);
-        this.method_3460(is, k, i, vector3f, j, sprite, modelElementTexture);
+        this.method_3463(vector3f, modelRotation);
+        this.method_3455(vector3f, arg);
+        this.method_3460(is, i, vector3f, j, sprite, modelElementTexture);
     }
 
-    private void method_3460(int[] is, int i, int j, Vector3f vector3f, int k, Sprite sprite, ModelElementTexture modelElementTexture) {
-        int l = i * 8;
-        is[l] = Float.floatToRawIntBits(vector3f.getX());
-        is[l + 1] = Float.floatToRawIntBits(vector3f.getY());
-        is[l + 2] = Float.floatToRawIntBits(vector3f.getZ());
-        is[l + 3] = k;
-        is[l + 4] = Float.floatToRawIntBits(sprite.getU(modelElementTexture.getU(j)));
-        is[l + 4 + 1] = Float.floatToRawIntBits(sprite.getV(modelElementTexture.getV(j)));
+    private void method_3460(int[] is, int i, Vector3f vector3f, int j, Sprite sprite, ModelElementTexture modelElementTexture) {
+        int k = i * 8;
+        is[k] = Float.floatToRawIntBits(vector3f.getX());
+        is[k + 1] = Float.floatToRawIntBits(vector3f.getY());
+        is[k + 2] = Float.floatToRawIntBits(vector3f.getZ());
+        is[k + 3] = j;
+        is[k + 4] = Float.floatToRawIntBits(sprite.getU(modelElementTexture.getU(i)));
+        is[k + 4 + 1] = Float.floatToRawIntBits(sprite.getV(modelElementTexture.getV(i)));
     }
 
-    private void method_3463(Vector3f vector3f, @Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation) {
+    private void method_3463(Vector3f vector3f, @Nullable ModelRotation modelRotation) {
         Vector3f vector3f3;
         Vector3f vector3f2;
         if (modelRotation == null) {
@@ -185,20 +197,19 @@ public class BakedQuadFactory {
         } else {
             vector3f3.set(1.0f, 1.0f, 1.0f);
         }
-        this.method_3464(vector3f, new Vector3f(modelRotation.origin), quaternion, vector3f3);
+        this.method_3464(vector3f, new Vector3f(modelRotation.origin), new Matrix4f(quaternion), vector3f3);
     }
 
-    public int method_3455(Vector3f vector3f, Direction direction, int i, ModelRotation modelRotation) {
-        if (modelRotation == ModelRotation.X0_Y0) {
-            return i;
+    public void method_3455(Vector3f vector3f, class_4590 arg) {
+        if (arg == class_4590.method_22931()) {
+            return;
         }
-        this.method_3464(vector3f, new Vector3f(0.5f, 0.5f, 0.5f), modelRotation.getQuaternion(), new Vector3f(1.0f, 1.0f, 1.0f));
-        return modelRotation.method_4706(direction, i);
+        this.method_3464(vector3f, new Vector3f(0.5f, 0.5f, 0.5f), arg.method_22936(), new Vector3f(1.0f, 1.0f, 1.0f));
     }
 
-    private void method_3464(Vector3f vector3f, Vector3f vector3f2, Quaternion quaternion, Vector3f vector3f3) {
+    private void method_3464(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
         Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0f);
-        vector4f.method_4959(quaternion);
+        vector4f.method_22674(matrix4f);
         vector4f.multiply(vector3f3);
         vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
     }
@@ -285,129 +296,6 @@ public class BakedQuadFactory {
                 is[k + 4 + 1] = js[o + 4 + 1];
             }
         }
-    }
-
-    private static void method_3466(ModelRotation modelRotation, Direction direction, class_797 arg) {
-        BakedQuadFactory.field_4264[BakedQuadFactory.method_3465((ModelRotation)modelRotation, (Direction)direction)] = arg;
-    }
-
-    private static int method_3465(ModelRotation modelRotation, Direction direction) {
-        return ModelRotation.values().length * direction.ordinal() + modelRotation.ordinal();
-    }
-
-    static {
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y0, Direction.DOWN, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y0, Direction.EAST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y0, Direction.NORTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y0, Direction.SOUTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y0, Direction.UP, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y0, Direction.WEST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y90, Direction.EAST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y90, Direction.NORTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y90, Direction.SOUTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y90, Direction.WEST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y180, Direction.EAST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y180, Direction.NORTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y180, Direction.SOUTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y180, Direction.WEST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y270, Direction.EAST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y270, Direction.NORTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y270, Direction.SOUTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y270, Direction.WEST, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y0, Direction.DOWN, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y0, Direction.SOUTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y90, Direction.DOWN, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y180, Direction.DOWN, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y180, Direction.NORTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y270, Direction.DOWN, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y0, Direction.DOWN, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y0, Direction.UP, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y0, Direction.SOUTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y0, Direction.UP, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y90, Direction.UP, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y180, Direction.NORTH, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y180, Direction.UP, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y270, Direction.UP, field_4258);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y270, Direction.UP, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y90, Direction.DOWN, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y0, Direction.WEST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y90, Direction.WEST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y180, Direction.WEST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y270, Direction.NORTH, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y270, Direction.SOUTH, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y270, Direction.WEST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y90, Direction.UP, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y270, Direction.DOWN, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y0, Direction.EAST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y90, Direction.EAST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y90, Direction.NORTH, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y90, Direction.SOUTH, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y180, Direction.EAST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y270, Direction.EAST, field_4261);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y180, Direction.DOWN, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y180, Direction.UP, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y0, Direction.NORTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y0, Direction.UP, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y90, Direction.UP, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y180, Direction.SOUTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y180, Direction.UP, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y270, Direction.UP, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y0, Direction.EAST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y0, Direction.NORTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y0, Direction.SOUTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y0, Direction.WEST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y90, Direction.EAST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y90, Direction.NORTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y90, Direction.SOUTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y90, Direction.WEST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y180, Direction.DOWN, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y180, Direction.EAST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y180, Direction.NORTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y180, Direction.SOUTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y180, Direction.UP, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y180, Direction.WEST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y270, Direction.EAST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y270, Direction.NORTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y270, Direction.SOUTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y270, Direction.WEST, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y0, Direction.DOWN, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y0, Direction.NORTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y90, Direction.DOWN, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y180, Direction.DOWN, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y180, Direction.SOUTH, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y270, Direction.DOWN, field_4262);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y90, Direction.UP, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X0_Y270, Direction.DOWN, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y0, Direction.EAST, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y90, Direction.EAST, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y90, Direction.NORTH, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y90, Direction.SOUTH, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y180, Direction.EAST, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X90_Y270, Direction.EAST, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y0, Direction.WEST, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y90, Direction.DOWN, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X180_Y270, Direction.UP, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y90, Direction.WEST, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y180, Direction.WEST, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y270, Direction.NORTH, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y270, Direction.SOUTH, field_4263);
-        BakedQuadFactory.method_3466(ModelRotation.X270_Y270, Direction.WEST, field_4263);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static abstract class class_797 {
-        private class_797() {
-        }
-
-        public ModelElementTexture method_3469(ModelElementTexture modelElementTexture) {
-            float f = modelElementTexture.getU(modelElementTexture.method_3414(0));
-            float g = modelElementTexture.getV(modelElementTexture.method_3414(0));
-            float h = modelElementTexture.getU(modelElementTexture.method_3414(2));
-            float i = modelElementTexture.getV(modelElementTexture.method_3414(2));
-            return this.method_3470(f, g, h, i);
-        }
-
-        abstract ModelElementTexture method_3470(float var1, float var2, float var3, float var4);
     }
 }
 

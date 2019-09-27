@@ -4,8 +4,6 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -51,12 +49,6 @@ extends Item {
     @Override
     public int getMaxUseTime(ItemStack itemStack) {
         return 72000;
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public boolean hasEnchantmentGlint(ItemStack itemStack) {
-        return false;
     }
 
     @Override
@@ -112,13 +104,13 @@ extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-            return TypedActionResult.method_22431(itemStack);
+            return TypedActionResult.fail(itemStack);
         }
         if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
-            return TypedActionResult.method_22431(itemStack);
+            return TypedActionResult.fail(itemStack);
         }
         playerEntity.setCurrentHand(hand);
-        return TypedActionResult.method_22428(itemStack);
+        return TypedActionResult.successWithoutSwing(itemStack);
     }
 
     @Override

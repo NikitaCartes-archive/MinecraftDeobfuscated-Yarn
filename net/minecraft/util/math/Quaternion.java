@@ -7,13 +7,14 @@ import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.MathHelper;
 
 public final class Quaternion {
     private final float[] components;
 
     public Quaternion() {
         this.components = new float[4];
-        this.components[4] = 1.0f;
+        this.components[3] = 1.0f;
     }
 
     public Quaternion(float f, float g, float h, float i) {
@@ -115,6 +116,14 @@ public final class Quaternion {
         this.components[3] = i * m - f * j - g * k - h * l;
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public void method_22872(float f) {
+        this.components[0] = this.components[0] * f;
+        this.components[1] = this.components[1] * f;
+        this.components[2] = this.components[2] * f;
+        this.components[3] = this.components[3] * f;
+    }
+
     public void reverse() {
         this.components[0] = -this.components[0];
         this.components[1] = -this.components[1];
@@ -127,6 +136,23 @@ public final class Quaternion {
 
     private static float sin(float f) {
         return (float)Math.sin(f);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void method_22873() {
+        float f = this.getX() * this.getX() + this.getY() * this.getY() + this.getZ() * this.getZ() + this.getW() * this.getW();
+        if (f > 1.0E-6f) {
+            float g = MathHelper.method_22858(f);
+            this.components[0] = this.components[0] * g;
+            this.components[1] = this.components[1] * g;
+            this.components[2] = this.components[2] * g;
+            this.components[3] = this.components[3] * g;
+        } else {
+            this.components[0] = 0.0f;
+            this.components[1] = 0.0f;
+            this.components[2] = 0.0f;
+            this.components[3] = 0.0f;
+        }
     }
 }
 

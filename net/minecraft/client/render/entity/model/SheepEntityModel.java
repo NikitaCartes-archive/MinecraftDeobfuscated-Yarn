@@ -15,7 +15,7 @@ extends QuadrupedEntityModel<T> {
     private float field_3552;
 
     public SheepEntityModel() {
-        super(12, 0.0f);
+        super(12, 0.0f, false, 8.0f, 4.0f, 2.0f, 2.0f, 24);
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-3.0f, -4.0f, -6.0f, 6.0f, 6.0f, 8.0f, 0.0f);
         this.head.setRotationPoint(0.0f, 6.0f, -8.0f);

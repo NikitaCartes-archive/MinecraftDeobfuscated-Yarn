@@ -172,7 +172,7 @@ implements FlyingItemEntity {
             areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
         }
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
+        if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
             areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
         }
         this.world.spawnEntity(areaEffectCloudEntity);

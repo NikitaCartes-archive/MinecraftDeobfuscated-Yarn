@@ -197,7 +197,7 @@ extends BlockWithEntity {
             if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
                 return blockState;
             }
-            boolean bl2 = world.getBlockState(blockPos.down()).isSideSolidFullSquare(world, blockPos.down(), Direction.UP);
+            boolean bl2 = world.getBlockState(blockPos.method_10074()).isSideSolidFullSquare(world, blockPos.method_10074(), Direction.UP);
             if ((blockState = (BlockState)blockState.with(ATTACHMENT, bl2 ? Attachment.FLOOR : Attachment.CEILING)).canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
                 return blockState;
             }

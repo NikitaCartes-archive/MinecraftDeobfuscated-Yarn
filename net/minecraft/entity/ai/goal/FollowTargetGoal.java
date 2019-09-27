@@ -40,7 +40,7 @@ extends TrackTargetGoal {
 
     @Override
     public boolean canStart() {
-        if (this.reciprocalChance > 0 && this.mob.getRand().nextInt(this.reciprocalChance) != 0) {
+        if (this.reciprocalChance > 0 && this.mob.getRandom().nextInt(this.reciprocalChance) != 0) {
             return false;
         }
         this.findClosestTarget();

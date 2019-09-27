@@ -4,6 +4,7 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import org.jetbrains.annotations.Unmodifiable;
@@ -67,6 +68,21 @@ implements Comparable<Vec3i> {
 
     public int getZ() {
         return this.z;
+    }
+
+    public Vec3i method_23228() {
+        return this.method_23227(1);
+    }
+
+    public Vec3i method_23227(int i) {
+        return this.method_23226(Direction.DOWN, i);
+    }
+
+    public Vec3i method_23226(Direction direction, int i) {
+        if (i == 0) {
+            return this;
+        }
+        return new Vec3i(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
     }
 
     public Vec3i crossProduct(Vec3i vec3i) {

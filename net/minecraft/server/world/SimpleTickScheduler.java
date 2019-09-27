@@ -63,7 +63,7 @@ implements TickScheduler<T> {
     public static <T> SimpleTickScheduler<T> fromNbt(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
         HashSet<ScheduledTick<T>> set = Sets.newHashSet();
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompoundTag(i);
+            CompoundTag compoundTag = listTag.getCompound(i);
             T object = function2.apply(new Identifier(compoundTag.getString("i")));
             if (object == null) continue;
             set.add(new ScheduledTick<T>(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), object, compoundTag.getInt("t"), TaskPriority.getByIndex(compoundTag.getInt("p"))));

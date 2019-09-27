@@ -44,7 +44,7 @@ extends Goal {
             HorseBaseEntity horseBaseEntity = this.getHorse(localDifficulty);
             SkeletonEntity skeletonEntity2 = this.getSkeleton(localDifficulty, horseBaseEntity);
             skeletonEntity2.startRiding(horseBaseEntity);
-            horseBaseEntity.addVelocity(this.skeletonHorse.getRand().nextGaussian() * 0.5, 0.0, this.skeletonHorse.getRand().nextGaussian() * 0.5);
+            horseBaseEntity.addVelocity(this.skeletonHorse.getRandom().nextGaussian() * 0.5, 0.0, this.skeletonHorse.getRandom().nextGaussian() * 0.5);
         }
     }
 
@@ -69,8 +69,8 @@ extends Goal {
         if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
             skeletonEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
         }
-        skeletonEntity.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(skeletonEntity.getRand(), skeletonEntity.getMainHandStack(), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRand().nextInt(18)), false));
-        skeletonEntity.equipStack(EquipmentSlot.HEAD, EnchantmentHelper.enchant(skeletonEntity.getRand(), skeletonEntity.getEquippedStack(EquipmentSlot.HEAD), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRand().nextInt(18)), false));
+        skeletonEntity.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(skeletonEntity.getRandom(), skeletonEntity.getMainHandStack(), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)), false));
+        skeletonEntity.equipStack(EquipmentSlot.HEAD, EnchantmentHelper.enchant(skeletonEntity.getRandom(), skeletonEntity.getEquippedStack(EquipmentSlot.HEAD), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)), false));
         skeletonEntity.world.spawnEntity(skeletonEntity);
         return skeletonEntity;
     }

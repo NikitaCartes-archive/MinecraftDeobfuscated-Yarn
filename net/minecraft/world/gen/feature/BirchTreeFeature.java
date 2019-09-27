@@ -63,10 +63,10 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         if (!bl) {
             return false;
         }
-        if (!BirchTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.down()) || blockPos.getY() >= 256 - i - 1) {
+        if (!BirchTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.method_10074()) || blockPos.getY() >= 256 - i - 1) {
             return false;
         }
-        this.setToDirt(modifiableTestableWorld, blockPos.down());
+        this.setToDirt(modifiableTestableWorld, blockPos.method_10074());
         for (j = blockPos.getY() - 3 + i; j <= blockPos.getY() + i; ++j) {
             k = j - (blockPos.getY() + i);
             int n = 1 - k / 2;

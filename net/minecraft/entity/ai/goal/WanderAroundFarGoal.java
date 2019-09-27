@@ -29,7 +29,7 @@ extends WanderAroundGoal {
             Vec3d vec3d = TargetFinder.findGroundTarget(this.mob, 15, 7);
             return vec3d == null ? super.getWanderTarget() : vec3d;
         }
-        if (this.mob.getRand().nextFloat() >= this.probability) {
+        if (this.mob.getRandom().nextFloat() >= this.probability) {
             return TargetFinder.findGroundTarget(this.mob, 10, 7);
         }
         return super.getWanderTarget();

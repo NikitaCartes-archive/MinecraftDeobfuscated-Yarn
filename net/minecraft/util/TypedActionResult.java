@@ -11,12 +11,12 @@ import org.jetbrains.annotations.Nullable;
 public class TypedActionResult<T> {
     private final ActionResult result;
     private final T value;
-    private final boolean field_20683;
+    private final boolean swingArm;
 
     public TypedActionResult(ActionResult actionResult, T object, boolean bl) {
         this.result = actionResult;
         this.value = object;
-        this.field_20683 = bl;
+        this.swingArm = bl;
     }
 
     public ActionResult getResult() {
@@ -28,23 +28,23 @@ public class TypedActionResult<T> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_22429() {
-        return this.field_20683;
+    public boolean shouldSwingArm() {
+        return this.swingArm;
     }
 
-    public static <T> TypedActionResult<T> method_22427(T object) {
+    public static <T> TypedActionResult<T> successWithSwing(T object) {
         return new TypedActionResult<T>(ActionResult.SUCCESS, object, true);
     }
 
-    public static <T> TypedActionResult<T> method_22428(T object) {
+    public static <T> TypedActionResult<T> successWithoutSwing(T object) {
         return new TypedActionResult<T>(ActionResult.SUCCESS, object, false);
     }
 
-    public static <T> TypedActionResult<T> method_22430(@Nullable T object) {
+    public static <T> TypedActionResult<T> pass(@Nullable T object) {
         return new TypedActionResult<T>(ActionResult.PASS, object, false);
     }
 
-    public static <T> TypedActionResult<T> method_22431(@Nullable T object) {
+    public static <T> TypedActionResult<T> fail(@Nullable T object) {
         return new TypedActionResult<T>(ActionResult.FAIL, object, false);
     }
 }

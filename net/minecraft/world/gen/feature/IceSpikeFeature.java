@@ -27,7 +27,7 @@ extends Feature<DefaultFeatureConfig> {
         int l;
         int k;
         while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
-            blockPos = blockPos.down();
+            blockPos = blockPos.method_10074();
         }
         if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
             return false;
@@ -77,7 +77,7 @@ extends Feature<DefaultFeatureConfig> {
                     Block block2 = blockState2.getBlock();
                     if (!blockState2.isAir() && !Block.isNaturalDirt(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) continue block5;
                     this.setBlockState(iWorld, blockPos2, Blocks.PACKED_ICE.getDefaultState());
-                    blockPos2 = blockPos2.down();
+                    blockPos2 = blockPos2.method_10074();
                     if (--p > 0) continue;
                     blockPos2 = blockPos2.down(random.nextInt(5) + 1);
                     p = random.nextInt(5);

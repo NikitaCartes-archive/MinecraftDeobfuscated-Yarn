@@ -111,11 +111,11 @@ Tickable {
         super.fromTag(compoundTag);
         this.itemsBeingCooked.clear();
         Inventories.fromTag(compoundTag, this.itemsBeingCooked);
-        if (compoundTag.containsKey("CookingTimes", 11)) {
+        if (compoundTag.contains("CookingTimes", 11)) {
             is = compoundTag.getIntArray("CookingTimes");
             System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
-        if (compoundTag.containsKey("CookingTotalTimes", 11)) {
+        if (compoundTag.contains("CookingTotalTimes", 11)) {
             is = compoundTag.getIntArray("CookingTotalTimes");
             System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }

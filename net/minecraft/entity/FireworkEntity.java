@@ -112,9 +112,6 @@ Projectile {
     @Override
     public void tick() {
         Vec3d vec3d;
-        this.prevRenderX = this.x;
-        this.prevRenderY = this.y;
-        this.prevRenderZ = this.z;
         super.tick();
         if (this.wasShotByEntity()) {
             if (this.shooter == null) {
@@ -280,7 +277,7 @@ Projectile {
         if (!itemStack.isEmpty()) {
             this.dataTracker.set(ITEM, itemStack);
         }
-        if (compoundTag.containsKey("ShotAtAngle")) {
+        if (compoundTag.contains("ShotAtAngle")) {
             this.dataTracker.set(SHOT_AT_ANGLE, compoundTag.getBoolean("ShotAtAngle"));
         }
     }
