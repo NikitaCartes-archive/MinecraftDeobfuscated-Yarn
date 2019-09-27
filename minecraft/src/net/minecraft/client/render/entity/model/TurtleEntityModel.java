@@ -1,6 +1,7 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -12,7 +13,7 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	private final ModelPart field_3594;
 
 	public TurtleEntityModel(float f) {
-		super(12, f);
+		super(12, f, true, 120.0F, 0.0F, 6.0F, 6.0F, 120);
 		this.textureWidth = 128;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 3, 0);
@@ -40,40 +41,9 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.leg4.setRotationPoint(5.0F, 21.0F, -4.0F);
 	}
 
-	public void method_17124(T turtleEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17125(turtleEntity, f, g, h, i, j, k);
-		if (this.isChild) {
-			float l = 6.0F;
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.16666667F, 0.16666667F, 0.16666667F);
-			RenderSystem.translatef(0.0F, 120.0F * k, 0.0F);
-			this.head.render(k);
-			this.body.render(k);
-			this.leg1.render(k);
-			this.leg2.render(k);
-			this.leg3.render(k);
-			this.leg4.render(k);
-			RenderSystem.popMatrix();
-		} else {
-			RenderSystem.pushMatrix();
-			if (turtleEntity.hasEgg()) {
-				RenderSystem.translatef(0.0F, -0.08F, 0.0F);
-			}
-
-			this.head.render(k);
-			this.body.render(k);
-			RenderSystem.pushMatrix();
-			this.leg1.render(k);
-			this.leg2.render(k);
-			RenderSystem.popMatrix();
-			this.leg3.render(k);
-			this.leg4.render(k);
-			if (turtleEntity.hasEgg()) {
-				this.field_3594.render(k);
-			}
-
-			RenderSystem.popMatrix();
-		}
+	@Override
+	protected Iterable<ModelPart> method_22948() {
+		return Iterables.concat(super.method_22948(), ImmutableList.of(this.field_3594));
 	}
 
 	public void method_17125(T turtleEntity, float f, float g, float h, float i, float j, float k) {
@@ -102,5 +72,20 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 			this.leg2.yaw = MathHelper.cos(f * 5.0F) * 3.0F * g;
 			this.leg2.pitch = 0.0F;
 		}
+
+		float l;
+		if (turtleEntity.hasEgg()) {
+			l = -1.28F;
+		} else {
+			l = 0.0F;
+		}
+
+		this.head.rotationPointY = l;
+		this.body.rotationPointY = l;
+		this.leg1.rotationPointY = l;
+		this.leg2.rotationPointY = l;
+		this.leg3.rotationPointY = l;
+		this.leg4.rotationPointY = l;
+		this.field_3594.visible = turtleEntity.hasEgg();
 	}
 }

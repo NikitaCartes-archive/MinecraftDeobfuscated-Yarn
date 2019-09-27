@@ -24,7 +24,7 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 			vec3d = TargetFinder.findGroundTarget(this.mob, 15, 15);
 		}
 
-		if (this.mob.getRand().nextFloat() >= this.probability) {
+		if (this.mob.getRandom().nextFloat() >= this.probability) {
 			vec3d = this.method_6314();
 		}
 

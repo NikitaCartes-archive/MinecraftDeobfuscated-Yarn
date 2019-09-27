@@ -4,9 +4,11 @@ import net.minecraft.class_4538;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -41,7 +43,7 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return topCoversMediumSquare(arg, blockPos.down());
+		return topCoversMediumSquare(arg, blockPos.method_10074());
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public abstract class AbstractRailBlock extends Block {
 		if (!world.isClient) {
 			RailShape railShape = blockState.get(this.getShapeProperty());
 			boolean bl2 = false;
-			BlockPos blockPos3 = blockPos.down();
+			BlockPos blockPos3 = blockPos.method_10074();
 			if (!topCoversMediumSquare(world, blockPos3)) {
 				bl2 = true;
 			}
@@ -102,9 +104,12 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	protected BlockState updateBlockState(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return world.isClient
-			? blockState
-			: new RailPlacementHelper(world, blockPos, blockState).updateBlockState(world.isReceivingRedstonePower(blockPos), bl).getBlockState();
+		if (world.isClient) {
+			return blockState;
+		} else {
+			RailShape railShape = blockState.get(this.getShapeProperty());
+			return new RailPlacementHelper(world, blockPos, blockState).updateBlockState(world.isReceivingRedstonePower(blockPos), bl, railShape).getBlockState();
+		}
 	}
 
 	@Override
@@ -122,9 +127,17 @@ public abstract class AbstractRailBlock extends Block {
 
 			if (this.allowCurves) {
 				world.updateNeighborsAlways(blockPos, this);
-				world.updateNeighborsAlways(blockPos.down(), this);
+				world.updateNeighborsAlways(blockPos.method_10074(), this);
 			}
 		}
+	}
+
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = super.getDefaultState();
+		Direction direction = itemPlacementContext.getPlayerFacing();
+		boolean bl = direction == Direction.EAST || direction == Direction.WEST;
+		return blockState.with(this.getShapeProperty(), bl ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH);
 	}
 
 	public abstract Property<RailShape> getShapeProperty();

@@ -94,7 +94,7 @@ public class IglooGenerator {
 		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
 			if ("chest".equals(string)) {
 				iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
-				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos.down());
+				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos.method_10074());
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
 				}
@@ -116,7 +116,7 @@ public class IglooGenerator {
 			boolean bl = super.generate(iWorld, chunkGenerator, random, blockBox, chunkPos);
 			if (this.template.equals(IglooGenerator.TOP_TEMPLATE)) {
 				BlockPos blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)));
-				BlockState blockState = iWorld.getBlockState(blockPos4.down());
+				BlockState blockState = iWorld.getBlockState(blockPos4.method_10074());
 				if (!blockState.isAir() && blockState.getBlock() != Blocks.LADDER) {
 					iWorld.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
 				}

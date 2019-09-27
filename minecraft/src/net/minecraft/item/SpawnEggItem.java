@@ -90,30 +90,30 @@ public class SpawnEggItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
-			return TypedActionResult.method_22430(itemStack);
+			return TypedActionResult.pass(itemStack);
 		} else {
 			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
 			if (hitResult.getType() != HitResult.Type.BLOCK) {
-				return TypedActionResult.method_22430(itemStack);
+				return TypedActionResult.pass(itemStack);
 			} else {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
-					return TypedActionResult.method_22430(itemStack);
+					return TypedActionResult.pass(itemStack);
 				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
 					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.SPAWN_EGG, false, false) == null) {
-						return TypedActionResult.method_22430(itemStack);
+						return TypedActionResult.pass(itemStack);
 					} else {
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.decrement(1);
 						}
 
 						playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-						return TypedActionResult.method_22427(itemStack);
+						return TypedActionResult.successWithSwing(itemStack);
 					}
 				} else {
-					return TypedActionResult.method_22431(itemStack);
+					return TypedActionResult.fail(itemStack);
 				}
 			}
 		}
@@ -139,9 +139,9 @@ public class SpawnEggItem extends Item {
 	}
 
 	public EntityType<?> getEntityType(@Nullable CompoundTag compoundTag) {
-		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
+		if (compoundTag != null && compoundTag.contains("EntityTag", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
-			if (compoundTag2.containsKey("id", 8)) {
+			if (compoundTag2.contains("id", 8)) {
 				return (EntityType<?>)EntityType.get(compoundTag2.getString("id")).orElse(this.type);
 			}
 		}

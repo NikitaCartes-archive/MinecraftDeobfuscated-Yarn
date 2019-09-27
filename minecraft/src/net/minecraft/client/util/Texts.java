@@ -11,7 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
-public class TextComponentUtil {
+public class Texts {
 	public static String getRenderChatMessage(String string, boolean bl) {
 		return !bl && !MinecraftClient.getInstance().options.chatColors ? Formatting.strip(string) : string;
 	}

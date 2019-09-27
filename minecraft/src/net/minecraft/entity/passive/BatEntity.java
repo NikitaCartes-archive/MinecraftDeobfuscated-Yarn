@@ -202,7 +202,7 @@ public class BatEntity extends AmbientEntity {
 		compoundTag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
 	}
 
-	public static boolean method_20661(EntityType<BatEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<BatEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		if (blockPos.getY() >= iWorld.getSeaLevel()) {
 			return false;
 		} else {
@@ -214,7 +214,7 @@ public class BatEntity extends AmbientEntity {
 				return false;
 			}
 
-			return i > random.nextInt(j) ? false : method_20636(entityType, iWorld, spawnType, blockPos, random);
+			return i > random.nextInt(j) ? false : canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
 		}
 	}
 

@@ -161,7 +161,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.renderBackground();
 		int k = this.getScrollbarPosition();
 		int l = k + 6;
-		RenderSystem.disableLighting();
 		RenderSystem.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -170,19 +169,19 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		float g = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0)
-			.texture((double)((float)this.left / 32.0F), (double)((float)(this.bottom + (int)this.getScrollAmount()) / 32.0F))
+			.texture((float)this.left / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F)
 			.color(32, 32, 32, 255)
 			.next();
 		bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0)
-			.texture((double)((float)this.right / 32.0F), (double)((float)(this.bottom + (int)this.getScrollAmount()) / 32.0F))
+			.texture((float)this.right / 32.0F, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0F)
 			.color(32, 32, 32, 255)
 			.next();
 		bufferBuilder.vertex((double)this.right, (double)this.top, 0.0)
-			.texture((double)((float)this.right / 32.0F), (double)((float)(this.top + (int)this.getScrollAmount()) / 32.0F))
+			.texture((float)this.right / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F)
 			.color(32, 32, 32, 255)
 			.next();
 		bufferBuilder.vertex((double)this.left, (double)this.top, 0.0)
-			.texture((double)((float)this.left / 32.0F), (double)((float)(this.top + (int)this.getScrollAmount()) / 32.0F))
+			.texture((float)this.left / 32.0F, (float)(this.top + (int)this.getScrollAmount()) / 32.0F)
 			.color(32, 32, 32, 255)
 			.next();
 		tessellator.draw();
@@ -205,16 +204,16 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		RenderSystem.disableTexture();
 		int o = 4;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
-		bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
-		bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-		bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 0).next();
+		bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 0).next();
+		bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
 		tessellator.draw();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-		bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-		bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
-		bufferBuilder.vertex((double)this.left, (double)(this.bottom - 4), 0.0).texture(0.0, 0.0).color(0, 0, 0, 0).next();
+		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
+		bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 0).next();
+		bufferBuilder.vertex((double)this.left, (double)(this.bottom - 4), 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 0).next();
 		tessellator.draw();
 		int p = this.getMaxScroll();
 		if (p > 0) {
@@ -226,22 +225,22 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			}
 
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-			bufferBuilder.vertex((double)k, (double)this.bottom, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)l, (double)this.bottom, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)l, (double)this.top, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-			bufferBuilder.vertex((double)k, (double)this.top, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)k, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)l, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)l, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
+			bufferBuilder.vertex((double)k, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
 			tessellator.draw();
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-			bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
-			bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
+			bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
 			tessellator.draw();
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-			bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
-			bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
+			bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
 			tessellator.draw();
 		}
 
@@ -452,16 +451,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex((double)this.left, (double)j, 0.0).texture(0.0, (double)((float)j / 32.0F)).color(64, 64, 64, l).next();
-		bufferBuilder.vertex((double)(this.left + this.width), (double)j, 0.0)
-			.texture((double)((float)this.width / 32.0F), (double)((float)j / 32.0F))
-			.color(64, 64, 64, l)
-			.next();
-		bufferBuilder.vertex((double)(this.left + this.width), (double)i, 0.0)
-			.texture((double)((float)this.width / 32.0F), (double)((float)i / 32.0F))
-			.color(64, 64, 64, k)
-			.next();
-		bufferBuilder.vertex((double)this.left, (double)i, 0.0).texture(0.0, (double)((float)i / 32.0F)).color(64, 64, 64, k).next();
+		bufferBuilder.vertex((double)this.left, (double)j, 0.0).texture(0.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
+		bufferBuilder.vertex((double)(this.left + this.width), (double)j, 0.0).texture((float)this.width / 32.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
+		bufferBuilder.vertex((double)(this.left + this.width), (double)i, 0.0).texture((float)this.width / 32.0F, (float)i / 32.0F).color(64, 64, 64, k).next();
+		bufferBuilder.vertex((double)this.left, (double)i, 0.0).texture(0.0F, (float)i / 32.0F).color(64, 64, 64, k).next();
 		tessellator.draw();
 	}
 

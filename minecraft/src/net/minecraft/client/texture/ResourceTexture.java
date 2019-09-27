@@ -56,8 +56,11 @@ public class ResourceTexture extends AbstractTexture {
 
 	@Environment(EnvType.CLIENT)
 	public static class TextureData implements Closeable {
+		@Nullable
 		private final TextureResourceMetadata metadata;
+		@Nullable
 		private final NativeImage image;
+		@Nullable
 		private final IOException exception;
 
 		public TextureData(IOException iOException) {

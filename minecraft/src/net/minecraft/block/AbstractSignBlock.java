@@ -1,7 +1,5 @@
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.EntityContext;
@@ -43,12 +41,6 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
 		return SHAPE;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-		return true;
 	}
 
 	@Override

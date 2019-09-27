@@ -27,6 +27,6 @@ public class ThrowablePotionItem extends PotionItem {
 			itemStack.decrement(1);
 		}
 
-		return TypedActionResult.method_22427(itemStack);
+		return TypedActionResult.successWithSwing(itemStack);
 	}
 }

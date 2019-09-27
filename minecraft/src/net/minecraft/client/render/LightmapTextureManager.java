@@ -22,9 +22,9 @@ public class LightmapTextureManager implements AutoCloseable {
 	private final GameRenderer worldRenderer;
 	private final MinecraftClient client;
 
-	public LightmapTextureManager(GameRenderer gameRenderer) {
+	public LightmapTextureManager(GameRenderer gameRenderer, MinecraftClient minecraftClient) {
 		this.worldRenderer = gameRenderer;
-		this.client = gameRenderer.getClient();
+		this.client = minecraftClient;
 		this.texture = new NativeImageBackedTexture(16, 16, false);
 		this.textureIdentifier = this.client.getTextureManager().registerDynamicTexture("light_map", this.texture);
 		this.image = this.texture.getImage();
@@ -42,13 +42,13 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public void disable() {
-		RenderSystem.activeTexture(33985);
+		RenderSystem.activeTexture(33986);
 		RenderSystem.disableTexture();
 		RenderSystem.activeTexture(33984);
 	}
 
 	public void enable() {
-		RenderSystem.activeTexture(33985);
+		RenderSystem.activeTexture(33986);
 		RenderSystem.matrixMode(5890);
 		RenderSystem.loadIdentity();
 		float f = 0.00390625F;

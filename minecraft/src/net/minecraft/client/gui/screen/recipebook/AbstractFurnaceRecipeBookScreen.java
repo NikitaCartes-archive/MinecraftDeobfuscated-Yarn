@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.Slot;
 import net.minecraft.item.Item;
@@ -114,8 +113,6 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 				this.field_3151 += f;
 			}
 
-			GuiLighting.enableForItems();
-			RenderSystem.disableLighting();
 			int k = this.outputSlot.xPosition + i;
 			int l = this.outputSlot.yPosition + j;
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822018048);
@@ -123,8 +120,6 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 			RenderSystem.depthFunc(516);
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822083583);
 			RenderSystem.depthFunc(515);
-			RenderSystem.enableLighting();
-			GuiLighting.disable();
 		}
 	}
 

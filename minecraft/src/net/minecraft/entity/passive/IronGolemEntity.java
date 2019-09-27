@@ -89,7 +89,7 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Override
 	protected void pushAway(Entity entity) {
-		if (entity instanceof Monster && !(entity instanceof CreeperEntity) && this.getRand().nextInt(20) == 0) {
+		if (entity instanceof Monster && !(entity instanceof CreeperEntity) && this.getRandom().nextInt(20) == 0) {
 			this.setTarget((LivingEntity)entity);
 		}
 
@@ -237,7 +237,7 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	public boolean canSpawn(class_4538 arg) {
 		BlockPos blockPos = new BlockPos(this);
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos2 = blockPos.method_10074();
 		BlockState blockState = arg.getBlockState(blockPos2);
 		if (!blockState.hasSolidTopSurface(arg, blockPos2, this)) {
 			return false;

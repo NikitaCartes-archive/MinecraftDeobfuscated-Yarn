@@ -18,7 +18,7 @@ public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity
 		return 180.0F;
 	}
 
-	protected Identifier method_4108(SilverfishEntity silverfishEntity) {
+	public Identifier method_4108(SilverfishEntity silverfishEntity) {
 		return SKIN;
 	}
 }

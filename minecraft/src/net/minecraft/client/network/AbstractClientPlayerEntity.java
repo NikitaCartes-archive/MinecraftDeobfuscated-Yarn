@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.PlayerSkinTexture;
-import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.world.ClientWorld;
@@ -85,19 +85,19 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	public static PlayerSkinTexture loadSkin(Identifier identifier, String string) {
 		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-		Texture texture = textureManager.getTexture(identifier);
-		if (texture == null) {
-			texture = new PlayerSkinTexture(
+		AbstractTexture abstractTexture = textureManager.getTexture(identifier);
+		if (abstractTexture == null) {
+			abstractTexture = new PlayerSkinTexture(
 				null,
 				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(string)),
 				DefaultSkinHelper.getTexture(getOfflinePlayerUuid(string)),
 				true,
 				null
 			);
-			textureManager.registerTexture(identifier, texture);
+			textureManager.registerTexture(identifier, abstractTexture);
 		}
 
-		return (PlayerSkinTexture)texture;
+		return (PlayerSkinTexture)abstractTexture;
 	}
 
 	public static Identifier getSkinId(String string) {

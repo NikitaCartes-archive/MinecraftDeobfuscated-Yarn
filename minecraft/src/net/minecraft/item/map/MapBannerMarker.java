@@ -26,7 +26,7 @@ public class MapBannerMarker {
 	public static MapBannerMarker fromNbt(CompoundTag compoundTag) {
 		BlockPos blockPos = NbtHelper.toBlockPos(compoundTag.getCompound("Pos"));
 		DyeColor dyeColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.WHITE);
-		Text text = compoundTag.containsKey("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
+		Text text = compoundTag.contains("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
 

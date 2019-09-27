@@ -180,14 +180,15 @@ public class RedstoneWireBlock extends Block {
 			}
 		}
 
-		return !connectsTo(blockState, direction) && (blockState.isSimpleFullBlock(blockView, blockPos2) || !connectsTo(blockView.getBlockState(blockPos2.down())))
+		return !connectsTo(blockState, direction)
+				&& (blockState.isSimpleFullBlock(blockView, blockPos2) || !connectsTo(blockView.getBlockState(blockPos2.method_10074())))
 			? WireConnection.NONE
 			: WireConnection.SIDE;
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos2 = blockPos.method_10074();
 		BlockState blockState2 = arg.getBlockState(blockPos2);
 		return blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
 	}
@@ -220,7 +221,7 @@ public class RedstoneWireBlock extends Block {
 				if (blockState3.isSimpleFullBlock(world, blockPos2) && !world.getBlockState(blockPos3).isSimpleFullBlock(world, blockPos3)) {
 					k = this.increasePower(k, world.getBlockState(blockPos2.up()));
 				} else if (!blockState3.isSimpleFullBlock(world, blockPos2)) {
-					k = this.increasePower(k, world.getBlockState(blockPos2.down()));
+					k = this.increasePower(k, world.getBlockState(blockPos2.method_10074()));
 				}
 			}
 		}
@@ -274,7 +275,7 @@ public class RedstoneWireBlock extends Block {
 				if (world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
 					this.updateNeighbors(world, blockPos2.up());
 				} else {
-					this.updateNeighbors(world, blockPos2.down());
+					this.updateNeighbors(world, blockPos2.method_10074());
 				}
 			}
 		}
@@ -300,7 +301,7 @@ public class RedstoneWireBlock extends Block {
 					if (world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
 						this.updateNeighbors(world, blockPos2.up());
 					} else {
-						this.updateNeighbors(world, blockPos2.down());
+						this.updateNeighbors(world, blockPos2.method_10074());
 					}
 				}
 			}
@@ -376,7 +377,7 @@ public class RedstoneWireBlock extends Block {
 			&& blockState.get(AbstractRedstoneGateBlock.FACING) == direction) {
 			return true;
 		} else {
-			return !bl && connectsTo(blockView, blockPos2.down());
+			return !bl && connectsTo(blockView, blockPos2.method_10074());
 		}
 	}
 

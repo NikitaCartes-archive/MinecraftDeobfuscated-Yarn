@@ -1,23 +1,25 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityModel<T> implements ModelWithArms, ModelWithHead {
-	protected final ModelPart field_3422;
+public class EvilVillagerEntityModel<T extends IllagerEntity> extends class_4595<T> implements ModelWithArms, ModelWithHead {
+	private final ModelPart field_3422;
 	private final ModelPart field_3419;
-	protected final ModelPart field_3425;
-	protected final ModelPart field_3423;
-	protected final ModelPart field_3420;
-	protected final ModelPart field_3418;
-	private final ModelPart field_3421;
-	protected final ModelPart field_3426;
-	protected final ModelPart field_3417;
+	private final ModelPart field_3425;
+	private final ModelPart field_3423;
+	private final ModelPart field_3420;
+	private final ModelPart field_3418;
+	private final ModelPart field_3426;
+	private final ModelPart field_3417;
 	private float field_3424;
 
 	public EvilVillagerEntityModel(float f, float g, int i, int j) {
@@ -28,10 +30,10 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		this.field_3419.addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 12.0F, 8.0F, f + 0.45F);
 		this.field_3422.addChild(this.field_3419);
 		this.field_3419.visible = false;
-		this.field_3421 = new ModelPart(this).setTextureSize(i, j);
-		this.field_3421.setRotationPoint(0.0F, g - 2.0F, 0.0F);
-		this.field_3421.setTextureOffset(24, 0).addCuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F, f);
-		this.field_3422.addChild(this.field_3421);
+		ModelPart modelPart = new ModelPart(this).setTextureSize(i, j);
+		modelPart.setRotationPoint(0.0F, g - 2.0F, 0.0F);
+		modelPart.setTextureOffset(24, 0).addCuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F, f);
+		this.field_3422.addChild(modelPart);
 		this.field_3425 = new ModelPart(this).setTextureSize(i, j);
 		this.field_3425.setRotationPoint(0.0F, 0.0F + g, 0.0F);
 		this.field_3425.setTextureOffset(16, 20).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F, f);
@@ -39,10 +41,10 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		this.field_3423 = new ModelPart(this).setTextureSize(i, j);
 		this.field_3423.setRotationPoint(0.0F, 0.0F + g + 2.0F, 0.0F);
 		this.field_3423.setTextureOffset(44, 22).addCuboid(-8.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, f);
-		ModelPart modelPart = new ModelPart(this, 44, 22).setTextureSize(i, j);
-		modelPart.mirror = true;
-		modelPart.addCuboid(4.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, f);
-		this.field_3423.addChild(modelPart);
+		ModelPart modelPart2 = new ModelPart(this, 44, 22).setTextureSize(i, j);
+		modelPart2.mirror = true;
+		modelPart2.addCuboid(4.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, f);
+		this.field_3423.addChild(modelPart2);
 		this.field_3423.setTextureOffset(40, 38).addCuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, f);
 		this.field_3420 = new ModelPart(this, 0, 22).setTextureSize(i, j);
 		this.field_3420.setRotationPoint(-2.0F, 12.0F + g, 0.0F);
@@ -60,18 +62,9 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		this.field_3417.setRotationPoint(5.0F, 2.0F + g, 0.0F);
 	}
 
-	public void method_17093(T illagerEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17094(illagerEntity, f, g, h, i, j, k);
-		this.field_3422.render(k);
-		this.field_3425.render(k);
-		this.field_3420.render(k);
-		this.field_3418.render(k);
-		if (illagerEntity.getState() == IllagerEntity.State.CROSSED) {
-			this.field_3423.render(k);
-		} else {
-			this.field_3426.render(k);
-			this.field_3417.render(k);
-		}
+	@Override
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3422, this.field_3425, this.field_3420, this.field_3418, this.field_3423, this.field_3426, this.field_3417);
 	}
 
 	public void method_17094(T illagerEntity, float f, float g, float h, float i, float j, float k) {
@@ -173,6 +166,11 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 			this.field_3417.roll = (float) (-Math.PI * 3.0 / 4.0);
 			this.field_3417.yaw = 0.0F;
 		}
+
+		boolean bl = state == IllagerEntity.State.CROSSED;
+		this.field_3423.visible = bl;
+		this.field_3417.visible = !bl;
+		this.field_3426.visible = !bl;
 	}
 
 	public void method_17092(T illagerEntity, float f, float g, float h) {
@@ -194,7 +192,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm) {
-		this.method_2813(arm).applyTransform(0.0625F);
+	public void setArmAngle(float f, Arm arm, class_4587 arg) {
+		this.method_2813(arm).method_22703(arg, 0.0625F);
 	}
 }

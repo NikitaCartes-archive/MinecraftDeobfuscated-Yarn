@@ -46,7 +46,7 @@ public class VersionedChunkStorage extends RegionBasedStorage {
 	}
 
 	public static int getDataVersion(CompoundTag compoundTag) {
-		return compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : -1;
+		return compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : -1;
 	}
 
 	@Override

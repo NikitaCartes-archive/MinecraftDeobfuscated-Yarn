@@ -86,7 +86,7 @@ public class HorseEntity extends HorseBaseEntity {
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		this.setVariant(compoundTag.getInt("Variant"));
-		if (compoundTag.containsKey("ArmorItem", 10)) {
+		if (compoundTag.contains("ArmorItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"));
 			if (!itemStack.isEmpty() && this.canEquip(itemStack)) {
 				this.items.setInvStack(1, itemStack);

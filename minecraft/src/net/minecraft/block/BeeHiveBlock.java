@@ -147,7 +147,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 				if (e > 0.0) {
 					this.addHoneyParticle(world, blockPos, voxelShape, (double)blockPos.getY() + e - 0.05);
 				} else {
-					BlockPos blockPos2 = blockPos.down();
+					BlockPos blockPos2 = blockPos.method_10074();
 					BlockState blockState2 = world.getBlockState(blockPos2);
 					VoxelShape voxelShape2 = blockState2.getCollisionShape(world, blockPos2);
 					double f = voxelShape2.getMaximum(Direction.Axis.Y);

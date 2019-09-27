@@ -71,7 +71,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Pumpkin")) {
+		if (compoundTag.contains("Pumpkin")) {
 			this.setHasPumpkin(compoundTag.getBoolean("Pumpkin"));
 		}
 	}
@@ -120,7 +120,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 		double h = livingEntity.z - this.z;
 		float i = MathHelper.sqrt(e * e + h * h) * 0.2F;
 		snowballEntity.setVelocity(e, g + (double)i, h, 1.6F, 12.0F);
-		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(snowballEntity);
 	}
 

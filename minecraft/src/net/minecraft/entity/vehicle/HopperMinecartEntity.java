@@ -139,7 +139,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		this.transferCooldown = compoundTag.getInt("TransferCooldown");
-		this.enabled = compoundTag.containsKey("Enabled") ? compoundTag.getBoolean("Enabled") : true;
+		this.enabled = compoundTag.contains("Enabled") ? compoundTag.getBoolean("Enabled") : true;
 	}
 
 	public void setTransferCooldown(int i) {

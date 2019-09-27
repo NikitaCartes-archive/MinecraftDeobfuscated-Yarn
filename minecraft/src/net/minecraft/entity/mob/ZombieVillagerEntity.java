@@ -86,23 +86,23 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("VillagerData", 10)) {
-			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
+		if (compoundTag.contains("VillagerData", 10)) {
+			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.get("VillagerData"))));
 		}
 
-		if (compoundTag.containsKey("Offers", 10)) {
+		if (compoundTag.contains("Offers", 10)) {
 			this.offerData = compoundTag.getCompound("Offers");
 		}
 
-		if (compoundTag.containsKey("Gossips", 10)) {
+		if (compoundTag.contains("Gossips", 10)) {
 			this.field_20299 = compoundTag.getList("Gossips", 10);
 		}
 
-		if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
+		if (compoundTag.contains("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
 			this.setConverting(compoundTag.containsUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
 		}
 
-		if (compoundTag.containsKey("Xp", 3)) {
+		if (compoundTag.contains("Xp", 3)) {
 			this.xp = compoundTag.getInt("Xp");
 		}
 	}

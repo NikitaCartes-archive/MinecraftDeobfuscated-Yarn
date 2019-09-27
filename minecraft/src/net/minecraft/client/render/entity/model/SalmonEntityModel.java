@@ -1,19 +1,18 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SalmonEntityModel<T extends Entity> extends EntityModel<T> {
+public class SalmonEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_3546;
 	private final ModelPart field_3548;
 	private final ModelPart field_3547;
-	private final ModelPart field_3545;
-	private final ModelPart field_3543;
-	private final ModelPart field_3549;
 	private final ModelPart field_3542;
 	private final ModelPart field_3544;
 
@@ -30,18 +29,18 @@ public class SalmonEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3547 = new ModelPart(this, 22, 0);
 		this.field_3547.addCuboid(-1.0F, -2.0F, -3.0F, 2.0F, 4.0F, 3.0F);
 		this.field_3547.setRotationPoint(0.0F, 20.0F, 0.0F);
-		this.field_3549 = new ModelPart(this, 20, 10);
-		this.field_3549.addCuboid(0.0F, -2.5F, 0.0F, 0.0F, 5.0F, 6.0F);
-		this.field_3549.setRotationPoint(0.0F, 0.0F, 8.0F);
-		this.field_3548.addChild(this.field_3549);
-		this.field_3545 = new ModelPart(this, 2, 1);
-		this.field_3545.addCuboid(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 3.0F);
-		this.field_3545.setRotationPoint(0.0F, -4.5F, 5.0F);
-		this.field_3546.addChild(this.field_3545);
-		this.field_3543 = new ModelPart(this, 0, 2);
-		this.field_3543.addCuboid(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 4.0F);
-		this.field_3543.setRotationPoint(0.0F, -4.5F, -1.0F);
-		this.field_3548.addChild(this.field_3543);
+		ModelPart modelPart = new ModelPart(this, 20, 10);
+		modelPart.addCuboid(0.0F, -2.5F, 0.0F, 0.0F, 5.0F, 6.0F);
+		modelPart.setRotationPoint(0.0F, 0.0F, 8.0F);
+		this.field_3548.addChild(modelPart);
+		ModelPart modelPart2 = new ModelPart(this, 2, 1);
+		modelPart2.addCuboid(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 3.0F);
+		modelPart2.setRotationPoint(0.0F, -4.5F, 5.0F);
+		this.field_3546.addChild(modelPart2);
+		ModelPart modelPart3 = new ModelPart(this, 0, 2);
+		modelPart3.addCuboid(0.0F, 0.0F, 0.0F, 0.0F, 2.0F, 4.0F);
+		modelPart3.setRotationPoint(0.0F, -4.5F, -1.0F);
+		this.field_3548.addChild(modelPart3);
 		this.field_3542 = new ModelPart(this, -4, 0);
 		this.field_3542.addCuboid(-2.0F, 0.0F, 0.0F, 2.0F, 0.0F, 2.0F);
 		this.field_3542.setRotationPoint(-1.5F, 21.5F, 0.0F);
@@ -53,13 +52,8 @@ public class SalmonEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		this.field_3546.render(k);
-		this.field_3548.render(k);
-		this.field_3547.render(k);
-		this.field_3542.render(k);
-		this.field_3544.render(k);
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3546, this.field_3548, this.field_3547, this.field_3542, this.field_3544);
 	}
 
 	@Override

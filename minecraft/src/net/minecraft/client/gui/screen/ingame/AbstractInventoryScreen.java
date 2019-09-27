@@ -52,7 +52,6 @@ public abstract class AbstractInventoryScreen<T extends Container> extends Abstr
 		Collection<StatusEffectInstance> collection = this.minecraft.player.getStatusEffects();
 		if (!collection.isEmpty()) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.disableLighting();
 			int j = 33;
 			if (collection.size() > 5) {
 				j = 132 / (collection.size() - 1);

@@ -1,19 +1,20 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PhantomEntityModel<T extends Entity> extends EntityModel<T> {
+public class PhantomEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart head;
 	private final ModelPart field_3477;
 	private final ModelPart field_3476;
 	private final ModelPart field_3474;
 	private final ModelPart field_3472;
-	private final ModelPart field_3478;
 	private final ModelPart field_3471;
 	private final ModelPart field_3473;
 
@@ -51,18 +52,18 @@ public class PhantomEntityModel<T extends Entity> extends EntityModel<T> {
 		this.field_3474.roll = -0.1F;
 		this.field_3472.roll = -0.1F;
 		this.head.pitch = -0.1F;
-		this.field_3478 = new ModelPart(this, 0, 0);
-		this.field_3478.addCuboid(-4.0F, -2.0F, -5.0F, 7.0F, 3.0F, 5.0F);
-		this.field_3478.setRotationPoint(0.0F, 1.0F, -7.0F);
-		this.field_3478.pitch = 0.2F;
-		this.head.addChild(this.field_3478);
+		ModelPart modelPart = new ModelPart(this, 0, 0);
+		modelPart.addCuboid(-4.0F, -2.0F, -5.0F, 7.0F, 3.0F, 5.0F);
+		modelPart.setRotationPoint(0.0F, 1.0F, -7.0F);
+		modelPart.pitch = 0.2F;
+		this.head.addChild(modelPart);
 		this.head.addChild(this.field_3477);
 		this.head.addChild(this.field_3474);
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.head.render(k);
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.head);
 	}
 
 	@Override

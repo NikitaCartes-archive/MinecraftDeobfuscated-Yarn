@@ -1,24 +1,26 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
@@ -33,100 +35,77 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		this.itemRenderer = itemRenderer;
 	}
 
-	public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h) {
-		RenderSystem.pushMatrix();
-		BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
-		double i = (double)blockPos.getX() - itemFrameEntity.x + d;
-		double j = (double)blockPos.getY() - itemFrameEntity.y + e;
-		double k = (double)blockPos.getZ() - itemFrameEntity.z + f;
-		RenderSystem.translated(i + 0.5, j + 0.5, k + 0.5);
-		RenderSystem.rotatef(itemFrameEntity.pitch, 1.0F, 0.0F, 0.0F);
-		RenderSystem.rotatef(180.0F - itemFrameEntity.yaw, 0.0F, 1.0F, 0.0F);
-		this.renderManager.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+	public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+		super.render(itemFrameEntity, d, e, f, g, h, arg, arg2);
+		arg.method_22903();
+		Direction direction = itemFrameEntity.getHorizontalFacing();
+		Vec3d vec3d = this.method_23174(itemFrameEntity, d, e, f, h);
+		arg.method_22904(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
+		double i = 0.46875;
+		arg.method_22904((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
+		arg.method_22907(Vector3f.field_20703.method_23214(itemFrameEntity.pitch, true));
+		arg.method_22907(Vector3f.field_20705.method_23214(180.0F - itemFrameEntity.yaw, true));
 		BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
 		BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
 		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(-0.5F, -0.5F, -0.5F);
-		if (this.renderOutlines) {
-			RenderSystem.enableColorMaterial();
-			RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(itemFrameEntity));
+		arg.method_22903();
+		arg.method_22904(-0.5, -0.5, -0.5);
+		int j = itemFrameEntity.getLightmapCoordinates();
+		blockRenderManager.getModelRenderer()
+			.render(arg.method_22910(), arg2.getBuffer(BlockRenderLayer.SOLID), null, bakedModelManager.getModel(modelIdentifier), 1.0F, 1.0F, 1.0F, j);
+		arg.method_22909();
+		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
+		if (!itemStack.isEmpty()) {
+			boolean bl = itemStack.getItem() == Items.FILLED_MAP;
+			arg.method_22904(0.0, 0.0, 0.4375);
+			int k = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
+			arg.method_22907(Vector3f.field_20707.method_23214((float)k * 360.0F / 8.0F, true));
+			if (bl) {
+				this.renderManager.textureManager.bindTexture(MAP_BACKGROUND_TEX);
+				arg.method_22907(Vector3f.field_20707.method_23214(180.0F, true));
+				float l = 0.0078125F;
+				arg.method_22905(0.0078125F, 0.0078125F, 0.0078125F);
+				arg.method_22904(-64.0, -64.0, 0.0);
+				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, itemFrameEntity.world);
+				arg.method_22904(0.0, 0.0, -1.0);
+				if (mapState != null) {
+					this.client.gameRenderer.getMapRenderer().draw(arg, arg2, mapState, true);
+				}
+			} else {
+				arg.method_22905(0.5F, 0.5F, 0.5F);
+				this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, arg, arg2);
+			}
 		}
 
-		blockRenderManager.getModelRenderer().render(bakedModelManager.getModel(modelIdentifier), 1.0F, 1.0F, 1.0F, 1.0F);
-		if (this.renderOutlines) {
-			RenderSystem.tearDownSolidRenderingTextureCombine();
-			RenderSystem.disableColorMaterial();
-		}
+		arg.method_22909();
+	}
 
-		RenderSystem.popMatrix();
-		RenderSystem.enableLighting();
-		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
-			RenderSystem.pushLightingAttributes();
-			GuiLighting.enable();
-		}
-
-		RenderSystem.translatef(0.0F, 0.0F, 0.4375F);
-		this.renderItem(itemFrameEntity);
-		if (itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP) {
-			GuiLighting.disable();
-			RenderSystem.popAttributes();
-		}
-
-		RenderSystem.enableLighting();
-		RenderSystem.popMatrix();
-		this.method_3995(
-			itemFrameEntity,
-			d + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3F),
-			e - 0.25,
-			f + (double)((float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3F)
+	public Vec3d method_23174(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g) {
+		return new Vec3d(
+			(double)((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3F),
+			-0.25,
+			(double)((float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3F)
 		);
 	}
 
-	@Nullable
-	protected Identifier method_3993(ItemFrameEntity itemFrameEntity) {
-		return null;
+	public Identifier method_3993(ItemFrameEntity itemFrameEntity) {
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 
-	private void renderItem(ItemFrameEntity itemFrameEntity) {
-		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
-		if (!itemStack.isEmpty()) {
-			RenderSystem.pushMatrix();
-			boolean bl = itemStack.getItem() == Items.FILLED_MAP;
-			int i = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-			RenderSystem.rotatef((float)i * 360.0F / 8.0F, 0.0F, 0.0F, 1.0F);
-			if (bl) {
-				RenderSystem.disableLighting();
-				this.renderManager.textureManager.bindTexture(MAP_BACKGROUND_TEX);
-				RenderSystem.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-				float f = 0.0078125F;
-				RenderSystem.scalef(0.0078125F, 0.0078125F, 0.0078125F);
-				RenderSystem.translatef(-64.0F, -64.0F, 0.0F);
-				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, itemFrameEntity.world);
-				RenderSystem.translatef(0.0F, 0.0F, -1.0F);
-				if (mapState != null) {
-					this.client.gameRenderer.getMapRenderer().draw(mapState, true);
-				}
-			} else {
-				RenderSystem.scalef(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.renderItem(itemStack, ModelTransformation.Type.FIXED);
-			}
-
-			RenderSystem.popMatrix();
-		}
-	}
-
-	protected void method_3995(ItemFrameEntity itemFrameEntity, double d, double e, double f) {
+	protected boolean method_23176(ItemFrameEntity itemFrameEntity) {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()
 			&& this.renderManager.targetedEntity == itemFrameEntity) {
-			double g = itemFrameEntity.squaredDistanceTo(this.renderManager.camera.getPos());
-			float h = itemFrameEntity.method_21751() ? 32.0F : 64.0F;
-			if (!(g >= (double)(h * h))) {
-				String string = itemFrameEntity.getHeldItemStack().getName().asFormattedString();
-				this.renderLabel(itemFrameEntity, string, d, e, f, 64);
-			}
+			double d = this.renderManager.method_23168(itemFrameEntity);
+			float f = itemFrameEntity.method_21751() ? 32.0F : 64.0F;
+			return d < (double)(f * f);
+		} else {
+			return false;
 		}
+	}
+
+	protected void method_23175(ItemFrameEntity itemFrameEntity, String string, class_4587 arg, class_4597 arg2) {
+		super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName().asFormattedString(), arg, arg2);
 	}
 }

@@ -8,13 +8,36 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class FloatTag extends AbstractNumberTag {
-	private float value;
+	public static final FloatTag ZERO = new FloatTag(0.0F);
+	public static final TagReader<FloatTag> READER = new TagReader<FloatTag>() {
+		public FloatTag method_23245(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+			positionTracker.add(96L);
+			return FloatTag.of(dataInput.readFloat());
+		}
 
-	FloatTag() {
+		@Override
+		public String getCrashReportName() {
+			return "FLOAT";
+		}
+
+		@Override
+		public String getCommandFeedbackName() {
+			return "TAG_Float";
+		}
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+	};
+	private final float value;
+
+	private FloatTag(float f) {
+		this.value = f;
 	}
 
-	public FloatTag(float f) {
-		this.value = f;
+	public static FloatTag of(float f) {
+		return f == 0.0F ? ZERO : new FloatTag(f);
 	}
 
 	@Override
@@ -23,14 +46,13 @@ public class FloatTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public void read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-		positionTracker.add(96L);
-		this.value = dataInput.readFloat();
+	public byte getType() {
+		return 5;
 	}
 
 	@Override
-	public byte getType() {
-		return 5;
+	public TagReader<FloatTag> getReader() {
+		return READER;
 	}
 
 	@Override
@@ -39,7 +61,7 @@ public class FloatTag extends AbstractNumberTag {
 	}
 
 	public FloatTag method_10587() {
-		return new FloatTag(this.value);
+		return this;
 	}
 
 	public boolean equals(Object object) {

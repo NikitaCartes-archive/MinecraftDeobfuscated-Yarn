@@ -1,12 +1,14 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class LeashEntityModel<T extends Entity> extends EntityModel<T> {
+public class LeashEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_3431;
 
 	public LeashEntityModel() {
@@ -22,14 +24,12 @@ public class LeashEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		this.field_3431.render(k);
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3431);
 	}
 
 	@Override
 	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		super.setAngles(entity, f, g, h, i, j, k);
 		this.field_3431.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3431.pitch = j * (float) (Math.PI / 180.0);
 	}

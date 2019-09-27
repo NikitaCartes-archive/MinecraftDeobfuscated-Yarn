@@ -1,8 +1,6 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Multimap;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -48,12 +46,6 @@ public class TridentItem extends Item {
 	@Override
 	public int getMaxUseTime(ItemStack itemStack) {
 		return 72000;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
-		return false;
 	}
 
 	@Override
@@ -120,12 +112,12 @@ public class TridentItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-			return TypedActionResult.method_22431(itemStack);
+			return TypedActionResult.fail(itemStack);
 		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
-			return TypedActionResult.method_22431(itemStack);
+			return TypedActionResult.fail(itemStack);
 		} else {
 			playerEntity.setCurrentHand(hand);
-			return TypedActionResult.method_22428(itemStack);
+			return TypedActionResult.successWithoutSwing(itemStack);
 		}
 	}
 

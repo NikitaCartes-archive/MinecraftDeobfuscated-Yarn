@@ -20,7 +20,7 @@ public class SwimGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (this.mob.getRand().nextFloat() < 0.8F) {
+		if (this.mob.getRandom().nextFloat() < 0.8F) {
 			this.mob.getJumpControl().setActive();
 		}
 	}

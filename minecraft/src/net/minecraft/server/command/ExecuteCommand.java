@@ -269,7 +269,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> new IntTag((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
+														i -> IntTag.of((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														bl
 													)
 											)
@@ -285,7 +285,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> new FloatTag((float)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
+														i -> FloatTag.of((float)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														bl
 													)
 											)
@@ -301,7 +301,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> new ShortTag((short)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
+														i -> ShortTag.of((short)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
 														bl
 													)
 											)
@@ -317,7 +317,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> new LongTag((long)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
+														i -> LongTag.of((long)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														bl
 													)
 											)
@@ -333,7 +333,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> new DoubleTag((double)i * DoubleArgumentType.getDouble(commandContext, "scale")),
+														i -> DoubleTag.of((double)i * DoubleArgumentType.getDouble(commandContext, "scale")),
 														bl
 													)
 											)
@@ -349,7 +349,7 @@ public class ExecuteCommand {
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
 														NbtPathArgumentType.getNbtPath(commandContext, "path"),
-														i -> new ByteTag((byte)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
+														i -> ByteTag.of((byte)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
 														bl
 													)
 											)

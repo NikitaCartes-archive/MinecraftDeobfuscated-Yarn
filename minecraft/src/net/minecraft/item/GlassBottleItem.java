@@ -35,25 +35,25 @@ public class GlassBottleItem extends Item {
 			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity)list.get(0);
 			areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5F);
 			world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-			return TypedActionResult.method_22427(this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
+			return TypedActionResult.successWithSwing(this.fill(itemStack, playerEntity, new ItemStack(Items.DRAGON_BREATH)));
 		} else {
 			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
 			if (hitResult.getType() == HitResult.Type.MISS) {
-				return TypedActionResult.method_22430(itemStack);
+				return TypedActionResult.pass(itemStack);
 			} else {
 				if (hitResult.getType() == HitResult.Type.BLOCK) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					if (!world.canPlayerModifyAt(playerEntity, blockPos)) {
-						return TypedActionResult.method_22430(itemStack);
+						return TypedActionResult.pass(itemStack);
 					}
 
 					if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
 						world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-						return TypedActionResult.method_22427(this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
+						return TypedActionResult.successWithSwing(this.fill(itemStack, playerEntity, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));
 					}
 				}
 
-				return TypedActionResult.method_22430(itemStack);
+				return TypedActionResult.pass(itemStack);
 			}
 		}
 	}

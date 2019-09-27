@@ -20,7 +20,7 @@ public class IronGolemLookGoal extends Goal {
 	public boolean canStart() {
 		if (!this.golem.world.isDaylight()) {
 			return false;
-		} else if (this.golem.getRand().nextInt(8000) != 0) {
+		} else if (this.golem.getRandom().nextInt(8000) != 0) {
 			return false;
 		} else {
 			this.targetVillager = this.golem

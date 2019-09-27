@@ -77,7 +77,8 @@ public class DirectConnectScreen extends Screen {
 	}
 
 	private void onAddressFieldChanged() {
-		this.selectServerButton.active = !this.addressField.getText().isEmpty() && this.addressField.getText().split(":").length > 0;
+		String string = this.addressField.getText();
+		this.selectServerButton.active = !string.isEmpty() && string.split(":").length > 0 && string.indexOf(32) == -1;
 	}
 
 	@Override

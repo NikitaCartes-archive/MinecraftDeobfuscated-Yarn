@@ -69,7 +69,7 @@ public class FishingRodItem extends Item {
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		return TypedActionResult.method_22427(itemStack);
+		return TypedActionResult.successWithSwing(itemStack);
 	}
 
 	@Override

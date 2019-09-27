@@ -41,7 +41,7 @@ public class HoldInHandsGoal<T extends MobEntity> extends Goal {
 	public void stop() {
 		this.actor.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		if (this.sound != null) {
-			this.actor.playSound(this.sound, 1.0F, this.actor.getRand().nextFloat() * 0.2F + 0.9F);
+			this.actor.playSound(this.sound, 1.0F, this.actor.getRandom().nextFloat() * 0.2F + 0.9F);
 		}
 	}
 }

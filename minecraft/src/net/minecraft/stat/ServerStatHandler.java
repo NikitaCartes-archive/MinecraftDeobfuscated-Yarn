@@ -84,30 +84,30 @@ public class ServerStatHandler extends StatHandler {
 				JsonElement jsonElement = Streams.parse(jsonReader);
 				if (!jsonElement.isJsonNull()) {
 					CompoundTag compoundTag = jsonToCompound(jsonElement.getAsJsonObject());
-					if (!compoundTag.containsKey("DataVersion", 99)) {
+					if (!compoundTag.contains("DataVersion", 99)) {
 						compoundTag.putInt("DataVersion", 1343);
 					}
 
 					compoundTag = NbtHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"));
-					if (compoundTag.containsKey("stats", 10)) {
+					if (compoundTag.contains("stats", 10)) {
 						CompoundTag compoundTag2 = compoundTag.getCompound("stats");
 
 						for(String string2 : compoundTag2.getKeys()) {
-							if (compoundTag2.containsKey(string2, 10)) {
+							if (compoundTag2.contains(string2, 10)) {
 								SystemUtil.ifPresentOrElse(
 									Registry.STAT_TYPE.getOrEmpty(new Identifier(string2)),
 									statType -> {
 										CompoundTag compoundTag2xx = compoundTag2.getCompound(string2);
 	
 										for(String string2xx : compoundTag2xx.getKeys()) {
-											if (compoundTag2xx.containsKey(string2xx, 99)) {
+											if (compoundTag2xx.contains(string2xx, 99)) {
 												SystemUtil.ifPresentOrElse(
 													this.createStat(statType, string2xx),
 													stat -> this.statMap.put(stat, compoundTag2x.getInt(string2x)),
 													() -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string2x)
 												);
 											} else {
-												LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compoundTag2xx.getTag(string2xx), string2xx);
+												LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compoundTag2xx.get(string2xx), string2xx);
 											}
 										}
 									},

@@ -1,11 +1,14 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
@@ -70,42 +73,21 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void method_17088(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17088(livingEntity, f, g, h, i, j, k);
-		RenderSystem.pushMatrix();
-		if (this.isChild) {
-			float l = 2.0F;
-			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
-			RenderSystem.translatef(0.0F, 24.0F * k, 0.0F);
-			this.leftLegOverlay.render(k);
-			this.rightLegOverlay.render(k);
-			this.leftArmOverlay.render(k);
-			this.rightArmOverlay.render(k);
-			this.bodyOverlay.render(k);
-		} else {
-			if (livingEntity.isInSneakingPose()) {
-				RenderSystem.translatef(0.0F, 0.2F, 0.0F);
-			}
-
-			this.leftLegOverlay.render(k);
-			this.rightLegOverlay.render(k);
-			this.leftArmOverlay.render(k);
-			this.rightArmOverlay.render(k);
-			this.bodyOverlay.render(k);
-		}
-
-		RenderSystem.popMatrix();
+	protected Iterable<ModelPart> method_22948() {
+		return Iterables.concat(
+			super.method_22948(), ImmutableList.of(this.leftLegOverlay, this.rightLegOverlay, this.leftArmOverlay, this.rightArmOverlay, this.bodyOverlay)
+		);
 	}
 
-	public void renderEars(float f) {
+	public void renderEars(class_4587 arg, class_4588 arg2, float f, int i) {
 		this.ears.copyRotation(this.head);
 		this.ears.rotationPointX = 0.0F;
 		this.ears.rotationPointY = 0.0F;
-		this.ears.render(f);
+		this.ears.method_22698(arg, arg2, f, i, null);
 	}
 
-	public void renderCape(float f) {
-		this.cape.render(f);
+	public void renderCape(class_4587 arg, class_4588 arg2, float f, int i) {
+		this.cape.method_22698(arg, arg2, f, i, null);
 	}
 
 	@Override
@@ -136,15 +118,15 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm) {
+	public void setArmAngle(float f, Arm arm, class_4587 arg) {
 		ModelPart modelPart = this.getArm(arm);
 		if (this.thinArms) {
 			float g = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);
 			modelPart.rotationPointX += g;
-			modelPart.applyTransform(f);
+			modelPart.method_22703(arg, f);
 			modelPart.rotationPointX -= g;
 		} else {
-			modelPart.applyTransform(f);
+			modelPart.method_22703(arg, f);
 		}
 	}
 

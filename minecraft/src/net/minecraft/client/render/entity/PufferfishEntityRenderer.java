@@ -1,9 +1,9 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.LargePufferfishEntityModel;
 import net.minecraft.client.render.entity.model.MediumPufferfishEntityModel;
@@ -25,12 +25,11 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 		this.field_4765 = 3;
 	}
 
-	@Nullable
-	protected Identifier method_4096(PufferfishEntity pufferfishEntity) {
+	public Identifier method_4096(PufferfishEntity pufferfishEntity) {
 		return SKIN;
 	}
 
-	public void method_4094(PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h) {
+	public void method_4094(PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
 		int i = pufferfishEntity.getPuffState();
 		if (i != this.field_4765) {
 			if (i == 0) {
@@ -44,11 +43,11 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 
 		this.field_4765 = i;
 		this.field_4673 = 0.1F + 0.1F * (float)i;
-		super.method_4072(pufferfishEntity, d, e, f, g, h);
+		super.method_4072(pufferfishEntity, d, e, f, g, h, arg, arg2);
 	}
 
-	protected void method_4095(PufferfishEntity pufferfishEntity, float f, float g, float h) {
-		RenderSystem.translatef(0.0F, MathHelper.cos(f * 0.05F) * 0.08F, 0.0F);
-		super.setupTransforms(pufferfishEntity, f, g, h);
+	protected void method_4095(PufferfishEntity pufferfishEntity, class_4587 arg, float f, float g, float h) {
+		arg.method_22904(0.0, (double)(MathHelper.cos(f * 0.05F) * 0.08F), 0.0);
+		super.setupTransforms(pufferfishEntity, arg, f, g, h);
 	}
 }

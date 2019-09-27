@@ -1,14 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class OcelotEntityModel<T extends Entity> extends EntityModel<T> {
+public class OcelotEntityModel<T extends Entity> extends class_4592<T> {
 	protected final ModelPart frontLegLeft;
 	protected final ModelPart frontLegRight;
 	protected final ModelPart backLegLeft;
@@ -20,6 +21,7 @@ public class OcelotEntityModel<T extends Entity> extends EntityModel<T> {
 	protected int animationState = 1;
 
 	public OcelotEntityModel(float f) {
+		super(true, 10.0F, 4.0F);
 		this.head = new ModelPart(this);
 		this.head.addCuboid("main", -2.5F, -2.0F, -3.0F, 5, 4, 5, f, 0, 0);
 		this.head.addCuboid("nose", -1.5F, 0.0F, -4.0F, 3, 2, 2, f, 0, 24);
@@ -51,36 +53,13 @@ public class OcelotEntityModel<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		if (this.isChild) {
-			float l = 2.0F;
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.75F, 0.75F, 0.75F);
-			RenderSystem.translatef(0.0F, 10.0F * k, 4.0F * k);
-			this.head.render(k);
-			RenderSystem.popMatrix();
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.5F, 0.5F, 0.5F);
-			RenderSystem.translatef(0.0F, 24.0F * k, 0.0F);
-			this.body.render(k);
-			this.frontLegLeft.render(k);
-			this.frontLegRight.render(k);
-			this.backLegLeft.render(k);
-			this.backLegRight.render(k);
-			this.tail1.render(k);
-			this.tail2.render(k);
-			RenderSystem.popMatrix();
-		} else {
-			this.head.render(k);
-			this.body.render(k);
-			this.tail1.render(k);
-			this.tail2.render(k);
-			this.frontLegLeft.render(k);
-			this.frontLegRight.render(k);
-			this.backLegLeft.render(k);
-			this.backLegRight.render(k);
-		}
+	protected Iterable<ModelPart> method_22946() {
+		return ImmutableList.<ModelPart>of(this.head);
+	}
+
+	@Override
+	protected Iterable<ModelPart> method_22948() {
+		return ImmutableList.<ModelPart>of(this.body, this.frontLegLeft, this.frontLegRight, this.backLegLeft, this.backLegRight, this.tail1, this.tail2);
 	}
 
 	@Override

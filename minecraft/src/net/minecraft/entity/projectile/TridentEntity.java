@@ -150,7 +150,7 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected SoundEvent getSound() {
+	protected SoundEvent getHitSound() {
 		return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
 	}
 
@@ -165,7 +165,7 @@ public class TridentEntity extends ProjectileEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Trident", 10)) {
+		if (compoundTag.contains("Trident", 10)) {
 			this.tridentStack = ItemStack.fromTag(compoundTag.getCompound("Trident"));
 		}
 

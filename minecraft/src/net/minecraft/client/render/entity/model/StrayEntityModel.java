@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
@@ -74,11 +75,11 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm) {
+	public void setArmAngle(float f, Arm arm, class_4587 arg) {
 		float g = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		ModelPart modelPart = this.getArm(arm);
 		modelPart.rotationPointX += g;
-		modelPart.applyTransform(f);
+		modelPart.method_22703(arg, f);
 		modelPart.rotationPointX -= g;
 	}
 }

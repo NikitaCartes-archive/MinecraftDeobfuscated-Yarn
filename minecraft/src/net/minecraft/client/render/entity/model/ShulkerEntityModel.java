@@ -1,13 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ShulkerEntityModel<T extends ShulkerEntity> extends EntityModel<T> {
+public class ShulkerEntityModel<T extends ShulkerEntity> extends class_4595<T> {
 	private final ModelPart field_3553;
 	private final ModelPart field_3555 = new ModelPart(64, 64, 0, 0);
 	private final ModelPart field_3554;
@@ -43,9 +45,9 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends EntityModel<T> 
 		this.field_3554.yaw = i * (float) (Math.PI / 180.0);
 	}
 
-	public void method_17123(T shulkerEntity, float f, float g, float h, float i, float j, float k) {
-		this.field_3553.render(k);
-		this.field_3555.render(k);
+	@Override
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3553, this.field_3555);
 	}
 
 	public ModelPart method_2831() {

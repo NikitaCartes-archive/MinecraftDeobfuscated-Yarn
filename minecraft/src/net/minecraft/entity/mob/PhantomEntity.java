@@ -163,7 +163,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("AX")) {
+		if (compoundTag.contains("AX")) {
 			this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
 		}
 

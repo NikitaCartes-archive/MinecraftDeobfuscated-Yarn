@@ -16,7 +16,7 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.Texture;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.resource.Resource;
@@ -151,7 +151,7 @@ public class ShaderEffect implements AutoCloseable {
 							}
 
 							textureManager.bindTexture(identifier);
-							Texture texture = textureManager.getTexture(identifier);
+							AbstractTexture abstractTexture = textureManager.getTexture(identifier);
 							int j = JsonHelper.getInt(jsonObject2, "width");
 							int k = JsonHelper.getInt(jsonObject2, "height");
 							boolean bl = JsonHelper.getBoolean(jsonObject2, "bilinear");
@@ -163,7 +163,7 @@ public class ShaderEffect implements AutoCloseable {
 								RenderSystem.texParameter(3553, 10240, 9728);
 							}
 
-							postProcessShader.addAuxTarget(string4, texture.getGlId(), j, k);
+							postProcessShader.addAuxTarget(string4, abstractTexture.getGlId(), j, k);
 						} else {
 							postProcessShader.addAuxTarget(string4, glFramebuffer3, glFramebuffer3.texWidth, glFramebuffer3.texHeight);
 						}

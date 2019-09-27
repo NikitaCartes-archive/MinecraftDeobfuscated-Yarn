@@ -86,12 +86,12 @@ public class PolarBearEntity extends AnimalEntity {
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
 	}
 
-	public static boolean method_20668(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
+	public static boolean canSpawn(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
 		Biome biome = iWorld.getBiome(blockPos);
 		if (biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN) {
 			return isValidNaturalSpawn(entityType, iWorld, spawnType, blockPos, random);
 		} else {
-			return iWorld.getBaseLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.ICE;
+			return iWorld.getBaseLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.ICE;
 		}
 	}
 

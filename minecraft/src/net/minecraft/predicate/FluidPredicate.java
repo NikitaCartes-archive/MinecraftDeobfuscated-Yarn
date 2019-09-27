@@ -32,6 +32,8 @@ public class FluidPredicate {
 	public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
 		if (this == ANY) {
 			return true;
+		} else if (!serverWorld.canSetBlock(blockPos)) {
+			return false;
 		} else {
 			FluidState fluidState = serverWorld.getFluidState(blockPos);
 			Fluid fluid = fluidState.getFluid();

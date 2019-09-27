@@ -77,7 +77,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return arg.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
+		return arg.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.GRASS_BLOCK && iWorld.getBaseLightLevel(blockPos, 0) > 8;
+		return iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK && iWorld.getBaseLightLevel(blockPos, 0) > 8;
 	}
 
 	@Override

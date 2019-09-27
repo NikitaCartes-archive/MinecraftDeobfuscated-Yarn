@@ -215,7 +215,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		super.readCustomDataFromTag(compoundTag);
 		this.wave = compoundTag.getInt("Wave");
 		this.ableToJoinRaid = compoundTag.getBoolean("CanJoinRaid");
-		if (compoundTag.containsKey("RaidId", 3)) {
+		if (compoundTag.contains("RaidId", 3)) {
 			if (this.world instanceof ServerWorld) {
 				this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(compoundTag.getInt("RaidId"));
 			}

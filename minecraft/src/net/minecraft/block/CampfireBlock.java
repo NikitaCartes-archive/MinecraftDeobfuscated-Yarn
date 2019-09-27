@@ -112,7 +112,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		boolean bl = iWorld.getFluidState(blockPos).getFluid() == Fluids.WATER;
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(bl))
-			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down()))))
+			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.method_10074()))))
 			.with(LIT, Boolean.valueOf(!bl))
 			.with(FACING, itemPlacementContext.getPlayerFacing());
 	}

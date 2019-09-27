@@ -20,7 +20,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	) {
 		if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.up()).getBlock())) {
 			return false;
-		} else if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.down()).getBlock())) {
+		} else if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.method_10074()).getBlock())) {
 			return false;
 		} else {
 			BlockState blockState = iWorld.getBlockState(blockPos);

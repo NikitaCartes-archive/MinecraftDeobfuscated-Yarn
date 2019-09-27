@@ -17,7 +17,13 @@ public class LightPredicate {
 	}
 
 	public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
-		return this.range.test(serverWorld.getLightLevel(blockPos));
+		if (this == ANY) {
+			return true;
+		} else if (!serverWorld.canSetBlock(blockPos)) {
+			return false;
+		} else {
+			return this.range.test(serverWorld.getLightLevel(blockPos));
+		}
 	}
 
 	public JsonElement toJson() {

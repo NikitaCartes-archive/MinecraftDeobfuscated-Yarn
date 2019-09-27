@@ -31,7 +31,7 @@ public class KnowledgeBookItem extends Item {
 			playerEntity.setStackInHand(hand, ItemStack.EMPTY);
 		}
 
-		if (compoundTag != null && compoundTag.containsKey("Recipes", 9)) {
+		if (compoundTag != null && compoundTag.contains("Recipes", 9)) {
 			if (!world.isClient) {
 				ListTag listTag = compoundTag.getList("Recipes", 8);
 				List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
@@ -42,7 +42,7 @@ public class KnowledgeBookItem extends Item {
 					Optional<? extends Recipe<?>> optional = recipeManager.get(new Identifier(string));
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", string);
-						return TypedActionResult.method_22431(itemStack);
+						return TypedActionResult.fail(itemStack);
 					}
 
 					list.add(optional.get());
@@ -52,10 +52,10 @@ public class KnowledgeBookItem extends Item {
 				playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			}
 
-			return TypedActionResult.method_22427(itemStack);
+			return TypedActionResult.successWithSwing(itemStack);
 		} else {
 			LOGGER.error("Tag not valid: {}", compoundTag);
-			return TypedActionResult.method_22431(itemStack);
+			return TypedActionResult.fail(itemStack);
 		}
 	}
 }

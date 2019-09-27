@@ -13,7 +13,6 @@ import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -143,9 +142,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	private void renderStatItem(int i, int j, Item item) {
 		this.renderIcon(i + 1, j + 1, 0, 0);
 		RenderSystem.enableRescaleNormal();
-		GuiLighting.enableForItems();
 		this.itemRenderer.renderGuiItemIcon(item.getStackForRender(), i + 2, j + 2);
-		GuiLighting.disable();
 		RenderSystem.disableRescaleNormal();
 	}
 

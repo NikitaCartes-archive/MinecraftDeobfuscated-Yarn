@@ -36,7 +36,7 @@ public class ThornsEnchantment extends Enchantment {
 
 	@Override
 	public void onUserDamaged(LivingEntity livingEntity, Entity entity, int i) {
-		Random random = livingEntity.getRand();
+		Random random = livingEntity.getRandom();
 		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.THORNS, livingEntity);
 		if (shouldDamageAttacker(i, random)) {
 			if (entity != null) {

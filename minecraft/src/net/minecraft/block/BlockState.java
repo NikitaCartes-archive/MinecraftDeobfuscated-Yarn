@@ -120,11 +120,6 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().mirror(this, blockMirror);
 	}
 
-	@Environment(EnvType.CLIENT)
-	public boolean hasBlockEntityBreakingRender() {
-		return this.getBlock().hasBlockEntityBreakingRender(this);
-	}
-
 	public BlockRenderType getRenderType() {
 		return this.getBlock().getRenderType(this);
 	}

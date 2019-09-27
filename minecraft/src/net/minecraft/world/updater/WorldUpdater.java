@@ -132,9 +132,9 @@ public class WorldUpdater {
 
 								boolean bl3 = i < SharedConstants.getGameVersion().getWorldVersion();
 								if (this.eraseCache) {
-									bl3 = bl3 || compoundTag3.containsKey("Heightmaps");
+									bl3 = bl3 || compoundTag3.contains("Heightmaps");
 									compoundTag3.remove("Heightmaps");
-									bl3 = bl3 || compoundTag3.containsKey("isLightOn");
+									bl3 = bl3 || compoundTag3.contains("isLightOn");
 									compoundTag3.remove("isLightOn");
 								}
 

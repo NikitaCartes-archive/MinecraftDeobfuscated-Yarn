@@ -97,7 +97,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 				if (i >= CrossbowItem.getPullTime(itemStack)) {
 					this.actor.stopUsingItem();
 					this.stage = CrossbowAttackGoal.Stage.CHARGED;
-					this.field_16529 = 20 + this.actor.getRand().nextInt(20);
+					this.field_16529 = 20 + this.actor.getRandom().nextInt(20);
 					this.actor.setCharging(false);
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.CHARGED) {

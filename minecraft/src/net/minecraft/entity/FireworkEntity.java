@@ -102,9 +102,6 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 
 	@Override
 	public void tick() {
-		this.prevRenderX = this.x;
-		this.prevRenderY = this.y;
-		this.prevRenderZ = this.z;
 		super.tick();
 		if (this.wasShotByEntity()) {
 			if (this.shooter == null) {
@@ -312,7 +309,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 			this.dataTracker.set(ITEM, itemStack);
 		}
 
-		if (compoundTag.containsKey("ShotAtAngle")) {
+		if (compoundTag.contains("ShotAtAngle")) {
 			this.dataTracker.set(SHOT_AT_ANGLE, compoundTag.getBoolean("ShotAtAngle"));
 		}
 	}

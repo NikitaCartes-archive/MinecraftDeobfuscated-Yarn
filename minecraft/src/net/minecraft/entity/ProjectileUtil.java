@@ -174,7 +174,7 @@ public final class ProjectileUtil {
 	public static ProjectileEntity createArrowProjectile(LivingEntity livingEntity, ItemStack itemStack, float f) {
 		ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
 		ProjectileEntity projectileEntity = arrowItem.createArrow(livingEntity.world, itemStack, livingEntity);
-		projectileEntity.method_7435(livingEntity, f);
+		projectileEntity.applyEnchantmentEffects(livingEntity, f);
 		if (itemStack.getItem() == Items.TIPPED_ARROW && projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).initFromStack(itemStack);
 		}

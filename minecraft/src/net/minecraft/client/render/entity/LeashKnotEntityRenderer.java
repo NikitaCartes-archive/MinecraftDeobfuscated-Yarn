@@ -1,8 +1,12 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4588;
+import net.minecraft.class_4597;
+import net.minecraft.class_4608;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.render.entity.model.LeashEntityModel;
 import net.minecraft.entity.decoration.LeadKnotEntity;
 import net.minecraft.util.Identifier;
@@ -16,31 +20,21 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h) {
-		RenderSystem.pushMatrix();
-		RenderSystem.disableCull();
-		RenderSystem.translatef((float)d, (float)e, (float)f);
+	public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+		arg.method_22903();
 		float i = 0.0625F;
-		RenderSystem.enableRescaleNormal();
-		RenderSystem.scalef(-1.0F, -1.0F, 1.0F);
-		RenderSystem.enableAlphaTest();
-		this.bindEntityTexture(leadKnotEntity);
-		if (this.renderOutlines) {
-			RenderSystem.enableColorMaterial();
-			RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(leadKnotEntity));
-		}
-
-		this.model.render(leadKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		if (this.renderOutlines) {
-			RenderSystem.tearDownSolidRenderingTextureCombine();
-			RenderSystem.disableColorMaterial();
-		}
-
-		RenderSystem.popMatrix();
-		super.render(leadKnotEntity, d, e, f, g, h);
+		arg.method_22905(-1.0F, -1.0F, 1.0F);
+		int j = leadKnotEntity.getLightmapCoordinates();
+		class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(SKIN));
+		class_4608.method_23211(lv);
+		this.model.setAngles(leadKnotEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+		this.model.method_22957(arg, lv, j);
+		lv.method_22923();
+		arg.method_22909();
+		super.render(leadKnotEntity, d, e, f, g, h, arg, arg2);
 	}
 
-	protected Identifier method_4036(LeadKnotEntity leadKnotEntity) {
+	public Identifier method_4036(LeadKnotEntity leadKnotEntity) {
 		return SKIN;
 	}
 }

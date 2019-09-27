@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
@@ -60,10 +59,8 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 			this.time += f;
 		}
 
-		GuiLighting.enableForItems();
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(BG_TEX);
-		RenderSystem.disableLighting();
 		int k = 29;
 		if (!this.results.hasCraftableRecipes()) {
 			k += 25;
@@ -98,9 +95,6 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		if (bl) {
 			RenderSystem.popMatrix();
 		}
-
-		RenderSystem.enableLighting();
-		GuiLighting.disable();
 	}
 
 	private List<Recipe<?>> getResults() {

@@ -39,7 +39,7 @@ public class ItemColors {
 				return -1;
 			} else {
 				CompoundTag compoundTag = itemStack.getSubTag("Explosion");
-				int[] is = compoundTag != null && compoundTag.containsKey("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
+				int[] is = compoundTag != null && compoundTag.contains("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
 				if (is == null) {
 					return 9079434;
 				} else if (is.length == 1) {

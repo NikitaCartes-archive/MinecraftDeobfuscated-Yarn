@@ -27,7 +27,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig
 		int k = blockPos.getY();
 		int l = blockPos.getZ();
 		if (k >= 1 && k + i + 1 < 256) {
-			BlockPos blockPos2 = blockPos.down();
+			BlockPos blockPos2 = blockPos.method_10074();
 			if (!isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2)) {
 				return false;
 			} else if (!this.doesTreeFit(modifiableTestableWorld, blockPos, i)) {

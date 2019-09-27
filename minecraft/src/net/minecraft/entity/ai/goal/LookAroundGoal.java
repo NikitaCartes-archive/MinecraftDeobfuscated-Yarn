@@ -16,7 +16,7 @@ public class LookAroundGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.getRand().nextFloat() < 0.02F;
+		return this.mob.getRandom().nextFloat() < 0.02F;
 	}
 
 	@Override
@@ -26,10 +26,10 @@ public class LookAroundGoal extends Goal {
 
 	@Override
 	public void start() {
-		double d = (Math.PI * 2) * this.mob.getRand().nextDouble();
+		double d = (Math.PI * 2) * this.mob.getRandom().nextDouble();
 		this.deltaX = Math.cos(d);
 		this.deltaZ = Math.sin(d);
-		this.lookTime = 20 + this.mob.getRand().nextInt(20);
+		this.lookTime = 20 + this.mob.getRandom().nextInt(20);
 	}
 
 	@Override

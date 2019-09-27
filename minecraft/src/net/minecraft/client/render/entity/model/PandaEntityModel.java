@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity.model;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -15,7 +14,7 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 	private float playAnimationProgress;
 
 	public PandaEntityModel(int i, float f) {
-		super(i, f);
+		super(i, f, true, 23.0F, 0.3F, 1.2F, 3.0F, 49);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 0, 6);
@@ -114,38 +113,6 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 			this.leg2.pitch = 0.5F * MathHelper.sin(h * 0.5F);
 			this.leg3.pitch = 0.5F * MathHelper.sin(h * 0.5F);
 			this.leg4.pitch = -0.5F * MathHelper.sin(h * 0.5F);
-		}
-	}
-
-	public void method_17104(T pandaEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17103(pandaEntity, f, g, h, i, j, k);
-		if (this.isChild) {
-			float l = 3.0F;
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, this.field_3540 * k, this.field_3537 * k);
-			RenderSystem.popMatrix();
-			RenderSystem.pushMatrix();
-			float m = 0.6F;
-			RenderSystem.scalef(0.5555555F, 0.5555555F, 0.5555555F);
-			RenderSystem.translatef(0.0F, 23.0F * k, 0.3F);
-			this.head.render(k);
-			RenderSystem.popMatrix();
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.33333334F, 0.33333334F, 0.33333334F);
-			RenderSystem.translatef(0.0F, 49.0F * k, 0.0F);
-			this.body.render(k);
-			this.leg1.render(k);
-			this.leg2.render(k);
-			this.leg3.render(k);
-			this.leg4.render(k);
-			RenderSystem.popMatrix();
-		} else {
-			this.head.render(k);
-			this.body.render(k);
-			this.leg1.render(k);
-			this.leg2.render(k);
-			this.leg3.render(k);
-			this.leg4.render(k);
 		}
 	}
 }

@@ -29,7 +29,7 @@ public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
 			(blockState2.isAir() || blockState2.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
 			blockState2 = iWorld.getBlockState(blockPos)
 		) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		int i = 0;

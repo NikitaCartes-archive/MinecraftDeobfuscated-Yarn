@@ -7,7 +7,5 @@ import net.fabricmc.api.Environment;
 public interface WindowEventHandler {
 	void onWindowFocusChanged(boolean bl);
 
-	void updateDisplay(boolean bl);
-
 	void onResolutionChanged();
 }

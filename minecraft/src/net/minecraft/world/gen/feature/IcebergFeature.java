@@ -209,7 +209,7 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 	}
 
 	private boolean method_13414(BlockView blockView, BlockPos blockPos) {
-		return blockView.getBlockState(blockPos.down()).getMaterial() == Material.AIR;
+		return blockView.getBlockState(blockPos.method_10074()).getMaterial() == Material.AIR;
 	}
 
 	private void method_13418(IWorld iWorld, BlockPos blockPos, int i, int j, boolean bl, int k) {

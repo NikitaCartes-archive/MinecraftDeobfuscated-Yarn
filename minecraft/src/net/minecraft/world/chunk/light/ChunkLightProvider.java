@@ -3,6 +3,8 @@ package net.minecraft.world.chunk.light;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -195,6 +197,11 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	@Override
 	public int getLightLevel(BlockPos blockPos) {
 		return this.lightStorage.getLight(blockPos.asLong());
+	}
+
+	@Environment(EnvType.CLIENT)
+	public String method_22875(long l) {
+		return "" + this.lightStorage.getLevel(l);
 	}
 
 	public void checkBlock(BlockPos blockPos) {

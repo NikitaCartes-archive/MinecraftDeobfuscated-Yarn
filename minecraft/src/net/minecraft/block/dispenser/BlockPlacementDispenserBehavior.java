@@ -18,7 +18,7 @@ public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavi
 		if (item instanceof BlockItem) {
 			Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
 			BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
-			Direction direction2 = blockPointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
+			Direction direction2 = blockPointer.getWorld().isAir(blockPos.method_10074()) ? direction : Direction.UP;
 			this.success = ((BlockItem)item).place(new AutomaticItemPlacementContext(blockPointer.getWorld(), blockPos, direction, itemStack, direction2))
 				== ActionResult.SUCCESS;
 		}

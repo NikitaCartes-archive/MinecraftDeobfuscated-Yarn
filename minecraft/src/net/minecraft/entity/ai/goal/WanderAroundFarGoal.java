@@ -24,7 +24,7 @@ public class WanderAroundFarGoal extends WanderAroundGoal {
 			Vec3d vec3d = TargetFinder.findGroundTarget(this.mob, 15, 7);
 			return vec3d == null ? super.getWanderTarget() : vec3d;
 		} else {
-			return this.mob.getRand().nextFloat() >= this.probability ? TargetFinder.findGroundTarget(this.mob, 10, 7) : super.getWanderTarget();
+			return this.mob.getRandom().nextFloat() >= this.probability ? TargetFinder.findGroundTarget(this.mob, 10, 7) : super.getWanderTarget();
 		}
 	}
 }

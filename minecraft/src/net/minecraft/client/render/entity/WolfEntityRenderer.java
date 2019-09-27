@@ -1,8 +1,9 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.entity.passive.WolfEntity;
@@ -23,16 +24,19 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 		return wolfEntity.method_6714();
 	}
 
-	public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h) {
+	public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
 		if (wolfEntity.isWet()) {
 			float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
-			RenderSystem.color3f(i, i, i);
+			this.model.method_22955(i, i, i);
 		}
 
-		super.method_4072(wolfEntity, d, e, f, g, h);
+		super.method_4072(wolfEntity, d, e, f, g, h, arg, arg2);
+		if (wolfEntity.isWet()) {
+			this.model.method_22955(1.0F, 1.0F, 1.0F);
+		}
 	}
 
-	protected Identifier method_4165(WolfEntity wolfEntity) {
+	public Identifier method_4165(WolfEntity wolfEntity) {
 		if (wolfEntity.isTamed()) {
 			return TAMED_SKIN;
 		} else {

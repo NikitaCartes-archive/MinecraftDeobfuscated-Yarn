@@ -60,7 +60,7 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 	}
 
 	private boolean replaceGround(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
+		BlockPos blockPos2 = blockPos.method_10074();
 		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2) && blockPos.getY() >= 2) {
 			this.setToDirt(modifiableTestableWorld, blockPos2);
 			this.setToDirt(modifiableTestableWorld, blockPos2.east());

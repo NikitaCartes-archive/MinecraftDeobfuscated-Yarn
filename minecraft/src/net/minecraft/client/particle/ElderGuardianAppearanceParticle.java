@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4588;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.EntityType;
@@ -41,10 +41,9 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
 		if (this.guardian != null) {
 			EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
-			entityRenderDispatcher.setRenderPosition(Particle.cameraX, Particle.cameraY, Particle.cameraZ);
 			float l = 1.0F / ElderGuardianEntity.field_17492;
 			float m = ((float)this.age + f) / (float)this.maxAge;
 			RenderSystem.depthMask(true);
@@ -52,7 +51,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 			RenderSystem.enableDepthTest();
 			RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
 			float n = 240.0F;
-			RenderSystem.glMultiTexCoord2f(33985, 240.0F, 240.0F);
+			RenderSystem.glMultiTexCoord2f(33986, 240.0F, 240.0F);
 			RenderSystem.pushMatrix();
 			float o = 0.05F + 0.5F * MathHelper.sin(m * (float) Math.PI);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, o);
@@ -65,7 +64,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 			this.guardian.headYaw = 0.0F;
 			this.guardian.prevYaw = 0.0F;
 			this.guardian.prevHeadYaw = 0.0F;
-			entityRenderDispatcher.render(this.guardian, 0.0, 0.0, 0.0, 0.0F, f, false);
+			entityRenderDispatcher.render(this.guardian, f);
 			RenderSystem.popMatrix();
 			RenderSystem.enableDepthTest();
 		}

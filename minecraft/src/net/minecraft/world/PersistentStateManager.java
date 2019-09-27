@@ -110,7 +110,7 @@ public class PersistentStateManager {
 				}
 			}
 
-			int j = compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
+			int j = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
 			var36 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
 		} catch (Throwable var33) {
 			var5 = var33;

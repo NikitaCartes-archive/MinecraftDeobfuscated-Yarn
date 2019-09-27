@@ -7,7 +7,6 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -124,7 +123,6 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		GuiLighting.disable();
 		this.drawCenteredString(this.font, I18n.translate("block.minecraft.beacon.primary"), 62, 10, 14737632);
 		this.drawCenteredString(this.font, I18n.translate("block.minecraft.beacon.secondary"), 169, 10, 14737632);
 
@@ -134,8 +132,6 @@ public class BeaconScreen extends AbstractContainerScreen<BeaconContainer> {
 				break;
 			}
 		}
-
-		GuiLighting.enableForItems();
 	}
 
 	@Override

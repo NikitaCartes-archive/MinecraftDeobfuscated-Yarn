@@ -81,7 +81,7 @@ public class EnderDragonFight {
 
 	public EnderDragonFight(ServerWorld serverWorld, CompoundTag compoundTag) {
 		this.world = serverWorld;
-		if (compoundTag.containsKey("DragonKilled", 99)) {
+		if (compoundTag.contains("DragonKilled", 99)) {
 			if (compoundTag.containsUuid("DragonUUID")) {
 				this.dragonUuid = compoundTag.getUuid("DragonUUID");
 			}
@@ -92,7 +92,7 @@ public class EnderDragonFight {
 				this.dragonSpawnState = EnderDragonSpawnState.START;
 			}
 
-			if (compoundTag.containsKey("ExitPortalLocation", 10)) {
+			if (compoundTag.contains("ExitPortalLocation", 10)) {
 				this.exitPortalLocation = NbtHelper.toBlockPos(compoundTag.getCompound("ExitPortalLocation"));
 			}
 		} else {
@@ -100,7 +100,7 @@ public class EnderDragonFight {
 			this.previouslyKilled = true;
 		}
 
-		if (compoundTag.containsKey("Gateways", 9)) {
+		if (compoundTag.contains("Gateways", 9)) {
 			ListTag listTag = compoundTag.getList("Gateways", 3);
 
 			for(int i = 0; i < listTag.size(); ++i) {
@@ -136,7 +136,7 @@ public class EnderDragonFight {
 		ListTag listTag = new ListTag();
 
 		for(int i : this.gateways) {
-			listTag.add(new IntTag(i));
+			listTag.add(IntTag.of(i));
 		}
 
 		compoundTag.put("Gateways", listTag);
@@ -377,10 +377,10 @@ public class EnderDragonFight {
 	private void generateEndPortal(boolean bl) {
 		EndPortalFeature endPortalFeature = new EndPortalFeature(bl);
 		if (this.exitPortalLocation == null) {
-			this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN).down();
+			this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN).method_10074();
 
 			while(this.world.getBlockState(this.exitPortalLocation).getBlock() == Blocks.BEDROCK && this.exitPortalLocation.getY() > this.world.getSeaLevel()) {
-				this.exitPortalLocation = this.exitPortalLocation.down();
+				this.exitPortalLocation = this.exitPortalLocation.method_10074();
 			}
 		}
 
@@ -451,7 +451,7 @@ public class EnderDragonFight {
 			BlockPos blockPos2 = blockPos.up(1);
 
 			for(Direction direction : Direction.Type.HORIZONTAL) {
-				List<EnderCrystalEntity> list2 = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, new Box(blockPos2.offset(direction, 2)));
+				List<EnderCrystalEntity> list2 = this.world.getNonSpectatingEntities(EnderCrystalEntity.class, new Box(blockPos2.method_10079(direction, 2)));
 				if (list2.isEmpty()) {
 					return;
 				}

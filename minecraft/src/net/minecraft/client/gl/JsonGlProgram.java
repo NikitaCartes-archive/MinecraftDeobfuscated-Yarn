@@ -15,7 +15,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.Texture;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -256,8 +256,8 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 				int j = -1;
 				if (object instanceof GlFramebuffer) {
 					j = ((GlFramebuffer)object).colorAttachment;
-				} else if (object instanceof Texture) {
-					j = ((Texture)object).getGlId();
+				} else if (object instanceof AbstractTexture) {
+					j = ((AbstractTexture)object).getGlId();
 				} else if (object instanceof Integer) {
 					j = (Integer)object;
 				}

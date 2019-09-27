@@ -30,7 +30,7 @@ public class GoToVillageGoal extends Goal {
 			return false;
 		} else if (this.mob.world.isDaylight()) {
 			return false;
-		} else if (this.mob.getRand().nextInt(this.searchRange) != 0) {
+		} else if (this.mob.getRandom().nextInt(this.searchRange) != 0) {
 			return false;
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.mob.world;
@@ -72,7 +72,7 @@ public class GoToVillageGoal extends Goal {
 	}
 
 	private void findOtherWaypoint() {
-		Random random = this.mob.getRand();
+		Random random = this.mob.getRandom();
 		BlockPos blockPos = this.mob
 			.world
 			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));

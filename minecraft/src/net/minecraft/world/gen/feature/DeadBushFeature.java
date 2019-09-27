@@ -26,7 +26,7 @@ public class DeadBushFeature extends Feature<DefaultFeatureConfig> {
 			(blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
 			blockState = iWorld.getBlockState(blockPos)
 		) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		BlockState blockState2 = DEAD_BUSH.getDefaultState();

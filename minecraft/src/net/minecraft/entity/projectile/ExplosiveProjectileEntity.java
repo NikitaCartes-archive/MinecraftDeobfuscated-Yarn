@@ -138,7 +138,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		if (compoundTag.containsKey("power", 9)) {
+		if (compoundTag.contains("power", 9)) {
 			ListTag listTag = compoundTag.getList("power", 6);
 			if (listTag.size() == 3) {
 				this.posX = listTag.getDouble(0);
@@ -148,7 +148,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		}
 
 		this.life = compoundTag.getInt("life");
-		if (compoundTag.containsKey("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
+		if (compoundTag.contains("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
 			ListTag listTag = compoundTag.getList("direction", 6);
 			this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 		} else {

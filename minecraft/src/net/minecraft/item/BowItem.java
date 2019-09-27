@@ -61,7 +61,7 @@ public class BowItem extends RangedWeaponItem {
 
 						int l = EnchantmentHelper.getLevel(Enchantments.PUNCH, itemStack);
 						if (l > 0) {
-							projectileEntity.method_7449(l);
+							projectileEntity.setPunch(l);
 						}
 
 						if (EnchantmentHelper.getLevel(Enchantments.FLAME, itemStack) > 0) {
@@ -125,9 +125,9 @@ public class BowItem extends RangedWeaponItem {
 		boolean bl = !playerEntity.getArrowType(itemStack).isEmpty();
 		if (playerEntity.abilities.creativeMode || bl) {
 			playerEntity.setCurrentHand(hand);
-			return TypedActionResult.method_22428(itemStack);
+			return TypedActionResult.successWithoutSwing(itemStack);
 		} else {
-			return bl ? TypedActionResult.method_22430(itemStack) : TypedActionResult.method_22431(itemStack);
+			return bl ? TypedActionResult.pass(itemStack) : TypedActionResult.fail(itemStack);
 		}
 	}
 

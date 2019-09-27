@@ -36,7 +36,7 @@ public class HotbarStorage {
 				return;
 			}
 
-			if (!compoundTag.containsKey("DataVersion", 99)) {
+			if (!compoundTag.contains("DataVersion", 99)) {
 				compoundTag.putInt("DataVersion", 1343);
 			}
 

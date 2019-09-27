@@ -9,8 +9,10 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class Transformation {
@@ -23,6 +25,23 @@ public class Transformation {
 		this.rotation = new Vector3f(vector3f);
 		this.translation = new Vector3f(vector3f2);
 		this.scale = new Vector3f(vector3f3);
+	}
+
+	public void method_23075(boolean bl, class_4587 arg) {
+		if (this != NONE) {
+			float f = this.rotation.getX();
+			float g = this.rotation.getY();
+			float h = this.rotation.getZ();
+			if (bl) {
+				g = -g;
+				h = -h;
+			}
+
+			int i = bl ? -1 : 1;
+			arg.method_22904((double)((float)i * this.translation.getX()), (double)this.translation.getY(), (double)this.translation.getZ());
+			arg.method_22907(new Quaternion(f, g, h, true));
+			arg.method_22905(this.scale.getX(), this.scale.getY(), this.scale.getZ());
+		}
 	}
 
 	public boolean equals(Object object) {

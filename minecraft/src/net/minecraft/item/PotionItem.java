@@ -83,7 +83,7 @@ public class PotionItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		playerEntity.setCurrentHand(hand);
-		return TypedActionResult.method_22427(playerEntity.getStackInHand(hand));
+		return TypedActionResult.successWithSwing(playerEntity.getStackInHand(hand));
 	}
 
 	@Override

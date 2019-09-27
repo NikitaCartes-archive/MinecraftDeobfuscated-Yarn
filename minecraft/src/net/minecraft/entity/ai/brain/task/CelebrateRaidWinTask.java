@@ -40,7 +40,7 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_19954(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		Random random = villagerEntity.getRand();
+		Random random = villagerEntity.getRandom();
 		if (random.nextInt(100) == 0) {
 			villagerEntity.playCelebrateSound();
 		}

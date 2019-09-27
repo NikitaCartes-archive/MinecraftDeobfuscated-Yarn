@@ -36,7 +36,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 		serverWorld.sendEntityStatus(villagerEntity2, (byte)18);
 		serverWorld.sendEntityStatus(villagerEntity, (byte)18);
-		int i = 275 + villagerEntity.getRand().nextInt(50);
+		int i = 275 + villagerEntity.getRandom().nextInt(50);
 		this.field_18368 = l + (long)i;
 	}
 
@@ -48,7 +48,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 				villagerEntity.eatForBreeding();
 				villagerEntity2.eatForBreeding();
 				this.method_20643(serverWorld, villagerEntity, villagerEntity2);
-			} else if (villagerEntity.getRand().nextInt(35) == 0) {
+			} else if (villagerEntity.getRandom().nextInt(35) == 0) {
 				serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
 				serverWorld.sendEntityStatus(villagerEntity, (byte)12);
 			}

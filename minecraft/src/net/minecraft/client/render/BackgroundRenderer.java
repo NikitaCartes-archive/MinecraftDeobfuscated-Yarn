@@ -178,20 +178,20 @@ public class BackgroundRenderer {
 		}
 	}
 
-	public static void applyFog(Camera camera, int i, float f, boolean bl) {
+	public static void applyFog(Camera camera, BackgroundRenderer.class_4596 arg, float f, boolean bl) {
 		setFogBlack(false);
 		RenderSystem.normal3f(0.0F, -1.0F, 0.0F);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		FluidState fluidState = camera.getSubmergedFluidState();
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
 			float g = 5.0F;
-			int j = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-			if (j < 20) {
-				g = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, f);
+			int i = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
+			if (i < 20) {
+				g = MathHelper.lerp(1.0F - (float)i / 20.0F, 5.0F, f);
 			}
 
 			RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
-			if (i == -1) {
+			if (arg == BackgroundRenderer.class_4596.FOG_SKY) {
 				RenderSystem.fogStart(0.0F);
 				RenderSystem.fogEnd(g * 0.8F);
 			} else {
@@ -223,7 +223,7 @@ public class BackgroundRenderer {
 			RenderSystem.fogDensity(2.0F);
 		} else {
 			RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
-			if (i == -1) {
+			if (arg == BackgroundRenderer.class_4596.FOG_SKY) {
 				RenderSystem.fogStart(0.0F);
 				RenderSystem.fogEnd(f);
 			} else {
@@ -238,12 +238,17 @@ public class BackgroundRenderer {
 			}
 		}
 
-		RenderSystem.enableColorMaterial();
 		RenderSystem.enableFog();
 		RenderSystem.colorMaterial(1028, 4608);
 	}
 
 	public static void setFogBlack(boolean bl) {
 		RenderSystem.fog(2918, bl ? blackColorBuffer : colorBuffer);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum class_4596 {
+		FOG_SKY,
+		FOG_TERRAIN;
 	}
 }

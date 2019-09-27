@@ -35,7 +35,7 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 	}
 
 	public void upload() {
-		this.bindTexture();
+		this.method_23207();
 		this.image.upload(0, 0, 0, false);
 	}
 

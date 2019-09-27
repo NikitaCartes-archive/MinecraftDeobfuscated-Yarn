@@ -197,7 +197,7 @@ public class SpiderEntity extends HostileEntity {
 		@Override
 		public boolean shouldContinue() {
 			float f = this.mob.getBrightnessAtEyes();
-			if (f >= 0.5F && this.mob.getRand().nextInt(100) == 0) {
+			if (f >= 0.5F && this.mob.getRandom().nextInt(100) == 0) {
 				this.mob.setTarget(null);
 				return false;
 			} else {

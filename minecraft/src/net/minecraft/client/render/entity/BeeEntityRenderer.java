@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity;
 
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.BeeEntityModel;
@@ -18,8 +17,7 @@ public class BeeEntityRenderer extends MobEntityRenderer<BeeEntity, BeeEntityMod
 		super(entityRenderDispatcher, new BeeEntityModel<>(), 0.4F);
 	}
 
-	@Nullable
-	protected Identifier method_22129(BeeEntity beeEntity) {
+	public Identifier method_22129(BeeEntity beeEntity) {
 		if (beeEntity.isAngry()) {
 			return beeEntity.hasNectar() ? ANGRY_NECTAR_SKIN : ANGRY_SKIN;
 		} else {

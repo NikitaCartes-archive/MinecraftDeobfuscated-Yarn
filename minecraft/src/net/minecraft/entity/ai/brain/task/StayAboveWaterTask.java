@@ -23,7 +23,7 @@ public class StayAboveWaterTask extends Task<MobEntity> {
 	}
 
 	protected void method_19012(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		if (mobEntity.getRand().nextFloat() < this.chance) {
+		if (mobEntity.getRandom().nextFloat() < this.chance) {
 			mobEntity.getJumpControl().setActive();
 		}
 	}

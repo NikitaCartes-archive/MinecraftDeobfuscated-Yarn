@@ -29,7 +29,7 @@ public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
 
 		int j = blockPos.getY();
 		if (j >= 1 && j + i + 1 < 256) {
-			Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+			Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
 			if (!Block.isNaturalDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
 				return false;
 			} else {

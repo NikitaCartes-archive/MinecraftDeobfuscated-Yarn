@@ -237,7 +237,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	public void deserializeInventory(CompoundTag compoundTag) {
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag) && compoundTag.containsKey("Items", 9)) {
+		if (!this.deserializeLootTable(compoundTag) && compoundTag.contains("Items", 9)) {
 			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}

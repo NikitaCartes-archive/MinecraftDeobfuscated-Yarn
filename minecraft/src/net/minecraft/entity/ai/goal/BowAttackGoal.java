@@ -86,11 +86,11 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 			}
 
 			if (this.field_6568 >= 20) {
-				if ((double)this.actor.getRand().nextFloat() < 0.3) {
+				if ((double)this.actor.getRandom().nextFloat() < 0.3) {
 					this.field_6573 = !this.field_6573;
 				}
 
-				if ((double)this.actor.getRand().nextFloat() < 0.3) {
+				if ((double)this.actor.getRandom().nextFloat() < 0.3) {
 					this.field_6571 = !this.field_6571;
 				}
 

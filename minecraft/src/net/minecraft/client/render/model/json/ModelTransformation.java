@@ -5,24 +5,12 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class ModelTransformation {
 	public static final ModelTransformation NONE = new ModelTransformation();
-	public static float globalTranslationX;
-	public static float globalTranslationY;
-	public static float globalTranslationZ;
-	public static float globalRotationX;
-	public static float globalRotationY;
-	public static float globalRotationZ;
-	public static float globalScaleOffsetX;
-	public static float globalScaleOffsetY;
-	public static float globalScaleOffsetZ;
 	public final Transformation thirdPersonLeftHand;
 	public final Transformation thirdPersonRightHand;
 	public final Transformation firstPersonLeftHand;
@@ -74,33 +62,6 @@ public class ModelTransformation {
 		this.gui = transformation6;
 		this.ground = transformation7;
 		this.fixed = transformation8;
-	}
-
-	public void applyGl(ModelTransformation.Type type) {
-		applyGl(this.getTransformation(type), false);
-	}
-
-	public static void applyGl(Transformation transformation, boolean bl) {
-		if (transformation != Transformation.NONE) {
-			int i = bl ? -1 : 1;
-			RenderSystem.translatef(
-				(float)i * (globalTranslationX + transformation.translation.getX()),
-				globalTranslationY + transformation.translation.getY(),
-				globalTranslationZ + transformation.translation.getZ()
-			);
-			float f = globalRotationX + transformation.rotation.getX();
-			float g = globalRotationY + transformation.rotation.getY();
-			float h = globalRotationZ + transformation.rotation.getZ();
-			if (bl) {
-				g = -g;
-				h = -h;
-			}
-
-			RenderSystem.multMatrix(new Matrix4f(new Quaternion(f, g, h, true)));
-			RenderSystem.scalef(
-				globalScaleOffsetX + transformation.scale.getX(), globalScaleOffsetY + transformation.scale.getY(), globalScaleOffsetZ + transformation.scale.getZ()
-			);
-		}
 	}
 
 	public Transformation getTransformation(ModelTransformation.Type type) {

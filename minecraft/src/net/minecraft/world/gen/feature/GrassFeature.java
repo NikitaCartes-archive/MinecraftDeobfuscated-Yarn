@@ -22,7 +22,7 @@ public class GrassFeature extends Feature<GrassFeatureConfig> {
 			(blockState.isAir() || blockState.matches(BlockTags.LEAVES)) && blockPos.getY() > 0;
 			blockState = iWorld.getBlockState(blockPos)
 		) {
-			blockPos = blockPos.down();
+			blockPos = blockPos.method_10074();
 		}
 
 		int i = 0;

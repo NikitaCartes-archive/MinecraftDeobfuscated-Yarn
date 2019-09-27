@@ -6,10 +6,6 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntity> {
-	public ArmorStandArmorEntityModel() {
-		this(0.0F);
-	}
-
 	public ArmorStandArmorEntityModel(float f) {
 		this(f, 64, 32);
 	}

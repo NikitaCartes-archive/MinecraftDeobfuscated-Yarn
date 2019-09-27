@@ -38,7 +38,7 @@ public class EnchantmentHelper {
 			ListTag listTag = itemStack.getEnchantments();
 
 			for(int i = 0; i < listTag.size(); ++i) {
-				CompoundTag compoundTag = listTag.getCompoundTag(i);
+				CompoundTag compoundTag = listTag.getCompound(i);
 				Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
 				if (identifier2 != null && identifier2.equals(identifier)) {
 					return compoundTag.getInt("lvl");
@@ -58,7 +58,7 @@ public class EnchantmentHelper {
 		Map<Enchantment, Integer> map = Maps.newLinkedHashMap();
 
 		for(int i = 0; i < listTag.size(); ++i) {
-			CompoundTag compoundTag = listTag.getCompoundTag(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(compoundTag.getString("id"))).ifPresent(enchantment -> {
 			});
 		}
@@ -95,8 +95,8 @@ public class EnchantmentHelper {
 			ListTag listTag = itemStack.getEnchantments();
 
 			for(int i = 0; i < listTag.size(); ++i) {
-				String string = listTag.getCompoundTag(i).getString("id");
-				int j = listTag.getCompoundTag(i).getInt("lvl");
+				String string = listTag.getCompound(i).getString("id");
+				int j = listTag.getCompound(i).getInt("lvl");
 				Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}
@@ -240,7 +240,7 @@ public class EnchantmentHelper {
 				}
 			}
 
-			return list.isEmpty() ? null : (Entry)list.get(livingEntity.getRand().nextInt(list.size()));
+			return list.isEmpty() ? null : (Entry)list.get(livingEntity.getRandom().nextInt(list.size()));
 		}
 	}
 

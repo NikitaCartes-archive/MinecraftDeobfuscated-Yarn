@@ -20,7 +20,7 @@ public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRende
 		return 180.0F;
 	}
 
-	protected Identifier method_4123(T spiderEntity) {
+	public Identifier method_4123(T spiderEntity) {
 		return SKIN;
 	}
 }

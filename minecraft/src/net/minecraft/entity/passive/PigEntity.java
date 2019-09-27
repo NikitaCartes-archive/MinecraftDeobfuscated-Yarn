@@ -245,7 +245,7 @@ public class PigEntity extends AnimalEntity {
 		} else {
 			this.field_6814 = true;
 			this.field_6812 = 0;
-			this.field_6813 = this.getRand().nextInt(841) + 140;
+			this.field_6813 = this.getRandom().nextInt(841) + 140;
 			this.getDataTracker().set(field_6815, this.field_6813);
 			return true;
 		}

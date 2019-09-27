@@ -34,11 +34,11 @@ public class WrittenBookItem extends Item {
 	public static boolean isValid(@Nullable CompoundTag compoundTag) {
 		if (!WritableBookItem.isValid(compoundTag)) {
 			return false;
-		} else if (!compoundTag.containsKey("title", 8)) {
+		} else if (!compoundTag.contains("title", 8)) {
 			return false;
 		} else {
 			String string = compoundTag.getString("title");
-			return string.length() > 32 ? false : compoundTag.containsKey("author", 8);
+			return string.length() > 32 ? false : compoundTag.contains("author", 8);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class WrittenBookItem extends Item {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		playerEntity.openEditBookScreen(itemStack, hand);
 		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-		return TypedActionResult.method_22427(itemStack);
+		return TypedActionResult.successWithSwing(itemStack);
 	}
 
 	public static boolean resolve(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {
@@ -118,7 +118,7 @@ public class WrittenBookItem extends Item {
 						text = new LiteralText(string);
 					}
 
-					listTag.method_10606(i, new StringTag(Text.Serializer.toJson(text)));
+					listTag.method_10606(i, StringTag.of(Text.Serializer.toJson(text)));
 				}
 
 				compoundTag.put("pages", listTag);

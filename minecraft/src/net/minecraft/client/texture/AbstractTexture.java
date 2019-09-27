@@ -2,11 +2,15 @@ package net.minecraft.client.texture;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.io.IOException;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractTexture implements Texture {
+public abstract class AbstractTexture {
 	protected int glId = -1;
 	protected boolean bilinear;
 	protected boolean mipmap;
@@ -31,7 +35,6 @@ public abstract class AbstractTexture implements Texture {
 		GlStateManager.texParameter(3553, 10240, j);
 	}
 
-	@Override
 	public void pushFilter(boolean bl, boolean bl2) {
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> this.method_22601(bl, bl2));
@@ -46,7 +49,6 @@ public abstract class AbstractTexture implements Texture {
 		this.setFilter(bl, bl2);
 	}
 
-	@Override
 	public void popFilter() {
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(this::method_22603);
@@ -59,7 +61,6 @@ public abstract class AbstractTexture implements Texture {
 		this.setFilter(this.oldBilinear, this.oldMipmap);
 	}
 
-	@Override
 	public int getGlId() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		if (this.glId == -1) {
@@ -81,5 +82,19 @@ public abstract class AbstractTexture implements Texture {
 			TextureUtil.releaseTextureId(this.glId);
 			this.glId = -1;
 		}
+	}
+
+	public abstract void load(ResourceManager resourceManager) throws IOException;
+
+	public void method_23207() {
+		if (!RenderSystem.isOnRenderThreadOrInit()) {
+			RenderSystem.recordRenderCall(() -> GlStateManager.bindTexture(this.getGlId()));
+		} else {
+			GlStateManager.bindTexture(this.getGlId());
+		}
+	}
+
+	public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
+		textureManager.registerTexture(identifier, this);
 	}
 }

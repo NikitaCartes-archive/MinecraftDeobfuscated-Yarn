@@ -20,7 +20,7 @@ public class WaterlilyFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		BlockPos blockPos3;
 		for(BlockPos blockPos2 = blockPos; blockPos2.getY() > 0; blockPos2 = blockPos3) {
-			blockPos3 = blockPos2.down();
+			blockPos3 = blockPos2.method_10074();
 			if (!iWorld.isAir(blockPos3)) {
 				break;
 			}

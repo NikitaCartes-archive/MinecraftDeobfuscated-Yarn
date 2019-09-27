@@ -1,46 +1,22 @@
 package net.minecraft.client.render.entity.feature;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BackgroundRenderer;
+import net.minecraft.class_4606;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, EndermanEntityModel<T>> {
+public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends class_4606<T, EndermanEntityModel<T>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/enderman/enderman_eyes.png");
 
 	public EndermanEyesFeatureRenderer(FeatureRendererContext<T, EndermanEntityModel<T>> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
-	public void method_4187(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		this.bindTexture(SKIN);
-		RenderSystem.enableBlend();
-		RenderSystem.disableAlphaTest();
-		RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
-		RenderSystem.disableLighting();
-		RenderSystem.depthMask(!livingEntity.isInvisible());
-		int m = 61680;
-		int n = 61680;
-		int o = 0;
-		RenderSystem.glMultiTexCoord2f(33985, 61680.0F, 0.0F);
-		RenderSystem.enableLighting();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		BackgroundRenderer.setFogBlack(true);
-		this.getModel().method_17088(livingEntity, f, g, i, j, k, l);
-		BackgroundRenderer.setFogBlack(false);
-		this.applyLightmapCoordinates(livingEntity);
-		RenderSystem.depthMask(true);
-		RenderSystem.disableBlend();
-		RenderSystem.enableAlphaTest();
-	}
-
 	@Override
-	public boolean hasHurtOverlay() {
-		return false;
+	public Identifier method_23193() {
+		return SKIN;
 	}
 }

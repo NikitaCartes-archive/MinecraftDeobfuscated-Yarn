@@ -1,15 +1,14 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
+import net.minecraft.class_4597;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.FallingBlockEntity;
@@ -24,24 +23,14 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		this.field_4673 = 0.5F;
 	}
 
-	public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h) {
+	public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
 		BlockState blockState = fallingBlockEntity.getBlockState();
 		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			World world = fallingBlockEntity.getWorldClient();
 			if (blockState != world.getBlockState(new BlockPos(fallingBlockEntity)) && blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-				this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-				RenderSystem.pushMatrix();
-				RenderSystem.disableLighting();
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				if (this.renderOutlines) {
-					RenderSystem.enableColorMaterial();
-					RenderSystem.setupSolidRenderingTextureCombine(this.getOutlineColor(fallingBlockEntity));
-				}
-
-				bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
+				arg.method_22903();
 				BlockPos blockPos = new BlockPos(fallingBlockEntity.x, fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.z);
-				RenderSystem.translatef((float)(d - (double)blockPos.getX() - 0.5), (float)(e - (double)blockPos.getY()), (float)(f - (double)blockPos.getZ() - 0.5));
+				arg.method_22904((double)(-(blockPos.getX() & 15)) - 0.5, (double)(-(blockPos.getY() & 15)), (double)(-(blockPos.getZ() & 15)) - 0.5);
 				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 				blockRenderManager.getModelRenderer()
 					.tesselate(
@@ -49,25 +38,19 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 						blockRenderManager.getModel(blockState),
 						blockState,
 						blockPos,
-						bufferBuilder,
+						arg,
+						arg2.getBuffer(BlockRenderLayer.method_22715(blockState)),
 						false,
 						new Random(),
 						blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos())
 					);
-				tessellator.draw();
-				if (this.renderOutlines) {
-					RenderSystem.tearDownSolidRenderingTextureCombine();
-					RenderSystem.disableColorMaterial();
-				}
-
-				RenderSystem.enableLighting();
-				RenderSystem.popMatrix();
-				super.render(fallingBlockEntity, d, e, f, g, h);
+				arg.method_22909();
+				super.render(fallingBlockEntity, d, e, f, g, h, arg, arg2);
 			}
 		}
 	}
 
-	protected Identifier method_3964(FallingBlockEntity fallingBlockEntity) {
+	public Identifier method_3964(FallingBlockEntity fallingBlockEntity) {
 		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

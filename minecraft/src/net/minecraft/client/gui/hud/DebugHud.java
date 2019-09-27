@@ -24,6 +24,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
@@ -94,7 +95,7 @@ public class DebugHud extends DrawableHelper {
 		this.renderRightText();
 		RenderSystem.popMatrix();
 		if (this.client.options.debugTpsEnabled) {
-			int i = this.client.method_22683().getScaledWidth();
+			int i = this.client.getWindow().getScaledWidth();
 			this.drawMetricsData(this.client.getMetricsData(), 0, i / 2, true);
 			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
@@ -139,7 +140,7 @@ public class DebugHud extends DrawableHelper {
 			if (!Strings.isNullOrEmpty(string)) {
 				int j = 9;
 				int k = this.fontRenderer.getStringWidth(string);
-				int l = this.client.method_22683().getScaledWidth() - 2 - k;
+				int l = this.client.getWindow().getScaledWidth() - 2 - k;
 				int m = 2 + j * i;
 				fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
 				this.fontRenderer.draw(string, (float)l, (float)m, 14737632);
@@ -326,8 +327,9 @@ public class DebugHud extends DrawableHelper {
 				list.add("Outside of world...");
 			}
 
-			if (this.client.gameRenderer != null && this.client.gameRenderer.isShaderEnabled()) {
-				list.add("Shader: " + this.client.gameRenderer.getShader().getName());
+			ShaderEffect shaderEffect = this.client.gameRenderer.getShader();
+			if (shaderEffect != null) {
+				list.add("Shader: " + shaderEffect.getName());
 			}
 
 			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
@@ -407,8 +409,8 @@ public class DebugHud extends DrawableHelper {
 			"",
 			String.format(
 				"Display: %dx%d (%s)",
-				MinecraftClient.getInstance().method_22683().getFramebufferWidth(),
-				MinecraftClient.getInstance().method_22683().getFramebufferHeight(),
+				MinecraftClient.getInstance().getWindow().getFramebufferWidth(),
+				MinecraftClient.getInstance().getWindow().getFramebufferHeight(),
 				GlDebugInfo.getVendor()
 			),
 			GlDebugInfo.getRenderer(),
@@ -493,7 +495,7 @@ public class DebugHud extends DrawableHelper {
 			q += (long)u;
 		}
 
-		int t = this.client.method_22683().getScaledHeight();
+		int t = this.client.getWindow().getScaledHeight();
 		fill(i, t - 60, i + p, t, -1873784752);
 
 		while(m != l) {

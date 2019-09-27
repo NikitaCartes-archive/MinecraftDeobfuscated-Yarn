@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.WallSignBlock;
@@ -115,7 +116,7 @@ public class SignEditScreen extends Screen {
 		this.sign
 			.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);
 		RenderSystem.translatef(-0.5F, -0.75F, -0.5F);
-		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign);
+		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, new class_4587(), 15728880);
 		this.sign.resetSelectionState();
 		RenderSystem.popMatrix();
 		super.render(i, j, f);

@@ -24,6 +24,7 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -75,10 +76,10 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	protected void mobTick() {
 		if (!this.isAiDisabled()) {
-			if (((ServerWorld)this.world).hasRaidAt(new BlockPos(this))) {
-				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
-			} else {
-				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(false);
+			EntityNavigation entityNavigation = this.getNavigation();
+			if (entityNavigation instanceof MobNavigation) {
+				boolean bl = ((ServerWorld)this.world).hasRaidAt(new BlockPos(this));
+				((MobNavigation)entityNavigation).setCanPathThroughDoors(bl);
 			}
 		}
 
@@ -115,7 +116,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.containsKey("Johnny", 99)) {
+		if (compoundTag.contains("Johnny", 99)) {
 			this.isJohnny = compoundTag.getBoolean("Johnny");
 		}
 	}

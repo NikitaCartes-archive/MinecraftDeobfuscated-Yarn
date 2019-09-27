@@ -1,8 +1,8 @@
 package net.minecraft.client.render.entity;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4587;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
@@ -15,12 +15,12 @@ public class ElderGuardianEntityRenderer extends GuardianEntityRenderer {
 		super(entityRenderDispatcher, 1.2F);
 	}
 
-	protected void method_3910(GuardianEntity guardianEntity, float f) {
-		RenderSystem.scalef(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
+	protected void method_3910(GuardianEntity guardianEntity, class_4587 arg, float f) {
+		arg.method_22905(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
 	}
 
 	@Override
-	protected Identifier method_3976(GuardianEntity guardianEntity) {
+	public Identifier method_3976(GuardianEntity guardianEntity) {
 		return SKIN;
 	}
 }

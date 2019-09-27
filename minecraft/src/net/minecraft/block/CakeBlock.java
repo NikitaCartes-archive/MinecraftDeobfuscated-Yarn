@@ -77,7 +77,7 @@ public class CakeBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return arg.getBlockState(blockPos.down()).getMaterial().isSolid();
+		return arg.getBlockState(blockPos.method_10074()).getMaterial().isSolid();
 	}
 
 	@Override

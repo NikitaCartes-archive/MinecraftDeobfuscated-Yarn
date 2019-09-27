@@ -131,15 +131,15 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos up(int i) {
-		return this.offset(Direction.UP, i);
+		return this.method_10079(Direction.UP, i);
 	}
 
-	public BlockPos down() {
+	public BlockPos method_10074() {
 		return this.down(1);
 	}
 
 	public BlockPos down(int i) {
-		return this.offset(Direction.DOWN, i);
+		return this.method_10079(Direction.DOWN, i);
 	}
 
 	public BlockPos north() {
@@ -147,7 +147,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos north(int i) {
-		return this.offset(Direction.NORTH, i);
+		return this.method_10079(Direction.NORTH, i);
 	}
 
 	public BlockPos south() {
@@ -155,7 +155,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos south(int i) {
-		return this.offset(Direction.SOUTH, i);
+		return this.method_10079(Direction.SOUTH, i);
 	}
 
 	public BlockPos west() {
@@ -163,7 +163,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos west(int i) {
-		return this.offset(Direction.WEST, i);
+		return this.method_10079(Direction.WEST, i);
 	}
 
 	public BlockPos east() {
@@ -171,14 +171,14 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos east(int i) {
-		return this.offset(Direction.EAST, i);
+		return this.method_10079(Direction.EAST, i);
 	}
 
 	public BlockPos offset(Direction direction) {
-		return this.offset(direction, 1);
+		return this.method_10079(direction, 1);
 	}
 
-	public BlockPos offset(Direction direction, int i) {
+	public BlockPos method_10079(Direction direction, int i) {
 		return i == 0
 			? this
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
@@ -294,8 +294,8 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}
 
 		@Override
-		public BlockPos offset(Direction direction, int i) {
-			return super.offset(direction, i).toImmutable();
+		public BlockPos method_10079(Direction direction, int i) {
+			return super.method_10079(direction, i).toImmutable();
 		}
 
 		@Override

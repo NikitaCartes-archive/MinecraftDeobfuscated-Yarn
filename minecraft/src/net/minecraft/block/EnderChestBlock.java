@@ -48,12 +48,6 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 		return SHAPE;
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-		return true;
-	}
-
 	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.ENTITYBLOCK_ANIMATED;

@@ -76,7 +76,7 @@ public class HungerManager {
 	}
 
 	public void deserialize(CompoundTag compoundTag) {
-		if (compoundTag.containsKey("foodLevel", 99)) {
+		if (compoundTag.contains("foodLevel", 99)) {
 			this.foodLevel = compoundTag.getInt("foodLevel");
 			this.foodStarvationTimer = compoundTag.getInt("foodTickTimer");
 			this.foodSaturationLevel = compoundTag.getFloat("foodSaturationLevel");

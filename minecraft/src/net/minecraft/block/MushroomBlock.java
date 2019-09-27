@@ -40,7 +40,7 @@ public class MushroomBlock extends Block {
 		BlockView blockView = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		return this.getDefaultState()
-			.with(DOWN, Boolean.valueOf(this != blockView.getBlockState(blockPos.down()).getBlock()))
+			.with(DOWN, Boolean.valueOf(this != blockView.getBlockState(blockPos.method_10074()).getBlock()))
 			.with(UP, Boolean.valueOf(this != blockView.getBlockState(blockPos.up()).getBlock()))
 			.with(NORTH, Boolean.valueOf(this != blockView.getBlockState(blockPos.north()).getBlock()))
 			.with(EAST, Boolean.valueOf(this != blockView.getBlockState(blockPos.east()).getBlock()))

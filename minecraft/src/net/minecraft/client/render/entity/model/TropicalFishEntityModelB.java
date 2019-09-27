@@ -1,13 +1,15 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4594;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TropicalFishEntityModelB<T extends Entity> extends EntityModel<T> {
+public class TropicalFishEntityModelB<T extends Entity> extends class_4594<T> {
 	private final ModelPart field_3597;
 	private final ModelPart field_3599;
 	private final ModelPart field_3598;
@@ -46,14 +48,8 @@ public class TropicalFishEntityModelB<T extends Entity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(T entity, float f, float g, float h, float i, float j, float k) {
-		this.setAngles(entity, f, g, h, i, j, k);
-		this.field_3597.render(k);
-		this.field_3599.render(k);
-		this.field_3598.render(k);
-		this.field_3596.render(k);
-		this.field_3595.render(k);
-		this.field_3600.render(k);
+	public Iterable<ModelPart> method_22960() {
+		return ImmutableList.<ModelPart>of(this.field_3597, this.field_3599, this.field_3598, this.field_3596, this.field_3595, this.field_3600);
 	}
 
 	@Override

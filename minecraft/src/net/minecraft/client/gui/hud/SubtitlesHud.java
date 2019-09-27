@@ -80,8 +80,8 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 				int q = p << 16 | p << 8 | p;
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef(
-					(float)this.client.method_22683().getScaledWidth() - (float)l * 1.0F - 2.0F,
-					(float)(this.client.method_22683().getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0F,
+					(float)this.client.getWindow().getScaledWidth() - (float)l * 1.0F - 2.0F,
+					(float)(this.client.getWindow().getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0F,
 					0.0F
 				);
 				RenderSystem.scalef(1.0F, 1.0F, 1.0F);
