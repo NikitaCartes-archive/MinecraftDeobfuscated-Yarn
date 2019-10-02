@@ -5,8 +5,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
@@ -14,6 +13,7 @@ import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.DyeableHorseArmorItem;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class HorseArmorFeatureRenderer
@@ -24,7 +24,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18658(class_4587 arg, class_4597 arg2, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_18658(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
         float q;
         float p;
         float o;
@@ -46,7 +46,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
             p = 1.0f;
             q = 1.0f;
         }
-        HorseArmorFeatureRenderer.method_23197(this.model, horseArmorItem.getEntityTexture(), arg, arg2, i, o, p, q);
+        HorseArmorFeatureRenderer.method_23197(this.model, horseArmorItem.getEntityTexture(), matrixStack, layeredVertexConsumerStorage, i, o, p, q);
     }
 }
 

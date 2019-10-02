@@ -64,7 +64,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return BASE_SHAPE;
     }
 
@@ -164,7 +164,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         LecternBlock.setPowered(serverWorld, blockPos, blockState, false);
     }
 
@@ -227,7 +227,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (blockState.get(HAS_BOOK).booleanValue()) {
             if (!world.isClient) {
                 this.openContainer(world, blockPos, playerEntity);

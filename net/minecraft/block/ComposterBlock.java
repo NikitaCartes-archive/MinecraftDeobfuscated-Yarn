@@ -178,7 +178,7 @@ implements InventoryProvider {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         int i = blockState.get(LEVEL);
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
@@ -227,12 +227,12 @@ implements InventoryProvider {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (blockState.get(LEVEL) == 7) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.cycle(LEVEL), 3);
             serverWorld.playSound(null, blockPos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
-        super.onScheduledTick(blockState, serverWorld, blockPos, random);
+        super.scheduledTick(blockState, serverWorld, blockPos, random);
     }
 
     @Override

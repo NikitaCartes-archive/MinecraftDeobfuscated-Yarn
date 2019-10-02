@@ -50,26 +50,26 @@ import org.jetbrains.annotations.Nullable;
 public class FishingBobberEntity
 extends Entity {
     private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private boolean field_7176;
-    private int field_7167;
+    private boolean stuckOnBlock;
+    private int removalTimer;
     private final PlayerEntity owner;
-    private int field_7166;
-    private int field_7173;
-    private int field_7174;
-    private int field_7172;
-    private float field_7169;
+    private int selfHitTimer;
+    private int hookCountdown;
+    private int waitCountdown;
+    private int fishTravelCountdown;
+    private float fishAngle;
     public Entity hookedEntity;
     private State state = State.FLYING;
-    private final int lureLevel;
     private final int luckOfTheSeaLevel;
+    private final int lureLevel;
 
     private FishingBobberEntity(World world, PlayerEntity playerEntity, int i, int j) {
         super(EntityType.FISHING_BOBBER, world);
         this.ignoreCameraFrustum = true;
         this.owner = playerEntity;
         this.owner.fishHook = this;
-        this.lureLevel = Math.max(0, i);
-        this.luckOfTheSeaLevel = Math.max(0, j);
+        this.luckOfTheSeaLevel = Math.max(0, i);
+        this.lureLevel = Math.max(0, j);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -136,12 +136,12 @@ extends Entity {
             this.remove();
             return;
         }
-        if (!this.world.isClient && this.method_6959()) {
+        if (!this.world.isClient && this.removeIfInvalid()) {
             return;
         }
-        if (this.field_7176) {
-            ++this.field_7167;
-            if (this.field_7167 >= 1200) {
+        if (this.stuckOnBlock) {
+            ++this.removalTimer;
+            if (this.removalTimer >= 1200) {
                 this.remove();
                 return;
             }
@@ -164,13 +164,13 @@ extends Entity {
                 return;
             }
             if (!this.world.isClient) {
-                this.method_6958();
+                this.checkForCollision();
             }
-            if (this.field_7176 || this.onGround || this.horizontalCollision) {
-                this.field_7166 = 0;
+            if (this.stuckOnBlock || this.onGround || this.horizontalCollision) {
+                this.selfHitTimer = 0;
                 this.setVelocity(Vec3d.ZERO);
             } else {
-                ++this.field_7166;
+                ++this.selfHitTimer;
             }
         } else {
             if (this.state == State.HOOKED_IN_ENTITY) {
@@ -195,7 +195,7 @@ extends Entity {
                 }
                 this.setVelocity(vec3d.x * 0.9, vec3d.y - d * (double)this.random.nextFloat() * 0.2, vec3d.z * 0.9);
                 if (!this.world.isClient && f > 0.0f) {
-                    this.method_6949(blockPos);
+                    this.tickFishingLogic(blockPos);
                 }
             }
         }
@@ -203,13 +203,13 @@ extends Entity {
             this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
         }
         this.move(MovementType.SELF, this.getVelocity());
-        this.method_6952();
+        this.smoothenMovement();
         double e = 0.92;
         this.setVelocity(this.getVelocity().multiply(0.92));
         this.setPosition(this.x, this.y, this.z);
     }
 
-    private boolean method_6959() {
+    private boolean removeIfInvalid() {
         boolean bl2;
         ItemStack itemStack = this.owner.getMainHandStack();
         ItemStack itemStack2 = this.owner.getOffHandStack();
@@ -222,7 +222,7 @@ extends Entity {
         return false;
     }
 
-    private void method_6952() {
+    private void smoothenMovement() {
         Vec3d vec3d = this.getVelocity();
         float f = MathHelper.sqrt(FishingBobberEntity.squaredHorizontalLength(vec3d));
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
@@ -243,14 +243,14 @@ extends Entity {
         this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
     }
 
-    private void method_6958() {
-        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !(entity.isSpectator() || !entity.collides() && !(entity instanceof ItemEntity) || entity == this.owner && this.field_7166 < 5), RayTraceContext.ShapeType.COLLIDER, true);
+    private void checkForCollision() {
+        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !(entity.isSpectator() || !entity.collides() && !(entity instanceof ItemEntity) || entity == this.owner && this.selfHitTimer < 5), RayTraceContext.ShapeType.COLLIDER, true);
         if (hitResult.getType() != HitResult.Type.MISS) {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 this.hookedEntity = ((EntityHitResult)hitResult).getEntity();
                 this.updateHookedEntityId();
             } else {
-                this.field_7176 = true;
+                this.stuckOnBlock = true;
             }
         }
     }
@@ -259,7 +259,7 @@ extends Entity {
         this.getDataTracker().set(HOOK_ENTITY_ID, this.hookedEntity.getEntityId() + 1);
     }
 
-    private void method_6949(BlockPos blockPos) {
+    private void tickFishingLogic(BlockPos blockPos) {
         ServerWorld serverWorld = (ServerWorld)this.world;
         int i = 1;
         BlockPos blockPos2 = blockPos.up();
@@ -269,25 +269,25 @@ extends Entity {
         if (this.random.nextFloat() < 0.5f && !this.world.isSkyVisible(blockPos2)) {
             --i;
         }
-        if (this.field_7173 > 0) {
-            --this.field_7173;
-            if (this.field_7173 <= 0) {
-                this.field_7174 = 0;
-                this.field_7172 = 0;
+        if (this.hookCountdown > 0) {
+            --this.hookCountdown;
+            if (this.hookCountdown <= 0) {
+                this.waitCountdown = 0;
+                this.fishTravelCountdown = 0;
             } else {
                 this.setVelocity(this.getVelocity().add(0.0, -0.2 * (double)this.random.nextFloat() * (double)this.random.nextFloat(), 0.0));
             }
-        } else if (this.field_7172 > 0) {
-            this.field_7172 -= i;
-            if (this.field_7172 > 0) {
+        } else if (this.fishTravelCountdown > 0) {
+            this.fishTravelCountdown -= i;
+            if (this.fishTravelCountdown > 0) {
                 double j;
-                this.field_7169 = (float)((double)this.field_7169 + this.random.nextGaussian() * 4.0);
-                float f = this.field_7169 * ((float)Math.PI / 180);
+                this.fishAngle = (float)((double)this.fishAngle + this.random.nextGaussian() * 4.0);
+                float f = this.fishAngle * ((float)Math.PI / 180);
                 float g = MathHelper.sin(f);
                 float h = MathHelper.cos(f);
-                double d = this.x + (double)(g * (float)this.field_7172 * 0.1f);
+                double d = this.x + (double)(g * (float)this.fishTravelCountdown * 0.1f);
                 double e = (float)MathHelper.floor(this.getBoundingBox().minY) + 1.0f;
-                Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j = this.z + (double)(h * (float)this.field_7172 * 0.1f))).getBlock();
+                Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j = this.z + (double)(h * (float)this.fishTravelCountdown * 0.1f))).getBlock();
                 if (block == Blocks.WATER) {
                     if (this.random.nextFloat() < 0.15f) {
                         serverWorld.spawnParticles(ParticleTypes.BUBBLE, d, e - (double)0.1f, j, 1, g, 0.1, h, 0.0);
@@ -304,17 +304,17 @@ extends Entity {
                 double m = this.getBoundingBox().minY + 0.5;
                 serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.x, m, this.z, (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
                 serverWorld.spawnParticles(ParticleTypes.FISHING, this.x, m, this.z, (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
-                this.field_7173 = MathHelper.nextInt(this.random, 20, 40);
+                this.hookCountdown = MathHelper.nextInt(this.random, 20, 40);
             }
-        } else if (this.field_7174 > 0) {
-            this.field_7174 -= i;
+        } else if (this.waitCountdown > 0) {
+            this.waitCountdown -= i;
             float f = 0.15f;
-            if (this.field_7174 < 20) {
-                f = (float)((double)f + (double)(20 - this.field_7174) * 0.05);
-            } else if (this.field_7174 < 40) {
-                f = (float)((double)f + (double)(40 - this.field_7174) * 0.02);
-            } else if (this.field_7174 < 60) {
-                f = (float)((double)f + (double)(60 - this.field_7174) * 0.01);
+            if (this.waitCountdown < 20) {
+                f = (float)((double)f + (double)(20 - this.waitCountdown) * 0.05);
+            } else if (this.waitCountdown < 40) {
+                f = (float)((double)f + (double)(40 - this.waitCountdown) * 0.02);
+            } else if (this.waitCountdown < 60) {
+                f = (float)((double)f + (double)(60 - this.waitCountdown) * 0.01);
             }
             if (this.random.nextFloat() < f) {
                 double j;
@@ -327,13 +327,13 @@ extends Entity {
                     serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
                 }
             }
-            if (this.field_7174 <= 0) {
-                this.field_7169 = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
-                this.field_7172 = MathHelper.nextInt(this.random, 20, 80);
+            if (this.waitCountdown <= 0) {
+                this.fishAngle = MathHelper.nextFloat(this.random, 0.0f, 360.0f);
+                this.fishTravelCountdown = MathHelper.nextInt(this.random, 20, 80);
             }
         } else {
-            this.field_7174 = MathHelper.nextInt(this.random, 100, 600);
-            this.field_7174 -= this.luckOfTheSeaLevel * 20 * 5;
+            this.waitCountdown = MathHelper.nextInt(this.random, 100, 600);
+            this.waitCountdown -= this.lureLevel * 20 * 5;
         }
     }
 
@@ -345,18 +345,18 @@ extends Entity {
     public void readCustomDataFromTag(CompoundTag compoundTag) {
     }
 
-    public int method_6957(ItemStack itemStack) {
+    public int use(ItemStack itemStack) {
         if (this.world.isClient || this.owner == null) {
             return 0;
         }
         int i = 0;
         if (this.hookedEntity != null) {
-            this.method_6954();
+            this.pullHookedEntity();
             Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
             this.world.sendEntityStatus(this, (byte)31);
             i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
-        } else if (this.field_7173 > 0) {
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this)).put(LootContextParameters.TOOL, itemStack).setRandom(this.random).setLuck((float)this.lureLevel + this.owner.getLuck());
+        } else if (this.hookCountdown > 0) {
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this)).put(LootContextParameters.TOOL, itemStack).setRandom(this.random).setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());
             LootTable lootTable = this.world.getServer().getLootManager().getSupplier(LootTables.FISHING_GAMEPLAY);
             List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
             Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, list);
@@ -374,7 +374,7 @@ extends Entity {
             }
             i = 1;
         }
-        if (this.field_7176) {
+        if (this.stuckOnBlock) {
             i = 2;
         }
         this.remove();
@@ -385,12 +385,12 @@ extends Entity {
     @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte b) {
         if (b == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
-            this.method_6954();
+            this.pullHookedEntity();
         }
         super.handleStatus(b);
     }
 
-    protected void method_6954() {
+    protected void pullHookedEntity() {
         if (this.owner == null) {
             return;
         }

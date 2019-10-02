@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4538;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.util.SectionDistanceLevelPropagator;
 import net.minecraft.util.SystemUtil;
@@ -32,6 +31,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.village.PointOfInterest;
 import net.minecraft.village.PointOfInterestSet;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
@@ -168,8 +168,8 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         });
     }
 
-    public void method_22439(class_4538 arg, BlockPos blockPos, int i) {
-        ChunkSectionPos.method_22446(new ChunkPos(blockPos), Math.floorDiv(i, 16)).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::method_22444).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.field_20688.add(chunkPos.toLong())).forEach(chunkPos -> arg.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+    public void method_22439(WorldView worldView, BlockPos blockPos, int i) {
+        ChunkSectionPos.method_22446(new ChunkPos(blockPos), Math.floorDiv(i, 16)).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::method_22444).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.field_20688.add(chunkPos.toLong())).forEach(chunkPos -> worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
     }
 
     final class PointOfInterestDistanceTracker

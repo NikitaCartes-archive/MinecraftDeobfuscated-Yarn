@@ -25,7 +25,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.class_4538;
 import net.minecraft.client.network.packet.BlockUpdateS2CPacket;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.client.network.packet.CommandSuggestionsS2CPacket;
@@ -133,6 +132,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -188,7 +188,7 @@ implements ServerPlayPacketListener {
         this.player.prevX = this.player.x;
         this.player.prevY = this.player.y;
         this.player.prevZ = this.player.z;
-        this.player.method_14226();
+        this.player.playerTick();
         this.player.setPositionAnglesAndUpdate(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
         ++this.ticks;
         this.lastTickMovePacketsCount = this.movePacketsCount;
@@ -758,8 +758,8 @@ implements ServerPlayPacketListener {
         this.updatedZ = this.player.z;
     }
 
-    private boolean method_20630(class_4538 arg) {
-        return arg.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5f));
+    private boolean method_20630(WorldView worldView) {
+        return worldView.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5f));
     }
 
     public void requestTeleport(double d, double e, double f, float g, float h) {

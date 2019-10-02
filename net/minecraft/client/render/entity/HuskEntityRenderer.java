@@ -5,11 +5,11 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.ZombieEntityRenderer;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class HuskEntityRenderer
@@ -20,10 +20,10 @@ extends ZombieEntityRenderer {
         super(entityRenderDispatcher);
     }
 
-    protected void method_3985(ZombieEntity zombieEntity, class_4587 arg, float f) {
+    protected void method_3985(ZombieEntity zombieEntity, MatrixStack matrixStack, float f) {
         float g = 1.0625f;
-        arg.method_22905(1.0625f, 1.0625f, 1.0625f);
-        super.scale(zombieEntity, arg, f);
+        matrixStack.scale(1.0625f, 1.0625f, 1.0625f);
+        super.scale(zombieEntity, matrixStack, f);
     }
 
     @Override

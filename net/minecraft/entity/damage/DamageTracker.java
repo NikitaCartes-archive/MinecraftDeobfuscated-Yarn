@@ -56,7 +56,7 @@ public class DamageTracker {
         if (damageRecord.isAttackerLiving() && !this.recentlyAttacked && this.entity.isAlive()) {
             this.recentlyAttacked = true;
             this.ageOnLastUpdate = this.ageOnLastAttacked = this.entity.age;
-            this.entity.method_6000();
+            this.entity.enterCombat();
         }
     }
 
@@ -163,7 +163,7 @@ public class DamageTracker {
             this.recentlyAttacked = false;
             this.ageOnLastUpdate = this.entity.age;
             if (bl) {
-                this.entity.method_6044();
+                this.entity.endCombat();
             }
             this.recentDamage.clear();
         }

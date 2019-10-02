@@ -9,11 +9,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.util.function.Predicate;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.class_4538;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPattern {
@@ -60,8 +60,8 @@ public class BlockPattern {
     }
 
     @Nullable
-    public Result searchAround(class_4538 arg, BlockPos blockPos) {
-        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(arg, false);
+    public Result searchAround(WorldView worldView, BlockPos blockPos) {
+        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(worldView, false);
         int i = Math.max(Math.max(this.width, this.height), this.depth);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(i - 1, i - 1, i - 1))) {
             for (Direction direction : Direction.values()) {
@@ -75,8 +75,8 @@ public class BlockPattern {
         return null;
     }
 
-    public static LoadingCache<BlockPos, CachedBlockPosition> makeCache(class_4538 arg, boolean bl) {
-        return CacheBuilder.newBuilder().build(new BlockStateCacheLoader(arg, bl));
+    public static LoadingCache<BlockPos, CachedBlockPosition> makeCache(WorldView worldView, boolean bl) {
+        return CacheBuilder.newBuilder().build(new BlockStateCacheLoader(worldView, bl));
     }
 
     protected static BlockPos translate(BlockPos blockPos, Direction direction, Direction direction2, int i, int j, int k) {
@@ -189,11 +189,11 @@ public class BlockPattern {
 
     static class BlockStateCacheLoader
     extends CacheLoader<BlockPos, CachedBlockPosition> {
-        private final class_4538 world;
+        private final WorldView world;
         private final boolean forceLoad;
 
-        public BlockStateCacheLoader(class_4538 arg, boolean bl) {
-            this.world = arg;
+        public BlockStateCacheLoader(WorldView worldView, boolean bl) {
+            this.world = worldView;
             this.forceLoad = bl;
         }
 

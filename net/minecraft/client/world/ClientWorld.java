@@ -546,7 +546,7 @@ extends World {
     }
 
     @Override
-    public Biome method_22387(int i, int j, int k) {
+    public Biome getGeneratorStoredBiome(int i, int j, int k) {
         return Biomes.PLAINS;
     }
 

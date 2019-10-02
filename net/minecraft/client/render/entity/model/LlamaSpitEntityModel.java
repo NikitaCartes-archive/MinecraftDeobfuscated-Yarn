@@ -28,7 +28,7 @@ extends class_4595<T> {
         this.field_3433.setTextureOffset(0, 0).addCuboid(2.0f, 0.0f, 0.0f, 2.0f, 2.0f, 2.0f, f);
         this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 2.0f, 0.0f, 2.0f, 2.0f, 2.0f, f);
         this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 2.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.field_3433.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override
@@ -36,7 +36,7 @@ extends class_4595<T> {
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.field_3433);
     }
 }

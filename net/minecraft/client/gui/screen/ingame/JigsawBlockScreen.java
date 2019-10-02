@@ -22,7 +22,7 @@ extends Screen {
     private TextFieldWidget attachmentTypeField;
     private TextFieldWidget targetPoolField;
     private TextFieldWidget finalStateField;
-    private ButtonWidget field_19103;
+    private ButtonWidget doneButton;
 
     public JigsawBlockScreen(JigsawBlockEntity jigsawBlockEntity) {
         super(NarratorManager.EMPTY);
@@ -57,7 +57,7 @@ extends Screen {
     @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
-        this.field_19103 = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.onDone()));
+        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.onDone()));
         this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.onCancel()));
         this.targetPoolField = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("jigsaw_block.target_pool", new Object[0]));
         this.targetPoolField.setMaxLength(128);
@@ -78,7 +78,7 @@ extends Screen {
     }
 
     protected void method_20118() {
-        this.field_19103.active = Identifier.isValid(this.attachmentTypeField.getText()) & Identifier.isValid(this.targetPoolField.getText());
+        this.doneButton.active = Identifier.isValid(this.attachmentTypeField.getText()) & Identifier.isValid(this.targetPoolField.getText());
     }
 
     @Override
@@ -102,7 +102,7 @@ extends Screen {
         if (super.keyPressed(i, j, k)) {
             return true;
         }
-        if (this.field_19103.active && (i == 257 || i == 335)) {
+        if (this.doneButton.active && (i == 257 || i == 335)) {
             this.onDone();
             return true;
         }

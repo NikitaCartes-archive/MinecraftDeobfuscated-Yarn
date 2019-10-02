@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4582;
+import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -58,10 +58,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
-@EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=class_4582.class)})
+@EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=SkinOverlayOwner.class)})
 public class WitherEntity
 extends HostileEntity
-implements class_4582,
+implements SkinOverlayOwner,
 RangedAttackMob {
     private static final TrackedData<Integer> TRACKED_ENTITY_ID_1 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> TRACKED_ENTITY_ID_2 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -150,7 +150,7 @@ RangedAttackMob {
         Vec3d vec3d = this.getVelocity().multiply(1.0, 0.6, 1.0);
         if (!this.world.isClient && this.getTrackedEntityId(0) > 0 && (entity = this.world.getEntityById(this.getTrackedEntityId(0))) != null) {
             double d = vec3d.y;
-            if (this.y < entity.y || !this.isAtHalfHealth() && this.y < entity.y + 5.0) {
+            if (this.y < entity.y || !this.shouldRenderOverlay() && this.y < entity.y + 5.0) {
                 d = Math.max(0.0, d);
                 d += 0.3 - d * (double)0.6f;
             }
@@ -192,7 +192,7 @@ RangedAttackMob {
             }
             this.sideHeadYaws[i] = this.getNextAngle(this.sideHeadYaws[i], this.bodyYaw, 10.0f);
         }
-        boolean bl = this.isAtHalfHealth();
+        boolean bl = this.shouldRenderOverlay();
         for (j = 0; j < 3; ++j) {
             double p = this.getHeadX(j);
             double q = this.getHeadY(j);
@@ -409,7 +409,7 @@ RangedAttackMob {
         if (this.getInvulTimer() > 0 && damageSource != DamageSource.OUT_OF_WORLD) {
             return false;
         }
-        if (this.isAtHalfHealth() && (entity = damageSource.getSource()) instanceof ProjectileEntity) {
+        if (this.shouldRenderOverlay() && (entity = damageSource.getSource()) instanceof ProjectileEntity) {
             return false;
         }
         entity = damageSource.getAttacker();
@@ -492,7 +492,7 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean isAtHalfHealth() {
+    public boolean shouldRenderOverlay() {
         return this.getHealth() <= this.getMaximumHealth() / 2.0f;
     }
 

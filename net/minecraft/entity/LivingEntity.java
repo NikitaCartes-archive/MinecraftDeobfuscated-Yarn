@@ -288,7 +288,7 @@ extends Entity {
             double d;
             if (this.isInsideWall()) {
                 this.damage(DamageSource.IN_WALL, 1.0f);
-            } else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox()) && (d = this.world.getWorldBorder().contains(this) + this.world.getWorldBorder().getBuffer()) < 0.0 && (e = this.world.getWorldBorder().getDamagePerBlock()) > 0.0) {
+            } else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox()) && (d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getBuffer()) < 0.0 && (e = this.world.getWorldBorder().getDamagePerBlock()) > 0.0) {
                 this.damage(DamageSource.IN_WALL, Math.max(1, MathHelper.floor(-d * e)));
             }
         }
@@ -300,9 +300,9 @@ extends Entity {
             BlockPos blockPos;
             if (this.isInFluid(FluidTags.WATER) && this.world.getBlockState(new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z)).getBlock() != Blocks.BUBBLE_COLUMN) {
                 if (!(this.canBreatheInWater() || StatusEffectUtil.hasWaterBreathing(this) || bl2)) {
-                    this.setBreath(this.getNextBreathInWater(this.getBreath()));
-                    if (this.getBreath() == -20) {
-                        this.setBreath(0);
+                    this.setAir(this.getNextAirUnderwater(this.getAir()));
+                    if (this.getAir() == -20) {
+                        this.setAir(0);
                         Vec3d vec3d = this.getVelocity();
                         for (int i = 0; i < 8; ++i) {
                             float f = this.random.nextFloat() - this.random.nextFloat();
@@ -316,8 +316,8 @@ extends Entity {
                 if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && !this.getVehicle().canBeRiddenInWater()) {
                     this.stopRiding();
                 }
-            } else if (this.getBreath() < this.getMaxBreath()) {
-                this.setBreath(this.getNextBreathInAir(this.getBreath()));
+            } else if (this.getAir() < this.getMaxAir()) {
+                this.setAir(this.getNextAirOnLand(this.getAir()));
             }
             if (!this.world.isClient && !Objects.equal(this.lastBlockPos, blockPos = new BlockPos(this))) {
                 this.lastBlockPos = blockPos;
@@ -405,7 +405,7 @@ extends Entity {
         return !this.isBaby();
     }
 
-    protected int getNextBreathInWater(int i) {
+    protected int getNextAirUnderwater(int i) {
         int j = EnchantmentHelper.getRespiration(this);
         if (j > 0 && this.random.nextInt(j + 1) > 0) {
             return i;
@@ -413,8 +413,8 @@ extends Entity {
         return i - 1;
     }
 
-    protected int getNextBreathInAir(int i) {
-        return Math.min(i + 4, this.getMaxBreath());
+    protected int getNextAirOnLand(int i) {
+        return Math.min(i + 4, this.getMaxAir());
     }
 
     protected int getCurrentExperience(PlayerEntity playerEntity) {
@@ -2158,10 +2158,10 @@ extends Entity {
         this.absorptionAmount = f;
     }
 
-    public void method_6000() {
+    public void enterCombat() {
     }
 
-    public void method_6044() {
+    public void endCombat() {
     }
 
     protected void method_6008() {

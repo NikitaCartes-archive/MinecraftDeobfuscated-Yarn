@@ -7,11 +7,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Arm;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandEntityModel
@@ -29,37 +29,37 @@ extends ArmorStandArmorEntityModel {
         super(f, 64, 64);
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-1.0f, -7.0f, -1.0f, 2.0f, 7.0f, 2.0f, f);
-        this.head.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.head.setPivot(0.0f, 0.0f, 0.0f);
         this.body = new ModelPart(this, 0, 26);
         this.body.addCuboid(-6.0f, 0.0f, -1.5f, 12.0f, 3.0f, 3.0f, f);
-        this.body.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.body.setPivot(0.0f, 0.0f, 0.0f);
         this.rightArm = new ModelPart(this, 24, 0);
         this.rightArm.addCuboid(-2.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
-        this.rightArm.setRotationPoint(-5.0f, 2.0f, 0.0f);
+        this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
         this.leftArm = new ModelPart(this, 32, 16);
         this.leftArm.mirror = true;
         this.leftArm.addCuboid(0.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
-        this.leftArm.setRotationPoint(5.0f, 2.0f, 0.0f);
+        this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
         this.rightLeg = new ModelPart(this, 8, 0);
         this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 11.0f, 2.0f, f);
-        this.rightLeg.setRotationPoint(-1.9f, 12.0f, 0.0f);
+        this.rightLeg.setPivot(-1.9f, 12.0f, 0.0f);
         this.leftLeg = new ModelPart(this, 40, 16);
         this.leftLeg.mirror = true;
         this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 11.0f, 2.0f, f);
-        this.leftLeg.setRotationPoint(1.9f, 12.0f, 0.0f);
+        this.leftLeg.setPivot(1.9f, 12.0f, 0.0f);
         this.bodyStickRight = new ModelPart(this, 16, 0);
         this.bodyStickRight.addCuboid(-3.0f, 3.0f, -1.0f, 2.0f, 7.0f, 2.0f, f);
-        this.bodyStickRight.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.bodyStickRight.setPivot(0.0f, 0.0f, 0.0f);
         this.bodyStickRight.visible = true;
         this.bodyStickLeft = new ModelPart(this, 48, 16);
         this.bodyStickLeft.addCuboid(1.0f, 3.0f, -1.0f, 2.0f, 7.0f, 2.0f, f);
-        this.bodyStickLeft.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.bodyStickLeft.setPivot(0.0f, 0.0f, 0.0f);
         this.hip = new ModelPart(this, 0, 48);
         this.hip.addCuboid(-4.0f, 10.0f, -1.0f, 8.0f, 2.0f, 2.0f, f);
-        this.hip.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.hip.setPivot(0.0f, 0.0f, 0.0f);
         this.plate = new ModelPart(this, 0, 32);
         this.plate.addCuboid(-6.0f, 11.0f, -6.0f, 12.0f, 1.0f, 12.0f, f);
-        this.plate.setRotationPoint(0.0f, 12.0f, 0.0f);
+        this.plate.setPivot(0.0f, 12.0f, 0.0f);
         this.headwear.visible = false;
     }
 
@@ -69,8 +69,8 @@ extends ArmorStandArmorEntityModel {
         this.leftArm.visible = armorStandEntity.shouldShowArms();
         this.rightArm.visible = armorStandEntity.shouldShowArms();
         this.plate.visible = !armorStandEntity.shouldHideBasePlate();
-        this.leftLeg.setRotationPoint(1.9f, 12.0f, 0.0f);
-        this.rightLeg.setRotationPoint(-1.9f, 12.0f, 0.0f);
+        this.leftLeg.setPivot(1.9f, 12.0f, 0.0f);
+        this.rightLeg.setPivot(-1.9f, 12.0f, 0.0f);
         this.bodyStickRight.pitch = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getPitch();
         this.bodyStickRight.yaw = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getYaw();
         this.bodyStickRight.roll = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getRoll();
@@ -91,11 +91,11 @@ extends ArmorStandArmorEntityModel {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm, class_4587 arg) {
+    public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
         ModelPart modelPart = this.getArm(arm);
         boolean bl = modelPart.visible;
         modelPart.visible = true;
-        super.setArmAngle(f, arm, arg);
+        super.setArmAngle(f, arm, matrixStack);
         modelPart.visible = bl;
     }
 }

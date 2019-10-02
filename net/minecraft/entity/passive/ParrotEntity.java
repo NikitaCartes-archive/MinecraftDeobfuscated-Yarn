@@ -123,7 +123,7 @@ implements Flutterer {
     public float field_6819;
     public float field_6827;
     public float field_6829;
-    public float field_6824 = 1.0f;
+    private float field_6824 = 1.0f;
     private boolean songPlaying;
     private BlockPos songSource;
 
@@ -324,7 +324,7 @@ implements Flutterer {
         return SoundEvents.ENTITY_PARROT_AMBIENT;
     }
 
-    public static SoundEvent getSound(EntityType<?> entityType) {
+    private static SoundEvent getSound(EntityType<?> entityType) {
         return MOB_SOUNDS.getOrDefault(entityType, SoundEvents.ENTITY_PARROT_AMBIENT);
     }
 
@@ -386,9 +386,7 @@ implements Flutterer {
         if (this.isInvulnerableTo(damageSource)) {
             return false;
         }
-        if (this.sitGoal != null) {
-            this.sitGoal.setEnabledWithOwner(false);
-        }
+        this.sitGoal.setEnabledWithOwner(false);
         return super.damage(damageSource, f);
     }
 

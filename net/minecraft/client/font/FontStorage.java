@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4591;
 import net.minecraft.client.font.BlankGlyph;
 import net.minecraft.client.font.EmptyGlyphRenderer;
 import net.minecraft.client.font.Font;
@@ -24,6 +23,7 @@ import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphAtlasTexture;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
+import net.minecraft.client.font.WhiteRectangleGlyph;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -63,7 +63,7 @@ implements AutoCloseable {
         this.glyphCache.clear();
         this.charactersByWidth.clear();
         this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
-        this.field_20910 = this.getGlyphRenderer(class_4591.INSTANCE);
+        this.field_20910 = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
         HashSet<Font> set = Sets.newHashSet();
         block1: for (char c = '\u0000'; c < '\uffff'; c = (char)((char)(c + 1))) {
             for (Font font2 : list) {

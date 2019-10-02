@@ -606,6 +606,18 @@ public class GlStateManager {
         return GL20.glGetProgramInfoLog(i, j);
     }
 
+    public static void method_23282() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        GlStateManager.texEnv(8960, 8704, 34160);
+        GlStateManager.method_23281(7681, 34168);
+    }
+
+    public static void method_23283() {
+        RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+        GlStateManager.texEnv(8960, 8704, 8448);
+        GlStateManager.method_22885(8448, 5890, 34168, 34166);
+    }
+
     public static void method_22610(int i, int j) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.activeTexture(33985);
@@ -633,7 +645,13 @@ public class GlStateManager {
         GlStateManager.activeTexture(33984);
     }
 
-    public static void method_22885(int i, int j, int k, int l) {
+    private static void method_23281(int i, int j) {
+        GlStateManager.texEnv(8960, 34161, i);
+        GlStateManager.texEnv(8960, 34176, j);
+        GlStateManager.texEnv(8960, 34192, 768);
+    }
+
+    private static void method_22885(int i, int j, int k, int l) {
         GlStateManager.texEnv(8960, 34161, i);
         GlStateManager.texEnv(8960, 34176, j);
         GlStateManager.texEnv(8960, 34192, 768);
@@ -676,8 +694,8 @@ public class GlStateManager {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GlStateManager.pushMatrix();
         GlStateManager.loadIdentity();
-        GlStateManager.rotatef(-30.0f, 0.0f, 1.0f, 0.0f);
-        GlStateManager.rotatef(165.0f, 1.0f, 0.0f, 0.0f);
+        GlStateManager.rotatef(-22.5f, 0.0f, 1.0f, 0.0f);
+        GlStateManager.rotatef(135.0f, 1.0f, 0.0f, 0.0f);
         GlStateManager.method_22616();
         GlStateManager.popMatrix();
     }
@@ -1153,7 +1171,7 @@ public class GlStateManager {
     @Deprecated
     public static void multMatrix(Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        matrix4f.putIntoBuffer(MATRIX_BUFFER);
+        matrix4f.writeToBuffer(MATRIX_BUFFER);
         MATRIX_BUFFER.rewind();
         GlStateManager.multMatrix(MATRIX_BUFFER);
     }

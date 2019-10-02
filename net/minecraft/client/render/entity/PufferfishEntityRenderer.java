@@ -5,8 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -16,6 +15,7 @@ import net.minecraft.client.render.entity.model.SmallPufferfishEntityModel;
 import net.minecraft.entity.passive.PufferfishEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class PufferfishEntityRenderer
@@ -34,19 +34,19 @@ extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
         return SKIN;
     }
 
-    public void method_4094(PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+    public void method_4094(PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         int i = pufferfishEntity.getPuffState();
         if (i != this.field_4765) {
             this.model = i == 0 ? this.smallModel : (i == 1 ? this.mediumModel : this.largeModel);
         }
         this.field_4765 = i;
         this.field_4673 = 0.1f + 0.1f * (float)i;
-        super.method_4072(pufferfishEntity, d, e, f, g, h, arg, arg2);
+        super.method_4072(pufferfishEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
-    protected void method_4095(PufferfishEntity pufferfishEntity, class_4587 arg, float f, float g, float h) {
-        arg.method_22904(0.0, MathHelper.cos(f * 0.05f) * 0.08f, 0.0);
-        super.setupTransforms(pufferfishEntity, arg, f, g, h);
+    protected void method_4095(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {
+        matrixStack.translate(0.0, MathHelper.cos(f * 0.05f) * 0.08f, 0.0);
+        super.setupTransforms(pufferfishEntity, matrixStack, f, g, h);
     }
 }
 

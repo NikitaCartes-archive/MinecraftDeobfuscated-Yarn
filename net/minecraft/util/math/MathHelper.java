@@ -20,7 +20,7 @@ public class MathHelper {
         }
     });
     private static final Random RANDOM = new Random();
-    private static final int[] MULTIPLY_DE_BRUJIN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
+    private static final int[] MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
     private static final double SMALLEST_FRACTION_FREE_DOUBLE = Double.longBitsToDouble(4805340802404319232L);
     private static final double[] ARCSINE_TABLE = new double[257];
     private static final double[] COSINE_TABLE = new double[257];
@@ -289,13 +289,13 @@ public class MathHelper {
         return i != 0 && (i & i - 1) == 0;
     }
 
-    public static int log2DeBrujin(int i) {
+    public static int log2DeBruijn(int i) {
         i = MathHelper.isPowerOfTwo(i) ? i : MathHelper.smallestEncompassingPowerOfTwo(i);
-        return MULTIPLY_DE_BRUJIN_BIT_POSITION[(int)((long)i * 125613361L >> 27) & 0x1F];
+        return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)i * 125613361L >> 27) & 0x1F];
     }
 
     public static int log2(int i) {
-        return MathHelper.log2DeBrujin(i) - (MathHelper.isPowerOfTwo(i) ? 0 : 1);
+        return MathHelper.log2DeBruijn(i) - (MathHelper.isPowerOfTwo(i) ? 0 : 1);
     }
 
     public static int roundUp(int i, int j) {
@@ -421,7 +421,7 @@ public class MathHelper {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static float method_22858(float f) {
+    public static float fastInverseSqrt(float f) {
         float g = 0.5f * f;
         int i = Float.floatToIntBits(f);
         i = 1597463007 - (i >> 1);
@@ -437,6 +437,16 @@ public class MathHelper {
         d = Double.longBitsToDouble(l);
         d *= 1.5 - e * d * d;
         return d;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static float fastInverseCbrt(float f) {
+        int i = Float.floatToIntBits(f);
+        i = 1419967116 - i / 3;
+        float g = Float.intBitsToFloat(i);
+        g = 0.6666667f * g + 1.0f / (3.0f * g * g * f);
+        g = 0.6666667f * g + 1.0f / (3.0f * g * g * f);
+        return g;
     }
 
     @Environment(value=EnvType.CLIENT)

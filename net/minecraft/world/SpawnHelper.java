@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.Random;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityData;
@@ -31,6 +30,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -80,7 +80,7 @@ public final class SpawnHelper {
                     if (spawnEntry == null) continue block2;
                     q = spawnEntry.minGroupSize + serverWorld.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
                 }
-                if (spawnEntry.type.getCategory() == EntityCategory.MISC || !spawnEntry.type.method_20814() && d > 16384.0 || !(entityType = spawnEntry.type).isSummonable() || !SpawnHelper.containsSpawnEntry(chunkGenerator, entityCategory, spawnEntry, mutable) || !SpawnHelper.canSpawn(location = SpawnRestriction.getLocation(entityType), serverWorld, mutable, entityType) || !SpawnRestriction.canSpawn(entityType, serverWorld, SpawnType.NATURAL, mutable, serverWorld.random) || !serverWorld.doesNotCollide(entityType.createSimpleBoundingBox(f, k, g))) continue;
+                if (spawnEntry.type.getCategory() == EntityCategory.MISC || !spawnEntry.type.isSpawnableFarFromPlayer() && d > 16384.0 || !(entityType = spawnEntry.type).isSummonable() || !SpawnHelper.containsSpawnEntry(chunkGenerator, entityCategory, spawnEntry, mutable) || !SpawnHelper.canSpawn(location = SpawnRestriction.getLocation(entityType), serverWorld, mutable, entityType) || !SpawnRestriction.canSpawn(entityType, serverWorld, SpawnType.NATURAL, mutable, serverWorld.random) || !serverWorld.doesNotCollide(entityType.createSimpleBoundingBox(f, k, g))) continue;
                 try {
                     Object entity = entityType.create(serverWorld);
                     if (!(entity instanceof MobEntity)) {
@@ -143,27 +143,27 @@ public final class SpawnHelper {
         return !blockState.matches(BlockTags.RAILS);
     }
 
-    public static boolean canSpawn(SpawnRestriction.Location location, class_4538 arg, BlockPos blockPos, @Nullable EntityType<?> entityType) {
+    public static boolean canSpawn(SpawnRestriction.Location location, WorldView worldView, BlockPos blockPos, @Nullable EntityType<?> entityType) {
         if (location == SpawnRestriction.Location.NO_RESTRICTIONS) {
             return true;
         }
-        if (entityType == null || !arg.getWorldBorder().contains(blockPos)) {
+        if (entityType == null || !worldView.getWorldBorder().contains(blockPos)) {
             return false;
         }
-        BlockState blockState = arg.getBlockState(blockPos);
-        FluidState fluidState = arg.getFluidState(blockPos);
+        BlockState blockState = worldView.getBlockState(blockPos);
+        FluidState fluidState = worldView.getFluidState(blockPos);
         BlockPos blockPos2 = blockPos.up();
         BlockPos blockPos3 = blockPos.method_10074();
         switch (location) {
             case IN_WATER: {
-                return fluidState.matches(FluidTags.WATER) && arg.getFluidState(blockPos3).matches(FluidTags.WATER) && !arg.getBlockState(blockPos2).isSimpleFullBlock(arg, blockPos2);
+                return fluidState.matches(FluidTags.WATER) && worldView.getFluidState(blockPos3).matches(FluidTags.WATER) && !worldView.getBlockState(blockPos2).isSimpleFullBlock(worldView, blockPos2);
             }
         }
-        BlockState blockState2 = arg.getBlockState(blockPos3);
-        if (!blockState2.allowsSpawning(arg, blockPos3, entityType)) {
+        BlockState blockState2 = worldView.getBlockState(blockPos3);
+        if (!blockState2.allowsSpawning(worldView, blockPos3, entityType)) {
             return false;
         }
-        return SpawnHelper.isClearForSpawn(arg, blockPos, blockState, fluidState) && SpawnHelper.isClearForSpawn(arg, blockPos2, arg.getBlockState(blockPos2), arg.getFluidState(blockPos2));
+        return SpawnHelper.isClearForSpawn(worldView, blockPos, blockState, fluidState) && SpawnHelper.isClearForSpawn(worldView, blockPos2, worldView.getBlockState(blockPos2), worldView.getFluidState(blockPos2));
     }
 
     public static void populateEntities(IWorld iWorld, Biome biome, int i, int j, Random random) {
@@ -216,10 +216,10 @@ public final class SpawnHelper {
         }
     }
 
-    private static BlockPos getEntitySpawnPos(class_4538 arg, @Nullable EntityType<?> entityType, int i, int j) {
-        BlockPos blockPos = new BlockPos(i, arg.getTopY(SpawnRestriction.getHeightmapType(entityType), i, j), j);
+    private static BlockPos getEntitySpawnPos(WorldView worldView, @Nullable EntityType<?> entityType, int i, int j) {
+        BlockPos blockPos = new BlockPos(i, worldView.getTopY(SpawnRestriction.getHeightmapType(entityType), i, j), j);
         BlockPos blockPos2 = blockPos.method_10074();
-        if (arg.getBlockState(blockPos2).canPlaceAtSide(arg, blockPos2, BlockPlacementEnvironment.LAND)) {
+        if (worldView.getBlockState(blockPos2).canPlaceAtSide(worldView, blockPos2, BlockPlacementEnvironment.LAND)) {
             return blockPos2;
         }
         return blockPos;

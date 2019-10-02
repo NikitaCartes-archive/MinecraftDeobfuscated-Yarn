@@ -34,31 +34,31 @@ extends class_4592<T> {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.body = new ModelPart(this);
-        this.body.setRotationPoint(0.0f, 19.0f, 0.0f);
+        this.body.setPivot(0.0f, 19.0f, 0.0f);
         this.mainBody = new ModelPart(this, 0, 0);
-        this.mainBody.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.mainBody.setPivot(0.0f, 0.0f, 0.0f);
         this.body.addChild(this.mainBody);
         this.mainBody.addCuboid(-3.5f, -4.0f, -5.0f, 7.0f, 7.0f, 10.0f, 0.0f);
         this.stinger = new ModelPart(this, 26, 7);
         this.stinger.addCuboid(0.0f, -1.0f, 5.0f, 0.0f, 1.0f, 2.0f, 0.0f);
         this.mainBody.addChild(this.stinger);
         this.leftAntenna = new ModelPart(this, 2, 0);
-        this.leftAntenna.setRotationPoint(0.0f, -2.0f, -5.0f);
+        this.leftAntenna.setPivot(0.0f, -2.0f, -5.0f);
         this.leftAntenna.addCuboid(1.5f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f, 0.0f);
         this.rightAntenna = new ModelPart(this, 2, 3);
-        this.rightAntenna.setRotationPoint(0.0f, -2.0f, -5.0f);
+        this.rightAntenna.setPivot(0.0f, -2.0f, -5.0f);
         this.rightAntenna.addCuboid(-2.5f, -2.0f, -3.0f, 1.0f, 2.0f, 3.0f, 0.0f);
         this.mainBody.addChild(this.leftAntenna);
         this.mainBody.addChild(this.rightAntenna);
         this.leftWing = new ModelPart(this, 0, 18);
-        this.leftWing.setRotationPoint(-1.5f, -4.0f, -3.0f);
+        this.leftWing.setPivot(-1.5f, -4.0f, -3.0f);
         this.leftWing.pitch = 0.0f;
         this.leftWing.yaw = -0.2618f;
         this.leftWing.roll = 0.0f;
         this.body.addChild(this.leftWing);
         this.leftWing.addCuboid(-9.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, 0.001f);
         this.rightWing = new ModelPart(this, 0, 18);
-        this.rightWing.setRotationPoint(1.5f, -4.0f, -3.0f);
+        this.rightWing.setPivot(1.5f, -4.0f, -3.0f);
         this.rightWing.pitch = 0.0f;
         this.rightWing.yaw = 0.2618f;
         this.rightWing.roll = 0.0f;
@@ -66,15 +66,15 @@ extends class_4592<T> {
         this.body.addChild(this.rightWing);
         this.rightWing.addCuboid(0.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, 0.001f);
         this.frontLeg = new ModelPart(this);
-        this.frontLeg.setRotationPoint(1.5f, 3.0f, -2.0f);
+        this.frontLeg.setPivot(1.5f, 3.0f, -2.0f);
         this.body.addChild(this.frontLeg);
         this.frontLeg.addCuboid("frontLegBox", -5.0f, 0.0f, 0.0f, 7, 2, 0, 0.0f, 26, 1);
         this.midLeg = new ModelPart(this);
-        this.midLeg.setRotationPoint(1.5f, 3.0f, 0.0f);
+        this.midLeg.setPivot(1.5f, 3.0f, 0.0f);
         this.body.addChild(this.midLeg);
         this.midLeg.addCuboid("midLegBox", -5.0f, 0.0f, 0.0f, 7, 2, 0, 0.0f, 26, 3);
         this.backLeg = new ModelPart(this);
-        this.backLeg.setRotationPoint(1.5f, 3.0f, 2.0f);
+        this.backLeg.setPivot(1.5f, 3.0f, 2.0f);
         this.body.addChild(this.backLeg);
         this.backLeg.addCuboid("backLegBox", -5.0f, 0.0f, 0.0f, 7, 2, 0, 0.0f, 26, 5);
     }
@@ -92,7 +92,7 @@ extends class_4592<T> {
         this.leftAntenna.pitch = 0.0f;
         this.rightAntenna.pitch = 0.0f;
         this.body.pitch = 0.0f;
-        this.body.rotationPointY = 19.0f;
+        this.body.pivotY = 19.0f;
         boolean bl2 = bl = ((BeeEntity)beeEntity).onGround && ((Entity)beeEntity).getVelocity().lengthSquared() < 1.0E-7;
         if (bl) {
             this.leftWing.yaw = -0.2618f;
@@ -128,7 +128,7 @@ extends class_4592<T> {
                 this.rightAntenna.pitch = l * (float)Math.PI * 0.03f;
                 this.frontLeg.pitch = -l * (float)Math.PI * 0.1f + 0.3926991f;
                 this.backLeg.pitch = -l * (float)Math.PI * 0.05f + 0.7853982f;
-                this.body.rotationPointY = 19.0f - MathHelper.cos(h * 0.18f) * 0.9f;
+                this.body.pivotY = 19.0f - MathHelper.cos(h * 0.18f) * 0.9f;
             }
         }
         if (this.bodyPitch > 0.0f) {

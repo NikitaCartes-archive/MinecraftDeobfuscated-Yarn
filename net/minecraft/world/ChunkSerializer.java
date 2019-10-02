@@ -16,7 +16,6 @@ import java.util.Objects;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4548;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
@@ -43,6 +42,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
@@ -74,7 +74,7 @@ public class ChunkSerializer {
         if (!Objects.equals(chunkPos, chunkPos2)) {
             LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", (Object)chunkPos, (Object)chunkPos, (Object)chunkPos2);
         }
-        class_4548 lv = new class_4548(chunkPos, biomeSource, compoundTag2.contains("Biomes", 11) ? compoundTag2.getIntArray("Biomes") : null);
+        BiomeArray biomeArray = new BiomeArray(chunkPos, biomeSource, compoundTag2.contains("Biomes", 11) ? compoundTag2.getIntArray("Biomes") : null);
         UpgradeData upgradeData = compoundTag2.contains("UpgradeData", 10) ? new UpgradeData(compoundTag2.getCompound("UpgradeData")) : UpgradeData.NO_UPGRADE_DATA;
         ChunkTickScheduler<Block> chunkTickScheduler = new ChunkTickScheduler<Block>(block -> block == null || block.getDefaultState().isAir(), chunkPos, compoundTag2.getList("ToBeTicked", 9));
         ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, chunkPos, compoundTag2.getList("LiquidsToBeTicked", 9));
@@ -112,10 +112,10 @@ public class ChunkSerializer {
         if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
             TickScheduler<Block> tickScheduler = compoundTag2.contains("TileTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag2.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get) : chunkTickScheduler;
             TickScheduler<Fluid> tickScheduler2 = compoundTag2.contains("LiquidTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag2.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get) : chunkTickScheduler2;
-            chunk = new WorldChunk(serverWorld.getWorld(), chunkPos, lv, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> ChunkSerializer.writeEntities(compoundTag2, worldChunk));
+            chunk = new WorldChunk(serverWorld.getWorld(), chunkPos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> ChunkSerializer.writeEntities(compoundTag2, worldChunk));
         } else {
             ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
-            protoChunk.method_22405(lv);
+            protoChunk.method_22405(biomeArray);
             chunk = protoChunk;
             chunk.setInhabitedTime(l);
             protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));
@@ -184,7 +184,7 @@ public class ChunkSerializer {
 
     public static CompoundTag serialize(ServerWorld serverWorld, Chunk chunk) {
         CompoundTag compoundTag4;
-        class_4548 lv;
+        BiomeArray biomeArray;
         Object compoundTag3;
         ChunkPos chunkPos = chunk.getPos();
         CompoundTag compoundTag = new CompoundTag();
@@ -227,8 +227,8 @@ public class ChunkSerializer {
         if (bl) {
             compoundTag2.putBoolean("isLightOn", true);
         }
-        if ((lv = chunk.getBiomeArray()) != null) {
-            compoundTag2.putIntArray("Biomes", lv.method_22401());
+        if ((biomeArray = chunk.getBiomeArray()) != null) {
+            compoundTag2.putIntArray("Biomes", biomeArray.toIntArray());
         }
         ListTag listTag2 = new ListTag();
         for (BlockPos blockPos : chunk.getBlockEntityPositions()) {

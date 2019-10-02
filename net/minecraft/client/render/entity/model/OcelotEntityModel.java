@@ -30,29 +30,29 @@ extends class_4592<T> {
         this.head.addCuboid("nose", -1.5f, 0.0f, -4.0f, 3, 2, 2, f, 0, 24);
         this.head.addCuboid("ear1", -2.0f, -3.0f, 0.0f, 1, 1, 2, f, 0, 10);
         this.head.addCuboid("ear2", 1.0f, -3.0f, 0.0f, 1, 1, 2, f, 6, 10);
-        this.head.setRotationPoint(0.0f, 15.0f, -9.0f);
+        this.head.setPivot(0.0f, 15.0f, -9.0f);
         this.body = new ModelPart(this, 20, 0);
         this.body.addCuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, f);
-        this.body.setRotationPoint(0.0f, 12.0f, -10.0f);
+        this.body.setPivot(0.0f, 12.0f, -10.0f);
         this.tail1 = new ModelPart(this, 0, 15);
         this.tail1.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
         this.tail1.pitch = 0.9f;
-        this.tail1.setRotationPoint(0.0f, 15.0f, 8.0f);
+        this.tail1.setPivot(0.0f, 15.0f, 8.0f);
         this.tail2 = new ModelPart(this, 4, 15);
         this.tail2.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, f);
-        this.tail2.setRotationPoint(0.0f, 20.0f, 14.0f);
+        this.tail2.setPivot(0.0f, 20.0f, 14.0f);
         this.frontLegLeft = new ModelPart(this, 8, 13);
         this.frontLegLeft.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
-        this.frontLegLeft.setRotationPoint(1.1f, 18.0f, 5.0f);
+        this.frontLegLeft.setPivot(1.1f, 18.0f, 5.0f);
         this.frontLegRight = new ModelPart(this, 8, 13);
         this.frontLegRight.addCuboid(-1.0f, 0.0f, 1.0f, 2.0f, 6.0f, 2.0f, f);
-        this.frontLegRight.setRotationPoint(-1.1f, 18.0f, 5.0f);
+        this.frontLegRight.setPivot(-1.1f, 18.0f, 5.0f);
         this.backLegLeft = new ModelPart(this, 40, 0);
         this.backLegLeft.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
-        this.backLegLeft.setRotationPoint(1.2f, 14.1f, -5.0f);
+        this.backLegLeft.setPivot(1.2f, 14.1f, -5.0f);
         this.backLegRight = new ModelPart(this, 40, 0);
         this.backLegRight.addCuboid(-1.0f, 0.0f, 0.0f, 2.0f, 10.0f, 2.0f, f);
-        this.backLegRight.setRotationPoint(-1.2f, 14.1f, -5.0f);
+        this.backLegRight.setPivot(-1.2f, 14.1f, -5.0f);
     }
 
     @Override
@@ -89,35 +89,35 @@ extends class_4592<T> {
 
     @Override
     public void animateModel(T entity, float f, float g, float h) {
-        this.body.rotationPointY = 12.0f;
-        this.body.rotationPointZ = -10.0f;
-        this.head.rotationPointY = 15.0f;
-        this.head.rotationPointZ = -9.0f;
-        this.tail1.rotationPointY = 15.0f;
-        this.tail1.rotationPointZ = 8.0f;
-        this.tail2.rotationPointY = 20.0f;
-        this.tail2.rotationPointZ = 14.0f;
-        this.backLegLeft.rotationPointY = 14.1f;
-        this.backLegLeft.rotationPointZ = -5.0f;
-        this.backLegRight.rotationPointY = 14.1f;
-        this.backLegRight.rotationPointZ = -5.0f;
-        this.frontLegLeft.rotationPointY = 18.0f;
-        this.frontLegLeft.rotationPointZ = 5.0f;
-        this.frontLegRight.rotationPointY = 18.0f;
-        this.frontLegRight.rotationPointZ = 5.0f;
+        this.body.pivotY = 12.0f;
+        this.body.pivotZ = -10.0f;
+        this.head.pivotY = 15.0f;
+        this.head.pivotZ = -9.0f;
+        this.tail1.pivotY = 15.0f;
+        this.tail1.pivotZ = 8.0f;
+        this.tail2.pivotY = 20.0f;
+        this.tail2.pivotZ = 14.0f;
+        this.backLegLeft.pivotY = 14.1f;
+        this.backLegLeft.pivotZ = -5.0f;
+        this.backLegRight.pivotY = 14.1f;
+        this.backLegRight.pivotZ = -5.0f;
+        this.frontLegLeft.pivotY = 18.0f;
+        this.frontLegLeft.pivotZ = 5.0f;
+        this.frontLegRight.pivotY = 18.0f;
+        this.frontLegRight.pivotZ = 5.0f;
         this.tail1.pitch = 0.9f;
         if (((Entity)entity).isInSneakingPose()) {
-            this.body.rotationPointY += 1.0f;
-            this.head.rotationPointY += 2.0f;
-            this.tail1.rotationPointY += 1.0f;
-            this.tail2.rotationPointY += -4.0f;
-            this.tail2.rotationPointZ += 2.0f;
+            this.body.pivotY += 1.0f;
+            this.head.pivotY += 2.0f;
+            this.tail1.pivotY += 1.0f;
+            this.tail2.pivotY += -4.0f;
+            this.tail2.pivotZ += 2.0f;
             this.tail1.pitch = 1.5707964f;
             this.tail2.pitch = 1.5707964f;
             this.animationState = 0;
         } else if (((Entity)entity).isSprinting()) {
-            this.tail2.rotationPointY = this.tail1.rotationPointY;
-            this.tail2.rotationPointZ += 2.0f;
+            this.tail2.pivotY = this.tail1.pivotY;
+            this.tail2.pivotZ += 2.0f;
             this.tail1.pitch = 1.5707964f;
             this.tail2.pitch = 1.5707964f;
             this.animationState = 2;

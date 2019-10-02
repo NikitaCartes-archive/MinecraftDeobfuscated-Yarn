@@ -84,7 +84,7 @@ public class WanderingTraderManager {
         Optional<BlockPos> optional = pointOfInterestStorage.getPosition(PointOfInterestType.MEETING.getCompletionCondition(), blockPos -> true, blockPos2, 48, PointOfInterestStorage.OccupationStatus.ANY);
         BlockPos blockPos22 = optional.orElse(blockPos2);
         BlockPos blockPos3 = this.method_18017(blockPos22, 48);
-        if (blockPos3 != null) {
+        if (blockPos3 != null && this.method_23279(blockPos3)) {
             if (this.world.getBiome(blockPos3) == Biomes.THE_VOID) {
                 return false;
             }
@@ -128,6 +128,14 @@ public class WanderingTraderManager {
             break;
         }
         return blockPos2;
+    }
+
+    private boolean method_23279(BlockPos blockPos) {
+        for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(1, 2, 1))) {
+            if (this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) continue;
+            return false;
+        }
+        return true;
     }
 }
 

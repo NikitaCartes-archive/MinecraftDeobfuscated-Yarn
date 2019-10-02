@@ -117,7 +117,7 @@ extends Item {
         }
         BlockState blockState = world.getBlockState(blockPos);
         Material material = blockState.getMaterial();
-        boolean bl = blockState.method_22360(this.fluid);
+        boolean bl = blockState.canBucketPlace(this.fluid);
         if (blockState.isAir() || bl || blockState.getBlock() instanceof FluidFillable && ((FluidFillable)((Object)blockState.getBlock())).canFillWithFluid(world, blockPos, blockState, this.fluid)) {
             if (world.dimension.doesWaterVaporize() && this.fluid.matches(FluidTags.WATER)) {
                 int i = blockPos.getX();

@@ -22,7 +22,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4548;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -35,6 +34,7 @@ import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -52,7 +52,7 @@ implements Chunk {
     private final ChunkPos pos;
     private volatile boolean shouldSave;
     @Nullable
-    private class_4548 field_20656;
+    private BiomeArray field_20656;
     @Nullable
     private volatile LightingProvider lightingProvider;
     private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
@@ -222,13 +222,13 @@ implements Chunk {
         return this.entities;
     }
 
-    public void method_22405(class_4548 arg) {
-        this.field_20656 = arg;
+    public void method_22405(BiomeArray biomeArray) {
+        this.field_20656 = biomeArray;
     }
 
     @Override
     @Nullable
-    public class_4548 getBiomeArray() {
+    public BiomeArray getBiomeArray() {
         return this.field_20656;
     }
 

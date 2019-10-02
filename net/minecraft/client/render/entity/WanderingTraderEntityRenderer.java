@@ -5,7 +5,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
@@ -13,6 +12,7 @@ import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRendere
 import net.minecraft.client.render.entity.model.VillagerResemblingModel;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WanderingTraderEntityRenderer
@@ -29,9 +29,9 @@ extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<Wanderi
         return TEXTURE;
     }
 
-    protected void method_18046(WanderingTraderEntity wanderingTraderEntity, class_4587 arg, float f) {
+    protected void method_18046(WanderingTraderEntity wanderingTraderEntity, MatrixStack matrixStack, float f) {
         float g = 0.9375f;
-        arg.method_22905(0.9375f, 0.9375f, 0.9375f);
+        matrixStack.scale(0.9375f, 0.9375f, 0.9375f);
     }
 }
 

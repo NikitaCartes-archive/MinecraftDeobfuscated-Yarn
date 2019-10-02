@@ -8,7 +8,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_4543;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.StructureManager;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.AbstractTempleFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -47,7 +47,7 @@ extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
         ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
         if (i == chunkPos.x && j == chunkPos.z) {
             int k = i >> 4;
@@ -60,7 +60,7 @@ extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
             if (chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST)) {
                 for (int m = i - 10; m <= i + 10; ++m) {
                     for (int n = j - 10; n <= j + 10; ++n) {
-                        if (!Feature.VILLAGE.shouldStartAt(arg, chunkGenerator, random, m, n, arg.getBiome(new BlockPos((m << 4) + 9, 0, (n << 4) + 9)))) continue;
+                        if (!Feature.VILLAGE.shouldStartAt(biomeAccess, chunkGenerator, random, m, n, biomeAccess.getBiome(new BlockPos((m << 4) + 9, 0, (n << 4) + 9)))) continue;
                         return false;
                     }
                 }

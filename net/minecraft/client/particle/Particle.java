@@ -7,9 +7,9 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.ReusableStream;
@@ -124,7 +124,7 @@ public abstract class Particle {
         }
     }
 
-    public abstract void buildGeometry(class_4588 var1, Camera var2, float var3, float var4, float var5, float var6, float var7, float var8);
+    public abstract void buildGeometry(VertexConsumer var1, Camera var2, float var3, float var4, float var5, float var6, float var7, float var8);
 
     public abstract ParticleTextureSheet getType();
 
@@ -189,7 +189,7 @@ public abstract class Particle {
     protected int getColorMultiplier(float f) {
         BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
         if (this.world.isChunkLoaded(blockPos)) {
-            return this.world.getLightmapIndex(blockPos);
+            return this.world.getLightmapCoordinates(blockPos);
         }
         return 0;
     }

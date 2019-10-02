@@ -5,14 +5,13 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -22,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(value=EnvType.CLIENT)
@@ -35,15 +35,15 @@ extends EntityRenderer<T> {
         this.field_4673 = 0.7f;
     }
 
-    public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
-        super.render(abstractMinecartEntity, d, e, f, g, h, arg, arg2);
-        arg.method_22903();
+    public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+        super.render(abstractMinecartEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        matrixStack.push();
         long l = (long)((Entity)abstractMinecartEntity).getEntityId() * 493286711L;
         l = l * l * 4392167121L + l * 98761L;
         float i = (((float)(l >> 16 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         float j = (((float)(l >> 20 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         float k = (((float)(l >> 24 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
-        arg.method_22904(i, j, k);
+        matrixStack.translate(i, j, k);
         double m = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderX, ((AbstractMinecartEntity)abstractMinecartEntity).x);
         double n = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderY, ((AbstractMinecartEntity)abstractMinecartEntity).y);
         double o = MathHelper.lerp((double)h, ((AbstractMinecartEntity)abstractMinecartEntity).prevRenderZ, ((AbstractMinecartEntity)abstractMinecartEntity).z);
@@ -59,7 +59,7 @@ extends EntityRenderer<T> {
             if (vec3d3 == null) {
                 vec3d3 = vec3d;
             }
-            arg.method_22904(vec3d.x - m, (vec3d2.y + vec3d3.y) / 2.0 - n, vec3d.z - o);
+            matrixStack.translate(vec3d.x - m, (vec3d2.y + vec3d3.y) / 2.0 - n, vec3d.z - o);
             Vec3d vec3d4 = vec3d3.add(-vec3d2.x, -vec3d2.y, -vec3d2.z);
             if (vec3d4.length() != 0.0) {
                 vec3d4 = vec3d4.normalize();
@@ -67,43 +67,43 @@ extends EntityRenderer<T> {
                 q = (float)(Math.atan(vec3d4.y) * 73.0);
             }
         }
-        arg.method_22904(0.0, 0.375, 0.0);
-        arg.method_22907(Vector3f.field_20705.method_23214(180.0f - g, true));
-        arg.method_22907(Vector3f.field_20707.method_23214(-q, true));
+        matrixStack.translate(0.0, 0.375, 0.0);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - g, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-q, true));
         float r = (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleTicks() - h;
         float s = ((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleStrength() - h;
         if (s < 0.0f) {
             s = 0.0f;
         }
         if (r > 0.0f) {
-            arg.method_22907(Vector3f.field_20703.method_23214(MathHelper.sin(r) * r * s / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleSide(), true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(r) * r * s / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleSide(), true));
         }
         int t = ((AbstractMinecartEntity)abstractMinecartEntity).getBlockOffset();
         int u = ((Entity)abstractMinecartEntity).getLightmapCoordinates();
         BlockState blockState = ((AbstractMinecartEntity)abstractMinecartEntity).getContainedBlock();
         if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-            arg.method_22903();
+            matrixStack.push();
             float v = 0.75f;
-            arg.method_22905(0.75f, 0.75f, 0.75f);
-            arg.method_22904(-0.5, (float)(t - 8) / 16.0f, 0.5);
-            this.renderBlock(abstractMinecartEntity, h, blockState, arg, arg2, u);
-            arg.method_22909();
+            matrixStack.scale(0.75f, 0.75f, 0.75f);
+            matrixStack.translate(-0.5, (float)(t - 8) / 16.0f, 0.5);
+            this.renderBlock(abstractMinecartEntity, h, blockState, matrixStack, layeredVertexConsumerStorage, u);
+            matrixStack.pop();
         }
-        arg.method_22905(-1.0f, -1.0f, 1.0f);
+        matrixStack.scale(-1.0f, -1.0f, 1.0f);
         this.model.setAngles(abstractMinecartEntity, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(this.method_4065(abstractMinecartEntity)));
-        class_4608.method_23211(lv);
-        this.model.method_22957(arg, lv, u);
-        lv.method_22923();
-        arg.method_22909();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(this.method_4065(abstractMinecartEntity)));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        this.model.method_22957(matrixStack, vertexConsumer, u);
+        vertexConsumer.clearDefaultOverlay();
+        matrixStack.pop();
     }
 
     public Identifier method_4065(T abstractMinecartEntity) {
         return SKIN;
     }
 
-    protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState, class_4587 arg, class_4597 arg2, int i) {
-        MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, arg, arg2, i, 0, 10);
+    protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+        MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, 0, 10);
     }
 }
 

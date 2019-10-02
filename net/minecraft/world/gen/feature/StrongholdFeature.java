@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_4543;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -20,6 +19,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -39,7 +39,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
         if (this.lastSeed != chunkGenerator.getSeed()) {
             this.invalidateState();
         }

@@ -27,29 +27,29 @@ extends class_4595<BoatEntity> {
         int l = 4;
         int m = 28;
         modelParts[0].addCuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f, 0.0f);
-        modelParts[0].setRotationPoint(0.0f, 3.0f, 1.0f);
+        modelParts[0].setPivot(0.0f, 3.0f, 1.0f);
         modelParts[1].addCuboid(-13.0f, -7.0f, -1.0f, 18.0f, 6.0f, 2.0f, 0.0f);
-        modelParts[1].setRotationPoint(-15.0f, 4.0f, 4.0f);
+        modelParts[1].setPivot(-15.0f, 4.0f, 4.0f);
         modelParts[2].addCuboid(-8.0f, -7.0f, -1.0f, 16.0f, 6.0f, 2.0f, 0.0f);
-        modelParts[2].setRotationPoint(15.0f, 4.0f, 0.0f);
+        modelParts[2].setPivot(15.0f, 4.0f, 0.0f);
         modelParts[3].addCuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f, 0.0f);
-        modelParts[3].setRotationPoint(0.0f, 4.0f, -9.0f);
+        modelParts[3].setPivot(0.0f, 4.0f, -9.0f);
         modelParts[4].addCuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f, 0.0f);
-        modelParts[4].setRotationPoint(0.0f, 4.0f, 9.0f);
+        modelParts[4].setPivot(0.0f, 4.0f, 9.0f);
         modelParts[0].pitch = 1.5707964f;
         modelParts[1].yaw = 4.712389f;
         modelParts[2].yaw = 1.5707964f;
         modelParts[3].yaw = (float)Math.PI;
         this.paddles[0] = this.makePaddle(true);
-        this.paddles[0].setRotationPoint(3.0f, -5.0f, 9.0f);
+        this.paddles[0].setPivot(3.0f, -5.0f, 9.0f);
         this.paddles[1] = this.makePaddle(false);
-        this.paddles[1].setRotationPoint(3.0f, -5.0f, -9.0f);
+        this.paddles[1].setPivot(3.0f, -5.0f, -9.0f);
         this.paddles[1].yaw = (float)Math.PI;
         this.paddles[0].roll = 0.19634955f;
         this.paddles[1].roll = 0.19634955f;
         this.bottom = new ModelPart(this, 0, 0).setTextureSize(128, 64);
         this.bottom.addCuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f, 0.0f);
-        this.bottom.setRotationPoint(0.0f, -3.0f, 1.0f);
+        this.bottom.setPivot(0.0f, -3.0f, 1.0f);
         this.bottom.pitch = 1.5707964f;
         ImmutableList.Builder builder = ImmutableList.builder();
         builder.addAll(Arrays.asList(modelParts));
@@ -92,7 +92,7 @@ extends class_4595<BoatEntity> {
     }
 
     @Override
-    public /* synthetic */ Iterable method_22960() {
+    public /* synthetic */ Iterable getParts() {
         return this.method_22953();
     }
 }

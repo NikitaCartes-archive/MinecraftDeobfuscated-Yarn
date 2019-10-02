@@ -13,7 +13,6 @@ import net.minecraft.block.Material;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -25,7 +24,9 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class CarvedPumpkinBlock
@@ -54,8 +55,8 @@ extends HorizontalFacingBlock {
         this.trySpawnEntity(world, blockPos);
     }
 
-    public boolean canDispense(class_4538 arg, BlockPos blockPos) {
-        return this.getSnowGolemDispenserPattern().searchAround(arg, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(arg, blockPos) != null;
+    public boolean canDispense(WorldView worldView, BlockPos blockPos) {
+        return this.getSnowGolemDispenserPattern().searchAround(worldView, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(worldView, blockPos) != null;
     }
 
     private void trySpawnEntity(World world, BlockPos blockPos) {
@@ -144,6 +145,11 @@ extends HorizontalFacingBlock {
             this.ironGolemPattern = BlockPatternBuilder.start().aisle("~^~", "###", "~#~").where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE)).where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
         }
         return this.ironGolemPattern;
+    }
+
+    @Override
+    public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+        return true;
     }
 }
 

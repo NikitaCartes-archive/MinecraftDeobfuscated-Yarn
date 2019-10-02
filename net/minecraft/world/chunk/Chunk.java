@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4548;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +24,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.UpgradeData;
@@ -93,7 +93,7 @@ StructureHolder {
     }
 
     @Nullable
-    public class_4548 getBiomeArray();
+    public BiomeArray getBiomeArray();
 
     public void setShouldSave(boolean var1);
 

@@ -5,10 +5,10 @@ package net.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.class_4595;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class class_4594<E extends Entity>
@@ -24,8 +24,8 @@ extends class_4595<E> {
     }
 
     @Override
-    public void method_17116(class_4587 arg, class_4588 arg2, int i, float f, float g, float h) {
-        super.method_17116(arg, arg2, i, this.field_20926 * f, this.field_20927 * g, this.field_20928 * h);
+    public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
+        super.method_17116(matrixStack, vertexConsumer, i, this.field_20926 * f, this.field_20927 * g, this.field_20928 * h);
     }
 }
 

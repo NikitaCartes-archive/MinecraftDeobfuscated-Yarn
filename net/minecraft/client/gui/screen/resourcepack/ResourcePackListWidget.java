@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.resourcepack.ResourcePackOptionsScreen;
 import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidget;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.resource.ClientResourcePackContainer;
+import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -56,7 +56,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         return this.right - 6;
     }
 
-    public void addEntry(ResourcePackEntry resourcePackEntry) {
+    public void add(ResourcePackEntry resourcePackEntry) {
         this.addEntry(resourcePackEntry);
         resourcePackEntry.resourcePackList = this;
     }
@@ -67,38 +67,38 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         private ResourcePackListWidget resourcePackList;
         protected final MinecraftClient client;
         protected final ResourcePackOptionsScreen screen;
-        private final ClientResourcePackContainer packContainer;
+        private final ClientResourcePackProfile pack;
 
-        public ResourcePackEntry(ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackContainer clientResourcePackContainer) {
+        public ResourcePackEntry(ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackProfile clientResourcePackProfile) {
             this.screen = resourcePackOptionsScreen;
             this.client = MinecraftClient.getInstance();
-            this.packContainer = clientResourcePackContainer;
+            this.pack = clientResourcePackProfile;
             this.resourcePackList = resourcePackListWidget;
         }
 
-        public void setList(SelectedResourcePackListWidget selectedResourcePackListWidget) {
-            this.getPackContainer().getInitialPosition().insert(selectedResourcePackListWidget.children(), this, ResourcePackEntry::getPackContainer, true);
+        public void enable(SelectedResourcePackListWidget selectedResourcePackListWidget) {
+            this.getPack().getInitialPosition().insert(selectedResourcePackListWidget.children(), this, ResourcePackEntry::getPack, true);
             this.resourcePackList = selectedResourcePackListWidget;
         }
 
         protected void drawIcon() {
-            this.packContainer.drawIcon(this.client.getTextureManager());
+            this.pack.drawIcon(this.client.getTextureManager());
         }
 
         protected ResourcePackCompatibility getCompatibility() {
-            return this.packContainer.getCompatibility();
+            return this.pack.getCompatibility();
         }
 
         protected String getDescription() {
-            return this.packContainer.getDescription().asFormattedString();
+            return this.pack.getDescription().asFormattedString();
         }
 
         protected String getDisplayName() {
-            return this.packContainer.getDisplayName().asFormattedString();
+            return this.pack.getDisplayName().asFormattedString();
         }
 
-        public ClientResourcePackContainer getPackContainer() {
-            return this.packContainer;
+        public ClientResourcePackProfile getPack() {
+            return this.pack;
         }
 
         @Override
@@ -114,7 +114,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 32, 32);
             String string = this.getDisplayName();
             String string2 = this.getDescription();
-            if (this.method_20151() && (this.client.options.touchscreen || bl)) {
+            if (this.isMoveable() && (this.client.options.touchscreen || bl)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_LOCATION);
                 DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -124,28 +124,28 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     string = INCOMPATIBLE.asFormattedString();
                     string2 = resourcePackCompatibility.getNotification().asFormattedString();
                 }
-                if (this.canSelect()) {
+                if (this.isSelectable()) {
                     if (p < 32) {
                         DrawableHelper.blit(k, j, 0.0f, 32.0f, 32, 32, 256, 256);
                     } else {
                         DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 256, 256);
                     }
                 } else {
-                    if (this.canRemove()) {
+                    if (this.isRemovable()) {
                         if (p < 16) {
                             DrawableHelper.blit(k, j, 32.0f, 32.0f, 32, 32, 256, 256);
                         } else {
                             DrawableHelper.blit(k, j, 32.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
-                    if (this.canSortUp()) {
+                    if (this.canMoveUp()) {
                         if (p < 32 && p > 16 && q < 16) {
                             DrawableHelper.blit(k, j, 96.0f, 32.0f, 32, 32, 256, 256);
                         } else {
                             DrawableHelper.blit(k, j, 96.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
-                    if (this.canSortDown()) {
+                    if (this.canMoveDown()) {
                         if (p < 32 && p > 16 && q > 16) {
                             DrawableHelper.blit(k, j, 64.0f, 32.0f, 32, 32, 256, 256);
                         } else {
@@ -164,69 +164,69 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             }
         }
 
-        protected boolean method_20151() {
-            return !this.packContainer.isPositionFixed() || !this.packContainer.canBeSorted();
+        protected boolean isMoveable() {
+            return !this.pack.isPinned() || !this.pack.isAlwaysEnabled();
         }
 
-        protected boolean canSelect() {
-            return !this.screen.isSelected(this);
+        protected boolean isSelectable() {
+            return !this.screen.isEnabled(this);
         }
 
-        protected boolean canRemove() {
-            return this.screen.isSelected(this) && !this.packContainer.canBeSorted();
+        protected boolean isRemovable() {
+            return this.screen.isEnabled(this) && !this.pack.isAlwaysEnabled();
         }
 
-        protected boolean canSortUp() {
+        protected boolean canMoveUp() {
             List list = this.resourcePackList.children();
             int i = list.indexOf(this);
-            return i > 0 && !((ResourcePackEntry)list.get((int)(i - 1))).packContainer.isPositionFixed();
+            return i > 0 && !((ResourcePackEntry)list.get((int)(i - 1))).pack.isPinned();
         }
 
-        protected boolean canSortDown() {
+        protected boolean canMoveDown() {
             List list = this.resourcePackList.children();
             int i = list.indexOf(this);
-            return i >= 0 && i < list.size() - 1 && !((ResourcePackEntry)list.get((int)(i + 1))).packContainer.isPositionFixed();
+            return i >= 0 && i < list.size() - 1 && !((ResourcePackEntry)list.get((int)(i + 1))).pack.isPinned();
         }
 
         @Override
         public boolean mouseClicked(double d, double e, int i) {
             double f = d - (double)this.resourcePackList.getRowLeft();
             double g = e - (double)this.resourcePackList.getRowTop(this.resourcePackList.children().indexOf(this));
-            if (this.method_20151() && f <= 32.0) {
-                if (this.canSelect()) {
-                    this.getScreen().setEdited();
+            if (this.isMoveable() && f <= 32.0) {
+                if (this.isSelectable()) {
+                    this.getScreen().markDirty();
                     ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
                     if (resourcePackCompatibility.isCompatible()) {
-                        this.getScreen().select(this);
+                        this.getScreen().enable(this);
                     } else {
                         Text text = resourcePackCompatibility.getConfirmMessage();
                         this.client.openScreen(new ConfirmScreen(bl -> {
                             this.client.openScreen(this.getScreen());
                             if (bl) {
-                                this.getScreen().select(this);
+                                this.getScreen().enable(this);
                             }
                         }, INCOMPATIBLE_CONFIRM, text));
                     }
                     return true;
                 }
-                if (f < 16.0 && this.canRemove()) {
-                    this.getScreen().remove(this);
+                if (f < 16.0 && this.isRemovable()) {
+                    this.getScreen().disable(this);
                     return true;
                 }
-                if (f > 16.0 && g < 16.0 && this.canSortUp()) {
+                if (f > 16.0 && g < 16.0 && this.canMoveUp()) {
                     List<ResourcePackEntry> list = this.resourcePackList.children();
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j - 1, this);
-                    this.getScreen().setEdited();
+                    this.getScreen().markDirty();
                     return true;
                 }
-                if (f > 16.0 && g > 16.0 && this.canSortDown()) {
+                if (f > 16.0 && g > 16.0 && this.canMoveDown()) {
                     List<ResourcePackEntry> list = this.resourcePackList.children();
                     int j = list.indexOf(this);
                     list.remove(this);
                     list.add(j + 1, this);
-                    this.getScreen().setEdited();
+                    this.getScreen().markDirty();
                     return true;
                 }
             }

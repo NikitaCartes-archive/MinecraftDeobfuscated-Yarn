@@ -9,16 +9,15 @@ import java.util.ArrayList;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.EnchantingPhrases;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.Matrix4f;
@@ -31,6 +30,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantingScreen
@@ -39,14 +39,14 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
     private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
     private static final BookModel bookModel = new BookModel();
     private final Random random = new Random();
-    public int field_2915;
+    public int ticks;
     public float nextPageAngle;
     public float pageAngle;
-    public float field_2909;
-    public float field_2906;
+    public float approximatePageAngle;
+    public float pageRotationSpeed;
     public float nextPageTurningSpeed;
     public float pageTurningSpeed;
-    private ItemStack field_2913 = ItemStack.EMPTY;
+    private ItemStack stack = ItemStack.EMPTY;
 
     public EnchantingScreen(EnchantingTableContainer enchantingTableContainer, PlayerInventory playerInventory, Text text) {
         super(enchantingTableContainer, playerInventory, text);
@@ -61,7 +61,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
     @Override
     public void tick() {
         super.tick();
-        this.method_2478();
+        this.doTick();
     }
 
     @Override
@@ -93,18 +93,18 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         RenderSystem.translatef(-0.34f, 0.23f, 0.0f);
         RenderSystem.multMatrix(Matrix4f.method_4929(90.0, 1.3333334f, 9.0f, 80.0f));
         RenderSystem.matrixMode(5888);
-        class_4587 lv = new class_4587();
-        lv.method_22903();
-        lv.method_22910().method_22668();
-        lv.method_22904(0.0, 3.3f, 1984.0);
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.push();
+        matrixStack.peek().loadIdentity();
+        matrixStack.translate(0.0, 3.3f, 1984.0);
         float g = 5.0f;
-        lv.method_22905(5.0f, 5.0f, 5.0f);
-        lv.method_22907(Vector3f.field_20707.method_23214(180.0f, true));
-        lv.method_22907(Vector3f.field_20703.method_23214(20.0f, true));
+        matrixStack.scale(5.0f, 5.0f, 5.0f);
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0f, true));
         float h = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
-        lv.method_22904((1.0f - h) * 0.2f, (1.0f - h) * 0.1f, (1.0f - h) * 0.25f);
-        lv.method_22907(Vector3f.field_20705.method_23214(-(1.0f - h) * 90.0f - 90.0f, true));
-        lv.method_22907(Vector3f.field_20703.method_23214(180.0f, true));
+        matrixStack.translate((1.0f - h) * 0.2f, (1.0f - h) * 0.1f, (1.0f - h) * 0.25f);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-(1.0f - h) * 90.0f - 90.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f, true));
         float n = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.25f;
         float o = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.75f;
         n = (n - (float)MathHelper.fastFloor(n)) * 1.6f - 0.3f;
@@ -123,13 +123,13 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         }
         RenderSystem.enableRescaleNormal();
         bookModel.setPageAngles(0.0f, n, o, h);
-        class_4597.class_4598 lv2 = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
-        class_4588 lv3 = lv2.getBuffer(BlockRenderLayer.method_23017(BOOK_TEXURE));
-        class_4608.method_23211(lv3);
-        bookModel.render(lv, lv3, 0.0625f, 0xF000F0, null);
-        lv3.method_22923();
-        lv2.method_22993();
-        lv.method_22909();
+        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.method_23017(BOOK_TEXURE));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        bookModel.render(matrixStack, vertexConsumer, 0.0625f, 0xF000F0, null);
+        vertexConsumer.clearDefaultOverlay();
+        lv.method_22993();
+        matrixStack.pop();
         RenderSystem.matrixMode(5889);
         RenderSystem.viewport(0, 0, this.minecraft.getWindow().getFramebufferWidth(), this.minecraft.getWindow().getFramebufferHeight());
         RenderSystem.popMatrix();
@@ -209,15 +209,15 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         }
     }
 
-    public void method_2478() {
+    public void doTick() {
         ItemStack itemStack = ((EnchantingTableContainer)this.container).getSlot(0).getStack();
-        if (!ItemStack.areEqualIgnoreDamage(itemStack, this.field_2913)) {
-            this.field_2913 = itemStack;
+        if (!ItemStack.areEqualIgnoreDamage(itemStack, this.stack)) {
+            this.stack = itemStack;
             do {
-                this.field_2909 += (float)(this.random.nextInt(4) - this.random.nextInt(4));
-            } while (this.nextPageAngle <= this.field_2909 + 1.0f && this.nextPageAngle >= this.field_2909 - 1.0f);
+                this.approximatePageAngle += (float)(this.random.nextInt(4) - this.random.nextInt(4));
+            } while (this.nextPageAngle <= this.approximatePageAngle + 1.0f && this.nextPageAngle >= this.approximatePageAngle - 1.0f);
         }
-        ++this.field_2915;
+        ++this.ticks;
         this.pageAngle = this.nextPageAngle;
         this.pageTurningSpeed = this.nextPageTurningSpeed;
         boolean bl = false;
@@ -227,11 +227,11 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         }
         this.nextPageTurningSpeed = bl ? (this.nextPageTurningSpeed += 0.2f) : (this.nextPageTurningSpeed -= 0.2f);
         this.nextPageTurningSpeed = MathHelper.clamp(this.nextPageTurningSpeed, 0.0f, 1.0f);
-        float f = (this.field_2909 - this.nextPageAngle) * 0.4f;
+        float f = (this.approximatePageAngle - this.nextPageAngle) * 0.4f;
         float g = 0.2f;
         f = MathHelper.clamp(f, -0.2f, 0.2f);
-        this.field_2906 += (f - this.field_2906) * 0.9f;
-        this.nextPageAngle += this.field_2906;
+        this.pageRotationSpeed += (f - this.pageRotationSpeed) * 0.9f;
+        this.nextPageAngle += this.pageRotationSpeed;
     }
 }
 

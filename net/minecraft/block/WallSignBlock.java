@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -26,6 +25,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class WallSignBlock
@@ -49,8 +49,8 @@ extends AbstractSignBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return arg.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getMaterial().isSolid();
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return worldView.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getMaterial().isSolid();
     }
 
     @Override
@@ -59,11 +59,11 @@ extends AbstractSignBlock {
         Direction[] directions;
         BlockState blockState = this.getDefaultState();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-        World lv = itemPlacementContext.getWorld();
+        World worldView = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : directions = itemPlacementContext.getPlacementDirections()) {
             Direction direction2;
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(lv, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction2 = direction.getOpposite())).canPlaceAt(worldView, blockPos)) continue;
             return (BlockState)blockState.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
         }
         return null;

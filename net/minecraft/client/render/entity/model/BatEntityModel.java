@@ -39,14 +39,14 @@ extends class_4595<BatEntity> {
         this.rightWing = new ModelPart(this, 42, 0);
         this.rightWing.addCuboid(-12.0f, 1.0f, 1.5f, 10.0f, 16.0f, 1.0f);
         this.rightWingTip = new ModelPart(this, 24, 16);
-        this.rightWingTip.setRotationPoint(-12.0f, 1.0f, 1.5f);
+        this.rightWingTip.setPivot(-12.0f, 1.0f, 1.5f);
         this.rightWingTip.addCuboid(-8.0f, 1.0f, 0.0f, 8.0f, 12.0f, 1.0f);
         this.leftWing = new ModelPart(this, 42, 0);
         this.leftWing.mirror = true;
         this.leftWing.addCuboid(2.0f, 1.0f, 1.5f, 10.0f, 16.0f, 1.0f);
         this.leftWingTip = new ModelPart(this, 24, 16);
         this.leftWingTip.mirror = true;
-        this.leftWingTip.setRotationPoint(12.0f, 1.0f, 1.5f);
+        this.leftWingTip.setPivot(12.0f, 1.0f, 1.5f);
         this.leftWingTip.addCuboid(0.0f, 1.0f, 0.0f, 8.0f, 12.0f, 1.0f);
         this.body.addChild(this.rightWing);
         this.body.addChild(this.leftWing);
@@ -55,7 +55,7 @@ extends class_4595<BatEntity> {
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.head, this.body);
     }
 
@@ -64,9 +64,9 @@ extends class_4595<BatEntity> {
             this.head.pitch = j * ((float)Math.PI / 180);
             this.head.yaw = (float)Math.PI - i * ((float)Math.PI / 180);
             this.head.roll = (float)Math.PI;
-            this.head.setRotationPoint(0.0f, -2.0f, 0.0f);
-            this.rightWing.setRotationPoint(-3.0f, 0.0f, 3.0f);
-            this.leftWing.setRotationPoint(3.0f, 0.0f, 3.0f);
+            this.head.setPivot(0.0f, -2.0f, 0.0f);
+            this.rightWing.setPivot(-3.0f, 0.0f, 3.0f);
+            this.leftWing.setPivot(3.0f, 0.0f, 3.0f);
             this.body.pitch = (float)Math.PI;
             this.rightWing.pitch = -0.15707964f;
             this.rightWing.yaw = -1.2566371f;
@@ -78,9 +78,9 @@ extends class_4595<BatEntity> {
             this.head.pitch = j * ((float)Math.PI / 180);
             this.head.yaw = i * ((float)Math.PI / 180);
             this.head.roll = 0.0f;
-            this.head.setRotationPoint(0.0f, 0.0f, 0.0f);
-            this.rightWing.setRotationPoint(0.0f, 0.0f, 0.0f);
-            this.leftWing.setRotationPoint(0.0f, 0.0f, 0.0f);
+            this.head.setPivot(0.0f, 0.0f, 0.0f);
+            this.rightWing.setPivot(0.0f, 0.0f, 0.0f);
+            this.leftWing.setPivot(0.0f, 0.0f, 0.0f);
             this.body.pitch = 0.7853982f + MathHelper.cos(h * 0.1f) * 0.15f;
             this.body.yaw = 0.0f;
             this.rightWing.yaw = MathHelper.cos(h * 1.3f) * (float)Math.PI * 0.25f;

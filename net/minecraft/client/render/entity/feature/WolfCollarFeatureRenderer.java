@@ -5,13 +5,13 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WolfCollarFeatureRenderer
@@ -22,12 +22,12 @@ extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4209(class_4587 arg, class_4597 arg2, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4209(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!wolfEntity.isTamed() || wolfEntity.isInvisible()) {
             return;
         }
         float[] fs = wolfEntity.getCollarColor().getColorComponents();
-        WolfCollarFeatureRenderer.method_23199(this.getModel(), SKIN, arg, arg2, i, wolfEntity, fs[0], fs[1], fs[2]);
+        WolfCollarFeatureRenderer.method_23199(this.getModel(), SKIN, matrixStack, layeredVertexConsumerStorage, i, wolfEntity, fs[0], fs[1], fs[2]);
     }
 }
 

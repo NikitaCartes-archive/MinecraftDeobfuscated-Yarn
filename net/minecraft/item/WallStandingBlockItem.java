@@ -29,17 +29,17 @@ extends BlockItem {
     protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
         BlockState blockState2 = null;
-        World lv = itemPlacementContext.getWorld();
+        World worldView = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : itemPlacementContext.getPlacementDirections()) {
             BlockState blockState3;
             if (direction == Direction.UP) continue;
             BlockState blockState4 = blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
-            if (blockState3 == null || !blockState3.canPlaceAt(lv, blockPos)) continue;
+            if (blockState3 == null || !blockState3.canPlaceAt(worldView, blockPos)) continue;
             blockState2 = blockState3;
             break;
         }
-        return blockState2 != null && lv.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
+        return blockState2 != null && worldView.canPlace(blockState2, blockPos, EntityContext.absent()) ? blockState2 : null;
     }
 
     @Override

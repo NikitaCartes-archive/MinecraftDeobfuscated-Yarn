@@ -7,20 +7,18 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4538;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4604;
-import net.minecraft.class_4608;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.AreaEffectCloudEntityRenderer;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
@@ -133,10 +131,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -323,39 +323,39 @@ public class EntityRenderDispatcher {
         return this.renderHitboxes;
     }
 
-    public <E extends Entity> boolean shouldRender(E entity, class_4604 arg, double d, double e, double f) {
+    public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double d, double e, double f) {
         EntityRenderer<E> entityRenderer = this.getRenderer(entity);
-        return entityRenderer.isVisible(entity, arg, d, e, f);
+        return entityRenderer.isVisible(entity, frustum, d, e, f);
     }
 
     public void render(Entity entity, float f) {
-        class_4597.class_4598 lv = MinecraftClient.getInstance().method_22940().method_23000();
-        this.render(entity, 0.0, 0.0, 0.0, 0.0f, f, new class_4587(), lv);
+        LayeredVertexConsumerStorage.class_4598 lv = MinecraftClient.getInstance().method_22940().method_23000();
+        this.render(entity, 0.0, 0.0, 0.0, 0.0f, f, new MatrixStack(), lv);
         lv.method_22993();
     }
 
-    public <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+    public <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         EntityRenderer<E> entityRenderer = this.getRenderer(entity);
         try {
             double l;
             float m;
-            Vec3d vec3d = entityRenderer.method_23169(entity, d, e, f, h);
+            Vec3d vec3d = entityRenderer.getPositionOffset(entity, d, e, f, h);
             double i = d + vec3d.getX();
             double j = e + vec3d.getY();
             double k = f + vec3d.getZ();
-            arg.method_22903();
-            arg.method_22904(i, j, k);
-            entityRenderer.render(entity, i, j, k, g, h, arg, arg2);
+            matrixStack.push();
+            matrixStack.translate(i, j, k);
+            entityRenderer.render(entity, i, j, k, g, h, matrixStack, layeredVertexConsumerStorage);
             if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.field_4673 > 0.0f && !entity.isInvisible() && (m = (float)((1.0 - (l = this.squaredDistanceToCamera(entity.x, entity.y, entity.z)) / 256.0) * (double)entityRenderer.field_4672)) > 0.0f) {
-                EntityRenderDispatcher.method_23166(arg, arg2, entity, m, h, this.world, entityRenderer.field_4673);
+                EntityRenderDispatcher.method_23166(matrixStack, layeredVertexConsumerStorage, entity, m, h, this.world, entityRenderer.field_4673);
             }
             if (entity.doesRenderOnFire()) {
-                this.method_23165(arg, arg2, entity);
+                this.renderFire(matrixStack, layeredVertexConsumerStorage, entity);
             }
             if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-                this.renderHitbox(arg, arg2.getBuffer(BlockRenderLayer.LINES), entity, h);
+                this.renderHitbox(matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.LINES), entity, h);
             }
-            arg.method_22909();
+            matrixStack.pop();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering entity in world");
             CrashReportSection crashReportSection = crashReport.addElement("Entity being rendered");
@@ -369,55 +369,55 @@ public class EntityRenderDispatcher {
         }
     }
 
-    private void renderHitbox(class_4587 arg, class_4588 arg2, Entity entity, float f) {
+    private void renderHitbox(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, float f) {
         float g = entity.getWidth() / 2.0f;
-        this.method_23164(arg, arg2, entity, 1.0f, 1.0f, 1.0f);
+        this.method_23164(matrixStack, vertexConsumer, entity, 1.0f, 1.0f, 1.0f);
         if (entity instanceof EnderDragonEntity) {
             double d = entity.x - MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
             double e = entity.y - MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
             double h = entity.z - MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
             for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
-                arg.method_22903();
+                matrixStack.push();
                 double i = d + MathHelper.lerp((double)f, enderDragonPart.prevRenderX, enderDragonPart.x);
                 double j = e + MathHelper.lerp((double)f, enderDragonPart.prevRenderY, enderDragonPart.y);
                 double k = h + MathHelper.lerp((double)f, enderDragonPart.prevRenderZ, enderDragonPart.z);
-                arg.method_22904(i, j, k);
-                this.method_23164(arg, arg2, enderDragonPart, 0.25f, 1.0f, 0.0f);
-                arg.method_22909();
+                matrixStack.translate(i, j, k);
+                this.method_23164(matrixStack, vertexConsumer, enderDragonPart, 0.25f, 1.0f, 0.0f);
+                matrixStack.pop();
             }
         }
         if (entity instanceof LivingEntity) {
             float l = 0.01f;
-            WorldRenderer.method_22980(arg, arg2, -g, entity.getStandingEyeHeight() - 0.01f, -g, g, entity.getStandingEyeHeight() + 0.01f, g, 1.0f, 0.0f, 0.0f, 1.0f);
+            WorldRenderer.method_22980(matrixStack, vertexConsumer, -g, entity.getStandingEyeHeight() - 0.01f, -g, g, entity.getStandingEyeHeight() + 0.01f, g, 1.0f, 0.0f, 0.0f, 1.0f);
         }
         Vec3d vec3d = entity.getRotationVec(f);
-        Matrix4f matrix4f = arg.method_22910();
-        arg2.method_22918(matrix4f, 0.0f, entity.getStandingEyeHeight(), 0.0f).color(0, 0, 255, 255).next();
-        arg2.method_22918(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0)).color(0, 0, 255, 255).next();
+        Matrix4f matrix4f = matrixStack.peek();
+        vertexConsumer.vertex(matrix4f, 0.0f, entity.getStandingEyeHeight(), 0.0f).color(0, 0, 255, 255).next();
+        vertexConsumer.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0)).color(0, 0, 255, 255).next();
     }
 
-    private void method_23164(class_4587 arg, class_4588 arg2, Entity entity, float f, float g, float h) {
+    private void method_23164(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, float f, float g, float h) {
         Box box = entity.getBoundingBox().offset(-entity.x, -entity.y, -entity.z);
-        WorldRenderer.method_22982(arg, arg2, box, f, g, h, 1.0f);
+        WorldRenderer.method_22982(matrixStack, vertexConsumer, box, f, g, h, 1.0f);
     }
 
-    private void method_23165(class_4587 arg, class_4597 arg2, Entity entity) {
+    private void renderFire(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity) {
         SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
         Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.FIRE_0);
         Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.FIRE_1);
-        arg.method_22903();
+        matrixStack.push();
         float f = entity.getWidth() * 1.4f;
-        arg.method_22905(f, f, f);
+        matrixStack.scale(f, f, f);
         float g = 0.5f;
         float h = 0.0f;
         float i = entity.getHeight() / f;
         float j = (float)(entity.y - entity.getBoundingBox().minY);
-        arg.method_22907(Vector3f.field_20705.method_23214(-this.cameraYaw, true));
-        arg.method_22904(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.cameraYaw, true));
+        matrixStack.translate(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
         float k = 0.0f;
         int l = 0;
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.CUTOUT);
-        Matrix4f matrix4f = arg.method_22910();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.CUTOUT);
+        Matrix4f matrix4f = matrixStack.peek();
         while (i > 0.0f) {
             Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
             float m = sprite3.getMinU();
@@ -429,24 +429,24 @@ public class EntityRenderDispatcher {
                 o = m;
                 m = q;
             }
-            EntityRenderDispatcher.method_23161(matrix4f, lv, g - 0.0f, 0.0f - j, k, o, p);
-            EntityRenderDispatcher.method_23161(matrix4f, lv, -g - 0.0f, 0.0f - j, k, m, p);
-            EntityRenderDispatcher.method_23161(matrix4f, lv, -g - 0.0f, 1.4f - j, k, m, n);
-            EntityRenderDispatcher.method_23161(matrix4f, lv, g - 0.0f, 1.4f - j, k, o, n);
+            EntityRenderDispatcher.method_23161(matrix4f, vertexConsumer, g - 0.0f, 0.0f - j, k, o, p);
+            EntityRenderDispatcher.method_23161(matrix4f, vertexConsumer, -g - 0.0f, 0.0f - j, k, m, p);
+            EntityRenderDispatcher.method_23161(matrix4f, vertexConsumer, -g - 0.0f, 1.4f - j, k, m, n);
+            EntityRenderDispatcher.method_23161(matrix4f, vertexConsumer, g - 0.0f, 1.4f - j, k, o, n);
             i -= 0.45f;
             j -= 0.45f;
             g *= 0.9f;
             k += 0.03f;
             ++l;
         }
-        arg.method_22909();
+        matrixStack.pop();
     }
 
-    private static void method_23161(Matrix4f matrix4f, class_4588 arg, float f, float g, float h, float i, float j) {
-        arg.method_22918(matrix4f, f, g, h).color(255, 255, 255, 255).texture(i, j).method_22916(240).method_22914(0.0f, 1.0f, 0.0f).next();
+    private static void method_23161(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j) {
+        vertexConsumer.vertex(matrix4f, f, g, h).color(255, 255, 255, 255).texture(i, j).light(240).normal(0.0f, 1.0f, 0.0f).next();
     }
 
-    private static void method_23166(class_4587 arg, class_4597 arg2, Entity entity, float f, float g, class_4538 arg3, float h) {
+    private static void method_23166(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity, float f, float g, WorldView worldView, float h) {
         MobEntity mobEntity;
         float i = h;
         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).isBaby()) {
@@ -461,29 +461,29 @@ public class EntityRenderDispatcher {
         int n = MathHelper.floor(e);
         int o = MathHelper.floor(j - (double)i);
         int p = MathHelper.floor(j + (double)i);
-        Matrix4f matrix4f = arg.method_22910();
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(field_21009));
-        class_4608.method_23211(lv);
+        Matrix4f matrix4f = matrixStack.peek();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23020(field_21009, false, true, false, 0.1f, false, false));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(k, m, o), new BlockPos(l, n, p))) {
-            EntityRenderDispatcher.method_23163(matrix4f, lv, arg3, blockPos, d, e, j, i, f);
+            EntityRenderDispatcher.method_23163(matrix4f, vertexConsumer, worldView, blockPos, d, e, j, i, f);
         }
-        lv.method_22923();
+        vertexConsumer.clearDefaultOverlay();
     }
 
-    private static void method_23163(Matrix4f matrix4f, class_4588 arg, class_4538 arg2, BlockPos blockPos, double d, double e, double f, float g, float h) {
+    private static void method_23163(Matrix4f matrix4f, VertexConsumer vertexConsumer, WorldView worldView, BlockPos blockPos, double d, double e, double f, float g, float h) {
         BlockPos blockPos2 = blockPos.method_10074();
-        BlockState blockState = arg2.getBlockState(blockPos2);
-        if (blockState.getRenderType() == BlockRenderType.INVISIBLE || arg2.getLightLevel(blockPos) <= 3) {
+        BlockState blockState = worldView.getBlockState(blockPos2);
+        if (blockState.getRenderType() == BlockRenderType.INVISIBLE || worldView.getLightLevel(blockPos) <= 3) {
             return;
         }
-        if (!blockState.method_21743(arg2, blockPos2)) {
+        if (!blockState.method_21743(worldView, blockPos2)) {
             return;
         }
-        VoxelShape voxelShape = blockState.getOutlineShape(arg2, blockPos.method_10074());
+        VoxelShape voxelShape = blockState.getOutlineShape(worldView, blockPos.method_10074());
         if (voxelShape.isEmpty()) {
             return;
         }
-        float i = (float)(((double)h - (e - (double)blockPos.getY()) / 2.0) * 0.5 * (double)arg2.getBrightness(blockPos));
+        float i = (float)(((double)h - (e - (double)blockPos.getY()) / 2.0) * 0.5 * (double)worldView.getBrightness(blockPos));
         if (i >= 0.0f) {
             if (i > 1.0f) {
                 i = 1.0f;
@@ -503,15 +503,15 @@ public class EntityRenderDispatcher {
             float u = -p / 2.0f / g + 0.5f;
             float v = -r / 2.0f / g + 0.5f;
             float w = -s / 2.0f / g + 0.5f;
-            EntityRenderDispatcher.method_23162(matrix4f, arg, i, o, q, r, t, v);
-            EntityRenderDispatcher.method_23162(matrix4f, arg, i, o, q, s, t, w);
-            EntityRenderDispatcher.method_23162(matrix4f, arg, i, p, q, s, u, w);
-            EntityRenderDispatcher.method_23162(matrix4f, arg, i, p, q, r, u, v);
+            EntityRenderDispatcher.method_23162(matrix4f, vertexConsumer, i, o, q, r, t, v);
+            EntityRenderDispatcher.method_23162(matrix4f, vertexConsumer, i, o, q, s, t, w);
+            EntityRenderDispatcher.method_23162(matrix4f, vertexConsumer, i, p, q, s, u, w);
+            EntityRenderDispatcher.method_23162(matrix4f, vertexConsumer, i, p, q, r, u, v);
         }
     }
 
-    private static void method_23162(Matrix4f matrix4f, class_4588 arg, float f, float g, float h, float i, float j, float k) {
-        arg.method_22918(matrix4f, g, h, i).method_22915(1.0f, 1.0f, 1.0f, f).texture(j, k).method_22916(0xF000F0).method_22914(0.0f, 1.0f, 0.0f).next();
+    private static void method_23162(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k) {
+        vertexConsumer.vertex(matrix4f, g, h, i).color(1.0f, 1.0f, 1.0f, f).texture(j, k).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
     }
 
     public void setWorld(@Nullable World world) {

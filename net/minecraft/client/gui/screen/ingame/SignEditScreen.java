@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.class_4587;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -20,6 +19,7 @@ import net.minecraft.client.util.SelectionManager;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class SignEditScreen
@@ -110,7 +110,7 @@ extends Screen {
         RenderSystem.translatef(0.0f, -1.0625f, 0.0f);
         this.sign.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);
         RenderSystem.translatef(-0.5f, -0.75f, -0.5f);
-        BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, new class_4587(), 0xF000F0);
+        BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, new MatrixStack(), 0xF000F0);
         this.sign.resetSelectionState();
         RenderSystem.popMatrix();
         super.render(i, j, f);

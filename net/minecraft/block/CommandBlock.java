@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
-import net.minecraft.class_4538;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -33,6 +32,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -77,7 +77,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
         if (blockEntity instanceof CommandBlockBlockEntity) {
             CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
@@ -116,12 +116,12 @@ extends BlockWithEntity {
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return 1;
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
             playerEntity.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);

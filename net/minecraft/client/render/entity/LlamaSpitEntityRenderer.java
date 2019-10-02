@@ -5,11 +5,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.LlamaSpitEntityModel;
@@ -17,6 +16,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class LlamaSpitEntityRenderer
@@ -28,19 +28,19 @@ extends EntityRenderer<LlamaSpitEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4061(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
-        arg.method_22903();
-        arg.method_22904(0.0, 0.15f, 0.0);
-        arg.method_22907(Vector3f.field_20705.method_23214(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f, true));
-        arg.method_22907(Vector3f.field_20707.method_23214(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch), true));
+    public void method_4061(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+        matrixStack.push();
+        matrixStack.translate(0.0, 0.15f, 0.0);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch), true));
         int i = llamaSpitEntity.getLightmapCoordinates();
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(SKIN));
-        class_4608.method_23211(lv);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
         this.model.setAngles(llamaSpitEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        this.model.method_22957(arg, lv, i);
-        lv.method_22923();
-        arg.method_22909();
-        super.render(llamaSpitEntity, d, e, f, g, h, arg, arg2);
+        this.model.method_22957(matrixStack, vertexConsumer, i);
+        vertexConsumer.clearDefaultOverlay();
+        matrixStack.pop();
+        super.render(llamaSpitEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
     public Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {

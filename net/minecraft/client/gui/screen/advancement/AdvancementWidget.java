@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 public class AdvancementWidget
 extends DrawableHelper {
     private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
-    private static final Pattern field_2708 = Pattern.compile("(.+) \\S+");
+    private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(.+) \\S+");
     private final AdvancementTab tab;
     private final Advancement advancement;
     private final AdvancementDisplay display;
@@ -75,7 +75,7 @@ extends DrawableHelper {
         if (j - i <= 10) {
             return this.client.textRenderer.wrapStringToWidthAsList(string, j);
         }
-        Matcher matcher = field_2708.matcher(string2);
+        Matcher matcher = BACKSLASH_S_PATTERN.matcher(string2);
         if (matcher.matches() && i - (k = this.client.textRenderer.getStringWidth(matcher.group(1))) <= 10) {
             return this.client.textRenderer.wrapStringToWidthAsList(string, k);
         }
@@ -144,7 +144,7 @@ extends DrawableHelper {
         this.children.add(advancementWidget);
     }
 
-    public void method_2331(int i, int j, float f, int k, int l) {
+    public void drawTooltip(int i, int j, float f, int k, int l) {
         AdvancementObtainedStatus advancementObtainedStatus3;
         AdvancementObtainedStatus advancementObtainedStatus2;
         AdvancementObtainedStatus advancementObtainedStatus;
@@ -238,7 +238,7 @@ extends DrawableHelper {
         }
     }
 
-    public boolean method_2329(int i, int j, int k, int l) {
+    public boolean shouldRender(int i, int j, int k, int l) {
         if (this.display.isHidden() && (this.progress == null || !this.progress.isDone())) {
             return false;
         }

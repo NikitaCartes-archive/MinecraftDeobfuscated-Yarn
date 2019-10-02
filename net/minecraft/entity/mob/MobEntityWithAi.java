@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -14,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class MobEntityWithAi
 extends MobEntity {
@@ -25,7 +25,7 @@ extends MobEntity {
         return this.getPathfindingFavor(blockPos, this.world);
     }
 
-    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
         return 0.0f;
     }
 

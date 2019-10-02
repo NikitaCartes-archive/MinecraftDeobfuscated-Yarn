@@ -64,7 +64,7 @@ RecipeGridAligner<Ingredient> {
     protected final RecipeBookResults recipesArea = new RecipeBookResults();
     protected final RecipeFinder recipeFinder = new RecipeFinder();
     private int cachedInvChangeCount;
-    private boolean field_3087;
+    private boolean searching;
 
     public void initialize(int i, int j, MinecraftClient minecraftClient, boolean bl, CraftingContainer<?> craftingContainer) {
         this.client = minecraftClient;
@@ -327,7 +327,7 @@ RecipeGridAligner<Ingredient> {
 
     @Override
     public boolean keyPressed(int i, int j, int k) {
-        this.field_3087 = false;
+        this.searching = false;
         if (!this.isOpen() || this.client.player.isSpectator()) {
             return false;
         }
@@ -343,7 +343,7 @@ RecipeGridAligner<Ingredient> {
             return true;
         }
         if (this.client.options.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
-            this.field_3087 = true;
+            this.searching = true;
             this.searchField.setSelected(true);
             return true;
         }
@@ -352,13 +352,13 @@ RecipeGridAligner<Ingredient> {
 
     @Override
     public boolean keyReleased(int i, int j, int k) {
-        this.field_3087 = false;
+        this.searching = false;
         return Element.super.keyReleased(i, j, k);
     }
 
     @Override
     public boolean charTyped(char c, int i) {
-        if (this.field_3087) {
+        if (this.searching) {
             return false;
         }
         if (!this.isOpen() || this.client.player.isSpectator()) {

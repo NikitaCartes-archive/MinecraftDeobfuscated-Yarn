@@ -28,31 +28,31 @@ extends class_4595<T> {
         int i = 22;
         this.body = new ModelPart(this, 0, 0);
         this.body.addCuboid(-1.0f, -2.0f, 0.0f, 2.0f, 4.0f, 7.0f);
-        this.body.setRotationPoint(0.0f, 22.0f, 0.0f);
+        this.body.setPivot(0.0f, 22.0f, 0.0f);
         this.head = new ModelPart(this, 11, 0);
         this.head.addCuboid(-1.0f, -2.0f, -3.0f, 2.0f, 4.0f, 3.0f);
-        this.head.setRotationPoint(0.0f, 22.0f, 0.0f);
+        this.head.setPivot(0.0f, 22.0f, 0.0f);
         this.mouth = new ModelPart(this, 0, 0);
         this.mouth.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 3.0f, 1.0f);
-        this.mouth.setRotationPoint(0.0f, 22.0f, -3.0f);
+        this.mouth.setPivot(0.0f, 22.0f, -3.0f);
         this.leftFint = new ModelPart(this, 22, 1);
         this.leftFint.addCuboid(-2.0f, 0.0f, -1.0f, 2.0f, 0.0f, 2.0f);
-        this.leftFint.setRotationPoint(-1.0f, 23.0f, 0.0f);
+        this.leftFint.setPivot(-1.0f, 23.0f, 0.0f);
         this.leftFint.roll = -0.7853982f;
         this.rightFin = new ModelPart(this, 22, 4);
         this.rightFin.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 0.0f, 2.0f);
-        this.rightFin.setRotationPoint(1.0f, 23.0f, 0.0f);
+        this.rightFin.setPivot(1.0f, 23.0f, 0.0f);
         this.rightFin.roll = 0.7853982f;
         this.tailFin = new ModelPart(this, 22, 3);
         this.tailFin.addCuboid(0.0f, -2.0f, 0.0f, 0.0f, 4.0f, 4.0f);
-        this.tailFin.setRotationPoint(0.0f, 22.0f, 7.0f);
+        this.tailFin.setPivot(0.0f, 22.0f, 7.0f);
         this.topFin = new ModelPart(this, 20, -6);
         this.topFin.addCuboid(0.0f, -1.0f, -1.0f, 0.0f, 1.0f, 6.0f);
-        this.topFin.setRotationPoint(0.0f, 20.0f, 0.0f);
+        this.topFin.setPivot(0.0f, 20.0f, 0.0f);
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.body, this.head, this.mouth, this.leftFint, this.rightFin, this.tailFin, this.topFin);
     }
 

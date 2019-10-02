@@ -22,11 +22,10 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
@@ -42,6 +41,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(value=EnvType.CLIENT)
@@ -58,16 +58,16 @@ public class ItemDynamicRenderer {
     private final ShieldEntityModel modelShield = new ShieldEntityModel();
     private final TridentEntityModel modelTrident = new TridentEntityModel();
 
-    public void render(ItemStack itemStack, class_4587 arg, class_4597 arg2, int i) {
+    public void render(ItemStack itemStack, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
         Item item = itemStack.getItem();
         if (item instanceof BlockItem) {
             Block block = ((BlockItem)item).getBlock();
             if (block instanceof AbstractBannerBlock) {
                 this.renderBanner.deserialize(itemStack, ((AbstractBannerBlock)block).getColor());
-                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBanner, arg, arg2, i);
+                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBanner, matrixStack, layeredVertexConsumerStorage, i);
             } else if (block instanceof BedBlock) {
                 this.renderBed.setColor(((BedBlock)block).getColor());
-                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBed, arg, arg2, i);
+                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBed, matrixStack, layeredVertexConsumerStorage, i);
             } else if (block instanceof AbstractSkullBlock) {
                 GameProfile gameProfile = null;
                 if (itemStack.hasTag()) {
@@ -81,21 +81,21 @@ public class ItemDynamicRenderer {
                         compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
                     }
                 }
-                SkullBlockEntityRenderer.render(null, 180.0f, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0f, arg, arg2, i);
+                SkullBlockEntityRenderer.render(null, 180.0f, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0f, matrixStack, layeredVertexConsumerStorage, i);
             } else if (block == Blocks.CONDUIT) {
-                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderConduit, arg, arg2, i);
+                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderConduit, matrixStack, layeredVertexConsumerStorage, i);
             } else if (block == Blocks.CHEST) {
-                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestNormal, arg, arg2, i);
+                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestNormal, matrixStack, layeredVertexConsumerStorage, i);
             } else if (block == Blocks.ENDER_CHEST) {
-                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestEnder, arg, arg2, i);
+                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestEnder, matrixStack, layeredVertexConsumerStorage, i);
             } else if (block == Blocks.TRAPPED_CHEST) {
-                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestTrapped, arg, arg2, i);
+                BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestTrapped, matrixStack, layeredVertexConsumerStorage, i);
             } else if (block instanceof ShulkerBoxBlock) {
                 DyeColor dyeColor = ShulkerBoxBlock.getColor(item);
                 if (dyeColor == null) {
-                    BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX, arg, arg2, i);
+                    BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX, matrixStack, layeredVertexConsumerStorage, i);
                 } else {
-                    BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX_DYED[dyeColor.getId()], arg, arg2, i);
+                    BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX_DYED[dyeColor.getId()], matrixStack, layeredVertexConsumerStorage, i);
                 }
             }
             return;
@@ -108,22 +108,22 @@ public class ItemDynamicRenderer {
             } else {
                 identifier = TextureCache.DEFAULT_SHIELD;
             }
-            arg.method_22903();
-            arg.method_22905(1.0f, -1.0f, -1.0f);
-            class_4588 lv = ItemRenderer.method_23181(arg2, identifier, false, itemStack.hasEnchantmentGlint(), false);
-            class_4608.method_23211(lv);
-            this.modelShield.renderItem(arg, lv, i);
-            lv.method_22923();
-            arg.method_22909();
+            matrixStack.push();
+            matrixStack.scale(1.0f, -1.0f, -1.0f);
+            VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, identifier, false, itemStack.hasEnchantmentGlint(), false);
+            OverlayTexture.clearDefaultOverlay(vertexConsumer);
+            this.modelShield.renderItem(matrixStack, vertexConsumer, i);
+            vertexConsumer.clearDefaultOverlay();
+            matrixStack.pop();
         } else if (item == Items.TRIDENT) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(TridentEntityModel.TEXTURE);
-            arg.method_22903();
-            arg.method_22905(1.0f, -1.0f, -1.0f);
-            class_4588 lv2 = ItemRenderer.method_23181(arg2, TridentEntityModel.TEXTURE, false, itemStack.hasEnchantmentGlint(), false);
-            class_4608.method_23211(lv2);
-            this.modelTrident.renderItem(arg, lv2, i);
-            lv2.method_22923();
-            arg.method_22909();
+            matrixStack.push();
+            matrixStack.scale(1.0f, -1.0f, -1.0f);
+            VertexConsumer vertexConsumer2 = ItemRenderer.method_23181(layeredVertexConsumerStorage, TridentEntityModel.TEXTURE, false, itemStack.hasEnchantmentGlint(), false);
+            OverlayTexture.clearDefaultOverlay(vertexConsumer2);
+            this.modelTrident.renderItem(matrixStack, vertexConsumer2, i);
+            vertexConsumer2.clearDefaultOverlay();
+            matrixStack.pop();
         }
     }
 }

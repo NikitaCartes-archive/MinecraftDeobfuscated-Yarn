@@ -12,7 +12,6 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4548;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.network.Packet;
@@ -21,6 +20,7 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ implements Packet<ClientPlayPacketListener> {
     private int verticalStripBitmask;
     private CompoundTag heightmaps;
     @Nullable
-    private class_4548 field_20664;
+    private BiomeArray field_20664;
     private byte[] data;
     private List<CompoundTag> blockEntities;
     private boolean isFullChunk;
@@ -51,7 +51,7 @@ implements Packet<ClientPlayPacketListener> {
             this.heightmaps.put(entry.getKey().getName(), new LongArrayTag(entry.getValue().asLongArray()));
         }
         if (this.isFullChunk) {
-            this.field_20664 = worldChunk.getBiomeArray().method_22403();
+            this.field_20664 = worldChunk.getBiomeArray().copy();
         }
         this.data = new byte[this.getDataSize(worldChunk, i)];
         this.verticalStripBitmask = this.writeData(new PacketByteBuf(this.getWriteBuffer()), worldChunk, i);
@@ -75,7 +75,7 @@ implements Packet<ClientPlayPacketListener> {
         this.verticalStripBitmask = packetByteBuf.readVarInt();
         this.heightmaps = packetByteBuf.readCompoundTag();
         if (this.isFullChunk) {
-            this.field_20664 = new class_4548(packetByteBuf);
+            this.field_20664 = new BiomeArray(packetByteBuf);
         }
         if ((i = packetByteBuf.readVarInt()) > 0x200000) {
             throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
@@ -97,7 +97,7 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeVarInt(this.verticalStripBitmask);
         packetByteBuf.writeCompoundTag(this.heightmaps);
         if (this.field_20664 != null) {
-            this.field_20664.method_22402(packetByteBuf);
+            this.field_20664.toPacket(packetByteBuf);
         }
         packetByteBuf.writeVarInt(this.data.length);
         packetByteBuf.writeBytes(this.data);
@@ -178,8 +178,8 @@ implements Packet<ClientPlayPacketListener> {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public class_4548 method_22422() {
-        return this.field_20664 == null ? null : this.field_20664.method_22403();
+    public BiomeArray method_22422() {
+        return this.field_20664 == null ? null : this.field_20664.copy();
     }
 }
 

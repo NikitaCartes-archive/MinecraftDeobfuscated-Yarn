@@ -10,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -59,6 +58,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
@@ -468,10 +468,10 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+        protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
             BlockState blockState;
-            Block block = arg.getBlockState(blockPos).getBlock();
-            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = arg.getBlockState(blockPos = blockPos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
+            Block block = worldView.getBlockState(blockPos).getBlock();
+            if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861 && (block = (blockState = worldView.getBlockState(blockPos = blockPos.up())).getBlock()) instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
                 this.field_6861 = true;
                 return true;
             }

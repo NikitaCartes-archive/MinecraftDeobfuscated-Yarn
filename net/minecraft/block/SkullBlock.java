@@ -35,7 +35,7 @@ extends AbstractSkullBlock {
     }
 
     @Override
-    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return VoxelShapes.empty();
     }
 

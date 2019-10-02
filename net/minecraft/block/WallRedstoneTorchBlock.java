@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.RedstoneTorchBlock;
 import net.minecraft.block.WallTorchBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
@@ -27,6 +26,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class WallRedstoneTorchBlock
@@ -50,8 +50,8 @@ extends RedstoneTorchBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return Blocks.WALL_TORCH.canPlaceAt(blockState, arg, blockPos);
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return Blocks.WALL_TORCH.canPlaceAt(blockState, worldView, blockPos);
     }
 
     @Override

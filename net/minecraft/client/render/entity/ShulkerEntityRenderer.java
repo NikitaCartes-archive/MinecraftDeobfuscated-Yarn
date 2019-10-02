@@ -5,8 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4604;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.ShulkerSomethingFeatureRenderer;
@@ -16,6 +15,7 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(value=EnvType.CLIENT)
@@ -41,11 +41,11 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
             double l = (double)(blockPos.getZ() - blockPos2.getZ()) * h;
             return new Vec3d(-j, -k, -l);
         }
-        return super.method_23169(shulkerEntity, d, e, f, g);
+        return super.getPositionOffset(shulkerEntity, d, e, f, g);
     }
 
-    public boolean method_4112(ShulkerEntity shulkerEntity, class_4604 arg, double d, double e, double f) {
-        if (super.method_4068(shulkerEntity, arg, d, e, f)) {
+    public boolean method_4112(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
+        if (super.method_4068(shulkerEntity, frustum, d, e, f)) {
             return true;
         }
         if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {
@@ -53,7 +53,7 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
             BlockPos blockPos2 = shulkerEntity.getAttachedBlock();
             Vec3d vec3d = new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
             Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            if (arg.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
+            if (frustum.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
                 return true;
             }
         }
@@ -67,16 +67,16 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         return SKIN_COLOR[shulkerEntity.getColor().getId()];
     }
 
-    protected void method_4114(ShulkerEntity shulkerEntity, class_4587 arg, float f, float g, float h) {
-        super.setupTransforms(shulkerEntity, arg, f, g, h);
-        arg.method_22904(0.0, 0.5, 0.0);
-        arg.method_22907(shulkerEntity.getAttachedFace().getOpposite().method_23224());
-        arg.method_22904(0.0, -0.5, 0.0);
+    protected void method_4114(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
+        super.setupTransforms(shulkerEntity, matrixStack, f, g, h);
+        matrixStack.translate(0.0, 0.5, 0.0);
+        matrixStack.multiply(shulkerEntity.getAttachedFace().getOpposite().method_23224());
+        matrixStack.translate(0.0, -0.5, 0.0);
     }
 
-    protected void method_4109(ShulkerEntity shulkerEntity, class_4587 arg, float f) {
+    protected void method_4109(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f) {
         float g = 0.999f;
-        arg.method_22905(0.999f, 0.999f, 0.999f);
+        matrixStack.scale(0.999f, 0.999f, 0.999f);
     }
 }
 

@@ -39,7 +39,7 @@ extends Item {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (playerEntity2.fishHook != null) {
             if (!world.isClient) {
-                int i = playerEntity2.fishHook.method_6957(itemStack);
+                int i = playerEntity2.fishHook.use(itemStack);
                 itemStack.damage(i, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
             world.playSound(null, playerEntity2.x, playerEntity2.y, playerEntity2.z, SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));

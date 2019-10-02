@@ -9,11 +9,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -39,6 +38,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,7 +94,7 @@ public class BlockEntityRenderDispatcher {
         this.hitResult = hitResult;
     }
 
-    public <E extends BlockEntity> void render(E blockEntity, float f, class_4587 arg, class_4597 arg2, double d, double e, double g) {
+    public <E extends BlockEntity> void render(E blockEntity, float f, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, double d, double e, double g) {
         if (!(blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z) < blockEntity.getSquaredRenderDistance())) {
             return;
         }
@@ -106,28 +106,28 @@ public class BlockEntityRenderDispatcher {
             return;
         }
         BlockPos blockPos = blockEntity.getPos();
-        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> BlockEntityRenderDispatcher.method_23079(blockEntityRenderer, blockEntity, (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - g, f, arg, arg2));
+        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - g, f, matrixStack, layeredVertexConsumerStorage));
     }
 
-    private static <T extends BlockEntity> void method_23079(BlockEntityRenderer<T> blockEntityRenderer, T blockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2) {
+    private static <T extends BlockEntity> void render(BlockEntityRenderer<T> blockEntityRenderer, T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         World world = blockEntity.getWorld();
-        int i = world != null ? world.getLightmapIndex(blockEntity.getPos()) : 0xF000F0;
-        blockEntityRenderer.render(blockEntity, d, e, f, g, arg, arg2, i);
+        int i = world != null ? world.getLightmapCoordinates(blockEntity.getPos()) : 0xF000F0;
+        blockEntityRenderer.render(blockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i);
     }
 
     @Deprecated
-    public <E extends BlockEntity> void renderEntity(E blockEntity, class_4587 arg, int i) {
-        class_4597.class_4598 lv = class_4597.method_22991(this.field_20988);
-        this.method_23077(blockEntity, arg, lv, i);
+    public <E extends BlockEntity> void renderEntity(E blockEntity, MatrixStack matrixStack, int i) {
+        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(this.field_20988);
+        this.method_23077(blockEntity, matrixStack, lv, i);
         lv.method_22993();
     }
 
-    public <E extends BlockEntity> boolean method_23077(E blockEntity, class_4587 arg, class_4597 arg2, int i) {
+    public <E extends BlockEntity> boolean method_23077(E blockEntity, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
         if (blockEntityRenderer == null) {
             return true;
         }
-        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0f, arg, arg2, i));
+        BlockEntityRenderDispatcher.renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0f, matrixStack, layeredVertexConsumerStorage, i));
         return false;
     }
 

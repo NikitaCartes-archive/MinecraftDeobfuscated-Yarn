@@ -5,9 +5,9 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -28,7 +28,7 @@ extends Particle {
     }
 
     @Override
-    public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
+    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
         float l = this.getSize(f);
         float m = this.getMinU();
         float n = this.getMaxU();
@@ -50,10 +50,10 @@ extends Particle {
                 vec3ds[z] = vec3d.multiply(2.0 * vec3ds[z].dotProduct(vec3d)).add(vec3ds[z].multiply((double)(v * v) - vec3d.dotProduct(vec3d))).add(vec3d.crossProduct(vec3ds[z]).multiply(2.0f * v));
             }
         }
-        arg.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z).texture(n, p).method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).method_22916(t).next();
-        arg.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z).texture(n, o).method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).method_22916(t).next();
-        arg.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z).texture(m, o).method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).method_22916(t).next();
-        arg.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z).texture(m, p).method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).method_22916(t).next();
+        vertexConsumer.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z).texture(n, p).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(t).next();
+        vertexConsumer.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z).texture(n, o).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(t).next();
+        vertexConsumer.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z).texture(m, o).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(t).next();
+        vertexConsumer.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z).texture(m, p).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(t).next();
     }
 
     public float getSize(float f) {

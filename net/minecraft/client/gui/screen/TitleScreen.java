@@ -43,7 +43,7 @@ extends Screen {
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
-    private final boolean field_17776;
+    private final boolean isMinceraft;
     @Nullable
     private String splashText;
     private ButtonWidget buttonResetDemo;
@@ -64,7 +64,7 @@ extends Screen {
     public TitleScreen(boolean bl) {
         super(new TranslatableText("narrator.screen.title", new Object[0]));
         this.doBackgroundFade = bl;
-        this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
+        this.isMinceraft = (double)new Random().nextFloat() < 1.0E-4;
     }
 
     private boolean areRealmsNotificationsEnabled() {
@@ -171,7 +171,7 @@ extends Screen {
         }
         this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, h);
-        if (this.field_17776) {
+        if (this.isMinceraft) {
             this.blit(l + 0, 30, 0, 0, 99, 44);
             this.blit(l + 99, 30, 129, 0, 27, 44);
             this.blit(l + 99 + 26, 30, 126, 0, 3, 44);

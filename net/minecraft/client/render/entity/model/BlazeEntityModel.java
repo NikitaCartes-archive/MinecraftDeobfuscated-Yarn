@@ -33,7 +33,7 @@ extends class_4595<T> {
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return this.field_20921;
     }
 
@@ -42,23 +42,23 @@ extends class_4595<T> {
         int m;
         float l = h * (float)Math.PI * -0.1f;
         for (m = 0; m < 4; ++m) {
-            this.rods[m].rotationPointY = -2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
-            this.rods[m].rotationPointX = MathHelper.cos(l) * 9.0f;
-            this.rods[m].rotationPointZ = MathHelper.sin(l) * 9.0f;
+            this.rods[m].pivotY = -2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
+            this.rods[m].pivotX = MathHelper.cos(l) * 9.0f;
+            this.rods[m].pivotZ = MathHelper.sin(l) * 9.0f;
             l += 1.5707964f;
         }
         l = 0.7853982f + h * (float)Math.PI * 0.03f;
         for (m = 4; m < 8; ++m) {
-            this.rods[m].rotationPointY = 2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
-            this.rods[m].rotationPointX = MathHelper.cos(l) * 7.0f;
-            this.rods[m].rotationPointZ = MathHelper.sin(l) * 7.0f;
+            this.rods[m].pivotY = 2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
+            this.rods[m].pivotX = MathHelper.cos(l) * 7.0f;
+            this.rods[m].pivotZ = MathHelper.sin(l) * 7.0f;
             l += 1.5707964f;
         }
         l = 0.47123894f + h * (float)Math.PI * -0.05f;
         for (m = 8; m < 12; ++m) {
-            this.rods[m].rotationPointY = 11.0f + MathHelper.cos(((float)m * 1.5f + h) * 0.5f);
-            this.rods[m].rotationPointX = MathHelper.cos(l) * 5.0f;
-            this.rods[m].rotationPointZ = MathHelper.sin(l) * 5.0f;
+            this.rods[m].pivotY = 11.0f + MathHelper.cos(((float)m * 1.5f + h) * 0.5f);
+            this.rods[m].pivotX = MathHelper.cos(l) * 5.0f;
+            this.rods[m].pivotZ = MathHelper.sin(l) * 5.0f;
             l += 1.5707964f;
         }
         this.head.yaw = i * ((float)Math.PI / 180);

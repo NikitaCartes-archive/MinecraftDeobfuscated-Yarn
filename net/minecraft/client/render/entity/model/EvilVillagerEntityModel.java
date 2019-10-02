@@ -6,7 +6,6 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.ModelWithArms;
@@ -16,6 +15,7 @@ import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class EvilVillagerEntityModel<T extends IllagerEntity>
@@ -34,22 +34,22 @@ ModelWithHead {
 
     public EvilVillagerEntityModel(float f, float g, int i, int j) {
         this.field_3422 = new ModelPart(this).setTextureSize(i, j);
-        this.field_3422.setRotationPoint(0.0f, 0.0f + g, 0.0f);
+        this.field_3422.setPivot(0.0f, 0.0f + g, 0.0f);
         this.field_3422.setTextureOffset(0, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f);
         this.field_3419 = new ModelPart(this, 32, 0).setTextureSize(i, j);
         this.field_3419.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 12.0f, 8.0f, f + 0.45f);
         this.field_3422.addChild(this.field_3419);
         this.field_3419.visible = false;
         ModelPart modelPart = new ModelPart(this).setTextureSize(i, j);
-        modelPart.setRotationPoint(0.0f, g - 2.0f, 0.0f);
+        modelPart.setPivot(0.0f, g - 2.0f, 0.0f);
         modelPart.setTextureOffset(24, 0).addCuboid(-1.0f, -1.0f, -6.0f, 2.0f, 4.0f, 2.0f, f);
         this.field_3422.addChild(modelPart);
         this.field_3425 = new ModelPart(this).setTextureSize(i, j);
-        this.field_3425.setRotationPoint(0.0f, 0.0f + g, 0.0f);
+        this.field_3425.setPivot(0.0f, 0.0f + g, 0.0f);
         this.field_3425.setTextureOffset(16, 20).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, f);
         this.field_3425.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, f + 0.5f);
         this.field_3423 = new ModelPart(this).setTextureSize(i, j);
-        this.field_3423.setRotationPoint(0.0f, 0.0f + g + 2.0f, 0.0f);
+        this.field_3423.setPivot(0.0f, 0.0f + g + 2.0f, 0.0f);
         this.field_3423.setTextureOffset(44, 22).addCuboid(-8.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, f);
         ModelPart modelPart2 = new ModelPart(this, 44, 22).setTextureSize(i, j);
         modelPart2.mirror = true;
@@ -57,23 +57,23 @@ ModelWithHead {
         this.field_3423.addChild(modelPart2);
         this.field_3423.setTextureOffset(40, 38).addCuboid(-4.0f, 2.0f, -2.0f, 8.0f, 4.0f, 4.0f, f);
         this.field_3420 = new ModelPart(this, 0, 22).setTextureSize(i, j);
-        this.field_3420.setRotationPoint(-2.0f, 12.0f + g, 0.0f);
+        this.field_3420.setPivot(-2.0f, 12.0f + g, 0.0f);
         this.field_3420.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.field_3418 = new ModelPart(this, 0, 22).setTextureSize(i, j);
         this.field_3418.mirror = true;
-        this.field_3418.setRotationPoint(2.0f, 12.0f + g, 0.0f);
+        this.field_3418.setPivot(2.0f, 12.0f + g, 0.0f);
         this.field_3418.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         this.field_3426 = new ModelPart(this, 40, 46).setTextureSize(i, j);
         this.field_3426.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.field_3426.setRotationPoint(-5.0f, 2.0f + g, 0.0f);
+        this.field_3426.setPivot(-5.0f, 2.0f + g, 0.0f);
         this.field_3417 = new ModelPart(this, 40, 46).setTextureSize(i, j);
         this.field_3417.mirror = true;
         this.field_3417.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.field_3417.setRotationPoint(5.0f, 2.0f + g, 0.0f);
+        this.field_3417.setPivot(5.0f, 2.0f + g, 0.0f);
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.field_3422, this.field_3425, this.field_3420, this.field_3418, this.field_3423, this.field_3426, this.field_3417);
     }
 
@@ -82,8 +82,8 @@ ModelWithHead {
         float l;
         this.field_3422.yaw = i * ((float)Math.PI / 180);
         this.field_3422.pitch = j * ((float)Math.PI / 180);
-        this.field_3423.rotationPointY = 3.0f;
-        this.field_3423.rotationPointZ = -1.0f;
+        this.field_3423.pivotY = 3.0f;
+        this.field_3423.pivotZ = -1.0f;
         this.field_3423.pitch = -0.75f;
         if (this.isRiding) {
             this.field_3426.pitch = -0.62831855f;
@@ -136,10 +136,10 @@ ModelWithHead {
             this.field_3426.pitch += MathHelper.sin(h * 0.067f) * 0.05f;
             this.field_3417.pitch -= MathHelper.sin(h * 0.067f) * 0.05f;
         } else if (state == IllagerEntity.State.SPELLCASTING) {
-            this.field_3426.rotationPointZ = 0.0f;
-            this.field_3426.rotationPointX = -5.0f;
-            this.field_3417.rotationPointZ = 0.0f;
-            this.field_3417.rotationPointX = 5.0f;
+            this.field_3426.pivotZ = 0.0f;
+            this.field_3426.pivotX = -5.0f;
+            this.field_3417.pivotZ = 0.0f;
+            this.field_3417.pivotX = 5.0f;
             this.field_3426.pitch = MathHelper.cos(h * 0.6662f) * 0.25f;
             this.field_3417.pitch = MathHelper.cos(h * 0.6662f) * 0.25f;
             this.field_3426.roll = 2.3561945f;
@@ -165,13 +165,13 @@ ModelWithHead {
             this.field_3417.yaw = MathHelper.lerp(l / 25.0f, 0.4f, 0.85f);
             this.field_3417.pitch = MathHelper.lerp(l / 25.0f, this.field_3417.pitch, -1.5707964f);
         } else if (state == IllagerEntity.State.CELEBRATING) {
-            this.field_3426.rotationPointZ = 0.0f;
-            this.field_3426.rotationPointX = -5.0f;
+            this.field_3426.pivotZ = 0.0f;
+            this.field_3426.pivotX = -5.0f;
             this.field_3426.pitch = MathHelper.cos(h * 0.6662f) * 0.05f;
             this.field_3426.roll = 2.670354f;
             this.field_3426.yaw = 0.0f;
-            this.field_3417.rotationPointZ = 0.0f;
-            this.field_3417.rotationPointX = 5.0f;
+            this.field_3417.pivotZ = 0.0f;
+            this.field_3417.pivotX = 5.0f;
             this.field_3417.pitch = MathHelper.cos(h * 0.6662f) * 0.05f;
             this.field_3417.roll = -2.3561945f;
             this.field_3417.yaw = 0.0f;
@@ -203,8 +203,8 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm, class_4587 arg) {
-        this.method_2813(arm).method_22703(arg, 0.0625f);
+    public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
+        this.method_2813(arm).rotate(matrixStack, 0.0625f);
     }
 }
 

@@ -282,7 +282,7 @@ public class ServerPlayerInteractionManager {
         }
         boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = playerEntity.shouldCancelInteraction() && bl;
-        if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
+        if (!bl2 && blockState.onUse(world, playerEntity, hand, blockHitResult)) {
             return ActionResult.SUCCESS;
         }
         if (itemStack.isEmpty() || playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {

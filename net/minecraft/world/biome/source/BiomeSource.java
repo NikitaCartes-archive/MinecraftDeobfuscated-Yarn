@@ -12,22 +12,22 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4543;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class BiomeSource
-implements class_4543.class_4544 {
+implements BiomeAccess.Storage {
     private static final List<Biome> SPAWN_BIOMES = Lists.newArrayList(Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.WOODED_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
     protected final Map<StructureFeature<?>, Boolean> structureFeatures = Maps.newHashMap();
     protected final Set<BlockState> topMaterials = Sets.newHashSet();
-    protected final Set<Biome> field_20643;
+    protected final Set<Biome> biomes;
 
     protected BiomeSource(Set<Biome> set) {
-        this.field_20643 = set;
+        this.biomes = set;
     }
 
     public List<Biome> getSpawnBiomes() {
@@ -51,7 +51,7 @@ implements class_4543.class_4544 {
                     int y = m + w;
                     int z = n + x;
                     int aa = o + v;
-                    set.add(this.getBiome(y, z, aa));
+                    set.add(this.getStoredBiome(y, z, aa));
                 }
             }
         }
@@ -73,7 +73,7 @@ implements class_4543.class_4544 {
             for (int v = 0; v < q; ++v) {
                 int w = m + v;
                 int x = n + u;
-                if (!list.contains(this.getBiome(w, s, x))) continue;
+                if (!list.contains(this.getStoredBiome(w, s, x))) continue;
                 if (blockPos == null || random.nextInt(t + 1) == 0) {
                     blockPos = new BlockPos(w << 2, j, x << 2);
                 }
@@ -83,17 +83,17 @@ implements class_4543.class_4544 {
         return blockPos;
     }
 
-    public float method_8757(int i, int j) {
+    public float getNoiseRange(int i, int j) {
         return 0.0f;
     }
 
     public boolean hasStructureFeature(StructureFeature<?> structureFeature2) {
-        return this.structureFeatures.computeIfAbsent(structureFeature2, structureFeature -> this.field_20643.stream().anyMatch(biome -> biome.hasStructureFeature(structureFeature)));
+        return this.structureFeatures.computeIfAbsent(structureFeature2, structureFeature -> this.biomes.stream().anyMatch(biome -> biome.hasStructureFeature(structureFeature)));
     }
 
     public Set<BlockState> getTopMaterials() {
         if (this.topMaterials.isEmpty()) {
-            for (Biome biome : this.field_20643) {
+            for (Biome biome : this.biomes) {
                 this.topMaterials.add(biome.getSurfaceConfig().getTopMaterial());
             }
         }

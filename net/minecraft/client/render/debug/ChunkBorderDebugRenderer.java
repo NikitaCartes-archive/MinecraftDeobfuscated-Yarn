@@ -44,62 +44,62 @@ implements DebugRenderer.Renderer {
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (k = -16; k <= 32; k += 16) {
             for (int m = -16; m <= 32; m += 16) {
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).method_22915(1.0f, 0.0f, 0.0f, 0.0f).next();
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).method_22915(1.0f, 0.0f, 0.0f, 0.5f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).method_22915(1.0f, 0.0f, 0.0f, 0.5f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).method_22915(1.0f, 0.0f, 0.0f, 0.0f).next();
+                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.0f).next();
+                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.5f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(1.0f, 0.0f, 0.0f, 0.0f).next();
             }
         }
         for (k = 2; k < 16; k += 2) {
-            bufferBuilder.vertex(i + (double)k, g, j).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i + (double)k, g, j).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + (double)k, h, j).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + (double)k, h, j).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i + (double)k, g, j + 16.0).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i + (double)k, g, j + 16.0).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + (double)k, h, j + 16.0).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + (double)k, h, j + 16.0).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i + (double)k, g, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i + (double)k, g, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + (double)k, h, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + (double)k, h, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i + (double)k, g, j + 16.0).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i + (double)k, g, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + (double)k, h, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + (double)k, h, j + 16.0).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
         for (k = 2; k < 16; k += 2) {
-            bufferBuilder.vertex(i, g, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i, g, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, h, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, h, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i + 16.0, g, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i + 16.0, g, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, h, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, h, j + (double)k).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i, g, j + (double)k).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i, g, j + (double)k).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, h, j + (double)k).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, h, j + (double)k).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i + 16.0, g, j + (double)k).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i + 16.0, g, j + (double)k).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, h, j + (double)k).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, h, j + (double)k).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
         for (k = 0; k <= 256; k += 2) {
             double n = (double)k - e;
-            bufferBuilder.vertex(i, n, j).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(i, n, j).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j + 16.0).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j + 16.0).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).method_22915(1.0f, 1.0f, 0.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).method_22915(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, n, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, n, j + 16.0).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, n, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 1.0f).next();
+            bufferBuilder.vertex(i, n, j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
         tessellator.draw();
         RenderSystem.lineWidth(2.0f);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (k = 0; k <= 16; k += 16) {
             for (int m = 0; m <= 16; m += 16) {
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).method_22915(0.25f, 0.25f, 1.0f, 0.0f).next();
-                bufferBuilder.vertex(i + (double)k, g, j + (double)m).method_22915(0.25f, 0.25f, 1.0f, 1.0f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).method_22915(0.25f, 0.25f, 1.0f, 1.0f).next();
-                bufferBuilder.vertex(i + (double)k, h, j + (double)m).method_22915(0.25f, 0.25f, 1.0f, 0.0f).next();
+                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+                bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+                bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(0.25f, 0.25f, 1.0f, 0.0f).next();
             }
         }
         for (k = 0; k <= 256; k += 16) {
             double n = (double)k - e;
-            bufferBuilder.vertex(i, n, j).method_22915(0.25f, 0.25f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(i, n, j).method_22915(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j + 16.0).method_22915(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j + 16.0).method_22915(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i + 16.0, n, j).method_22915(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).method_22915(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(i, n, j).method_22915(0.25f, 0.25f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i, n, j + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, n, j + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i + 16.0, n, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            bufferBuilder.vertex(i, n, j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
         }
         tessellator.draw();
         RenderSystem.lineWidth(1.0f);

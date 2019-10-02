@@ -10,16 +10,15 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSkullBlock;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.WallSkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.DragonHeadEntityModel;
@@ -30,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -59,45 +59,45 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+    public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
         float h = skullBlockEntity.getTicksPowered(g);
         BlockState blockState = skullBlockEntity.getCachedState();
         boolean bl = blockState.getBlock() instanceof WallSkullBlock;
         Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
         float j = 22.5f * (float)(bl ? (2 + direction.getHorizontal()) * 4 : blockState.get(SkullBlock.ROTATION));
-        SkullBlockEntityRenderer.render(direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, arg, arg2, i);
+        SkullBlockEntityRenderer.render(direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, matrixStack, layeredVertexConsumerStorage, i);
     }
 
-    public static void render(@Nullable Direction direction, float f, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, float g, class_4587 arg, class_4597 arg2, int i) {
+    public static void render(@Nullable Direction direction, float f, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
         SkullEntityModel skullEntityModel = MODELS.get(skullType);
-        arg.method_22903();
+        matrixStack.push();
         if (direction == null) {
-            arg.method_22904(0.5, 0.0, 0.5);
+            matrixStack.translate(0.5, 0.0, 0.5);
         } else {
             switch (direction) {
                 case NORTH: {
-                    arg.method_22904(0.5, 0.25, 0.74f);
+                    matrixStack.translate(0.5, 0.25, 0.74f);
                     break;
                 }
                 case SOUTH: {
-                    arg.method_22904(0.5, 0.25, 0.26f);
+                    matrixStack.translate(0.5, 0.25, 0.26f);
                     break;
                 }
                 case WEST: {
-                    arg.method_22904(0.74f, 0.25, 0.5);
+                    matrixStack.translate(0.74f, 0.25, 0.5);
                     break;
                 }
                 default: {
-                    arg.method_22904(0.26f, 0.25, 0.5);
+                    matrixStack.translate(0.26f, 0.25, 0.5);
                 }
             }
         }
-        arg.method_22905(-1.0f, -1.0f, 1.0f);
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(SkullBlockEntityRenderer.method_3578(skullType, gameProfile)));
-        class_4608.method_23211(lv);
-        skullEntityModel.render(arg, lv, g, f, 0.0f, 0.0625f, i);
-        lv.method_22923();
-        arg.method_22909();
+        matrixStack.scale(-1.0f, -1.0f, 1.0f);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SkullBlockEntityRenderer.method_3578(skullType, gameProfile)));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        skullEntityModel.render(matrixStack, vertexConsumer, g, f, 0.0f, 0.0625f, i);
+        vertexConsumer.clearDefaultOverlay();
+        matrixStack.pop();
     }
 
     private static Identifier method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {

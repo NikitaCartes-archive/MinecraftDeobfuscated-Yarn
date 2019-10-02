@@ -35,14 +35,14 @@ extends DrawableHelper {
     private final String title;
     private final AdvancementWidget rootWidget;
     private final Map<Advancement, AdvancementWidget> widgets = Maps.newLinkedHashMap();
-    private double panX;
-    private double panY;
+    private double originX;
+    private double originY;
     private int minPanX = Integer.MAX_VALUE;
     private int minPanY = Integer.MAX_VALUE;
     private int maxPanX = Integer.MIN_VALUE;
     private int maxPanY = Integer.MIN_VALUE;
-    private float field_2688;
-    private boolean field_2683;
+    private float alpha;
+    private boolean initialized;
 
     public AdvancementTab(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, AdvancementTabType advancementTabType, int i, Advancement advancement, AdvancementDisplay advancementDisplay) {
         this.client = minecraftClient;
@@ -74,10 +74,10 @@ extends DrawableHelper {
     }
 
     public void render() {
-        if (!this.field_2683) {
-            this.panX = 117 - (this.maxPanX + this.minPanX) / 2;
-            this.panY = 56 - (this.maxPanY + this.minPanY) / 2;
-            this.field_2683 = true;
+        if (!this.initialized) {
+            this.originX = 117 - (this.maxPanX + this.minPanX) / 2;
+            this.originY = 56 - (this.maxPanY + this.minPanY) / 2;
+            this.initialized = true;
         }
         RenderSystem.depthFunc(518);
         AdvancementTab.fill(0, 0, 234, 113, -16777216);
@@ -89,8 +89,8 @@ extends DrawableHelper {
             this.client.getTextureManager().bindTexture(TextureManager.MISSING_IDENTIFIER);
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        int i = MathHelper.floor(this.panX);
-        int j = MathHelper.floor(this.panY);
+        int i = MathHelper.floor(this.originX);
+        int j = MathHelper.floor(this.originY);
         int k = i % 16;
         int l = j % 16;
         for (int m = -1; m <= 15; ++m) {
@@ -106,20 +106,20 @@ extends DrawableHelper {
     public void drawWidgetTooltip(int i, int j, int k, int l) {
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 200.0f);
-        AdvancementTab.fill(0, 0, 234, 113, MathHelper.floor(this.field_2688 * 255.0f) << 24);
+        AdvancementTab.fill(0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0f) << 24);
         boolean bl = false;
-        int m = MathHelper.floor(this.panX);
-        int n = MathHelper.floor(this.panY);
+        int m = MathHelper.floor(this.originX);
+        int n = MathHelper.floor(this.originY);
         if (i > 0 && i < 234 && j > 0 && j < 113) {
             for (AdvancementWidget advancementWidget : this.widgets.values()) {
-                if (!advancementWidget.method_2329(m, n, i, j)) continue;
+                if (!advancementWidget.shouldRender(m, n, i, j)) continue;
                 bl = true;
-                advancementWidget.method_2331(m, n, this.field_2688, k, l);
+                advancementWidget.drawTooltip(m, n, this.alpha, k, l);
                 break;
             }
         }
         RenderSystem.popMatrix();
-        this.field_2688 = bl ? MathHelper.clamp(this.field_2688 + 0.02f, 0.0f, 0.3f) : MathHelper.clamp(this.field_2688 - 0.04f, 0.0f, 1.0f);
+        this.alpha = bl ? MathHelper.clamp(this.alpha + 0.02f, 0.0f, 0.3f) : MathHelper.clamp(this.alpha - 0.04f, 0.0f, 1.0f);
     }
 
     public boolean isClickOnTab(int i, int j, double d, double e) {
@@ -143,10 +143,10 @@ extends DrawableHelper {
 
     public void move(double d, double e) {
         if (this.maxPanX - this.minPanX > 234) {
-            this.panX = MathHelper.clamp(this.panX + d, (double)(-(this.maxPanX - 234)), 0.0);
+            this.originX = MathHelper.clamp(this.originX + d, (double)(-(this.maxPanX - 234)), 0.0);
         }
         if (this.maxPanY - this.minPanY > 113) {
-            this.panY = MathHelper.clamp(this.panY + e, (double)(-(this.maxPanY - 113)), 0.0);
+            this.originY = MathHelper.clamp(this.originY + e, (double)(-(this.maxPanY - 113)), 0.0);
         }
     }
 

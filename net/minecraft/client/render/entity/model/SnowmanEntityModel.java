@@ -25,19 +25,19 @@ extends class_4595<T> {
         float g = 0.0f;
         this.field_3568 = new ModelPart(this, 0, 0).setTextureSize(64, 64);
         this.field_3568.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, -0.5f);
-        this.field_3568.setRotationPoint(0.0f, 4.0f, 0.0f);
+        this.field_3568.setPivot(0.0f, 4.0f, 0.0f);
         this.field_3566 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
         this.field_3566.addCuboid(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, -0.5f);
-        this.field_3566.setRotationPoint(0.0f, 6.0f, 0.0f);
+        this.field_3566.setPivot(0.0f, 6.0f, 0.0f);
         this.field_3565 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
         this.field_3565.addCuboid(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, -0.5f);
-        this.field_3565.setRotationPoint(0.0f, 6.0f, 0.0f);
+        this.field_3565.setPivot(0.0f, 6.0f, 0.0f);
         this.field_3567 = new ModelPart(this, 0, 16).setTextureSize(64, 64);
         this.field_3567.addCuboid(-5.0f, -10.0f, -5.0f, 10.0f, 10.0f, 10.0f, -0.5f);
-        this.field_3567.setRotationPoint(0.0f, 13.0f, 0.0f);
+        this.field_3567.setPivot(0.0f, 13.0f, 0.0f);
         this.field_3569 = new ModelPart(this, 0, 36).setTextureSize(64, 64);
         this.field_3569.addCuboid(-6.0f, -12.0f, -6.0f, 12.0f, 12.0f, 12.0f, -0.5f);
-        this.field_3569.setRotationPoint(0.0f, 24.0f, 0.0f);
+        this.field_3569.setPivot(0.0f, 24.0f, 0.0f);
     }
 
     @Override
@@ -51,14 +51,14 @@ extends class_4595<T> {
         this.field_3565.roll = -1.0f;
         this.field_3566.yaw = 0.0f + this.field_3567.yaw;
         this.field_3565.yaw = (float)Math.PI + this.field_3567.yaw;
-        this.field_3566.rotationPointX = m * 5.0f;
-        this.field_3566.rotationPointZ = -l * 5.0f;
-        this.field_3565.rotationPointX = -m * 5.0f;
-        this.field_3565.rotationPointZ = l * 5.0f;
+        this.field_3566.pivotX = m * 5.0f;
+        this.field_3566.pivotZ = -l * 5.0f;
+        this.field_3565.pivotX = -m * 5.0f;
+        this.field_3565.pivotZ = l * 5.0f;
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.field_3567, this.field_3569, this.field_3568, this.field_3566, this.field_3565);
     }
 

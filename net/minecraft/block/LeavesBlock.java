@@ -39,7 +39,7 @@ extends Block {
     }
 
     @Override
-    public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!blockState.get(PERSISTENT).booleanValue() && blockState.get(DISTANCE) == 7) {
             LeavesBlock.dropStacks(blockState, serverWorld, blockPos);
             serverWorld.removeBlock(blockPos, false);
@@ -47,7 +47,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         serverWorld.setBlockState(blockPos, LeavesBlock.updateDistanceFromLogs(blockState, serverWorld, blockPos), 3);
     }
 

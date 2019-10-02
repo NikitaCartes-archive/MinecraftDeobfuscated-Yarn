@@ -32,22 +32,22 @@ implements DebugRenderer.Renderer {
         double e = camera.getPos().y;
         double f = camera.getPos().z;
         BlockPos blockPos = this.client.player.getBlockPos();
-        World lv = this.client.player.world;
+        World worldView = this.client.player.world;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.color4f(0.0f, 1.0f, 0.0f, 0.75f);
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(6.0f);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
-            fluidState = lv.getFluidState(blockPos2);
+            fluidState = worldView.getFluidState(blockPos2);
             if (!fluidState.matches(FluidTags.WATER)) continue;
-            double g = (float)blockPos2.getY() + fluidState.getHeight(lv, blockPos2);
+            double g = (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2);
             DebugRenderer.method_23102(new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, g, (float)blockPos2.getZ() + 0.99f).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 0.2f);
         }
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
-            fluidState = lv.getFluidState(blockPos2);
+            fluidState = worldView.getFluidState(blockPos2);
             if (!fluidState.matches(FluidTags.WATER)) continue;
-            DebugRenderer.method_23105(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(lv, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
+            DebugRenderer.method_23105(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
         }
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
@@ -52,6 +51,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class OcelotEntity
@@ -251,13 +251,13 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean canSpawn(class_4538 arg) {
-        if (arg.intersectsEntities(this) && !arg.containsFluid(this.getBoundingBox())) {
+    public boolean canSpawn(WorldView worldView) {
+        if (worldView.intersectsEntities(this) && !worldView.containsFluid(this.getBoundingBox())) {
             BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
-            if (blockPos.getY() < arg.getSeaLevel()) {
+            if (blockPos.getY() < worldView.getSeaLevel()) {
                 return false;
             }
-            BlockState blockState = arg.getBlockState(blockPos.method_10074());
+            BlockState blockState = worldView.getBlockState(blockPos.method_10074());
             Block block = blockState.getBlock();
             if (block == Blocks.GRASS_BLOCK || blockState.matches(BlockTags.LEAVES)) {
                 return true;

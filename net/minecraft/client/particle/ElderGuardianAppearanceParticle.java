@@ -7,12 +7,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -48,7 +48,7 @@ extends Particle {
     }
 
     @Override
-    public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
+    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
         if (this.guardian == null) {
             return;
         }

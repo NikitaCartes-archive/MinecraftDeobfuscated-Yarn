@@ -5,7 +5,6 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import java.util.UUID;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -34,6 +33,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class ZombiePigmanEntity
@@ -117,8 +117,8 @@ extends ZombieEntity {
     }
 
     @Override
-    public boolean canSpawn(class_4538 arg) {
-        return arg.intersectsEntities(this) && !arg.containsFluid(this.getBoundingBox());
+    public boolean canSpawn(WorldView worldView) {
+        return worldView.intersectsEntities(this) && !worldView.containsFluid(this.getBoundingBox());
     }
 
     @Override

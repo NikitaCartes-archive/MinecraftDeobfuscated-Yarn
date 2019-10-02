@@ -50,7 +50,7 @@ extends class_4595<T> {
             i = 0.0f;
         }
         for (int j = 0; j < this.field_3427.length; ++j) {
-            this.field_3427[j].rotationPointY = (float)(-(4 - j)) * i * 1.7f;
+            this.field_3427[j].pivotY = (float)(-(4 - j)) * i * 1.7f;
         }
     }
 
@@ -59,7 +59,7 @@ extends class_4595<T> {
     }
 
     @Override
-    public /* synthetic */ Iterable method_22960() {
+    public /* synthetic */ Iterable getParts() {
         return this.method_22959();
     }
 }

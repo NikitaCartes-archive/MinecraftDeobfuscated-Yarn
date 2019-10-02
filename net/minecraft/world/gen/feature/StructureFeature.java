@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_4543;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.ChunkRandom;
@@ -133,7 +133,7 @@ extends Feature<C> {
         return new ChunkPos(i + k, j + l);
     }
 
-    public abstract boolean shouldStartAt(class_4543 var1, ChunkGenerator<?> var2, Random var3, int var4, int var5, Biome var6);
+    public abstract boolean shouldStartAt(BiomeAccess var1, ChunkGenerator<?> var2, Random var3, int var4, int var5, Biome var6);
 
     public abstract StructureStartFactory getStructureStartFactory();
 

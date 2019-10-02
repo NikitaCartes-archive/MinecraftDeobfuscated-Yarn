@@ -5,17 +5,17 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WitherSkullEntityRenderer
@@ -28,19 +28,19 @@ extends EntityRenderer<WitherSkullEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4159(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
-        arg.method_22903();
+    public void method_4159(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+        matrixStack.push();
         float i = 0.0625f;
-        arg.method_22905(-1.0f, -1.0f, 1.0f);
+        matrixStack.scale(-1.0f, -1.0f, 1.0f);
         float j = MathHelper.method_22859(witherSkullEntity.prevYaw, witherSkullEntity.yaw, h);
         float k = MathHelper.lerp(h, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
         int l = witherSkullEntity.getLightmapCoordinates();
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(this.method_4160(witherSkullEntity)));
-        class_4608.method_23211(lv);
-        this.model.render(arg, lv, 0.0f, j, k, 0.0625f, l);
-        lv.method_22923();
-        arg.method_22909();
-        super.render(witherSkullEntity, d, e, f, g, h, arg, arg2);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(this.method_4160(witherSkullEntity)));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        this.model.render(matrixStack, vertexConsumer, 0.0f, j, k, 0.0625f, l);
+        vertexConsumer.clearDefaultOverlay();
+        matrixStack.pop();
+        super.render(witherSkullEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
     public Identifier method_4160(WitherSkullEntity witherSkullEntity) {

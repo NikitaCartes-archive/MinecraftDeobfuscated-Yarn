@@ -38,7 +38,7 @@ extends class_4595<T> {
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.field_3571, this.field_3573, this.field_3572, this.field_3570);
     }
 }

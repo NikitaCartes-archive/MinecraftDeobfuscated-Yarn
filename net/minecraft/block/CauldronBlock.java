@@ -69,7 +69,7 @@ extends Block {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         DyeableItem dyeableItem;
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (itemStack.isEmpty()) {
@@ -186,7 +186,7 @@ extends Block {
     }
 
     @Override
-    public void onRainTick(World world, BlockPos blockPos) {
+    public void rainTick(World world, BlockPos blockPos) {
         if (world.random.nextInt(20) != 1) {
             return;
         }

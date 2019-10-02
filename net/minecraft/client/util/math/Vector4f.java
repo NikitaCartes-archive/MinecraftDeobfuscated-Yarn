@@ -71,7 +71,7 @@ public class Vector4f {
         if ((double)f < 1.0E-5) {
             return false;
         }
-        float g = MathHelper.method_22858(f);
+        float g = MathHelper.fastInverseSqrt(f);
         int j = 0;
         while (j < 4) {
             int n = j++;
@@ -80,13 +80,13 @@ public class Vector4f {
         return true;
     }
 
-    public void method_22674(Matrix4f matrix4f) {
+    public void multiply(Matrix4f matrix4f) {
         float[] fs = Arrays.copyOf(this.components, 4);
         for (int i = 0; i < 4; ++i) {
             this.components[i] = 0.0f;
             for (int j = 0; j < 4; ++j) {
                 int n = i;
-                this.components[n] = this.components[n] + matrix4f.method_22669(i, j) * fs[j];
+                this.components[n] = this.components[n] + matrix4f.get(i, j) * fs[j];
             }
         }
     }

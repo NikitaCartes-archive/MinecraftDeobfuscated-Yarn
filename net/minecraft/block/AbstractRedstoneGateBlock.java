@@ -10,7 +10,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -24,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class AbstractRedstoneGateBlock
 extends HorizontalFacingBlock {
@@ -40,12 +40,12 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return AbstractRedstoneGateBlock.topCoversMediumSquare(arg, blockPos.method_10074());
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return AbstractRedstoneGateBlock.topCoversMediumSquare(worldView, blockPos.method_10074());
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (this.isLocked(serverWorld, blockPos, blockState)) {
             return;
         }
@@ -108,7 +108,7 @@ extends HorizontalFacingBlock {
         }
     }
 
-    public boolean isLocked(class_4538 arg, BlockPos blockPos, BlockState blockState) {
+    public boolean isLocked(WorldView worldView, BlockPos blockPos, BlockState blockState) {
         return false;
     }
 
@@ -127,15 +127,15 @@ extends HorizontalFacingBlock {
         return Math.max(i, blockState2.getBlock() == Blocks.REDSTONE_WIRE ? blockState2.get(RedstoneWireBlock.POWER) : 0);
     }
 
-    protected int getMaxInputLevelSides(class_4538 arg, BlockPos blockPos, BlockState blockState) {
+    protected int getMaxInputLevelSides(WorldView worldView, BlockPos blockPos, BlockState blockState) {
         Direction direction = blockState.get(FACING);
         Direction direction2 = direction.rotateYClockwise();
         Direction direction3 = direction.rotateYCounterclockwise();
-        return Math.max(this.getInputLevel(arg, blockPos.offset(direction2), direction2), this.getInputLevel(arg, blockPos.offset(direction3), direction3));
+        return Math.max(this.getInputLevel(worldView, blockPos.offset(direction2), direction2), this.getInputLevel(worldView, blockPos.offset(direction3), direction3));
     }
 
-    protected int getInputLevel(class_4538 arg, BlockPos blockPos, Direction direction) {
-        BlockState blockState = arg.getBlockState(blockPos);
+    protected int getInputLevel(WorldView worldView, BlockPos blockPos, Direction direction) {
+        BlockState blockState = worldView.getBlockState(blockPos);
         Block block = blockState.getBlock();
         if (this.isValidInput(blockState)) {
             if (block == Blocks.REDSTONE_BLOCK) {
@@ -144,7 +144,7 @@ extends HorizontalFacingBlock {
             if (block == Blocks.REDSTONE_WIRE) {
                 return blockState.get(RedstoneWireBlock.POWER);
             }
-            return arg.getStrongRedstonePower(blockPos, direction);
+            return worldView.getStrongRedstonePower(blockPos, direction);
         }
         return 0;
     }

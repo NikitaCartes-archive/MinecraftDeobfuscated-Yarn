@@ -8,7 +8,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_4543;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.StructureManager;
@@ -16,6 +15,7 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -30,7 +30,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
         int k = i >> 4;
         int l = j >> 4;
         random.setSeed((long)(k ^ l << 4) ^ chunkGenerator.getSeed());

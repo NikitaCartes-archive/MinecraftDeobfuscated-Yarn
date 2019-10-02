@@ -5,16 +5,16 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.LeashEntityModel;
 import net.minecraft.entity.decoration.LeadKnotEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class LeashKnotEntityRenderer
@@ -26,18 +26,18 @@ extends EntityRenderer<LeadKnotEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
-        arg.method_22903();
+    public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+        matrixStack.push();
         float i = 0.0625f;
-        arg.method_22905(-1.0f, -1.0f, 1.0f);
+        matrixStack.scale(-1.0f, -1.0f, 1.0f);
         int j = leadKnotEntity.getLightmapCoordinates();
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(SKIN));
-        class_4608.method_23211(lv);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
         this.model.setAngles(leadKnotEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-        this.model.method_22957(arg, lv, j);
-        lv.method_22923();
-        arg.method_22909();
-        super.render(leadKnotEntity, d, e, f, g, h, arg, arg2);
+        this.model.method_22957(matrixStack, vertexConsumer, j);
+        vertexConsumer.clearDefaultOverlay();
+        matrixStack.pop();
+        super.render(leadKnotEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
     public Identifier method_4036(LeadKnotEntity leadKnotEntity) {

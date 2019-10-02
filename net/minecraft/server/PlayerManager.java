@@ -140,7 +140,7 @@ public abstract class PlayerManager {
         GameRules gameRules = serverWorld.getGameRules();
         boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
         boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(serverPlayerEntity.getEntityId(), serverPlayerEntity.interactionManager.getGameMode(), LevelProperties.method_22418(levelProperties.getSeed()), levelProperties.isHardcore(), serverWorld.dimension.getType(), this.getMaxPlayerCount(), levelProperties.getGeneratorType(), this.viewDistance, bl2, !bl));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(serverPlayerEntity.getEntityId(), serverPlayerEntity.interactionManager.getGameMode(), LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.isHardcore(), serverWorld.dimension.getType(), this.getMaxPlayerCount(), levelProperties.getGeneratorType(), this.viewDistance, bl2, !bl));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
         serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(serverPlayerEntity.abilities));
@@ -384,7 +384,7 @@ public abstract class PlayerManager {
             serverPlayerEntity2.setPosition(serverPlayerEntity2.x, serverPlayerEntity2.y + 1.0, serverPlayerEntity2.z);
         }
         LevelProperties levelProperties = serverPlayerEntity2.world.getLevelProperties();
-        serverPlayerEntity2.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity2.dimension, LevelProperties.method_22418(levelProperties.getSeed()), levelProperties.getGeneratorType(), serverPlayerEntity2.interactionManager.getGameMode()));
+        serverPlayerEntity2.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity2.dimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), serverPlayerEntity2.interactionManager.getGameMode()));
         BlockPos blockPos2 = serverWorld.getSpawnPos();
         serverPlayerEntity2.networkHandler.requestTeleport(serverPlayerEntity2.x, serverPlayerEntity2.y, serverPlayerEntity2.z, serverPlayerEntity2.yaw, serverPlayerEntity2.pitch);
         serverPlayerEntity2.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos2));
@@ -561,7 +561,7 @@ public abstract class PlayerManager {
 
     public void method_14594(ServerPlayerEntity serverPlayerEntity) {
         serverPlayerEntity.openContainer(serverPlayerEntity.playerContainer);
-        serverPlayerEntity.method_14217();
+        serverPlayerEntity.markHealthDirty();
         serverPlayerEntity.networkHandler.sendPacket(new HeldItemChangeS2CPacket(serverPlayerEntity.inventory.selectedSlot));
     }
 

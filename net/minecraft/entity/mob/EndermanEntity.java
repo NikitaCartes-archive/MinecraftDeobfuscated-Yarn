@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -57,6 +56,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class EndermanEntity
@@ -387,8 +387,8 @@ extends HostileEntity {
             }
         }
 
-        private boolean method_7033(class_4538 arg, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
-            return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(arg, blockPos2) && blockState.canPlaceAt(arg, blockPos);
+        private boolean method_7033(WorldView worldView, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
+            return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(worldView, blockPos2) && blockState.canPlaceAt(worldView, blockPos);
         }
     }
 

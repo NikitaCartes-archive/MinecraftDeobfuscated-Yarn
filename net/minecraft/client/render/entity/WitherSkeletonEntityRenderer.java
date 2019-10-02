@@ -5,11 +5,11 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.SkeletonEntityRenderer;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WitherSkeletonEntityRenderer
@@ -25,8 +25,8 @@ extends SkeletonEntityRenderer {
         return SKIN;
     }
 
-    protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, class_4587 arg, float f) {
-        arg.method_22905(1.2f, 1.2f, 1.2f);
+    protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, MatrixStack matrixStack, float f) {
+        matrixStack.scale(1.2f, 1.2f, 1.2f);
     }
 }
 

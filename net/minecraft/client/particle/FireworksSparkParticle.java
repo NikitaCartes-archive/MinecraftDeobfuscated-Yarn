@@ -5,7 +5,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.AnimatedParticle;
 import net.minecraft.client.particle.NoRenderParticle;
@@ -16,6 +15,7 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -78,9 +78,9 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
+        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
             this.setColorAlpha(0.6f - ((float)this.age + f - 1.0f) * 0.25f * 0.5f);
-            super.buildGeometry(arg, camera, f, g, h, i, j, k);
+            super.buildGeometry(vertexConsumer, camera, f, g, h, i, j, k);
         }
 
         @Override
@@ -120,9 +120,9 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
+        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
             if (!this.flicker || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-                super.buildGeometry(arg, camera, f, g, h, i, j, k);
+                super.buildGeometry(vertexConsumer, camera, f, g, h, i, j, k);
             }
         }
 

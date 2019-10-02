@@ -148,10 +148,10 @@ extends Screen {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-        bufferBuilder.vertex(0.0, this.height, this.getBlitOffset()).texture(0.0f, g * 0.015625f).method_22915(m, m, m, 1.0f).next();
-        bufferBuilder.vertex(k, this.height, this.getBlitOffset()).texture((float)k * 0.015625f, g * 0.015625f).method_22915(m, m, m, 1.0f).next();
-        bufferBuilder.vertex(k, 0.0, this.getBlitOffset()).texture((float)k * 0.015625f, h * 0.015625f).method_22915(m, m, m, 1.0f).next();
-        bufferBuilder.vertex(0.0, 0.0, this.getBlitOffset()).texture(0.0f, h * 0.015625f).method_22915(m, m, m, 1.0f).next();
+        bufferBuilder.vertex(0.0, this.height, this.getBlitOffset()).texture(0.0f, g * 0.015625f).color(m, m, m, 1.0f).next();
+        bufferBuilder.vertex(k, this.height, this.getBlitOffset()).texture((float)k * 0.015625f, g * 0.015625f).color(m, m, m, 1.0f).next();
+        bufferBuilder.vertex(k, 0.0, this.getBlitOffset()).texture((float)k * 0.015625f, h * 0.015625f).color(m, m, m, 1.0f).next();
+        bufferBuilder.vertex(0.0, 0.0, this.getBlitOffset()).texture(0.0f, h * 0.015625f).color(m, m, m, 1.0f).next();
         tessellator.draw();
     }
 
@@ -200,10 +200,10 @@ extends Screen {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
         bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-        bufferBuilder.vertex(0.0, p, this.getBlitOffset()).texture(0.0f, 1.0f).method_22915(1.0f, 1.0f, 1.0f, 1.0f).next();
-        bufferBuilder.vertex(o, p, this.getBlitOffset()).texture(1.0f, 1.0f).method_22915(1.0f, 1.0f, 1.0f, 1.0f).next();
-        bufferBuilder.vertex(o, 0.0, this.getBlitOffset()).texture(1.0f, 0.0f).method_22915(1.0f, 1.0f, 1.0f, 1.0f).next();
-        bufferBuilder.vertex(0.0, 0.0, this.getBlitOffset()).texture(0.0f, 0.0f).method_22915(1.0f, 1.0f, 1.0f, 1.0f).next();
+        bufferBuilder.vertex(0.0, p, this.getBlitOffset()).texture(0.0f, 1.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();
+        bufferBuilder.vertex(o, p, this.getBlitOffset()).texture(1.0f, 1.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();
+        bufferBuilder.vertex(o, 0.0, this.getBlitOffset()).texture(1.0f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();
+        bufferBuilder.vertex(0.0, 0.0, this.getBlitOffset()).texture(0.0f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();
         tessellator.draw();
         RenderSystem.disableBlend();
         super.render(i, j, f);

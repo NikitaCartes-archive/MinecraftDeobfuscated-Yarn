@@ -21,7 +21,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -87,6 +86,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import org.jetbrains.annotations.Nullable;
@@ -908,8 +908,8 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-            BlockState blockState = arg.getBlockState(blockPos);
+        protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
+            BlockState blockState = worldView.getBlockState(blockPos);
             return blockState.getBlock() == Blocks.SWEET_BERRY_BUSH && blockState.get(SweetBerryBushBlock.AGE) >= 2;
         }
 

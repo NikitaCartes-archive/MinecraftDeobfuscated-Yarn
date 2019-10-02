@@ -13,7 +13,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
@@ -60,6 +59,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class TurtleEntity
@@ -292,14 +292,14 @@ extends AnimalEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-        if (!this.isLandBound() && arg.getFluidState(blockPos).matches(FluidTags.WATER)) {
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+        if (!this.isLandBound() && worldView.getFluidState(blockPos).matches(FluidTags.WATER)) {
             return 10.0f;
         }
-        if (arg.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND) {
+        if (worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND) {
             return 10.0f;
         }
-        return arg.getBrightness(blockPos) - 0.5f;
+        return worldView.getBrightness(blockPos) - 0.5f;
     }
 
     @Override
@@ -356,7 +356,8 @@ extends AnimalEntity {
 
         @Override
         protected PathNodeNavigator createPathNodeNavigator(int i) {
-            return new PathNodeNavigator(new AmphibiousPathNodeMaker(), i);
+            this.nodeMaker = new AmphibiousPathNodeMaker();
+            return new PathNodeNavigator(this.nodeMaker, i);
         }
 
         @Override
@@ -443,8 +444,8 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-            Block block = arg.getBlockState(blockPos).getBlock();
+        protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
+            Block block = worldView.getBlockState(blockPos).getBlock();
             return block == Blocks.WATER;
         }
     }
@@ -511,11 +512,11 @@ extends AnimalEntity {
         }
 
         @Override
-        protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-            if (!arg.isAir(blockPos.up())) {
+        protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
+            if (!worldView.isAir(blockPos.up())) {
                 return false;
             }
-            Block block = arg.getBlockState(blockPos).getBlock();
+            Block block = worldView.getBlockState(blockPos).getBlock();
             return block == Blocks.SAND;
         }
     }

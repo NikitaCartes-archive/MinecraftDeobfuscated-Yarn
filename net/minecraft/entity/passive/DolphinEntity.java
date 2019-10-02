@@ -19,7 +19,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.DolphinLookControl;
@@ -46,6 +45,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -84,7 +84,7 @@ extends WaterCreatureEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        this.setBreath(this.getMaxBreath());
+        this.setAir(this.getMaxAir());
         this.pitch = 0.0f;
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
@@ -95,7 +95,7 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    protected void tickBreath(int i) {
+    protected void tickWaterBreathingAir(int i) {
     }
 
     public void setTreasurePos(BlockPos blockPos) {
@@ -193,13 +193,13 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public int getMaxBreath() {
+    public int getMaxAir() {
         return 4800;
     }
 
     @Override
-    protected int getNextBreathInAir(int i) {
-        return this.getMaxBreath();
+    protected int getNextAirOnLand(int i) {
+        return this.getMaxAir();
     }
 
     @Override
@@ -385,13 +385,13 @@ extends WaterCreatureEntity {
 
         @Override
         public boolean canStart() {
-            return this.dolphin.hasFish() && this.dolphin.getBreath() >= 100;
+            return this.dolphin.hasFish() && this.dolphin.getAir() >= 100;
         }
 
         @Override
         public boolean shouldContinue() {
             BlockPos blockPos = this.dolphin.getTreasurePos();
-            return !new BlockPos((double)blockPos.getX(), this.dolphin.y, (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0) && !this.field_6753 && this.dolphin.getBreath() >= 100;
+            return !new BlockPos((double)blockPos.getX(), this.dolphin.y, (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0) && !this.field_6753 && this.dolphin.getAir() >= 100;
         }
 
         /*

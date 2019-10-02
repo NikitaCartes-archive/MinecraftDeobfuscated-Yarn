@@ -5,12 +5,11 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -20,6 +19,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class CapeFeatureRenderer
@@ -28,7 +28,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         super(featureRendererContext);
     }
 
-    public void method_4177(class_4587 arg, class_4597 arg2, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4177(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!abstractClientPlayerEntity.canRenderCapeTexture() || abstractClientPlayerEntity.isInvisible() || !abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) || abstractClientPlayerEntity.getCapeTexture() == null) {
             return;
         }
@@ -36,8 +36,8 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         if (itemStack.getItem() == Items.ELYTRA) {
             return;
         }
-        arg.method_22903();
-        arg.method_22904(0.0, 0.0, 0.125);
+        matrixStack.push();
+        matrixStack.translate(0.0, 0.0, 0.125);
         double d = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7524, abstractClientPlayerEntity.field_7500) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.x);
         double e = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7502, abstractClientPlayerEntity.field_7521) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.y);
         double n = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7522, abstractClientPlayerEntity.field_7499) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.z);
@@ -58,14 +58,14 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         if (abstractClientPlayerEntity.isInSneakingPose()) {
             r += 25.0f;
         }
-        arg.method_22907(Vector3f.field_20703.method_23214(6.0f + s / 2.0f + r, true));
-        arg.method_22907(Vector3f.field_20707.method_23214(t / 2.0f, true));
-        arg.method_22907(Vector3f.field_20705.method_23214(180.0f - t / 2.0f, true));
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(abstractClientPlayerEntity.getCapeTexture()));
-        class_4608.method_23211(lv);
-        ((PlayerEntityModel)this.getModel()).renderCape(arg, lv, 0.0625f, i);
-        lv.method_22923();
-        arg.method_22909();
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0f + s / 2.0f + r, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t / 2.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - t / 2.0f, true));
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(abstractClientPlayerEntity.getCapeTexture()));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        ((PlayerEntityModel)this.getModel()).renderCape(matrixStack, vertexConsumer, 0.0625f, i);
+        vertexConsumer.clearDefaultOverlay();
+        matrixStack.pop();
     }
 }
 

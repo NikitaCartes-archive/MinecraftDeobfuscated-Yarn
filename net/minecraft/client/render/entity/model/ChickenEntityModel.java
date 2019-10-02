@@ -27,28 +27,28 @@ extends class_4592<T> {
         int i = 16;
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-2.0f, -6.0f, -2.0f, 4.0f, 6.0f, 3.0f, 0.0f);
-        this.head.setRotationPoint(0.0f, 15.0f, -4.0f);
+        this.head.setPivot(0.0f, 15.0f, -4.0f);
         this.beak = new ModelPart(this, 14, 0);
         this.beak.addCuboid(-2.0f, -4.0f, -4.0f, 4.0f, 2.0f, 2.0f, 0.0f);
-        this.beak.setRotationPoint(0.0f, 15.0f, -4.0f);
+        this.beak.setPivot(0.0f, 15.0f, -4.0f);
         this.wattle = new ModelPart(this, 14, 4);
         this.wattle.addCuboid(-1.0f, -2.0f, -3.0f, 2.0f, 2.0f, 2.0f, 0.0f);
-        this.wattle.setRotationPoint(0.0f, 15.0f, -4.0f);
+        this.wattle.setPivot(0.0f, 15.0f, -4.0f);
         this.body = new ModelPart(this, 0, 9);
         this.body.addCuboid(-3.0f, -4.0f, -3.0f, 6.0f, 8.0f, 6.0f, 0.0f);
-        this.body.setRotationPoint(0.0f, 16.0f, 0.0f);
+        this.body.setPivot(0.0f, 16.0f, 0.0f);
         this.leftLeg = new ModelPart(this, 26, 0);
         this.leftLeg.addCuboid(-1.0f, 0.0f, -3.0f, 3.0f, 5.0f, 3.0f);
-        this.leftLeg.setRotationPoint(-2.0f, 19.0f, 1.0f);
+        this.leftLeg.setPivot(-2.0f, 19.0f, 1.0f);
         this.rightLeg = new ModelPart(this, 26, 0);
         this.rightLeg.addCuboid(-1.0f, 0.0f, -3.0f, 3.0f, 5.0f, 3.0f);
-        this.rightLeg.setRotationPoint(1.0f, 19.0f, 1.0f);
+        this.rightLeg.setPivot(1.0f, 19.0f, 1.0f);
         this.leftWing = new ModelPart(this, 24, 13);
         this.leftWing.addCuboid(0.0f, 0.0f, -3.0f, 1.0f, 4.0f, 6.0f);
-        this.leftWing.setRotationPoint(-4.0f, 13.0f, 0.0f);
+        this.leftWing.setPivot(-4.0f, 13.0f, 0.0f);
         this.rightWing = new ModelPart(this, 24, 13);
         this.rightWing.addCuboid(-1.0f, 0.0f, -3.0f, 1.0f, 4.0f, 6.0f);
-        this.rightWing.setRotationPoint(4.0f, 13.0f, 0.0f);
+        this.rightWing.setPivot(4.0f, 13.0f, 0.0f);
     }
 
     @Override

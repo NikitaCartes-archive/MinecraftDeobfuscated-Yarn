@@ -86,7 +86,7 @@ extends Block {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity2, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity2, Hand hand, BlockHitResult blockHitResult) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         Item item = itemStack.getItem();
         if (item == Items.FLINT_AND_STEEL || item == Items.FIRE_CHARGE) {
@@ -99,7 +99,7 @@ extends Block {
             }
             return true;
         }
-        return super.activate(blockState, world, blockPos, playerEntity2, hand, blockHitResult);
+        return super.onUse(blockState, world, blockPos, playerEntity2, hand, blockHitResult);
     }
 
     @Override

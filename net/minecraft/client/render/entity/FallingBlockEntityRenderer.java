@@ -6,12 +6,11 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -19,6 +18,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
@@ -29,7 +29,7 @@ extends EntityRenderer<FallingBlockEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+    public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         BlockState blockState = fallingBlockEntity.getBlockState();
         if (blockState.getRenderType() != BlockRenderType.MODEL) {
             return;
@@ -38,13 +38,13 @@ extends EntityRenderer<FallingBlockEntity> {
         if (blockState == world.getBlockState(new BlockPos(fallingBlockEntity)) || blockState.getRenderType() == BlockRenderType.INVISIBLE) {
             return;
         }
-        arg.method_22903();
+        matrixStack.push();
         BlockPos blockPos = new BlockPos(fallingBlockEntity.x, fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.z);
-        arg.method_22904((double)(-(blockPos.getX() & 0xF)) - 0.5, -(blockPos.getY() & 0xF), (double)(-(blockPos.getZ() & 0xF)) - 0.5);
+        matrixStack.translate((double)(-(blockPos.getX() & 0xF)) - 0.5, -(blockPos.getY() & 0xF), (double)(-(blockPos.getZ() & 0xF)) - 0.5);
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
-        blockRenderManager.getModelRenderer().tesselate(world, blockRenderManager.getModel(blockState), blockState, blockPos, arg, arg2.getBuffer(BlockRenderLayer.method_22715(blockState)), false, new Random(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()));
-        arg.method_22909();
-        super.render(fallingBlockEntity, d, e, f, g, h, arg, arg2);
+        blockRenderManager.getModelRenderer().tesselate(world, blockRenderManager.getModel(blockState), blockState, blockPos, matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.method_22715(blockState)), false, new Random(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()));
+        matrixStack.pop();
+        super.render(fallingBlockEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
     public Identifier method_3964(FallingBlockEntity fallingBlockEntity) {

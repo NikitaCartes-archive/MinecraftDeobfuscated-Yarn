@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4543;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
@@ -38,7 +38,7 @@ extends ChunkGenerator<DebugChunkGeneratorConfig> {
     }
 
     @Override
-    public void carve(class_4543 arg, Chunk chunk, GenerationStep.Carver carver) {
+    public void carve(BiomeAccess biomeAccess, Chunk chunk, GenerationStep.Carver carver) {
     }
 
     @Override

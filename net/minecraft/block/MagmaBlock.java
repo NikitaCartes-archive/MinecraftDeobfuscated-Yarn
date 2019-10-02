@@ -10,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BubbleColumnBlock;
-import net.minecraft.class_4538;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -26,6 +25,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class MagmaBlock
 extends Block {
@@ -43,12 +43,12 @@ extends Block {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean method_22359(BlockState blockState) {
+    public boolean hasEmissiveLighting(BlockState blockState) {
         return true;
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         BubbleColumnBlock.update(serverWorld, blockPos.up(), true);
     }
 
@@ -61,7 +61,7 @@ extends Block {
     }
 
     @Override
-    public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         BlockPos blockPos2 = blockPos.up();
         if (serverWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
             serverWorld.playSound(null, blockPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5f, 2.6f + (serverWorld.random.nextFloat() - serverWorld.random.nextFloat()) * 0.8f);
@@ -70,7 +70,7 @@ extends Block {
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return 20;
     }
 

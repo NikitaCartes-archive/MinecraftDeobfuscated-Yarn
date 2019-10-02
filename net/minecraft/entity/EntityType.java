@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4538;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -141,6 +140,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -210,7 +210,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<RabbitEntity> RABBIT = EntityType.register("rabbit", Builder.create(RabbitEntity::new, EntityCategory.CREATURE).setDimensions(0.4f, 0.5f));
     public static final EntityType<SalmonEntity> SALMON = EntityType.register("salmon", Builder.create(SalmonEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7f, 0.4f));
     public static final EntityType<SheepEntity> SHEEP = EntityType.register("sheep", Builder.create(SheepEntity::new, EntityCategory.CREATURE).setDimensions(0.9f, 1.3f));
-    public static final EntityType<ShulkerEntity> SHULKER = EntityType.register("shulker", Builder.create(ShulkerEntity::new, EntityCategory.MONSTER).makeFireImmune().method_20815().setDimensions(1.0f, 1.0f));
+    public static final EntityType<ShulkerEntity> SHULKER = EntityType.register("shulker", Builder.create(ShulkerEntity::new, EntityCategory.MONSTER).makeFireImmune().spawnableFarFromPlayer().setDimensions(1.0f, 1.0f));
     public static final EntityType<ShulkerBulletEntity> SHULKER_BULLET = EntityType.register("shulker_bullet", Builder.create(ShulkerBulletEntity::new, EntityCategory.MISC).setDimensions(0.3125f, 0.3125f));
     public static final EntityType<SilverfishEntity> SILVERFISH = EntityType.register("silverfish", Builder.create(SilverfishEntity::new, EntityCategory.MONSTER).setDimensions(0.4f, 0.3f));
     public static final EntityType<SkeletonEntity> SKELETON = EntityType.register("skeleton", Builder.create(SkeletonEntity::new, EntityCategory.MONSTER).setDimensions(0.6f, 1.99f));
@@ -235,7 +235,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<VillagerEntity> VILLAGER = EntityType.register("villager", Builder.create(VillagerEntity::new, EntityCategory.MISC).setDimensions(0.6f, 1.95f));
     public static final EntityType<IronGolemEntity> IRON_GOLEM = EntityType.register("iron_golem", Builder.create(IronGolemEntity::new, EntityCategory.MISC).setDimensions(1.4f, 2.7f));
     public static final EntityType<VindicatorEntity> VINDICATOR = EntityType.register("vindicator", Builder.create(VindicatorEntity::new, EntityCategory.MONSTER).setDimensions(0.6f, 1.95f));
-    public static final EntityType<PillagerEntity> PILLAGER = EntityType.register("pillager", Builder.create(PillagerEntity::new, EntityCategory.MONSTER).method_20815().setDimensions(0.6f, 1.95f));
+    public static final EntityType<PillagerEntity> PILLAGER = EntityType.register("pillager", Builder.create(PillagerEntity::new, EntityCategory.MONSTER).spawnableFarFromPlayer().setDimensions(0.6f, 1.95f));
     public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = EntityType.register("wandering_trader", Builder.create(WanderingTraderEntity::new, EntityCategory.CREATURE).setDimensions(0.6f, 1.95f));
     public static final EntityType<WitchEntity> WITCH = EntityType.register("witch", Builder.create(WitchEntity::new, EntityCategory.MONSTER).setDimensions(0.6f, 1.95f));
     public static final EntityType<WitherEntity> WITHER = EntityType.register("wither", Builder.create(WitherEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.9f, 3.5f));
@@ -326,12 +326,12 @@ public class EntityType<T extends Entity> {
         return entity;
     }
 
-    protected static double getOriginY(class_4538 arg, BlockPos blockPos, boolean bl, Box box) {
+    protected static double getOriginY(WorldView worldView, BlockPos blockPos, boolean bl, Box box) {
         Box box2 = new Box(blockPos);
         if (bl) {
             box2 = box2.stretch(0.0, -1.0, 0.0);
         }
-        Stream<VoxelShape> stream = arg.getCollisions(null, box2, Collections.emptySet());
+        Stream<VoxelShape> stream = worldView.getCollisions(null, box2, Collections.emptySet());
         return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
     }
 
@@ -365,7 +365,7 @@ public class EntityType<T extends Entity> {
         return this.fireImmune;
     }
 
-    public boolean method_20814() {
+    public boolean isSpawnableFarFromPlayer() {
         return this.field_19423;
     }
 
@@ -554,7 +554,7 @@ public class EntityType<T extends Entity> {
             return this;
         }
 
-        public Builder<T> method_20815() {
+        public Builder<T> spawnableFarFromPlayer() {
             this.field_19424 = true;
             return this;
         }

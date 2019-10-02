@@ -32,7 +32,7 @@ extends class_4592<T> {
         this.textureHeight = 32;
         this.head = new ModelPart(this, 1, 5);
         this.head.addCuboid(-3.0f, -2.0f, -5.0f, 8.0f, 6.0f, 6.0f);
-        this.head.setRotationPoint(-1.0f, 16.5f, -3.0f);
+        this.head.setPivot(-1.0f, 16.5f, -3.0f);
         this.leftEar = new ModelPart(this, 8, 1);
         this.leftEar.addCuboid(-3.0f, -4.0f, -4.0f, 2.0f, 2.0f, 1.0f);
         this.rightEar = new ModelPart(this, 15, 1);
@@ -44,23 +44,23 @@ extends class_4592<T> {
         this.head.addChild(this.nose);
         this.body = new ModelPart(this, 24, 15);
         this.body.addCuboid(-3.0f, 3.999f, -3.5f, 6.0f, 11.0f, 6.0f);
-        this.body.setRotationPoint(0.0f, 16.0f, -6.0f);
+        this.body.setPivot(0.0f, 16.0f, -6.0f);
         float f = 0.001f;
         this.frontLeftLeg = new ModelPart(this, 13, 24);
         this.frontLeftLeg.addCuboid(2.0f, 0.5f, -1.0f, 2.0f, 6.0f, 2.0f, 0.001f);
-        this.frontLeftLeg.setRotationPoint(-5.0f, 17.5f, 7.0f);
+        this.frontLeftLeg.setPivot(-5.0f, 17.5f, 7.0f);
         this.frontRightLeg = new ModelPart(this, 4, 24);
         this.frontRightLeg.addCuboid(2.0f, 0.5f, -1.0f, 2.0f, 6.0f, 2.0f, 0.001f);
-        this.frontRightLeg.setRotationPoint(-1.0f, 17.5f, 7.0f);
+        this.frontRightLeg.setPivot(-1.0f, 17.5f, 7.0f);
         this.rearLeftLeg = new ModelPart(this, 13, 24);
         this.rearLeftLeg.addCuboid(2.0f, 0.5f, -1.0f, 2.0f, 6.0f, 2.0f, 0.001f);
-        this.rearLeftLeg.setRotationPoint(-5.0f, 17.5f, 0.0f);
+        this.rearLeftLeg.setPivot(-5.0f, 17.5f, 0.0f);
         this.rearRightLeg = new ModelPart(this, 4, 24);
         this.rearRightLeg.addCuboid(2.0f, 0.5f, -1.0f, 2.0f, 6.0f, 2.0f, 0.001f);
-        this.rearRightLeg.setRotationPoint(-1.0f, 17.5f, 0.0f);
+        this.rearRightLeg.setPivot(-1.0f, 17.5f, 0.0f);
         this.tail = new ModelPart(this, 30, 0);
         this.tail.addCuboid(2.0f, 0.0f, -1.0f, 4.0f, 9.0f, 5.0f);
-        this.tail.setRotationPoint(-4.0f, 15.0f, -1.0f);
+        this.tail.setPivot(-4.0f, 15.0f, -1.0f);
         this.body.addChild(this.tail);
     }
 
@@ -71,32 +71,32 @@ extends class_4592<T> {
         this.frontRightLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
         this.rearLeftLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
         this.rearRightLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
-        this.head.setRotationPoint(-1.0f, 16.5f, -3.0f);
+        this.head.setPivot(-1.0f, 16.5f, -3.0f);
         this.head.yaw = 0.0f;
         this.head.roll = ((FoxEntity)foxEntity).getHeadRoll(h);
         this.frontLeftLeg.visible = true;
         this.frontRightLeg.visible = true;
         this.rearLeftLeg.visible = true;
         this.rearRightLeg.visible = true;
-        this.body.setRotationPoint(0.0f, 16.0f, -6.0f);
+        this.body.setPivot(0.0f, 16.0f, -6.0f);
         this.body.roll = 0.0f;
-        this.frontLeftLeg.setRotationPoint(-5.0f, 17.5f, 7.0f);
-        this.frontRightLeg.setRotationPoint(-1.0f, 17.5f, 7.0f);
+        this.frontLeftLeg.setPivot(-5.0f, 17.5f, 7.0f);
+        this.frontRightLeg.setPivot(-1.0f, 17.5f, 7.0f);
         if (((FoxEntity)foxEntity).isInSneakingPose()) {
             this.body.pitch = 1.6755161f;
             float i = ((FoxEntity)foxEntity).getBodyRotationHeightOffset(h);
-            this.body.setRotationPoint(0.0f, 16.0f + ((FoxEntity)foxEntity).getBodyRotationHeightOffset(h), -6.0f);
-            this.head.setRotationPoint(-1.0f, 16.5f + i, -3.0f);
+            this.body.setPivot(0.0f, 16.0f + ((FoxEntity)foxEntity).getBodyRotationHeightOffset(h), -6.0f);
+            this.head.setPivot(-1.0f, 16.5f + i, -3.0f);
             this.head.yaw = 0.0f;
         } else if (((FoxEntity)foxEntity).isSleeping()) {
             this.body.roll = -1.5707964f;
-            this.body.setRotationPoint(0.0f, 21.0f, -6.0f);
+            this.body.setPivot(0.0f, 21.0f, -6.0f);
             this.tail.pitch = -2.6179938f;
             if (this.isChild) {
                 this.tail.pitch = -2.1816616f;
-                this.body.setRotationPoint(0.0f, 21.0f, -2.0f);
+                this.body.setPivot(0.0f, 21.0f, -2.0f);
             }
-            this.head.setRotationPoint(1.0f, 19.49f, -3.0f);
+            this.head.setPivot(1.0f, 19.49f, -3.0f);
             this.head.pitch = 0.0f;
             this.head.yaw = -2.0943952f;
             this.head.roll = 0.0f;
@@ -106,19 +106,19 @@ extends class_4592<T> {
             this.rearRightLeg.visible = false;
         } else if (((FoxEntity)foxEntity).isSitting()) {
             this.body.pitch = 0.5235988f;
-            this.body.setRotationPoint(0.0f, 9.0f, -3.0f);
+            this.body.setPivot(0.0f, 9.0f, -3.0f);
             this.tail.pitch = 0.7853982f;
-            this.tail.setRotationPoint(-4.0f, 15.0f, -2.0f);
-            this.head.setRotationPoint(-1.0f, 10.0f, -0.25f);
+            this.tail.setPivot(-4.0f, 15.0f, -2.0f);
+            this.head.setPivot(-1.0f, 10.0f, -0.25f);
             this.head.pitch = 0.0f;
             this.head.yaw = 0.0f;
             if (this.isChild) {
-                this.head.setRotationPoint(-1.0f, 13.0f, -3.75f);
+                this.head.setPivot(-1.0f, 13.0f, -3.75f);
             }
             this.frontLeftLeg.pitch = -1.3089969f;
-            this.frontLeftLeg.setRotationPoint(-5.0f, 21.5f, 6.75f);
+            this.frontLeftLeg.setPivot(-5.0f, 21.5f, 6.75f);
             this.frontRightLeg.pitch = -1.3089969f;
-            this.frontRightLeg.setRotationPoint(-1.0f, 21.5f, 6.75f);
+            this.frontRightLeg.setPivot(-1.0f, 21.5f, 6.75f);
             this.rearLeftLeg.pitch = -0.2617994f;
             this.rearRightLeg.pitch = -0.2617994f;
         }

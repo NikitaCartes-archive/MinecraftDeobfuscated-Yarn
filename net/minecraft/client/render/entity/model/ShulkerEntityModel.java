@@ -22,11 +22,11 @@ extends class_4595<T> {
         this.field_3553 = new ModelPart(64, 64, 0, 28);
         this.field_3554 = new ModelPart(64, 64, 0, 52);
         this.field_3555.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);
-        this.field_3555.setRotationPoint(0.0f, 24.0f, 0.0f);
+        this.field_3555.setPivot(0.0f, 24.0f, 0.0f);
         this.field_3553.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 8.0f, 16.0f);
-        this.field_3553.setRotationPoint(0.0f, 24.0f, 0.0f);
+        this.field_3553.setPivot(0.0f, 24.0f, 0.0f);
         this.field_3554.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 6.0f, 6.0f);
-        this.field_3554.setRotationPoint(0.0f, 12.0f, 0.0f);
+        this.field_3554.setPivot(0.0f, 12.0f, 0.0f);
     }
 
     public void method_17122(T shulkerEntity, float f, float g, float h, float i, float j, float k) {
@@ -37,14 +37,14 @@ extends class_4595<T> {
         if (m > (float)Math.PI) {
             o = MathHelper.sin(h * 0.1f) * 0.7f;
         }
-        this.field_3555.setRotationPoint(0.0f, 16.0f + MathHelper.sin(m) * 8.0f + o, 0.0f);
+        this.field_3555.setPivot(0.0f, 16.0f + MathHelper.sin(m) * 8.0f + o, 0.0f);
         this.field_3555.yaw = ((ShulkerEntity)shulkerEntity).method_7116(l) > 0.3f ? n * n * n * n * (float)Math.PI * 0.125f : 0.0f;
         this.field_3554.pitch = j * ((float)Math.PI / 180);
         this.field_3554.yaw = i * ((float)Math.PI / 180);
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.field_3553, this.field_3555);
     }
 

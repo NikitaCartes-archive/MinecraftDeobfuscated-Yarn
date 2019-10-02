@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -26,6 +25,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.level.LevelProperties;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface IWorld
 extends EntityView,
-class_4538,
+WorldView,
 ModifiableTestableWorld {
     public long getSeed();
 
@@ -100,7 +100,7 @@ ModifiableTestableWorld {
 
     @Override
     default public BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-        return class_4538.super.getTopPosition(type, blockPos);
+        return WorldView.super.getTopPosition(type, blockPos);
     }
 }
 

@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.server.world.ServerWorld;
@@ -19,6 +18,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class AbstractPressurePlateBlock
 extends Block {
@@ -36,7 +36,7 @@ extends Block {
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return 20;
     }
 
@@ -54,13 +54,13 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.method_10074();
-        return AbstractPressurePlateBlock.topCoversMediumSquare(arg, blockPos2) || AbstractPressurePlateBlock.sideCoversSmallSquare(arg, blockPos2, Direction.UP);
+        return AbstractPressurePlateBlock.topCoversMediumSquare(worldView, blockPos2) || AbstractPressurePlateBlock.sideCoversSmallSquare(worldView, blockPos2, Direction.UP);
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int i = this.getRedstoneOutput(blockState);
         if (i > 0) {
             this.updatePlateState(serverWorld, blockPos, blockState, i);

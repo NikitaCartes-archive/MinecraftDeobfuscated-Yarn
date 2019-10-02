@@ -30,25 +30,25 @@ extends class_4594<T> {
         int i = 22;
         this.field_3589 = new ModelPart(this, 0, 0);
         this.field_3589.addCuboid(-1.0f, -1.5f, -3.0f, 2.0f, 3.0f, 6.0f, f);
-        this.field_3589.setRotationPoint(0.0f, 22.0f, 0.0f);
+        this.field_3589.setPivot(0.0f, 22.0f, 0.0f);
         this.field_3591 = new ModelPart(this, 22, -6);
         this.field_3591.addCuboid(0.0f, -1.5f, 0.0f, 0.0f, 3.0f, 6.0f, f);
-        this.field_3591.setRotationPoint(0.0f, 22.0f, 3.0f);
+        this.field_3591.setPivot(0.0f, 22.0f, 3.0f);
         this.field_3590 = new ModelPart(this, 2, 16);
         this.field_3590.addCuboid(-2.0f, -1.0f, 0.0f, 2.0f, 2.0f, 0.0f, f);
-        this.field_3590.setRotationPoint(-1.0f, 22.5f, 0.0f);
+        this.field_3590.setPivot(-1.0f, 22.5f, 0.0f);
         this.field_3590.yaw = 0.7853982f;
         this.field_3588 = new ModelPart(this, 2, 12);
         this.field_3588.addCuboid(0.0f, -1.0f, 0.0f, 2.0f, 2.0f, 0.0f, f);
-        this.field_3588.setRotationPoint(1.0f, 22.5f, 0.0f);
+        this.field_3588.setPivot(1.0f, 22.5f, 0.0f);
         this.field_3588.yaw = -0.7853982f;
         this.field_3587 = new ModelPart(this, 10, -5);
         this.field_3587.addCuboid(0.0f, -3.0f, 0.0f, 0.0f, 3.0f, 6.0f, f);
-        this.field_3587.setRotationPoint(0.0f, 20.5f, -3.0f);
+        this.field_3587.setPivot(0.0f, 20.5f, -3.0f);
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.field_3589, this.field_3591, this.field_3590, this.field_3588, this.field_3587);
     }
 

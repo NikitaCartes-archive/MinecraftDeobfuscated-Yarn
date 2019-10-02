@@ -72,7 +72,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         if (blockState.get(IN_WALL).booleanValue()) {
             return blockState.get(FACING).getAxis() == Direction.Axis.X ? field_11027 : field_11020;
         }
@@ -111,7 +111,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (blockState.get(OPEN).booleanValue()) {
             blockState = (BlockState)blockState.with(OPEN, false);
             world.setBlockState(blockPos, blockState, 10);

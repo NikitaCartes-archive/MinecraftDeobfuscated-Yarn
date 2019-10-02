@@ -15,7 +15,6 @@ import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,6 +37,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class BellBlock
@@ -84,7 +84,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         return this.ring(world, blockState, blockHitResult, playerEntity, true);
     }
 
@@ -224,8 +224,8 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return WallMountedBlock.canPlaceAt(arg, blockPos, BellBlock.getPlacementSide(blockState).getOpposite());
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return WallMountedBlock.canPlaceAt(worldView, blockPos, BellBlock.getPlacementSide(blockState).getOpposite());
     }
 
     private static Direction getPlacementSide(BlockState blockState) {

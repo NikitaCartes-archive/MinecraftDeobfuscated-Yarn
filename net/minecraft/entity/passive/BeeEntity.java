@@ -219,7 +219,12 @@ implements Flutterer {
         if (!this.hasHive()) {
             return false;
         }
-        return this.hasNectar() || !this.world.isDaylight() || this.world.hasRain(this.getBlockPos()) || this.ticksSincePollination > 3600;
+        boolean bl = false;
+        BlockEntity blockEntity = this.world.getBlockEntity(this.hivePos);
+        if (blockEntity instanceof BeeHiveBlockEntity) {
+            bl = ((BeeHiveBlockEntity)blockEntity).method_23280();
+        }
+        return !bl && (this.hasNectar() || !this.world.isDaylight() || this.world.hasRain(this.getBlockPos()) || this.ticksSincePollination > 3600);
     }
 
     public void setCannotEnterHiveTicks(int i) {
@@ -438,7 +443,7 @@ implements Flutterer {
     @Override
     protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
         if (this.isBaby()) {
-            return entityDimensions.height * 0.95f;
+            return entityDimensions.height * 0.5f;
         }
         return entityDimensions.height * 0.5f;
     }

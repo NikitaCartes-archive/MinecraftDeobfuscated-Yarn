@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4548;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -22,6 +21,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -157,7 +157,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public class_4548 getBiomeArray() {
+    public BiomeArray getBiomeArray() {
         return this.wrapped.getBiomeArray();
     }
 
@@ -200,7 +200,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void method_22405(class_4548 arg) {
+    public void method_22405(BiomeArray biomeArray) {
     }
 
     @Override

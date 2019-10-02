@@ -11,7 +11,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.class_4538;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -24,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class TallPlantBlock
@@ -63,12 +63,12 @@ extends PlantBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         if (blockState.get(HALF) == DoubleBlockHalf.UPPER) {
-            BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
+            BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
             return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
         }
-        return super.canPlaceAt(blockState, arg, blockPos);
+        return super.canPlaceAt(blockState, worldView, blockPos);
     }
 
     public void placeAt(IWorld iWorld, BlockPos blockPos, int i) {

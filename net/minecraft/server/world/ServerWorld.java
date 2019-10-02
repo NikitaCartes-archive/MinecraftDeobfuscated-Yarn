@@ -58,13 +58,13 @@ import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Npc;
-import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
+import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.Raid;
@@ -186,8 +186,8 @@ extends World {
     }
 
     @Override
-    public Biome method_22387(int i, int j, int k) {
-        return this.method_14178().getChunkGenerator().getBiomeSource().getBiome(i, j, k);
+    public Biome getGeneratorStoredBiome(int i, int j, int k) {
+        return this.method_14178().getChunkGenerator().getBiomeSource().getStoredBiome(i, j, k);
     }
 
     public void tick(BooleanSupplier booleanSupplier) {
@@ -378,7 +378,7 @@ extends World {
                 this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
             }
             if (bl && this.getBiome(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
-                this.getBlockState(blockPos2).getBlock().onRainTick(this, blockPos2);
+                this.getBlockState(blockPos2).getBlock().rainTick(this, blockPos2);
             }
         }
         profiler.swap("tickBlocks");
@@ -392,7 +392,7 @@ extends World {
                     profiler.push("randomTick");
                     BlockState blockState = chunkSection.getBlockState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
                     if (blockState.hasRandomTicks()) {
-                        blockState.onRandomTick(this, blockPos3, this.random);
+                        blockState.randomTick(this, blockPos3, this.random);
                     }
                     if ((fluidState = blockState.getFluidState()).hasRandomTicks()) {
                         fluidState.onRandomTick(this, blockPos3, this.random);

@@ -15,7 +15,6 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
-import net.minecraft.class_4538;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructurePieceType;
@@ -30,6 +29,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
@@ -217,7 +217,7 @@ public abstract class StructurePiece {
         return blockView.getBlockState(blockPos);
     }
 
-    protected boolean isUnderSeaLevel(class_4538 arg, int i, int j, int k, BlockBox blockBox) {
+    protected boolean isUnderSeaLevel(WorldView worldView, int i, int j, int k, BlockBox blockBox) {
         int n;
         int m;
         int l = this.applyXTransform(i, k);
@@ -225,7 +225,7 @@ public abstract class StructurePiece {
         if (!blockBox.contains(blockPos)) {
             return false;
         }
-        return m < arg.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+        return m < worldView.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
     }
 
     protected void fill(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n) {

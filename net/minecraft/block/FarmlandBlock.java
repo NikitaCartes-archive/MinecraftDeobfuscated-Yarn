@@ -13,7 +13,6 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.PistonExtensionBlock;
 import net.minecraft.block.StemBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
@@ -31,6 +30,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class FarmlandBlock
 extends Block {
@@ -51,8 +51,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        BlockState blockState2 = arg.getBlockState(blockPos.up());
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        BlockState blockState2 = worldView.getBlockState(blockPos.up());
         return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock || blockState2.getBlock() instanceof PistonExtensionBlock;
     }
 
@@ -75,7 +75,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!blockState.canPlaceAt(serverWorld, blockPos)) {
             FarmlandBlock.setToDirt(blockState, serverWorld, blockPos);
             return;
@@ -109,9 +109,9 @@ extends Block {
         return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
     }
 
-    private static boolean isWaterNearby(class_4538 arg, BlockPos blockPos) {
+    private static boolean isWaterNearby(WorldView worldView, BlockPos blockPos) {
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
-            if (!arg.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
+            if (!worldView.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
             return true;
         }
         return false;

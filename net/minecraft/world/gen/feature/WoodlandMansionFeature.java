@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4543;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
@@ -22,6 +21,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -52,7 +52,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
         ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
         if (i == chunkPos.x && j == chunkPos.z) {
             Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32);

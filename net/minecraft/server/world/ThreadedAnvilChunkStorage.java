@@ -420,7 +420,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos);
             }
             if ((chunk2 = (Chunk)optional.get()).getStatus().isAtLeast(chunkStatus)) {
-                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus == ChunkStatus.LIGHT ? this.method_20617(chunkHolder, chunkStatus) : chunkStatus.method_20612(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), chunk2);
+                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus == ChunkStatus.LIGHT ? this.method_20617(chunkHolder, chunkStatus) : chunkStatus.runNoGenTask(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), chunk2);
                 this.worldGenerationProgressListener.setChunkStatus(chunkPos, chunkStatus);
                 return completableFuture;
             }

@@ -26,12 +26,12 @@ implements RecipeBookProvider {
     private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
     public final AbstractFurnaceRecipeBookScreen recipeBook;
     private boolean narrow;
-    private final Identifier field_18975;
+    private final Identifier background;
 
     public AbstractFurnaceScreen(T abstractFurnaceContainer, AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen, PlayerInventory playerInventory, Text text, Identifier identifier) {
         super(abstractFurnaceContainer, playerInventory, text);
         this.recipeBook = abstractFurnaceRecipeBookScreen;
-        this.field_18975 = identifier;
+        this.background = identifier;
     }
 
     @Override
@@ -80,7 +80,7 @@ implements RecipeBookProvider {
     protected void drawBackground(float f, int i, int j) {
         int m;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().bindTexture(this.field_18975);
+        this.minecraft.getTextureManager().bindTexture(this.background);
         int k = this.left;
         int l = this.top;
         this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);

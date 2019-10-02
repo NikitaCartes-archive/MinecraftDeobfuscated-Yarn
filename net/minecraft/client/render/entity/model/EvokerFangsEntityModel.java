@@ -19,13 +19,13 @@ extends class_4595<T> {
     private final ModelPart field_3375;
 
     public EvokerFangsEntityModel() {
-        this.field_3374.setRotationPoint(-5.0f, 22.0f, -5.0f);
+        this.field_3374.setPivot(-5.0f, 22.0f, -5.0f);
         this.field_3374.addCuboid(0.0f, 0.0f, 0.0f, 10.0f, 12.0f, 10.0f);
         this.field_3376 = new ModelPart(this, 40, 0);
-        this.field_3376.setRotationPoint(1.5f, 22.0f, -4.0f);
+        this.field_3376.setPivot(1.5f, 22.0f, -4.0f);
         this.field_3376.addCuboid(0.0f, 0.0f, 0.0f, 4.0f, 14.0f, 8.0f);
         this.field_3375 = new ModelPart(this, 40, 0);
-        this.field_3375.setRotationPoint(-1.5f, 22.0f, 4.0f);
+        this.field_3375.setPivot(-1.5f, 22.0f, 4.0f);
         this.field_3375.addCuboid(0.0f, 0.0f, 0.0f, 4.0f, 14.0f, 8.0f);
     }
 
@@ -40,12 +40,12 @@ extends class_4595<T> {
         this.field_3375.roll = (float)Math.PI + l * 0.35f * (float)Math.PI;
         this.field_3375.yaw = (float)Math.PI;
         float m = (f + MathHelper.sin(f * 2.7f)) * 0.6f * 12.0f;
-        this.field_3375.rotationPointY = this.field_3376.rotationPointY = 24.0f - m;
-        this.field_3374.rotationPointY = this.field_3376.rotationPointY;
+        this.field_3375.pivotY = this.field_3376.pivotY = 24.0f - m;
+        this.field_3374.pivotY = this.field_3376.pivotY;
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.field_3374, this.field_3376, this.field_3375);
     }
 }

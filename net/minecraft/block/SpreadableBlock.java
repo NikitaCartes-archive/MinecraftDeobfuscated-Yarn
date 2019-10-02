@@ -9,11 +9,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SnowBlock;
 import net.minecraft.block.SnowyBlock;
-import net.minecraft.class_4538;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 
 public abstract class SpreadableBlock
@@ -22,23 +22,23 @@ extends SnowyBlock {
         super(settings);
     }
 
-    private static boolean canSurvive(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    private static boolean canSurvive(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.up();
-        BlockState blockState2 = arg.getBlockState(blockPos2);
+        BlockState blockState2 = worldView.getBlockState(blockPos2);
         if (blockState2.getBlock() == Blocks.SNOW && blockState2.get(SnowBlock.LAYERS) == 1) {
             return true;
         }
-        int i = ChunkLightProvider.getRealisticOpacity(arg, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getOpacity(arg, blockPos2));
-        return i < arg.getMaxLightLevel();
+        int i = ChunkLightProvider.getRealisticOpacity(worldView, blockState, blockPos, blockState2, blockPos2, Direction.UP, blockState2.getOpacity(worldView, blockPos2));
+        return i < worldView.getMaxLightLevel();
     }
 
-    private static boolean canSpread(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    private static boolean canSpread(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.up();
-        return SpreadableBlock.canSurvive(blockState, arg, blockPos) && !arg.getFluidState(blockPos2).matches(FluidTags.WATER);
+        return SpreadableBlock.canSurvive(blockState, worldView, blockPos) && !worldView.getFluidState(blockPos2).matches(FluidTags.WATER);
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!SpreadableBlock.canSurvive(blockState, serverWorld, blockPos)) {
             serverWorld.setBlockState(blockPos, Blocks.DIRT.getDefaultState());
             return;

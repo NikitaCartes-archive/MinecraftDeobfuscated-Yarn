@@ -5,7 +5,6 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4538;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
@@ -15,12 +14,13 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.WorldView;
 
 public class FollowOwnerGoal
 extends Goal {
     protected final TameableEntity tameable;
     private LivingEntity owner;
-    protected final class_4538 world;
+    protected final WorldView world;
     private final double field_6442;
     private final EntityNavigation navigation;
     private int field_6443;

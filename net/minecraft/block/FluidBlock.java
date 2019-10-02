@@ -15,7 +15,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidDrainable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.BaseFluid;
@@ -35,6 +34,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.loot.context.LootContext;
 
 public class FluidBlock
@@ -57,7 +57,7 @@ implements FluidDrainable {
     }
 
     @Override
-    public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         serverWorld.getFluidState(blockPos).onRandomTick(serverWorld, blockPos, random);
     }
 
@@ -99,8 +99,8 @@ implements FluidDrainable {
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
-        return this.fluid.getTickRate(arg);
+    public int getTickRate(WorldView worldView) {
+        return this.fluid.getTickRate(worldView);
     }
 
     @Override

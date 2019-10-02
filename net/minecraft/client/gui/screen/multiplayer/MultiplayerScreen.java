@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.LanServerQueryManager;
-import net.minecraft.client.network.ServerEntryNetworkPart;
+import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 public class MultiplayerScreen
 extends Screen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final ServerEntryNetworkPart field_3037 = new ServerEntryNetworkPart();
+    private final MultiplayerServerListPinger serverListPinger = new MultiplayerServerListPinger();
     private final Screen parent;
     protected MultiplayerServerListWidget serverListWidget;
     private ServerList serverList;
@@ -110,7 +110,7 @@ extends Screen {
             this.lanServers.markClean();
             this.serverListWidget.setLanServers(list);
         }
-        this.field_3037.method_3000();
+        this.serverListPinger.tick();
     }
 
     @Override
@@ -120,7 +120,7 @@ extends Screen {
             this.lanServerDetector.interrupt();
             this.lanServerDetector = null;
         }
-        this.field_3037.method_3004();
+        this.serverListPinger.cancel();
     }
 
     private void refresh() {
@@ -233,8 +233,8 @@ extends Screen {
         }
     }
 
-    public ServerEntryNetworkPart method_2538() {
-        return this.field_3037;
+    public MultiplayerServerListPinger getServerListPinger() {
+        return this.serverListPinger;
     }
 
     public void setTooltip(String string) {

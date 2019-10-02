@@ -9,7 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallMountedBlock;
 import net.minecraft.block.enums.WallMountLocation;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +27,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractButtonBlock
@@ -58,7 +58,7 @@ extends WallMountedBlock {
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return this.wooden ? 30 : 20;
     }
 
@@ -95,7 +95,7 @@ extends WallMountedBlock {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (blockState.get(POWERED).booleanValue()) {
             return true;
         }
@@ -146,7 +146,7 @@ extends WallMountedBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!blockState.get(POWERED).booleanValue()) {
             return;
         }

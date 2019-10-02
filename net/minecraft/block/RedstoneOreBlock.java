@@ -51,9 +51,9 @@ extends Block {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         RedstoneOreBlock.light(blockState, world, blockPos);
-        return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+        return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
     }
 
     private static void light(BlockState blockState, World world, BlockPos blockPos) {
@@ -64,7 +64,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (blockState.get(LIT).booleanValue()) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(LIT, false), 3);
         }

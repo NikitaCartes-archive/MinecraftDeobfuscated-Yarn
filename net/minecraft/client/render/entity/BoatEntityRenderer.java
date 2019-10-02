@@ -5,11 +5,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
@@ -17,6 +16,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
@@ -30,34 +30,34 @@ extends EntityRenderer<BoatEntity> {
         this.field_4673 = 0.8f;
     }
 
-    public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+    public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         float k;
-        arg.method_22903();
-        arg.method_22904(0.0, 0.375, 0.0);
-        arg.method_22907(Vector3f.field_20705.method_23214(180.0f - g, true));
+        matrixStack.push();
+        matrixStack.translate(0.0, 0.375, 0.0);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - g, true));
         float i = (float)boatEntity.getDamageWobbleTicks() - h;
         float j = boatEntity.getDamageWobbleStrength() - h;
         if (j < 0.0f) {
             j = 0.0f;
         }
         if (i > 0.0f) {
-            arg.method_22907(Vector3f.field_20703.method_23214(MathHelper.sin(i) * i * j / 10.0f * (float)boatEntity.getDamageWobbleSide(), true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(i) * i * j / 10.0f * (float)boatEntity.getDamageWobbleSide(), true));
         }
         if (!MathHelper.approximatelyEquals(k = boatEntity.interpolateBubbleWobble(h), 0.0f)) {
-            arg.method_22907(new Quaternion(new Vector3f(1.0f, 0.0f, 1.0f), boatEntity.interpolateBubbleWobble(h), true));
+            matrixStack.multiply(new Quaternion(new Vector3f(1.0f, 0.0f, 1.0f), boatEntity.interpolateBubbleWobble(h), true));
         }
-        arg.method_22905(-1.0f, -1.0f, 1.0f);
+        matrixStack.scale(-1.0f, -1.0f, 1.0f);
         int l = boatEntity.getLightmapCoordinates();
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(this.method_3891(boatEntity)));
-        class_4608.method_23211(lv);
-        arg.method_22907(Vector3f.field_20705.method_23214(90.0f, true));
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(this.method_3891(boatEntity)));
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f, true));
         this.model.method_22952(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        this.model.method_22957(arg, lv, l);
-        class_4588 lv2 = arg2.getBuffer(BlockRenderLayer.WATER_MASK);
-        this.model.method_22954().method_22698(arg, lv2, 0.0625f, l, null);
-        arg.method_22909();
-        lv.method_22923();
-        super.render(boatEntity, d, e, f, g, h, arg, arg2);
+        this.model.method_22957(matrixStack, vertexConsumer, l);
+        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.WATER_MASK);
+        this.model.method_22954().render(matrixStack, vertexConsumer2, 0.0625f, l, null);
+        matrixStack.pop();
+        vertexConsumer.clearDefaultOverlay();
+        super.render(boatEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
     public Identifier method_3891(BoatEntity boatEntity) {

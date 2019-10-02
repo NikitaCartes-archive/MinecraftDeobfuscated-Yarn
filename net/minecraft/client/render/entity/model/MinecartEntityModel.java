@@ -27,17 +27,17 @@ extends class_4595<T> {
         int k = 16;
         int l = 4;
         this.field_3432[0].addCuboid(-10.0f, -8.0f, -1.0f, 20.0f, 16.0f, 2.0f, 0.0f);
-        this.field_3432[0].setRotationPoint(0.0f, 4.0f, 0.0f);
+        this.field_3432[0].setPivot(0.0f, 4.0f, 0.0f);
         this.field_3432[5].addCuboid(-9.0f, -7.0f, -1.0f, 18.0f, 14.0f, 1.0f, 0.0f);
-        this.field_3432[5].setRotationPoint(0.0f, 4.0f, 0.0f);
+        this.field_3432[5].setPivot(0.0f, 4.0f, 0.0f);
         this.field_3432[1].addCuboid(-8.0f, -9.0f, -1.0f, 16.0f, 8.0f, 2.0f, 0.0f);
-        this.field_3432[1].setRotationPoint(-9.0f, 4.0f, 0.0f);
+        this.field_3432[1].setPivot(-9.0f, 4.0f, 0.0f);
         this.field_3432[2].addCuboid(-8.0f, -9.0f, -1.0f, 16.0f, 8.0f, 2.0f, 0.0f);
-        this.field_3432[2].setRotationPoint(9.0f, 4.0f, 0.0f);
+        this.field_3432[2].setPivot(9.0f, 4.0f, 0.0f);
         this.field_3432[3].addCuboid(-8.0f, -9.0f, -1.0f, 16.0f, 8.0f, 2.0f, 0.0f);
-        this.field_3432[3].setRotationPoint(0.0f, 4.0f, -7.0f);
+        this.field_3432[3].setPivot(0.0f, 4.0f, -7.0f);
         this.field_3432[4].addCuboid(-8.0f, -9.0f, -1.0f, 16.0f, 8.0f, 2.0f, 0.0f);
-        this.field_3432[4].setRotationPoint(0.0f, 4.0f, 7.0f);
+        this.field_3432[4].setPivot(0.0f, 4.0f, 7.0f);
         this.field_3432[0].pitch = 1.5707964f;
         this.field_3432[1].yaw = 4.712389f;
         this.field_3432[2].yaw = 1.5707964f;
@@ -47,11 +47,11 @@ extends class_4595<T> {
 
     @Override
     public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-        this.field_3432[5].rotationPointY = 4.0f - h;
+        this.field_3432[5].pivotY = 4.0f - h;
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return Arrays.asList(this.field_3432);
     }
 }

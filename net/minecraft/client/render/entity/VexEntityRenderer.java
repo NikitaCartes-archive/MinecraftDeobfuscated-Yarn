@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.model.VexEntityModel;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class VexEntityRenderer
@@ -29,8 +29,8 @@ extends BipedEntityRenderer<VexEntity, VexEntityModel> {
         return TEXTURE;
     }
 
-    protected void method_4143(VexEntity vexEntity, class_4587 arg, float f) {
-        arg.method_22905(0.4f, 0.4f, 0.4f);
+    protected void method_4143(VexEntity vexEntity, MatrixStack matrixStack, float f) {
+        matrixStack.scale(0.4f, 0.4f, 0.4f);
     }
 }
 

@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -22,6 +21,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class SnowBlock
@@ -66,13 +66,13 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
         Block block = blockState2.getBlock();
         if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
             return false;
         }
-        return Block.isFaceFullSquare(blockState2.getCollisionShape(arg, blockPos.method_10074()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
+        return Block.isFaceFullSquare(blockState2.getCollisionShape(worldView, blockPos.method_10074()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
     }
 
     @Override
@@ -84,7 +84,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11) {
             SnowBlock.dropStacks(blockState, serverWorld, blockPos);
             serverWorld.removeBlock(blockPos, false);

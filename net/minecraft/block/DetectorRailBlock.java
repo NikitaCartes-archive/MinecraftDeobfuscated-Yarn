@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RailPlacementHelper;
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.class_4538;
 import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -31,6 +30,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class DetectorRailBlock
@@ -44,7 +44,7 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return 20;
     }
 
@@ -65,7 +65,7 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!blockState.get(POWERED).booleanValue()) {
             return;
         }

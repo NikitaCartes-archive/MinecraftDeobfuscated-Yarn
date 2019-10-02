@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4538;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -63,6 +62,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class PillagerEntity
@@ -156,12 +156,12 @@ RangedAttackMob {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-        Block block = arg.getBlockState(blockPos.method_10074()).getBlock();
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+        Block block = worldView.getBlockState(blockPos.method_10074()).getBlock();
         if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
             return 10.0f;
         }
-        return 0.5f - arg.getBrightness(blockPos);
+        return 0.5f - worldView.getBrightness(blockPos);
     }
 
     @Override

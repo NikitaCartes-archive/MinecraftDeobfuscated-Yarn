@@ -3,13 +3,13 @@
  */
 package net.minecraft.client.texture;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
@@ -42,7 +42,7 @@ ResourceReloadListener {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Identifier MISSING_IDENTIFIER = new Identifier("");
     private final Map<Identifier, AbstractTexture> textures = Maps.newHashMap();
-    private final List<TextureTickListener> tickListeners = Lists.newArrayList();
+    private final Set<TextureTickListener> tickListeners = Sets.newHashSet();
     private final Map<String, Integer> dynamicIdCounters = Maps.newHashMap();
     private final ResourceManager resourceContainer;
 

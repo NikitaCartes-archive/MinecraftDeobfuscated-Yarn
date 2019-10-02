@@ -70,14 +70,14 @@ import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.RecipeManager;
-import net.minecraft.resource.DefaultResourcePackCreator;
-import net.minecraft.resource.FileResourcePackCreator;
+import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourcePackContainer;
-import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.scoreboard.ScoreboardState;
 import net.minecraft.scoreboard.ScoreboardSynchronizer;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -219,9 +219,9 @@ Runnable {
     @Environment(value=EnvType.CLIENT)
     private boolean iconFilePresent;
     private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA, this.serverThread);
-    private final ResourcePackContainerManager<ResourcePackContainer> dataPackContainerManager = new ResourcePackContainerManager<ResourcePackContainer>(ResourcePackContainer::new);
+    private final ResourcePackManager<ResourcePackProfile> dataPackManager = new ResourcePackManager<ResourcePackProfile>(ResourcePackProfile::new);
     @Nullable
-    private FileResourcePackCreator dataPackCreator;
+    private FileResourcePackProvider fileDataPackProvider;
     private final CommandManager commandManager;
     private final RecipeManager recipeManager = new RecipeManager();
     private final RegistryTagManager tagManager = new RegistryTagManager();
@@ -423,20 +423,20 @@ Runnable {
     }
 
     protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
-        this.dataPackContainerManager.addCreator(new DefaultResourcePackCreator());
-        this.dataPackCreator = new FileResourcePackCreator(new File(file, "datapacks"));
-        this.dataPackContainerManager.addCreator(this.dataPackCreator);
-        this.dataPackContainerManager.callCreators();
-        ArrayList<ResourcePackContainer> list = Lists.newArrayList();
+        this.dataPackManager.registerProvider(new VanillaDataPackProvider());
+        this.fileDataPackProvider = new FileResourcePackProvider(new File(file, "datapacks"));
+        this.dataPackManager.registerProvider(this.fileDataPackProvider);
+        this.dataPackManager.scanPacks();
+        ArrayList<ResourcePackProfile> list = Lists.newArrayList();
         for (String string : levelProperties.getEnabledDataPacks()) {
-            ResourcePackContainer resourcePackContainer = this.dataPackContainerManager.getContainer(string);
-            if (resourcePackContainer != null) {
-                list.add(resourcePackContainer);
+            ResourcePackProfile resourcePackProfile = this.dataPackManager.getProfile(string);
+            if (resourcePackProfile != null) {
+                list.add(resourcePackProfile);
                 continue;
             }
             LOGGER.warn("Missing data pack {}", (Object)string);
         }
-        this.dataPackContainerManager.setEnabled(list);
+        this.dataPackManager.setEnabledProfiles(list);
         this.reloadDataPacks(levelProperties);
     }
 
@@ -956,12 +956,12 @@ Runnable {
         }
         crashReport.getSystemDetailsSection().add("Data Packs", () -> {
             StringBuilder stringBuilder = new StringBuilder();
-            for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getEnabledContainers()) {
+            for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
                 if (stringBuilder.length() > 0) {
                     stringBuilder.append(", ");
                 }
-                stringBuilder.append(resourcePackContainer.getName());
-                if (resourcePackContainer.getCompatibility().isCompatible()) continue;
+                stringBuilder.append(resourcePackProfile.getName());
+                if (resourcePackProfile.getCompatibility().isCompatible()) continue;
                 stringBuilder.append(" (incompatible)");
             }
             return stringBuilder.toString();
@@ -1329,21 +1329,21 @@ Runnable {
             return;
         }
         this.getPlayerManager().saveAllPlayerData();
-        this.dataPackContainerManager.callCreators();
+        this.dataPackManager.scanPacks();
         this.reloadDataPacks(this.getWorld(DimensionType.OVERWORLD).getLevelProperties());
         this.getPlayerManager().onDataPacksReloaded();
     }
 
     private void reloadDataPacks(LevelProperties levelProperties) {
-        ArrayList<ResourcePackContainer> list = Lists.newArrayList(this.dataPackContainerManager.getEnabledContainers());
-        for (ResourcePackContainer resourcePackContainer2 : this.dataPackContainerManager.getAlphabeticallyOrderedContainers()) {
-            if (levelProperties.getDisabledDataPacks().contains(resourcePackContainer2.getName()) || list.contains(resourcePackContainer2)) continue;
-            LOGGER.info("Found new data pack {}, loading it automatically", (Object)resourcePackContainer2.getName());
-            resourcePackContainer2.getInitialPosition().insert(list, resourcePackContainer2, resourcePackContainer -> resourcePackContainer, false);
+        ArrayList<ResourcePackProfile> list = Lists.newArrayList(this.dataPackManager.getEnabledProfiles());
+        for (ResourcePackProfile resourcePackProfile2 : this.dataPackManager.getProfiles()) {
+            if (levelProperties.getDisabledDataPacks().contains(resourcePackProfile2.getName()) || list.contains(resourcePackProfile2)) continue;
+            LOGGER.info("Found new data pack {}, loading it automatically", (Object)resourcePackProfile2.getName());
+            resourcePackProfile2.getInitialPosition().insert(list, resourcePackProfile2, resourcePackProfile -> resourcePackProfile, false);
         }
-        this.dataPackContainerManager.setEnabled(list);
+        this.dataPackManager.setEnabledProfiles(list);
         ArrayList<ResourcePack> list2 = Lists.newArrayList();
-        this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> list2.add(resourcePackContainer.createResourcePack()));
+        this.dataPackManager.getEnabledProfiles().forEach(resourcePackProfile -> list2.add(resourcePackProfile.createResourcePack()));
         CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, COMPLETED_UNIT_FUTURE);
         this.executeTasks(completableFuture::isDone);
         try {
@@ -1353,10 +1353,10 @@ Runnable {
         }
         levelProperties.getEnabledDataPacks().clear();
         levelProperties.getDisabledDataPacks().clear();
-        this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainer -> levelProperties.getEnabledDataPacks().add(resourcePackContainer.getName()));
-        this.dataPackContainerManager.getAlphabeticallyOrderedContainers().forEach(resourcePackContainer -> {
-            if (!this.dataPackContainerManager.getEnabledContainers().contains(resourcePackContainer)) {
-                levelProperties.getDisabledDataPacks().add(resourcePackContainer.getName());
+        this.dataPackManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
+        this.dataPackManager.getProfiles().forEach(resourcePackProfile -> {
+            if (!this.dataPackManager.getEnabledProfiles().contains(resourcePackProfile)) {
+                levelProperties.getDisabledDataPacks().add(resourcePackProfile.getName());
             }
         });
     }
@@ -1381,8 +1381,8 @@ Runnable {
         return this.dataManager;
     }
 
-    public ResourcePackContainerManager<ResourcePackContainer> getDataPackContainerManager() {
-        return this.dataPackContainerManager;
+    public ResourcePackManager<ResourcePackProfile> getDataPackManager() {
+        return this.dataPackManager;
     }
 
     public CommandManager getCommandManager() {

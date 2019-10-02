@@ -5,17 +5,17 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.BellBlockEntity;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class BellBlockEntityRenderer
@@ -26,14 +26,14 @@ extends BlockEntityRenderer<BellBlockEntity> {
     public BellBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
         super(blockEntityRenderDispatcher);
         this.field_20816.addCuboid(-3.0f, -6.0f, -3.0f, 6.0f, 7.0f, 6.0f);
-        this.field_20816.setRotationPoint(8.0f, 12.0f, 8.0f);
+        this.field_20816.setPivot(8.0f, 12.0f, 8.0f);
         ModelPart modelPart = new ModelPart(32, 32, 0, 13);
         modelPart.addCuboid(4.0f, 4.0f, 4.0f, 8.0f, 2.0f, 8.0f);
-        modelPart.setRotationPoint(-8.0f, -12.0f, -8.0f);
+        modelPart.setPivot(-8.0f, -12.0f, -8.0f);
         this.field_20816.addChild(modelPart);
     }
 
-    public void method_17139(BellBlockEntity bellBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+    public void method_17139(BellBlockEntity bellBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
         float h = (float)bellBlockEntity.ringTicks + g;
         float j = 0.0f;
         float k = 0.0f;
@@ -51,8 +51,8 @@ extends BlockEntityRenderer<BellBlockEntity> {
         }
         this.field_20816.pitch = j;
         this.field_20816.roll = k;
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
-        this.field_20816.method_22698(arg, lv, 0.0625f, i, this.method_23082(BELL_BODY_TEXTURE));
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
+        this.field_20816.render(matrixStack, vertexConsumer, 0.0625f, i, this.getSprite(BELL_BODY_TEXTURE));
     }
 }
 

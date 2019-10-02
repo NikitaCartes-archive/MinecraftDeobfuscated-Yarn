@@ -8,7 +8,6 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
@@ -23,6 +22,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AnimalEntity
@@ -69,11 +69,11 @@ extends PassiveEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-        if (arg.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK) {
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+        if (worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK) {
             return 10.0f;
         }
-        return arg.getBrightness(blockPos) - 0.5f;
+        return worldView.getBrightness(blockPos) - 0.5f;
     }
 
     @Override

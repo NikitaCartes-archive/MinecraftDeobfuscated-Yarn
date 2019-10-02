@@ -8,7 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.Waterloggable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -25,6 +24,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class LadderBlock
@@ -64,9 +64,9 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         Direction direction = blockState.get(FACING);
-        return this.canPlaceOn(arg, blockPos.offset(direction.getOpposite()), direction);
+        return this.canPlaceOn(worldView, blockPos.offset(direction.getOpposite()), direction);
     }
 
     @Override
@@ -88,11 +88,11 @@ implements Waterloggable {
             return null;
         }
         blockState = this.getDefaultState();
-        World lv = itemPlacementContext.getWorld();
+        World worldView = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
         for (Direction direction : itemPlacementContext.getPlacementDirections()) {
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction.getOpposite())).canPlaceAt(lv, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction.getOpposite())).canPlaceAt(worldView, blockPos)) continue;
             return (BlockState)blockState.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
         }
         return null;

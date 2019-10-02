@@ -20,7 +20,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4538;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
@@ -52,6 +51,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.loot.context.LootContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,11 +101,11 @@ implements State<BlockState> {
         return this.getBlock().getOpacity(this, blockView, blockPos);
     }
 
-    public VoxelShape getCullShape(BlockView blockView, BlockPos blockPos, Direction direction) {
+    public VoxelShape getCullingShape(BlockView blockView, BlockPos blockPos, Direction direction) {
         if (this.shapeCache != null && this.shapeCache.shapes != null) {
             return this.shapeCache.shapes[direction.ordinal()];
         }
-        return VoxelShapes.method_16344(this.method_11615(blockView, blockPos), direction);
+        return VoxelShapes.slice(this.getCullingShape(blockView, blockPos), direction);
     }
 
     public boolean method_17900() {
@@ -141,8 +141,8 @@ implements State<BlockState> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_22361() {
-        return this.getBlock().method_22359(this);
+    public boolean hasEmissiveLighting() {
+        return this.getBlock().hasEmissiveLighting(this);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -224,8 +224,8 @@ implements State<BlockState> {
         return this.getBlock().getCollisionShape(this, blockView, blockPos, entityContext);
     }
 
-    public VoxelShape method_11615(BlockView blockView, BlockPos blockPos) {
-        return this.getBlock().method_9571(this, blockView, blockPos);
+    public VoxelShape getCullingShape(BlockView blockView, BlockPos blockPos) {
+        return this.getBlock().getCullingShape(this, blockView, blockPos);
     }
 
     public VoxelShape getRayTraceShape(BlockView blockView, BlockPos blockPos) {
@@ -265,11 +265,11 @@ implements State<BlockState> {
     }
 
     public void scheduledTick(ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        this.getBlock().onScheduledTick(this, serverWorld, blockPos, random);
+        this.getBlock().scheduledTick(this, serverWorld, blockPos, random);
     }
 
-    public void onRandomTick(ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        this.getBlock().onRandomTick(this, serverWorld, blockPos, random);
+    public void randomTick(ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        this.getBlock().randomTick(this, serverWorld, blockPos, random);
     }
 
     public void onEntityCollision(World world, BlockPos blockPos, Entity entity) {
@@ -284,8 +284,8 @@ implements State<BlockState> {
         return this.getBlock().getDroppedStacks(this, builder);
     }
 
-    public boolean activate(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        return this.getBlock().activate(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
+    public boolean onUse(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        return this.getBlock().onUse(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
     }
 
     public void onBlockBreakStart(World world, BlockPos blockPos, PlayerEntity playerEntity) {
@@ -308,12 +308,12 @@ implements State<BlockState> {
         return this.getBlock().canReplace(this, itemPlacementContext);
     }
 
-    public boolean method_22360(Fluid fluid) {
-        return this.getBlock().method_22358(this, fluid);
+    public boolean canBucketPlace(Fluid fluid) {
+        return this.getBlock().canBucketPlace(this, fluid);
     }
 
-    public boolean canPlaceAt(class_4538 arg, BlockPos blockPos) {
-        return this.getBlock().canPlaceAt(this, arg, blockPos);
+    public boolean canPlaceAt(WorldView worldView, BlockPos blockPos) {
+        return this.getBlock().canPlaceAt(this, worldView, blockPos);
     }
 
     public boolean shouldPostProcess(BlockView blockView, BlockPos blockPos) {
@@ -406,12 +406,12 @@ implements State<BlockState> {
                 this.shapes = null;
             } else {
                 this.shapes = new VoxelShape[DIRECTIONS.length];
-                VoxelShape voxelShape = block.method_9571(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+                VoxelShape voxelShape = block.getCullingShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
                 Direction[] directionArray = DIRECTIONS;
                 int n = directionArray.length;
                 for (int i = 0; i < n; ++i) {
                     Direction direction = directionArray[i];
-                    this.shapes[direction.ordinal()] = VoxelShapes.method_16344(voxelShape, direction);
+                    this.shapes[direction.ordinal()] = VoxelShapes.slice(voxelShape, direction);
                 }
             }
             this.collisionShape = block.getCollisionShape(blockState, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, EntityContext.absent());

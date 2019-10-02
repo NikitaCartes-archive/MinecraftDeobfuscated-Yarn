@@ -31,7 +31,7 @@ extends SurfaceChunkGenerator<FloatingIslandsChunkGeneratorConfig> {
 
     @Override
     protected double[] computeNoiseRange(int i, int j) {
-        return new double[]{this.biomeSource.method_8757(i, j), 0.0};
+        return new double[]{this.biomeSource.getNoiseRange(i, j), 0.0};
     }
 
     @Override

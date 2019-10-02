@@ -6,6 +6,7 @@ package net.minecraft.entity.passive;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
@@ -37,6 +38,11 @@ extends AbstractDonkeyEntity {
     @Override
     protected void playAddChestSound() {
         this.playSound(SoundEvents.ENTITY_MULE_CHEST, 1.0f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
+    }
+
+    @Override
+    public PassiveEntity createChild(PassiveEntity passiveEntity) {
+        return EntityType.MULE.create(this.world);
     }
 }
 

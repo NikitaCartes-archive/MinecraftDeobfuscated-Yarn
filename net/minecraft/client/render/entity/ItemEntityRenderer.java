@@ -6,8 +6,7 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -20,6 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemEntityRenderer
@@ -48,10 +48,10 @@ extends EntityRenderer<ItemEntity> {
         return i;
     }
 
-    public void method_3996(ItemEntity itemEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+    public void method_3996(ItemEntity itemEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         float t;
         float s;
-        arg.method_22903();
+        matrixStack.push();
         ItemStack itemStack = itemEntity.getStack();
         int i = itemStack.isEmpty() ? 187 : Item.getRawId(itemStack.getItem()) + itemStack.getDamage();
         this.random.setSeed(i);
@@ -61,9 +61,9 @@ extends EntityRenderer<ItemEntity> {
         float k = 0.25f;
         float l = MathHelper.sin(((float)itemEntity.getAge() + h) / 10.0f + itemEntity.hoverHeight) * 0.1f + 0.1f;
         float m = bakedModel.getTransformation().getTransformation((ModelTransformation.Type)ModelTransformation.Type.GROUND).scale.getY();
-        arg.method_22904(0.0, l + 0.25f * m, 0.0);
+        matrixStack.translate(0.0, l + 0.25f * m, 0.0);
         float n = ((float)itemEntity.getAge() + h) / 20.0f + itemEntity.hoverHeight;
-        arg.method_22907(Vector3f.field_20705.method_23214(n, false));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n, false));
         float o = bakedModel.getTransformation().ground.scale.getX();
         float p = bakedModel.getTransformation().ground.scale.getY();
         float q = bakedModel.getTransformation().ground.scale.getZ();
@@ -71,29 +71,29 @@ extends EntityRenderer<ItemEntity> {
             float r = -0.0f * (float)(j - 1) * 0.5f * o;
             s = -0.0f * (float)(j - 1) * 0.5f * p;
             t = -0.09375f * (float)(j - 1) * 0.5f * q;
-            arg.method_22904(r, s, t);
+            matrixStack.translate(r, s, t);
         }
         for (int u = 0; u < j; ++u) {
-            arg.method_22903();
+            matrixStack.push();
             if (u > 0) {
                 if (bl) {
                     s = (this.random.nextFloat() * 2.0f - 1.0f) * 0.15f;
                     t = (this.random.nextFloat() * 2.0f - 1.0f) * 0.15f;
                     float v = (this.random.nextFloat() * 2.0f - 1.0f) * 0.15f;
-                    arg.method_22904(s, t, v);
+                    matrixStack.translate(s, t, v);
                 } else {
                     s = (this.random.nextFloat() * 2.0f - 1.0f) * 0.15f * 0.5f;
                     t = (this.random.nextFloat() * 2.0f - 1.0f) * 0.15f * 0.5f;
-                    arg.method_22904(s, t, 0.0);
+                    matrixStack.translate(s, t, 0.0);
                 }
             }
-            this.itemRenderer.method_23179(itemStack, ModelTransformation.Type.GROUND, false, arg, arg2, itemEntity.getLightmapCoordinates(), bakedModel);
-            arg.method_22909();
+            this.itemRenderer.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, layeredVertexConsumerStorage, itemEntity.getLightmapCoordinates(), bakedModel);
+            matrixStack.pop();
             if (bl) continue;
-            arg.method_22904(0.0f * o, 0.0f * p, 0.09375f * q);
+            matrixStack.translate(0.0f * o, 0.0f * p, 0.09375f * q);
         }
-        arg.method_22909();
-        super.render(itemEntity, d, e, f, g, h, arg, arg2);
+        matrixStack.pop();
+        super.render(itemEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
     public Identifier method_3999(ItemEntity itemEntity) {

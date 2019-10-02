@@ -6,7 +6,6 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.ModelWithArms;
@@ -17,6 +16,7 @@ import net.minecraft.item.CrossbowItem;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class BipedEntityModel<T extends LivingEntity>
@@ -50,27 +50,27 @@ ModelWithHead {
         this.textureHeight = j;
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f);
-        this.head.setRotationPoint(0.0f, 0.0f + g, 0.0f);
+        this.head.setPivot(0.0f, 0.0f + g, 0.0f);
         this.headwear = new ModelPart(this, 32, 0);
         this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f + 0.5f);
-        this.headwear.setRotationPoint(0.0f, 0.0f + g, 0.0f);
+        this.headwear.setPivot(0.0f, 0.0f + g, 0.0f);
         this.body = new ModelPart(this, 16, 16);
         this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
-        this.body.setRotationPoint(0.0f, 0.0f + g, 0.0f);
+        this.body.setPivot(0.0f, 0.0f + g, 0.0f);
         this.rightArm = new ModelPart(this, 40, 16);
         this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.rightArm.setRotationPoint(-5.0f, 2.0f + g, 0.0f);
+        this.rightArm.setPivot(-5.0f, 2.0f + g, 0.0f);
         this.leftArm = new ModelPart(this, 40, 16);
         this.leftArm.mirror = true;
         this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.leftArm.setRotationPoint(5.0f, 2.0f + g, 0.0f);
+        this.leftArm.setPivot(5.0f, 2.0f + g, 0.0f);
         this.rightLeg = new ModelPart(this, 0, 16);
         this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.rightLeg.setRotationPoint(-1.9f, 12.0f + g, 0.0f);
+        this.rightLeg.setPivot(-1.9f, 12.0f + g, 0.0f);
         this.leftLeg = new ModelPart(this, 0, 16);
         this.leftLeg.mirror = true;
         this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.leftLeg.setRotationPoint(1.9f, 12.0f + g, 0.0f);
+        this.leftLeg.setPivot(1.9f, 12.0f + g, 0.0f);
     }
 
     @Override
@@ -98,10 +98,10 @@ ModelWithHead {
         this.head.yaw = i * ((float)Math.PI / 180);
         this.head.pitch = bl ? -0.7853982f : (this.field_3396 > 0.0f ? (bl2 ? this.method_2804(this.head.pitch, -0.7853982f, this.field_3396) : this.method_2804(this.head.pitch, j * ((float)Math.PI / 180), this.field_3396)) : j * ((float)Math.PI / 180));
         this.body.yaw = 0.0f;
-        this.rightArm.rotationPointZ = 0.0f;
-        this.rightArm.rotationPointX = -5.0f;
-        this.leftArm.rotationPointZ = 0.0f;
-        this.leftArm.rotationPointX = 5.0f;
+        this.rightArm.pivotZ = 0.0f;
+        this.rightArm.pivotX = -5.0f;
+        this.leftArm.pivotZ = 0.0f;
+        this.leftArm.pivotX = 5.0f;
         float l = 1.0f;
         if (bl) {
             l = (float)((Entity)livingEntity).getVelocity().lengthSquared();
@@ -180,10 +180,10 @@ ModelWithHead {
             if (arm == Arm.LEFT) {
                 this.body.yaw *= -1.0f;
             }
-            this.rightArm.rotationPointZ = MathHelper.sin(this.body.yaw) * 5.0f;
-            this.rightArm.rotationPointX = -MathHelper.cos(this.body.yaw) * 5.0f;
-            this.leftArm.rotationPointZ = -MathHelper.sin(this.body.yaw) * 5.0f;
-            this.leftArm.rotationPointX = MathHelper.cos(this.body.yaw) * 5.0f;
+            this.rightArm.pivotZ = MathHelper.sin(this.body.yaw) * 5.0f;
+            this.rightArm.pivotX = -MathHelper.cos(this.body.yaw) * 5.0f;
+            this.leftArm.pivotZ = -MathHelper.sin(this.body.yaw) * 5.0f;
+            this.leftArm.pivotX = MathHelper.cos(this.body.yaw) * 5.0f;
             this.rightArm.yaw += this.body.yaw;
             this.leftArm.yaw += this.body.yaw;
             this.leftArm.pitch += this.body.yaw;
@@ -201,24 +201,24 @@ ModelWithHead {
             this.body.pitch = 0.5f;
             this.rightArm.pitch += 0.4f;
             this.leftArm.pitch += 0.4f;
-            this.rightLeg.rotationPointZ = 4.0f;
-            this.leftLeg.rotationPointZ = 4.0f;
-            this.rightLeg.rotationPointY = 12.2f;
-            this.leftLeg.rotationPointY = 12.2f;
-            this.head.rotationPointY = 4.2f;
-            this.body.rotationPointY = 3.2f;
-            this.leftArm.rotationPointY = 5.2f;
-            this.rightArm.rotationPointY = 5.2f;
+            this.rightLeg.pivotZ = 4.0f;
+            this.leftLeg.pivotZ = 4.0f;
+            this.rightLeg.pivotY = 12.2f;
+            this.leftLeg.pivotY = 12.2f;
+            this.head.pivotY = 4.2f;
+            this.body.pivotY = 3.2f;
+            this.leftArm.pivotY = 5.2f;
+            this.rightArm.pivotY = 5.2f;
         } else {
             this.body.pitch = 0.0f;
-            this.rightLeg.rotationPointZ = 0.1f;
-            this.leftLeg.rotationPointZ = 0.1f;
-            this.rightLeg.rotationPointY = 12.0f;
-            this.leftLeg.rotationPointY = 12.0f;
-            this.head.rotationPointY = 0.0f;
-            this.body.rotationPointY = 0.0f;
-            this.leftArm.rotationPointY = 2.0f;
-            this.rightArm.rotationPointY = 2.0f;
+            this.rightLeg.pivotZ = 0.1f;
+            this.leftLeg.pivotZ = 0.1f;
+            this.rightLeg.pivotY = 12.0f;
+            this.leftLeg.pivotY = 12.0f;
+            this.head.pivotY = 0.0f;
+            this.body.pivotY = 0.0f;
+            this.leftArm.pivotY = 2.0f;
+            this.rightArm.pivotY = 2.0f;
         }
         this.rightArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
         this.leftArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
@@ -330,8 +330,8 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm, class_4587 arg) {
-        this.getArm(arm).method_22703(arg, f);
+    public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
+        this.getArm(arm).rotate(matrixStack, f);
     }
 
     protected ModelPart getArm(Arm arm) {

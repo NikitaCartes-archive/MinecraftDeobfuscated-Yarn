@@ -34,7 +34,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (blockState.get(HAS_RECORD).booleanValue()) {
             this.removeRecord(world, blockPos);
             blockState = (BlockState)blockState.with(HAS_RECORD, false);

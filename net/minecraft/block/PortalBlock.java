@@ -57,7 +57,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (serverWorld.dimension.hasVisibleSky() && serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < serverWorld.getDifficulty().getId()) {
             ZombiePigmanEntity entity;
             while (serverWorld.getBlockState(blockPos).getBlock() == this) {

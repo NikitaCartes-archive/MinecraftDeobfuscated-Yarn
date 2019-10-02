@@ -42,13 +42,13 @@ extends PlantBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int i = blockState.get(AGE);
         if (i < 3 && random.nextInt(10) == 0) {
             blockState = (BlockState)blockState.with(AGE, i + 1);
             serverWorld.setBlockState(blockPos, blockState, 2);
         }
-        super.onScheduledTick(blockState, serverWorld, blockPos, random);
+        super.scheduledTick(blockState, serverWorld, blockPos, random);
     }
 
     @Override

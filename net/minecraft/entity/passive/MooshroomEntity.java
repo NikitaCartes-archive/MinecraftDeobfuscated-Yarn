@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -35,6 +34,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MooshroomEntity
@@ -49,11 +49,11 @@ extends CowEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-        if (arg.getBlockState(blockPos.method_10074()).getBlock() == Blocks.MYCELIUM) {
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+        if (worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.MYCELIUM) {
             return 10.0f;
         }
-        return arg.getBrightness(blockPos) - 0.5f;
+        return worldView.getBrightness(blockPos) - 0.5f;
     }
 
     public static boolean canSpawn(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {

@@ -78,7 +78,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (this.shouldHatchProgress(serverWorld) && this.isSand(serverWorld, blockPos)) {
             int i = blockState.get(HATCH);
             if (i < 2) {

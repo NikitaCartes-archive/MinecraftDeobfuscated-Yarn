@@ -10,11 +10,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.BedPart;
-import net.minecraft.class_4538;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldView;
 
 public class CatSitOnBlockGoal
 extends MoveToTargetPosGoal {
@@ -54,14 +54,14 @@ extends MoveToTargetPosGoal {
     }
 
     @Override
-    protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-        if (!arg.isAir(blockPos.up())) {
+    protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
+        if (!worldView.isAir(blockPos.up())) {
             return false;
         }
-        BlockState blockState = arg.getBlockState(blockPos);
+        BlockState blockState = worldView.getBlockState(blockPos);
         Block block = blockState.getBlock();
         if (block == Blocks.CHEST) {
-            return ChestBlockEntity.getPlayersLookingInChestCount(arg, blockPos) < 1;
+            return ChestBlockEntity.getPlayersLookingInChestCount(worldView, blockPos) < 1;
         }
         if (block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT).booleanValue()) {
             return true;

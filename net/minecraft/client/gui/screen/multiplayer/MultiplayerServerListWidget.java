@@ -160,7 +160,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.server.playerCountLabel = "";
                 SERVER_PINGER_THREAD_POOL.submit(() -> {
                     try {
-                        this.screen.method_2538().method_3003(this.server);
+                        this.screen.getServerListPinger().add(this.server);
                     } catch (UnknownHostException unknownHostException) {
                         this.server.ping = -1L;
                         this.server.label = (Object)((Object)Formatting.DARK_RED) + I18n.translate("multiplayer.status.cannot_resolve", new Object[0]);

@@ -40,7 +40,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_4599;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -92,6 +91,7 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LayeredBufferBuilderStorage;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -104,8 +104,8 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.resource.ClientResourcePackContainer;
-import net.minecraft.client.resource.ClientResourcePackCreator;
+import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
+import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.RedirectedResourcePack;
@@ -151,13 +151,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.resource.FileResourcePackCreator;
+import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourcePackContainer;
-import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
@@ -227,7 +227,7 @@ WindowEventHandler {
     private final Window window;
     private final RenderTickCounter renderTickCounter = new RenderTickCounter(20.0f, 0L);
     private final Snooper snooper = new Snooper("client", this, SystemUtil.getMeasuringTimeMs());
-    private final class_4599 field_20909;
+    private final LayeredBufferBuilderStorage field_20909;
     public final WorldRenderer worldRenderer;
     private final EntityRenderDispatcher entityRenderManager;
     private final ItemRenderer itemRenderer;
@@ -254,8 +254,8 @@ WindowEventHandler {
     private final boolean isDemo;
     private final DisableableProfiler profiler = new DisableableProfiler(() -> this.renderTickCounter.ticksThisFrame);
     private final ReloadableResourceManager resourceManager;
-    private final ClientResourcePackCreator resourcePackCreator;
-    private final ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager;
+    private final ClientBuiltinResourcePackProvider builtinPackProvider;
+    private final ResourcePackManager<ClientResourcePackProfile> resourcePackManager;
     private final LanguageManager languageManager;
     private final BlockColors blockColorMap;
     private final ItemColors itemColorMap;
@@ -333,13 +333,13 @@ WindowEventHandler {
         this.gameVersion = runArgs.game.version;
         this.versionType = runArgs.game.versionType;
         this.sessionPropertyMap = runArgs.network.profileProperties;
-        this.resourcePackCreator = new ClientResourcePackCreator(new File(this.runDirectory, "server-resource-packs"), runArgs.directories.getResourceIndex());
-        this.resourcePackContainerManager = new ResourcePackContainerManager<ClientResourcePackContainer>((string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition) -> {
+        this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), runArgs.directories.getResourceIndex());
+        this.resourcePackManager = new ResourcePackManager<ClientResourcePackProfile>((string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition) -> {
             Supplier<ResourcePack> supplier2 = packResourceMetadata.getPackFormat() < SharedConstants.getGameVersion().getPackVersion() ? () -> MinecraftClient.method_1528((Supplier)supplier) : supplier;
-            return new ClientResourcePackContainer(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition);
+            return new ClientResourcePackProfile(string, bl, supplier2, resourcePack, packResourceMetadata, insertionPosition);
         });
-        this.resourcePackContainerManager.addCreator(this.resourcePackCreator);
-        this.resourcePackContainerManager.addCreator(new FileResourcePackCreator(this.resourcePackDir));
+        this.resourcePackManager.registerProvider(this.builtinPackProvider);
+        this.resourcePackManager.registerProvider(new FileResourcePackProvider(this.resourcePackDir));
         this.netProxy = runArgs.network.netProxy;
         this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
         this.session = runArgs.network.session;
@@ -387,9 +387,9 @@ WindowEventHandler {
         this.framebuffer = new GlFramebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, IS_SYSTEM_MAC);
         this.framebuffer.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES, this.thread);
-        this.options.addResourcePackContainersToManager(this.resourcePackContainerManager);
-        this.resourcePackContainerManager.callCreators();
-        List<ResourcePack> list = this.resourcePackContainerManager.getEnabledContainers().stream().map(ResourcePackContainer::createResourcePack).collect(Collectors.toList());
+        this.options.addResourcePackContainersToManager(this.resourcePackManager);
+        this.resourcePackManager.scanPacks();
+        List<ResourcePack> list = this.resourcePackManager.getEnabledProfiles().stream().map(ResourcePackProfile::createResourcePack).collect(Collectors.toList());
         for (ResourcePack resourcePack2 : list) {
             this.resourceManager.addPack(resourcePack2);
         }
@@ -431,7 +431,7 @@ WindowEventHandler {
         this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
         this.firstPersonRenderer = new FirstPersonRenderer(this);
         this.resourceManager.registerListener(this.itemRenderer);
-        this.field_20909 = new class_4599();
+        this.field_20909 = new LayeredBufferBuilderStorage();
         this.gameRenderer = new GameRenderer(this, this.resourceManager, this.field_20909);
         this.resourceManager.registerListener(this.gameRenderer);
         this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockStateMaps(), this.blockColorMap);
@@ -470,7 +470,7 @@ WindowEventHandler {
         }, false));
     }
 
-    public void start() {
+    public void run() {
         this.thread = Thread.currentThread();
         try {
             boolean bl = false;
@@ -599,8 +599,8 @@ WindowEventHandler {
             this.resourceReloadFuture = completableFuture;
             return completableFuture;
         }
-        this.resourcePackContainerManager.callCreators();
-        List<ResourcePack> list = this.resourcePackContainerManager.getEnabledContainers().stream().map(ResourcePackContainer::createResourcePack).collect(Collectors.toList());
+        this.resourcePackManager.scanPacks();
+        List<ResourcePack> list = this.resourcePackManager.getEnabledProfiles().stream().map(ResourcePackProfile::createResourcePack).collect(Collectors.toList());
         this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), () -> {
             this.languageManager.reloadResources(list);
             this.worldRenderer.reload();
@@ -717,7 +717,7 @@ WindowEventHandler {
             this.gameRenderer.close();
             this.worldRenderer.close();
             this.soundManager.close();
-            this.resourcePackContainerManager.close();
+            this.resourcePackManager.close();
             this.particleManager.clearAtlas();
             this.statusEffectSpriteManager.close();
             this.paintingManager.close();
@@ -735,7 +735,7 @@ WindowEventHandler {
         this.window.setPhase("Pre render");
         long l = SystemUtil.getMeasuringTimeNano();
         this.profiler.startTick();
-        if (this.window.method_22093()) {
+        if (this.window.shouldClose()) {
             this.scheduleStop();
         }
         if (this.resourceReloadFuture != null && !(this.overlay instanceof SplashScreen)) {
@@ -1396,7 +1396,7 @@ WindowEventHandler {
                     this.render(false);
                 }
             }
-            this.resourcePackCreator.clear();
+            this.builtinPackProvider.clear();
             this.inGameHud.clear();
             this.currentServerEntry = null;
             this.isIntegratedServerRunning = false;
@@ -1621,7 +1621,7 @@ WindowEventHandler {
     public void addSnooperInfo(Snooper snooper) {
         snooper.addInfo("fps", currentFps);
         snooper.addInfo("vsync_enabled", this.options.enableVsync);
-        snooper.addInfo("display_frequency", this.window.method_22092());
+        snooper.addInfo("display_frequency", this.window.getRefreshRate());
         snooper.addInfo("display_type", this.window.isFullscreen() ? "fullscreen" : "windowed");
         snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
         snooper.addInfo("current_action", this.getCurrentAction());
@@ -1631,9 +1631,9 @@ WindowEventHandler {
         snooper.addInfo("subtitles", this.options.showSubtitles);
         snooper.addInfo("touch", this.options.touchscreen ? "touch" : "mouse");
         int i = 0;
-        for (ClientResourcePackContainer clientResourcePackContainer : this.resourcePackContainerManager.getEnabledContainers()) {
-            if (clientResourcePackContainer.canBeSorted() || clientResourcePackContainer.isPositionFixed()) continue;
-            snooper.addInfo("resource_pack[" + i++ + "]", clientResourcePackContainer.getName());
+        for (ClientResourcePackProfile clientResourcePackProfile : this.resourcePackManager.getEnabledProfiles()) {
+            if (clientResourcePackProfile.isAlwaysEnabled() || clientResourcePackProfile.isPinned()) continue;
+            snooper.addInfo("resource_pack[" + i++ + "]", clientResourcePackProfile.getName());
         }
         snooper.addInfo("resource_packs", i);
         if (this.server != null) {
@@ -1707,12 +1707,12 @@ WindowEventHandler {
         return this.resourceManager;
     }
 
-    public ResourcePackContainerManager<ClientResourcePackContainer> getResourcePackContainerManager() {
-        return this.resourcePackContainerManager;
+    public ResourcePackManager<ClientResourcePackProfile> getResourcePackManager() {
+        return this.resourcePackManager;
     }
 
-    public ClientResourcePackCreator getResourcePackDownloader() {
-        return this.resourcePackCreator;
+    public ClientBuiltinResourcePackProvider getResourcePackDownloader() {
+        return this.builtinPackProvider;
     }
 
     public File getResourcePackDir() {
@@ -1916,7 +1916,7 @@ WindowEventHandler {
         return this.window;
     }
 
-    public class_4599 method_22940() {
+    public LayeredBufferBuilderStorage method_22940() {
         return this.field_20909;
     }
 

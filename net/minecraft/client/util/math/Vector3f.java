@@ -6,18 +6,18 @@ package net.minecraft.client.util.math;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4581;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
 public final class Vector3f {
-    public static Vector3f field_20702 = new Vector3f(-1.0f, 0.0f, 0.0f);
-    public static Vector3f field_20703 = new Vector3f(1.0f, 0.0f, 0.0f);
-    public static Vector3f field_20704 = new Vector3f(0.0f, -1.0f, 0.0f);
-    public static Vector3f field_20705 = new Vector3f(0.0f, 1.0f, 0.0f);
-    public static Vector3f field_20706 = new Vector3f(0.0f, 0.0f, -1.0f);
-    public static Vector3f field_20707 = new Vector3f(0.0f, 0.0f, 1.0f);
+    public static Vector3f NEGATIVE_X = new Vector3f(-1.0f, 0.0f, 0.0f);
+    public static Vector3f POSITIVE_X = new Vector3f(1.0f, 0.0f, 0.0f);
+    public static Vector3f NEGATIVE_Y = new Vector3f(0.0f, -1.0f, 0.0f);
+    public static Vector3f POSITIVE_Y = new Vector3f(0.0f, 1.0f, 0.0f);
+    public static Vector3f NEGATIVE_Z = new Vector3f(0.0f, 0.0f, -1.0f);
+    public static Vector3f POSITIVE_Z = new Vector3f(0.0f, 0.0f, 1.0f);
     private final float[] components;
 
     @Environment(value=EnvType.CLIENT)
@@ -130,7 +130,7 @@ public final class Vector3f {
         if ((double)f < 1.0E-5) {
             return false;
         }
-        float g = MathHelper.method_22858(f);
+        float g = MathHelper.fastInverseSqrt(f);
         int j = 0;
         while (j < 3) {
             int n = j++;
@@ -153,13 +153,13 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_23215(class_4581 arg) {
+    public void multiply(Matrix3f matrix3f) {
         float[] fs = Arrays.copyOf(this.components, 3);
         for (int i = 0; i < 3; ++i) {
             this.components[i] = 0.0f;
             for (int j = 0; j < 3; ++j) {
                 int n = i;
-                this.components[n] = this.components[n] + arg.method_22850(i, j) * fs[j];
+                this.components[n] = this.components[n] + matrix3f.get(i, j) * fs[j];
             }
         }
     }
@@ -174,7 +174,7 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Quaternion method_23214(float f, boolean bl) {
+    public Quaternion getRotationQuaternion(float f, boolean bl) {
         return new Quaternion(this, f, bl);
     }
 }

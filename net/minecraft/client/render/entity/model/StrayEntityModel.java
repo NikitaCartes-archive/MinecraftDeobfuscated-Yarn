@@ -5,7 +5,6 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
@@ -15,6 +14,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class StrayEntityModel<T extends MobEntity>
@@ -28,18 +28,18 @@ extends BipedEntityModel<T> {
         if (!bl) {
             this.rightArm = new ModelPart(this, 40, 16);
             this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
-            this.rightArm.setRotationPoint(-5.0f, 2.0f, 0.0f);
+            this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
             this.leftArm = new ModelPart(this, 40, 16);
             this.leftArm.mirror = true;
             this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
-            this.leftArm.setRotationPoint(5.0f, 2.0f, 0.0f);
+            this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
             this.rightLeg = new ModelPart(this, 0, 16);
             this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
-            this.rightLeg.setRotationPoint(-2.0f, 12.0f, 0.0f);
+            this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
             this.leftLeg = new ModelPart(this, 0, 16);
             this.leftLeg.mirror = true;
             this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
-            this.leftLeg.setRotationPoint(2.0f, 12.0f, 0.0f);
+            this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
         }
     }
 
@@ -79,12 +79,12 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm, class_4587 arg) {
+    public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
         float g = arm == Arm.RIGHT ? 1.0f : -1.0f;
         ModelPart modelPart = this.getArm(arm);
-        modelPart.rotationPointX += g;
-        modelPart.method_22703(arg, f);
-        modelPart.rotationPointX -= g;
+        modelPart.pivotX += g;
+        modelPart.rotate(matrixStack, f);
+        modelPart.pivotX -= g;
     }
 }
 

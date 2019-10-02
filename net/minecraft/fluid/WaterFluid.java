@@ -11,7 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4538;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -29,6 +28,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class WaterFluid
@@ -79,7 +79,7 @@ extends BaseFluid {
     }
 
     @Override
-    public int method_15733(class_4538 arg) {
+    public int method_15733(WorldView worldView) {
         return 4;
     }
 
@@ -94,12 +94,12 @@ extends BaseFluid {
     }
 
     @Override
-    public int getLevelDecreasePerBlock(class_4538 arg) {
+    public int getLevelDecreasePerBlock(WorldView worldView) {
         return 1;
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return 5;
     }
 

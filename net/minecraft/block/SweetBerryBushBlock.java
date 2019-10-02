@@ -62,8 +62,8 @@ implements Fertilizable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        super.onScheduledTick(blockState, serverWorld, blockPos, random);
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        super.scheduledTick(blockState, serverWorld, blockPos, random);
         int i = blockState.get(AGE);
         if (i < 3 && random.nextInt(5) == 0 && serverWorld.getBaseLightLevel(blockPos.up(), 0) >= 9) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
@@ -86,7 +86,7 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         boolean bl;
         int i = blockState.get(AGE);
         boolean bl2 = bl = i == 3;
@@ -100,7 +100,7 @@ implements Fertilizable {
             world.setBlockState(blockPos, (BlockState)blockState.with(AGE, 1), 2);
             return true;
         }
-        return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+        return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
     }
 
     @Override

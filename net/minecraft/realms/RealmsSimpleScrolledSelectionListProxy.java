@@ -76,15 +76,15 @@ extends ListWidget {
         RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        int m = this.field_2180 + this.width / 2 - this.getRowWidth() / 2 + 2;
-        int n = this.field_2166 + 4 - (int)this.field_2175;
+        int m = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
+        int n = this.top + 4 - (int)this.scroll;
         if (this.renderHeader) {
             this.renderHeader(m, n, tessellator);
         }
         this.renderList(m, n, i, j, f);
         RenderSystem.disableDepthTest();
-        this.renderHoleBackground(0, this.field_2166, 255, 255);
-        this.renderHoleBackground(this.field_2165, this.height, 255, 255);
+        this.renderHoleBackground(0, this.top, 255, 255);
+        this.renderHoleBackground(this.bottom, this.height, 255, 255);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
         RenderSystem.disableAlphaTest();
@@ -92,16 +92,16 @@ extends ListWidget {
         RenderSystem.disableTexture();
         int o = this.getMaxScroll();
         if (o > 0) {
-            int p = (this.field_2165 - this.field_2166) * (this.field_2165 - this.field_2166) / this.getMaxPosition();
-            int q = (int)this.field_2175 * (this.field_2165 - this.field_2166 - (p = MathHelper.clamp(p, 32, this.field_2165 - this.field_2166 - 8))) / o + this.field_2166;
-            if (q < this.field_2166) {
-                q = this.field_2166;
+            int p = (this.bottom - this.top) * (this.bottom - this.top) / this.getMaxPosition();
+            int q = (int)this.scroll * (this.bottom - this.top - (p = MathHelper.clamp(p, 32, this.bottom - this.top - 8))) / o + this.top;
+            if (q < this.top) {
+                q = this.top;
             }
             bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-            bufferBuilder.vertex(k, this.field_2165, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(l, this.field_2165, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(l, this.field_2166, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(k, this.field_2166, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(k, this.bottom, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(l, this.bottom, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(l, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(k, this.top, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 255).next();
             tessellator.draw();
             bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
             bufferBuilder.vertex(k, q + p, 0.0).texture(0.0f, 1.0f).color(128, 128, 128, 255).next();

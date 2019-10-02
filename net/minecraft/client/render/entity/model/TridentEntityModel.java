@@ -5,11 +5,11 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class TridentEntityModel
@@ -34,8 +34,8 @@ extends Model {
         this.field_3593.addChild(modelPart4);
     }
 
-    public void renderItem(class_4587 arg, class_4588 arg2, int i) {
-        this.field_3593.method_22698(arg, arg2, 0.0625f, i, null);
+    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i) {
+        this.field_3593.render(matrixStack, vertexConsumer, 0.0625f, i, null);
     }
 }
 

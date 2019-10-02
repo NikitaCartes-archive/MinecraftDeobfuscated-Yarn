@@ -153,6 +153,9 @@ public abstract class EntityNavigation {
         if (!path.equalsPath(this.currentPath)) {
             this.currentPath = path;
         }
+        if (this.isIdle()) {
+            return false;
+        }
         this.method_6359();
         if (this.currentPath.getLength() <= 0) {
             return false;

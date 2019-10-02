@@ -30,7 +30,6 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4538;
 import net.minecraft.client.network.packet.EntityS2CPacket;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -106,6 +105,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -170,7 +170,7 @@ CommandOutput {
     protected boolean firstUpdate = true;
     protected final DataTracker dataTracker;
     protected static final TrackedData<Byte> FLAGS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Integer> BREATH = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> AIR = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<Text>> CUSTOM_NAME = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.OPTIONAL_TEXT_COMPONENT);
     private static final TrackedData<Boolean> NAME_VISIBLE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> SILENT = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -213,7 +213,7 @@ CommandOutput {
         }
         this.dataTracker = new DataTracker(this);
         this.dataTracker.startTracking(FLAGS, (byte)0);
-        this.dataTracker.startTracking(BREATH, this.getMaxBreath());
+        this.dataTracker.startTracking(AIR, this.getMaxAir());
         this.dataTracker.startTracking(NAME_VISIBLE, false);
         this.dataTracker.startTracking(CUSTOM_NAME, Optional.empty());
         this.dataTracker.startTracking(SILENT, false);
@@ -667,26 +667,26 @@ CommandOutput {
         return new Vec3d(d, e, f);
     }
 
-    public static Vec3d adjustSingleAxisMovementForCollisions(Vec3d vec3d, Box box, class_4538 arg, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
+    public static Vec3d adjustSingleAxisMovementForCollisions(Vec3d vec3d, Box box, WorldView worldView, EntityContext entityContext, ReusableStream<VoxelShape> reusableStream) {
         boolean bl;
         double d = vec3d.x;
         double e = vec3d.y;
         double f = vec3d.z;
-        if (e != 0.0 && (e = VoxelShapes.method_17945(Direction.Axis.Y, box, arg, e, entityContext, reusableStream.stream())) != 0.0) {
+        if (e != 0.0 && (e = VoxelShapes.method_17945(Direction.Axis.Y, box, worldView, e, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, e, 0.0);
         }
         boolean bl2 = bl = Math.abs(d) < Math.abs(f);
-        if (bl && f != 0.0 && (f = VoxelShapes.method_17945(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream())) != 0.0) {
+        if (bl && f != 0.0 && (f = VoxelShapes.method_17945(Direction.Axis.Z, box, worldView, f, entityContext, reusableStream.stream())) != 0.0) {
             box = box.offset(0.0, 0.0, f);
         }
         if (d != 0.0) {
-            d = VoxelShapes.method_17945(Direction.Axis.X, box, arg, d, entityContext, reusableStream.stream());
+            d = VoxelShapes.method_17945(Direction.Axis.X, box, worldView, d, entityContext, reusableStream.stream());
             if (!bl && d != 0.0) {
                 box = box.offset(d, 0.0, 0.0);
             }
         }
         if (!bl && f != 0.0) {
-            f = VoxelShapes.method_17945(Direction.Axis.Z, box, arg, f, entityContext, reusableStream.stream());
+            f = VoxelShapes.method_17945(Direction.Axis.Z, box, worldView, f, entityContext, reusableStream.stream());
         }
         return new Vec3d(d, e, f);
     }
@@ -986,7 +986,7 @@ CommandOutput {
     public int getLightmapCoordinates() {
         BlockPos blockPos = new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
         if (this.world.isChunkLoaded(blockPos)) {
-            return this.world.getLightmapIndex(blockPos);
+            return this.world.getLightmapCoordinates(blockPos);
         }
         return 0;
     }
@@ -1230,7 +1230,7 @@ CommandOutput {
             compoundTag.put("Rotation", this.toListTag(this.yaw, this.pitch));
             compoundTag.putFloat("FallDistance", this.fallDistance);
             compoundTag.putShort("Fire", (short)this.fireTicks);
-            compoundTag.putShort("Air", (short)this.getBreath());
+            compoundTag.putShort("Air", (short)this.getAir());
             compoundTag.putBoolean("OnGround", this.onGround);
             compoundTag.putInt("Dimension", this.dimension.getRawId());
             compoundTag.putBoolean("Invulnerable", this.invulnerable);
@@ -1298,7 +1298,7 @@ CommandOutput {
             this.setYaw(this.yaw);
             this.fallDistance = compoundTag.getFloat("FallDistance");
             this.fireTicks = compoundTag.getShort("Fire");
-            this.setBreath(compoundTag.getShort("Air"));
+            this.setAir(compoundTag.getShort("Air"));
             this.onGround = compoundTag.getBoolean("OnGround");
             if (compoundTag.contains("Dimension")) {
                 this.dimension = DimensionType.byRawId(compoundTag.getInt("Dimension"));
@@ -1770,16 +1770,16 @@ CommandOutput {
         }
     }
 
-    public int getMaxBreath() {
+    public int getMaxAir() {
         return 300;
     }
 
-    public int getBreath() {
-        return this.dataTracker.get(BREATH);
+    public int getAir() {
+        return this.dataTracker.get(AIR);
     }
 
-    public void setBreath(int i) {
-        this.dataTracker.set(BREATH, i);
+    public void setAir(int i) {
+        this.dataTracker.set(AIR, i);
     }
 
     public void onStruckByLightning(LightningEntity lightningEntity) {

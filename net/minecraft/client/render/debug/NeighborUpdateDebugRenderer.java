@@ -13,12 +13,12 @@ import java.util.Iterator;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.util.math.BlockPos;
@@ -63,8 +63,8 @@ implements DebugRenderer.Renderer {
         double g = 0.0025;
         HashSet<BlockPos> set = Sets.newHashSet();
         HashMap<BlockPos, Integer> map = Maps.newHashMap();
-        class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
-        class_4588 lv2 = lv.getBuffer(BlockRenderLayer.LINES);
+        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.LINES);
         Iterator<Map.Entry<Long, Map<BlockPos, Integer>>> iterator = this.field_4623.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Long, Map<BlockPos, Integer>> entry = iterator.next();
@@ -80,7 +80,7 @@ implements DebugRenderer.Renderer {
                 Integer integer = entry2.getValue();
                 if (!set.add(blockPos)) continue;
                 Box box = new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)n).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-d, -e, -f);
-                WorldRenderer.drawBoxOutline(lv2, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0f, 1.0f, 1.0f, 1.0f);
+                WorldRenderer.drawBoxOutline(vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0f, 1.0f, 1.0f, 1.0f);
                 map.put(blockPos, integer);
             }
         }

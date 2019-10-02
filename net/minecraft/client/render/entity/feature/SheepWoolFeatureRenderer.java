@@ -5,8 +5,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.SheepEntityModel;
@@ -14,6 +13,7 @@ import net.minecraft.client.render.entity.model.SheepWoolEntityModel;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class SheepWoolFeatureRenderer
@@ -25,7 +25,7 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4198(class_4587 arg, class_4597 arg2, int i, SheepEntity sheepEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4198(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, SheepEntity sheepEntity, float f, float g, float h, float j, float k, float l, float m) {
         float v;
         float u;
         float t;
@@ -50,7 +50,7 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
             u = hs[1];
             v = hs[2];
         }
-        SheepWoolFeatureRenderer.method_23196(this.getModel(), this.model, SKIN, arg, arg2, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
+        SheepWoolFeatureRenderer.method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
     }
 }
 

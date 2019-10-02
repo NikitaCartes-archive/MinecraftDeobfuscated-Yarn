@@ -8,7 +8,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.class_4587;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
@@ -26,6 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -34,7 +34,7 @@ extends AbstractContainerScreen<LoomContainer> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
     private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
     @Nullable
-    private BannerBlockEntity field_20785;
+    private BannerBlockEntity preview;
     private ItemStack banner = ItemStack.EMPTY;
     private ItemStack dye = ItemStack.EMPTY;
     private ItemStack pattern = ItemStack.EMPTY;
@@ -84,13 +84,13 @@ extends AbstractContainerScreen<LoomContainer> {
         }
         int m = (int)(41.0f * this.scrollPosition);
         this.blit(k + 119, l + 13 + m, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
-        if (this.field_20785 != null && !this.hasTooManyPatterns) {
+        if (this.preview != null && !this.hasTooManyPatterns) {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(k + 139, l + 52, 0.0f);
             RenderSystem.scalef(24.0f, -24.0f, 1.0f);
-            this.field_20785.method_22534(true);
-            BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.field_20785, new class_4587(), 0xF000F0);
-            this.field_20785.method_22534(false);
+            this.preview.method_22534(true);
+            BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack(), 0xF000F0);
+            this.preview.method_22534(false);
             RenderSystem.popMatrix();
         } else if (this.hasTooManyPatterns) {
             this.blit(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
@@ -137,7 +137,7 @@ extends AbstractContainerScreen<LoomContainer> {
         RenderSystem.translatef((float)j + 0.5f, k + 16, 0.0f);
         RenderSystem.scalef(6.0f, -6.0f, 1.0f);
         RenderSystem.translatef(0.5f, 0.5f, 0.0f);
-        BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new class_4587(), 0xF000F0);
+        BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack(), 0xF000F0);
         RenderSystem.popMatrix();
         this.minecraft.getSpriteAtlas().method_23207();
     }
@@ -204,10 +204,10 @@ extends AbstractContainerScreen<LoomContainer> {
     private void onInventoryChanged() {
         ItemStack itemStack = ((LoomContainer)this.container).getOutputSlot().getStack();
         if (itemStack.isEmpty()) {
-            this.field_20785 = null;
+            this.preview = null;
         } else {
-            this.field_20785 = new BannerBlockEntity();
-            this.field_20785.deserialize(itemStack, ((BannerItem)itemStack.getItem()).getColor());
+            this.preview = new BannerBlockEntity();
+            this.preview.deserialize(itemStack, ((BannerItem)itemStack.getItem()).getColor());
         }
         ItemStack itemStack2 = ((LoomContainer)this.container).getBannerSlot().getStack();
         ItemStack itemStack3 = ((LoomContainer)this.container).getDyeSlot().getStack();
@@ -215,7 +215,7 @@ extends AbstractContainerScreen<LoomContainer> {
         CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
         boolean bl = this.hasTooManyPatterns = compoundTag.contains("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
         if (this.hasTooManyPatterns) {
-            this.field_20785 = null;
+            this.preview = null;
         }
         if (!(ItemStack.areEqualIgnoreDamage(itemStack2, this.banner) && ItemStack.areEqualIgnoreDamage(itemStack3, this.dye) && ItemStack.areEqualIgnoreDamage(itemStack4, this.pattern))) {
             this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack4.isEmpty() && !this.hasTooManyPatterns;

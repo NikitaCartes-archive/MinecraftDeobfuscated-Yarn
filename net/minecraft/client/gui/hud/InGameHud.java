@@ -104,10 +104,10 @@ extends DrawableHelper {
     private int titleFadeInTicks;
     private int titleRemainTicks;
     private int titleFadeOutTicks;
-    private int field_2014;
-    private int field_2033;
-    private long field_2012;
-    private long field_2032;
+    private int lastHealthValue;
+    private int renderHealthValue;
+    private long lastHealthCheckTime;
+    private long heartJumpEndTick;
     private int scaledWidth;
     private int scaledHeight;
     private final Map<MessageType, List<ClientChatListener>> listeners = Maps.newHashMap();
@@ -653,22 +653,22 @@ extends DrawableHelper {
             return;
         }
         int i = MathHelper.ceil(playerEntity.getHealth());
-        boolean bl = this.field_2032 > (long)this.ticks && (this.field_2032 - (long)this.ticks) / 3L % 2L == 1L;
+        boolean bl = this.heartJumpEndTick > (long)this.ticks && (this.heartJumpEndTick - (long)this.ticks) / 3L % 2L == 1L;
         long l = SystemUtil.getMeasuringTimeMs();
-        if (i < this.field_2014 && playerEntity.timeUntilRegen > 0) {
-            this.field_2012 = l;
-            this.field_2032 = this.ticks + 20;
-        } else if (i > this.field_2014 && playerEntity.timeUntilRegen > 0) {
-            this.field_2012 = l;
-            this.field_2032 = this.ticks + 10;
+        if (i < this.lastHealthValue && playerEntity.timeUntilRegen > 0) {
+            this.lastHealthCheckTime = l;
+            this.heartJumpEndTick = this.ticks + 20;
+        } else if (i > this.lastHealthValue && playerEntity.timeUntilRegen > 0) {
+            this.lastHealthCheckTime = l;
+            this.heartJumpEndTick = this.ticks + 10;
         }
-        if (l - this.field_2012 > 1000L) {
-            this.field_2014 = i;
-            this.field_2033 = i;
-            this.field_2012 = l;
+        if (l - this.lastHealthCheckTime > 1000L) {
+            this.lastHealthValue = i;
+            this.renderHealthValue = i;
+            this.lastHealthCheckTime = l;
         }
-        this.field_2014 = i;
-        int j = this.field_2033;
+        this.lastHealthValue = i;
+        int j = this.renderHealthValue;
         this.random.setSeed(this.ticks * 312871);
         HungerManager hungerManager = playerEntity.getHungerManager();
         int k = hungerManager.getFoodLevel();
@@ -777,8 +777,8 @@ extends DrawableHelper {
             t -= 10;
         }
         this.client.getProfiler().swap("air");
-        z = playerEntity.getBreath();
-        aa = playerEntity.getMaxBreath();
+        z = playerEntity.getAir();
+        aa = playerEntity.getMaxAir();
         if (playerEntity.isInFluid(FluidTags.WATER) || z < aa) {
             ab = this.getHeartRows(y) - 1;
             t -= ab * 10;
@@ -861,7 +861,7 @@ extends DrawableHelper {
 
     private void renderVignetteOverlay(Entity entity) {
         WorldBorder worldBorder = this.client.world.getWorldBorder();
-        float f = (float)worldBorder.contains(entity);
+        float f = (float)worldBorder.getDistanceInsideBorder(entity);
         double d = Math.min(worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize()));
         double e = Math.max((double)worldBorder.getWarningBlocks(), d);
         f = (double)f < e ? 1.0f - (float)((double)f / e) : 0.0f;

@@ -29,17 +29,17 @@ import net.minecraft.world.World;
 
 public class FenceBlock
 extends HorizontalConnectedBlock {
-    private final VoxelShape[] SHAPES;
+    private final VoxelShape[] cullingShapes;
 
     public FenceBlock(Block.Settings settings) {
         super(2.0f, 2.0f, 16.0f, 16.0f, 24.0f, settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateFactory.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
-        this.SHAPES = this.createShapes(2.0f, 1.0f, 16.0f, 6.0f, 15.0f);
+        this.cullingShapes = this.createShapes(2.0f, 1.0f, 16.0f, 6.0f, 15.0f);
     }
 
     @Override
-    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return this.SHAPES[this.getShapeIndex(blockState)];
+    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return this.cullingShapes[this.getShapeIndex(blockState)];
     }
 
     @Override
@@ -55,7 +55,7 @@ extends HorizontalConnectedBlock {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (world.isClient) {
             ItemStack itemStack = playerEntity.getStackInHand(hand);
             return itemStack.getItem() == Items.LEAD || itemStack.isEmpty();

@@ -10,8 +10,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.VillagerResourceMetadata;
@@ -26,6 +25,7 @@ import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
@@ -56,7 +56,7 @@ implements SynchronousResourceReloadListener {
         reloadableResourceManager.registerListener(this);
     }
 
-    public void method_17151(class_4587 arg, class_4597 arg2, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_17151(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (((Entity)livingEntity).isInvisible()) {
             return;
         }
@@ -68,14 +68,14 @@ implements SynchronousResourceReloadListener {
         Object entityModel = this.getModel();
         ((ModelWithHat)entityModel).setHatVisible(hatType2 == VillagerResourceMetadata.HatType.NONE || hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL);
         Identifier identifier = this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType));
-        VillagerClothingFeatureRenderer.method_23198(entityModel, identifier, arg, arg2, i, livingEntity);
+        VillagerClothingFeatureRenderer.method_23198(entityModel, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity);
         ((ModelWithHat)entityModel).setHatVisible(true);
         if (villagerProfession != VillagerProfession.NONE && !((LivingEntity)livingEntity).isBaby()) {
             Identifier identifier2 = this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession));
-            VillagerClothingFeatureRenderer.method_23198(entityModel, identifier2, arg, arg2, i, livingEntity);
+            VillagerClothingFeatureRenderer.method_23198(entityModel, identifier2, matrixStack, layeredVertexConsumerStorage, i, livingEntity);
             if (villagerProfession != VillagerProfession.NITWIT) {
                 Identifier identifier3 = this.findTexture("profession_level", (Identifier)LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));
-                VillagerClothingFeatureRenderer.method_23198(entityModel, identifier3, arg, arg2, i, livingEntity);
+                VillagerClothingFeatureRenderer.method_23198(entityModel, identifier3, matrixStack, layeredVertexConsumerStorage, i, livingEntity);
             }
         }
     }

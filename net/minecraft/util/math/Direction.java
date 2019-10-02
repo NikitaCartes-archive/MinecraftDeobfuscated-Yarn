@@ -104,33 +104,33 @@ public enum Direction implements StringIdentifiable
     public static Direction method_23225(Matrix4f matrix4f, Direction direction) {
         Vec3i vec3i = direction.getVector();
         Vector4f vector4f = new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f);
-        vector4f.method_22674(matrix4f);
+        vector4f.multiply(matrix4f);
         return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
     @Environment(value=EnvType.CLIENT)
     public Quaternion method_23224() {
-        Quaternion quaternion = Vector3f.field_20703.method_23214(90.0f, true);
+        Quaternion quaternion = Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true);
         switch (this) {
             case DOWN: {
-                return Vector3f.field_20703.method_23214(180.0f, true);
+                return Vector3f.POSITIVE_X.getRotationQuaternion(180.0f, true);
             }
             case UP: {
-                return Vector3f.field_20705.method_23214(0.0f, true);
+                return Vector3f.POSITIVE_Y.getRotationQuaternion(0.0f, true);
             }
             case NORTH: {
-                quaternion.copyFrom(Vector3f.field_20707.method_23214(180.0f, true));
+                quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f, true));
                 return quaternion;
             }
             case SOUTH: {
                 return quaternion;
             }
             case WEST: {
-                quaternion.copyFrom(Vector3f.field_20707.method_23214(-90.0f, true));
+                quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f, true));
                 return quaternion;
             }
         }
-        quaternion.copyFrom(Vector3f.field_20707.method_23214(90.0f, true));
+        quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f, true));
         return quaternion;
     }
 

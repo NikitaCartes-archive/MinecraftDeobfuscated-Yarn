@@ -8,13 +8,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.enums.WallMountLocation;
-import net.minecraft.class_4538;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class WallMountedBlock
@@ -26,13 +26,13 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return WallMountedBlock.canPlaceAt(arg, blockPos, WallMountedBlock.getDirection(blockState).getOpposite());
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return WallMountedBlock.canPlaceAt(worldView, blockPos, WallMountedBlock.getDirection(blockState).getOpposite());
     }
 
-    public static boolean canPlaceAt(class_4538 arg, BlockPos blockPos, Direction direction) {
+    public static boolean canPlaceAt(WorldView worldView, BlockPos blockPos, Direction direction) {
         BlockPos blockPos2 = blockPos.offset(direction);
-        return arg.getBlockState(blockPos2).isSideSolidFullSquare(arg, blockPos2, direction.getOpposite());
+        return worldView.getBlockState(blockPos2).isSideSolidFullSquare(worldView, blockPos2, direction.getOpposite());
     }
 
     @Override

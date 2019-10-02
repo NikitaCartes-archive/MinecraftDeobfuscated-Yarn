@@ -5,13 +5,13 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SlimeEntityModel;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class SlimeOverlayFeatureRenderer<T extends LivingEntity>
@@ -22,8 +22,8 @@ extends FeatureRenderer<T, SlimeEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_23200(class_4587 arg, class_4597 arg2, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
-        SlimeOverlayFeatureRenderer.method_23195(this.getModel(), this.model, this.method_23194(livingEntity), arg, arg2, i, livingEntity, f, g, j, k, l, m, h);
+    public void method_23200(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+        SlimeOverlayFeatureRenderer.method_23195(this.getModel(), this.model, this.method_23194(livingEntity), matrixStack, layeredVertexConsumerStorage, i, livingEntity, f, g, j, k, l, m, h);
     }
 }
 

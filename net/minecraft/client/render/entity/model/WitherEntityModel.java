@@ -26,7 +26,7 @@ extends class_4595<T> {
         this.field_3613[0] = new ModelPart(this, 0, 16);
         this.field_3613[0].addCuboid(-10.0f, 3.9f, -0.5f, 20.0f, 3.0f, 3.0f, f);
         this.field_3613[1] = new ModelPart(this).setTextureSize(this.textureWidth, this.textureHeight);
-        this.field_3613[1].setRotationPoint(-2.0f, 6.9f, -0.5f);
+        this.field_3613[1].setPivot(-2.0f, 6.9f, -0.5f);
         this.field_3613[1].setTextureOffset(0, 22).addCuboid(0.0f, 0.0f, 0.0f, 3.0f, 10.0f, 3.0f, f);
         this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 1.5f, 0.5f, 11.0f, 2.0f, 2.0f, f);
         this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 4.0f, 0.5f, 11.0f, 2.0f, 2.0f, f);
@@ -38,12 +38,12 @@ extends class_4595<T> {
         this.field_3612[0].addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f, f);
         this.field_3612[1] = new ModelPart(this, 32, 0);
         this.field_3612[1].addCuboid(-4.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, f);
-        this.field_3612[1].rotationPointX = -8.0f;
-        this.field_3612[1].rotationPointY = 4.0f;
+        this.field_3612[1].pivotX = -8.0f;
+        this.field_3612[1].pivotY = 4.0f;
         this.field_3612[2] = new ModelPart(this, 32, 0);
         this.field_3612[2].addCuboid(-4.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, f);
-        this.field_3612[2].rotationPointX = 10.0f;
-        this.field_3612[2].rotationPointY = 4.0f;
+        this.field_3612[2].pivotX = 10.0f;
+        this.field_3612[2].pivotY = 4.0f;
         ImmutableList.Builder builder = ImmutableList.builder();
         builder.addAll(Arrays.asList(this.field_3612));
         builder.addAll(Arrays.asList(this.field_3613));
@@ -57,7 +57,7 @@ extends class_4595<T> {
     public void method_17130(T witherEntity, float f, float g, float h, float i, float j, float k) {
         float l = MathHelper.cos(h * 0.1f);
         this.field_3613[1].pitch = (0.065f + 0.05f * l) * (float)Math.PI;
-        this.field_3613[2].setRotationPoint(-2.0f, 6.9f + MathHelper.cos(this.field_3613[1].pitch) * 10.0f, -0.5f + MathHelper.sin(this.field_3613[1].pitch) * 10.0f);
+        this.field_3613[2].setPivot(-2.0f, 6.9f + MathHelper.cos(this.field_3613[1].pitch) * 10.0f, -0.5f + MathHelper.sin(this.field_3613[1].pitch) * 10.0f);
         this.field_3613[2].pitch = (0.265f + 0.1f * l) * (float)Math.PI;
         this.field_3612[0].yaw = i * ((float)Math.PI / 180);
         this.field_3612[0].pitch = j * ((float)Math.PI / 180);
@@ -71,7 +71,7 @@ extends class_4595<T> {
     }
 
     @Override
-    public /* synthetic */ Iterable method_22960() {
+    public /* synthetic */ Iterable getParts() {
         return this.method_22970();
     }
 }

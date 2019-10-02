@@ -5,7 +5,6 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4581;
 import net.minecraft.class_4590;
 import net.minecraft.class_4609;
 import net.minecraft.client.render.model.BakedQuad;
@@ -21,6 +20,7 @@ import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
@@ -64,13 +64,13 @@ public class BakedQuadFactory {
         float f = modelElementTexture.getU(modelElementTexture.method_3414(0));
         float g = modelElementTexture.getV(modelElementTexture.method_3414(0));
         Vector4f vector4f = new Vector4f(f / 16.0f, g / 16.0f, 0.0f, 1.0f);
-        vector4f.method_22674(matrix4f);
+        vector4f.multiply(matrix4f);
         float h = 16.0f * vector4f.getX();
         float i = 16.0f * vector4f.getY();
         float j = modelElementTexture.getU(modelElementTexture.method_3414(2));
         float k = modelElementTexture.getV(modelElementTexture.method_3414(2));
         Vector4f vector4f2 = new Vector4f(j / 16.0f, k / 16.0f, 0.0f, 1.0f);
-        vector4f2.method_22674(matrix4f);
+        vector4f2.multiply(matrix4f);
         float l = 16.0f * vector4f2.getX();
         float m = 16.0f * vector4f2.getY();
         if (Math.signum(j - f) == Math.signum(l - h)) {
@@ -89,8 +89,8 @@ public class BakedQuadFactory {
         }
         float r = (float)Math.toRadians(modelElementTexture.rotation);
         Vector3f vector3f = new Vector3f(MathHelper.cos(r), MathHelper.sin(r), 0.0f);
-        class_4581 lv = new class_4581(matrix4f);
-        vector3f.method_23215(lv);
+        Matrix3f matrix3f = new Matrix3f(matrix4f);
+        vector3f.multiply(matrix3f);
         int s = Math.floorMod(-((int)Math.round(Math.toDegrees(Math.atan2(vector3f.getY(), vector3f.getX())) / 90.0)) * 90, 360);
         return new ModelElementTexture(new float[]{n, p, o, q}, s);
     }
@@ -209,7 +209,7 @@ public class BakedQuadFactory {
 
     private void method_3464(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
         Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0f);
-        vector4f.method_22674(matrix4f);
+        vector4f.multiply(matrix4f);
         vector4f.multiply(vector3f3);
         vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
     }

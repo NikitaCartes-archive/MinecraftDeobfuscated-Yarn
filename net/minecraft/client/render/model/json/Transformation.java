@@ -12,9 +12,9 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
@@ -30,7 +30,7 @@ public class Transformation {
         this.scale = new Vector3f(vector3f3);
     }
 
-    public void method_23075(boolean bl, class_4587 arg) {
+    public void method_23075(boolean bl, MatrixStack matrixStack) {
         if (this == NONE) {
             return;
         }
@@ -42,9 +42,9 @@ public class Transformation {
             h = -h;
         }
         int i = bl ? -1 : 1;
-        arg.method_22904((float)i * this.translation.getX(), this.translation.getY(), this.translation.getZ());
-        arg.method_22907(new Quaternion(f, g, h, true));
-        arg.method_22905(this.scale.getX(), this.scale.getY(), this.scale.getZ());
+        matrixStack.translate((float)i * this.translation.getX(), this.translation.getY(), this.translation.getZ());
+        matrixStack.multiply(new Quaternion(f, g, h, true));
+        matrixStack.scale(this.scale.getX(), this.scale.getY(), this.scale.getZ());
     }
 
     public boolean equals(Object object) {

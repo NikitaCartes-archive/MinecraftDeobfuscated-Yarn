@@ -10,18 +10,18 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity>
 extends BipedEntityModel<T> {
-    private List<ModelPart> field_20787 = Lists.newArrayList();
+    private List<ModelPart> parts = Lists.newArrayList();
     public final ModelPart leftArmOverlay;
     public final ModelPart rightArmOverlay;
     public final ModelPart leftLegOverlay;
@@ -42,39 +42,39 @@ extends BipedEntityModel<T> {
         if (bl) {
             this.leftArm = new ModelPart(this, 32, 48);
             this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f);
-            this.leftArm.setRotationPoint(5.0f, 2.5f, 0.0f);
+            this.leftArm.setPivot(5.0f, 2.5f, 0.0f);
             this.rightArm = new ModelPart(this, 40, 16);
             this.rightArm.addCuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f);
-            this.rightArm.setRotationPoint(-5.0f, 2.5f, 0.0f);
+            this.rightArm.setPivot(-5.0f, 2.5f, 0.0f);
             this.leftArmOverlay = new ModelPart(this, 48, 48);
             this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
-            this.leftArmOverlay.setRotationPoint(5.0f, 2.5f, 0.0f);
+            this.leftArmOverlay.setPivot(5.0f, 2.5f, 0.0f);
             this.rightArmOverlay = new ModelPart(this, 40, 32);
             this.rightArmOverlay.addCuboid(-2.0f, -2.0f, -2.0f, 3.0f, 12.0f, 4.0f, f + 0.25f);
-            this.rightArmOverlay.setRotationPoint(-5.0f, 2.5f, 10.0f);
+            this.rightArmOverlay.setPivot(-5.0f, 2.5f, 10.0f);
         } else {
             this.leftArm = new ModelPart(this, 32, 48);
             this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-            this.leftArm.setRotationPoint(5.0f, 2.0f, 0.0f);
+            this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
             this.leftArmOverlay = new ModelPart(this, 48, 48);
             this.leftArmOverlay.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-            this.leftArmOverlay.setRotationPoint(5.0f, 2.0f, 0.0f);
+            this.leftArmOverlay.setPivot(5.0f, 2.0f, 0.0f);
             this.rightArmOverlay = new ModelPart(this, 40, 32);
             this.rightArmOverlay.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-            this.rightArmOverlay.setRotationPoint(-5.0f, 2.0f, 10.0f);
+            this.rightArmOverlay.setPivot(-5.0f, 2.0f, 10.0f);
         }
         this.leftLeg = new ModelPart(this, 16, 48);
         this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-        this.leftLeg.setRotationPoint(1.9f, 12.0f, 0.0f);
+        this.leftLeg.setPivot(1.9f, 12.0f, 0.0f);
         this.leftLegOverlay = new ModelPart(this, 0, 48);
         this.leftLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-        this.leftLegOverlay.setRotationPoint(1.9f, 12.0f, 0.0f);
+        this.leftLegOverlay.setPivot(1.9f, 12.0f, 0.0f);
         this.rightLegOverlay = new ModelPart(this, 0, 32);
         this.rightLegOverlay.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.25f);
-        this.rightLegOverlay.setRotationPoint(-1.9f, 12.0f, 0.0f);
+        this.rightLegOverlay.setPivot(-1.9f, 12.0f, 0.0f);
         this.bodyOverlay = new ModelPart(this, 16, 32);
         this.bodyOverlay.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f + 0.25f);
-        this.bodyOverlay.setRotationPoint(0.0f, 0.0f, 0.0f);
+        this.bodyOverlay.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override
@@ -82,15 +82,15 @@ extends BipedEntityModel<T> {
         return Iterables.concat(super.method_22948(), ImmutableList.of(this.leftLegOverlay, this.rightLegOverlay, this.leftArmOverlay, this.rightArmOverlay, this.bodyOverlay));
     }
 
-    public void renderEars(class_4587 arg, class_4588 arg2, float f, int i) {
+    public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i) {
         this.ears.copyRotation(this.head);
-        this.ears.rotationPointX = 0.0f;
-        this.ears.rotationPointY = 0.0f;
-        this.ears.method_22698(arg, arg2, f, i, null);
+        this.ears.pivotX = 0.0f;
+        this.ears.pivotY = 0.0f;
+        this.ears.render(matrixStack, vertexConsumer, f, i, null);
     }
 
-    public void renderCape(class_4587 arg, class_4588 arg2, float f, int i) {
-        this.cape.method_22698(arg, arg2, f, i, null);
+    public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i) {
+        this.cape.render(matrixStack, vertexConsumer, f, i, null);
     }
 
     @Override
@@ -101,7 +101,7 @@ extends BipedEntityModel<T> {
         this.leftArmOverlay.copyRotation(this.leftArm);
         this.rightArmOverlay.copyRotation(this.rightArm);
         this.bodyOverlay.copyRotation(this.body);
-        this.cape.rotationPointY = ((Entity)livingEntity).isInSneakingPose() ? 2.0f : 0.0f;
+        this.cape.pivotY = ((Entity)livingEntity).isInSneakingPose() ? 2.0f : 0.0f;
     }
 
     @Override
@@ -117,33 +117,33 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm, class_4587 arg) {
+    public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
         ModelPart modelPart = this.getArm(arm);
         if (this.thinArms) {
             float g = 0.5f * (float)(arm == Arm.RIGHT ? 1 : -1);
-            modelPart.rotationPointX += g;
-            modelPart.method_22703(arg, f);
-            modelPart.rotationPointX -= g;
+            modelPart.pivotX += g;
+            modelPart.rotate(matrixStack, f);
+            modelPart.pivotX -= g;
         } else {
-            modelPart.method_22703(arg, f);
+            modelPart.rotate(matrixStack, f);
         }
     }
 
-    public ModelPart method_22697(Random random) {
-        return this.field_20787.get(random.nextInt(this.field_20787.size()));
+    public ModelPart getRandomPart(Random random) {
+        return this.parts.get(random.nextInt(this.parts.size()));
     }
 
     @Override
-    public void method_22696(ModelPart modelPart) {
-        if (this.field_20787 == null) {
-            this.field_20787 = Lists.newArrayList();
+    public void onPartAdded(ModelPart modelPart) {
+        if (this.parts == null) {
+            this.parts = Lists.newArrayList();
         }
-        this.field_20787.add(modelPart);
+        this.parts.add(modelPart);
     }
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.method_22696((ModelPart)object);
+        this.onPartAdded((ModelPart)object);
     }
 }
 

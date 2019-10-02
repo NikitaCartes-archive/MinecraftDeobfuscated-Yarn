@@ -261,7 +261,7 @@ public class ClientPlayerInteractionManager {
         }
         boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = clientPlayerEntity.shouldCancelInteraction() && bl;
-        if (!bl2 && clientWorld.getBlockState(blockPos).activate(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
+        if (!bl2 && clientWorld.getBlockState(blockPos).onUse(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
             this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
             return ActionResult.SUCCESS;
         }

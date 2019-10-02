@@ -9,7 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectedPlantBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -24,6 +23,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class VineBlock
@@ -67,8 +67,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return this.hasAdjacentBlocks(this.getPlacementShape(blockState, arg, blockPos));
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return this.hasAdjacentBlocks(this.getPlacementShape(blockState, worldView, blockPos));
     }
 
     private boolean hasAdjacentBlocks(BlockState blockState) {
@@ -139,7 +139,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         BlockState blockState6;
         BlockState blockState5;
         BlockPos blockPos3;

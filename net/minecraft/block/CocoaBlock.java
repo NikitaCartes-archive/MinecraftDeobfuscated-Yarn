@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -23,6 +22,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class CocoaBlock
@@ -40,7 +40,7 @@ implements Fertilizable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int i;
         if (serverWorld.random.nextInt(5) == 0 && (i = blockState.get(AGE).intValue()) < 2) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(AGE, i + 1), 2);
@@ -48,8 +48,8 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        Block block = arg.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        Block block = worldView.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
         return block.matches(BlockTags.JUNGLE_LOGS);
     }
 
@@ -75,10 +75,10 @@ implements Fertilizable {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
         BlockState blockState = this.getDefaultState();
-        World lv = itemPlacementContext.getWorld();
+        World worldView = itemPlacementContext.getWorld();
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         for (Direction direction : itemPlacementContext.getPlacementDirections()) {
-            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction)).canPlaceAt(lv, blockPos)) continue;
+            if (!direction.getAxis().isHorizontal() || !(blockState = (BlockState)blockState.with(FACING, direction)).canPlaceAt(worldView, blockPos)) continue;
             return blockState;
         }
         return null;

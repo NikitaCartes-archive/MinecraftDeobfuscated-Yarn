@@ -7,11 +7,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4543;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.jetbrains.annotations.Nullable;
@@ -108,8 +108,8 @@ implements BlockRenderView {
     }
 
     @Override
-    public class_4543 method_22385() {
-        return this.world.method_22385();
+    public BiomeAccess getBiomeAccess() {
+        return this.world.getBiomeAccess();
     }
 
     @Override

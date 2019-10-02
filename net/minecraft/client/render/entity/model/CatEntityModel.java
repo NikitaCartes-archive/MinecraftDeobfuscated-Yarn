@@ -32,38 +32,38 @@ extends OcelotEntityModel<T> {
             this.backLegLeft.roll = 0.0f;
             this.backLegRight.pitch = 0.0f;
             this.backLegRight.roll = 0.0f;
-            this.backLegRight.rotationPointX = -1.2f;
+            this.backLegRight.pivotX = -1.2f;
             this.frontLegLeft.pitch = 0.0f;
             this.frontLegRight.pitch = 0.0f;
             this.frontLegRight.roll = 0.0f;
-            this.frontLegRight.rotationPointX = -1.1f;
-            this.frontLegRight.rotationPointY = 18.0f;
+            this.frontLegRight.pivotX = -1.1f;
+            this.frontLegRight.pivotY = 18.0f;
         }
         super.animateModel(catEntity, f, g, h);
         if (((TameableEntity)catEntity).isSitting()) {
             this.body.pitch = 0.7853982f;
-            this.body.rotationPointY += -4.0f;
-            this.body.rotationPointZ += 5.0f;
-            this.head.rotationPointY += -3.3f;
-            this.head.rotationPointZ += 1.0f;
-            this.tail1.rotationPointY += 8.0f;
-            this.tail1.rotationPointZ += -2.0f;
-            this.tail2.rotationPointY += 2.0f;
-            this.tail2.rotationPointZ += -0.8f;
+            this.body.pivotY += -4.0f;
+            this.body.pivotZ += 5.0f;
+            this.head.pivotY += -3.3f;
+            this.head.pivotZ += 1.0f;
+            this.tail1.pivotY += 8.0f;
+            this.tail1.pivotZ += -2.0f;
+            this.tail2.pivotY += 2.0f;
+            this.tail2.pivotZ += -0.8f;
             this.tail1.pitch = 1.7278761f;
             this.tail2.pitch = 2.670354f;
             this.backLegLeft.pitch = -0.15707964f;
-            this.backLegLeft.rotationPointY = 16.1f;
-            this.backLegLeft.rotationPointZ = -7.0f;
+            this.backLegLeft.pivotY = 16.1f;
+            this.backLegLeft.pivotZ = -7.0f;
             this.backLegRight.pitch = -0.15707964f;
-            this.backLegRight.rotationPointY = 16.1f;
-            this.backLegRight.rotationPointZ = -7.0f;
+            this.backLegRight.pivotY = 16.1f;
+            this.backLegRight.pivotZ = -7.0f;
             this.frontLegLeft.pitch = -1.5707964f;
-            this.frontLegLeft.rotationPointY = 21.0f;
-            this.frontLegLeft.rotationPointZ = 1.0f;
+            this.frontLegLeft.pivotY = 21.0f;
+            this.frontLegLeft.pivotZ = 1.0f;
             this.frontLegRight.pitch = -1.5707964f;
-            this.frontLegRight.rotationPointY = 21.0f;
-            this.frontLegRight.rotationPointZ = 1.0f;
+            this.frontLegRight.pivotY = 21.0f;
+            this.frontLegRight.pivotZ = 1.0f;
             this.animationState = 3;
         }
     }
@@ -76,12 +76,12 @@ extends OcelotEntityModel<T> {
             this.backLegLeft.pitch = -1.2707963f;
             this.backLegRight.pitch = -0.47079635f;
             this.backLegRight.roll = -0.2f;
-            this.backLegRight.rotationPointX = -0.2f;
+            this.backLegRight.pivotX = -0.2f;
             this.frontLegLeft.pitch = -0.4f;
             this.frontLegRight.pitch = 0.5f;
             this.frontLegRight.roll = -0.5f;
-            this.frontLegRight.rotationPointX = -0.3f;
-            this.frontLegRight.rotationPointY = 20.0f;
+            this.frontLegRight.pivotX = -0.3f;
+            this.frontLegRight.pivotY = 20.0f;
             this.tail1.pitch = ModelUtil.interpolateAngle(this.tail1.pitch, 0.8f, this.tailCurlAnimation);
             this.tail2.pitch = ModelUtil.interpolateAngle(this.tail2.pitch, -0.4f, this.tailCurlAnimation);
         }

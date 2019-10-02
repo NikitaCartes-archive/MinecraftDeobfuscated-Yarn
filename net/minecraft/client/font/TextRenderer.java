@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4588;
 import net.minecraft.class_4590;
-import net.minecraft.class_4597;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Formatting;
@@ -76,17 +76,17 @@ implements AutoCloseable {
         if (string == null) {
             return 0;
         }
-        class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
+        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
         int j = this.method_22942(string, f, g, i, bl, matrix4f, lv, false, 0, 0xF000F0);
         lv.method_22993();
         return j;
     }
 
-    public int method_22942(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
-        return this.draw(string, f, g, i, bl, matrix4f, arg, bl2, j, k);
+    public int method_22942(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k) {
+        return this.draw(string, f, g, i, bl, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
     }
 
-    private int draw(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
+    private int draw(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k) {
         if (this.rightToLeft) {
             string = this.mirror(string);
         }
@@ -94,13 +94,13 @@ implements AutoCloseable {
             i |= 0xFF000000;
         }
         if (bl) {
-            this.drawLayer(string, f, g, i, true, matrix4f, arg, bl2, j, k);
+            this.drawLayer(string, f, g, i, true, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
         }
-        f = this.drawLayer(string, f, g, i, false, matrix4f, arg, bl2, j, k);
+        f = this.drawLayer(string, f, g, i, false, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
         return (int)f + (bl ? 1 : 0);
     }
 
-    private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
+    private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k) {
         GlyphRenderer glyphRenderer2;
         Identifier identifier2;
         float h = bl ? 0.25f : 1.0f;
@@ -161,16 +161,16 @@ implements AutoCloseable {
             if (identifier != null) {
                 v = bl4 ? glyph.getBoldOffset() : 0.0f;
                 w = bl ? glyph.getShadowOffset() : 0.0f;
-                class_4588 lv = arg.getBuffer(bl2 ? BlockRenderLayer.method_23030(identifier) : BlockRenderLayer.method_23028(identifier));
-                this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, lv, p, q, r, s, k);
+                VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.method_23030(identifier) : RenderLayer.method_23028(identifier));
+                this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, vertexConsumer, p, q, r, s, k);
             }
             v = glyph.getAdvance(bl4);
             float f2 = w = bl ? 1.0f : 0.0f;
             if (bl7) {
-                list.add(new GlyphRenderer.Rectangle(o + w - 1.0f, g + w + 4.5f, o + w + v, g + w + 4.5f - 1.0f, 0.001f, p, q, r, s));
+                list.add(new GlyphRenderer.Rectangle(o + w - 1.0f, g + w + 4.5f, o + w + v, g + w + 4.5f - 1.0f, -0.01f, p, q, r, s));
             }
             if (bl6) {
-                list.add(new GlyphRenderer.Rectangle(o + w - 1.0f, g + w + 9.0f, o + w + v, g + w + 9.0f - 1.0f, 0.001f, p, q, r, s));
+                list.add(new GlyphRenderer.Rectangle(o + w - 1.0f, g + w + 9.0f, o + w + v, g + w + 9.0f - 1.0f, -0.01f, p, q, r, s));
             }
             o += v;
         }
@@ -179,21 +179,21 @@ implements AutoCloseable {
             float y = (float)(j >> 16 & 0xFF) / 255.0f;
             float z = (float)(j >> 8 & 0xFF) / 255.0f;
             float aa = (float)(j & 0xFF) / 255.0f;
-            list.add(new GlyphRenderer.Rectangle(f - 1.0f, g + 9.0f, o + 1.0f, g - 1.0f, -0.001f, y, z, aa, x));
+            list.add(new GlyphRenderer.Rectangle(f - 1.0f, g + 9.0f, o + 1.0f, g - 1.0f, 0.01f, y, z, aa, x));
         }
         if (!list.isEmpty() && (identifier2 = (glyphRenderer2 = this.fontStorage.method_22943()).getId()) != null) {
-            class_4588 lv2 = arg.getBuffer(bl2 ? BlockRenderLayer.method_23030(identifier2) : BlockRenderLayer.method_23028(identifier2));
+            VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.method_23030(identifier2) : RenderLayer.method_23028(identifier2));
             for (GlyphRenderer.Rectangle rectangle : list) {
-                glyphRenderer2.method_22944(rectangle, matrix4f, lv2, k);
+                glyphRenderer2.method_22944(rectangle, matrix4f, vertexConsumer2, k);
             }
         }
         return o;
     }
 
-    private void drawGlyph(GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, Matrix4f matrix4f, class_4588 arg, float i, float j, float k, float l, int m) {
-        glyphRenderer.draw(bl2, g, h, matrix4f, arg, i, j, k, l, m);
+    private void drawGlyph(GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, Matrix4f matrix4f, VertexConsumer vertexConsumer, float i, float j, float k, float l, int m) {
+        glyphRenderer.draw(bl2, g, h, matrix4f, vertexConsumer, i, j, k, l, m);
         if (bl) {
-            glyphRenderer.draw(bl2, g + f, h, matrix4f, arg, i, j, k, l, m);
+            glyphRenderer.draw(bl2, g + f, h, matrix4f, vertexConsumer, i, j, k, l, m);
         }
     }
 

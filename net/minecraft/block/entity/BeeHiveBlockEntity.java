@@ -11,6 +11,7 @@ import java.util.Optional;
 import net.minecraft.block.BeeHiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
@@ -38,6 +39,25 @@ implements Tickable {
 
     public BeeHiveBlockEntity() {
         super(BlockEntityType.BEEHIVE);
+    }
+
+    @Override
+    public void markDirty() {
+        if (this.method_23280()) {
+            this.angerBees(null, BeeState.EMERGENCY);
+        }
+        super.markDirty();
+    }
+
+    public boolean method_23280() {
+        if (this.world == null) {
+            return false;
+        }
+        for (BlockPos blockPos : BlockPos.iterate(this.pos.add(-1, -1, -1), this.pos.add(1, 1, 1))) {
+            if (!(this.world.getBlockState(blockPos).getBlock() instanceof FireBlock)) continue;
+            return true;
+        }
+        return false;
     }
 
     public boolean hasNoBees() {
@@ -107,7 +127,7 @@ implements Tickable {
     private boolean releaseBee(CompoundTag compoundTag, @Nullable List<Entity> list, BeeState beeState) {
         BlockPos blockPos3;
         BlockPos blockPos = this.getPos();
-        if (!this.world.isDaylight() || this.world.hasRain(blockPos)) {
+        if ((!this.world.isDaylight() || this.world.hasRain(blockPos)) && beeState != BeeState.EMERGENCY) {
             return false;
         }
         compoundTag.remove("Passengers");
@@ -259,7 +279,8 @@ implements Tickable {
 
     public static enum BeeState {
         HONEY_DELIVERED,
-        BEE_RELEASED;
+        BEE_RELEASED,
+        EMERGENCY;
 
     }
 }

@@ -9,7 +9,6 @@ import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.damage.DamageSource;
@@ -24,6 +23,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class CactusBlock
 extends Block {
@@ -37,7 +37,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!blockState.canPlaceAt(serverWorld, blockPos)) {
             serverWorld.breakBlock(blockPos, true);
             return;
@@ -83,15 +83,15 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockState blockState2 = arg.getBlockState(blockPos.offset(direction));
+            BlockState blockState2 = worldView.getBlockState(blockPos.offset(direction));
             Material material = blockState2.getMaterial();
-            if (!material.isSolid() && !arg.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) continue;
+            if (!material.isSolid() && !worldView.getFluidState(blockPos.offset(direction)).matches(FluidTags.LAVA)) continue;
             return false;
         }
-        Block block = arg.getBlockState(blockPos.method_10074()).getBlock();
-        return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !arg.getBlockState(blockPos.up()).getMaterial().isLiquid();
+        Block block = worldView.getBlockState(blockPos.method_10074()).getBlock();
+        return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !worldView.getBlockState(blockPos.up()).getMaterial().isLiquid();
     }
 
     @Override

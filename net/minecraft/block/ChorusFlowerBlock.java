@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChorusPlantBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class ChorusFlowerBlock
@@ -33,7 +33,7 @@ extends Block {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int j;
         if (!blockState.canPlaceAt(serverWorld, blockPos)) {
             serverWorld.breakBlock(blockPos, true);
@@ -107,9 +107,9 @@ extends Block {
         world.playLevelEvent(1034, blockPos, 0);
     }
 
-    private static boolean isSurroundedByAir(class_4538 arg, BlockPos blockPos, @Nullable Direction direction) {
+    private static boolean isSurroundedByAir(WorldView worldView, BlockPos blockPos, @Nullable Direction direction) {
         for (Direction direction2 : Direction.Type.HORIZONTAL) {
-            if (direction2 == direction || arg.isAir(blockPos.offset(direction2))) continue;
+            if (direction2 == direction || worldView.isAir(blockPos.offset(direction2))) continue;
             return false;
         }
         return true;
@@ -124,8 +124,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
         Block block = blockState2.getBlock();
         if (block == this.plantBlock || block == Blocks.END_STONE) {
             return true;
@@ -135,7 +135,7 @@ extends Block {
         }
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockState blockState3 = arg.getBlockState(blockPos.offset(direction));
+            BlockState blockState3 = worldView.getBlockState(blockPos.offset(direction));
             if (blockState3.getBlock() == this.plantBlock) {
                 if (bl) {
                     return false;

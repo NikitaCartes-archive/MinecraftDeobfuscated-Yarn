@@ -5,17 +5,17 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantingTableBlockEntityRenderer
@@ -27,28 +27,28 @@ extends BlockEntityRenderer<EnchantingTableBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3571(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+    public void method_3571(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
         float j;
-        arg.method_22903();
-        arg.method_22904(0.5, 0.75, 0.5);
+        matrixStack.push();
+        matrixStack.translate(0.5, 0.75, 0.5);
         float h = (float)enchantingTableBlockEntity.ticks + g;
-        arg.method_22904(0.0, 0.1f + MathHelper.sin(h * 0.1f) * 0.01f, 0.0);
+        matrixStack.translate(0.0, 0.1f + MathHelper.sin(h * 0.1f) * 0.01f, 0.0);
         for (j = enchantingTableBlockEntity.field_11964 - enchantingTableBlockEntity.field_11963; j >= (float)Math.PI; j -= (float)Math.PI * 2) {
         }
         while (j < (float)(-Math.PI)) {
             j += (float)Math.PI * 2;
         }
         float k = enchantingTableBlockEntity.field_11963 + j * g;
-        arg.method_22907(Vector3f.field_20705.method_23214(-k, false));
-        arg.method_22907(Vector3f.field_20707.method_23214(80.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-k, false));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(80.0f, true));
         float l = MathHelper.lerp(g, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
         float m = MathHelper.method_22450(l + 0.25f) * 1.6f - 0.3f;
         float n = MathHelper.method_22450(l + 0.75f) * 1.6f - 0.3f;
         float o = MathHelper.lerp(g, enchantingTableBlockEntity.pageTurningSpeed, enchantingTableBlockEntity.nextPageTurningSpeed);
         this.book.setPageAngles(h, MathHelper.clamp(m, 0.0f, 1.0f), MathHelper.clamp(n, 0.0f, 1.0f), o);
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
-        this.book.render(arg, lv, 0.0625f, i, this.method_23082(BOOK_TEX));
-        arg.method_22909();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
+        this.book.render(matrixStack, vertexConsumer, 0.0625f, i, this.getSprite(BOOK_TEX));
+        matrixStack.pop();
     }
 }
 

@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -47,6 +46,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class RavagerEntity
@@ -312,8 +312,8 @@ extends RaiderEntity {
     }
 
     @Override
-    public boolean canSpawn(class_4538 arg) {
-        return !arg.containsFluid(this.getBoundingBox());
+    public boolean canSpawn(WorldView worldView) {
+        return !worldView.containsFluid(this.getBoundingBox());
     }
 
     @Override

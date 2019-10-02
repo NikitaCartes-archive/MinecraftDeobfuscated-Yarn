@@ -5,7 +5,6 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import java.util.function.Predicate;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -24,6 +23,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class HostileEntity
 extends MobEntityWithAi
@@ -97,8 +97,8 @@ implements Monster {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-        return 0.5f - arg.getBrightness(blockPos);
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+        return 0.5f - worldView.getBrightness(blockPos);
     }
 
     public static boolean isSpawnDark(IWorld iWorld, BlockPos blockPos, Random random) {

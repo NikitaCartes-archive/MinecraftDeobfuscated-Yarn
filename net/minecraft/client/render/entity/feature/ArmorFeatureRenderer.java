@@ -7,11 +7,10 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.class_4592;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -22,6 +21,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -37,14 +37,14 @@ extends FeatureRenderer<T, M> {
         this.modelBody = bipedEntityModel2;
     }
 
-    public void method_17157(class_4587 arg, class_4597 arg2, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
-        this.renderArmor(arg, arg2, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.CHEST, i);
-        this.renderArmor(arg, arg2, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.LEGS, i);
-        this.renderArmor(arg, arg2, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.FEET, i);
-        this.renderArmor(arg, arg2, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.HEAD, i);
+    public void method_17157(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.CHEST, i);
+        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.LEGS, i);
+        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.FEET, i);
+        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.HEAD, i);
     }
 
-    private void renderArmor(class_4587 arg, class_4597 arg2, T livingEntity, float f, float g, float h, float i, float j, float k, float l, EquipmentSlot equipmentSlot, int m) {
+    private void renderArmor(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, T livingEntity, float f, float g, float h, float i, float j, float k, float l, EquipmentSlot equipmentSlot, int m) {
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(equipmentSlot);
         if (!(itemStack.getItem() instanceof ArmorItem)) {
             return;
@@ -65,18 +65,18 @@ extends FeatureRenderer<T, M> {
             float o = (float)(n >> 16 & 0xFF) / 255.0f;
             float p = (float)(n >> 8 & 0xFF) / 255.0f;
             float q = (float)(n & 0xFF) / 255.0f;
-            this.method_23192(arg, arg2, m, armorItem, bl2, bipedEntityModel, bl, o, p, q, null);
-            this.method_23192(arg, arg2, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, "overlay");
+            this.method_23192(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, o, p, q, null);
+            this.method_23192(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, "overlay");
         } else {
-            this.method_23192(arg, arg2, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, null);
+            this.method_23192(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, null);
         }
     }
 
-    private void method_23192(class_4587 arg, class_4597 arg2, int i, ArmorItem armorItem, boolean bl, A bipedEntityModel, boolean bl2, float f, float g, float h, @Nullable String string) {
-        class_4588 lv = ItemRenderer.method_23181(arg2, this.method_4174(armorItem, bl2, string), false, bl, false);
-        class_4608.method_23211(lv);
-        ((class_4592)bipedEntityModel).method_17116(arg, lv, i, f, g, h);
-        lv.method_22923();
+    private void method_23192(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, ArmorItem armorItem, boolean bl, A bipedEntityModel, boolean bl2, float f, float g, float h, @Nullable String string) {
+        VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, this.method_4174(armorItem, bl2, string), false, bl, false);
+        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        ((class_4592)bipedEntityModel).method_17116(matrixStack, vertexConsumer, i, f, g, h);
+        vertexConsumer.clearDefaultOverlay();
     }
 
     public A getArmor(EquipmentSlot equipmentSlot) {

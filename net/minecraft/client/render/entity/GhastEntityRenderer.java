@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.GhastEntityModel;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class GhastEntityRenderer
@@ -29,11 +29,11 @@ extends MobEntityRenderer<GhastEntity, GhastEntityModel<GhastEntity>> {
         return SKIN;
     }
 
-    protected void method_3973(GhastEntity ghastEntity, class_4587 arg, float f) {
+    protected void method_3973(GhastEntity ghastEntity, MatrixStack matrixStack, float f) {
         float g = 1.0f;
         float h = 4.5f;
         float i = 4.5f;
-        arg.method_22905(4.5f, 4.5f, 4.5f);
+        matrixStack.scale(4.5f, 4.5f, 4.5f);
     }
 }
 

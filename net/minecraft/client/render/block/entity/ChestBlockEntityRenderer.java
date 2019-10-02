@@ -6,7 +6,6 @@ package net.minecraft.client.render.block.entity;
 import java.util.Calendar;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -14,17 +13,18 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity>
@@ -54,55 +54,55 @@ extends BlockEntityRenderer<T> {
         this.field_20818.addCuboid(1.0f, 0.0f, 1.0f, 14.0f, 10.0f, 14.0f, 0.0f);
         this.field_20817 = new ModelPart(64, 64, 0, 0);
         this.field_20817.addCuboid(1.0f, 0.0f, 0.0f, 14.0f, 5.0f, 14.0f, 0.0f);
-        this.field_20817.rotationPointY = 9.0f;
-        this.field_20817.rotationPointZ = 1.0f;
+        this.field_20817.pivotY = 9.0f;
+        this.field_20817.pivotZ = 1.0f;
         this.field_20819 = new ModelPart(64, 64, 0, 0);
         this.field_20819.addCuboid(7.0f, -2.0f, 15.0f, 2.0f, 4.0f, 1.0f, 0.0f);
-        this.field_20819.rotationPointY = 9.0f;
+        this.field_20819.pivotY = 9.0f;
         this.field_20821 = new ModelPart(128, 64, 0, 19);
         this.field_20821.addCuboid(1.0f, 0.0f, 1.0f, 30.0f, 10.0f, 14.0f, 0.0f);
         this.field_20820 = new ModelPart(128, 64, 0, 0);
         this.field_20820.addCuboid(1.0f, 0.0f, 0.0f, 30.0f, 5.0f, 14.0f, 0.0f);
-        this.field_20820.rotationPointY = 9.0f;
-        this.field_20820.rotationPointZ = 1.0f;
+        this.field_20820.pivotY = 9.0f;
+        this.field_20820.pivotZ = 1.0f;
         this.field_20822 = new ModelPart(128, 64, 0, 0);
         this.field_20822.addCuboid(15.0f, -2.0f, 15.0f, 2.0f, 4.0f, 1.0f, 0.0f);
-        this.field_20822.rotationPointY = 9.0f;
+        this.field_20822.pivotY = 9.0f;
     }
 
     @Override
-    public void render(T blockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+    public void render(T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
         boolean bl;
         BlockState blockState = ((BlockEntity)blockEntity).hasWorld() ? ((BlockEntity)blockEntity).getCachedState() : (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         boolean bl2 = bl = chestType != ChestType.SINGLE;
         Identifier identifier = this.isChristmas ? (bl ? CHRISTMAS_DOUBLE_TEX : CHRISTMAS_TEX) : (blockEntity instanceof TrappedChestBlockEntity ? (bl ? TRAPPED_DOUBLE_TEX : TRAPPED_TEX) : (blockEntity instanceof EnderChestBlockEntity ? ENDER_TEX : (bl ? NORMAL_DOUBLE_TEX : NORMAL_TEX)));
-        arg.method_22903();
+        matrixStack.push();
         float h = blockState.get(ChestBlock.FACING).asRotation();
-        arg.method_22904(0.5, 0.5, 0.5);
-        arg.method_22907(Vector3f.field_20705.method_23214(-h, true));
-        arg.method_22904(-0.5, -0.5, -0.5);
+        matrixStack.translate(0.5, 0.5, 0.5);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h, true));
+        matrixStack.translate(-0.5, -0.5, -0.5);
         float j = ((ChestAnimationProgress)blockEntity).getAnimationProgress(g);
         j = 1.0f - j;
         j = 1.0f - j * j * j;
-        class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
-        Sprite sprite = this.method_23082(identifier);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
+        Sprite sprite = this.getSprite(identifier);
         if (bl) {
             if (chestType == ChestType.LEFT) {
-                arg.method_22904(-1.0, 0.0, 0.0);
+                matrixStack.translate(-1.0, 0.0, 0.0);
             }
-            this.method_22749(arg, lv, this.field_20820, this.field_20822, this.field_20821, j, i, sprite);
+            this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, j, i, sprite);
         } else {
-            this.method_22749(arg, lv, this.field_20817, this.field_20819, this.field_20818, j, i, sprite);
+            this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, j, i, sprite);
         }
-        arg.method_22909();
+        matrixStack.pop();
     }
 
-    private void method_22749(class_4587 arg, class_4588 arg2, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, Sprite sprite) {
+    private void method_22749(MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, Sprite sprite) {
         modelPart2.pitch = modelPart.pitch = -(f * 1.5707964f);
-        modelPart.method_22698(arg, arg2, 0.0625f, i, sprite);
-        modelPart2.method_22698(arg, arg2, 0.0625f, i, sprite);
-        modelPart3.method_22698(arg, arg2, 0.0625f, i, sprite);
+        modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, sprite);
+        modelPart2.render(matrixStack, vertexConsumer, 0.0625f, i, sprite);
+        modelPart3.render(matrixStack, vertexConsumer, 0.0625f, i, sprite);
     }
 }
 

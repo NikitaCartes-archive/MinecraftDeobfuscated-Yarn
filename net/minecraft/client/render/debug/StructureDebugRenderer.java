@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.world.ClientWorld;
@@ -48,12 +48,12 @@ implements DebugRenderer.Renderer {
         RenderSystem.disableTexture();
         RenderSystem.disableDepthTest();
         BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
-        class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
-        class_4588 lv2 = lv.getBuffer(BlockRenderLayer.LINES);
+        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.LINES);
         if (this.field_4626.containsKey(dimensionType)) {
             for (BlockBox blockBox : this.field_4626.get(dimensionType).values()) {
                 if (!blockPos.isWithinDistance(blockBox.method_22874(), 500.0)) continue;
-                WorldRenderer.drawBoxOutline(lv2, (double)blockBox.minX - d, (double)blockBox.minY - e, (double)blockBox.minZ - f, (double)(blockBox.maxX + 1) - d, (double)(blockBox.maxY + 1) - e, (double)(blockBox.maxZ + 1) - f, 1.0f, 1.0f, 1.0f, 1.0f);
+                WorldRenderer.drawBoxOutline(vertexConsumer, (double)blockBox.minX - d, (double)blockBox.minY - e, (double)blockBox.minZ - f, (double)(blockBox.maxX + 1) - d, (double)(blockBox.maxY + 1) - e, (double)(blockBox.maxZ + 1) - f, 1.0f, 1.0f, 1.0f, 1.0f);
             }
         }
         if (this.field_4627.containsKey(dimensionType)) {
@@ -63,10 +63,10 @@ implements DebugRenderer.Renderer {
                 Boolean boolean_ = this.field_4625.get(dimensionType).get(string);
                 if (!blockPos.isWithinDistance(blockBox2.method_22874(), 500.0)) continue;
                 if (boolean_.booleanValue()) {
-                    WorldRenderer.drawBoxOutline(lv2, (double)blockBox2.minX - d, (double)blockBox2.minY - e, (double)blockBox2.minZ - f, (double)(blockBox2.maxX + 1) - d, (double)(blockBox2.maxY + 1) - e, (double)(blockBox2.maxZ + 1) - f, 0.0f, 1.0f, 0.0f, 1.0f);
+                    WorldRenderer.drawBoxOutline(vertexConsumer, (double)blockBox2.minX - d, (double)blockBox2.minY - e, (double)blockBox2.minZ - f, (double)(blockBox2.maxX + 1) - d, (double)(blockBox2.maxY + 1) - e, (double)(blockBox2.maxZ + 1) - f, 0.0f, 1.0f, 0.0f, 1.0f);
                     continue;
                 }
-                WorldRenderer.drawBoxOutline(lv2, (double)blockBox2.minX - d, (double)blockBox2.minY - e, (double)blockBox2.minZ - f, (double)(blockBox2.maxX + 1) - d, (double)(blockBox2.maxY + 1) - e, (double)(blockBox2.maxZ + 1) - f, 0.0f, 0.0f, 1.0f, 1.0f);
+                WorldRenderer.drawBoxOutline(vertexConsumer, (double)blockBox2.minX - d, (double)blockBox2.minY - e, (double)blockBox2.minZ - f, (double)(blockBox2.maxX + 1) - d, (double)(blockBox2.maxY + 1) - e, (double)(blockBox2.maxZ + 1) - f, 0.0f, 0.0f, 1.0f, 1.0f);
             }
         }
         lv.method_22993();

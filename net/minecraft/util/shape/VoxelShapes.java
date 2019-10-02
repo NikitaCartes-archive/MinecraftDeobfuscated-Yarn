@@ -16,7 +16,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.SystemUtil;
@@ -37,6 +36,7 @@ import net.minecraft.util.shape.SimpleVoxelShape;
 import net.minecraft.util.shape.SliceVoxelShape;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.WorldView;
 
 public final class VoxelShapes {
     private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
@@ -189,11 +189,11 @@ public final class VoxelShapes {
         return d;
     }
 
-    public static double method_17945(Direction.Axis axis, Box box, class_4538 arg, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
-        return VoxelShapes.method_17944(box, arg, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
+    public static double method_17945(Direction.Axis axis, Box box, WorldView worldView, double d, EntityContext entityContext, Stream<VoxelShape> stream) {
+        return VoxelShapes.method_17944(box, worldView, d, entityContext, AxisCycleDirection.between(axis, Direction.Axis.Z), stream);
     }
 
-    private static double method_17944(Box box, class_4538 arg, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream) {
+    private static double method_17944(Box box, WorldView worldView, double d, EntityContext entityContext, AxisCycleDirection axisCycleDirection, Stream<VoxelShape> stream) {
         if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
             return d;
         }
@@ -231,9 +231,9 @@ public final class VoxelShapes {
                     }
                     if (s >= 3) continue;
                     mutable.set(axisCycleDirection2, q, r, p);
-                    BlockState blockState = arg.getBlockState(mutable);
+                    BlockState blockState = worldView.getBlockState(mutable);
                     if (s == 1 && !blockState.method_17900() || s == 2 && blockState.getBlock() != Blocks.MOVING_PISTON) continue;
-                    d = blockState.getCollisionShape(arg, mutable, entityContext).method_1108(axis3, box.offset(-mutable.getX(), -mutable.getY(), -mutable.getZ()), d);
+                    d = blockState.getCollisionShape(worldView, mutable, entityContext).method_1108(axis3, box.offset(-mutable.getX(), -mutable.getY(), -mutable.getZ()), d);
                     if (Math.abs(d) < 1.0E-7) {
                         return 0.0;
                     }
@@ -269,7 +269,7 @@ public final class VoxelShapes {
         return DoubleMath.fuzzyEquals(voxelShape3.getMaximum(axis), 1.0, 1.0E-7) && DoubleMath.fuzzyEquals(voxelShape4.getMinimum(axis), 0.0, 1.0E-7) && !VoxelShapes.matchesAnywhere(new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), booleanBiFunction);
     }
 
-    public static VoxelShape method_16344(VoxelShape voxelShape, Direction direction) {
+    public static VoxelShape slice(VoxelShape voxelShape, Direction direction) {
         int i;
         boolean bl;
         if (voxelShape == VoxelShapes.fullCube()) {

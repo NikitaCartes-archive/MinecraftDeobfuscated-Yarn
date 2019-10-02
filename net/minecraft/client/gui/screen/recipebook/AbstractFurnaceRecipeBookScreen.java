@@ -24,11 +24,11 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractFurnaceRecipeBookScreen
 extends RecipeBookWidget {
-    private Iterator<Item> field_3153;
-    private Set<Item> field_3149;
+    private Iterator<Item> fuelIterator;
+    private Set<Item> fuels;
     private Slot outputSlot;
-    private Item field_3152;
-    private float field_3151;
+    private Item currentItem;
+    private float frameTime;
 
     @Override
     protected boolean toggleFilteringCraftable() {
@@ -86,11 +86,11 @@ extends RecipeBookWidget {
         this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), list.get((int)2).xPosition, list.get((int)2).yPosition);
         DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
         this.outputSlot = list.get(1);
-        if (this.field_3149 == null) {
-            this.field_3149 = this.getAllowedFuels();
+        if (this.fuels == null) {
+            this.fuels = this.getAllowedFuels();
         }
-        this.field_3153 = this.field_3149.iterator();
-        this.field_3152 = null;
+        this.fuelIterator = this.fuels.iterator();
+        this.currentItem = null;
         Iterator iterator = defaultedList.iterator();
         for (int i = 0; i < 2; ++i) {
             if (!iterator.hasNext()) {
@@ -112,29 +112,29 @@ extends RecipeBookWidget {
             return;
         }
         if (!Screen.hasControlDown()) {
-            this.field_3151 += f;
+            this.frameTime += f;
         }
         int k = this.outputSlot.xPosition + i;
         int l = this.outputSlot.yPosition + j;
         DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FF0000);
-        this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getStackForRender(), k, l);
+        this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), k, l);
         RenderSystem.depthFunc(516);
         DrawableHelper.fill(k, l, k + 16, l + 16, 0x30FFFFFF);
         RenderSystem.depthFunc(515);
     }
 
-    private Item method_2658() {
-        if (this.field_3152 == null || this.field_3151 > 30.0f) {
-            this.field_3151 = 0.0f;
-            if (this.field_3153 == null || !this.field_3153.hasNext()) {
-                if (this.field_3149 == null) {
-                    this.field_3149 = this.getAllowedFuels();
+    private Item getItem() {
+        if (this.currentItem == null || this.frameTime > 30.0f) {
+            this.frameTime = 0.0f;
+            if (this.fuelIterator == null || !this.fuelIterator.hasNext()) {
+                if (this.fuels == null) {
+                    this.fuels = this.getAllowedFuels();
                 }
-                this.field_3153 = this.field_3149.iterator();
+                this.fuelIterator = this.fuels.iterator();
             }
-            this.field_3152 = this.field_3153.next();
+            this.currentItem = this.fuelIterator.next();
         }
-        return this.field_3152;
+        return this.currentItem;
     }
 }
 

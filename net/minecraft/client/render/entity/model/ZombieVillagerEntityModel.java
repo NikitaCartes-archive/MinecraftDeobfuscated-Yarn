@@ -30,11 +30,11 @@ implements ModelWithHat {
             this.body = new ModelPart(this, 16, 16);
             this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f + 0.1f);
             this.rightLeg = new ModelPart(this, 0, 16);
-            this.rightLeg.setRotationPoint(-2.0f, 12.0f, 0.0f);
+            this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
             this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.1f);
             this.leftLeg = new ModelPart(this, 0, 16);
             this.leftLeg.mirror = true;
-            this.leftLeg.setRotationPoint(2.0f, 12.0f, 0.0f);
+            this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
             this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f + 0.1f);
         } else {
             this.head = new ModelPart(this, 0, 0);
@@ -51,17 +51,17 @@ implements ModelWithHat {
             this.body.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, f + 0.05f);
             this.rightArm = new ModelPart(this, 44, 22);
             this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-            this.rightArm.setRotationPoint(-5.0f, 2.0f, 0.0f);
+            this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
             this.leftArm = new ModelPart(this, 44, 22);
             this.leftArm.mirror = true;
             this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
-            this.leftArm.setRotationPoint(5.0f, 2.0f, 0.0f);
+            this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
             this.rightLeg = new ModelPart(this, 0, 22);
-            this.rightLeg.setRotationPoint(-2.0f, 12.0f, 0.0f);
+            this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
             this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
             this.leftLeg = new ModelPart(this, 0, 22);
             this.leftLeg.mirror = true;
-            this.leftLeg.setRotationPoint(2.0f, 12.0f, 0.0f);
+            this.leftLeg.setPivot(2.0f, 12.0f, 0.0f);
             this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, f);
         }
     }

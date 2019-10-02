@@ -5,14 +5,14 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.WitchHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.WitchEntityModel;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WitchEntityRenderer
@@ -24,18 +24,18 @@ extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
         this.addFeature(new WitchHeldItemFeatureRenderer<WitchEntity>(this));
     }
 
-    public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+    public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         ((WitchEntityModel)this.model).method_2840(!witchEntity.getMainHandStack().isEmpty());
-        super.method_4072(witchEntity, d, e, f, g, h, arg, arg2);
+        super.method_4072(witchEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 
     public Identifier method_4154(WitchEntity witchEntity) {
         return SKIN;
     }
 
-    protected void method_4157(WitchEntity witchEntity, class_4587 arg, float f) {
+    protected void method_4157(WitchEntity witchEntity, MatrixStack matrixStack, float f) {
         float g = 0.9375f;
-        arg.method_22905(0.9375f, 0.9375f, 0.9375f);
+        matrixStack.scale(0.9375f, 0.9375f, 0.9375f);
     }
 }
 

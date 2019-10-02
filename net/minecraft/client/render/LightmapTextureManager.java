@@ -13,6 +13,8 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(value=EnvType.CLIENT)
@@ -33,6 +35,12 @@ implements AutoCloseable {
         this.texture = new NativeImageBackedTexture(16, 16, false);
         this.textureIdentifier = this.client.getTextureManager().registerDynamicTexture("light_map", this.texture);
         this.image = this.texture.getImage();
+        for (int i = 0; i < 16; ++i) {
+            for (int j = 0; j < 16; ++j) {
+                this.image.setPixelRGBA(j, i, -1);
+            }
+        }
+        this.texture.upload();
     }
 
     @Override
@@ -87,10 +95,10 @@ implements AutoCloseable {
         for (int k = 0; k < 16; ++k) {
             for (int l = 0; l < 16; ++l) {
                 float x;
-                float m = world.dimension.getLightLevelToBrightness()[k] * h;
-                float n = world.dimension.getLightLevelToBrightness()[l] * (this.prevFlicker * 0.1f + 1.5f);
+                float m = this.method_23284(world, k) * h;
+                float n = this.method_23284(world, l) * (this.prevFlicker * 0.1f + 1.5f);
                 if (world.getTicksSinceLightning() > 0) {
-                    m = world.dimension.getLightLevelToBrightness()[k];
+                    m = this.method_23284(world, k);
                 }
                 float o = m * (g * 0.65f + 0.35f);
                 float p = m * (g * 0.65f + 0.35f);
@@ -116,26 +124,14 @@ implements AutoCloseable {
                     w = 0.25f + t * 0.75f;
                 }
                 if (j > 0.0f) {
-                    x = 1.0f / u;
-                    if (x > 1.0f / v) {
-                        x = 1.0f / v;
-                    }
-                    if (x > 1.0f / w) {
-                        x = 1.0f / w;
-                    }
+                    x = Math.min(1.0f / u, Math.min(1.0f / v, 1.0f / w));
                     u = u * (1.0f - j) + u * x * j;
                     v = v * (1.0f - j) + v * x * j;
                     w = w * (1.0f - j) + w * x * j;
                 }
-                if (u > 1.0f) {
-                    u = 1.0f;
-                }
-                if (v > 1.0f) {
-                    v = 1.0f;
-                }
-                if (w > 1.0f) {
-                    w = 1.0f;
-                }
+                u = MathHelper.clamp(u, 0.0f, 1.0f);
+                v = MathHelper.clamp(v, 0.0f, 1.0f);
+                w = MathHelper.clamp(w, 0.0f, 1.0f);
                 x = (float)this.client.options.gamma;
                 float y = 1.0f - u;
                 float z = 1.0f - v;
@@ -149,24 +145,9 @@ implements AutoCloseable {
                 u = u * 0.96f + 0.03f;
                 v = v * 0.96f + 0.03f;
                 w = w * 0.96f + 0.03f;
-                if (u > 1.0f) {
-                    u = 1.0f;
-                }
-                if (v > 1.0f) {
-                    v = 1.0f;
-                }
-                if (w > 1.0f) {
-                    w = 1.0f;
-                }
-                if (u < 0.0f) {
-                    u = 0.0f;
-                }
-                if (v < 0.0f) {
-                    v = 0.0f;
-                }
-                if (w < 0.0f) {
-                    w = 0.0f;
-                }
+                u = MathHelper.clamp(u, 0.0f, 1.0f);
+                v = MathHelper.clamp(v, 0.0f, 1.0f);
+                w = MathHelper.clamp(w, 0.0f, 1.0f);
                 int ab = 255;
                 int ac = (int)(u * 255.0f);
                 int ad = (int)(v * 255.0f);
@@ -177,6 +158,10 @@ implements AutoCloseable {
         this.texture.upload();
         this.isDirty = false;
         this.client.getProfiler().pop();
+    }
+
+    private float method_23284(World world, int i) {
+        return world.dimension.getLightLevelToBrightness()[i];
     }
 }
 

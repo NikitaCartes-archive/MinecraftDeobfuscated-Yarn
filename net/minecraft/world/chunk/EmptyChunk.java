@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4548;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -20,6 +19,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -27,10 +27,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class EmptyChunk
 extends WorldChunk {
-    private static final Biome[] BIOMES = SystemUtil.consume(new Biome[class_4548.field_20649], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
+    private static final Biome[] BIOMES = SystemUtil.consume(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
 
     public EmptyChunk(World world, ChunkPos chunkPos) {
-        super(world, chunkPos, new class_4548(BIOMES));
+        super(world, chunkPos, new BiomeArray(BIOMES));
     }
 
     @Override

@@ -6,7 +6,6 @@ package net.minecraft.block;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class WeightedPressurePlateBlock
 extends AbstractPressurePlateBlock {
@@ -60,7 +60,7 @@ extends AbstractPressurePlateBlock {
     }
 
     @Override
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return 10;
     }
 

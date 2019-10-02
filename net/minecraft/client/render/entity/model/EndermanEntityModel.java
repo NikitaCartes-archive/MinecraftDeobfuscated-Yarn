@@ -20,24 +20,24 @@ extends BipedEntityModel<T> {
         float g = -14.0f;
         this.headwear = new ModelPart(this, 0, 16);
         this.headwear.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f - 0.5f);
-        this.headwear.setRotationPoint(0.0f, -14.0f, 0.0f);
+        this.headwear.setPivot(0.0f, -14.0f, 0.0f);
         this.body = new ModelPart(this, 32, 16);
         this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
-        this.body.setRotationPoint(0.0f, -14.0f, 0.0f);
+        this.body.setPivot(0.0f, -14.0f, 0.0f);
         this.rightArm = new ModelPart(this, 56, 0);
         this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
-        this.rightArm.setRotationPoint(-3.0f, -12.0f, 0.0f);
+        this.rightArm.setPivot(-3.0f, -12.0f, 0.0f);
         this.leftArm = new ModelPart(this, 56, 0);
         this.leftArm.mirror = true;
         this.leftArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
-        this.leftArm.setRotationPoint(5.0f, -12.0f, 0.0f);
+        this.leftArm.setPivot(5.0f, -12.0f, 0.0f);
         this.rightLeg = new ModelPart(this, 56, 0);
         this.rightLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
-        this.rightLeg.setRotationPoint(-2.0f, -2.0f, 0.0f);
+        this.rightLeg.setPivot(-2.0f, -2.0f, 0.0f);
         this.leftLeg = new ModelPart(this, 56, 0);
         this.leftLeg.mirror = true;
         this.leftLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 30.0f, 2.0f, f);
-        this.leftLeg.setRotationPoint(2.0f, -2.0f, 0.0f);
+        this.leftLeg.setPivot(2.0f, -2.0f, 0.0f);
     }
 
     @Override
@@ -47,8 +47,8 @@ extends BipedEntityModel<T> {
         this.head.visible = true;
         float l = -14.0f;
         this.body.pitch = 0.0f;
-        this.body.rotationPointY = -14.0f;
-        this.body.rotationPointZ = -0.0f;
+        this.body.pivotY = -14.0f;
+        this.body.pivotZ = -0.0f;
         this.rightLeg.pitch -= 0.0f;
         this.leftLeg.pitch -= 0.0f;
         this.rightArm.pitch = (float)((double)this.rightArm.pitch * 0.5);
@@ -86,27 +86,27 @@ extends BipedEntityModel<T> {
             this.rightArm.roll = 0.05f;
             this.leftArm.roll = -0.05f;
         }
-        this.rightArm.rotationPointZ = 0.0f;
-        this.leftArm.rotationPointZ = 0.0f;
-        this.rightLeg.rotationPointZ = 0.0f;
-        this.leftLeg.rotationPointZ = 0.0f;
-        this.rightLeg.rotationPointY = -5.0f;
-        this.leftLeg.rotationPointY = -5.0f;
-        this.head.rotationPointZ = -0.0f;
-        this.head.rotationPointY = -13.0f;
-        this.headwear.rotationPointX = this.head.rotationPointX;
-        this.headwear.rotationPointY = this.head.rotationPointY;
-        this.headwear.rotationPointZ = this.head.rotationPointZ;
+        this.rightArm.pivotZ = 0.0f;
+        this.leftArm.pivotZ = 0.0f;
+        this.rightLeg.pivotZ = 0.0f;
+        this.leftLeg.pivotZ = 0.0f;
+        this.rightLeg.pivotY = -5.0f;
+        this.leftLeg.pivotY = -5.0f;
+        this.head.pivotZ = -0.0f;
+        this.head.pivotY = -13.0f;
+        this.headwear.pivotX = this.head.pivotX;
+        this.headwear.pivotY = this.head.pivotY;
+        this.headwear.pivotZ = this.head.pivotZ;
         this.headwear.pitch = this.head.pitch;
         this.headwear.yaw = this.head.yaw;
         this.headwear.roll = this.head.roll;
         if (this.angry) {
             n = 1.0f;
-            this.head.rotationPointY -= 5.0f;
+            this.head.pivotY -= 5.0f;
         }
         n = -14.0f;
-        this.rightArm.setRotationPoint(-5.0f, -12.0f, 0.0f);
-        this.leftArm.setRotationPoint(5.0f, -12.0f, 0.0f);
+        this.rightArm.setPivot(-5.0f, -12.0f, 0.0f);
+        this.leftArm.setPivot(5.0f, -12.0f, 0.0f);
     }
 }
 

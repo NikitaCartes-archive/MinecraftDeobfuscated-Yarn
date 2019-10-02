@@ -23,7 +23,6 @@ import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4538;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.container.NameableContainerProvider;
@@ -73,6 +72,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.loot.LootTable;
 import net.minecraft.world.loot.LootTables;
@@ -307,7 +307,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public boolean method_22358(BlockState blockState, Fluid fluid) {
+    public boolean canBucketPlace(BlockState blockState, Fluid fluid) {
         return this.material.isReplaceable() || !this.material.isSolid();
     }
 
@@ -331,7 +331,7 @@ implements ItemConvertible {
 
     @Deprecated
     @Environment(value=EnvType.CLIENT)
-    public boolean method_22359(BlockState blockState) {
+    public boolean hasEmissiveLighting(BlockState blockState) {
         return false;
     }
 
@@ -349,8 +349,8 @@ implements ItemConvertible {
             if (b != 127) {
                 return b != 0;
             }
-            VoxelShape voxelShape = blockState.getCullShape(blockView, blockPos, direction);
-            VoxelShape voxelShape2 = blockState2.getCullShape(blockView, blockPos2, direction.getOpposite());
+            VoxelShape voxelShape = blockState.getCullingShape(blockView, blockPos, direction);
+            VoxelShape voxelShape2 = blockState2.getCullingShape(blockView, blockPos2, direction.getOpposite());
             boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
             if (object2ByteLinkedOpenHashMap.size() == 200) {
                 object2ByteLinkedOpenHashMap.removeLastByte();
@@ -383,7 +383,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         return blockState.getOutlineShape(blockView, blockPos);
     }
 
@@ -397,9 +397,9 @@ implements ItemConvertible {
         return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
-    public static boolean sideCoversSmallSquare(class_4538 arg, BlockPos blockPos, Direction direction) {
-        BlockState blockState = arg.getBlockState(blockPos);
-        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(arg, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+    public static boolean sideCoversSmallSquare(WorldView worldView, BlockPos blockPos, Direction direction) {
+        BlockState blockState = worldView.getBlockState(blockPos);
+        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(worldView, blockPos).getFace(direction), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
     public static boolean isSideSolidFullSquare(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
@@ -418,7 +418,7 @@ implements ItemConvertible {
     @Deprecated
     public final boolean isFullOpaque(BlockState blockState, BlockView blockView, BlockPos blockPos) {
         if (blockState.isOpaque()) {
-            return Block.isShapeFullCube(blockState.method_11615(blockView, blockPos));
+            return Block.isShapeFullCube(blockState.getCullingShape(blockView, blockPos));
         }
         return false;
     }
@@ -441,12 +441,12 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-        this.onScheduledTick(blockState, serverWorld, blockPos, random);
+    public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+        this.scheduledTick(blockState, serverWorld, blockPos, random);
     }
 
     @Deprecated
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -461,7 +461,7 @@ implements ItemConvertible {
         DebugRendererInfoManager.sendNeighborUpdate(world, blockPos);
     }
 
-    public int getTickRate(class_4538 arg) {
+    public int getTickRate(WorldView worldView) {
         return 10;
     }
 
@@ -585,12 +585,12 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         return true;
     }
 
     @Deprecated
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         return false;
     }
 
@@ -705,7 +705,7 @@ implements ItemConvertible {
         world.playLevelEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
     }
 
-    public void onRainTick(World world, BlockPos blockPos) {
+    public void rainTick(World world, BlockPos blockPos) {
     }
 
     public boolean shouldDropItemsOnExplosion(Explosion explosion) {

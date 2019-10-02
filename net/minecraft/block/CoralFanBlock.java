@@ -30,7 +30,7 @@ extends DeadCoralFanBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (!CoralFanBlock.isInWater(blockState, serverWorld, blockPos)) {
             serverWorld.setBlockState(blockPos, (BlockState)this.deadCoralBlock.getDefaultState().with(WATERLOGGED, false), 2);
         }

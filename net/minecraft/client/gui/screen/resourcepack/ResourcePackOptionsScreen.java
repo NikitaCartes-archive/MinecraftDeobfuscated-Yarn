@@ -13,9 +13,9 @@ import net.minecraft.client.gui.screen.resourcepack.AvailableResourcePackListWid
 import net.minecraft.client.gui.screen.resourcepack.ResourcePackListWidget;
 import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.ClientResourcePackContainer;
+import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
@@ -24,8 +24,8 @@ public class ResourcePackOptionsScreen
 extends Screen {
     private final Screen parent;
     private AvailableResourcePackListWidget availablePacks;
-    private SelectedResourcePackListWidget selectedPacks;
-    private boolean edited;
+    private SelectedResourcePackListWidget enabledPacks;
+    private boolean dirty;
 
     public ResourcePackOptionsScreen(Screen screen) {
         super(new TranslatableText("resourcePack.title", new Object[0]));
@@ -36,20 +36,20 @@ extends Screen {
     protected void init() {
         this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, I18n.translate("resourcePack.openFolder", new Object[0]), buttonWidget -> SystemUtil.getOperatingSystem().open(this.minecraft.getResourcePackDir())));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
-            if (this.edited) {
-                ArrayList<ClientResourcePackContainer> list = Lists.newArrayList();
-                for (ResourcePackListWidget.ResourcePackEntry resourcePackEntry : this.selectedPacks.children()) {
-                    list.add(resourcePackEntry.getPackContainer());
+            if (this.dirty) {
+                ArrayList<ClientResourcePackProfile> list = Lists.newArrayList();
+                for (ResourcePackListWidget.ResourcePackEntry resourcePackEntry : this.enabledPacks.children()) {
+                    list.add(resourcePackEntry.getPack());
                 }
                 Collections.reverse(list);
-                this.minecraft.getResourcePackContainerManager().setEnabled(list);
+                this.minecraft.getResourcePackManager().setEnabledProfiles(list);
                 this.minecraft.options.resourcePacks.clear();
                 this.minecraft.options.incompatibleResourcePacks.clear();
-                for (ClientResourcePackContainer clientResourcePackContainer : list) {
-                    if (clientResourcePackContainer.isPositionFixed()) continue;
-                    this.minecraft.options.resourcePacks.add(clientResourcePackContainer.getName());
-                    if (clientResourcePackContainer.getCompatibility().isCompatible()) continue;
-                    this.minecraft.options.incompatibleResourcePacks.add(clientResourcePackContainer.getName());
+                for (ClientResourcePackProfile clientResourcePackProfile : list) {
+                    if (clientResourcePackProfile.isPinned()) continue;
+                    this.minecraft.options.resourcePacks.add(clientResourcePackProfile.getName());
+                    if (clientResourcePackProfile.getCompatibility().isCompatible()) continue;
+                    this.minecraft.options.incompatibleResourcePacks.add(clientResourcePackProfile.getName());
                 }
                 this.minecraft.options.write();
                 this.minecraft.openScreen(this.parent);
@@ -59,63 +59,63 @@ extends Screen {
             }
         }));
         AvailableResourcePackListWidget availableResourcePackListWidget = this.availablePacks;
-        SelectedResourcePackListWidget selectedResourcePackListWidget = this.selectedPacks;
+        SelectedResourcePackListWidget selectedResourcePackListWidget = this.enabledPacks;
         this.availablePacks = new AvailableResourcePackListWidget(this.minecraft, 200, this.height);
         this.availablePacks.setLeftPos(this.width / 2 - 4 - 200);
         if (availableResourcePackListWidget != null) {
             this.availablePacks.children().addAll(availableResourcePackListWidget.children());
         }
         this.children.add(this.availablePacks);
-        this.selectedPacks = new SelectedResourcePackListWidget(this.minecraft, 200, this.height);
-        this.selectedPacks.setLeftPos(this.width / 2 + 4);
+        this.enabledPacks = new SelectedResourcePackListWidget(this.minecraft, 200, this.height);
+        this.enabledPacks.setLeftPos(this.width / 2 + 4);
         if (selectedResourcePackListWidget != null) {
-            this.selectedPacks.children().addAll(selectedResourcePackListWidget.children());
+            this.enabledPacks.children().addAll(selectedResourcePackListWidget.children());
         }
-        this.children.add(this.selectedPacks);
-        if (!this.edited) {
+        this.children.add(this.enabledPacks);
+        if (!this.dirty) {
             this.availablePacks.children().clear();
-            this.selectedPacks.children().clear();
-            ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager = this.minecraft.getResourcePackContainerManager();
-            resourcePackContainerManager.callCreators();
-            ArrayList<ClientResourcePackContainer> list = Lists.newArrayList(resourcePackContainerManager.getAlphabeticallyOrderedContainers());
-            list.removeAll(resourcePackContainerManager.getEnabledContainers());
-            for (ClientResourcePackContainer clientResourcePackContainer : list) {
-                this.availablePacks.addEntry(new ResourcePackListWidget.ResourcePackEntry(this.availablePacks, this, clientResourcePackContainer));
+            this.enabledPacks.children().clear();
+            ResourcePackManager<ClientResourcePackProfile> resourcePackManager = this.minecraft.getResourcePackManager();
+            resourcePackManager.scanPacks();
+            ArrayList<ClientResourcePackProfile> list = Lists.newArrayList(resourcePackManager.getProfiles());
+            list.removeAll(resourcePackManager.getEnabledProfiles());
+            for (ClientResourcePackProfile clientResourcePackProfile : list) {
+                this.availablePacks.add(new ResourcePackListWidget.ResourcePackEntry(this.availablePacks, this, clientResourcePackProfile));
             }
-            for (ClientResourcePackContainer clientResourcePackContainer : Lists.reverse(Lists.newArrayList(resourcePackContainerManager.getEnabledContainers()))) {
-                this.selectedPacks.addEntry(new ResourcePackListWidget.ResourcePackEntry(this.selectedPacks, this, clientResourcePackContainer));
+            for (ClientResourcePackProfile clientResourcePackProfile : Lists.reverse(Lists.newArrayList(resourcePackManager.getEnabledProfiles()))) {
+                this.enabledPacks.add(new ResourcePackListWidget.ResourcePackEntry(this.enabledPacks, this, clientResourcePackProfile));
             }
         }
     }
 
-    public void select(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
+    public void enable(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
         this.availablePacks.children().remove(resourcePackEntry);
-        resourcePackEntry.setList(this.selectedPacks);
-        this.setEdited();
+        resourcePackEntry.enable(this.enabledPacks);
+        this.markDirty();
     }
 
-    public void remove(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
-        this.selectedPacks.children().remove(resourcePackEntry);
-        this.availablePacks.addEntry(resourcePackEntry);
-        this.setEdited();
+    public void disable(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
+        this.enabledPacks.children().remove(resourcePackEntry);
+        this.availablePacks.add(resourcePackEntry);
+        this.markDirty();
     }
 
-    public boolean isSelected(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
-        return this.selectedPacks.children().contains(resourcePackEntry);
+    public boolean isEnabled(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
+        return this.enabledPacks.children().contains(resourcePackEntry);
     }
 
     @Override
     public void render(int i, int j, float f) {
         this.renderDirtBackground(0);
         this.availablePacks.render(i, j, f);
-        this.selectedPacks.render(i, j, f);
+        this.enabledPacks.render(i, j, f);
         this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 0xFFFFFF);
         this.drawCenteredString(this.font, I18n.translate("resourcePack.folderInfo", new Object[0]), this.width / 2 - 77, this.height - 26, 0x808080);
         super.render(i, j, f);
     }
 
-    public void setEdited() {
-        this.edited = true;
+    public void markDirty() {
+        this.dirty = true;
     }
 }
 

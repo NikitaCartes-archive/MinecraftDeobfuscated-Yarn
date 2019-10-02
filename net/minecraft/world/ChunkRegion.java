@@ -14,7 +14,6 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_4543;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -37,6 +36,7 @@ import net.minecraft.world.MultiTickScheduler;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
@@ -65,7 +65,7 @@ implements IWorld {
     private final ChunkGeneratorConfig generatorSettings;
     private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(blockPos -> this.getChunk((BlockPos)blockPos).getBlockTickScheduler());
     private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.getChunk((BlockPos)blockPos).getFluidTickScheduler());
-    private final class_4543 field_20668;
+    private final BiomeAccess biomeAccess;
 
     public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
         int i = MathHelper.floor(Math.sqrt(list.size()));
@@ -84,7 +84,7 @@ implements IWorld {
         this.levelProperties = serverWorld.getLevelProperties();
         this.random = serverWorld.getRandom();
         this.dimension = serverWorld.getDimension();
-        this.field_20668 = new class_4543(this, LevelProperties.method_22418(this.seed), this.dimension.getType().method_22415());
+        this.biomeAccess = new BiomeAccess(this, LevelProperties.sha256Hash(this.seed), this.dimension.getType().getBiomeAccessType());
     }
 
     public int getCenterChunkX() {
@@ -157,13 +157,13 @@ implements IWorld {
     }
 
     @Override
-    public class_4543 method_22385() {
-        return this.field_20668;
+    public BiomeAccess getBiomeAccess() {
+        return this.biomeAccess;
     }
 
     @Override
-    public Biome method_22387(int i, int j, int k) {
-        return this.world.method_22387(i, j, k);
+    public Biome getGeneratorStoredBiome(int i, int j, int k) {
+        return this.world.getGeneratorStoredBiome(i, j, k);
     }
 
     @Override

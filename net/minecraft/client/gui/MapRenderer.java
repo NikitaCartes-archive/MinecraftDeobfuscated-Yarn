@@ -4,21 +4,15 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.MaterialColor;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
@@ -27,11 +21,13 @@ import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class MapRenderer
 implements AutoCloseable {
+    public static final Identifier field_21056 = new Identifier("textures/map/map_background.png");
     private static final Identifier MAP_ICONS_TEXTURE = new Identifier("textures/map/map_icons.png");
     private final TextureManager textureManager;
     private final Map<String, MapTexture> mapTextures = Maps.newHashMap();
@@ -44,8 +40,8 @@ implements AutoCloseable {
         this.getMapTexture(mapState).updateTexture();
     }
 
-    public void draw(class_4587 arg, class_4597 arg2, MapState mapState, boolean bl) {
-        this.getMapTexture(mapState).draw(arg, arg2, bl);
+    public void draw(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, MapState mapState, boolean bl, int i) {
+        this.getMapTexture(mapState).draw(matrixStack, layeredVertexConsumerStorage, bl, i);
     }
 
     private MapTexture getMapTexture(MapState mapState) {
@@ -110,66 +106,52 @@ implements AutoCloseable {
             this.texture.upload();
         }
 
-        private void draw(class_4587 arg, class_4597 arg2, boolean bl) {
-            boolean i = false;
+        private void draw(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl, int i) {
             boolean j = false;
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            boolean k = false;
             float f = 0.0f;
-            Matrix4f matrix4f = arg.method_22910();
-            MapRenderer.this.textureManager.bindTexture(this.id);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE);
-            RenderSystem.disableAlphaTest();
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV);
-            bufferBuilder.method_22918(matrix4f, 0.0f, 128.0f, -0.01f).texture(0.0f, 1.0f).next();
-            bufferBuilder.method_22918(matrix4f, 128.0f, 128.0f, -0.01f).texture(1.0f, 1.0f).next();
-            bufferBuilder.method_22918(matrix4f, 128.0f, 0.0f, -0.01f).texture(1.0f, 0.0f).next();
-            bufferBuilder.method_22918(matrix4f, 0.0f, 0.0f, -0.01f).texture(0.0f, 0.0f).next();
-            tessellator.draw();
-            RenderSystem.enableAlphaTest();
-            RenderSystem.disableBlend();
-            int k = 0;
+            Matrix4f matrix4f = matrixStack.peek();
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23028(this.id));
+            vertexConsumer.vertex(matrix4f, 0.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(i).next();
+            vertexConsumer.vertex(matrix4f, 128.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(i).next();
+            vertexConsumer.vertex(matrix4f, 128.0f, 0.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(i).next();
+            vertexConsumer.vertex(matrix4f, 0.0f, 0.0f, -0.01f).color(255, 255, 255, 255).texture(0.0f, 0.0f).light(i).next();
+            int l = 0;
             for (MapIcon mapIcon : this.mapState.icons.values()) {
                 if (bl && !mapIcon.isAlwaysRendered()) continue;
-                MapRenderer.this.textureManager.bindTexture(MAP_ICONS_TEXTURE);
-                arg.method_22903();
-                arg.method_22904(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);
-                arg.method_22907(Vector3f.field_20707.method_23214((float)(mapIcon.getRotation() * 360) / 16.0f, true));
-                arg.method_22905(4.0f, 4.0f, 3.0f);
-                arg.method_22904(-0.125, 0.125, 0.0);
+                matrixStack.push();
+                matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f, true));
+                matrixStack.scale(4.0f, 4.0f, 3.0f);
+                matrixStack.translate(-0.125, 0.125, 0.0);
                 byte b = mapIcon.getTypeId();
                 float g = (float)(b % 16 + 0) / 16.0f;
                 float h = (float)(b / 16 + 0) / 16.0f;
-                float l = (float)(b % 16 + 1) / 16.0f;
-                float m = (float)(b / 16 + 1) / 16.0f;
-                Matrix4f matrix4f2 = arg.method_22910();
-                bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-                float n = -0.001f;
-                bufferBuilder.method_22918(matrix4f2, -1.0f, 1.0f, (float)k * -0.001f).texture(g, h).color(255, 255, 255, 255).next();
-                bufferBuilder.method_22918(matrix4f2, 1.0f, 1.0f, (float)k * -0.001f).texture(l, h).color(255, 255, 255, 255).next();
-                bufferBuilder.method_22918(matrix4f2, 1.0f, -1.0f, (float)k * -0.001f).texture(l, m).color(255, 255, 255, 255).next();
-                bufferBuilder.method_22918(matrix4f2, -1.0f, -1.0f, (float)k * -0.001f).texture(g, m).color(255, 255, 255, 255).next();
-                bufferBuilder.end();
-                BufferRenderer.draw(bufferBuilder);
-                arg.method_22909();
+                float m = (float)(b % 16 + 1) / 16.0f;
+                float n = (float)(b / 16 + 1) / 16.0f;
+                Matrix4f matrix4f2 = matrixStack.peek();
+                float o = -0.001f;
+                VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23028(MAP_ICONS_TEXTURE));
+                vertexConsumer2.vertex(matrix4f2, -1.0f, 1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(g, h).light(i).next();
+                vertexConsumer2.vertex(matrix4f2, 1.0f, 1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(m, h).light(i).next();
+                vertexConsumer2.vertex(matrix4f2, 1.0f, -1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(m, n).light(i).next();
+                vertexConsumer2.vertex(matrix4f2, -1.0f, -1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(g, n).light(i).next();
+                matrixStack.pop();
                 if (mapIcon.getText() != null) {
                     TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
                     String string = mapIcon.getText().asFormattedString();
-                    float o = textRenderer.getStringWidth(string);
-                    float f2 = 25.0f / o;
+                    float p = textRenderer.getStringWidth(string);
+                    float f2 = 25.0f / p;
                     textRenderer.getClass();
-                    float p = MathHelper.clamp(f2, 0.0f, 6.0f / 9.0f);
-                    arg.method_22903();
-                    arg.method_22904(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - o * p / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);
-                    arg.method_22905(p, p, 1.0f);
-                    DrawableHelper.fill(arg.method_22910(), -1, -1, (int)o, textRenderer.fontHeight - 1, Integer.MIN_VALUE);
-                    arg.method_22904(0.0, 0.0, -0.1f);
-                    RenderSystem.enableAlphaTest();
-                    textRenderer.method_22942(string, 0.0f, 0.0f, -1, false, arg.method_22910(), arg2, false, 0, 0xF000F0);
-                    arg.method_22909();
+                    float q = MathHelper.clamp(f2, 0.0f, 6.0f / 9.0f);
+                    matrixStack.push();
+                    matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - p * q / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);
+                    matrixStack.scale(q, q, 1.0f);
+                    matrixStack.translate(0.0, 0.0, -0.1f);
+                    textRenderer.method_22942(string, 0.0f, 0.0f, -1, false, matrixStack.peek(), layeredVertexConsumerStorage, false, Integer.MIN_VALUE, i);
+                    matrixStack.pop();
                 }
-                ++k;
+                ++l;
             }
         }
 

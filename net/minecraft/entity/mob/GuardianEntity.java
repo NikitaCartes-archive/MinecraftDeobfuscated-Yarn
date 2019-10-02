@@ -8,7 +8,6 @@ import java.util.Random;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -46,6 +45,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class GuardianEntity
@@ -194,11 +194,11 @@ extends HostileEntity {
     }
 
     @Override
-    public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-        if (arg.getFluidState(blockPos).matches(FluidTags.WATER)) {
-            return 10.0f + arg.getBrightness(blockPos) - 0.5f;
+    public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+        if (worldView.getFluidState(blockPos).matches(FluidTags.WATER)) {
+            return 10.0f + worldView.getBrightness(blockPos) - 0.5f;
         }
-        return super.getPathfindingFavor(blockPos, arg);
+        return super.getPathfindingFavor(blockPos, worldView);
     }
 
     @Override
@@ -250,7 +250,7 @@ extends HostileEntity {
                 }
             }
             if (this.isInsideWaterOrBubbleColumn()) {
-                this.setBreath(300);
+                this.setAir(300);
             } else if (this.onGround) {
                 this.setVelocity(this.getVelocity().add((this.random.nextFloat() * 2.0f - 1.0f) * 0.4f, 0.5, (this.random.nextFloat() * 2.0f - 1.0f) * 0.4f));
                 this.yaw = this.random.nextFloat() * 360.0f;
@@ -283,8 +283,8 @@ extends HostileEntity {
     }
 
     @Override
-    public boolean canSpawn(class_4538 arg) {
-        return arg.intersectsEntities(this);
+    public boolean canSpawn(WorldView worldView) {
+        return worldView.intersectsEntities(this);
     }
 
     public static boolean canSpawn(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {

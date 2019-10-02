@@ -95,7 +95,7 @@ extends SpriteBillboardParticle {
         int i = super.getColorMultiplier(f);
         int j = 0;
         if (this.world.isChunkLoaded(this.blockPos)) {
-            j = this.world.getLightmapIndex(this.blockPos);
+            j = this.world.getLightmapCoordinates(this.blockPos);
         }
         return i == 0 ? j : i;
     }

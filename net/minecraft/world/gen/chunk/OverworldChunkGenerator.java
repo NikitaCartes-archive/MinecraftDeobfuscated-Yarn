@@ -89,10 +89,10 @@ extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
         float h = 0.0f;
         int k = 2;
         int l = this.getSeaLevel();
-        float m = this.biomeSource.getBiome(i, l, j).getDepth();
+        float m = this.biomeSource.getStoredBiome(i, l, j).getDepth();
         for (int n = -2; n <= 2; ++n) {
             for (int o = -2; o <= 2; ++o) {
-                Biome biome = this.biomeSource.getBiome(i + n, l, j + o);
+                Biome biome = this.biomeSource.getStoredBiome(i + n, l, j + o);
                 float p = biome.getDepth();
                 float q = biome.getScale();
                 if (this.amplified && p > 0.0f) {

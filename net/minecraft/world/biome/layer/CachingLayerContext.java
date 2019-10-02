@@ -5,8 +5,8 @@ package net.minecraft.world.biome.layer;
 
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import java.util.Random;
-import net.minecraft.class_4540;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
+import net.minecraft.world.biome.SeedMixer;
 import net.minecraft.world.biome.layer.CachingLayerSampler;
 import net.minecraft.world.biome.layer.LayerOperator;
 import net.minecraft.world.biome.layer.LayerSampleContext;
@@ -21,7 +21,7 @@ implements LayerSampleContext<CachingLayerSampler> {
     private long localSeed;
 
     public CachingLayerContext(int i, long l, long m) {
-        this.worldSeed = CachingLayerContext.method_22417(l, m);
+        this.worldSeed = CachingLayerContext.addSalt(l, m);
         this.noiseSampler = new PerlinNoiseSampler(new Random(l));
         this.cache = new Long2IntLinkedOpenHashMap(16, 0.25f);
         this.cache.defaultReturnValue(Integer.MIN_VALUE);
@@ -43,16 +43,16 @@ implements LayerSampleContext<CachingLayerSampler> {
     @Override
     public void initSeed(long l, long m) {
         long n = this.worldSeed;
-        n = class_4540.method_22372(n, l);
-        n = class_4540.method_22372(n, m);
-        n = class_4540.method_22372(n, l);
-        this.localSeed = n = class_4540.method_22372(n, m);
+        n = SeedMixer.mixSeed(n, l);
+        n = SeedMixer.mixSeed(n, m);
+        n = SeedMixer.mixSeed(n, l);
+        this.localSeed = n = SeedMixer.mixSeed(n, m);
     }
 
     @Override
     public int nextInt(int i) {
         int j = (int)Math.floorMod(this.localSeed >> 24, (long)i);
-        this.localSeed = class_4540.method_22372(this.localSeed, this.worldSeed);
+        this.localSeed = SeedMixer.mixSeed(this.localSeed, this.worldSeed);
         return j;
     }
 
@@ -61,15 +61,15 @@ implements LayerSampleContext<CachingLayerSampler> {
         return this.noiseSampler;
     }
 
-    private static long method_22417(long l, long m) {
+    private static long addSalt(long l, long m) {
         long n = m;
-        n = class_4540.method_22372(n, m);
-        n = class_4540.method_22372(n, m);
-        n = class_4540.method_22372(n, m);
+        n = SeedMixer.mixSeed(n, m);
+        n = SeedMixer.mixSeed(n, m);
+        n = SeedMixer.mixSeed(n, m);
         long o = l;
-        o = class_4540.method_22372(o, n);
-        o = class_4540.method_22372(o, n);
-        o = class_4540.method_22372(o, n);
+        o = SeedMixer.mixSeed(o, n);
+        o = SeedMixer.mixSeed(o, n);
+        o = SeedMixer.mixSeed(o, n);
         return o;
     }
 

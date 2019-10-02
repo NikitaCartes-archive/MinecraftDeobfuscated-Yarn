@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Waterloggable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.fluid.FluidState;
@@ -26,6 +25,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class ScaffoldingBlock
 extends Block
@@ -93,7 +93,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         int i = ScaffoldingBlock.calculateDistance(serverWorld, blockPos);
         BlockState blockState2 = (BlockState)((BlockState)blockState.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(serverWorld, blockPos, i));
         if (blockState2.get(DISTANCE) == 7) {
@@ -108,8 +108,8 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return ScaffoldingBlock.calculateDistance(arg, blockPos) < 7;
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return ScaffoldingBlock.calculateDistance(worldView, blockPos) < 7;
     }
 
     @Override

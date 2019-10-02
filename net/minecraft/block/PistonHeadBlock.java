@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FacingBlock;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.block.enums.PistonType;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -29,6 +28,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class PistonHeadBlock
 extends FacingBlock {
@@ -147,8 +147,8 @@ extends FacingBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        Block block = arg.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getBlock();
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        Block block = worldView.getBlockState(blockPos.offset(blockState.get(FACING).getOpposite())).getBlock();
         return block == Blocks.PISTON || block == Blocks.STICKY_PISTON || block == Blocks.MOVING_PISTON;
     }
 

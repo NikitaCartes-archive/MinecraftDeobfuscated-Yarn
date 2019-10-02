@@ -5,12 +5,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.GuardianEntityRenderer;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class ElderGuardianEntityRenderer
@@ -21,8 +21,8 @@ extends GuardianEntityRenderer {
         super(entityRenderDispatcher, 1.2f);
     }
 
-    protected void method_3910(GuardianEntity guardianEntity, class_4587 arg, float f) {
-        arg.method_22905(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
+    protected void method_3910(GuardianEntity guardianEntity, MatrixStack matrixStack, float f) {
+        matrixStack.scale(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
     }
 
     @Override

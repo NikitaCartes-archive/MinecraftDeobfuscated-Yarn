@@ -45,7 +45,7 @@ extends FacingBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (blockState.get(POWERED).booleanValue()) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, false), 2);
         } else {

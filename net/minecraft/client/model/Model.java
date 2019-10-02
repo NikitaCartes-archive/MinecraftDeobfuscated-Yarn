@@ -14,12 +14,12 @@ implements Consumer<ModelPart> {
     public int textureWidth = 64;
     public int textureHeight = 32;
 
-    public void method_22696(ModelPart modelPart) {
+    public void onPartAdded(ModelPart modelPart) {
     }
 
     @Override
     public /* synthetic */ void accept(Object object) {
-        this.method_22696((ModelPart)object);
+        this.onPartAdded((ModelPart)object);
     }
 }
 

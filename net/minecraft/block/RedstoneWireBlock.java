@@ -21,7 +21,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ObserverBlock;
 import net.minecraft.block.RepeaterBlock;
 import net.minecraft.block.enums.WireConnection;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
@@ -38,6 +37,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class RedstoneWireBlock
@@ -147,10 +147,10 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.method_10074();
-        BlockState blockState2 = arg.getBlockState(blockPos2);
-        return blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
+        BlockState blockState2 = worldView.getBlockState(blockPos2);
+        return blockState2.isSideSolidFullSquare(worldView, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.HOPPER;
     }
 
     private BlockState update(World world, BlockPos blockPos, BlockState blockState) {

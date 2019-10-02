@@ -47,9 +47,9 @@ extends CropBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
         if (random.nextInt(3) != 0) {
-            super.onScheduledTick(blockState, serverWorld, blockPos, random);
+            super.scheduledTick(blockState, serverWorld, blockPos, random);
         }
     }
 

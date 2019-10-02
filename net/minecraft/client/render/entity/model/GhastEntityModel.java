@@ -22,7 +22,7 @@ extends class_4595<T> {
         ImmutableList.Builder builder = ImmutableList.builder();
         ModelPart modelPart = new ModelPart(this, 0, 0);
         modelPart.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 16.0f, 16.0f);
-        modelPart.rotationPointY = 17.6f;
+        modelPart.pivotY = 17.6f;
         builder.add(modelPart);
         Random random = new Random(1660L);
         for (int i = 0; i < this.field_3372.length; ++i) {
@@ -31,9 +31,9 @@ extends class_4595<T> {
             float g = ((float)(i / 3) / 2.0f * 2.0f - 1.0f) * 5.0f;
             int j = random.nextInt(7) + 8;
             this.field_3372[i].addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, j, 2.0f);
-            this.field_3372[i].rotationPointX = f;
-            this.field_3372[i].rotationPointZ = g;
-            this.field_3372[i].rotationPointY = 24.6f;
+            this.field_3372[i].pivotX = f;
+            this.field_3372[i].pivotZ = g;
+            this.field_3372[i].pivotY = 24.6f;
             builder.add(this.field_3372[i]);
         }
         this.field_20929 = builder.build();
@@ -47,7 +47,7 @@ extends class_4595<T> {
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return this.field_20929;
     }
 }

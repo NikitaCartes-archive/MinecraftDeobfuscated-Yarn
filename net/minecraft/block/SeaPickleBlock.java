@@ -10,7 +10,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.Waterloggable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -28,6 +27,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class SeaPickleBlock
@@ -73,9 +73,9 @@ Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.method_10074();
-        return this.canPlantOnTop(arg.getBlockState(blockPos2), arg, blockPos2);
+        return this.canPlantOnTop(worldView.getBlockState(blockPos2), worldView, blockPos2);
     }
 
     @Override

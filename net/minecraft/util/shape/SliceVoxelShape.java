@@ -14,7 +14,7 @@ public class SliceVoxelShape
 extends VoxelShape {
     private final VoxelShape shape;
     private final Direction.Axis axis;
-    private static final DoubleList points = new FractionalDoubleList(1);
+    private static final DoubleList POINTS = new FractionalDoubleList(1);
 
     public SliceVoxelShape(VoxelShape voxelShape, Direction.Axis axis, int i) {
         super(SliceVoxelShape.createVoxelSet(voxelShape.voxels, axis, i));
@@ -29,7 +29,7 @@ extends VoxelShape {
     @Override
     protected DoubleList getPointPositions(Direction.Axis axis) {
         if (axis == this.axis) {
-            return points;
+            return POINTS;
         }
         return this.shape.getPointPositions(axis);
     }

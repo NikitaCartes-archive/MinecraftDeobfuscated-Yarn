@@ -8,7 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.RailPlacementHelper;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.Property;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class AbstractRailBlock
 extends Block {
@@ -53,8 +53,8 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-        return AbstractRailBlock.topCoversMediumSquare(arg, blockPos.method_10074());
+    public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+        return AbstractRailBlock.topCoversMediumSquare(worldView, blockPos.method_10074());
     }
 
     @Override

@@ -30,29 +30,29 @@ extends class_4595<T> {
         int i = 6;
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f);
-        this.head.setRotationPoint(0.0f, 6.0f, 0.0f);
+        this.head.setPivot(0.0f, 6.0f, 0.0f);
         this.headHat = new ModelPart(this, 32, 0);
         this.headHat.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, f + 0.5f);
-        this.headHat.setRotationPoint(0.0f, 6.0f, 0.0f);
+        this.headHat.setPivot(0.0f, 6.0f, 0.0f);
         this.body = new ModelPart(this, 16, 16);
         this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, f);
-        this.body.setRotationPoint(0.0f, 6.0f, 0.0f);
+        this.body.setPivot(0.0f, 6.0f, 0.0f);
         this.leg1 = new ModelPart(this, 0, 16);
         this.leg1.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, f);
-        this.leg1.setRotationPoint(-2.0f, 18.0f, 4.0f);
+        this.leg1.setPivot(-2.0f, 18.0f, 4.0f);
         this.leg2 = new ModelPart(this, 0, 16);
         this.leg2.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, f);
-        this.leg2.setRotationPoint(2.0f, 18.0f, 4.0f);
+        this.leg2.setPivot(2.0f, 18.0f, 4.0f);
         this.leg3 = new ModelPart(this, 0, 16);
         this.leg3.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, f);
-        this.leg3.setRotationPoint(-2.0f, 18.0f, -4.0f);
+        this.leg3.setPivot(-2.0f, 18.0f, -4.0f);
         this.leg4 = new ModelPart(this, 0, 16);
         this.leg4.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 6.0f, 4.0f, f);
-        this.leg4.setRotationPoint(2.0f, 18.0f, -4.0f);
+        this.leg4.setPivot(2.0f, 18.0f, -4.0f);
     }
 
     @Override
-    public Iterable<ModelPart> method_22960() {
+    public Iterable<ModelPart> getParts() {
         return ImmutableList.of(this.head, this.body, this.leg1, this.leg2, this.leg3, this.leg4);
     }
 

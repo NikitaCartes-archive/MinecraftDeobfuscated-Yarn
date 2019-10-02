@@ -49,7 +49,7 @@ extends Block {
     }
 
     @Override
-    public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         boolean bl2;
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         Item item = itemStack.getItem();
