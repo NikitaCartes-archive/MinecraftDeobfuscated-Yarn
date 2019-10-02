@@ -140,7 +140,7 @@ public final class Quaternion {
 	public void method_22873() {
 		float f = this.getX() * this.getX() + this.getY() * this.getY() + this.getZ() * this.getZ() + this.getW() * this.getW();
 		if (f > 1.0E-6F) {
-			float g = MathHelper.method_22858(f);
+			float g = MathHelper.fastInverseSqrt(f);
 			this.components[0] = this.components[0] * g;
 			this.components[1] = this.components[1] * g;
 			this.components[2] = this.components[2] * g;

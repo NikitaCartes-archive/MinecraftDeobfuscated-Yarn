@@ -190,7 +190,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	@Override
 	public void set(Matrix4f matrix4f) {
 		this.floatData.position(0);
-		matrix4f.putIntoBuffer(this.floatData);
+		matrix4f.writeToBuffer(this.floatData);
 		this.markStateDirty();
 	}
 

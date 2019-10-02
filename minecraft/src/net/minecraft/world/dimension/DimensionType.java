@@ -5,38 +5,44 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.io.File;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
-import net.minecraft.class_4545;
-import net.minecraft.class_4546;
-import net.minecraft.class_4547;
 import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeAccessType;
+import net.minecraft.world.biome.HorizontalVoronoiBiomeAccessType;
+import net.minecraft.world.biome.VoronoiBiomeAccessType;
 
 public class DimensionType implements DynamicSerializable {
-	public static final DimensionType OVERWORLD = register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true, class_4547.INSTANCE));
-	public static final DimensionType THE_NETHER = register(
-		"the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false, class_4546.INSTANCE)
+	public static final DimensionType OVERWORLD = register(
+		"overworld", new DimensionType(1, "", "", OverworldDimension::new, true, HorizontalVoronoiBiomeAccessType.INSTANCE)
 	);
-	public static final DimensionType THE_END = register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false, class_4546.INSTANCE));
+	public static final DimensionType THE_NETHER = register(
+		"the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false, VoronoiBiomeAccessType.INSTANCE)
+	);
+	public static final DimensionType THE_END = register(
+		"the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false, VoronoiBiomeAccessType.INSTANCE)
+	);
 	private final int id;
 	private final String suffix;
 	private final String saveDir;
 	private final BiFunction<World, DimensionType, ? extends Dimension> factory;
 	private final boolean hasSkyLight;
-	private final class_4545 field_20658;
+	private final BiomeAccessType biomeAccessType;
 
 	private static DimensionType register(String string, DimensionType dimensionType) {
 		return Registry.register(Registry.DIMENSION_TYPE, dimensionType.id, string, dimensionType);
 	}
 
-	protected DimensionType(int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl, class_4545 arg) {
+	protected DimensionType(
+		int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl, BiomeAccessType biomeAccessType
+	) {
 		this.id = i;
 		this.suffix = string;
 		this.saveDir = string2;
 		this.factory = biFunction;
 		this.hasSkyLight = bl;
-		this.field_20658 = arg;
+		this.biomeAccessType = biomeAccessType;
 	}
 
 	public static DimensionType deserialize(Dynamic<?> dynamic) {
@@ -86,8 +92,8 @@ public class DimensionType implements DynamicSerializable {
 		return this.hasSkyLight;
 	}
 
-	public class_4545 method_22415() {
-		return this.field_20658;
+	public BiomeAccessType getBiomeAccessType() {
+		return this.biomeAccessType;
 	}
 
 	@Override

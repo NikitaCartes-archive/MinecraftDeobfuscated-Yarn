@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.StrayEntityModel;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttackMob, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
@@ -19,7 +19,19 @@ public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttackMob, 
 		super(featureRendererContext);
 	}
 
-	public void method_23204(class_4587 arg, class_4597 arg2, int i, T mobEntity, float f, float g, float h, float j, float k, float l, float m) {
-		FeatureRenderer.method_23195(this.getModel(), this.model, SKIN, arg, arg2, i, mobEntity, f, g, j, k, l, m, h);
+	public void method_23204(
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i,
+		T mobEntity,
+		float f,
+		float g,
+		float h,
+		float j,
+		float k,
+		float l,
+		float m
+	) {
+		FeatureRenderer.method_23195(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h);
 	}
 }

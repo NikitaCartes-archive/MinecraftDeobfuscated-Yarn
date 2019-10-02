@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -20,6 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class AnimalEntity extends PassiveEntity {
 	private int loveTicks;
@@ -76,8 +76,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return arg.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : arg.getBrightness(blockPos) - 0.5F;
+	public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+		return worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.GRASS_BLOCK ? 10.0F : worldView.getBrightness(blockPos) - 0.5F;
 	}
 
 	@Override

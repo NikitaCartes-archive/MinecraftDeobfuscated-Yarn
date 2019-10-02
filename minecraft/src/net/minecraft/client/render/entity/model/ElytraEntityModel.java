@@ -53,8 +53,8 @@ public class ElytraEntityModel<T extends LivingEntity> extends class_4592<T> {
 			o = 0.08726646F;
 		}
 
-		this.field_3365.rotationPointX = 5.0F;
-		this.field_3365.rotationPointY = n;
+		this.field_3365.pivotX = 5.0F;
+		this.field_3365.pivotY = n;
 		if (livingEntity instanceof AbstractClientPlayerEntity) {
 			AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
 			abstractClientPlayerEntity.elytraPitch = (float)((double)abstractClientPlayerEntity.elytraPitch + (double)(l - abstractClientPlayerEntity.elytraPitch) * 0.1);
@@ -69,9 +69,9 @@ public class ElytraEntityModel<T extends LivingEntity> extends class_4592<T> {
 			this.field_3365.yaw = o;
 		}
 
-		this.field_3364.rotationPointX = -this.field_3365.rotationPointX;
+		this.field_3364.pivotX = -this.field_3365.pivotX;
 		this.field_3364.yaw = -this.field_3365.yaw;
-		this.field_3364.rotationPointY = this.field_3365.rotationPointY;
+		this.field_3364.pivotY = this.field_3365.pivotY;
 		this.field_3364.pitch = this.field_3365.pitch;
 		this.field_3364.roll = -this.field_3365.roll;
 	}

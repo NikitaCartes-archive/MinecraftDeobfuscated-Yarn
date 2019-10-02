@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.model.GhastEntityModel;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEntityModel<GhastEntity>> {
@@ -20,10 +20,10 @@ public class GhastEntityRenderer extends MobEntityRenderer<GhastEntity, GhastEnt
 		return ghastEntity.isShooting() ? ANGRY_SKIN : SKIN;
 	}
 
-	protected void method_3973(GhastEntity ghastEntity, class_4587 arg, float f) {
+	protected void method_3973(GhastEntity ghastEntity, MatrixStack matrixStack, float f) {
 		float g = 1.0F;
 		float h = 4.5F;
 		float i = 4.5F;
-		arg.method_22905(4.5F, 4.5F, 4.5F);
+		matrixStack.scale(4.5F, 4.5F, 4.5F);
 	}
 }

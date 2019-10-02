@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
@@ -14,6 +13,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class LanternBlock extends Block {
 	public static final BooleanProperty HANGING = Properties.HANGING;
@@ -55,9 +55,9 @@ public class LanternBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		Direction direction = attachedDirection(blockState).getOpposite();
-		return Block.sideCoversSmallSquare(arg, blockPos.offset(direction), direction.getOpposite());
+		return Block.sideCoversSmallSquare(worldView, blockPos.offset(direction), direction.getOpposite());
 	}
 
 	protected static Direction attachedDirection(BlockState blockState) {

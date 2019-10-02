@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BeeHiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
@@ -30,6 +31,29 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 
 	public BeeHiveBlockEntity() {
 		super(BlockEntityType.BEEHIVE);
+	}
+
+	@Override
+	public void markDirty() {
+		if (this.method_23280()) {
+			this.angerBees(null, BeeHiveBlockEntity.BeeState.EMERGENCY);
+		}
+
+		super.markDirty();
+	}
+
+	public boolean method_23280() {
+		if (this.world == null) {
+			return false;
+		} else {
+			for (BlockPos blockPos : BlockPos.iterate(this.pos.add(-1, -1, -1), this.pos.add(1, 1, 1))) {
+				if (this.world.getBlockState(blockPos).getBlock() instanceof FireBlock) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	public boolean hasNoBees() {
@@ -106,7 +130,9 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 
 	private boolean releaseBee(CompoundTag compoundTag, @Nullable List<Entity> list, BeeHiveBlockEntity.BeeState beeState) {
 		BlockPos blockPos = this.getPos();
-		if (this.world.isDaylight() && !this.world.hasRain(blockPos)) {
+		if ((!this.world.isDaylight() || this.world.hasRain(blockPos)) && beeState != BeeHiveBlockEntity.BeeState.EMERGENCY) {
+			return false;
+		} else {
 			compoundTag.remove("Passengers");
 			compoundTag.remove("Leash");
 			compoundTag.removeUuid("UUID");
@@ -187,8 +213,6 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 					return false;
 				}
 			}
-		} else {
-			return false;
 		}
 	}
 
@@ -284,6 +308,7 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 
 	public static enum BeeState {
 		HONEY_DELIVERED,
-		BEE_RELEASED;
+		BEE_RELEASED,
+		EMERGENCY;
 	}
 }

@@ -20,11 +20,11 @@ public class LeashEntityModel<T extends Entity> extends class_4595<T> {
 		this.textureHeight = l;
 		this.field_3431 = new ModelPart(this, i, j);
 		this.field_3431.addCuboid(-3.0F, -6.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F);
-		this.field_3431.setRotationPoint(0.0F, 0.0F, 0.0F);
+		this.field_3431.setPivot(0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.field_3431);
 	}
 

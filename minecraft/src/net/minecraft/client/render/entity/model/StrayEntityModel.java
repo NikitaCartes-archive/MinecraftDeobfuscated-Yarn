@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
@@ -11,6 +10,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends BipedEntityModel<T> {
@@ -23,18 +23,18 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 		if (!bl) {
 			this.rightArm = new ModelPart(this, 40, 16);
 			this.rightArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
-			this.rightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+			this.rightArm.setPivot(-5.0F, 2.0F, 0.0F);
 			this.leftArm = new ModelPart(this, 40, 16);
 			this.leftArm.mirror = true;
 			this.leftArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
-			this.leftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+			this.leftArm.setPivot(5.0F, 2.0F, 0.0F);
 			this.rightLeg = new ModelPart(this, 0, 16);
 			this.rightLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
-			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
+			this.rightLeg.setPivot(-2.0F, 12.0F, 0.0F);
 			this.leftLeg = new ModelPart(this, 0, 16);
 			this.leftLeg.mirror = true;
 			this.leftLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);
-			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
+			this.leftLeg.setPivot(2.0F, 12.0F, 0.0F);
 		}
 	}
 
@@ -75,11 +75,11 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm, class_4587 arg) {
+	public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
 		float g = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		ModelPart modelPart = this.getArm(arm);
-		modelPart.rotationPointX += g;
-		modelPart.method_22703(arg, f);
-		modelPart.rotationPointX -= g;
+		modelPart.pivotX += g;
+		modelPart.rotate(matrixStack, f);
+		modelPart.pivotX -= g;
 	}
 }

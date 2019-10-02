@@ -61,7 +61,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {

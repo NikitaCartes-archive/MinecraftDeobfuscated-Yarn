@@ -5,7 +5,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
@@ -38,6 +37,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.explosion.Explosion;
 
@@ -74,7 +74,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
@@ -222,8 +222,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> entityType, class_4538 arg, BlockPos blockPos, int i) {
-		Direction direction = arg.getBlockState(blockPos).get(FACING);
+	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> entityType, WorldView worldView, BlockPos blockPos, int i) {
+		Direction direction = worldView.getBlockState(blockPos).get(FACING);
 		int j = blockPos.getX();
 		int k = blockPos.getY();
 		int l = blockPos.getZ();
@@ -237,7 +237,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			for (int r = n; r <= p; r++) {
 				for (int s = o; s <= q; s++) {
 					BlockPos blockPos2 = new BlockPos(r, k, s);
-					Optional<Vec3d> optional = canWakeUpAt(entityType, arg, blockPos2);
+					Optional<Vec3d> optional = canWakeUpAt(entityType, worldView, blockPos2);
 					if (optional.isPresent()) {
 						if (i <= 0) {
 							return optional;
@@ -252,18 +252,18 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return Optional.empty();
 	}
 
-	protected static Optional<Vec3d> canWakeUpAt(EntityType<?> entityType, class_4538 arg, BlockPos blockPos) {
-		VoxelShape voxelShape = arg.getBlockState(blockPos).getCollisionShape(arg, blockPos);
+	protected static Optional<Vec3d> canWakeUpAt(EntityType<?> entityType, WorldView worldView, BlockPos blockPos) {
+		VoxelShape voxelShape = worldView.getBlockState(blockPos).getCollisionShape(worldView, blockPos);
 		if (voxelShape.getMaximum(Direction.Axis.Y) > 0.4375) {
 			return Optional.empty();
 		} else {
 			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 
-			while (mutable.getY() >= 0 && blockPos.getY() - mutable.getY() <= 2 && arg.getBlockState(mutable).getCollisionShape(arg, mutable).isEmpty()) {
+			while (mutable.getY() >= 0 && blockPos.getY() - mutable.getY() <= 2 && worldView.getBlockState(mutable).getCollisionShape(worldView, mutable).isEmpty()) {
 				mutable.setOffset(Direction.DOWN);
 			}
 
-			VoxelShape voxelShape2 = arg.getBlockState(mutable).getCollisionShape(arg, mutable);
+			VoxelShape voxelShape2 = worldView.getBlockState(mutable).getCollisionShape(worldView, mutable);
 			if (voxelShape2.isEmpty()) {
 				return Optional.empty();
 			} else {
@@ -273,7 +273,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				} else {
 					float f = entityType.getWidth() / 2.0F;
 					Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
-					return arg.doesNotCollide(
+					return worldView.doesNotCollide(
 							new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)entityType.getHeight(), vec3d.z + (double)f)
 						)
 						? Optional.of(vec3d)

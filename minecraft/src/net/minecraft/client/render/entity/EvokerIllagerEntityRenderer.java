@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EvilVillagerEntityModel;
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class EvokerIllagerEntityRenderer<T extends SpellcastingIllagerEntity> extends IllagerEntityRenderer<T> {
@@ -18,9 +18,21 @@ public class EvokerIllagerEntityRenderer<T extends SpellcastingIllagerEntity> ex
 		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
 		this.addFeature(
 			new HeldItemFeatureRenderer<T, EvilVillagerEntityModel<T>>(this) {
-				public void method_23170(class_4587 arg, class_4597 arg2, int i, T spellcastingIllagerEntity, float f, float g, float h, float j, float k, float l, float m) {
+				public void method_23170(
+					MatrixStack matrixStack,
+					LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+					int i,
+					T spellcastingIllagerEntity,
+					float f,
+					float g,
+					float h,
+					float j,
+					float k,
+					float l,
+					float m
+				) {
 					if (spellcastingIllagerEntity.isSpellcasting()) {
-						super.method_17162(arg, arg2, i, spellcastingIllagerEntity, f, g, h, j, k, l, m);
+						super.method_17162(matrixStack, layeredVertexConsumerStorage, i, spellcastingIllagerEntity, f, g, h, j, k, l, m);
 					}
 				}
 			}

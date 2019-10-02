@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.class_4538;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.client.network.ClientDummyContainerProvider;
 import net.minecraft.container.BlockContext;
@@ -20,6 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape field_16379 = Block.createCuboidShape(2.0, 0.0, 6.0, 4.0, 7.0, 10.0);
@@ -141,12 +141,12 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		return true;
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
 		return true;
 	}

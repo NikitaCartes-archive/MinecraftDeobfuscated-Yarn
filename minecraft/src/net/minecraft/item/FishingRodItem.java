@@ -34,7 +34,7 @@ public class FishingRodItem extends Item {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (playerEntity.fishHook != null) {
 			if (!world.isClient) {
-				int i = playerEntity.fishHook.method_6957(itemStack);
+				int i = playerEntity.fishHook.use(itemStack);
 				itemStack.damage(i, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			}
 

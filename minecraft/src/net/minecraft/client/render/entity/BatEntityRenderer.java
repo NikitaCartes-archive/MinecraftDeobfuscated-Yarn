@@ -2,11 +2,11 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.model.BatEntityModel;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityModel> {
@@ -20,17 +20,17 @@ public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityMod
 		return SKIN;
 	}
 
-	protected void method_3884(BatEntity batEntity, class_4587 arg, float f) {
-		arg.method_22905(0.35F, 0.35F, 0.35F);
+	protected void method_3884(BatEntity batEntity, MatrixStack matrixStack, float f) {
+		matrixStack.scale(0.35F, 0.35F, 0.35F);
 	}
 
-	protected void method_3882(BatEntity batEntity, class_4587 arg, float f, float g, float h) {
+	protected void method_3882(BatEntity batEntity, MatrixStack matrixStack, float f, float g, float h) {
 		if (batEntity.isRoosting()) {
-			arg.method_22904(0.0, -0.1F, 0.0);
+			matrixStack.translate(0.0, -0.1F, 0.0);
 		} else {
-			arg.method_22904(0.0, (double)(MathHelper.cos(f * 0.3F) * 0.1F), 0.0);
+			matrixStack.translate(0.0, (double)(MathHelper.cos(f * 0.3F) * 0.1F), 0.0);
 		}
 
-		super.setupTransforms(batEntity, arg, f, g, h);
+		super.setupTransforms(batEntity, matrixStack, f, g, h);
 	}
 }

@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4538;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -107,6 +106,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class PlayerEntity extends LivingEntity {
 	public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6F, 1.8F);
@@ -561,7 +561,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.updateShoulderEntity(this.getShoulderEntityLeft());
 		this.updateShoulderEntity(this.getShoulderEntityRight());
-		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isInsideWater() || this.hasVehicle()) || this.abilities.flying || this.isSleeping()) {
+		if (!this.world.isClient && (this.fallDistance > 0.5F || this.isInsideWater()) || this.abilities.flying || this.isSleeping()) {
 			this.dropShoulderEntities();
 		}
 	}
@@ -1373,18 +1373,18 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.wakeUp(true, true);
 	}
 
-	public static Optional<Vec3d> method_7288(class_4538 arg, BlockPos blockPos, boolean bl) {
-		Block block = arg.getBlockState(blockPos).getBlock();
+	public static Optional<Vec3d> method_7288(WorldView worldView, BlockPos blockPos, boolean bl) {
+		Block block = worldView.getBlockState(blockPos).getBlock();
 		if (!(block instanceof BedBlock)) {
 			if (!bl) {
 				return Optional.empty();
 			} else {
 				boolean bl2 = block.canMobSpawnInside();
-				boolean bl3 = arg.getBlockState(blockPos.up()).getBlock().canMobSpawnInside();
+				boolean bl3 = worldView.getBlockState(blockPos.up()).getBlock().canMobSpawnInside();
 				return bl2 && bl3 ? Optional.of(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.1, (double)blockPos.getZ() + 0.5)) : Optional.empty();
 			}
 		} else {
-			return BedBlock.findWakeUpPosition(EntityType.PLAYER, arg, blockPos, 0);
+			return BedBlock.findWakeUpPosition(EntityType.PLAYER, worldView, blockPos, 0);
 		}
 	}
 

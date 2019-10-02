@@ -26,7 +26,7 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(HAS_RECORD)) {
 			this.removeRecord(world, blockPos);
 			blockState = blockState.with(HAS_RECORD, Boolean.valueOf(false));

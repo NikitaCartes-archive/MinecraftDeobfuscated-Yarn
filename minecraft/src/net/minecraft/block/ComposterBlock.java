@@ -193,7 +193,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		int i = (Integer)blockState.get(LEVEL);
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
@@ -248,13 +248,13 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if ((Integer)blockState.get(LEVEL) == 7) {
 			serverWorld.setBlockState(blockPos, blockState.cycle(LEVEL), 3);
 			serverWorld.playSound(null, blockPos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 
-		super.onScheduledTick(blockState, serverWorld, blockPos, random);
+		super.scheduledTick(blockState, serverWorld, blockPos, random);
 	}
 
 	@Override

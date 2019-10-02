@@ -2,8 +2,8 @@ package net.minecraft.world.biome.layer;
 
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import java.util.Random;
-import net.minecraft.class_4540;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
+import net.minecraft.world.biome.SeedMixer;
 
 public class CachingLayerContext implements LayerSampleContext<CachingLayerSampler> {
 	private final Long2IntLinkedOpenHashMap cache;
@@ -13,7 +13,7 @@ public class CachingLayerContext implements LayerSampleContext<CachingLayerSampl
 	private long localSeed;
 
 	public CachingLayerContext(int i, long l, long m) {
-		this.worldSeed = method_22417(l, m);
+		this.worldSeed = addSalt(l, m);
 		this.noiseSampler = new PerlinNoiseSampler(new Random(l));
 		this.cache = new Long2IntLinkedOpenHashMap(16, 0.25F);
 		this.cache.defaultReturnValue(Integer.MIN_VALUE);
@@ -35,17 +35,17 @@ public class CachingLayerContext implements LayerSampleContext<CachingLayerSampl
 	@Override
 	public void initSeed(long l, long m) {
 		long n = this.worldSeed;
-		n = class_4540.method_22372(n, l);
-		n = class_4540.method_22372(n, m);
-		n = class_4540.method_22372(n, l);
-		n = class_4540.method_22372(n, m);
+		n = SeedMixer.mixSeed(n, l);
+		n = SeedMixer.mixSeed(n, m);
+		n = SeedMixer.mixSeed(n, l);
+		n = SeedMixer.mixSeed(n, m);
 		this.localSeed = n;
 	}
 
 	@Override
 	public int nextInt(int i) {
 		int j = (int)Math.floorMod(this.localSeed >> 24, (long)i);
-		this.localSeed = class_4540.method_22372(this.localSeed, this.worldSeed);
+		this.localSeed = SeedMixer.mixSeed(this.localSeed, this.worldSeed);
 		return j;
 	}
 
@@ -54,12 +54,12 @@ public class CachingLayerContext implements LayerSampleContext<CachingLayerSampl
 		return this.noiseSampler;
 	}
 
-	private static long method_22417(long l, long m) {
-		long n = class_4540.method_22372(m, m);
-		n = class_4540.method_22372(n, m);
-		n = class_4540.method_22372(n, m);
-		long o = class_4540.method_22372(l, n);
-		o = class_4540.method_22372(o, n);
-		return class_4540.method_22372(o, n);
+	private static long addSalt(long l, long m) {
+		long n = SeedMixer.mixSeed(m, m);
+		n = SeedMixer.mixSeed(n, m);
+		n = SeedMixer.mixSeed(n, m);
+		long o = SeedMixer.mixSeed(l, n);
+		o = SeedMixer.mixSeed(o, n);
+		return SeedMixer.mixSeed(o, n);
 	}
 }

@@ -4,13 +4,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -22,6 +21,7 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,8 +46,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.model;
 	}
 
-	public void method_4054(T livingEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
-		arg.method_22903();
+	public void method_4054(
+		T livingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
+	) {
+		matrixStack.push();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, h);
 		this.model.isRiding = livingEntity.hasVehicle();
 		this.model.isChild = livingEntity.isBaby();
@@ -80,16 +82,16 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
 				float n = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
-				arg.method_22904((double)((float)(-direction.getOffsetX()) * n), 0.0, (double)((float)(-direction.getOffsetZ()) * n));
+				matrixStack.translate((double)((float)(-direction.getOffsetX()) * n), 0.0, (double)((float)(-direction.getOffsetZ()) * n));
 			}
 		}
 
 		float lx = this.getAge(livingEntity, h);
-		this.setupTransforms(livingEntity, arg, lx, i, h);
-		arg.method_22905(-1.0F, -1.0F, 1.0F);
-		this.scale(livingEntity, arg, h);
+		this.setupTransforms(livingEntity, matrixStack, lx, i, h);
+		matrixStack.scale(-1.0F, -1.0F, 1.0F);
+		this.scale(livingEntity, matrixStack, h);
 		float n = 0.0625F;
-		arg.method_22904(0.0, -1.501F, 0.0);
+		matrixStack.translate(0.0, -1.501F, 0.0);
 		float o = 0.0F;
 		float p = 0.0F;
 		if (!livingEntity.hasVehicle() && livingEntity.isAlive()) {
@@ -110,26 +112,26 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		int q = livingEntity.getLightmapCoordinates();
 		if (bl || bl2) {
 			this.model.setAngles(livingEntity, p, o, lx, k, m, 0.0625F);
-			class_4588 lv = arg2.getBuffer(
-				bl2 ? BlockRenderLayer.method_23019(this.getTexture(livingEntity), true, true, false) : BlockRenderLayer.method_23017(this.getTexture(livingEntity))
+			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(
+				bl2 ? RenderLayer.method_23019(this.getTexture(livingEntity), true, true, false) : RenderLayer.method_23017(this.getTexture(livingEntity))
 			);
-			method_23184(livingEntity, lv, this.method_23185(livingEntity, h));
-			this.model.method_22957(arg, lv, q);
-			lv.method_22923();
+			method_23184(livingEntity, vertexConsumer, this.method_23185(livingEntity, h));
+			this.model.method_22957(matrixStack, vertexConsumer, q);
+			vertexConsumer.clearDefaultOverlay();
 		}
 
 		if (!livingEntity.isSpectator()) {
 			for (FeatureRenderer<T, M> featureRenderer : this.features) {
-				featureRenderer.render(arg, arg2, q, livingEntity, p, o, h, lx, k, m, 0.0625F);
+				featureRenderer.render(matrixStack, layeredVertexConsumerStorage, q, livingEntity, p, o, h, lx, k, m, 0.0625F);
 			}
 		}
 
-		arg.method_22909();
-		super.render(livingEntity, d, e, f, g, h, arg, arg2);
+		matrixStack.pop();
+		super.render(livingEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}
 
-	public static void method_23184(LivingEntity livingEntity, class_4588 arg, float f) {
-		arg.method_22922(class_4608.method_23210(f), class_4608.method_23212(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
+	public static void method_23184(LivingEntity livingEntity, VertexConsumer vertexConsumer, float f) {
+		vertexConsumer.defaultOverlay(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
 	}
 
 	protected boolean method_4056(T livingEntity, boolean bl) {
@@ -151,10 +153,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected void setupTransforms(T livingEntity, class_4587 arg, float f, float g, float h) {
+	protected void setupTransforms(T livingEntity, MatrixStack matrixStack, float f, float g, float h) {
 		EntityPose entityPose = livingEntity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
-			arg.method_22907(Vector3f.field_20705.method_23214(180.0F - g, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g, true));
 		}
 
 		if (livingEntity.deathTime > 0) {
@@ -164,21 +166,21 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				i = 1.0F;
 			}
 
-			arg.method_22907(Vector3f.field_20707.method_23214(i * this.getLyingAngle(livingEntity), true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(i * this.getLyingAngle(livingEntity), true));
 		} else if (livingEntity.isUsingRiptide()) {
-			arg.method_22907(Vector3f.field_20703.method_23214(-90.0F - livingEntity.pitch, true));
-			arg.method_22907(Vector3f.field_20705.method_23214(((float)livingEntity.age + h) * -75.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F - livingEntity.pitch, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)livingEntity.age + h) * -75.0F, true));
 		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
-			arg.method_22907(Vector3f.field_20705.method_23214(direction != null ? method_18656(direction) : g, true));
-			arg.method_22907(Vector3f.field_20707.method_23214(this.getLyingAngle(livingEntity), true));
-			arg.method_22907(Vector3f.field_20705.method_23214(270.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(direction != null ? method_18656(direction) : g, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(livingEntity), true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F, true));
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
 			String string = Formatting.strip(livingEntity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
 				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
-				arg.method_22904(0.0, (double)(livingEntity.getHeight() + 0.1F), 0.0);
-				arg.method_22907(Vector3f.field_20707.method_23214(180.0F, true));
+				matrixStack.translate(0.0, (double)(livingEntity.getHeight() + 0.1F), 0.0);
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F, true));
 			}
 		}
 	}
@@ -199,7 +201,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 0.0F;
 	}
 
-	protected void scale(T livingEntity, class_4587 arg, float f) {
+	protected void scale(T livingEntity, MatrixStack matrixStack, float f) {
 	}
 
 	protected boolean method_4055(T livingEntity) {

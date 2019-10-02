@@ -2,12 +2,11 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.Vector3f;
@@ -15,6 +14,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
@@ -23,7 +23,17 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 	}
 
 	public void method_4177(
-		class_4587 arg, class_4597 arg2, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, float m
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i,
+		AbstractClientPlayerEntity abstractClientPlayerEntity,
+		float f,
+		float g,
+		float h,
+		float j,
+		float k,
+		float l,
+		float m
 	) {
 		if (abstractClientPlayerEntity.canRenderCapeTexture()
 			&& !abstractClientPlayerEntity.isInvisible()
@@ -31,8 +41,8 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 			&& abstractClientPlayerEntity.getCapeTexture() != null) {
 			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() != Items.ELYTRA) {
-				arg.method_22903();
-				arg.method_22904(0.0, 0.0, 0.125);
+				matrixStack.push();
+				matrixStack.translate(0.0, 0.0, 0.125);
 				double d = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7524, abstractClientPlayerEntity.field_7500)
 					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.x);
 				double e = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7502, abstractClientPlayerEntity.field_7521)
@@ -58,14 +68,14 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 					r += 25.0F;
 				}
 
-				arg.method_22907(Vector3f.field_20703.method_23214(6.0F + s / 2.0F + r, true));
-				arg.method_22907(Vector3f.field_20707.method_23214(t / 2.0F, true));
-				arg.method_22907(Vector3f.field_20705.method_23214(180.0F - t / 2.0F, true));
-				class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(abstractClientPlayerEntity.getCapeTexture()));
-				class_4608.method_23211(lv);
-				this.getModel().renderCape(arg, lv, 0.0625F, i);
-				lv.method_22923();
-				arg.method_22909();
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F + s / 2.0F + r, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t / 2.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - t / 2.0F, true));
+				VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(abstractClientPlayerEntity.getCapeTexture()));
+				OverlayTexture.clearDefaultOverlay(vertexConsumer);
+				this.getModel().renderCape(matrixStack, vertexConsumer, 0.0625F, i);
+				vertexConsumer.clearDefaultOverlay();
+				matrixStack.pop();
 			}
 		}
 	}

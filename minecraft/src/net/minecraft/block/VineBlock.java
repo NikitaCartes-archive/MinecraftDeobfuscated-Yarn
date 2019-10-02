@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -18,6 +17,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class VineBlock extends Block {
 	public static final BooleanProperty UP = ConnectedPlantBlock.UP;
@@ -76,8 +76,8 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return this.hasAdjacentBlocks(this.getPlacementShape(blockState, arg, blockPos));
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return this.hasAdjacentBlocks(this.getPlacementShape(blockState, worldView, blockPos));
 	}
 
 	private boolean hasAdjacentBlocks(BlockState blockState) {
@@ -158,7 +158,7 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		BlockState blockState2 = this.getPlacementShape(blockState, serverWorld, blockPos);
 		if (blockState2 != blockState) {
 			if (this.hasAdjacentBlocks(blockState2)) {

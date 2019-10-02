@@ -32,7 +32,7 @@ public class BlazeEntityModel<T extends Entity> extends class_4595<T> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return this.field_20921;
 	}
 
@@ -41,27 +41,27 @@ public class BlazeEntityModel<T extends Entity> extends class_4595<T> {
 		float l = h * (float) Math.PI * -0.1F;
 
 		for (int m = 0; m < 4; m++) {
-			this.rods[m].rotationPointY = -2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
-			this.rods[m].rotationPointX = MathHelper.cos(l) * 9.0F;
-			this.rods[m].rotationPointZ = MathHelper.sin(l) * 9.0F;
+			this.rods[m].pivotY = -2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
+			this.rods[m].pivotX = MathHelper.cos(l) * 9.0F;
+			this.rods[m].pivotZ = MathHelper.sin(l) * 9.0F;
 			l++;
 		}
 
 		l = (float) (Math.PI / 4) + h * (float) Math.PI * 0.03F;
 
 		for (int m = 4; m < 8; m++) {
-			this.rods[m].rotationPointY = 2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
-			this.rods[m].rotationPointX = MathHelper.cos(l) * 7.0F;
-			this.rods[m].rotationPointZ = MathHelper.sin(l) * 7.0F;
+			this.rods[m].pivotY = 2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
+			this.rods[m].pivotX = MathHelper.cos(l) * 7.0F;
+			this.rods[m].pivotZ = MathHelper.sin(l) * 7.0F;
 			l++;
 		}
 
 		l = 0.47123894F + h * (float) Math.PI * -0.05F;
 
 		for (int m = 8; m < 12; m++) {
-			this.rods[m].rotationPointY = 11.0F + MathHelper.cos(((float)m * 1.5F + h) * 0.5F);
-			this.rods[m].rotationPointX = MathHelper.cos(l) * 5.0F;
-			this.rods[m].rotationPointZ = MathHelper.sin(l) * 5.0F;
+			this.rods[m].pivotY = 11.0F + MathHelper.cos(((float)m * 1.5F + h) * 0.5F);
+			this.rods[m].pivotX = MathHelper.cos(l) * 5.0F;
+			this.rods[m].pivotZ = MathHelper.sin(l) * 5.0F;
 			l++;
 		}
 

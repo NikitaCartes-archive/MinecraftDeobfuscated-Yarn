@@ -24,14 +24,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.resource.ClientResourcePackContainer;
+import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Arm;
@@ -712,32 +712,32 @@ public class GameOptions {
 		return this.useNativeTransport;
 	}
 
-	public void addResourcePackContainersToManager(ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager) {
-		resourcePackContainerManager.callCreators();
-		Set<ClientResourcePackContainer> set = Sets.<ClientResourcePackContainer>newLinkedHashSet();
+	public void addResourcePackContainersToManager(ResourcePackManager<ClientResourcePackProfile> resourcePackManager) {
+		resourcePackManager.scanPacks();
+		Set<ClientResourcePackProfile> set = Sets.<ClientResourcePackProfile>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();
 
 		while (iterator.hasNext()) {
 			String string = (String)iterator.next();
-			ClientResourcePackContainer clientResourcePackContainer = resourcePackContainerManager.getContainer(string);
-			if (clientResourcePackContainer == null && !string.startsWith("file/")) {
-				clientResourcePackContainer = resourcePackContainerManager.getContainer("file/" + string);
+			ClientResourcePackProfile clientResourcePackProfile = resourcePackManager.getProfile(string);
+			if (clientResourcePackProfile == null && !string.startsWith("file/")) {
+				clientResourcePackProfile = resourcePackManager.getProfile("file/" + string);
 			}
 
-			if (clientResourcePackContainer == null) {
+			if (clientResourcePackProfile == null) {
 				LOGGER.warn("Removed resource pack {} from options because it doesn't seem to exist anymore", string);
 				iterator.remove();
-			} else if (!clientResourcePackContainer.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
+			} else if (!clientResourcePackProfile.getCompatibility().isCompatible() && !this.incompatibleResourcePacks.contains(string)) {
 				LOGGER.warn("Removed resource pack {} from options because it is no longer compatible", string);
 				iterator.remove();
-			} else if (clientResourcePackContainer.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
+			} else if (clientResourcePackProfile.getCompatibility().isCompatible() && this.incompatibleResourcePacks.contains(string)) {
 				LOGGER.info("Removed resource pack {} from incompatibility list because it's now compatible", string);
 				this.incompatibleResourcePacks.remove(string);
 			} else {
-				set.add(clientResourcePackContainer);
+				set.add(clientResourcePackProfile);
 			}
 		}
 
-		resourcePackContainerManager.setEnabled(set);
+		resourcePackManager.setEnabledProfiles(set);
 	}
 }

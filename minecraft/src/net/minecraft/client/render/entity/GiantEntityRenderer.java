@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.GiantEntityModel;
 import net.minecraft.entity.mob.GiantEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEntityModel<GiantEntity>> {
@@ -22,8 +22,8 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
 	}
 
-	protected void method_3980(GiantEntity giantEntity, class_4587 arg, float f) {
-		arg.method_22905(this.scale, this.scale, this.scale);
+	protected void method_3980(GiantEntity giantEntity, MatrixStack matrixStack, float f) {
+		matrixStack.scale(this.scale, this.scale, this.scale);
 	}
 
 	public Identifier method_3981(GiantEntity giantEntity) {

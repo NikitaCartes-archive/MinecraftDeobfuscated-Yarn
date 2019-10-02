@@ -4,8 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.container.CartographyTableContainer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -16,6 +15,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class CartographyTableScreen extends AbstractContainerScreen<CartographyTableContainer> {
@@ -108,8 +108,8 @@ public class CartographyTableScreen extends AbstractContainerScreen<CartographyT
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)i, (float)j, 1.0F);
 			RenderSystem.scalef(f, f, 1.0F);
-			class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
-			this.minecraft.gameRenderer.getMapRenderer().draw(new class_4587(), lv, mapState, true);
+			LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+			this.minecraft.gameRenderer.getMapRenderer().draw(new MatrixStack(), lv, mapState, true, 15728880);
 			lv.method_22993();
 			RenderSystem.popMatrix();
 		}

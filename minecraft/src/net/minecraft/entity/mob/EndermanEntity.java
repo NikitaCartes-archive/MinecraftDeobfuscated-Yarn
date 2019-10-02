@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -52,6 +51,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class EndermanEntity extends HostileEntity {
 	private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
@@ -439,8 +439,8 @@ public class EndermanEntity extends HostileEntity {
 			}
 		}
 
-		private boolean method_7033(class_4538 arg, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
-			return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(arg, blockPos2) && blockState.canPlaceAt(arg, blockPos);
+		private boolean method_7033(WorldView worldView, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
+			return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(worldView, blockPos2) && blockState.canPlaceAt(worldView, blockPos);
 		}
 	}
 

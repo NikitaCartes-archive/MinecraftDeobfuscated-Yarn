@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.FoxHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
@@ -22,10 +22,10 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 		this.addFeature(new FoxHeldItemFeatureRenderer(this));
 	}
 
-	protected void method_18334(FoxEntity foxEntity, class_4587 arg, float f, float g, float h) {
-		super.setupTransforms(foxEntity, arg, f, g, h);
+	protected void method_18334(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {
+		super.setupTransforms(foxEntity, matrixStack, f, g, h);
 		if (foxEntity.isChasing() || foxEntity.isWalking()) {
-			arg.method_22907(Vector3f.field_20703.method_23214(-MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch), true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch), true));
 		}
 	}
 

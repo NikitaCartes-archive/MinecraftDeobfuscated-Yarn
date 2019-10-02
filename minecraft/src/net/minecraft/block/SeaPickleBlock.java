@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -20,6 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterloggable {
 	public static final IntProperty PICKLES = Properties.PICKLES;
@@ -62,9 +62,9 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.method_10074();
-		return this.canPlantOnTop(arg.getBlockState(blockPos2), arg, blockPos2);
+		return this.canPlantOnTop(worldView.getBlockState(blockPos2), worldView, blockPos2);
 	}
 
 	@Override

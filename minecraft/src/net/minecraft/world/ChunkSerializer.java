@@ -12,7 +12,6 @@ import java.util.Objects;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4548;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
@@ -33,6 +32,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
@@ -63,7 +63,7 @@ public class ChunkSerializer {
 			LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", chunkPos, chunkPos, chunkPos2);
 		}
 
-		class_4548 lv = new class_4548(chunkPos, biomeSource, compoundTag2.contains("Biomes", 11) ? compoundTag2.getIntArray("Biomes") : null);
+		BiomeArray biomeArray = new BiomeArray(chunkPos, biomeSource, compoundTag2.contains("Biomes", 11) ? compoundTag2.getIntArray("Biomes") : null);
 		UpgradeData upgradeData = compoundTag2.contains("UpgradeData", 10) ? new UpgradeData(compoundTag2.getCompound("UpgradeData")) : UpgradeData.NO_UPGRADE_DATA;
 		ChunkTickScheduler<Block> chunkTickScheduler = new ChunkTickScheduler<>(
 			block -> block == null || block.getDefaultState().isAir(), chunkPos, compoundTag2.getList("ToBeTicked", 9)
@@ -126,11 +126,19 @@ public class ChunkSerializer {
 			}
 
 			chunk = new WorldChunk(
-				serverWorld.getWorld(), chunkPos, lv, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> writeEntities(compoundTag2, worldChunk)
+				serverWorld.getWorld(),
+				chunkPos,
+				biomeArray,
+				upgradeData,
+				tickScheduler,
+				tickScheduler2,
+				l,
+				chunkSections,
+				worldChunk -> writeEntities(compoundTag2, worldChunk)
 			);
 		} else {
 			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
-			protoChunk.method_22405(lv);
+			protoChunk.method_22405(biomeArray);
 			chunk = protoChunk;
 			protoChunk.setInhabitedTime(l);
 			protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));
@@ -269,9 +277,9 @@ public class ChunkSerializer {
 			compoundTag2.putBoolean("isLightOn", true);
 		}
 
-		class_4548 lv = chunk.getBiomeArray();
-		if (lv != null) {
-			compoundTag2.putIntArray("Biomes", lv.method_22401());
+		BiomeArray biomeArray = chunk.getBiomeArray();
+		if (biomeArray != null) {
+			compoundTag2.putIntArray("Biomes", biomeArray.toIntArray());
 		}
 
 		ListTag listTag2 = new ListTag();

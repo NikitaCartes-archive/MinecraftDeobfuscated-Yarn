@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4538;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
@@ -126,6 +125,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -311,7 +311,7 @@ public class EntityType<T extends Entity> {
 		"sheep", EntityType.Builder.create(SheepEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.3F)
 	);
 	public static final EntityType<ShulkerEntity> SHULKER = register(
-		"shulker", EntityType.Builder.create(ShulkerEntity::new, EntityCategory.MONSTER).makeFireImmune().method_20815().setDimensions(1.0F, 1.0F)
+		"shulker", EntityType.Builder.create(ShulkerEntity::new, EntityCategory.MONSTER).makeFireImmune().spawnableFarFromPlayer().setDimensions(1.0F, 1.0F)
 	);
 	public static final EntityType<ShulkerBulletEntity> SHULKER_BULLET = register(
 		"shulker_bullet", EntityType.Builder.<ShulkerBulletEntity>create(ShulkerBulletEntity::new, EntityCategory.MISC).setDimensions(0.3125F, 0.3125F)
@@ -387,7 +387,7 @@ public class EntityType<T extends Entity> {
 		"vindicator", EntityType.Builder.create(VindicatorEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<PillagerEntity> PILLAGER = register(
-		"pillager", EntityType.Builder.create(PillagerEntity::new, EntityCategory.MONSTER).method_20815().setDimensions(0.6F, 1.95F)
+		"pillager", EntityType.Builder.create(PillagerEntity::new, EntityCategory.MONSTER).spawnableFarFromPlayer().setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = register(
 		"wandering_trader", EntityType.Builder.create(WanderingTraderEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 1.95F)
@@ -550,13 +550,13 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
-	protected static double getOriginY(class_4538 arg, BlockPos blockPos, boolean bl, Box box) {
+	protected static double getOriginY(WorldView worldView, BlockPos blockPos, boolean bl, Box box) {
 		Box box2 = new Box(blockPos);
 		if (bl) {
 			box2 = box2.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = arg.getCollisions(null, box2, Collections.emptySet());
+		Stream<VoxelShape> stream = worldView.getCollisions(null, box2, Collections.emptySet());
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, box, stream, bl ? -2.0 : -1.0);
 	}
 
@@ -589,7 +589,7 @@ public class EntityType<T extends Entity> {
 		return this.fireImmune;
 	}
 
-	public boolean method_20814() {
+	public boolean isSpawnableFarFromPlayer() {
 		return this.field_19423;
 	}
 
@@ -820,7 +820,7 @@ public class EntityType<T extends Entity> {
 			return this;
 		}
 
-		public EntityType.Builder<T> method_20815() {
+		public EntityType.Builder<T> spawnableFarFromPlayer() {
 			this.field_19424 = true;
 			return this;
 		}

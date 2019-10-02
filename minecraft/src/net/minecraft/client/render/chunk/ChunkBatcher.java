@@ -19,9 +19,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -29,6 +27,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlBuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.BlockModelRenderer;
@@ -43,6 +42,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
@@ -68,7 +68,8 @@ public class ChunkBatcher {
 		this.field_20831 = world;
 		this.field_20832 = worldRenderer;
 		int i = Math.max(
-			1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / (BlockRenderLayer.method_22720().stream().mapToInt(BlockRenderLayer::method_22722).sum() * 4) - 1
+			1,
+			(int)((double)Runtime.getRuntime().maxMemory() * 0.3) / (RenderLayer.getBlockLayers().stream().mapToInt(RenderLayer::getExpectedBufferSize).sum() * 4) - 1
 		);
 		int j = Runtime.getRuntime().availableProcessors();
 		int k = bl ? j : Math.min(j, 4);
@@ -112,7 +113,7 @@ public class ChunkBatcher {
 				CompletableFuture.runAsync(() -> {
 				}, this.field_20830).thenCompose(void_ -> lv.method_22783(blockLayeredBufferBuilder)).whenComplete((unit, throwable) -> {
 					this.field_20829.send(() -> {
-						blockLayeredBufferBuilder.method_22705();
+						blockLayeredBufferBuilder.clear();
 						this.field_20827.add(blockLayeredBufferBuilder);
 						this.field_20993 = this.field_20827.size();
 						this.method_22763();
@@ -202,8 +203,8 @@ public class ChunkBatcher {
 				return false;
 			}
 		};
-		private final Set<BlockRenderLayer> nonEmpty = Sets.<BlockRenderLayer>newHashSet();
-		private final Set<BlockRenderLayer> initialized = Sets.<BlockRenderLayer>newHashSet();
+		private final Set<RenderLayer> nonEmpty = Sets.<RenderLayer>newHashSet();
+		private final Set<RenderLayer> initialized = Sets.<RenderLayer>newHashSet();
 		private boolean empty = true;
 		private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 		private ChunkOcclusionGraph occlusionGraph = new ChunkOcclusionGraph();
@@ -214,8 +215,8 @@ public class ChunkBatcher {
 			return this.empty;
 		}
 
-		public boolean isEmpty(BlockRenderLayer blockRenderLayer) {
-			return !this.nonEmpty.contains(blockRenderLayer);
+		public boolean isEmpty(RenderLayer renderLayer) {
+			return !this.nonEmpty.contains(renderLayer);
 		}
 
 		public List<BlockEntity> getBlockEntities() {
@@ -235,9 +236,9 @@ public class ChunkBatcher {
 		@Nullable
 		private ChunkBatcher.ChunkRenderer.class_4579 task;
 		private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
-		private final Map<BlockRenderLayer, GlBuffer> buffers = (Map<BlockRenderLayer, GlBuffer>)BlockRenderLayer.method_22720()
+		private final Map<RenderLayer, GlBuffer> buffers = (Map<RenderLayer, GlBuffer>)RenderLayer.getBlockLayers()
 			.stream()
-			.collect(Collectors.toMap(blockRenderLayer -> blockRenderLayer, blockRenderLayer -> new GlBuffer(VertexFormats.POSITION_COLOR_UV_NORMAL)));
+			.collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new GlBuffer(VertexFormats.POSITION_COLOR_UV_NORMAL)));
 		public Box boundingBox;
 		private int field_4471 = -1;
 		private boolean rebuildScheduled = true;
@@ -272,8 +273,8 @@ public class ChunkBatcher {
 			}
 		}
 
-		public GlBuffer getGlBuffer(BlockRenderLayer blockRenderLayer) {
-			return (GlBuffer)this.buffers.get(blockRenderLayer);
+		public GlBuffer getGlBuffer(RenderLayer renderLayer) {
+			return (GlBuffer)this.buffers.get(renderLayer);
 		}
 
 		public void setOrigin(int i, int j, int k) {
@@ -342,13 +343,13 @@ public class ChunkBatcher {
 			return this.neighborPositions[direction.ordinal()];
 		}
 
-		public boolean method_22773(BlockRenderLayer blockRenderLayer, ChunkBatcher chunkBatcher) {
+		public boolean method_22773(RenderLayer renderLayer, ChunkBatcher chunkBatcher) {
 			ChunkBatcher.ChunkRenderData chunkRenderData = this.getData();
 			if (this.task != null) {
 				this.task.method_22782();
 			}
 
-			if (!chunkRenderData.initialized.contains(blockRenderLayer)) {
+			if (!chunkRenderData.initialized.contains(renderLayer)) {
 				return false;
 			} else {
 				this.task = new ChunkBatcher.ChunkRenderer.class_4579(this.getSquaredCameraDistance(), chunkRenderData);
@@ -450,11 +451,7 @@ public class ChunkBatcher {
 					} else {
 						List<CompletableFuture<Void>> list = Lists.<CompletableFuture<Void>>newArrayList();
 						chunkRenderData.initialized
-							.forEach(
-								blockRenderLayer -> list.add(
-										ChunkBatcher.this.upload(blockLayeredBufferBuilder.get(blockRenderLayer), ChunkRenderer.this.getGlBuffer(blockRenderLayer))
-									)
-							);
+							.forEach(renderLayer -> list.add(ChunkBatcher.this.upload(blockLayeredBufferBuilder.get(renderLayer), ChunkRenderer.this.getGlBuffer(renderLayer))));
 						CompletableFuture<Unit> completableFuture = SystemUtil.thenCombine(list).thenApply(listx -> Unit.INSTANCE);
 						return completableFuture.whenComplete((unit, throwable) -> {
 							if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
@@ -479,7 +476,7 @@ public class ChunkBatcher {
 				Set<BlockEntity> set = Sets.<BlockEntity>newHashSet();
 				ChunkRendererRegion chunkRendererRegion = this.field_20838;
 				this.field_20838 = null;
-				class_4587 lv = new class_4587();
+				MatrixStack matrixStack = new MatrixStack();
 				if (chunkRendererRegion != null) {
 					BlockModelRenderer.enableBrightnessCache();
 					Random random = new Random();
@@ -501,34 +498,34 @@ public class ChunkBatcher {
 
 						FluidState fluidState = chunkRendererRegion.getFluidState(blockPos3);
 						if (!fluidState.isEmpty()) {
-							BlockRenderLayer blockRenderLayer = BlockRenderLayer.method_22716(fluidState);
-							BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(blockRenderLayer);
-							if (chunkRenderData.initialized.add(blockRenderLayer)) {
+							RenderLayer renderLayer = RenderLayer.method_22716(fluidState);
+							BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(renderLayer);
+							if (chunkRenderData.initialized.add(renderLayer)) {
 								ChunkRenderer.this.beginBufferBuilding(bufferBuilder);
 							}
 
 							if (blockRenderManager.tesselateFluid(blockPos3, chunkRendererRegion, bufferBuilder, fluidState)) {
 								chunkRenderData.empty = false;
-								chunkRenderData.nonEmpty.add(blockRenderLayer);
+								chunkRenderData.nonEmpty.add(renderLayer);
 							}
 						}
 
 						if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-							BlockRenderLayer blockRenderLayerx = BlockRenderLayer.method_22715(blockState);
-							BufferBuilder bufferBuilderx = blockLayeredBufferBuilder.get(blockRenderLayerx);
-							if (chunkRenderData.initialized.add(blockRenderLayerx)) {
+							RenderLayer renderLayerx = RenderLayer.method_22715(blockState);
+							BufferBuilder bufferBuilderx = blockLayeredBufferBuilder.get(renderLayerx);
+							if (chunkRenderData.initialized.add(renderLayerx)) {
 								ChunkRenderer.this.beginBufferBuilding(bufferBuilderx);
 							}
 
-							if (blockRenderManager.tesselateBlock(blockState, blockPos3, chunkRendererRegion, lv, bufferBuilderx, true, random)) {
+							if (blockRenderManager.tesselateBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilderx, true, random)) {
 								chunkRenderData.empty = false;
-								chunkRenderData.nonEmpty.add(blockRenderLayerx);
+								chunkRenderData.nonEmpty.add(renderLayerx);
 							}
 						}
 					}
 
-					if (chunkRenderData.nonEmpty.contains(BlockRenderLayer.TRANSLUCENT)) {
-						BufferBuilder bufferBuilder2 = blockLayeredBufferBuilder.get(BlockRenderLayer.TRANSLUCENT);
+					if (chunkRenderData.nonEmpty.contains(RenderLayer.TRANSLUCENT)) {
+						BufferBuilder bufferBuilder2 = blockLayeredBufferBuilder.get(RenderLayer.TRANSLUCENT);
 						bufferBuilder2.sortQuads(f - (float)blockPos.getX(), g - (float)blockPos.getY(), h - (float)blockPos.getZ());
 						chunkRenderData.bufferState = bufferBuilder2.toBufferState();
 					}
@@ -584,8 +581,8 @@ public class ChunkBatcher {
 					float g = (float)vec3d.y;
 					float h = (float)vec3d.z;
 					BufferBuilder.State state = this.field_20841.bufferState;
-					if (state != null && this.field_20841.nonEmpty.contains(BlockRenderLayer.TRANSLUCENT)) {
-						BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(BlockRenderLayer.TRANSLUCENT);
+					if (state != null && this.field_20841.nonEmpty.contains(RenderLayer.TRANSLUCENT)) {
+						BufferBuilder bufferBuilder = blockLayeredBufferBuilder.get(RenderLayer.TRANSLUCENT);
 						ChunkRenderer.this.beginBufferBuilding(bufferBuilder);
 						bufferBuilder.restoreState(state);
 						bufferBuilder.sortQuads(
@@ -597,7 +594,7 @@ public class ChunkBatcher {
 							return CompletableFuture.completedFuture(Unit.INSTANCE);
 						} else {
 							CompletableFuture<Unit> completableFuture = ChunkBatcher.this.upload(
-									blockLayeredBufferBuilder.get(BlockRenderLayer.TRANSLUCENT), ChunkRenderer.this.getGlBuffer(BlockRenderLayer.TRANSLUCENT)
+									blockLayeredBufferBuilder.get(RenderLayer.TRANSLUCENT), ChunkRenderer.this.getGlBuffer(RenderLayer.TRANSLUCENT)
 								)
 								.thenApply(void_ -> Unit.INSTANCE);
 							return completableFuture.whenComplete((unit, throwable) -> {

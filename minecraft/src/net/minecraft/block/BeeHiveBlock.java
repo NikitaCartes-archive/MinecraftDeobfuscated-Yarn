@@ -11,8 +11,13 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
+import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -33,7 +38,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.loot.context.LootContextParameters;
 
 public class BeeHiveBlock extends BlockWithEntity {
 	public static final Direction[] field_20418 = new Direction[]{Direction.WEST, Direction.EAST, Direction.SOUTH};
@@ -62,7 +70,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
 		if (!world.isClient) {
 			if (blockEntity instanceof BeeHiveBlockEntity && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-				((BeeHiveBlockEntity)blockEntity).angerBees(playerEntity, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
+				((BeeHiveBlockEntity)blockEntity).angerBees(playerEntity, BeeHiveBlockEntity.BeeState.EMERGENCY);
 				world.updateHorizontalAdjacent(blockPos, this);
 			}
 
@@ -87,7 +95,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		int i = (Integer)blockState.get(HONEY_LEVEL);
 		boolean bl = false;
@@ -114,7 +122,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 			this.emptyHoney(world, blockState, blockPos, playerEntity);
 			return true;
 		} else {
-			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 
@@ -222,5 +230,38 @@ public class BeeHiveBlock extends BlockWithEntity {
 		}
 
 		super.onBreak(world, blockPos, blockState, playerEntity);
+	}
+
+	@Override
+	public List<ItemStack> getDroppedStacks(BlockState blockState, LootContext.Builder builder) {
+		Entity entity = builder.getNullable(LootContextParameters.THIS_ENTITY);
+		if (entity instanceof TntEntity
+			|| entity instanceof CreeperEntity
+			|| entity instanceof WitherSkullEntity
+			|| entity instanceof WitherEntity
+			|| entity instanceof TntMinecartEntity) {
+			BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
+			if (blockEntity instanceof BeeHiveBlockEntity) {
+				BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
+				beeHiveBlockEntity.angerBees(null, BeeHiveBlockEntity.BeeState.EMERGENCY);
+			}
+		}
+
+		return super.getDroppedStacks(blockState, builder);
+	}
+
+	@Override
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if (iWorld.getBlockState(blockPos2).getBlock() instanceof FireBlock) {
+			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+			if (blockEntity instanceof BeeHiveBlockEntity) {
+				BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
+				beeHiveBlockEntity.angerBees(null, BeeHiveBlockEntity.BeeState.EMERGENCY);
+			}
+		}
+
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 }

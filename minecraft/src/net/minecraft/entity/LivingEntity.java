@@ -281,7 +281,7 @@ public abstract class LivingEntity extends Entity {
 			if (this.isInsideWall()) {
 				this.damage(DamageSource.IN_WALL, 1.0F);
 			} else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox())) {
-				double d = this.world.getWorldBorder().contains(this) + this.world.getWorldBorder().getBuffer();
+				double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getBuffer();
 				if (d < 0.0) {
 					double e = this.world.getWorldBorder().getDamagePerBlock();
 					if (e > 0.0) {
@@ -300,9 +300,9 @@ public abstract class LivingEntity extends Entity {
 			if (this.isInFluid(FluidTags.WATER)
 				&& this.world.getBlockState(new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z)).getBlock() != Blocks.BUBBLE_COLUMN) {
 				if (!this.canBreatheInWater() && !StatusEffectUtil.hasWaterBreathing(this) && !bl2) {
-					this.setBreath(this.getNextBreathInWater(this.getBreath()));
-					if (this.getBreath() == -20) {
-						this.setBreath(0);
+					this.setAir(this.getNextAirUnderwater(this.getAir()));
+					if (this.getAir() == -20) {
+						this.setAir(0);
 						Vec3d vec3d = this.getVelocity();
 
 						for (int i = 0; i < 8; i++) {
@@ -319,8 +319,8 @@ public abstract class LivingEntity extends Entity {
 				if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && !this.getVehicle().canBeRiddenInWater()) {
 					this.stopRiding();
 				}
-			} else if (this.getBreath() < this.getMaxBreath()) {
-				this.setBreath(this.getNextBreathInAir(this.getBreath()));
+			} else if (this.getAir() < this.getMaxAir()) {
+				this.setAir(this.getNextAirOnLand(this.getAir()));
 			}
 
 			if (!this.world.isClient) {
@@ -433,13 +433,13 @@ public abstract class LivingEntity extends Entity {
 		return !this.isBaby();
 	}
 
-	protected int getNextBreathInWater(int i) {
+	protected int getNextAirUnderwater(int i) {
 		int j = EnchantmentHelper.getRespiration(this);
 		return j > 0 && this.random.nextInt(j + 1) > 0 ? i : i - 1;
 	}
 
-	protected int getNextBreathInAir(int i) {
-		return Math.min(i + 4, this.getMaxBreath());
+	protected int getNextAirOnLand(int i) {
+		return Math.min(i + 4, this.getMaxAir());
 	}
 
 	protected int getCurrentExperience(PlayerEntity playerEntity) {
@@ -2443,10 +2443,10 @@ public abstract class LivingEntity extends Entity {
 		this.absorptionAmount = f;
 	}
 
-	public void method_6000() {
+	public void enterCombat() {
 	}
 
-	public void method_6044() {
+	public void endCombat() {
 	}
 
 	protected void method_6008() {

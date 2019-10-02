@@ -3,12 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ParrotEntityModel extends class_4595<ParrotEntity> {
@@ -29,45 +29,45 @@ public class ParrotEntityModel extends class_4595<ParrotEntity> {
 		this.textureHeight = 32;
 		this.field_3458 = new ModelPart(this, 2, 8);
 		this.field_3458.addCuboid(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F);
-		this.field_3458.setRotationPoint(0.0F, 16.5F, -3.0F);
+		this.field_3458.setPivot(0.0F, 16.5F, -3.0F);
 		this.field_3460 = new ModelPart(this, 22, 1);
 		this.field_3460.addCuboid(-1.5F, -1.0F, -1.0F, 3.0F, 4.0F, 1.0F);
-		this.field_3460.setRotationPoint(0.0F, 21.07F, 1.16F);
+		this.field_3460.setPivot(0.0F, 21.07F, 1.16F);
 		this.field_3459 = new ModelPart(this, 19, 8);
 		this.field_3459.addCuboid(-0.5F, 0.0F, -1.5F, 1.0F, 5.0F, 3.0F);
-		this.field_3459.setRotationPoint(1.5F, 16.94F, -2.76F);
+		this.field_3459.setPivot(1.5F, 16.94F, -2.76F);
 		this.field_3455 = new ModelPart(this, 19, 8);
 		this.field_3455.addCuboid(-0.5F, 0.0F, -1.5F, 1.0F, 5.0F, 3.0F);
-		this.field_3455.setRotationPoint(-1.5F, 16.94F, -2.76F);
+		this.field_3455.setPivot(-1.5F, 16.94F, -2.76F);
 		this.field_3452 = new ModelPart(this, 2, 2);
 		this.field_3452.addCuboid(-1.0F, -1.5F, -1.0F, 2.0F, 3.0F, 2.0F);
-		this.field_3452.setRotationPoint(0.0F, 15.69F, -2.76F);
+		this.field_3452.setPivot(0.0F, 15.69F, -2.76F);
 		this.field_3461 = new ModelPart(this, 10, 0);
 		this.field_3461.addCuboid(-1.0F, -0.5F, -2.0F, 2.0F, 1.0F, 4.0F);
-		this.field_3461.setRotationPoint(0.0F, -2.0F, -1.0F);
+		this.field_3461.setPivot(0.0F, -2.0F, -1.0F);
 		this.field_3452.addChild(this.field_3461);
 		this.field_3451 = new ModelPart(this, 11, 7);
 		this.field_3451.addCuboid(-0.5F, -1.0F, -0.5F, 1.0F, 2.0F, 1.0F);
-		this.field_3451.setRotationPoint(0.0F, -0.5F, -1.5F);
+		this.field_3451.setPivot(0.0F, -0.5F, -1.5F);
 		this.field_3452.addChild(this.field_3451);
 		this.field_3453 = new ModelPart(this, 16, 7);
 		this.field_3453.addCuboid(-0.5F, 0.0F, -0.5F, 1.0F, 2.0F, 1.0F);
-		this.field_3453.setRotationPoint(0.0F, -1.75F, -2.45F);
+		this.field_3453.setPivot(0.0F, -1.75F, -2.45F);
 		this.field_3452.addChild(this.field_3453);
 		this.field_3456 = new ModelPart(this, 2, 18);
 		this.field_3456.addCuboid(0.0F, -4.0F, -2.0F, 0.0F, 5.0F, 4.0F);
-		this.field_3456.setRotationPoint(0.0F, -2.15F, 0.15F);
+		this.field_3456.setPivot(0.0F, -2.15F, 0.15F);
 		this.field_3452.addChild(this.field_3456);
 		this.field_3450 = new ModelPart(this, 14, 18);
 		this.field_3450.addCuboid(-0.5F, 0.0F, -0.5F, 1.0F, 2.0F, 1.0F);
-		this.field_3450.setRotationPoint(1.0F, 22.0F, -1.05F);
+		this.field_3450.setPivot(1.0F, 22.0F, -1.05F);
 		this.field_3457 = new ModelPart(this, 14, 18);
 		this.field_3457.addCuboid(-0.5F, 0.0F, -0.5F, 1.0F, 2.0F, 1.0F);
-		this.field_3457.setRotationPoint(-1.0F, 22.0F, -1.05F);
+		this.field_3457.setPivot(-1.0F, 22.0F, -1.05F);
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.field_3458, this.field_3459, this.field_3455, this.field_3460, this.field_3452, this.field_3450, this.field_3457);
 	}
 
@@ -79,42 +79,42 @@ public class ParrotEntityModel extends class_4595<ParrotEntity> {
 		this.method_17110(method_17107(parrotEntity));
 	}
 
-	public void method_17106(class_4587 arg, class_4588 arg2, int i, float f, float g, float h, float j, float k, int l) {
+	public void method_17106(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h, float j, float k, int l) {
 		this.method_17110(ParrotEntityModel.Pose.ON_SHOULDER);
 		this.method_17111(ParrotEntityModel.Pose.ON_SHOULDER, l, f, g, 0.0F, h, j);
-		this.method_22960().forEach(modelPart -> modelPart.method_22698(arg, arg2, k, i, null));
+		this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, k, i, null));
 	}
 
 	private void method_17111(ParrotEntityModel.Pose pose, int i, float f, float g, float h, float j, float k) {
 		this.field_3452.pitch = k * (float) (Math.PI / 180.0);
 		this.field_3452.yaw = j * (float) (Math.PI / 180.0);
 		this.field_3452.roll = 0.0F;
-		this.field_3452.rotationPointX = 0.0F;
-		this.field_3458.rotationPointX = 0.0F;
-		this.field_3460.rotationPointX = 0.0F;
-		this.field_3455.rotationPointX = -1.5F;
-		this.field_3459.rotationPointX = 1.5F;
+		this.field_3452.pivotX = 0.0F;
+		this.field_3458.pivotX = 0.0F;
+		this.field_3460.pivotX = 0.0F;
+		this.field_3455.pivotX = -1.5F;
+		this.field_3459.pivotX = 1.5F;
 		switch (pose) {
 			case SITTING:
 				break;
 			case PARTY:
 				float l = MathHelper.cos((float)i);
 				float m = MathHelper.sin((float)i);
-				this.field_3452.rotationPointX = l;
-				this.field_3452.rotationPointY = 15.69F + m;
+				this.field_3452.pivotX = l;
+				this.field_3452.pivotY = 15.69F + m;
 				this.field_3452.pitch = 0.0F;
 				this.field_3452.yaw = 0.0F;
 				this.field_3452.roll = MathHelper.sin((float)i) * 0.4F;
-				this.field_3458.rotationPointX = l;
-				this.field_3458.rotationPointY = 16.5F + m;
+				this.field_3458.pivotX = l;
+				this.field_3458.pivotY = 16.5F + m;
 				this.field_3459.roll = -0.0873F - h;
-				this.field_3459.rotationPointX = 1.5F + l;
-				this.field_3459.rotationPointY = 16.94F + m;
+				this.field_3459.pivotX = 1.5F + l;
+				this.field_3459.pivotY = 16.94F + m;
 				this.field_3455.roll = 0.0873F + h;
-				this.field_3455.rotationPointX = -1.5F + l;
-				this.field_3455.rotationPointY = 16.94F + m;
-				this.field_3460.rotationPointX = l;
-				this.field_3460.rotationPointY = 21.07F + m;
+				this.field_3455.pivotX = -1.5F + l;
+				this.field_3455.pivotY = 16.94F + m;
+				this.field_3460.pivotX = l;
+				this.field_3460.pivotY = 21.07F + m;
 				break;
 			case STANDING:
 				this.field_3450.pitch = this.field_3450.pitch + MathHelper.cos(f * 0.6662F) * 1.4F * g;
@@ -123,16 +123,16 @@ public class ParrotEntityModel extends class_4595<ParrotEntity> {
 			case ON_SHOULDER:
 			default:
 				float n = h * 0.3F;
-				this.field_3452.rotationPointY = 15.69F + n;
+				this.field_3452.pivotY = 15.69F + n;
 				this.field_3460.pitch = 1.015F + MathHelper.cos(f * 0.6662F) * 0.3F * g;
-				this.field_3460.rotationPointY = 21.07F + n;
-				this.field_3458.rotationPointY = 16.5F + n;
+				this.field_3460.pivotY = 21.07F + n;
+				this.field_3458.pivotY = 16.5F + n;
 				this.field_3459.roll = -0.0873F - h;
-				this.field_3459.rotationPointY = 16.94F + n;
+				this.field_3459.pivotY = 16.94F + n;
 				this.field_3455.roll = 0.0873F + h;
-				this.field_3455.rotationPointY = 16.94F + n;
-				this.field_3450.rotationPointY = 22.0F + n;
-				this.field_3457.rotationPointY = 22.0F + n;
+				this.field_3455.pivotY = 16.94F + n;
+				this.field_3450.pivotY = 22.0F + n;
+				this.field_3457.pivotY = 22.0F + n;
 		}
 	}
 
@@ -145,23 +145,23 @@ public class ParrotEntityModel extends class_4595<ParrotEntity> {
 		this.field_3455.yaw = (float) -Math.PI;
 		this.field_3450.pitch = -0.0299F;
 		this.field_3457.pitch = -0.0299F;
-		this.field_3450.rotationPointY = 22.0F;
-		this.field_3457.rotationPointY = 22.0F;
+		this.field_3450.pivotY = 22.0F;
+		this.field_3457.pivotY = 22.0F;
 		this.field_3450.roll = 0.0F;
 		this.field_3457.roll = 0.0F;
 		switch (pose) {
 			case SITTING:
 				float f = 1.9F;
-				this.field_3452.rotationPointY = 17.59F;
+				this.field_3452.pivotY = 17.59F;
 				this.field_3460.pitch = 1.5388988F;
-				this.field_3460.rotationPointY = 22.97F;
-				this.field_3458.rotationPointY = 18.4F;
+				this.field_3460.pivotY = 22.97F;
+				this.field_3458.pivotY = 18.4F;
 				this.field_3459.roll = -0.0873F;
-				this.field_3459.rotationPointY = 18.84F;
+				this.field_3459.pivotY = 18.84F;
 				this.field_3455.roll = 0.0873F;
-				this.field_3455.rotationPointY = 18.84F;
-				this.field_3450.rotationPointY++;
-				this.field_3457.rotationPointY++;
+				this.field_3455.pivotY = 18.84F;
+				this.field_3450.pivotY++;
+				this.field_3457.pivotY++;
 				this.field_3450.pitch++;
 				this.field_3457.pitch++;
 				break;

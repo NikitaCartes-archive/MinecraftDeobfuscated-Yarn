@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -37,6 +36,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class IronGolemEntity extends GolemEntity {
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -83,7 +83,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected int getNextBreathInWater(int i) {
+	protected int getNextAirUnderwater(int i) {
 		return i;
 	}
 
@@ -235,22 +235,23 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean canSpawn(class_4538 arg) {
+	public boolean canSpawn(WorldView worldView) {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.method_10074();
-		BlockState blockState = arg.getBlockState(blockPos2);
-		if (!blockState.hasSolidTopSurface(arg, blockPos2, this)) {
+		BlockState blockState = worldView.getBlockState(blockPos2);
+		if (!blockState.hasSolidTopSurface(worldView, blockPos2, this)) {
 			return false;
 		} else {
 			for (int i = 1; i < 3; i++) {
 				BlockPos blockPos3 = blockPos.up(i);
-				BlockState blockState2 = arg.getBlockState(blockPos3);
-				if (!SpawnHelper.isClearForSpawn(arg, blockPos3, blockState2, blockState2.getFluidState())) {
+				BlockState blockState2 = worldView.getBlockState(blockPos3);
+				if (!SpawnHelper.isClearForSpawn(worldView, blockPos3, blockState2, blockState2.getFluidState())) {
 					return false;
 				}
 			}
 
-			return SpawnHelper.isClearForSpawn(arg, blockPos, arg.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && arg.intersectsEntities(this);
+			return SpawnHelper.isClearForSpawn(worldView, blockPos, worldView.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
+				&& worldView.intersectsEntities(this);
 		}
 	}
 }

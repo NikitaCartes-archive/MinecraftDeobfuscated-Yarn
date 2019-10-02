@@ -30,7 +30,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends class_4592<T> {
 		this.textureHeight = 64;
 		this.field_3305 = new ModelPart(this, 0, 32);
 		this.field_3305.addCuboid(-5.0F, -8.0F, -17.0F, 10.0F, 10.0F, 22.0F, 0.05F);
-		this.field_3305.setRotationPoint(0.0F, 11.0F, 5.0F);
+		this.field_3305.setPivot(0.0F, 11.0F, 5.0F);
 		this.field_3307 = new ModelPart(this, 0, 35);
 		this.field_3307.addCuboid(-2.05F, -6.0F, -2.0F, 4.0F, 12.0F, 7.0F);
 		this.field_3307.pitch = (float) (Math.PI / 6);
@@ -47,35 +47,35 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends class_4592<T> {
 		this.field_3306 = new ModelPart(this, 48, 21);
 		this.field_3306.mirror = true;
 		this.field_3306.addCuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f);
-		this.field_3306.setRotationPoint(4.0F, 14.0F, 7.0F);
+		this.field_3306.setPivot(4.0F, 14.0F, 7.0F);
 		this.field_3303 = new ModelPart(this, 48, 21);
 		this.field_3303.addCuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f);
-		this.field_3303.setRotationPoint(-4.0F, 14.0F, 7.0F);
+		this.field_3303.setPivot(-4.0F, 14.0F, 7.0F);
 		this.field_3302 = new ModelPart(this, 48, 21);
 		this.field_3302.mirror = true;
 		this.field_3302.addCuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f);
-		this.field_3302.setRotationPoint(4.0F, 6.0F, -12.0F);
+		this.field_3302.setPivot(4.0F, 6.0F, -12.0F);
 		this.field_3308 = new ModelPart(this, 48, 21);
 		this.field_3308.addCuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f);
-		this.field_3308.setRotationPoint(-4.0F, 6.0F, -12.0F);
+		this.field_3308.setPivot(-4.0F, 6.0F, -12.0F);
 		float g = 5.5F;
 		this.field_20930 = new ModelPart(this, 48, 21);
 		this.field_20930.mirror = true;
-		this.field_20930.method_22971(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
-		this.field_20930.setRotationPoint(4.0F, 14.0F, 7.0F);
+		this.field_20930.addCuboid(-3.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20930.setPivot(4.0F, 14.0F, 7.0F);
 		this.field_20931 = new ModelPart(this, 48, 21);
-		this.field_20931.method_22971(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
-		this.field_20931.setRotationPoint(-4.0F, 14.0F, 7.0F);
+		this.field_20931.addCuboid(-1.0F, -1.01F, -1.0F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20931.setPivot(-4.0F, 14.0F, 7.0F);
 		this.field_20932 = new ModelPart(this, 48, 21);
 		this.field_20932.mirror = true;
-		this.field_20932.method_22971(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
-		this.field_20932.setRotationPoint(4.0F, 6.0F, -12.0F);
+		this.field_20932.addCuboid(-3.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20932.setPivot(4.0F, 6.0F, -12.0F);
 		this.field_20933 = new ModelPart(this, 48, 21);
-		this.field_20933.method_22971(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
-		this.field_20933.setRotationPoint(-4.0F, 6.0F, -12.0F);
+		this.field_20933.addCuboid(-1.0F, -1.01F, -1.9F, 4.0F, 11.0F, 4.0F, f, f + 5.5F, f);
+		this.field_20933.setPivot(-4.0F, 6.0F, -12.0F);
 		this.field_3300 = new ModelPart(this, 42, 36);
 		this.field_3300.addCuboid(-1.5F, 0.0F, 0.0F, 3.0F, 14.0F, 4.0F, f);
-		this.field_3300.setRotationPoint(0.0F, -5.0F, 2.0F);
+		this.field_3300.setPivot(0.0F, -5.0F, 2.0F);
 		this.field_3300.pitch = (float) (Math.PI / 6);
 		this.field_3305.addChild(this.field_3300);
 		ModelPart modelPart4 = new ModelPart(this, 26, 0);
@@ -126,7 +126,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends class_4592<T> {
 			modelPart.visible = bl2 && bl;
 		}
 
-		this.field_3305.rotationPointY = 11.0F;
+		this.field_3305.pivotY = 11.0F;
 	}
 
 	@Override
@@ -166,8 +166,8 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends class_4592<T> {
 		float q = horseBaseEntity.getEatingAnimationProgress(h);
 		boolean bl = horseBaseEntity.field_6957 != 0;
 		float r = (float)horseBaseEntity.age + h;
-		this.field_3307.rotationPointY = 4.0F;
-		this.field_3307.rotationPointZ = -12.0F;
+		this.field_3307.pivotY = 4.0F;
+		this.field_3307.pivotZ = -12.0F;
 		this.field_3305.pitch = 0.0F;
 		this.field_3307.pitch = (float) (Math.PI / 6) + m;
 		this.field_3307.yaw = l * (float) (Math.PI / 180.0);
@@ -177,15 +177,15 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends class_4592<T> {
 		float v = (1.0F - Math.max(o, n)) * ((float) (Math.PI / 6) + m + q * MathHelper.sin(r) * 0.05F);
 		this.field_3307.pitch = o * ((float) (Math.PI / 12) + m) + n * (2.1816616F + MathHelper.sin(r) * 0.05F) + v;
 		this.field_3307.yaw = o * l * (float) (Math.PI / 180.0) + (1.0F - Math.max(o, n)) * this.field_3307.yaw;
-		this.field_3307.rotationPointY = o * -4.0F + n * 11.0F + (1.0F - Math.max(o, n)) * this.field_3307.rotationPointY;
-		this.field_3307.rotationPointZ = o * -4.0F + n * -12.0F + (1.0F - Math.max(o, n)) * this.field_3307.rotationPointZ;
+		this.field_3307.pivotY = o * -4.0F + n * 11.0F + (1.0F - Math.max(o, n)) * this.field_3307.pivotY;
+		this.field_3307.pivotZ = o * -4.0F + n * -12.0F + (1.0F - Math.max(o, n)) * this.field_3307.pivotZ;
 		this.field_3305.pitch = o * (float) (-Math.PI / 4) + p * this.field_3305.pitch;
 		float w = (float) (Math.PI / 12) * o;
 		float x = MathHelper.cos(r * 0.6F + (float) Math.PI);
-		this.field_3302.rotationPointY = 2.0F * o + 14.0F * p;
-		this.field_3302.rotationPointZ = -6.0F * o - 10.0F * p;
-		this.field_3308.rotationPointY = this.field_3302.rotationPointY;
-		this.field_3308.rotationPointZ = this.field_3302.rotationPointZ;
+		this.field_3302.pivotY = 2.0F * o + 14.0F * p;
+		this.field_3302.pivotZ = -6.0F * o - 10.0F * p;
+		this.field_3308.pivotY = this.field_3302.pivotY;
+		this.field_3308.pivotZ = this.field_3302.pivotZ;
 		float y = ((float) (-Math.PI / 3) + x) * o + u * p;
 		float z = ((float) (-Math.PI / 3) - x) * o - u * p;
 		this.field_3306.pitch = w - t * 0.5F * g * p;
@@ -193,25 +193,25 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends class_4592<T> {
 		this.field_3302.pitch = y;
 		this.field_3308.pitch = z;
 		this.field_3300.pitch = (float) (Math.PI / 6) + g * 0.75F;
-		this.field_3300.rotationPointY = -5.0F + g;
-		this.field_3300.rotationPointZ = 2.0F + g * 2.0F;
+		this.field_3300.pivotY = -5.0F + g;
+		this.field_3300.pivotZ = 2.0F + g * 2.0F;
 		if (bl) {
 			this.field_3300.yaw = MathHelper.cos(r * 0.7F);
 		} else {
 			this.field_3300.yaw = 0.0F;
 		}
 
-		this.field_20930.rotationPointY = this.field_3306.rotationPointY;
-		this.field_20930.rotationPointZ = this.field_3306.rotationPointZ;
+		this.field_20930.pivotY = this.field_3306.pivotY;
+		this.field_20930.pivotZ = this.field_3306.pivotZ;
 		this.field_20930.pitch = this.field_3306.pitch;
-		this.field_20931.rotationPointY = this.field_3303.rotationPointY;
-		this.field_20931.rotationPointZ = this.field_3303.rotationPointZ;
+		this.field_20931.pivotY = this.field_3303.pivotY;
+		this.field_20931.pivotZ = this.field_3303.pivotZ;
 		this.field_20931.pitch = this.field_3303.pitch;
-		this.field_20932.rotationPointY = this.field_3302.rotationPointY;
-		this.field_20932.rotationPointZ = this.field_3302.rotationPointZ;
+		this.field_20932.pivotY = this.field_3302.pivotY;
+		this.field_20932.pivotZ = this.field_3302.pivotZ;
 		this.field_20932.pitch = this.field_3302.pitch;
-		this.field_20933.rotationPointY = this.field_3308.rotationPointY;
-		this.field_20933.rotationPointZ = this.field_3308.rotationPointZ;
+		this.field_20933.pivotY = this.field_3308.pivotY;
+		this.field_20933.pivotZ = this.field_3308.pivotZ;
 		this.field_20933.pitch = this.field_3308.pitch;
 		boolean bl2 = horseBaseEntity.isBaby();
 		this.field_3306.visible = !bl2;
@@ -222,6 +222,6 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends class_4592<T> {
 		this.field_20931.visible = bl2;
 		this.field_20932.visible = bl2;
 		this.field_20933.visible = bl2;
-		this.field_3305.rotationPointY = bl2 ? 10.8F : 0.0F;
+		this.field_3305.pivotY = bl2 ? 10.8F : 0.0F;
 	}
 }

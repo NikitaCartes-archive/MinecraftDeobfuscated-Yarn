@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
-import net.minecraft.class_4582;
+import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -41,9 +41,9 @@ import net.minecraft.world.explosion.Explosion;
 
 @EnvironmentInterfaces({@EnvironmentInterface(
 		value = EnvType.CLIENT,
-		itf = class_4582.class
+		itf = SkinOverlayOwner.class
 	)})
-public class CreeperEntity extends HostileEntity implements class_4582 {
+public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	private static final TrackedData<Integer> FUSE_SPEED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> IGNITED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -184,7 +184,7 @@ public class CreeperEntity extends HostileEntity implements class_4582 {
 	}
 
 	@Override
-	public boolean isAtHalfHealth() {
+	public boolean shouldRenderOverlay() {
 		return this.dataTracker.get(CHARGED);
 	}
 
@@ -229,7 +229,7 @@ public class CreeperEntity extends HostileEntity implements class_4582 {
 			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
 				? Explosion.DestructionType.DESTROY
 				: Explosion.DestructionType.NONE;
-			float f = this.isAtHalfHealth() ? 2.0F : 1.0F;
+			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
 			this.dead = true;
 			this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);
 			this.remove();
@@ -264,7 +264,7 @@ public class CreeperEntity extends HostileEntity implements class_4582 {
 	}
 
 	public boolean shouldDropHead() {
-		return this.isAtHalfHealth() && this.headsDropped < 1;
+		return this.shouldRenderOverlay() && this.headsDropped < 1;
 	}
 
 	public void onHeadDropped() {

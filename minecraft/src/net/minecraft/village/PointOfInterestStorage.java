@@ -18,7 +18,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.minecraft.class_4538;
 import net.minecraft.block.BlockState;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.util.SectionDistanceLevelPropagator;
@@ -26,6 +25,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
@@ -193,13 +193,13 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 			);
 	}
 
-	public void method_22439(class_4538 arg, BlockPos blockPos, int i) {
+	public void method_22439(WorldView worldView, BlockPos blockPos, int i) {
 		ChunkSectionPos.method_22446(new ChunkPos(blockPos), Math.floorDiv(i, 16))
 			.map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong())))
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::method_22444).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())
 			.filter(chunkPos -> this.field_20688.add(chunkPos.toLong()))
-			.forEach(chunkPos -> arg.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+			.forEach(chunkPos -> worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
 	}
 
 	public static enum OccupationStatus {

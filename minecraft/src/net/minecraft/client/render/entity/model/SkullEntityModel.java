@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SkullEntityModel extends Model {
@@ -20,12 +20,12 @@ public class SkullEntityModel extends Model {
 		this.textureHeight = l;
 		this.skull = new ModelPart(this, i, j);
 		this.skull.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.0F);
-		this.skull.setRotationPoint(0.0F, 0.0F, 0.0F);
+		this.skull.setPivot(0.0F, 0.0F, 0.0F);
 	}
 
-	public void render(class_4587 arg, class_4588 arg2, float f, float g, float h, float i, int j) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j) {
 		this.skull.yaw = g * (float) (Math.PI / 180.0);
 		this.skull.pitch = h * (float) (Math.PI / 180.0);
-		this.skull.method_22698(arg, arg2, i, j, null);
+		this.skull.render(matrixStack, vertexConsumer, i, j, null);
 	}
 }

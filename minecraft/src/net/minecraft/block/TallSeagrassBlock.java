@@ -3,7 +3,6 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements FluidFillable {
 	public static final EnumProperty<DoubleBlockHalf> HALF = ReplaceableTallPlantBlock.HALF;
@@ -58,13 +58,13 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		if (blockState.get(HALF) == DoubleBlockHalf.UPPER) {
-			BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
+			BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
 			return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
 		} else {
-			FluidState fluidState = arg.getFluidState(blockPos);
-			return super.canPlaceAt(blockState, arg, blockPos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
+			FluidState fluidState = worldView.getFluidState(blockPos);
+			return super.canPlaceAt(blockState, worldView, blockPos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
 		}
 	}
 

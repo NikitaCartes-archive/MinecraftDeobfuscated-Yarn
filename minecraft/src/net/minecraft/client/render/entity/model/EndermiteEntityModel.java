@@ -24,7 +24,7 @@ public class EndermiteEntityModel<T extends Entity> extends class_4595<T> {
 				.addCuboid(
 					(float)field_3366[i][0] * -0.5F, 0.0F, (float)field_3366[i][2] * -0.5F, (float)field_3366[i][0], (float)field_3366[i][1], (float)field_3366[i][2]
 				);
-			this.field_3368[i].setRotationPoint(0.0F, (float)(24 - field_3366[i][1]), f);
+			this.field_3368[i].setPivot(0.0F, (float)(24 - field_3366[i][1]), f);
 			if (i < this.field_3368.length - 1) {
 				f += (float)(field_3366[i][2] + field_3366[i + 1][2]) * 0.5F;
 			}
@@ -32,7 +32,7 @@ public class EndermiteEntityModel<T extends Entity> extends class_4595<T> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return Arrays.asList(this.field_3368);
 	}
 
@@ -40,7 +40,7 @@ public class EndermiteEntityModel<T extends Entity> extends class_4595<T> {
 	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
 		for (int l = 0; l < this.field_3368.length; l++) {
 			this.field_3368[l].yaw = MathHelper.cos(h * 0.9F + (float)l * 0.15F * (float) Math.PI) * (float) Math.PI * 0.01F * (float)(1 + Math.abs(l - 2));
-			this.field_3368[l].rotationPointX = MathHelper.sin(h * 0.9F + (float)l * 0.15F * (float) Math.PI) * (float) Math.PI * 0.1F * (float)Math.abs(l - 2);
+			this.field_3368[l].pivotX = MathHelper.sin(h * 0.9F + (float)l * 0.15F * (float) Math.PI) * (float) Math.PI * 0.1F * (float)Math.abs(l - 2);
 		}
 	}
 }

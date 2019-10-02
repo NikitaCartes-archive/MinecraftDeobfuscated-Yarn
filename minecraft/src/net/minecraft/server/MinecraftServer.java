@@ -62,14 +62,14 @@ import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.RecipeManager;
-import net.minecraft.resource.DefaultResourcePackCreator;
-import net.minecraft.resource.FileResourcePackCreator;
+import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourcePackContainer;
-import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.scoreboard.ScoreboardState;
 import net.minecraft.scoreboard.ScoreboardSynchronizer;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -198,9 +198,9 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
 	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA, this.serverThread);
-	private final ResourcePackContainerManager<ResourcePackContainer> dataPackContainerManager = new ResourcePackContainerManager<>(ResourcePackContainer::new);
+	private final ResourcePackManager<ResourcePackProfile> dataPackManager = new ResourcePackManager<>(ResourcePackProfile::new);
 	@Nullable
-	private FileResourcePackCreator dataPackCreator;
+	private FileResourcePackProvider fileDataPackProvider;
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final RegistryTagManager tagManager = new RegistryTagManager();
@@ -435,22 +435,22 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
-		this.dataPackContainerManager.addCreator(new DefaultResourcePackCreator());
-		this.dataPackCreator = new FileResourcePackCreator(new File(file, "datapacks"));
-		this.dataPackContainerManager.addCreator(this.dataPackCreator);
-		this.dataPackContainerManager.callCreators();
-		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList();
+		this.dataPackManager.registerProvider(new VanillaDataPackProvider());
+		this.fileDataPackProvider = new FileResourcePackProvider(new File(file, "datapacks"));
+		this.dataPackManager.registerProvider(this.fileDataPackProvider);
+		this.dataPackManager.scanPacks();
+		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList();
 
 		for (String string : levelProperties.getEnabledDataPacks()) {
-			ResourcePackContainer resourcePackContainer = this.dataPackContainerManager.getContainer(string);
-			if (resourcePackContainer != null) {
-				list.add(resourcePackContainer);
+			ResourcePackProfile resourcePackProfile = this.dataPackManager.getProfile(string);
+			if (resourcePackProfile != null) {
+				list.add(resourcePackProfile);
 			} else {
 				LOGGER.warn("Missing data pack {}", string);
 			}
 		}
 
-		this.dataPackContainerManager.setEnabled(list);
+		this.dataPackManager.setEnabledProfiles(list);
 		this.reloadDataPacks(levelProperties);
 	}
 
@@ -1038,13 +1038,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		crashReport.getSystemDetailsSection().add("Data Packs", (CrashCallable<String>)(() -> {
 			StringBuilder stringBuilder = new StringBuilder();
 
-			for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getEnabledContainers()) {
+			for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
 				if (stringBuilder.length() > 0) {
 					stringBuilder.append(", ");
 				}
 
-				stringBuilder.append(resourcePackContainer.getName());
-				if (!resourcePackContainer.getCompatibility().isCompatible()) {
+				stringBuilder.append(resourcePackProfile.getName());
+				if (!resourcePackProfile.getCompatibility().isCompatible()) {
 					stringBuilder.append(" (incompatible)");
 				}
 			}
@@ -1416,25 +1416,25 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			this.execute(this::reload);
 		} else {
 			this.getPlayerManager().saveAllPlayerData();
-			this.dataPackContainerManager.callCreators();
+			this.dataPackManager.scanPacks();
 			this.reloadDataPacks(this.getWorld(DimensionType.OVERWORLD).getLevelProperties());
 			this.getPlayerManager().onDataPacksReloaded();
 		}
 	}
 
 	private void reloadDataPacks(LevelProperties levelProperties) {
-		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(this.dataPackContainerManager.getEnabledContainers());
+		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(this.dataPackManager.getEnabledProfiles());
 
-		for (ResourcePackContainer resourcePackContainer : this.dataPackContainerManager.getAlphabeticallyOrderedContainers()) {
-			if (!levelProperties.getDisabledDataPacks().contains(resourcePackContainer.getName()) && !list.contains(resourcePackContainer)) {
-				LOGGER.info("Found new data pack {}, loading it automatically", resourcePackContainer.getName());
-				resourcePackContainer.getInitialPosition().insert(list, resourcePackContainer, resourcePackContainerx -> resourcePackContainerx, false);
+		for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getProfiles()) {
+			if (!levelProperties.getDisabledDataPacks().contains(resourcePackProfile.getName()) && !list.contains(resourcePackProfile)) {
+				LOGGER.info("Found new data pack {}, loading it automatically", resourcePackProfile.getName());
+				resourcePackProfile.getInitialPosition().insert(list, resourcePackProfile, resourcePackProfilex -> resourcePackProfilex, false);
 			}
 		}
 
-		this.dataPackContainerManager.setEnabled(list);
+		this.dataPackManager.setEnabledProfiles(list);
 		List<ResourcePack> list2 = Lists.<ResourcePack>newArrayList();
-		this.dataPackContainerManager.getEnabledContainers().forEach(resourcePackContainerx -> list2.add(resourcePackContainerx.createResourcePack()));
+		this.dataPackManager.getEnabledProfiles().forEach(resourcePackProfilex -> list2.add(resourcePackProfilex.createResourcePack()));
 		CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, COMPLETED_UNIT_FUTURE);
 		this.executeTasks(completableFuture::isDone);
 
@@ -1446,12 +1446,10 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 		levelProperties.getEnabledDataPacks().clear();
 		levelProperties.getDisabledDataPacks().clear();
-		this.dataPackContainerManager
-			.getEnabledContainers()
-			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
-		this.dataPackContainerManager.getAlphabeticallyOrderedContainers().forEach(resourcePackContainerx -> {
-			if (!this.dataPackContainerManager.getEnabledContainers().contains(resourcePackContainerx)) {
-				levelProperties.getDisabledDataPacks().add(resourcePackContainerx.getName());
+		this.dataPackManager.getEnabledProfiles().forEach(resourcePackProfilex -> levelProperties.getEnabledDataPacks().add(resourcePackProfilex.getName()));
+		this.dataPackManager.getProfiles().forEach(resourcePackProfilex -> {
+			if (!this.dataPackManager.getEnabledProfiles().contains(resourcePackProfilex)) {
+				levelProperties.getDisabledDataPacks().add(resourcePackProfilex.getName());
 			}
 		});
 	}
@@ -1474,8 +1472,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.dataManager;
 	}
 
-	public ResourcePackContainerManager<ResourcePackContainer> getDataPackContainerManager() {
-		return this.dataPackContainerManager;
+	public ResourcePackManager<ResourcePackProfile> getDataPackManager() {
+		return this.dataPackManager;
 	}
 
 	public CommandManager getCommandManager() {

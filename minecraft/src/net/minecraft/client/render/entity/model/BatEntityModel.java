@@ -35,14 +35,14 @@ public class BatEntityModel extends class_4595<BatEntity> {
 		this.rightWing = new ModelPart(this, 42, 0);
 		this.rightWing.addCuboid(-12.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
 		this.rightWingTip = new ModelPart(this, 24, 16);
-		this.rightWingTip.setRotationPoint(-12.0F, 1.0F, 1.5F);
+		this.rightWingTip.setPivot(-12.0F, 1.0F, 1.5F);
 		this.rightWingTip.addCuboid(-8.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
 		this.leftWing = new ModelPart(this, 42, 0);
 		this.leftWing.mirror = true;
 		this.leftWing.addCuboid(2.0F, 1.0F, 1.5F, 10.0F, 16.0F, 1.0F);
 		this.leftWingTip = new ModelPart(this, 24, 16);
 		this.leftWingTip.mirror = true;
-		this.leftWingTip.setRotationPoint(12.0F, 1.0F, 1.5F);
+		this.leftWingTip.setPivot(12.0F, 1.0F, 1.5F);
 		this.leftWingTip.addCuboid(0.0F, 1.0F, 0.0F, 8.0F, 12.0F, 1.0F);
 		this.body.addChild(this.rightWing);
 		this.body.addChild(this.leftWing);
@@ -51,7 +51,7 @@ public class BatEntityModel extends class_4595<BatEntity> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.head, this.body);
 	}
 
@@ -60,9 +60,9 @@ public class BatEntityModel extends class_4595<BatEntity> {
 			this.head.pitch = j * (float) (Math.PI / 180.0);
 			this.head.yaw = (float) Math.PI - i * (float) (Math.PI / 180.0);
 			this.head.roll = (float) Math.PI;
-			this.head.setRotationPoint(0.0F, -2.0F, 0.0F);
-			this.rightWing.setRotationPoint(-3.0F, 0.0F, 3.0F);
-			this.leftWing.setRotationPoint(3.0F, 0.0F, 3.0F);
+			this.head.setPivot(0.0F, -2.0F, 0.0F);
+			this.rightWing.setPivot(-3.0F, 0.0F, 3.0F);
+			this.leftWing.setPivot(3.0F, 0.0F, 3.0F);
 			this.body.pitch = (float) Math.PI;
 			this.rightWing.pitch = (float) (-Math.PI / 20);
 			this.rightWing.yaw = (float) (-Math.PI * 2.0 / 5.0);
@@ -74,9 +74,9 @@ public class BatEntityModel extends class_4595<BatEntity> {
 			this.head.pitch = j * (float) (Math.PI / 180.0);
 			this.head.yaw = i * (float) (Math.PI / 180.0);
 			this.head.roll = 0.0F;
-			this.head.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.rightWing.setRotationPoint(0.0F, 0.0F, 0.0F);
-			this.leftWing.setRotationPoint(0.0F, 0.0F, 0.0F);
+			this.head.setPivot(0.0F, 0.0F, 0.0F);
+			this.rightWing.setPivot(0.0F, 0.0F, 0.0F);
+			this.leftWing.setPivot(0.0F, 0.0F, 0.0F);
 			this.body.pitch = (float) (Math.PI / 4) + MathHelper.cos(h * 0.1F) * 0.15F;
 			this.body.yaw = 0.0F;
 			this.rightWing.yaw = MathHelper.cos(h * 1.3F) * (float) Math.PI * 0.25F;

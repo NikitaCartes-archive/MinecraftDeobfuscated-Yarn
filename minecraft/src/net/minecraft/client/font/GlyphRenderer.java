@@ -3,7 +3,7 @@ package net.minecraft.client.font;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Identifier;
 
@@ -31,7 +31,7 @@ public class GlyphRenderer {
 		this.yMax = m;
 	}
 
-	public void draw(boolean bl, float f, float g, Matrix4f matrix4f, class_4588 arg, float h, float i, float j, float k, int l) {
+	public void draw(boolean bl, float f, float g, Matrix4f matrix4f, VertexConsumer vertexConsumer, float h, float i, float j, float k, int l) {
 		int m = 3;
 		float n = f + this.xMin;
 		float o = f + this.xMax;
@@ -41,32 +41,32 @@ public class GlyphRenderer {
 		float s = g + q;
 		float t = bl ? 1.0F - 0.25F * p : 0.0F;
 		float u = bl ? 1.0F - 0.25F * q : 0.0F;
-		arg.method_22918(matrix4f, n + t, r, 0.0F).texture(this.uMin, this.vMin).method_22916(l).method_22915(h, i, j, k).next();
-		arg.method_22918(matrix4f, n + u, s, 0.0F).texture(this.uMin, this.vMax).method_22916(l).method_22915(h, i, j, k).next();
-		arg.method_22918(matrix4f, o + u, s, 0.0F).texture(this.uMax, this.vMax).method_22916(l).method_22915(h, i, j, k).next();
-		arg.method_22918(matrix4f, o + t, r, 0.0F).texture(this.uMax, this.vMin).method_22916(l).method_22915(h, i, j, k).next();
+		vertexConsumer.vertex(matrix4f, n + t, r, 0.0F).color(h, i, j, k).texture(this.uMin, this.vMin).light(l).next();
+		vertexConsumer.vertex(matrix4f, n + u, s, 0.0F).color(h, i, j, k).texture(this.uMin, this.vMax).light(l).next();
+		vertexConsumer.vertex(matrix4f, o + u, s, 0.0F).color(h, i, j, k).texture(this.uMax, this.vMax).light(l).next();
+		vertexConsumer.vertex(matrix4f, o + t, r, 0.0F).color(h, i, j, k).texture(this.uMax, this.vMin).light(l).next();
 	}
 
-	public void method_22944(GlyphRenderer.Rectangle rectangle, Matrix4f matrix4f, class_4588 arg, int i) {
-		arg.method_22918(matrix4f, rectangle.xMin, rectangle.yMin, rectangle.field_20911)
+	public void method_22944(GlyphRenderer.Rectangle rectangle, Matrix4f matrix4f, VertexConsumer vertexConsumer, int i) {
+		vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMin, rectangle.field_20911)
+			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMin, this.vMin)
-			.method_22916(i)
-			.method_22915(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
+			.light(i)
 			.next();
-		arg.method_22918(matrix4f, rectangle.xMax, rectangle.yMin, rectangle.field_20911)
+		vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMin, rectangle.field_20911)
+			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMin, this.vMax)
-			.method_22916(i)
-			.method_22915(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
+			.light(i)
 			.next();
-		arg.method_22918(matrix4f, rectangle.xMax, rectangle.yMax, rectangle.field_20911)
+		vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMax, rectangle.field_20911)
+			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMax, this.vMax)
-			.method_22916(i)
-			.method_22915(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
+			.light(i)
 			.next();
-		arg.method_22918(matrix4f, rectangle.xMin, rectangle.yMax, rectangle.field_20911)
+		vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMax, rectangle.field_20911)
+			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
 			.texture(this.uMax, this.vMin)
-			.method_22916(i)
-			.method_22915(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
+			.light(i)
 			.next();
 	}
 

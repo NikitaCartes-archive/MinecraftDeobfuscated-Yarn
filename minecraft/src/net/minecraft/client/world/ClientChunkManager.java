@@ -5,7 +5,6 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4548;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -83,7 +83,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(World world, int i, int j, @Nullable class_4548 arg, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k) {
+	public WorldChunk loadChunkFromPacket(World world, int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k) {
 		if (!this.chunks.isInRadius(i, j)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", i, j);
 			return null;
@@ -91,16 +91,16 @@ public class ClientChunkManager extends ChunkManager {
 			int l = this.chunks.getIndex(i, j);
 			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
 			if (!positionEquals(worldChunk, i, j)) {
-				if (arg == null) {
+				if (biomeArray == null) {
 					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", i, j);
 					return null;
 				}
 
-				worldChunk = new WorldChunk(world, new ChunkPos(i, j), arg);
-				worldChunk.loadFromPacket(arg, packetByteBuf, compoundTag, k);
+				worldChunk = new WorldChunk(world, new ChunkPos(i, j), biomeArray);
+				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
 				this.chunks.set(l, worldChunk);
 			} else {
-				worldChunk.loadFromPacket(arg, packetByteBuf, compoundTag, k);
+				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
 			}
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();

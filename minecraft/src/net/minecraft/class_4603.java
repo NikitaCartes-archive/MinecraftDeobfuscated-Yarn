@@ -19,12 +19,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class class_4603 {
 	private static final Identifier field_20986 = new Identifier("textures/misc/underwater.png");
 
-	public static void method_23067(MinecraftClient minecraftClient, class_4587 arg) {
+	public static void method_23067(MinecraftClient minecraftClient, MatrixStack matrixStack) {
 		RenderSystem.disableAlphaTest();
 		if (minecraftClient.player.isInsideWall()) {
 			BlockState blockState = minecraftClient.world.getBlockState(new BlockPos(minecraftClient.player));
@@ -42,24 +43,24 @@ public class class_4603 {
 			}
 
 			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-				method_23068(minecraftClient, minecraftClient.getBlockRenderManager().getModels().getSprite(blockState), arg);
+				method_23068(minecraftClient, minecraftClient.getBlockRenderManager().getModels().getSprite(blockState), matrixStack);
 			}
 		}
 
 		if (!minecraftClient.player.isSpectator()) {
 			if (minecraftClient.player.isInFluid(FluidTags.WATER)) {
-				method_23069(minecraftClient, arg);
+				method_23069(minecraftClient, matrixStack);
 			}
 
 			if (minecraftClient.player.isOnFire()) {
-				method_23070(minecraftClient, arg);
+				method_23070(minecraftClient, matrixStack);
 			}
 		}
 
 		RenderSystem.enableAlphaTest();
 	}
 
-	private static void method_23068(MinecraftClient minecraftClient, Sprite sprite, class_4587 arg) {
+	private static void method_23068(MinecraftClient minecraftClient, Sprite sprite, MatrixStack matrixStack) {
 		minecraftClient.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
 		float f = 0.1F;
@@ -72,17 +73,17 @@ public class class_4603 {
 		float m = sprite.getMaxU();
 		float n = sprite.getMinV();
 		float o = sprite.getMaxV();
-		Matrix4f matrix4f = arg.method_22910();
+		Matrix4f matrix4f = matrixStack.peek();
 		bufferBuilder.begin(7, VertexFormats.field_20887);
-		bufferBuilder.method_22918(matrix4f, -1.0F, -1.0F, -0.5F).method_22915(0.1F, 0.1F, 0.1F, 0.5F).texture(m, o).next();
-		bufferBuilder.method_22918(matrix4f, 1.0F, -1.0F, -0.5F).method_22915(0.1F, 0.1F, 0.1F, 0.5F).texture(l, o).next();
-		bufferBuilder.method_22918(matrix4f, 1.0F, 1.0F, -0.5F).method_22915(0.1F, 0.1F, 0.1F, 0.5F).texture(l, n).next();
-		bufferBuilder.method_22918(matrix4f, -1.0F, 1.0F, -0.5F).method_22915(0.1F, 0.1F, 0.1F, 0.5F).texture(m, n).next();
+		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(m, o).next();
+		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(l, o).next();
+		bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(l, n).next();
+		bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(m, n).next();
 		bufferBuilder.end();
 		BufferRenderer.draw(bufferBuilder);
 	}
 
-	private static void method_23069(MinecraftClient minecraftClient, class_4587 arg) {
+	private static void method_23069(MinecraftClient minecraftClient, MatrixStack matrixStack) {
 		minecraftClient.getTextureManager().bindTexture(field_20986);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
 		float f = minecraftClient.player.getBrightnessAtEyes();
@@ -96,18 +97,18 @@ public class class_4603 {
 		float l = -0.5F;
 		float m = -minecraftClient.player.yaw / 64.0F;
 		float n = minecraftClient.player.pitch / 64.0F;
-		Matrix4f matrix4f = arg.method_22910();
+		Matrix4f matrix4f = matrixStack.peek();
 		bufferBuilder.begin(7, VertexFormats.field_20887);
-		bufferBuilder.method_22918(matrix4f, -1.0F, -1.0F, -0.5F).method_22915(f, f, f, 0.1F).texture(4.0F + m, 4.0F + n).next();
-		bufferBuilder.method_22918(matrix4f, 1.0F, -1.0F, -0.5F).method_22915(f, f, f, 0.1F).texture(0.0F + m, 4.0F + n).next();
-		bufferBuilder.method_22918(matrix4f, 1.0F, 1.0F, -0.5F).method_22915(f, f, f, 0.1F).texture(0.0F + m, 0.0F + n).next();
-		bufferBuilder.method_22918(matrix4f, -1.0F, 1.0F, -0.5F).method_22915(f, f, f, 0.1F).texture(4.0F + m, 0.0F + n).next();
+		bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).color(f, f, f, 0.1F).texture(4.0F + m, 4.0F + n).next();
+		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(f, f, f, 0.1F).texture(0.0F + m, 4.0F + n).next();
+		bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).color(f, f, f, 0.1F).texture(0.0F + m, 0.0F + n).next();
+		bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).color(f, f, f, 0.1F).texture(4.0F + m, 0.0F + n).next();
 		bufferBuilder.end();
 		BufferRenderer.draw(bufferBuilder);
 		RenderSystem.disableBlend();
 	}
 
-	private static void method_23070(MinecraftClient minecraftClient, class_4587 arg) {
+	private static void method_23070(MinecraftClient minecraftClient, MatrixStack matrixStack) {
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
 		RenderSystem.depthFunc(519);
 		RenderSystem.depthMask(false);
@@ -116,7 +117,7 @@ public class class_4603 {
 		float f = 1.0F;
 
 		for (int i = 0; i < 2; i++) {
-			arg.method_22903();
+			matrixStack.push();
 			Sprite sprite = minecraftClient.getSpriteAtlas().getSprite(ModelLoader.FIRE_1);
 			minecraftClient.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			float g = sprite.getMinU();
@@ -128,17 +129,17 @@ public class class_4603 {
 			float n = -0.5F;
 			float o = 0.5F;
 			float p = -0.5F;
-			arg.method_22904((double)((float)(-(i * 2 - 1)) * 0.24F), -0.3F, 0.0);
-			arg.method_22907(Vector3f.field_20705.method_23214((float)(i * 2 - 1) * 10.0F, true));
-			Matrix4f matrix4f = arg.method_22910();
+			matrixStack.translate((double)((float)(-(i * 2 - 1)) * 0.24F), -0.3F, 0.0);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(i * 2 - 1) * 10.0F, true));
+			Matrix4f matrix4f = matrixStack.peek();
 			bufferBuilder.begin(7, VertexFormats.field_20887);
-			bufferBuilder.method_22918(matrix4f, -0.5F, -0.5F, -0.5F).method_22915(1.0F, 1.0F, 1.0F, 0.9F).texture(h, k).next();
-			bufferBuilder.method_22918(matrix4f, 0.5F, -0.5F, -0.5F).method_22915(1.0F, 1.0F, 1.0F, 0.9F).texture(g, k).next();
-			bufferBuilder.method_22918(matrix4f, 0.5F, 0.5F, -0.5F).method_22915(1.0F, 1.0F, 1.0F, 0.9F).texture(g, j).next();
-			bufferBuilder.method_22918(matrix4f, -0.5F, 0.5F, -0.5F).method_22915(1.0F, 1.0F, 1.0F, 0.9F).texture(h, j).next();
+			bufferBuilder.vertex(matrix4f, -0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(h, k).next();
+			bufferBuilder.vertex(matrix4f, 0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(g, k).next();
+			bufferBuilder.vertex(matrix4f, 0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(g, j).next();
+			bufferBuilder.vertex(matrix4f, -0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(h, j).next();
 			bufferBuilder.end();
 			BufferRenderer.draw(bufferBuilder);
-			arg.method_22909();
+			matrixStack.pop();
 		}
 
 		RenderSystem.disableBlend();

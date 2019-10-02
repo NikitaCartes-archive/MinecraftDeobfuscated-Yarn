@@ -88,7 +88,7 @@ public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
 		for (int n = 0; n < m; n++) {
 			int o = j + n * this.itemHeight + this.headerHeight;
 			int p = this.itemHeight - 4;
-			if (o > this.field_2165 || o + p < this.field_2166) {
+			if (o > this.bottom || o + p < this.top) {
 				this.updateItemPosition(n, i, o, f);
 			}
 
@@ -101,11 +101,11 @@ public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
 	}
 
 	public int y0() {
-		return this.field_2166;
+		return this.top;
 	}
 
 	public int y1() {
-		return this.field_2165;
+		return this.bottom;
 	}
 
 	public int headerHeight() {
@@ -113,7 +113,7 @@ public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
 	}
 
 	public double yo() {
-		return this.field_2175;
+		return this.scroll;
 	}
 
 	public int itemHeight() {

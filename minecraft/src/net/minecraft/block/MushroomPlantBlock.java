@@ -1,13 +1,13 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -26,7 +26,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (random.nextInt(25) == 0) {
 			int i = 5;
 			int j = 4;
@@ -61,11 +61,13 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.method_10074();
-		BlockState blockState2 = arg.getBlockState(blockPos2);
+		BlockState blockState2 = worldView.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block != Blocks.MYCELIUM && block != Blocks.PODZOL ? arg.getBaseLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, arg, blockPos2) : true;
+		return block != Blocks.MYCELIUM && block != Blocks.PODZOL
+			? worldView.getBaseLightLevel(blockPos, 0) < 13 && this.canPlantOnTop(blockState2, worldView, blockPos2)
+			: true;
 	}
 
 	public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos blockPos, BlockState blockState, Random random) {

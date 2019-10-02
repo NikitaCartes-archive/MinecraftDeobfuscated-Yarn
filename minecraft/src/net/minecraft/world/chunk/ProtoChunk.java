@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_4548;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -32,6 +31,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +42,7 @@ public class ProtoChunk implements Chunk {
 	private final ChunkPos pos;
 	private volatile boolean shouldSave;
 	@Nullable
-	private class_4548 field_20656;
+	private BiomeArray field_20656;
 	@Nullable
 	private volatile LightingProvider lightingProvider;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
@@ -240,13 +240,13 @@ public class ProtoChunk implements Chunk {
 		return this.entities;
 	}
 
-	public void method_22405(class_4548 arg) {
-		this.field_20656 = arg;
+	public void method_22405(BiomeArray biomeArray) {
+		this.field_20656 = biomeArray;
 	}
 
 	@Nullable
 	@Override
-	public class_4548 getBiomeArray() {
+	public BiomeArray getBiomeArray() {
 		return this.field_20656;
 	}
 

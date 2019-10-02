@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -13,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class KelpPlantBlock extends Block implements FluidFillable {
 	private final KelpBlock kelpBlock;
@@ -28,12 +28,12 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
 			serverWorld.breakBlock(blockPos, true);
 		}
 
-		super.onScheduledTick(blockState, serverWorld, blockPos, random);
+		super.scheduledTick(blockState, serverWorld, blockPos, random);
 	}
 
 	@Override
@@ -56,11 +56,11 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.method_10074();
-		BlockState blockState2 = arg.getBlockState(blockPos2);
+		BlockState blockState2 = worldView.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block != Blocks.MAGMA_BLOCK && (block == this || blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP));
+		return block != Blocks.MAGMA_BLOCK && (block == this || blockState2.isSideSolidFullSquare(worldView, blockPos2, Direction.UP));
 	}
 
 	@Environment(EnvType.CLIENT)

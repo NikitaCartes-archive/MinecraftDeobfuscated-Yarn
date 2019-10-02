@@ -2,12 +2,12 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
@@ -17,7 +17,16 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 		super(blockEntityRenderDispatcher);
 	}
 
-	public void method_22751(EndGatewayBlockEntity endGatewayBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+	public void method_22751(
+		EndGatewayBlockEntity endGatewayBlockEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i
+	) {
 		if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
 			float h = endGatewayBlockEntity.isRecentlyGenerated()
 				? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(g)
@@ -27,11 +36,11 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 			int k = MathHelper.floor((double)h * j);
 			float[] fs = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
 			long l = endGatewayBlockEntity.getWorld().getTime();
-			BeaconBlockEntityRenderer.renderLightBeam(arg, arg2, BEAM_TEXTURE, g, h, l, 0, k, fs, 0.15F, 0.175F);
-			BeaconBlockEntityRenderer.renderLightBeam(arg, arg2, BEAM_TEXTURE, g, h, l, 0, -k, fs, 0.15F, 0.175F);
+			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, layeredVertexConsumerStorage, BEAM_TEXTURE, g, h, l, 0, k, fs, 0.15F, 0.175F);
+			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, layeredVertexConsumerStorage, BEAM_TEXTURE, g, h, l, 0, -k, fs, 0.15F, 0.175F);
 		}
 
-		super.method_3591(endGatewayBlockEntity, d, e, f, g, arg, arg2, i);
+		super.method_3591(endGatewayBlockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i);
 	}
 
 	@Override

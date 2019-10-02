@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -30,6 +29,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class ZombiePigmanEntity extends ZombieEntity {
 	private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
@@ -119,8 +119,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean canSpawn(class_4538 arg) {
-		return arg.intersectsEntities(this) && !arg.containsFluid(this.getBoundingBox());
+	public boolean canSpawn(WorldView worldView) {
+		return worldView.intersectsEntities(this) && !worldView.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

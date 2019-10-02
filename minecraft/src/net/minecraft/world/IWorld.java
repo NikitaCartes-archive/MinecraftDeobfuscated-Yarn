@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +20,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.level.LevelProperties;
 
-public interface IWorld extends EntityView, class_4538, ModifiableTestableWorld {
+public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	long getSeed();
 
 	default float getMoonSize() {
@@ -87,6 +86,6 @@ public interface IWorld extends EntityView, class_4538, ModifiableTestableWorld 
 
 	@Override
 	default BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-		return class_4538.super.getTopPosition(type, blockPos);
+		return WorldView.super.getTopPosition(type, blockPos);
 	}
 }

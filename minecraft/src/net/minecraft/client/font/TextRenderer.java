@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
 import net.minecraft.class_4590;
-import net.minecraft.class_4597;
-import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Formatting;
@@ -66,18 +66,22 @@ public class TextRenderer implements AutoCloseable {
 		if (string == null) {
 			return 0;
 		} else {
-			class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
+			LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
 			int j = this.method_22942(string, f, g, i, bl, matrix4f, lv, false, 0, 15728880);
 			lv.method_22993();
 			return j;
 		}
 	}
 
-	public int method_22942(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
-		return this.draw(string, f, g, i, bl, matrix4f, arg, bl2, j, k);
+	public int method_22942(
+		String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k
+	) {
+		return this.draw(string, f, g, i, bl, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
 	}
 
-	private int draw(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
+	private int draw(
+		String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k
+	) {
 		if (this.rightToLeft) {
 			string = this.mirror(string);
 		}
@@ -87,14 +91,16 @@ public class TextRenderer implements AutoCloseable {
 		}
 
 		if (bl) {
-			this.drawLayer(string, f, g, i, true, matrix4f, arg, bl2, j, k);
+			this.drawLayer(string, f, g, i, true, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
 		}
 
-		f = this.drawLayer(string, f, g, i, false, matrix4f, arg, bl2, j, k);
+		f = this.drawLayer(string, f, g, i, false, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
 		return (int)f + (bl ? 1 : 0);
 	}
 
-	private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, class_4597 arg, boolean bl2, int j, int k) {
+	private float drawLayer(
+		String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k
+	) {
 		float h = bl ? 0.25F : 1.0F;
 		float l = (float)(i >> 16 & 0xFF) / 255.0F * h;
 		float m = (float)(i >> 8 & 0xFF) / 255.0F * h;
@@ -153,18 +159,18 @@ public class TextRenderer implements AutoCloseable {
 				if (identifier != null) {
 					float v = bl4 ? glyph.getBoldOffset() : 0.0F;
 					float w = bl ? glyph.getShadowOffset() : 0.0F;
-					class_4588 lv = arg.getBuffer(bl2 ? BlockRenderLayer.method_23030(identifier) : BlockRenderLayer.method_23028(identifier));
-					this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, lv, p, q, r, s, k);
+					VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.method_23030(identifier) : RenderLayer.method_23028(identifier));
+					this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, vertexConsumer, p, q, r, s, k);
 				}
 
 				float v = glyph.getAdvance(bl4);
 				float w = bl ? 1.0F : 0.0F;
 				if (bl7) {
-					list.add(new GlyphRenderer.Rectangle(o + w - 1.0F, g + w + 4.5F, o + w + v, g + w + 4.5F - 1.0F, 0.001F, p, q, r, s));
+					list.add(new GlyphRenderer.Rectangle(o + w - 1.0F, g + w + 4.5F, o + w + v, g + w + 4.5F - 1.0F, -0.01F, p, q, r, s));
 				}
 
 				if (bl6) {
-					list.add(new GlyphRenderer.Rectangle(o + w - 1.0F, g + w + 9.0F, o + w + v, g + w + 9.0F - 1.0F, 0.001F, p, q, r, s));
+					list.add(new GlyphRenderer.Rectangle(o + w - 1.0F, g + w + 9.0F, o + w + v, g + w + 9.0F - 1.0F, -0.01F, p, q, r, s));
 				}
 
 				o += v;
@@ -176,17 +182,17 @@ public class TextRenderer implements AutoCloseable {
 			float y = (float)(j >> 16 & 0xFF) / 255.0F;
 			float z = (float)(j >> 8 & 0xFF) / 255.0F;
 			float aa = (float)(j & 0xFF) / 255.0F;
-			list.add(new GlyphRenderer.Rectangle(f - 1.0F, g + 9.0F, o + 1.0F, g - 1.0F, -0.001F, y, z, aa, x));
+			list.add(new GlyphRenderer.Rectangle(f - 1.0F, g + 9.0F, o + 1.0F, g - 1.0F, 0.01F, y, z, aa, x));
 		}
 
 		if (!list.isEmpty()) {
 			GlyphRenderer glyphRenderer2 = this.fontStorage.method_22943();
 			Identifier identifier2 = glyphRenderer2.getId();
 			if (identifier2 != null) {
-				class_4588 lv2 = arg.getBuffer(bl2 ? BlockRenderLayer.method_23030(identifier2) : BlockRenderLayer.method_23028(identifier2));
+				VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.method_23030(identifier2) : RenderLayer.method_23028(identifier2));
 
 				for (GlyphRenderer.Rectangle rectangle : list) {
-					glyphRenderer2.method_22944(rectangle, matrix4f, lv2, k);
+					glyphRenderer2.method_22944(rectangle, matrix4f, vertexConsumer2, k);
 				}
 			}
 		}
@@ -195,11 +201,23 @@ public class TextRenderer implements AutoCloseable {
 	}
 
 	private void drawGlyph(
-		GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, Matrix4f matrix4f, class_4588 arg, float i, float j, float k, float l, int m
+		GlyphRenderer glyphRenderer,
+		boolean bl,
+		boolean bl2,
+		float f,
+		float g,
+		float h,
+		Matrix4f matrix4f,
+		VertexConsumer vertexConsumer,
+		float i,
+		float j,
+		float k,
+		float l,
+		int m
 	) {
-		glyphRenderer.draw(bl2, g, h, matrix4f, arg, i, j, k, l, m);
+		glyphRenderer.draw(bl2, g, h, matrix4f, vertexConsumer, i, j, k, l, m);
 		if (bl) {
-			glyphRenderer.draw(bl2, g + f, h, matrix4f, arg, i, j, k, l, m);
+			glyphRenderer.draw(bl2, g + f, h, matrix4f, vertexConsumer, i, j, k, l, m);
 		}
 	}
 

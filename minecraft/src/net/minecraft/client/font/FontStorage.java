@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4591;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -53,7 +52,7 @@ public class FontStorage implements AutoCloseable {
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
 		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
-		this.field_20910 = this.getGlyphRenderer(class_4591.INSTANCE);
+		this.field_20910 = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {

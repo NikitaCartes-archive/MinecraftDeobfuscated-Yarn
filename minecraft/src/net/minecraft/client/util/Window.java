@@ -104,12 +104,12 @@ public final class Window implements AutoCloseable {
 		GLFW.glfwSetWindowFocusCallback(this.handle, this::onWindowFocusChanged);
 	}
 
-	public int method_22092() {
+	public int getRefreshRate() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		return GLX._getRefreshRate(this);
 	}
 
-	public boolean method_22093() {
+	public boolean shouldClose() {
 		return GLX._shouldClose(this);
 	}
 

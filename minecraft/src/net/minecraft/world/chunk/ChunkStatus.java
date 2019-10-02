@@ -28,7 +28,7 @@ public class ChunkStatus {
 	private static final EnumSet<Heightmap.Type> POST_CARVER_HEIGHTMAPS = EnumSet.of(
 		Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE, Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
 	);
-	private static final ChunkStatus.class_4305 field_19345 = (chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> {
+	private static final ChunkStatus.NoGenTask STATUS_BUMP_NO_GEN_TASK = (chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> {
 		if (chunk instanceof ProtoChunk && !chunk.getStatus().isAtLeast(chunkStatus)) {
 			((ProtoChunk)chunk).setStatus(chunkStatus);
 		}
@@ -48,7 +48,7 @@ public class ChunkStatus {
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
 				if (serverWorld.getLevelProperties().hasStructures()) {
-					chunkGenerator.setStructureStarts(serverWorld.method_22385().method_22392(chunkGenerator.getBiomeSource()), chunk, chunkGenerator, structureManager);
+					chunkGenerator.setStructureStarts(serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, chunkGenerator, structureManager);
 				}
 
 				if (chunk instanceof ProtoChunk) {
@@ -98,7 +98,7 @@ public class ChunkStatus {
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(
-				serverWorld.method_22385().method_22392(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.AIR
+				serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.AIR
 			)
 	);
 	public static final ChunkStatus LIQUID_CARVERS = register(
@@ -108,7 +108,7 @@ public class ChunkStatus {
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(
-				serverWorld.method_22385().method_22392(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.LIQUID
+				serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.LIQUID
 			)
 	);
 	public static final ChunkStatus FEATURES = register(
@@ -195,7 +195,7 @@ public class ChunkStatus {
 	private final int index;
 	private final ChunkStatus previous;
 	private final ChunkStatus.Task task;
-	private final ChunkStatus.class_4305 field_19346;
+	private final ChunkStatus.NoGenTask noGenTask;
 	private final int taskMargin;
 	private final ChunkStatus.ChunkType chunkType;
 	private final EnumSet<Heightmap.Type> heightMapTypes;
@@ -220,7 +220,7 @@ public class ChunkStatus {
 	private static ChunkStatus register(
 		String string, @Nullable ChunkStatus chunkStatus, int i, EnumSet<Heightmap.Type> enumSet, ChunkStatus.ChunkType chunkType, ChunkStatus.Task task
 	) {
-		return register(string, chunkStatus, i, enumSet, chunkType, task, field_19345);
+		return register(string, chunkStatus, i, enumSet, chunkType, task, STATUS_BUMP_NO_GEN_TASK);
 	}
 
 	private static ChunkStatus register(
@@ -230,9 +230,9 @@ public class ChunkStatus {
 		EnumSet<Heightmap.Type> enumSet,
 		ChunkStatus.ChunkType chunkType,
 		ChunkStatus.Task task,
-		ChunkStatus.class_4305 arg
+		ChunkStatus.NoGenTask noGenTask
 	) {
-		return Registry.register(Registry.CHUNK_STATUS, string, new ChunkStatus(string, chunkStatus, i, enumSet, chunkType, task, arg));
+		return Registry.register(Registry.CHUNK_STATUS, string, new ChunkStatus(string, chunkStatus, i, enumSet, chunkType, task, noGenTask));
 	}
 
 	public static List<ChunkStatus> createOrderedList() {
@@ -275,12 +275,12 @@ public class ChunkStatus {
 		EnumSet<Heightmap.Type> enumSet,
 		ChunkStatus.ChunkType chunkType,
 		ChunkStatus.Task task,
-		ChunkStatus.class_4305 arg
+		ChunkStatus.NoGenTask noGenTask
 	) {
 		this.id = string;
 		this.previous = chunkStatus == null ? this : chunkStatus;
 		this.task = task;
-		this.field_19346 = arg;
+		this.noGenTask = noGenTask;
 		this.taskMargin = i;
 		this.chunkType = chunkType;
 		this.heightMapTypes = enumSet;
@@ -310,14 +310,14 @@ public class ChunkStatus {
 		return this.task.doWork(this, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, (Chunk)list.get(list.size() / 2));
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20612(
+	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runNoGenTask(
 		ServerWorld serverWorld,
 		StructureManager structureManager,
 		ServerLightingProvider serverLightingProvider,
 		Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 		Chunk chunk
 	) {
-		return this.field_19346.doWork(this, serverWorld, structureManager, serverLightingProvider, function, chunk);
+		return this.noGenTask.doWork(this, serverWorld, structureManager, serverLightingProvider, function, chunk);
 	}
 
 	public int getTaskMargin() {
@@ -347,6 +347,17 @@ public class ChunkStatus {
 	public static enum ChunkType {
 		PROTOCHUNK,
 		LEVELCHUNK;
+	}
+
+	interface NoGenTask {
+		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
+			ChunkStatus chunkStatus,
+			ServerWorld serverWorld,
+			StructureManager structureManager,
+			ServerLightingProvider serverLightingProvider,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
+			Chunk chunk
+		);
 	}
 
 	interface SimpleTask extends ChunkStatus.Task {
@@ -383,17 +394,6 @@ public class ChunkStatus {
 			ServerLightingProvider serverLightingProvider,
 			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			List<Chunk> list,
-			Chunk chunk
-		);
-	}
-
-	interface class_4305 {
-		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
-			ChunkStatus chunkStatus,
-			ServerWorld serverWorld,
-			StructureManager structureManager,
-			ServerLightingProvider serverLightingProvider,
-			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			Chunk chunk
 		);
 	}

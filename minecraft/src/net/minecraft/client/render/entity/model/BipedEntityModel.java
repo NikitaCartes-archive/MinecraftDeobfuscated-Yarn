@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.LivingEntity;
@@ -11,6 +10,7 @@ import net.minecraft.item.CrossbowItem;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> implements ModelWithArms, ModelWithHead {
@@ -41,27 +41,27 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 		this.textureHeight = j;
 		this.head = new ModelPart(this, 0, 0);
 		this.head.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f);
-		this.head.setRotationPoint(0.0F, 0.0F + g, 0.0F);
+		this.head.setPivot(0.0F, 0.0F + g, 0.0F);
 		this.headwear = new ModelPart(this, 32, 0);
 		this.headwear.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f + 0.5F);
-		this.headwear.setRotationPoint(0.0F, 0.0F + g, 0.0F);
+		this.headwear.setPivot(0.0F, 0.0F + g, 0.0F);
 		this.body = new ModelPart(this, 16, 16);
 		this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f);
-		this.body.setRotationPoint(0.0F, 0.0F + g, 0.0F);
+		this.body.setPivot(0.0F, 0.0F + g, 0.0F);
 		this.rightArm = new ModelPart(this, 40, 16);
 		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightArm.setRotationPoint(-5.0F, 2.0F + g, 0.0F);
+		this.rightArm.setPivot(-5.0F, 2.0F + g, 0.0F);
 		this.leftArm = new ModelPart(this, 40, 16);
 		this.leftArm.mirror = true;
 		this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.leftArm.setRotationPoint(5.0F, 2.0F + g, 0.0F);
+		this.leftArm.setPivot(5.0F, 2.0F + g, 0.0F);
 		this.rightLeg = new ModelPart(this, 0, 16);
 		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightLeg.setRotationPoint(-1.9F, 12.0F + g, 0.0F);
+		this.rightLeg.setPivot(-1.9F, 12.0F + g, 0.0F);
 		this.leftLeg = new ModelPart(this, 0, 16);
 		this.leftLeg.mirror = true;
 		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.leftLeg.setRotationPoint(1.9F, 12.0F + g, 0.0F);
+		this.leftLeg.setPivot(1.9F, 12.0F + g, 0.0F);
 	}
 
 	@Override
@@ -97,10 +97,10 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 		}
 
 		this.body.yaw = 0.0F;
-		this.rightArm.rotationPointZ = 0.0F;
-		this.rightArm.rotationPointX = -5.0F;
-		this.leftArm.rotationPointZ = 0.0F;
-		this.leftArm.rotationPointX = 5.0F;
+		this.rightArm.pivotZ = 0.0F;
+		this.rightArm.pivotX = -5.0F;
+		this.leftArm.pivotZ = 0.0F;
+		this.leftArm.pivotX = 5.0F;
 		float l = 1.0F;
 		if (bl) {
 			l = (float)livingEntity.getVelocity().lengthSquared();
@@ -182,10 +182,10 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 				this.body.yaw *= -1.0F;
 			}
 
-			this.rightArm.rotationPointZ = MathHelper.sin(this.body.yaw) * 5.0F;
-			this.rightArm.rotationPointX = -MathHelper.cos(this.body.yaw) * 5.0F;
-			this.leftArm.rotationPointZ = -MathHelper.sin(this.body.yaw) * 5.0F;
-			this.leftArm.rotationPointX = MathHelper.cos(this.body.yaw) * 5.0F;
+			this.rightArm.pivotZ = MathHelper.sin(this.body.yaw) * 5.0F;
+			this.rightArm.pivotX = -MathHelper.cos(this.body.yaw) * 5.0F;
+			this.leftArm.pivotZ = -MathHelper.sin(this.body.yaw) * 5.0F;
+			this.leftArm.pivotX = MathHelper.cos(this.body.yaw) * 5.0F;
 			this.rightArm.yaw = this.rightArm.yaw + this.body.yaw;
 			this.leftArm.yaw = this.leftArm.yaw + this.body.yaw;
 			this.leftArm.pitch = this.leftArm.pitch + this.body.yaw;
@@ -204,24 +204,24 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 			this.body.pitch = 0.5F;
 			this.rightArm.pitch += 0.4F;
 			this.leftArm.pitch += 0.4F;
-			this.rightLeg.rotationPointZ = 4.0F;
-			this.leftLeg.rotationPointZ = 4.0F;
-			this.rightLeg.rotationPointY = 12.2F;
-			this.leftLeg.rotationPointY = 12.2F;
-			this.head.rotationPointY = 4.2F;
-			this.body.rotationPointY = 3.2F;
-			this.leftArm.rotationPointY = 5.2F;
-			this.rightArm.rotationPointY = 5.2F;
+			this.rightLeg.pivotZ = 4.0F;
+			this.leftLeg.pivotZ = 4.0F;
+			this.rightLeg.pivotY = 12.2F;
+			this.leftLeg.pivotY = 12.2F;
+			this.head.pivotY = 4.2F;
+			this.body.pivotY = 3.2F;
+			this.leftArm.pivotY = 5.2F;
+			this.rightArm.pivotY = 5.2F;
 		} else {
 			this.body.pitch = 0.0F;
-			this.rightLeg.rotationPointZ = 0.1F;
-			this.leftLeg.rotationPointZ = 0.1F;
-			this.rightLeg.rotationPointY = 12.0F;
-			this.leftLeg.rotationPointY = 12.0F;
-			this.head.rotationPointY = 0.0F;
-			this.body.rotationPointY = 0.0F;
-			this.leftArm.rotationPointY = 2.0F;
-			this.rightArm.rotationPointY = 2.0F;
+			this.rightLeg.pivotZ = 0.1F;
+			this.leftLeg.pivotZ = 0.1F;
+			this.rightLeg.pivotY = 12.0F;
+			this.leftLeg.pivotY = 12.0F;
+			this.head.pivotY = 0.0F;
+			this.body.pivotY = 0.0F;
+			this.leftArm.pivotY = 2.0F;
+			this.rightArm.pivotY = 2.0F;
 		}
 
 		this.rightArm.roll = this.rightArm.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
@@ -343,8 +343,8 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm, class_4587 arg) {
-		this.getArm(arm).method_22703(arg, f);
+	public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
+		this.getArm(arm).rotate(matrixStack, f);
 	}
 
 	protected ModelPart getArm(Arm arm) {

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
@@ -14,6 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class SugarCaneBlock extends Block {
 	public static final IntProperty AGE = Properties.AGE_15;
@@ -30,7 +30,7 @@ public class SugarCaneBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
 			serverWorld.breakBlock(blockPos, true);
 		} else if (serverWorld.isAir(blockPos.up())) {
@@ -64,8 +64,8 @@ public class SugarCaneBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		Block block = arg.getBlockState(blockPos.method_10074()).getBlock();
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		Block block = worldView.getBlockState(blockPos.method_10074()).getBlock();
 		if (block == this) {
 			return true;
 		} else {
@@ -78,8 +78,8 @@ public class SugarCaneBlock extends Block {
 				BlockPos blockPos2 = blockPos.method_10074();
 
 				for (Direction direction : Direction.Type.HORIZONTAL) {
-					BlockState blockState2 = arg.getBlockState(blockPos2.offset(direction));
-					FluidState fluidState = arg.getFluidState(blockPos2.offset(direction));
+					BlockState blockState2 = worldView.getBlockState(blockPos2.offset(direction));
+					FluidState fluidState = worldView.getFluidState(blockPos2.offset(direction));
 					if (fluidState.matches(FluidTags.WATER) || blockState2.getBlock() == Blocks.FROSTED_ICE) {
 						return true;
 					}

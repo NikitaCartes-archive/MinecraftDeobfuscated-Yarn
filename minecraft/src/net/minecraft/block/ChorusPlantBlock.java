@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.class_4538;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -10,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class ChorusPlantBlock extends ConnectedPlantBlock {
 	protected ChorusPlantBlock(Block.Settings settings) {
@@ -62,26 +62,26 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
 			serverWorld.breakBlock(blockPos, true);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
-		boolean bl = !arg.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
+		boolean bl = !worldView.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
-			Block block = arg.getBlockState(blockPos2).getBlock();
+			Block block = worldView.getBlockState(blockPos2).getBlock();
 			if (block == this) {
 				if (bl) {
 					return false;
 				}
 
-				Block block2 = arg.getBlockState(blockPos2.method_10074()).getBlock();
+				Block block2 = worldView.getBlockState(blockPos2.method_10074()).getBlock();
 				if (block2 == this || block2 == Blocks.END_STONE) {
 					return true;
 				}

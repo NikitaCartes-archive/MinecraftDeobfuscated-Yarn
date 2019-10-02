@@ -17,8 +17,8 @@ public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEnti
 		this.field_3348.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 8.0F, 3.0F);
 		this.field_3349.yaw = (float) (-Math.PI / 2);
 		this.field_3348.yaw = (float) (Math.PI / 2);
-		this.field_3349.setRotationPoint(6.0F, -8.0F, 0.0F);
-		this.field_3348.setRotationPoint(-6.0F, -8.0F, 0.0F);
+		this.field_3349.setPivot(6.0F, -8.0F, 0.0F);
+		this.field_3348.setPivot(-6.0F, -8.0F, 0.0F);
 		this.field_3305.addChild(this.field_3349);
 		this.field_3305.addChild(this.field_3348);
 	}
@@ -27,10 +27,10 @@ public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEnti
 	protected void method_2789(ModelPart modelPart) {
 		ModelPart modelPart2 = new ModelPart(this, 0, 12);
 		modelPart2.addCuboid(-1.0F, -7.0F, 0.0F, 2.0F, 7.0F, 1.0F);
-		modelPart2.setRotationPoint(1.25F, -10.0F, 4.0F);
+		modelPart2.setPivot(1.25F, -10.0F, 4.0F);
 		ModelPart modelPart3 = new ModelPart(this, 0, 12);
 		modelPart3.addCuboid(-1.0F, -7.0F, 0.0F, 2.0F, 7.0F, 1.0F);
-		modelPart3.setRotationPoint(-1.25F, -10.0F, 4.0F);
+		modelPart3.setPivot(-1.25F, -10.0F, 4.0F);
 		modelPart2.pitch = (float) (Math.PI / 12);
 		modelPart2.roll = (float) (Math.PI / 12);
 		modelPart3.pitch = (float) (Math.PI / 12);

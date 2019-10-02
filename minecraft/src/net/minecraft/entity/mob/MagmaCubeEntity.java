@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -21,6 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.loot.LootTables;
 
 public class MagmaCubeEntity extends SlimeEntity {
@@ -39,8 +39,8 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	public boolean canSpawn(class_4538 arg) {
-		return arg.intersectsEntities(this) && !arg.containsFluid(this.getBoundingBox());
+	public boolean canSpawn(WorldView worldView) {
+		return worldView.intersectsEntities(this) && !worldView.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

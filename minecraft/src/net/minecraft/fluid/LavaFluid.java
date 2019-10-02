@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -22,6 +21,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class LavaFluid extends BaseFluid {
 	@Override
@@ -105,9 +105,9 @@ public abstract class LavaFluid extends BaseFluid {
 		}
 	}
 
-	private boolean method_15819(class_4538 arg, BlockPos blockPos) {
+	private boolean method_15819(WorldView worldView, BlockPos blockPos) {
 		for (Direction direction : Direction.values()) {
-			if (this.method_15817(arg, blockPos.offset(direction))) {
+			if (this.method_15817(worldView, blockPos.offset(direction))) {
 				return true;
 			}
 		}
@@ -115,8 +115,10 @@ public abstract class LavaFluid extends BaseFluid {
 		return false;
 	}
 
-	private boolean method_15817(class_4538 arg, BlockPos blockPos) {
-		return blockPos.getY() >= 0 && blockPos.getY() < 256 && !arg.isChunkLoaded(blockPos) ? false : arg.getBlockState(blockPos).getMaterial().isBurnable();
+	private boolean method_15817(WorldView worldView, BlockPos blockPos) {
+		return blockPos.getY() >= 0 && blockPos.getY() < 256 && !worldView.isChunkLoaded(blockPos)
+			? false
+			: worldView.getBlockState(blockPos).getMaterial().isBurnable();
 	}
 
 	@Nullable
@@ -132,8 +134,8 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15733(class_4538 arg) {
-		return arg.getDimension().doesWaterVaporize() ? 4 : 2;
+	public int method_15733(WorldView worldView) {
+		return worldView.getDimension().doesWaterVaporize() ? 4 : 2;
 	}
 
 	@Override
@@ -147,8 +149,8 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int getLevelDecreasePerBlock(class_4538 arg) {
-		return arg.getDimension().doesWaterVaporize() ? 1 : 2;
+	public int getLevelDecreasePerBlock(WorldView worldView) {
+		return worldView.getDimension().doesWaterVaporize() ? 1 : 2;
 	}
 
 	@Override
@@ -157,8 +159,8 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int getTickRate(class_4538 arg) {
-		return arg.getDimension().isNether() ? 10 : 30;
+	public int getTickRate(WorldView worldView) {
+		return worldView.getDimension().isNether() ? 10 : 30;
 	}
 
 	@Override

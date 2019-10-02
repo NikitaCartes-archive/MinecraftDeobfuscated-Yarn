@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +21,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class BambooBlock extends Block implements Fertilizable {
 	protected static final VoxelShape SMALL_LEAVES_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
@@ -94,7 +94,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
 			serverWorld.breakBlock(blockPos, true);
 		} else if ((Integer)blockState.get(STAGE) == 0) {
@@ -108,8 +108,8 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return arg.getBlockState(blockPos.method_10074()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return worldView.getBlockState(blockPos.method_10074()).matches(BlockTags.BAMBOO_PLANTABLE_ON);
 	}
 
 	@Override

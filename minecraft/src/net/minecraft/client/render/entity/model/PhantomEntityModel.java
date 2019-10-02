@@ -25,27 +25,27 @@ public class PhantomEntityModel<T extends Entity> extends class_4595<T> {
 		this.head.addCuboid(-3.0F, -2.0F, -8.0F, 5.0F, 3.0F, 9.0F);
 		this.field_3471 = new ModelPart(this, 3, 20);
 		this.field_3471.addCuboid(-2.0F, 0.0F, 0.0F, 3.0F, 2.0F, 6.0F);
-		this.field_3471.setRotationPoint(0.0F, -2.0F, 1.0F);
+		this.field_3471.setPivot(0.0F, -2.0F, 1.0F);
 		this.head.addChild(this.field_3471);
 		this.field_3473 = new ModelPart(this, 4, 29);
 		this.field_3473.addCuboid(-1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 6.0F);
-		this.field_3473.setRotationPoint(0.0F, 0.5F, 6.0F);
+		this.field_3473.setPivot(0.0F, 0.5F, 6.0F);
 		this.field_3471.addChild(this.field_3473);
 		this.field_3477 = new ModelPart(this, 23, 12);
 		this.field_3477.addCuboid(0.0F, 0.0F, 0.0F, 6.0F, 2.0F, 9.0F);
-		this.field_3477.setRotationPoint(2.0F, -2.0F, -8.0F);
+		this.field_3477.setPivot(2.0F, -2.0F, -8.0F);
 		this.field_3476 = new ModelPart(this, 16, 24);
 		this.field_3476.addCuboid(0.0F, 0.0F, 0.0F, 13.0F, 1.0F, 9.0F);
-		this.field_3476.setRotationPoint(6.0F, 0.0F, 0.0F);
+		this.field_3476.setPivot(6.0F, 0.0F, 0.0F);
 		this.field_3477.addChild(this.field_3476);
 		this.field_3474 = new ModelPart(this, 23, 12);
 		this.field_3474.mirror = true;
 		this.field_3474.addCuboid(-6.0F, 0.0F, 0.0F, 6.0F, 2.0F, 9.0F);
-		this.field_3474.setRotationPoint(-3.0F, -2.0F, -8.0F);
+		this.field_3474.setPivot(-3.0F, -2.0F, -8.0F);
 		this.field_3472 = new ModelPart(this, 16, 24);
 		this.field_3472.mirror = true;
 		this.field_3472.addCuboid(-13.0F, 0.0F, 0.0F, 13.0F, 1.0F, 9.0F);
-		this.field_3472.setRotationPoint(-6.0F, 0.0F, 0.0F);
+		this.field_3472.setPivot(-6.0F, 0.0F, 0.0F);
 		this.field_3474.addChild(this.field_3472);
 		this.field_3477.roll = 0.1F;
 		this.field_3476.roll = 0.1F;
@@ -54,7 +54,7 @@ public class PhantomEntityModel<T extends Entity> extends class_4595<T> {
 		this.head.pitch = -0.1F;
 		ModelPart modelPart = new ModelPart(this, 0, 0);
 		modelPart.addCuboid(-4.0F, -2.0F, -5.0F, 7.0F, 3.0F, 5.0F);
-		modelPart.setRotationPoint(0.0F, 1.0F, -7.0F);
+		modelPart.setPivot(0.0F, 1.0F, -7.0F);
 		modelPart.pitch = 0.2F;
 		this.head.addChild(modelPart);
 		this.head.addChild(this.field_3477);
@@ -62,7 +62,7 @@ public class PhantomEntityModel<T extends Entity> extends class_4595<T> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.head);
 	}
 

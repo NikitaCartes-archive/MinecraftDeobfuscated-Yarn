@@ -52,7 +52,7 @@ public class DamageTracker {
 			this.recentlyAttacked = true;
 			this.ageOnLastAttacked = this.entity.age;
 			this.ageOnLastUpdate = this.ageOnLastAttacked;
-			this.entity.method_6000();
+			this.entity.enterCombat();
 		}
 	}
 
@@ -172,7 +172,7 @@ public class DamageTracker {
 			this.recentlyAttacked = false;
 			this.ageOnLastUpdate = this.entity.age;
 			if (bl) {
-				this.entity.method_6044();
+				this.entity.endCombat();
 			}
 
 			this.recentDamage.clear();

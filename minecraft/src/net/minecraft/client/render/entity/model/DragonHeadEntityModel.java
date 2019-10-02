@@ -2,9 +2,9 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class DragonHeadEntityModel extends SkullEntityModel {
@@ -25,20 +25,20 @@ public class DragonHeadEntityModel extends SkullEntityModel {
 		this.head.addCuboid("scale", 3.0F, -12.0F, -4.0F, 2, 4, 6, f, 0, 0);
 		this.head.addCuboid("nostril", 3.0F, -3.0F, -22.0F, 2, 2, 4, f, 112, 0);
 		this.jaw = new ModelPart(this);
-		this.jaw.setRotationPoint(0.0F, 4.0F, -8.0F);
+		this.jaw.setPivot(0.0F, 4.0F, -8.0F);
 		this.jaw.addCuboid("jaw", -6.0F, 0.0F, -16.0F, 12, 4, 16, f, 176, 65);
 		this.head.addChild(this.jaw);
 	}
 
 	@Override
-	public void render(class_4587 arg, class_4588 arg2, float f, float g, float h, float i, int j) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j) {
 		this.jaw.pitch = (float)(Math.sin((double)(f * (float) Math.PI * 0.2F)) + 1.0) * 0.2F;
 		this.head.yaw = g * (float) (Math.PI / 180.0);
 		this.head.pitch = h * (float) (Math.PI / 180.0);
-		arg.method_22903();
-		arg.method_22904(0.0, -0.374375F, 0.0);
-		arg.method_22905(0.75F, 0.75F, 0.75F);
-		this.head.method_22698(arg, arg2, i, j, null);
-		arg.method_22909();
+		matrixStack.push();
+		matrixStack.translate(0.0, -0.374375F, 0.0);
+		matrixStack.scale(0.75F, 0.75F, 0.75F);
+		this.head.render(matrixStack, vertexConsumer, i, j, null);
+		matrixStack.pop();
 	}
 }

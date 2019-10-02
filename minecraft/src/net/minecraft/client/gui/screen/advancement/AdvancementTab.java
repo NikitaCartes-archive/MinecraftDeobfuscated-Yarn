@@ -28,14 +28,14 @@ public class AdvancementTab extends DrawableHelper {
 	private final String title;
 	private final AdvancementWidget rootWidget;
 	private final Map<Advancement, AdvancementWidget> widgets = Maps.<Advancement, AdvancementWidget>newLinkedHashMap();
-	private double panX;
-	private double panY;
+	private double originX;
+	private double originY;
 	private int minPanX = Integer.MAX_VALUE;
 	private int minPanY = Integer.MAX_VALUE;
 	private int maxPanX = Integer.MIN_VALUE;
 	private int maxPanY = Integer.MIN_VALUE;
-	private float field_2688;
-	private boolean field_2683;
+	private float alpha;
+	private boolean initialized;
 
 	public AdvancementTab(
 		MinecraftClient minecraftClient,
@@ -74,10 +74,10 @@ public class AdvancementTab extends DrawableHelper {
 	}
 
 	public void render() {
-		if (!this.field_2683) {
-			this.panX = (double)(117 - (this.maxPanX + this.minPanX) / 2);
-			this.panY = (double)(56 - (this.maxPanY + this.minPanY) / 2);
-			this.field_2683 = true;
+		if (!this.initialized) {
+			this.originX = (double)(117 - (this.maxPanX + this.minPanX) / 2);
+			this.originY = (double)(56 - (this.maxPanY + this.minPanY) / 2);
+			this.initialized = true;
 		}
 
 		RenderSystem.depthFunc(518);
@@ -91,8 +91,8 @@ public class AdvancementTab extends DrawableHelper {
 		}
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		int i = MathHelper.floor(this.panX);
-		int j = MathHelper.floor(this.panY);
+		int i = MathHelper.floor(this.originX);
+		int j = MathHelper.floor(this.originY);
 		int k = i % 16;
 		int l = j % 16;
 
@@ -110,15 +110,15 @@ public class AdvancementTab extends DrawableHelper {
 	public void drawWidgetTooltip(int i, int j, int k, int l) {
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef(0.0F, 0.0F, 200.0F);
-		fill(0, 0, 234, 113, MathHelper.floor(this.field_2688 * 255.0F) << 24);
+		fill(0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0F) << 24);
 		boolean bl = false;
-		int m = MathHelper.floor(this.panX);
-		int n = MathHelper.floor(this.panY);
+		int m = MathHelper.floor(this.originX);
+		int n = MathHelper.floor(this.originY);
 		if (i > 0 && i < 234 && j > 0 && j < 113) {
 			for (AdvancementWidget advancementWidget : this.widgets.values()) {
-				if (advancementWidget.method_2329(m, n, i, j)) {
+				if (advancementWidget.shouldRender(m, n, i, j)) {
 					bl = true;
-					advancementWidget.method_2331(m, n, this.field_2688, k, l);
+					advancementWidget.drawTooltip(m, n, this.alpha, k, l);
 					break;
 				}
 			}
@@ -126,9 +126,9 @@ public class AdvancementTab extends DrawableHelper {
 
 		RenderSystem.popMatrix();
 		if (bl) {
-			this.field_2688 = MathHelper.clamp(this.field_2688 + 0.02F, 0.0F, 0.3F);
+			this.alpha = MathHelper.clamp(this.alpha + 0.02F, 0.0F, 0.3F);
 		} else {
-			this.field_2688 = MathHelper.clamp(this.field_2688 - 0.04F, 0.0F, 1.0F);
+			this.alpha = MathHelper.clamp(this.alpha - 0.04F, 0.0F, 1.0F);
 		}
 	}
 
@@ -155,11 +155,11 @@ public class AdvancementTab extends DrawableHelper {
 
 	public void move(double d, double e) {
 		if (this.maxPanX - this.minPanX > 234) {
-			this.panX = MathHelper.clamp(this.panX + d, (double)(-(this.maxPanX - 234)), 0.0);
+			this.originX = MathHelper.clamp(this.originX + d, (double)(-(this.maxPanX - 234)), 0.0);
 		}
 
 		if (this.maxPanY - this.minPanY > 113) {
-			this.panY = MathHelper.clamp(this.panY + e, (double)(-(this.maxPanY - 113)), 0.0);
+			this.originY = MathHelper.clamp(this.originY + e, (double)(-(this.maxPanY - 113)), 0.0);
 		}
 	}
 

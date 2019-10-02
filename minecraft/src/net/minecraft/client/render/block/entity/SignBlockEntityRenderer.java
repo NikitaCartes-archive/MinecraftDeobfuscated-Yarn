@@ -5,11 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SignBlock;
@@ -20,7 +16,10 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
@@ -29,6 +28,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity> {
@@ -42,32 +42,41 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		this.field_20991.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 14.0F, 2.0F, 0.0F);
 	}
 
-	public void method_23083(SignBlockEntity signBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+	public void method_23083(
+		SignBlockEntity signBlockEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i
+	) {
 		BlockState blockState = signBlockEntity.getCachedState();
-		arg.method_22903();
+		matrixStack.push();
 		float h = 0.6666667F;
 		if (blockState.getBlock() instanceof SignBlock) {
-			arg.method_22904(0.5, 0.5, 0.5);
-			arg.method_22907(Vector3f.field_20705.method_23214(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), true));
+			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F), true));
 			this.field_20991.visible = true;
 		} else {
-			arg.method_22904(0.5, 0.5, 0.5);
-			arg.method_22907(Vector3f.field_20705.method_23214(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), true));
-			arg.method_22904(0.0, -0.3125, -0.4375);
+			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), true));
+			matrixStack.translate(0.0, -0.3125, -0.4375);
 			this.field_20991.visible = false;
 		}
 
-		Sprite sprite = this.method_23082(this.getModelTexture(blockState.getBlock()));
-		arg.method_22903();
-		arg.method_22905(0.6666667F, -0.6666667F, -0.6666667F);
-		class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
-		this.field_20990.method_22698(arg, lv, 0.0625F, i, sprite);
-		this.field_20991.method_22698(arg, lv, 0.0625F, i, sprite);
-		arg.method_22909();
+		Sprite sprite = this.getSprite(this.getModelTexture(blockState.getBlock()));
+		matrixStack.push();
+		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
+		this.field_20990.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20991.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		matrixStack.pop();
 		TextRenderer textRenderer = this.field_20989.getFontRenderer();
 		float j = 0.010416667F;
-		arg.method_22904(0.0, 0.33333334F, 0.046666667F);
-		arg.method_22905(0.010416667F, -0.010416667F, 0.010416667F);
+		matrixStack.translate(0.0, 0.33333334F, 0.046666667F);
+		matrixStack.scale(0.010416667F, -0.010416667F, 0.010416667F);
 		int k = signBlockEntity.getTextColor().getSignColor();
 
 		for (int l = 0; l < 4; l++) {
@@ -77,7 +86,9 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			});
 			if (string != null) {
 				float m = (float)(-textRenderer.getStringWidth(string) / 2);
-				textRenderer.method_22942(string, m, (float)(l * 10 - signBlockEntity.text.length * 5), k, false, arg.method_22910(), arg2, false, 0, i);
+				textRenderer.method_22942(
+					string, m, (float)(l * 10 - signBlockEntity.text.length * 5), k, false, matrixStack.peek(), layeredVertexConsumerStorage, false, 0, i
+				);
 				if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
 					int n = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
 					int o = textRenderer.isRightToLeft() ? -1 : 1;
@@ -87,7 +98,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 						if (signBlockEntity.getSelectionStart() < string.length()) {
 							DrawableHelper.fill(p, q - 1, p + 1, q + 9, 0xFF000000 | k);
 						} else {
-							textRenderer.method_22942("_", (float)p, (float)q, k, false, arg.method_22910(), arg2, false, 0, i);
+							textRenderer.method_22942("_", (float)p, (float)q, k, false, matrixStack.peek(), layeredVertexConsumerStorage, false, 0, i);
 						}
 					}
 
@@ -97,7 +108,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 						int t = (textRenderer.getStringWidth(string.substring(0, r)) - textRenderer.getStringWidth(string) / 2) * o;
 						int u = (textRenderer.getStringWidth(string.substring(0, s)) - textRenderer.getStringWidth(string) / 2) * o;
 						RenderSystem.pushMatrix();
-						RenderSystem.multMatrix(arg.method_22910());
+						RenderSystem.multMatrix(matrixStack.peek());
 						this.method_16210(Math.min(t, u), q, Math.max(t, u), q + 9);
 						RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 						RenderSystem.popMatrix();
@@ -106,7 +117,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			}
 		}
 
-		arg.method_22909();
+		matrixStack.pop();
 	}
 
 	private Identifier getModelTexture(Block block) {

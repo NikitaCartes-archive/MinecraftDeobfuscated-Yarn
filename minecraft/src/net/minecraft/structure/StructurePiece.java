@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +26,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class StructurePiece {
@@ -230,12 +230,12 @@ public abstract class StructurePiece {
 		return !blockBox.contains(blockPos) ? Blocks.AIR.getDefaultState() : blockView.getBlockState(blockPos);
 	}
 
-	protected boolean isUnderSeaLevel(class_4538 arg, int i, int j, int k, BlockBox blockBox) {
+	protected boolean isUnderSeaLevel(WorldView worldView, int i, int j, int k, BlockBox blockBox) {
 		int l = this.applyXTransform(i, k);
 		int m = this.applyYTransform(j + 1);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !blockBox.contains(blockPos) ? false : m < arg.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+		return !blockBox.contains(blockPos) ? false : m < worldView.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
 	}
 
 	protected void fill(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, int n) {

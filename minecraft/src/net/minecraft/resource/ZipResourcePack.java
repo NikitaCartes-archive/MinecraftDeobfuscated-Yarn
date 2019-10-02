@@ -69,7 +69,7 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 		while (enumeration.hasMoreElements()) {
 			ZipEntry zipEntry = (ZipEntry)enumeration.nextElement();
 			String string = zipEntry.getName();
-			if (string.startsWith(resourceType.getName() + "/")) {
+			if (string.startsWith(resourceType.getDirectory() + "/")) {
 				List<String> list = Lists.<String>newArrayList(TYPE_NAMESPACE_SPLITTER.split(string));
 				if (list.size() > 1) {
 					String string2 = (String)list.get(1);
@@ -108,7 +108,7 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 
 		Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
 		List<Identifier> list = Lists.<Identifier>newArrayList();
-		String string2 = resourceType.getName() + "/";
+		String string2 = resourceType.getDirectory() + "/";
 
 		while (enumeration.hasMoreElements()) {
 			ZipEntry zipEntry = (ZipEntry)enumeration.nextElement();

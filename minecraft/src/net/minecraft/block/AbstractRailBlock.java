@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.class_4538;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityContext;
@@ -12,6 +11,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public abstract class AbstractRailBlock extends Block {
 	protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
@@ -42,8 +42,8 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return topCoversMediumSquare(arg, blockPos.method_10074());
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return topCoversMediumSquare(worldView, blockPos.method_10074());
 	}
 
 	@Override

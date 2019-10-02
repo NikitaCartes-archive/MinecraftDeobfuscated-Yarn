@@ -145,13 +145,10 @@ public class CreditsScreen extends Screen {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getBlitOffset()).texture(0.0F, g * 0.015625F).method_22915(m, m, m, 1.0F).next();
-		bufferBuilder.vertex((double)k, (double)this.height, (double)this.getBlitOffset())
-			.texture((float)k * 0.015625F, g * 0.015625F)
-			.method_22915(m, m, m, 1.0F)
-			.next();
-		bufferBuilder.vertex((double)k, 0.0, (double)this.getBlitOffset()).texture((float)k * 0.015625F, h * 0.015625F).method_22915(m, m, m, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, h * 0.015625F).method_22915(m, m, m, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getBlitOffset()).texture(0.0F, g * 0.015625F).color(m, m, m, 1.0F).next();
+		bufferBuilder.vertex((double)k, (double)this.height, (double)this.getBlitOffset()).texture((float)k * 0.015625F, g * 0.015625F).color(m, m, m, 1.0F).next();
+		bufferBuilder.vertex((double)k, 0.0, (double)this.getBlitOffset()).texture((float)k * 0.015625F, h * 0.015625F).color(m, m, m, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, h * 0.015625F).color(m, m, m, 1.0F).next();
 		tessellator.draw();
 	}
 
@@ -205,10 +202,10 @@ public class CreditsScreen extends Screen {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)p, (double)this.getBlitOffset()).texture(0.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)o, (double)p, (double)this.getBlitOffset()).texture(1.0F, 1.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)o, 0.0, (double)this.getBlitOffset()).texture(1.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, 0.0F).method_22915(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)p, (double)this.getBlitOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)o, (double)p, (double)this.getBlitOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)o, 0.0, (double)this.getBlitOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		RenderSystem.disableBlend();
 		super.render(i, j, f);

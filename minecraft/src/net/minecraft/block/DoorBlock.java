@@ -3,7 +3,6 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -30,6 +29,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class DoorBlock extends Block {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -200,7 +200,7 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (this.material == Material.METAL) {
 			return false;
 		} else {
@@ -233,10 +233,10 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.method_10074();
-		BlockState blockState2 = arg.getBlockState(blockPos2);
-		return blockState.get(HALF) == DoubleBlockHalf.LOWER ? blockState2.isSideSolidFullSquare(arg, blockPos2, Direction.UP) : blockState2.getBlock() == this;
+		BlockState blockState2 = worldView.getBlockState(blockPos2);
+		return blockState.get(HALF) == DoubleBlockHalf.LOWER ? blockState2.isSideSolidFullSquare(worldView, blockPos2, Direction.UP) : blockState2.getBlock() == this;
 	}
 
 	private void playOpenCloseSound(World world, BlockPos blockPos, boolean bl) {

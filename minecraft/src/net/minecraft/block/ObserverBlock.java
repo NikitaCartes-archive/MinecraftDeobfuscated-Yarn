@@ -38,7 +38,7 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if ((Boolean)blockState.get(POWERED)) {
 			serverWorld.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(false)), 2);
 		} else {

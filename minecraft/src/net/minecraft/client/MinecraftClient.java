@@ -34,7 +34,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4599;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -84,6 +83,7 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LayeredBufferBuilderStorage;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -96,8 +96,8 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.resource.ClientResourcePackContainer;
-import net.minecraft.client.resource.ClientResourcePackCreator;
+import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
+import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.RedirectedResourcePack;
@@ -143,13 +143,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.resource.FileResourcePackCreator;
+import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourcePackContainer;
-import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
@@ -216,7 +216,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	private final Window window;
 	private final RenderTickCounter renderTickCounter = new RenderTickCounter(20.0F, 0L);
 	private final Snooper snooper = new Snooper("client", this, SystemUtil.getMeasuringTimeMs());
-	private final class_4599 field_20909;
+	private final LayeredBufferBuilderStorage field_20909;
 	public final WorldRenderer worldRenderer;
 	private final EntityRenderDispatcher entityRenderManager;
 	private final ItemRenderer itemRenderer;
@@ -243,8 +243,8 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	private final boolean isDemo;
 	private final DisableableProfiler profiler = new DisableableProfiler(() -> this.renderTickCounter.ticksThisFrame);
 	private final ReloadableResourceManager resourceManager;
-	private final ClientResourcePackCreator resourcePackCreator;
-	private final ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager;
+	private final ClientBuiltinResourcePackProvider builtinPackProvider;
+	private final ResourcePackManager<ClientResourcePackProfile> resourcePackManager;
 	private final LanguageManager languageManager;
 	private final BlockColors blockColorMap;
 	private final ItemColors itemColorMap;
@@ -320,8 +320,8 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.gameVersion = runArgs.game.version;
 		this.versionType = runArgs.game.versionType;
 		this.sessionPropertyMap = runArgs.network.profileProperties;
-		this.resourcePackCreator = new ClientResourcePackCreator(new File(this.runDirectory, "server-resource-packs"), runArgs.directories.getResourceIndex());
-		this.resourcePackContainerManager = new ResourcePackContainerManager<>((stringx, bl, supplier, resourcePackx, packResourceMetadata, insertionPosition) -> {
+		this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), runArgs.directories.getResourceIndex());
+		this.resourcePackManager = new ResourcePackManager<>((stringx, bl, supplier, resourcePackx, packResourceMetadata, insertionPosition) -> {
 			Supplier<ResourcePack> supplier2;
 			if (packResourceMetadata.getPackFormat() < SharedConstants.getGameVersion().getPackVersion()) {
 				supplier2 = () -> new RedirectedResourcePack((ResourcePack)supplier.get(), RedirectedResourcePack.NEW_TO_OLD_MAP);
@@ -329,10 +329,10 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 				supplier2 = supplier;
 			}
 
-			return new ClientResourcePackContainer(stringx, bl, supplier2, resourcePackx, packResourceMetadata, insertionPosition);
+			return new ClientResourcePackProfile(stringx, bl, supplier2, resourcePackx, packResourceMetadata, insertionPosition);
 		});
-		this.resourcePackContainerManager.addCreator(this.resourcePackCreator);
-		this.resourcePackContainerManager.addCreator(new FileResourcePackCreator(this.resourcePackDir));
+		this.resourcePackManager.registerProvider(this.builtinPackProvider);
+		this.resourcePackManager.registerProvider(new FileResourcePackProvider(this.resourcePackDir));
 		this.netProxy = runArgs.network.netProxy;
 		this.sessionService = new YggdrasilAuthenticationService(this.netProxy, UUID.randomUUID().toString()).createMinecraftSessionService();
 		this.session = runArgs.network.session;
@@ -397,12 +397,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.framebuffer = new GlFramebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, IS_SYSTEM_MAC);
 		this.framebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
 		this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES, this.thread);
-		this.options.addResourcePackContainersToManager(this.resourcePackContainerManager);
-		this.resourcePackContainerManager.callCreators();
-		List<ResourcePack> list = (List<ResourcePack>)this.resourcePackContainerManager
-			.getEnabledContainers()
+		this.options.addResourcePackContainersToManager(this.resourcePackManager);
+		this.resourcePackManager.scanPacks();
+		List<ResourcePack> list = (List<ResourcePack>)this.resourcePackManager
+			.getEnabledProfiles()
 			.stream()
-			.map(ResourcePackContainer::createResourcePack)
+			.map(ResourcePackProfile::createResourcePack)
 			.collect(Collectors.toList());
 
 		for (ResourcePack resourcePack : list) {
@@ -447,7 +447,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
 			this.firstPersonRenderer = new FirstPersonRenderer(this);
 			this.resourceManager.registerListener(this.itemRenderer);
-			this.field_20909 = new class_4599();
+			this.field_20909 = new LayeredBufferBuilderStorage();
 			this.gameRenderer = new GameRenderer(this, this.resourceManager, this.field_20909);
 			this.resourceManager.registerListener(this.gameRenderer);
 			this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockStateMaps(), this.blockColorMap);
@@ -491,7 +491,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		}
 	}
 
-	public void start() {
+	public void run() {
 		this.thread = Thread.currentThread();
 
 		try {
@@ -643,11 +643,11 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 				this.resourceReloadFuture = completableFuture;
 				return completableFuture;
 			} else {
-				this.resourcePackContainerManager.callCreators();
-				List<ResourcePack> list = (List<ResourcePack>)this.resourcePackContainerManager
-					.getEnabledContainers()
+				this.resourcePackManager.scanPacks();
+				List<ResourcePack> list = (List<ResourcePack>)this.resourcePackManager
+					.getEnabledProfiles()
 					.stream()
-					.map(ResourcePackContainer::createResourcePack)
+					.map(ResourcePackProfile::createResourcePack)
 					.collect(Collectors.toList());
 				this.setOverlay(
 					new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), () -> {
@@ -788,7 +788,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.gameRenderer.close();
 			this.worldRenderer.close();
 			this.soundManager.close();
-			this.resourcePackContainerManager.close();
+			this.resourcePackManager.close();
 			this.particleManager.clearAtlas();
 			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
@@ -803,7 +803,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		this.window.setPhase("Pre render");
 		long l = SystemUtil.getMeasuringTimeNano();
 		this.profiler.startTick();
-		if (this.window.method_22093()) {
+		if (this.window.shouldClose()) {
 			this.scheduleStop();
 		}
 
@@ -1548,7 +1548,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 				}
 			}
 
-			this.resourcePackCreator.clear();
+			this.builtinPackProvider.clear();
 			this.inGameHud.clear();
 			this.currentServerEntry = null;
 			this.isIntegratedServerRunning = false;
@@ -1791,7 +1791,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	public void addSnooperInfo(Snooper snooper) {
 		snooper.addInfo("fps", currentFps);
 		snooper.addInfo("vsync_enabled", this.options.enableVsync);
-		snooper.addInfo("display_frequency", this.window.method_22092());
+		snooper.addInfo("display_frequency", this.window.getRefreshRate());
 		snooper.addInfo("display_type", this.window.isFullscreen() ? "fullscreen" : "windowed");
 		snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
 		snooper.addInfo("current_action", this.getCurrentAction());
@@ -1802,9 +1802,9 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		snooper.addInfo("touch", this.options.touchscreen ? "touch" : "mouse");
 		int i = 0;
 
-		for (ClientResourcePackContainer clientResourcePackContainer : this.resourcePackContainerManager.getEnabledContainers()) {
-			if (!clientResourcePackContainer.canBeSorted() && !clientResourcePackContainer.isPositionFixed()) {
-				snooper.addInfo("resource_pack[" + i++ + "]", clientResourcePackContainer.getName());
+		for (ClientResourcePackProfile clientResourcePackProfile : this.resourcePackManager.getEnabledProfiles()) {
+			if (!clientResourcePackProfile.isAlwaysEnabled() && !clientResourcePackProfile.isPinned()) {
+				snooper.addInfo("resource_pack[" + i++ + "]", clientResourcePackProfile.getName());
 			}
 		}
 
@@ -1875,12 +1875,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		return this.resourceManager;
 	}
 
-	public ResourcePackContainerManager<ClientResourcePackContainer> getResourcePackContainerManager() {
-		return this.resourcePackContainerManager;
+	public ResourcePackManager<ClientResourcePackProfile> getResourcePackManager() {
+		return this.resourcePackManager;
 	}
 
-	public ClientResourcePackCreator getResourcePackDownloader() {
-		return this.resourcePackCreator;
+	public ClientBuiltinResourcePackProvider getResourcePackDownloader() {
+		return this.builtinPackProvider;
 	}
 
 	public File getResourcePackDir() {
@@ -2082,7 +2082,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		return this.window;
 	}
 
-	public class_4599 method_22940() {
+	public LayeredBufferBuilderStorage method_22940() {
 		return this.field_20909;
 	}
 }

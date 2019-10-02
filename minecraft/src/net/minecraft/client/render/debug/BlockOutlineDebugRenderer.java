@@ -59,10 +59,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(g, h, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, h, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, k, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, k, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
@@ -70,10 +70,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(g, k, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, h, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, h, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
@@ -81,10 +81,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(j, h, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, h, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
@@ -92,10 +92,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(j, k, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, h, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, k, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, h, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
@@ -103,10 +103,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(g, h, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, h, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, h, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, h, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
@@ -114,10 +114,10 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(g, k, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, k, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, i).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, m).method_22915(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 				}

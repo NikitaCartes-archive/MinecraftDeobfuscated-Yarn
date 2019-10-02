@@ -82,11 +82,11 @@ public final class Matrix4f {
 		return stringBuilder.toString();
 	}
 
-	public void putIntoBuffer(FloatBuffer floatBuffer) {
-		this.putIntoBuffer(floatBuffer, false);
+	public void writeToBuffer(FloatBuffer floatBuffer) {
+		this.writeToBuffer(floatBuffer, false);
 	}
 
-	public void putIntoBuffer(FloatBuffer floatBuffer, boolean bl) {
+	public void writeToBuffer(FloatBuffer floatBuffer, boolean bl) {
 		if (bl) {
 			for (int i = 0; i < 4; i++) {
 				for (int j = 0; j < 4; j++) {
@@ -98,7 +98,7 @@ public final class Matrix4f {
 		}
 	}
 
-	public void method_22668() {
+	public void loadIdentity() {
 		this.components[0] = 1.0F;
 		this.components[1] = 0.0F;
 		this.components[2] = 0.0F;
@@ -117,7 +117,7 @@ public final class Matrix4f {
 		this.components[15] = 1.0F;
 	}
 
-	public float method_22669(int i, int j) {
+	public float get(int i, int j) {
 		return this.components[4 * j + i];
 	}
 
@@ -125,35 +125,35 @@ public final class Matrix4f {
 		this.components[4 * j + i] = f;
 	}
 
-	public float method_22868() {
-		float f = this.method_22867(0, 1, 0, 1);
-		float g = this.method_22867(0, 1, 0, 2);
-		float h = this.method_22867(0, 1, 0, 3);
-		float i = this.method_22867(0, 1, 1, 2);
-		float j = this.method_22867(0, 1, 1, 3);
-		float k = this.method_22867(0, 1, 2, 3);
-		float l = this.method_22867(2, 3, 0, 1);
-		float m = this.method_22867(2, 3, 0, 2);
-		float n = this.method_22867(2, 3, 0, 3);
-		float o = this.method_22867(2, 3, 1, 2);
-		float p = this.method_22867(2, 3, 1, 3);
-		float q = this.method_22867(2, 3, 2, 3);
-		float r = this.method_22669(1, 1) * q - this.method_22669(1, 2) * p + this.method_22669(1, 3) * o;
-		float s = -this.method_22669(1, 0) * q + this.method_22669(1, 2) * n - this.method_22669(1, 3) * m;
-		float t = this.method_22669(1, 0) * p - this.method_22669(1, 1) * n + this.method_22669(1, 3) * l;
-		float u = -this.method_22669(1, 0) * o + this.method_22669(1, 1) * m - this.method_22669(1, 2) * l;
-		float v = -this.method_22669(0, 1) * q + this.method_22669(0, 2) * p - this.method_22669(0, 3) * o;
-		float w = this.method_22669(0, 0) * q - this.method_22669(0, 2) * n + this.method_22669(0, 3) * m;
-		float x = -this.method_22669(0, 0) * p + this.method_22669(0, 1) * n - this.method_22669(0, 3) * l;
-		float y = this.method_22669(0, 0) * o - this.method_22669(0, 1) * m + this.method_22669(0, 2) * l;
-		float z = this.method_22669(3, 1) * k - this.method_22669(3, 2) * j + this.method_22669(3, 3) * i;
-		float aa = -this.method_22669(3, 0) * k + this.method_22669(3, 2) * h - this.method_22669(3, 3) * g;
-		float ab = this.method_22669(3, 0) * j - this.method_22669(3, 1) * h + this.method_22669(3, 3) * f;
-		float ac = -this.method_22669(3, 0) * i + this.method_22669(3, 1) * g - this.method_22669(3, 2) * f;
-		float ad = -this.method_22669(2, 1) * k + this.method_22669(2, 2) * j - this.method_22669(2, 3) * i;
-		float ae = this.method_22669(2, 0) * k - this.method_22669(2, 2) * h + this.method_22669(2, 3) * g;
-		float af = -this.method_22669(2, 0) * j + this.method_22669(2, 1) * h - this.method_22669(2, 3) * f;
-		float ag = this.method_22669(2, 0) * i - this.method_22669(2, 1) * g + this.method_22669(2, 2) * f;
+	public float determinantAndAdjugate() {
+		float f = this.minor(0, 1, 0, 1);
+		float g = this.minor(0, 1, 0, 2);
+		float h = this.minor(0, 1, 0, 3);
+		float i = this.minor(0, 1, 1, 2);
+		float j = this.minor(0, 1, 1, 3);
+		float k = this.minor(0, 1, 2, 3);
+		float l = this.minor(2, 3, 0, 1);
+		float m = this.minor(2, 3, 0, 2);
+		float n = this.minor(2, 3, 0, 3);
+		float o = this.minor(2, 3, 1, 2);
+		float p = this.minor(2, 3, 1, 3);
+		float q = this.minor(2, 3, 2, 3);
+		float r = this.get(1, 1) * q - this.get(1, 2) * p + this.get(1, 3) * o;
+		float s = -this.get(1, 0) * q + this.get(1, 2) * n - this.get(1, 3) * m;
+		float t = this.get(1, 0) * p - this.get(1, 1) * n + this.get(1, 3) * l;
+		float u = -this.get(1, 0) * o + this.get(1, 1) * m - this.get(1, 2) * l;
+		float v = -this.get(0, 1) * q + this.get(0, 2) * p - this.get(0, 3) * o;
+		float w = this.get(0, 0) * q - this.get(0, 2) * n + this.get(0, 3) * m;
+		float x = -this.get(0, 0) * p + this.get(0, 1) * n - this.get(0, 3) * l;
+		float y = this.get(0, 0) * o - this.get(0, 1) * m + this.get(0, 2) * l;
+		float z = this.get(3, 1) * k - this.get(3, 2) * j + this.get(3, 3) * i;
+		float aa = -this.get(3, 0) * k + this.get(3, 2) * h - this.get(3, 3) * g;
+		float ab = this.get(3, 0) * j - this.get(3, 1) * h + this.get(3, 3) * f;
+		float ac = -this.get(3, 0) * i + this.get(3, 1) * g - this.get(3, 2) * f;
+		float ad = -this.get(2, 1) * k + this.get(2, 2) * j - this.get(2, 3) * i;
+		float ae = this.get(2, 0) * k - this.get(2, 2) * h + this.get(2, 3) * g;
+		float af = -this.get(2, 0) * j + this.get(2, 1) * h - this.get(2, 3) * f;
+		float ag = this.get(2, 0) * i - this.get(2, 1) * g + this.get(2, 2) * f;
 		this.set(0, 0, r);
 		this.set(1, 0, s);
 		this.set(2, 0, t);
@@ -173,35 +173,35 @@ public final class Matrix4f {
 		return f * q - g * p + h * o + i * n - j * m + k * l;
 	}
 
-	public void method_22871() {
+	public void transpose() {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < i; j++) {
-				this.method_22869(i, j);
+				this.transpose(i, j);
 			}
 		}
 	}
 
-	private void method_22869(int i, int j) {
+	private void transpose(int i, int j) {
 		float f = this.components[i + j * 4];
 		this.components[i + j * 4] = this.components[j + i * 4];
 		this.components[j + i * 4] = f;
 	}
 
-	public boolean method_22870() {
-		float f = this.method_22868();
+	public boolean invert() {
+		float f = this.determinantAndAdjugate();
 		if (Math.abs(f) > 1.0E-6F) {
-			this.method_22866(f);
+			this.multiply(f);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private float method_22867(int i, int j, int k, int l) {
-		return this.method_22669(i, k) * this.method_22669(j, l) - this.method_22669(i, l) * this.method_22669(j, k);
+	private float minor(int i, int j, int k, int l) {
+		return this.get(i, k) * this.get(j, l) - this.get(i, l) * this.get(j, k);
 	}
 
-	public void method_22672(Matrix4f matrix4f) {
+	public void multiply(Matrix4f matrix4f) {
 		float[] fs = Arrays.copyOf(this.components, 16);
 
 		for (int i = 0; i < 4; i++) {
@@ -215,11 +215,11 @@ public final class Matrix4f {
 		}
 	}
 
-	public void method_22670(Quaternion quaternion) {
-		this.method_22672(new Matrix4f(quaternion));
+	public void multiply(Quaternion quaternion) {
+		this.multiply(new Matrix4f(quaternion));
 	}
 
-	public void method_22866(float f) {
+	public void multiply(float f) {
 		for (int i = 0; i < 16; i++) {
 			this.components[i] = this.components[i] * f;
 		}
@@ -249,13 +249,13 @@ public final class Matrix4f {
 		return matrix4f;
 	}
 
-	public void method_22671(Vector3f vector3f) {
-		this.set(0, 3, this.method_22669(0, 3) + vector3f.getX());
-		this.set(1, 3, this.method_22669(1, 3) + vector3f.getY());
-		this.set(2, 3, this.method_22669(2, 3) + vector3f.getZ());
+	public void addToLastColumn(Vector3f vector3f) {
+		this.set(0, 3, this.get(0, 3) + vector3f.getX());
+		this.set(1, 3, this.get(1, 3) + vector3f.getY());
+		this.set(2, 3, this.get(2, 3) + vector3f.getZ());
 	}
 
-	public Matrix4f method_22673() {
+	public Matrix4f copy() {
 		return new Matrix4f((float[])this.components.clone());
 	}
 }

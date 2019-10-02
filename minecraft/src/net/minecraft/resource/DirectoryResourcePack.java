@@ -69,7 +69,7 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 	@Override
 	public Set<String> getNamespaces(ResourceType resourceType) {
 		Set<String> set = Sets.<String>newHashSet();
-		File file = new File(this.base, resourceType.getName());
+		File file = new File(this.base, resourceType.getDirectory());
 		File[] files = file.listFiles(DirectoryFileFilter.DIRECTORY);
 		if (files != null) {
 			for (File file2 : files) {
@@ -90,7 +90,7 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 
 	@Override
 	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
-		File file = new File(this.base, resourceType.getName());
+		File file = new File(this.base, resourceType.getDirectory());
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 
 		for (String string2 : this.getNamespaces(resourceType)) {

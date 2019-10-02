@@ -39,14 +39,14 @@ public class NetherWartBlock extends PlantBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		int i = (Integer)blockState.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
 			blockState = blockState.with(AGE, Integer.valueOf(i + 1));
 			serverWorld.setBlockState(blockPos, blockState, 2);
 		}
 
-		super.onScheduledTick(blockState, serverWorld, blockPos, random);
+		super.scheduledTick(blockState, serverWorld, blockPos, random);
 	}
 
 	@Environment(EnvType.CLIENT)

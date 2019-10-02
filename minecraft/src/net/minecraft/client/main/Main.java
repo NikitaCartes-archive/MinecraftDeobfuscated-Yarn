@@ -154,7 +154,7 @@ public class Main {
 				public void run() {
 					try {
 						RenderSystem.initGameThread(true);
-						minecraftClient.start();
+						minecraftClient.run();
 					} catch (Throwable var2) {
 						Main.LOGGER.error("Exception in client thread", var2);
 					}
@@ -169,7 +169,7 @@ public class Main {
 
 			try {
 				RenderSystem.initGameThread(false);
-				minecraftClient.start();
+				minecraftClient.run();
 			} catch (Throwable var64) {
 				LOGGER.error("Unhandled game exception", var64);
 			}

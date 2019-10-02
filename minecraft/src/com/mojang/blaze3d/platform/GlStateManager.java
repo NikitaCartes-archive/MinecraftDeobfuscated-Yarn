@@ -577,6 +577,18 @@ public class GlStateManager {
 		return GL20.glGetProgramInfoLog(i, j);
 	}
 
+	public static void method_23282() {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		texEnv(8960, 8704, 34160);
+		method_23281(7681, 34168);
+	}
+
+	public static void method_23283() {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		texEnv(8960, 8704, 8448);
+		method_22885(8448, 5890, 34168, 34166);
+	}
+
 	public static void method_22610(int i, int j) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		activeTexture(33985);
@@ -604,7 +616,13 @@ public class GlStateManager {
 		activeTexture(33984);
 	}
 
-	public static void method_22885(int i, int j, int k, int l) {
+	private static void method_23281(int i, int j) {
+		texEnv(8960, 34161, i);
+		texEnv(8960, 34176, j);
+		texEnv(8960, 34192, 768);
+	}
+
+	private static void method_22885(int i, int j, int k, int l) {
 		texEnv(8960, 34161, i);
 		texEnv(8960, 34176, j);
 		texEnv(8960, 34192, 768);
@@ -647,8 +665,8 @@ public class GlStateManager {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		pushMatrix();
 		loadIdentity();
-		rotatef(-30.0F, 0.0F, 1.0F, 0.0F);
-		rotatef(165.0F, 1.0F, 0.0F, 0.0F);
+		rotatef(-22.5F, 0.0F, 1.0F, 0.0F);
+		rotatef(135.0F, 1.0F, 0.0F, 0.0F);
 		method_22616();
 		popMatrix();
 	}
@@ -1123,7 +1141,7 @@ public class GlStateManager {
 	@Deprecated
 	public static void multMatrix(Matrix4f matrix4f) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		matrix4f.putIntoBuffer(MATRIX_BUFFER);
+		matrix4f.writeToBuffer(MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
 		multMatrix(MATRIX_BUFFER);
 	}

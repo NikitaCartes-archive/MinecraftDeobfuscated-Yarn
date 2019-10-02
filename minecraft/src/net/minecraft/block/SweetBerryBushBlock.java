@@ -51,8 +51,8 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		super.onScheduledTick(blockState, serverWorld, blockPos, random);
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		super.scheduledTick(blockState, serverWorld, blockPos, random);
 		int i = (Integer)blockState.get(AGE);
 		if (i < 3 && random.nextInt(5) == 0 && serverWorld.getBaseLightLevel(blockPos.up(), 0) >= 9) {
 			serverWorld.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(i + 1)), 2);
@@ -74,7 +74,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		int i = (Integer)blockState.get(AGE);
 		boolean bl = i == 3;
 		if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
@@ -86,7 +86,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 			world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(1)), 2);
 			return true;
 		} else {
-			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

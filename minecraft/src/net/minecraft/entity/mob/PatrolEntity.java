@@ -183,9 +183,8 @@ public abstract class PatrolEntity extends HostileEntity {
 					BlockPos blockPos = new BlockPos(vec3d4);
 					blockPos = this.actor.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
-						if (!this.wander()) {
-							this.field_20701 = this.actor.world.getTime() + 200L;
-						}
+						this.wander();
+						this.field_20701 = this.actor.world.getTime() + 200L;
 					} else if (bl) {
 						for (PatrolEntity patrolEntity : list) {
 							patrolEntity.setPatrolTarget(blockPos);

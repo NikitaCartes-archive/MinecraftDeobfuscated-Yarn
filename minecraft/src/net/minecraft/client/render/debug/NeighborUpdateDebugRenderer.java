@@ -10,12 +10,12 @@ import java.util.Set;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -60,8 +60,8 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 		double g = 0.0025;
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Map<BlockPos, Integer> map = Maps.<BlockPos, Integer>newHashMap();
-		class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
-		class_4588 lv2 = lv.getBuffer(BlockRenderLayer.LINES);
+		LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+		VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.LINES);
 		Iterator<Entry<Long, Map<BlockPos, Integer>>> iterator = this.field_4623.entrySet().iterator();
 
 		while (iterator.hasNext()) {
@@ -81,7 +81,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 							.contract(0.0025 * (double)n)
 							.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
 							.offset(-d, -e, -f);
-						WorldRenderer.drawBoxOutline(lv2, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0F, 1.0F, 1.0F, 1.0F);
+						WorldRenderer.drawBoxOutline(vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0F, 1.0F, 1.0F, 1.0F);
 						map.put(blockPos, integer);
 					}
 				}

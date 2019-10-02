@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
@@ -18,7 +17,9 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -45,8 +46,9 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		}
 	}
 
-	public boolean canDispense(class_4538 arg, BlockPos blockPos) {
-		return this.getSnowGolemDispenserPattern().searchAround(arg, blockPos) != null || this.getIronGolemDispenserPattern().searchAround(arg, blockPos) != null;
+	public boolean canDispense(WorldView worldView, BlockPos blockPos) {
+		return this.getSnowGolemDispenserPattern().searchAround(worldView, blockPos) != null
+			|| this.getIronGolemDispenserPattern().searchAround(worldView, blockPos) != null;
 	}
 
 	private void trySpawnEntity(World world, BlockPos blockPos) {
@@ -158,5 +160,10 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		}
 
 		return this.ironGolemPattern;
+	}
+
+	@Override
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return true;
 	}
 }

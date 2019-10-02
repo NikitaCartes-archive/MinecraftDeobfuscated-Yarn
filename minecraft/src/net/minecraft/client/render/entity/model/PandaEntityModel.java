@@ -14,32 +14,32 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 	private float playAnimationProgress;
 
 	public PandaEntityModel(int i, float f) {
-		super(i, f, true, 23.0F, 0.3F, 1.2F, 3.0F, 49);
+		super(i, f, true, 23.0F, 4.8F, 2.7F, 3.0F, 49);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 0, 6);
 		this.head.addCuboid(-6.5F, -5.0F, -4.0F, 13.0F, 10.0F, 9.0F);
-		this.head.setRotationPoint(0.0F, 11.5F, -17.0F);
+		this.head.setPivot(0.0F, 11.5F, -17.0F);
 		this.head.setTextureOffset(45, 16).addCuboid(-3.5F, 0.0F, -6.0F, 7.0F, 5.0F, 2.0F);
 		this.head.setTextureOffset(52, 25).addCuboid(-8.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F);
 		this.head.setTextureOffset(52, 25).addCuboid(3.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F);
 		this.body = new ModelPart(this, 0, 25);
 		this.body.addCuboid(-9.5F, -13.0F, -6.5F, 19.0F, 26.0F, 13.0F);
-		this.body.setRotationPoint(0.0F, 10.0F, 0.0F);
+		this.body.setPivot(0.0F, 10.0F, 0.0F);
 		int j = 9;
 		int k = 6;
 		this.leg1 = new ModelPart(this, 40, 0);
 		this.leg1.addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 9.0F, 6.0F);
-		this.leg1.setRotationPoint(-5.5F, 15.0F, 9.0F);
+		this.leg1.setPivot(-5.5F, 15.0F, 9.0F);
 		this.leg2 = new ModelPart(this, 40, 0);
 		this.leg2.addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 9.0F, 6.0F);
-		this.leg2.setRotationPoint(5.5F, 15.0F, 9.0F);
+		this.leg2.setPivot(5.5F, 15.0F, 9.0F);
 		this.leg3 = new ModelPart(this, 40, 0);
 		this.leg3.addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 9.0F, 6.0F);
-		this.leg3.setRotationPoint(-5.5F, 15.0F, -9.0F);
+		this.leg3.setPivot(-5.5F, 15.0F, -9.0F);
 		this.leg4 = new ModelPart(this, 40, 0);
 		this.leg4.addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 9.0F, 6.0F);
-		this.leg4.setRotationPoint(5.5F, 15.0F, -9.0F);
+		this.leg4.setPivot(5.5F, 15.0F, -9.0F);
 	}
 
 	public void method_17102(T pandaEntity, float f, float g, float h) {

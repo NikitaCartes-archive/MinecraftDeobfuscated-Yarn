@@ -17,7 +17,7 @@ import net.minecraft.world.updater.WorldUpdater;
 
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
-	private static final Object2IntMap<DimensionType> field_3232 = SystemUtil.consume(
+	private static final Object2IntMap<DimensionType> DIMENSION_COLORS = SystemUtil.consume(
 		new Object2IntOpenCustomHashMap<>(SystemUtil.identityHashStrategy()), object2IntOpenCustomHashMap -> {
 			object2IntOpenCustomHashMap.put(DimensionType.OVERWORLD, -13408734);
 			object2IntOpenCustomHashMap.put(DimensionType.THE_NETHER, -10075085);
@@ -73,7 +73,7 @@ public class OptimizeWorldScreen extends Screen {
 
 			for (DimensionType dimensionType : DimensionType.getAll()) {
 				int p = MathHelper.floor(this.updater.getProgress(dimensionType) * (float)(l - k));
-				fill(k + o, m, k + o + p, n, field_3232.getInt(dimensionType));
+				fill(k + o, m, k + o + p, n, DIMENSION_COLORS.getInt(dimensionType));
 				o += p;
 			}
 

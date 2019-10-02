@@ -4,12 +4,12 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class BookModel extends Model {
@@ -28,13 +28,13 @@ public class BookModel extends Model {
 		this.leftPage = new ModelPart(64, 32, 24, 10).addCuboid(0.0F, -4.0F, 0.0F, 5.0F, 8.0F, 0.005F);
 		this.rightPage = new ModelPart(64, 32, 24, 10).addCuboid(0.0F, -4.0F, 0.0F, 5.0F, 8.0F, 0.005F);
 		this.field_20786 = ImmutableList.of(this.leftCover, this.rightCover, this.spine, this.leftBlock, this.rightBlock, this.leftPage, this.rightPage);
-		this.leftCover.setRotationPoint(0.0F, 0.0F, -1.0F);
-		this.rightCover.setRotationPoint(0.0F, 0.0F, 1.0F);
+		this.leftCover.setPivot(0.0F, 0.0F, -1.0F);
+		this.rightCover.setPivot(0.0F, 0.0F, 1.0F);
 		this.spine.yaw = (float) (Math.PI / 2);
 	}
 
-	public void render(class_4587 arg, class_4588 arg2, float f, int i, Sprite sprite) {
-		this.field_20786.forEach(modelPart -> modelPart.method_22698(arg, arg2, f, i, sprite));
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, Sprite sprite) {
+		this.field_20786.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, f, i, sprite));
 	}
 
 	public void setPageAngles(float f, float g, float h, float i) {
@@ -45,9 +45,9 @@ public class BookModel extends Model {
 		this.rightBlock.yaw = -j;
 		this.leftPage.yaw = j - j * 2.0F * g;
 		this.rightPage.yaw = j - j * 2.0F * h;
-		this.leftBlock.rotationPointX = MathHelper.sin(j);
-		this.rightBlock.rotationPointX = MathHelper.sin(j);
-		this.leftPage.rotationPointX = MathHelper.sin(j);
-		this.rightPage.rotationPointX = MathHelper.sin(j);
+		this.leftBlock.pivotX = MathHelper.sin(j);
+		this.rightBlock.pivotX = MathHelper.sin(j);
+		this.leftPage.pivotX = MathHelper.sin(j);
+		this.rightPage.pivotX = MathHelper.sin(j);
 	}
 }

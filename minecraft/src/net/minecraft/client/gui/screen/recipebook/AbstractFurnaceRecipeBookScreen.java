@@ -19,11 +19,11 @@ import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
-	private Iterator<Item> field_3153;
-	private Set<Item> field_3149;
+	private Iterator<Item> fuelIterator;
+	private Set<Item> fuels;
 	private Slot outputSlot;
-	private Item field_3152;
-	private float field_3151;
+	private Item currentItem;
+	private float frameTime;
 
 	@Override
 	protected boolean toggleFilteringCraftable() {
@@ -82,12 +82,12 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)list.get(2)).xPosition, ((Slot)list.get(2)).yPosition);
 		DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
 		this.outputSlot = (Slot)list.get(1);
-		if (this.field_3149 == null) {
-			this.field_3149 = this.getAllowedFuels();
+		if (this.fuels == null) {
+			this.fuels = this.getAllowedFuels();
 		}
 
-		this.field_3153 = this.field_3149.iterator();
-		this.field_3152 = null;
+		this.fuelIterator = this.fuels.iterator();
+		this.currentItem = null;
 		Iterator<Ingredient> iterator = defaultedList.iterator();
 
 		for (int i = 0; i < 2; i++) {
@@ -110,33 +110,33 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 		super.drawGhostSlots(i, j, bl, f);
 		if (this.outputSlot != null) {
 			if (!Screen.hasControlDown()) {
-				this.field_3151 += f;
+				this.frameTime += f;
 			}
 
 			int k = this.outputSlot.xPosition + i;
 			int l = this.outputSlot.yPosition + j;
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822018048);
-			this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getStackForRender(), k, l);
+			this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), k, l);
 			RenderSystem.depthFunc(516);
 			DrawableHelper.fill(k, l, k + 16, l + 16, 822083583);
 			RenderSystem.depthFunc(515);
 		}
 	}
 
-	private Item method_2658() {
-		if (this.field_3152 == null || this.field_3151 > 30.0F) {
-			this.field_3151 = 0.0F;
-			if (this.field_3153 == null || !this.field_3153.hasNext()) {
-				if (this.field_3149 == null) {
-					this.field_3149 = this.getAllowedFuels();
+	private Item getItem() {
+		if (this.currentItem == null || this.frameTime > 30.0F) {
+			this.frameTime = 0.0F;
+			if (this.fuelIterator == null || !this.fuelIterator.hasNext()) {
+				if (this.fuels == null) {
+					this.fuels = this.getAllowedFuels();
 				}
 
-				this.field_3153 = this.field_3149.iterator();
+				this.fuelIterator = this.fuels.iterator();
 			}
 
-			this.field_3152 = (Item)this.field_3153.next();
+			this.currentItem = (Item)this.fuelIterator.next();
 		}
 
-		return this.field_3152;
+		return this.currentItem;
 	}
 }

@@ -29,8 +29,8 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		super.onScheduledTick(blockState, serverWorld, blockPos, random);
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		super.scheduledTick(blockState, serverWorld, blockPos, random);
 		if (serverWorld.getLightLevel(blockPos.up()) >= 9 && random.nextInt(7) == 0) {
 			this.generate(serverWorld, blockPos, blockState, random);
 		}

@@ -11,17 +11,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4584;
-import net.minecraft.class_4585;
-import net.minecraft.class_4588;
 import net.minecraft.client.util.GlAllocationUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class BufferBuilder extends class_4585 implements class_4584 {
+public class BufferBuilder extends AbstractVertexConsumer implements BufferVertexConsumer {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private ByteBuffer bufByte;
+	private ByteBuffer buffer;
 	private final List<BufferBuilder.class_4574> field_20774 = Lists.<BufferBuilder.class_4574>newArrayList();
 	private int field_20775 = 0;
 	private int field_20776 = 0;
@@ -36,7 +33,7 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 	private boolean building;
 
 	public BufferBuilder(int i) {
-		this.bufByte = GlAllocationUtils.allocateByteBuffer(i * 4);
+		this.buffer = GlAllocationUtils.allocateByteBuffer(i * 4);
 	}
 
 	protected void method_22892() {
@@ -44,15 +41,15 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 	}
 
 	private void grow(int i) {
-		if (this.field_20884 + i > this.bufByte.capacity()) {
-			int j = this.bufByte.capacity();
+		if (this.field_20884 + i > this.buffer.capacity()) {
+			int j = this.buffer.capacity();
 			int k = j + roundBufferSize(i);
 			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", j, k);
 			ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(k);
-			this.bufByte.position(0);
-			byteBuffer.put(this.bufByte);
+			this.buffer.position(0);
+			byteBuffer.put(this.buffer);
 			byteBuffer.rewind();
-			this.bufByte = byteBuffer;
+			this.buffer = byteBuffer;
 		}
 	}
 
@@ -71,8 +68,8 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 	}
 
 	public void sortQuads(float f, float g, float h) {
-		this.bufByte.clear();
-		FloatBuffer floatBuffer = this.bufByte.asFloatBuffer();
+		this.buffer.clear();
+		FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
 		int i = this.vertexCount / 4;
 		float[] fs = new float[i];
 
@@ -124,11 +121,11 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 	}
 
 	public BufferBuilder.State toBufferState() {
-		this.bufByte.limit(this.field_20884);
-		this.bufByte.position(this.field_20776);
+		this.buffer.limit(this.field_20884);
+		this.buffer.position(this.field_20776);
 		ByteBuffer byteBuffer = ByteBuffer.allocate(this.vertexCount * this.format.getVertexSize());
-		byteBuffer.put(this.bufByte);
-		this.bufByte.clear();
+		byteBuffer.put(this.buffer);
+		this.buffer.clear();
 		return new BufferBuilder.State(byteBuffer, new VertexFormat(this.format));
 	}
 
@@ -155,10 +152,10 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 		state.field_20885.clear();
 		int i = state.field_20885.capacity();
 		this.grow(i);
-		this.bufByte.limit(this.bufByte.capacity());
-		this.bufByte.position(this.field_20776);
-		this.bufByte.put(state.field_20885);
-		this.bufByte.clear();
+		this.buffer.limit(this.buffer.capacity());
+		this.buffer.position(this.field_20776);
+		this.buffer.put(state.field_20885);
+		this.buffer.clear();
 		this.format = new VertexFormat(state.format);
 		this.vertexCount = i / this.format.getVertexSize();
 		this.field_20884 = this.field_20776 + this.vertexCount * this.format.getVertexSize();
@@ -173,7 +170,7 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 			this.format = vertexFormat;
 			this.currentElement = vertexFormat.getElement(0);
 			this.currentElementId = 0;
-			this.bufByte.clear();
+			this.buffer.clear();
 		}
 	}
 
@@ -192,17 +189,17 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 
 	@Override
 	public void putByte(int i, byte b) {
-		this.bufByte.put(this.field_20884 + i, b);
+		this.buffer.put(this.field_20884 + i, b);
 	}
 
 	@Override
 	public void putShort(int i, short s) {
-		this.bufByte.putShort(this.field_20884 + i, s);
+		this.buffer.putShort(this.field_20884 + i, s);
 	}
 
 	@Override
 	public void putFloat(int i, float f) {
-		this.bufByte.putFloat(this.field_20884 + i, f);
+		this.buffer.putFloat(this.field_20884 + i, f);
 	}
 
 	@Override
@@ -226,43 +223,43 @@ public class BufferBuilder extends class_4585 implements class_4584 {
 		}
 
 		if (this.field_20889 && this.currentElement.getType() == VertexFormatElement.Type.COLOR) {
-			class_4584.super.color(this.field_20890, this.field_20891, this.field_20892, this.field_20893);
+			BufferVertexConsumer.super.color(this.field_20890, this.field_20891, this.field_20892, this.field_20893);
 		}
 
-		if (this.field_20894 && this.currentElement.getType() == VertexFormatElement.Type.UV && this.currentElement.getIndex() == 1) {
-			class_4584.super.method_22917(this.field_20895, this.field_20896);
+		if (this.hasDefaultOverlay && this.currentElement.getType() == VertexFormatElement.Type.UV && this.currentElement.getIndex() == 1) {
+			BufferVertexConsumer.super.overlay(this.defaultOverlayU, this.defaultOverlayV);
 		}
 	}
 
 	@Override
-	public class_4588 color(int i, int j, int k, int l) {
+	public VertexConsumer color(int i, int j, int k, int l) {
 		if (this.field_20889) {
 			throw new IllegalStateException();
 		} else {
-			return class_4584.super.color(i, j, k, l);
+			return BufferVertexConsumer.super.color(i, j, k, l);
 		}
 	}
 
 	@Override
-	public class_4588 method_22917(int i, int j) {
-		if (this.field_20894) {
+	public VertexConsumer overlay(int i, int j) {
+		if (this.hasDefaultOverlay) {
 			throw new IllegalStateException();
 		} else {
-			return class_4584.super.method_22917(i, j);
+			return BufferVertexConsumer.super.overlay(i, j);
 		}
 	}
 
 	public Pair<BufferBuilder.class_4574, ByteBuffer> method_22632() {
 		BufferBuilder.class_4574 lv = (BufferBuilder.class_4574)this.field_20774.get(this.field_20775++);
-		this.bufByte.position(this.field_20777);
+		this.buffer.position(this.field_20777);
 		this.field_20777 = this.field_20777 + lv.method_22635() * lv.method_22634().getVertexSize();
-		this.bufByte.limit(this.field_20777);
+		this.buffer.limit(this.field_20777);
 		if (this.field_20775 == this.field_20774.size() && this.vertexCount == 0) {
 			this.clear();
 		}
 
-		ByteBuffer byteBuffer = this.bufByte.slice();
-		this.bufByte.clear();
+		ByteBuffer byteBuffer = this.buffer.slice();
+		this.buffer.clear();
 		return Pair.of(lv, byteBuffer);
 	}
 

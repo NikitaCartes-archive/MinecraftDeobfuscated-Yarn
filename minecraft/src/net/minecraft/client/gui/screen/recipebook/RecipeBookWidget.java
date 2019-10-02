@@ -51,7 +51,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	protected final RecipeBookResults recipesArea = new RecipeBookResults();
 	protected final RecipeFinder recipeFinder = new RecipeFinder();
 	private int cachedInvChangeCount;
-	private boolean field_3087;
+	private boolean searching;
 
 	public void initialize(int i, int j, MinecraftClient minecraftClient, boolean bl, CraftingContainer<?> craftingContainer) {
 		this.client = minecraftClient;
@@ -347,7 +347,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		this.field_3087 = false;
+		this.searching = false;
 		if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;
 		} else if (i == 256 && !this.isWide()) {
@@ -359,7 +359,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		} else if (this.searchField.isFocused() && this.searchField.isVisible() && i != 256) {
 			return true;
 		} else if (this.client.options.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
-			this.field_3087 = true;
+			this.searching = true;
 			this.searchField.setSelected(true);
 			return true;
 		} else {
@@ -369,13 +369,13 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 
 	@Override
 	public boolean keyReleased(int i, int j, int k) {
-		this.field_3087 = false;
+		this.searching = false;
 		return Element.super.keyReleased(i, j, k);
 	}
 
 	@Override
 	public boolean charTyped(char c, int i) {
-		if (this.field_3087) {
+		if (this.searching) {
 			return false;
 		} else if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;

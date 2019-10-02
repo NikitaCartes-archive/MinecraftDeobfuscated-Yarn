@@ -3,10 +3,10 @@ package net.minecraft.structure.processor;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldView;
 
 public class NopStructureProcessor extends StructureProcessor {
 	public static final NopStructureProcessor INSTANCE = new NopStructureProcessor();
@@ -17,7 +17,7 @@ public class NopStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		class_4538 arg,
+		WorldView worldView,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,

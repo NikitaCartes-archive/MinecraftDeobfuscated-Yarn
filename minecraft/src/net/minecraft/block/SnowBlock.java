@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -16,6 +15,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.WorldView;
 
 public class SnowBlock extends Block {
 	public static final IntProperty LAYERS = Properties.LAYERS;
@@ -66,11 +66,11 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		BlockState blockState2 = arg.getBlockState(blockPos.method_10074());
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
 		Block block = blockState2.getBlock();
 		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER
-			? Block.isFaceFullSquare(blockState2.getCollisionShape(arg, blockPos.method_10074()), Direction.UP)
+			? Block.isFaceFullSquare(blockState2.getCollisionShape(worldView, blockPos.method_10074()), Direction.UP)
 				|| block == this && (Integer)blockState2.get(LAYERS) == 8
 			: false;
 	}
@@ -85,7 +85,7 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11) {
 			dropStacks(blockState, serverWorld, blockPos);
 			serverWorld.removeBlock(blockPos, false);

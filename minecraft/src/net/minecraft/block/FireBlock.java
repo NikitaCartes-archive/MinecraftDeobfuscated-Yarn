@@ -7,7 +7,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
@@ -27,6 +26,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.TheEndDimension;
 
@@ -99,18 +99,18 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.method_10074();
-		return arg.getBlockState(blockPos2).isSideSolidFullSquare(arg, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(arg, blockPos);
+		return worldView.getBlockState(blockPos2).isSideSolidFullSquare(worldView, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(worldView, blockPos);
 	}
 
 	@Override
-	public int getTickRate(class_4538 arg) {
+	public int getTickRate(WorldView worldView) {
 		return 30;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (serverWorld.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			if (!blockState.canPlaceAt(serverWorld, blockPos)) {
 				serverWorld.removeBlock(blockPos, false);
@@ -229,14 +229,14 @@ public class FireBlock extends Block {
 		return false;
 	}
 
-	private int getBurnChance(class_4538 arg, BlockPos blockPos) {
-		if (!arg.isAir(blockPos)) {
+	private int getBurnChance(WorldView worldView, BlockPos blockPos) {
+		if (!worldView.isAir(blockPos)) {
 			return 0;
 		} else {
 			int i = 0;
 
 			for (Direction direction : Direction.values()) {
-				BlockState blockState = arg.getBlockState(blockPos.offset(direction));
+				BlockState blockState = worldView.getBlockState(blockPos.offset(direction));
 				i = Math.max(this.getBurnChance(blockState), i);
 			}
 

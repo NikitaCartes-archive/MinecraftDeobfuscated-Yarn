@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -90,7 +89,7 @@ public final class SpawnHelper {
 									q = spawnEntry.minGroupSize + serverWorld.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 								}
 
-								if (spawnEntry.type.getCategory() == EntityCategory.MISC || !spawnEntry.type.method_20814() && d > 16384.0) {
+								if (spawnEntry.type.getCategory() == EntityCategory.MISC || !spawnEntry.type.isSpawnableFarFromPlayer() && d > 16384.0) {
 									break label115;
 								}
 
@@ -178,25 +177,26 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static boolean canSpawn(SpawnRestriction.Location location, class_4538 arg, BlockPos blockPos, @Nullable EntityType<?> entityType) {
+	public static boolean canSpawn(SpawnRestriction.Location location, WorldView worldView, BlockPos blockPos, @Nullable EntityType<?> entityType) {
 		if (location == SpawnRestriction.Location.NO_RESTRICTIONS) {
 			return true;
-		} else if (entityType != null && arg.getWorldBorder().contains(blockPos)) {
-			BlockState blockState = arg.getBlockState(blockPos);
-			FluidState fluidState = arg.getFluidState(blockPos);
+		} else if (entityType != null && worldView.getWorldBorder().contains(blockPos)) {
+			BlockState blockState = worldView.getBlockState(blockPos);
+			FluidState fluidState = worldView.getFluidState(blockPos);
 			BlockPos blockPos2 = blockPos.up();
 			BlockPos blockPos3 = blockPos.method_10074();
 			switch (location) {
 				case IN_WATER:
 					return fluidState.matches(FluidTags.WATER)
-						&& arg.getFluidState(blockPos3).matches(FluidTags.WATER)
-						&& !arg.getBlockState(blockPos2).isSimpleFullBlock(arg, blockPos2);
+						&& worldView.getFluidState(blockPos3).matches(FluidTags.WATER)
+						&& !worldView.getBlockState(blockPos2).isSimpleFullBlock(worldView, blockPos2);
 				case ON_GROUND:
 				default:
-					BlockState blockState2 = arg.getBlockState(blockPos3);
-					return !blockState2.allowsSpawning(arg, blockPos3, entityType)
+					BlockState blockState2 = worldView.getBlockState(blockPos3);
+					return !blockState2.allowsSpawning(worldView, blockPos3, entityType)
 						? false
-						: isClearForSpawn(arg, blockPos, blockState, fluidState) && isClearForSpawn(arg, blockPos2, arg.getBlockState(blockPos2), arg.getFluidState(blockPos2));
+						: isClearForSpawn(worldView, blockPos, blockState, fluidState)
+							&& isClearForSpawn(worldView, blockPos2, worldView.getBlockState(blockPos2), worldView.getFluidState(blockPos2));
 			}
 		} else {
 			return false;
@@ -262,9 +262,9 @@ public final class SpawnHelper {
 		}
 	}
 
-	private static BlockPos getEntitySpawnPos(class_4538 arg, @Nullable EntityType<?> entityType, int i, int j) {
-		BlockPos blockPos = new BlockPos(i, arg.getTopY(SpawnRestriction.getHeightmapType(entityType), i, j), j);
+	private static BlockPos getEntitySpawnPos(WorldView worldView, @Nullable EntityType<?> entityType, int i, int j) {
+		BlockPos blockPos = new BlockPos(i, worldView.getTopY(SpawnRestriction.getHeightmapType(entityType), i, j), j);
 		BlockPos blockPos2 = blockPos.method_10074();
-		return arg.getBlockState(blockPos2).canPlaceAtSide(arg, blockPos2, BlockPlacementEnvironment.LAND) ? blockPos2 : blockPos;
+		return worldView.getBlockState(blockPos2).canPlaceAtSide(worldView, blockPos2, BlockPlacementEnvironment.LAND) ? blockPos2 : blockPos;
 	}
 }

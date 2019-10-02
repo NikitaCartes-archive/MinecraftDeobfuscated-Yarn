@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.item.DyeableHorseArmorItem;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
@@ -18,7 +18,19 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 		super(featureRendererContext);
 	}
 
-	public void method_18658(class_4587 arg, class_4597 arg2, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
+	public void method_18658(
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i,
+		HorseEntity horseEntity,
+		float f,
+		float g,
+		float h,
+		float j,
+		float k,
+		float l,
+		float m
+	) {
 		ItemStack itemStack = horseEntity.getArmorType();
 		if (itemStack.getItem() instanceof HorseArmorItem) {
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
@@ -39,7 +51,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 				q = 1.0F;
 			}
 
-			method_23197(this.model, horseArmorItem.getEntityTexture(), arg, arg2, i, o, p, q);
+			method_23197(this.model, horseArmorItem.getEntityTexture(), matrixStack, layeredVertexConsumerStorage, i, o, p, q);
 		}
 	}
 }

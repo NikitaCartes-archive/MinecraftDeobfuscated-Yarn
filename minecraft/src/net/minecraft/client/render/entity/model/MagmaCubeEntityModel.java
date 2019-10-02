@@ -50,7 +50,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends class_4595<T> {
 		}
 
 		for (int j = 0; j < this.field_3427.length; j++) {
-			this.field_3427[j].rotationPointY = (float)(-(4 - j)) * i * 1.7F;
+			this.field_3427[j].pivotY = (float)(-(4 - j)) * i * 1.7F;
 		}
 	}
 

@@ -20,7 +20,7 @@ public class CoralBlockBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if (!this.isInWater(serverWorld, blockPos)) {
 			serverWorld.setBlockState(blockPos, this.deadCoralBlock.getDefaultState(), 2);
 		}

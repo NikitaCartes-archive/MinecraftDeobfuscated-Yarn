@@ -128,7 +128,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		if ((Boolean)serverWorld.getBlockState(blockPos).get(POWERED)) {
 			this.updatePowered(serverWorld, blockPos);
 		}

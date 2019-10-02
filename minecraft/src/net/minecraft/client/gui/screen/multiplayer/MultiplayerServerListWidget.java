@@ -230,7 +230,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.server.playerCountLabel = "";
 				MultiplayerServerListWidget.SERVER_PINGER_THREAD_POOL.submit(() -> {
 					try {
-						this.screen.method_2538().method_3003(this.server);
+						this.screen.getServerListPinger().add(this.server);
 					} catch (UnknownHostException var2) {
 						this.server.ping = -1L;
 						this.server.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_resolve");

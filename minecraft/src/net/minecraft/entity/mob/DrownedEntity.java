@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -46,6 +45,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
@@ -169,8 +169,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	@Override
-	public boolean canSpawn(class_4538 arg) {
-		return arg.intersectsEntities(this);
+	public boolean canSpawn(WorldView worldView) {
+		return worldView.intersectsEntities(this);
 	}
 
 	public boolean method_7012(@Nullable LivingEntity livingEntity) {
@@ -330,9 +330,11 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		}
 
 		@Override
-		protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
+		protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
 			BlockPos blockPos2 = blockPos.up();
-			return arg.isAir(blockPos2) && arg.isAir(blockPos2.up()) ? arg.getBlockState(blockPos).hasSolidTopSurface(arg, blockPos, this.drowned) : false;
+			return worldView.isAir(blockPos2) && worldView.isAir(blockPos2.up())
+				? worldView.getBlockState(blockPos).hasSolidTopSurface(worldView, blockPos, this.drowned)
+				: false;
 		}
 
 		@Override

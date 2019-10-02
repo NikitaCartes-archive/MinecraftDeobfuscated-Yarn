@@ -106,9 +106,7 @@ public class OverworldDimension extends Dimension {
 
 				if (BiomeSourceType.CHECKERBOARD == biomeSourceType4) {
 					int j = jsonObject3.has("size") ? jsonObject3.getAsJsonPrimitive("size").getAsInt() : 2;
-					CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig = biomeSourceType3.getConfig(this.world.getLevelProperties())
-						.method_8777(biomes)
-						.method_8780(j);
+					CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig = biomeSourceType3.getConfig(this.world.getLevelProperties()).setBiomes(biomes).setSize(j);
 					biomeSource = biomeSourceType3.applyConfig(checkerboardBiomeSourceConfig);
 				}
 

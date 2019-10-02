@@ -29,7 +29,7 @@ public class TridentEntity extends ProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
 	private boolean dealtDamage;
-	public int field_7649;
+	public int returnTimer;
 
 	public TridentEntity(EntityType<? extends TridentEntity> entityType, World world) {
 		super(entityType, world);
@@ -77,11 +77,11 @@ public class TridentEntity extends ProjectileEntity {
 
 				double d = 0.05 * (double)i;
 				this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
-				if (this.field_7649 == 0) {
+				if (this.returnTimer == 0) {
 					this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
 				}
 
-				this.field_7649++;
+				this.returnTimer++;
 			}
 		}
 

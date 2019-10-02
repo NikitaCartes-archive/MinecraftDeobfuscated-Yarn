@@ -69,7 +69,7 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_22358(BlockState blockState, Fluid fluid) {
+	public boolean canBucketPlace(BlockState blockState, Fluid fluid) {
 		return false;
 	}
 }

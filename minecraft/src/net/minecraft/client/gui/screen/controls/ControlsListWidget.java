@@ -18,7 +18,7 @@ import org.apache.commons.lang3.ArrayUtils;
 @Environment(EnvType.CLIENT)
 public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Entry> {
 	private final ControlsOptionsScreen gui;
-	private int field_2733;
+	private int maxKeyNameLength;
 
 	public ControlsListWidget(ControlsOptionsScreen controlsOptionsScreen, MinecraftClient minecraftClient) {
 		super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 43, controlsOptionsScreen.height - 32, 20);
@@ -35,8 +35,8 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			}
 
 			int i = minecraftClient.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
-			if (i > this.field_2733) {
-				this.field_2733 = i;
+			if (i > this.maxKeyNameLength) {
+				this.maxKeyNameLength = i;
 			}
 
 			this.addEntry(new ControlsListWidget.KeyBindingEntry(keyBinding));
@@ -119,7 +119,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			boolean bl2 = ControlsListWidget.this.gui.focusedBinding == this.binding;
 			ControlsListWidget.this.minecraft
 				.textRenderer
-				.draw(this.bindingName, (float)(k + 90 - ControlsListWidget.this.field_2733), (float)(j + m / 2 - 9 / 2), 16777215);
+				.draw(this.bindingName, (float)(k + 90 - ControlsListWidget.this.maxKeyNameLength), (float)(j + m / 2 - 9 / 2), 16777215);
 			this.resetButton.x = k + 190;
 			this.resetButton.y = j;
 			this.resetButton.active = !this.binding.isDefault();

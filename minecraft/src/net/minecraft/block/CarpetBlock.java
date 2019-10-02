@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
@@ -8,6 +7,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class CarpetBlock extends Block {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -37,7 +37,7 @@ public class CarpetBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return !arg.isAir(blockPos.method_10074());
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return !worldView.isAir(blockPos.method_10074());
 	}
 }

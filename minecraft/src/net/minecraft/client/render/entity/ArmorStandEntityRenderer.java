@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
@@ -13,6 +12,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
@@ -30,11 +30,11 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 		return SKIN;
 	}
 
-	protected void method_3877(ArmorStandEntity armorStandEntity, class_4587 arg, float f, float g, float h) {
-		arg.method_22907(Vector3f.field_20705.method_23214(180.0F - g, true));
+	protected void method_3877(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g, true));
 		float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
 		if (i < 5.0F) {
-			arg.method_22907(Vector3f.field_20705.method_23214(MathHelper.sin(i / 1.5F * (float) Math.PI) * 3.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.sin(i / 1.5F * (float) Math.PI) * 3.0F, true));
 		}
 	}
 

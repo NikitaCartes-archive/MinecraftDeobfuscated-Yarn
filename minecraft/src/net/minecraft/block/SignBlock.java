@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.class_4538;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -13,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class SignBlock extends AbstractSignBlock {
 	public static final IntProperty ROTATION = Properties.ROTATION;
@@ -23,8 +23,8 @@ public class SignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return arg.getBlockState(blockPos.method_10074()).getMaterial().isSolid();
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return worldView.getBlockState(blockPos.method_10074()).getMaterial().isSolid();
 	}
 
 	@Override

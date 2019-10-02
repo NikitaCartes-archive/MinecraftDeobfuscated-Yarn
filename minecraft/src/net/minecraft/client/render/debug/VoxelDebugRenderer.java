@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.shape.VoxelShape;
 
 @Environment(EnvType.CLIENT)
@@ -47,12 +47,12 @@ public class VoxelDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.lineWidth(2.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.depthMask(false);
-		class_4597.class_4598 lv = class_4597.method_22991(Tessellator.getInstance().getBufferBuilder());
-		class_4588 lv2 = lv.getBuffer(BlockRenderLayer.LINES);
-		class_4587 lv3 = new class_4587();
+		LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+		VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.LINES);
+		MatrixStack matrixStack = new MatrixStack();
 
 		for (VoxelShape voxelShape : this.field_4542) {
-			WorldRenderer.method_22983(lv3, lv2, voxelShape, -e, -f, -g, 1.0F, 1.0F, 1.0F, 1.0F);
+			WorldRenderer.method_22983(matrixStack, vertexConsumer, voxelShape, -e, -f, -g, 1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		lv.method_22993();

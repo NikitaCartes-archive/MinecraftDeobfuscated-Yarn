@@ -3,14 +3,14 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
@@ -18,7 +18,16 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4034(LightningEntity lightningEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
+	public void method_4034(
+		LightningEntity lightningEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		float h,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+	) {
 		float[] fs = new float[8];
 		float[] gs = new float[8];
 		float i = 0.0F;
@@ -32,8 +41,8 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 			j += (float)(random.nextInt(11) - 5);
 		}
 
-		class_4588 lv = arg2.getBuffer(BlockRenderLayer.LIGHTNING);
-		Matrix4f matrix4f = arg.method_22910();
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.LIGHTNING);
+		Matrix4f matrix4f = matrixStack.peek();
 
 		for (int l = 0; l < 4; l++) {
 			Random random2 = new Random(lightningEntity.seed);
@@ -77,10 +86,10 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 						z *= (float)(r - 1) * 0.1F + 1.0F;
 					}
 
-					method_23183(matrix4f, lv, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, false, true, false);
-					method_23183(matrix4f, lv, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, false, true, true);
-					method_23183(matrix4f, lv, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, true, false, true);
-					method_23183(matrix4f, lv, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, true, false, false);
+					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, false, true, false);
+					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, false, true, true);
+					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, true, true, false, true);
+					method_23183(matrix4f, vertexConsumer, p, q, r, s, t, 0.45F, 0.45F, 0.5F, y, z, false, true, false, false);
 				}
 			}
 		}
@@ -88,7 +97,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 
 	private static void method_23183(
 		Matrix4f matrix4f,
-		class_4588 arg,
+		VertexConsumer vertexConsumer,
 		float f,
 		float g,
 		int i,
@@ -104,10 +113,10 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		boolean bl3,
 		boolean bl4
 	) {
-		arg.method_22918(matrix4f, f + (bl ? o : -o), (float)(i * 16), g + (bl2 ? o : -o)).method_22915(k, l, m, 0.3F).next();
-		arg.method_22918(matrix4f, h + (bl ? n : -n), (float)((i + 1) * 16), j + (bl2 ? n : -n)).method_22915(k, l, m, 0.3F).next();
-		arg.method_22918(matrix4f, h + (bl3 ? n : -n), (float)((i + 1) * 16), j + (bl4 ? n : -n)).method_22915(k, l, m, 0.3F).next();
-		arg.method_22918(matrix4f, f + (bl3 ? o : -o), (float)(i * 16), g + (bl4 ? o : -o)).method_22915(k, l, m, 0.3F).next();
+		vertexConsumer.vertex(matrix4f, f + (bl ? o : -o), (float)(i * 16), g + (bl2 ? o : -o)).color(k, l, m, 0.3F).next();
+		vertexConsumer.vertex(matrix4f, h + (bl ? n : -n), (float)((i + 1) * 16), j + (bl2 ? n : -n)).color(k, l, m, 0.3F).next();
+		vertexConsumer.vertex(matrix4f, h + (bl3 ? n : -n), (float)((i + 1) * 16), j + (bl4 ? n : -n)).color(k, l, m, 0.3F).next();
+		vertexConsumer.vertex(matrix4f, f + (bl3 ? o : -o), (float)(i * 16), g + (bl4 ? o : -o)).color(k, l, m, 0.3F).next();
 	}
 
 	public Identifier method_4033(LightningEntity lightningEntity) {

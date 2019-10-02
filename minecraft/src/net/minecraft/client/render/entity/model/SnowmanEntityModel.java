@@ -21,19 +21,19 @@ public class SnowmanEntityModel<T extends Entity> extends class_4595<T> {
 		float g = 0.0F;
 		this.field_3568 = new ModelPart(this, 0, 0).setTextureSize(64, 64);
 		this.field_3568.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, -0.5F);
-		this.field_3568.setRotationPoint(0.0F, 4.0F, 0.0F);
+		this.field_3568.setPivot(0.0F, 4.0F, 0.0F);
 		this.field_3566 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
 		this.field_3566.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
-		this.field_3566.setRotationPoint(0.0F, 6.0F, 0.0F);
+		this.field_3566.setPivot(0.0F, 6.0F, 0.0F);
 		this.field_3565 = new ModelPart(this, 32, 0).setTextureSize(64, 64);
 		this.field_3565.addCuboid(-1.0F, 0.0F, -1.0F, 12.0F, 2.0F, 2.0F, -0.5F);
-		this.field_3565.setRotationPoint(0.0F, 6.0F, 0.0F);
+		this.field_3565.setPivot(0.0F, 6.0F, 0.0F);
 		this.field_3567 = new ModelPart(this, 0, 16).setTextureSize(64, 64);
 		this.field_3567.addCuboid(-5.0F, -10.0F, -5.0F, 10.0F, 10.0F, 10.0F, -0.5F);
-		this.field_3567.setRotationPoint(0.0F, 13.0F, 0.0F);
+		this.field_3567.setPivot(0.0F, 13.0F, 0.0F);
 		this.field_3569 = new ModelPart(this, 0, 36).setTextureSize(64, 64);
 		this.field_3569.addCuboid(-6.0F, -12.0F, -6.0F, 12.0F, 12.0F, 12.0F, -0.5F);
-		this.field_3569.setRotationPoint(0.0F, 24.0F, 0.0F);
+		this.field_3569.setPivot(0.0F, 24.0F, 0.0F);
 	}
 
 	@Override
@@ -47,14 +47,14 @@ public class SnowmanEntityModel<T extends Entity> extends class_4595<T> {
 		this.field_3565.roll = -1.0F;
 		this.field_3566.yaw = 0.0F + this.field_3567.yaw;
 		this.field_3565.yaw = (float) Math.PI + this.field_3567.yaw;
-		this.field_3566.rotationPointX = m * 5.0F;
-		this.field_3566.rotationPointZ = -l * 5.0F;
-		this.field_3565.rotationPointX = -m * 5.0F;
-		this.field_3565.rotationPointZ = l * 5.0F;
+		this.field_3566.pivotX = m * 5.0F;
+		this.field_3566.pivotZ = -l * 5.0F;
+		this.field_3565.pivotX = -m * 5.0F;
+		this.field_3565.pivotZ = l * 5.0F;
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.field_3567, this.field_3569, this.field_3568, this.field_3566, this.field_3565);
 	}
 

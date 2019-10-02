@@ -75,7 +75,7 @@ public class WanderingTraderManager {
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
-			if (blockPos3 != null) {
+			if (blockPos3 != null && this.method_23279(blockPos3)) {
 				if (this.world.getBiome(blockPos3) == Biomes.THE_VOID) {
 					return false;
 				}
@@ -124,5 +124,15 @@ public class WanderingTraderManager {
 		}
 
 		return blockPos2;
+	}
+
+	private boolean method_23279(BlockPos blockPos) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(1, 2, 1))) {
+			if (!this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

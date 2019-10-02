@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class BrewingStandScreen extends AbstractContainerScreen<BrewingStandContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
-	private static final int[] field_2824 = new int[]{29, 24, 20, 16, 11, 6, 0};
+	private static final int[] BUBBLE_PROGRESS = new int[]{29, 24, 20, 16, 11, 6, 0};
 
 	public BrewingStandScreen(BrewingStandContainer brewingStandContainer, PlayerInventory playerInventory, Text text) {
 		super(brewingStandContainer, playerInventory, text);
@@ -52,7 +52,7 @@ public class BrewingStandScreen extends AbstractContainerScreen<BrewingStandCont
 				this.blit(k + 97, l + 16, 176, 0, 9, p);
 			}
 
-			p = field_2824[o / 2 % 7];
+			p = BUBBLE_PROGRESS[o / 2 % 7];
 			if (p > 0) {
 				this.blit(k + 63, l + 14 + 29 - p, 185, 29 - p, 12, p);
 			}

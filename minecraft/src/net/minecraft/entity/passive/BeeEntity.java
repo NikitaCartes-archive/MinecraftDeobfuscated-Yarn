@@ -214,8 +214,16 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	private boolean canEnterHive() {
 		if (this.cannotEnterHiveTicks > 0) {
 			return false;
+		} else if (!this.hasHive()) {
+			return false;
 		} else {
-			return !this.hasHive() ? false : this.hasNectar() || !this.world.isDaylight() || this.world.hasRain(this.getBlockPos()) || this.ticksSincePollination > 3600;
+			boolean bl = false;
+			BlockEntity blockEntity = this.world.getBlockEntity(this.hivePos);
+			if (blockEntity instanceof BeeHiveBlockEntity) {
+				bl = ((BeeHiveBlockEntity)blockEntity).method_23280();
+			}
+
+			return !bl && (this.hasNectar() || !this.world.isDaylight() || this.world.hasRain(this.getBlockPos()) || this.ticksSincePollination > 3600);
 		}
 	}
 
@@ -442,7 +450,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return this.isBaby() ? entityDimensions.height * 0.95F : entityDimensions.height * 0.5F;
+		return this.isBaby() ? entityDimensions.height * 0.5F : entityDimensions.height * 0.5F;
 	}
 
 	@Override

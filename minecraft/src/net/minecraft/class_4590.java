@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -25,7 +26,7 @@ public final class class_4590 {
 	private Quaternion field_20905;
 	private static final class_4590 field_20906 = SystemUtil.get(() -> {
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.method_22668();
+		matrix4f.loadIdentity();
 		class_4590 lv = new class_4590(matrix4f);
 		lv.method_22937();
 		return lv;
@@ -54,7 +55,7 @@ public final class class_4590 {
 
 	public class_4590 method_22933(class_4590 arg) {
 		Matrix4f matrix4f = this.method_22936();
-		matrix4f.method_22672(arg.method_22936());
+		matrix4f.multiply(arg.method_22936());
 		return new class_4590(matrix4f);
 	}
 
@@ -64,13 +65,13 @@ public final class class_4590 {
 			return this;
 		} else {
 			Matrix4f matrix4f = this.method_22936();
-			return matrix4f.method_22870() ? new class_4590(matrix4f) : null;
+			return matrix4f.invert() ? new class_4590(matrix4f) : null;
 		}
 	}
 
 	private void method_22938() {
 		if (!this.field_20901) {
-			Pair<class_4581, Vector3f> pair = method_22932(this.field_20900);
+			Pair<Matrix3f, Vector3f> pair = method_22932(this.field_20900);
 			Triple<Quaternion, Vector3f, Quaternion> triple = pair.getFirst().method_22853();
 			this.field_20902 = pair.getSecond();
 			this.field_20903 = triple.getLeft();
@@ -84,22 +85,22 @@ public final class class_4590 {
 		@Nullable Vector3f vector3f, @Nullable Quaternion quaternion, @Nullable Vector3f vector3f2, @Nullable Quaternion quaternion2
 	) {
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.method_22668();
+		matrix4f.loadIdentity();
 		if (quaternion != null) {
-			matrix4f.method_22672(new Matrix4f(quaternion));
+			matrix4f.multiply(new Matrix4f(quaternion));
 		}
 
 		if (vector3f2 != null) {
 			Matrix4f matrix4f2 = new Matrix4f();
-			matrix4f2.method_22668();
+			matrix4f2.loadIdentity();
 			matrix4f2.set(0, 0, vector3f2.getX());
 			matrix4f2.set(1, 1, vector3f2.getY());
 			matrix4f2.set(2, 2, vector3f2.getZ());
-			matrix4f.method_22672(matrix4f2);
+			matrix4f.multiply(matrix4f2);
 		}
 
 		if (quaternion2 != null) {
-			matrix4f.method_22672(new Matrix4f(quaternion2));
+			matrix4f.multiply(new Matrix4f(quaternion2));
 		}
 
 		if (vector3f != null) {
@@ -111,11 +112,11 @@ public final class class_4590 {
 		return matrix4f;
 	}
 
-	public static Pair<class_4581, Vector3f> method_22932(Matrix4f matrix4f) {
-		matrix4f.method_22866(1.0F / matrix4f.method_22669(3, 3));
-		Vector3f vector3f = new Vector3f(matrix4f.method_22669(0, 3), matrix4f.method_22669(1, 3), matrix4f.method_22669(2, 3));
-		class_4581 lv = new class_4581(matrix4f);
-		return Pair.of(lv, vector3f);
+	public static Pair<Matrix3f, Vector3f> method_22932(Matrix4f matrix4f) {
+		matrix4f.multiply(1.0F / matrix4f.get(3, 3));
+		Vector3f vector3f = new Vector3f(matrix4f.get(0, 3), matrix4f.get(1, 3), matrix4f.get(2, 3));
+		Matrix3f matrix3f = new Matrix3f(matrix4f);
+		return Pair.of(matrix3f, vector3f);
 	}
 
 	public Matrix4f method_22936() {

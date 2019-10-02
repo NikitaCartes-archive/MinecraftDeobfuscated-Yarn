@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class AdvancementWidget extends DrawableHelper {
 	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
-	private static final Pattern field_2708 = Pattern.compile("(.+) \\S+");
+	private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(.+) \\S+");
 	private final AdvancementTab tab;
 	private final Advancement advancement;
 	private final AdvancementDisplay display;
@@ -74,7 +74,7 @@ public class AdvancementWidget extends DrawableHelper {
 				if (j - i <= 10) {
 					return this.client.textRenderer.wrapStringToWidthAsList(string, j);
 				} else {
-					Matcher matcher = field_2708.matcher(string2);
+					Matcher matcher = BACKSLASH_S_PATTERN.matcher(string2);
 					if (matcher.matches()) {
 						int k = this.client.textRenderer.getStringWidth(matcher.group(1));
 						if (i - k <= 10) {
@@ -156,7 +156,7 @@ public class AdvancementWidget extends DrawableHelper {
 		this.children.add(advancementWidget);
 	}
 
-	public void method_2331(int i, int j, float f, int k, int l) {
+	public void drawTooltip(int i, int j, float f, int k, int l) {
 		boolean bl = k + i + this.xPos + this.width + 26 >= this.tab.getScreen().width;
 		String string = this.progress == null ? null : this.progress.getProgressBarFraction();
 		int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
@@ -267,7 +267,7 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 	}
 
-	public boolean method_2329(int i, int j, int k, int l) {
+	public boolean shouldRender(int i, int j, int k, int l) {
 		if (!this.display.isHidden() || this.progress != null && this.progress.isDone()) {
 			int m = i + this.xPos;
 			int n = m + 26;

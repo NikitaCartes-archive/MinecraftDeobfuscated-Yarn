@@ -24,7 +24,7 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		this.headwear.visible = false;
 		this.rightLeg = new ModelPart(this, 32, 0);
 		this.rightLeg.addCuboid(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F, 0.0F);
-		this.rightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
+		this.rightLeg.setPivot(-1.9F, 12.0F, 0.0F);
 		this.field_3602 = new ModelPart(this, 0, 32);
 		this.field_3602.addCuboid(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
 		this.field_3601 = new ModelPart(this, 0, 32);
@@ -48,10 +48,10 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		}
 
 		this.rightLeg.pitch += (float) (Math.PI / 5);
-		this.field_3602.rotationPointZ = 2.0F;
-		this.field_3601.rotationPointZ = 2.0F;
-		this.field_3602.rotationPointY = 1.0F;
-		this.field_3601.rotationPointY = 1.0F;
+		this.field_3602.pivotZ = 2.0F;
+		this.field_3601.pivotZ = 2.0F;
+		this.field_3602.pivotY = 1.0F;
+		this.field_3601.pivotY = 1.0F;
 		this.field_3602.yaw = 0.47123894F + MathHelper.cos(h * 0.8F) * (float) Math.PI * 0.05F;
 		this.field_3601.yaw = -this.field_3602.yaw;
 		this.field_3601.roll = -0.47123894F;

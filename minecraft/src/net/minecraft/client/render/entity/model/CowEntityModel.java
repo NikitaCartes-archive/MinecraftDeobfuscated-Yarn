@@ -11,21 +11,21 @@ public class CowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 		super(12, 0.0F, false, 10.0F, 4.0F, 2.0F, 2.0F, 24);
 		this.head = new ModelPart(this, 0, 0);
 		this.head.addCuboid(-4.0F, -4.0F, -6.0F, 8.0F, 8.0F, 6.0F, 0.0F);
-		this.head.setRotationPoint(0.0F, 4.0F, -8.0F);
+		this.head.setPivot(0.0F, 4.0F, -8.0F);
 		this.head.setTextureOffset(22, 0).addCuboid(-5.0F, -5.0F, -4.0F, 1.0F, 3.0F, 1.0F, 0.0F);
 		this.head.setTextureOffset(22, 0).addCuboid(4.0F, -5.0F, -4.0F, 1.0F, 3.0F, 1.0F, 0.0F);
 		this.body = new ModelPart(this, 18, 4);
 		this.body.addCuboid(-6.0F, -10.0F, -7.0F, 12.0F, 18.0F, 10.0F, 0.0F);
-		this.body.setRotationPoint(0.0F, 5.0F, 2.0F);
+		this.body.setPivot(0.0F, 5.0F, 2.0F);
 		this.body.setTextureOffset(52, 0).addCuboid(-2.0F, 2.0F, -8.0F, 4.0F, 6.0F, 1.0F);
-		this.leg1.rotationPointX--;
-		this.leg2.rotationPointX++;
-		this.leg1.rotationPointZ += 0.0F;
-		this.leg2.rotationPointZ += 0.0F;
-		this.leg3.rotationPointX--;
-		this.leg4.rotationPointX++;
-		this.leg3.rotationPointZ--;
-		this.leg4.rotationPointZ--;
+		this.leg1.pivotX--;
+		this.leg2.pivotX++;
+		this.leg1.pivotZ += 0.0F;
+		this.leg2.pivotZ += 0.0F;
+		this.leg3.pivotX--;
+		this.leg4.pivotX++;
+		this.leg3.pivotZ--;
+		this.leg4.pivotZ--;
 	}
 
 	public ModelPart getHead() {

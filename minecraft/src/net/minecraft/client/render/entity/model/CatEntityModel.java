@@ -26,39 +26,39 @@ public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 			this.backLegLeft.roll = 0.0F;
 			this.backLegRight.pitch = 0.0F;
 			this.backLegRight.roll = 0.0F;
-			this.backLegRight.rotationPointX = -1.2F;
+			this.backLegRight.pivotX = -1.2F;
 			this.frontLegLeft.pitch = 0.0F;
 			this.frontLegRight.pitch = 0.0F;
 			this.frontLegRight.roll = 0.0F;
-			this.frontLegRight.rotationPointX = -1.1F;
-			this.frontLegRight.rotationPointY = 18.0F;
+			this.frontLegRight.pivotX = -1.1F;
+			this.frontLegRight.pivotY = 18.0F;
 		}
 
 		super.animateModel(catEntity, f, g, h);
 		if (catEntity.isSitting()) {
 			this.body.pitch = (float) (Math.PI / 4);
-			this.body.rotationPointY += -4.0F;
-			this.body.rotationPointZ += 5.0F;
-			this.head.rotationPointY += -3.3F;
-			this.head.rotationPointZ++;
-			this.tail1.rotationPointY += 8.0F;
-			this.tail1.rotationPointZ += -2.0F;
-			this.tail2.rotationPointY += 2.0F;
-			this.tail2.rotationPointZ += -0.8F;
+			this.body.pivotY += -4.0F;
+			this.body.pivotZ += 5.0F;
+			this.head.pivotY += -3.3F;
+			this.head.pivotZ++;
+			this.tail1.pivotY += 8.0F;
+			this.tail1.pivotZ += -2.0F;
+			this.tail2.pivotY += 2.0F;
+			this.tail2.pivotZ += -0.8F;
 			this.tail1.pitch = 1.7278761F;
 			this.tail2.pitch = 2.670354F;
 			this.backLegLeft.pitch = (float) (-Math.PI / 20);
-			this.backLegLeft.rotationPointY = 16.1F;
-			this.backLegLeft.rotationPointZ = -7.0F;
+			this.backLegLeft.pivotY = 16.1F;
+			this.backLegLeft.pivotZ = -7.0F;
 			this.backLegRight.pitch = (float) (-Math.PI / 20);
-			this.backLegRight.rotationPointY = 16.1F;
-			this.backLegRight.rotationPointZ = -7.0F;
+			this.backLegRight.pivotY = 16.1F;
+			this.backLegRight.pivotZ = -7.0F;
 			this.frontLegLeft.pitch = (float) (-Math.PI / 2);
-			this.frontLegLeft.rotationPointY = 21.0F;
-			this.frontLegLeft.rotationPointZ = 1.0F;
+			this.frontLegLeft.pivotY = 21.0F;
+			this.frontLegLeft.pivotZ = 1.0F;
 			this.frontLegRight.pitch = (float) (-Math.PI / 2);
-			this.frontLegRight.rotationPointY = 21.0F;
-			this.frontLegRight.rotationPointZ = 1.0F;
+			this.frontLegRight.pivotY = 21.0F;
+			this.frontLegRight.pivotZ = 1.0F;
 			this.animationState = 3;
 		}
 	}
@@ -71,12 +71,12 @@ public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 			this.backLegLeft.pitch = -1.2707963F;
 			this.backLegRight.pitch = -0.47079635F;
 			this.backLegRight.roll = -0.2F;
-			this.backLegRight.rotationPointX = -0.2F;
+			this.backLegRight.pivotX = -0.2F;
 			this.frontLegLeft.pitch = -0.4F;
 			this.frontLegRight.pitch = 0.5F;
 			this.frontLegRight.roll = -0.5F;
-			this.frontLegRight.rotationPointX = -0.3F;
-			this.frontLegRight.rotationPointY = 20.0F;
+			this.frontLegRight.pivotX = -0.3F;
+			this.frontLegRight.pivotY = 20.0F;
 			this.tail1.pitch = ModelUtil.interpolateAngle(this.tail1.pitch, 0.8F, this.tailCurlAnimation);
 			this.tail2.pitch = ModelUtil.interpolateAngle(this.tail2.pitch, -0.4F, this.tailCurlAnimation);
 		}

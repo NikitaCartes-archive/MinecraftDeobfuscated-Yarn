@@ -108,7 +108,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	public float field_6819;
 	public float field_6827;
 	public float field_6829;
-	public float field_6824 = 1.0F;
+	private float field_6824 = 1.0F;
 	private boolean songPlaying;
 	private BlockPos songSource;
 
@@ -339,7 +339,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		}
 	}
 
-	public static SoundEvent getSound(EntityType<?> entityType) {
+	private static SoundEvent getSound(EntityType<?> entityType) {
 		return (SoundEvent)MOB_SOUNDS.getOrDefault(entityType, SoundEvents.ENTITY_PARROT_AMBIENT);
 	}
 
@@ -400,10 +400,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			if (this.sitGoal != null) {
-				this.sitGoal.setEnabledWithOwner(false);
-			}
-
+			this.sitGoal.setEnabledWithOwner(false);
 			return super.damage(damageSource, f);
 		}
 	}

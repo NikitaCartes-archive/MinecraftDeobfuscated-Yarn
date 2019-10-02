@@ -8,12 +8,11 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColors;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.Matrix4f;
@@ -24,6 +23,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
 
@@ -41,24 +41,24 @@ public class BlockModelRenderer {
 		BakedModel bakedModel,
 		BlockState blockState,
 		BlockPos blockPos,
-		class_4587 arg,
-		class_4588 arg2,
+		MatrixStack matrixStack,
+		VertexConsumer vertexConsumer,
 		boolean bl,
 		Random random,
 		long l
 	) {
 		boolean bl2 = MinecraftClient.isAmbientOcclusionEnabled() && blockState.getLuminance() == 0 && bakedModel.useAmbientOcclusion();
 		Vec3d vec3d = blockState.getOffsetPos(blockRenderView, blockPos);
-		arg.method_22903();
-		arg.method_22904((double)(blockPos.getX() & 15) + vec3d.x, (double)(blockPos.getY() & 15) + vec3d.y, (double)(blockPos.getZ() & 15) + vec3d.z);
+		matrixStack.push();
+		matrixStack.translate((double)(blockPos.getX() & 15) + vec3d.x, (double)(blockPos.getY() & 15) + vec3d.y, (double)(blockPos.getZ() & 15) + vec3d.z);
 
 		boolean throwable;
 		try {
 			if (!bl2) {
-				return this.tesselateFlat(blockRenderView, bakedModel, blockState, blockPos, arg, arg2, bl, random, l);
+				return this.tesselateFlat(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, bl, random, l);
 			}
 
-			throwable = this.tesselateSmooth(blockRenderView, bakedModel, blockState, blockPos, arg, arg2, bl, random, l);
+			throwable = this.tesselateSmooth(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, bl, random, l);
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Tesselating block model");
 			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
@@ -66,7 +66,7 @@ public class BlockModelRenderer {
 			crashReportSection.add("Using AO", bl2);
 			throw new CrashException(crashReport);
 		} finally {
-			arg.method_22909();
+			matrixStack.pop();
 		}
 
 		return throwable;
@@ -77,8 +77,8 @@ public class BlockModelRenderer {
 		BakedModel bakedModel,
 		BlockState blockState,
 		BlockPos blockPos,
-		class_4587 arg,
-		class_4588 arg2,
+		MatrixStack matrixStack,
+		VertexConsumer vertexConsumer,
 		boolean bl,
 		Random random,
 		long l
@@ -92,7 +92,7 @@ public class BlockModelRenderer {
 			random.setSeed(l);
 			List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
 			if (!list.isEmpty() && (!bl || Block.shouldDrawSide(blockState, blockRenderView, blockPos, direction))) {
-				this.tesselateQuadsSmooth(blockRenderView, blockState, blockPos, arg, arg2, list, fs, bitSet, ambientOcclusionCalculator);
+				this.tesselateQuadsSmooth(blockRenderView, blockState, blockPos, matrixStack, vertexConsumer, list, fs, bitSet, ambientOcclusionCalculator);
 				bl2 = true;
 			}
 		}
@@ -100,7 +100,7 @@ public class BlockModelRenderer {
 		random.setSeed(l);
 		List<BakedQuad> list2 = bakedModel.getQuads(blockState, null, random);
 		if (!list2.isEmpty()) {
-			this.tesselateQuadsSmooth(blockRenderView, blockState, blockPos, arg, arg2, list2, fs, bitSet, ambientOcclusionCalculator);
+			this.tesselateQuadsSmooth(blockRenderView, blockState, blockPos, matrixStack, vertexConsumer, list2, fs, bitSet, ambientOcclusionCalculator);
 			bl2 = true;
 		}
 
@@ -112,8 +112,8 @@ public class BlockModelRenderer {
 		BakedModel bakedModel,
 		BlockState blockState,
 		BlockPos blockPos,
-		class_4587 arg,
-		class_4588 arg2,
+		MatrixStack matrixStack,
+		VertexConsumer vertexConsumer,
 		boolean bl,
 		Random random,
 		long l
@@ -125,8 +125,8 @@ public class BlockModelRenderer {
 			random.setSeed(l);
 			List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
 			if (!list.isEmpty() && (!bl || Block.shouldDrawSide(blockState, blockRenderView, blockPos, direction))) {
-				int i = blockRenderView.getLightmapIndex(blockState, blockPos.offset(direction));
-				this.tesselateQuadsFlat(blockRenderView, blockState, blockPos, i, false, arg, arg2, list, bitSet);
+				int i = blockRenderView.getLightmapCoordinates(blockState, blockPos.offset(direction));
+				this.tesselateQuadsFlat(blockRenderView, blockState, blockPos, i, false, matrixStack, vertexConsumer, list, bitSet);
 				bl2 = true;
 			}
 		}
@@ -134,7 +134,7 @@ public class BlockModelRenderer {
 		random.setSeed(l);
 		List<BakedQuad> list2 = bakedModel.getQuads(blockState, null, random);
 		if (!list2.isEmpty()) {
-			this.tesselateQuadsFlat(blockRenderView, blockState, blockPos, -1, true, arg, arg2, list2, bitSet);
+			this.tesselateQuadsFlat(blockRenderView, blockState, blockPos, -1, true, matrixStack, vertexConsumer, list2, bitSet);
 			bl2 = true;
 		}
 
@@ -145,8 +145,8 @@ public class BlockModelRenderer {
 		BlockRenderView blockRenderView,
 		BlockState blockState,
 		BlockPos blockPos,
-		class_4587 arg,
-		class_4588 arg2,
+		MatrixStack matrixStack,
+		VertexConsumer vertexConsumer,
 		List<BakedQuad> list,
 		float[] fs,
 		BitSet bitSet,
@@ -159,8 +159,8 @@ public class BlockModelRenderer {
 				blockRenderView,
 				blockState,
 				blockPos,
-				arg2,
-				arg.method_22910(),
+				vertexConsumer,
+				matrixStack.peek(),
 				bakedQuad,
 				ambientOcclusionCalculator.colorMultiplier[0],
 				ambientOcclusionCalculator.colorMultiplier[1],
@@ -178,7 +178,7 @@ public class BlockModelRenderer {
 		BlockRenderView blockRenderView,
 		BlockState blockState,
 		BlockPos blockPos,
-		class_4588 arg,
+		VertexConsumer vertexConsumer,
 		Matrix4f matrix4f,
 		BakedQuad bakedQuad,
 		float f,
@@ -204,7 +204,7 @@ public class BlockModelRenderer {
 			q = 1.0F;
 		}
 
-		arg.method_22920(matrix4f, bakedQuad, new float[]{f, g, h, i}, o, p, q, new int[]{j, k, l, m}, true);
+		vertexConsumer.quad(matrix4f, bakedQuad, new float[]{f, g, h, i}, o, p, q, new int[]{j, k, l, m}, true);
 	}
 
 	private void updateShape(
@@ -280,8 +280,8 @@ public class BlockModelRenderer {
 		BlockPos blockPos,
 		int i,
 		boolean bl,
-		class_4587 arg,
-		class_4588 arg2,
+		MatrixStack matrixStack,
+		VertexConsumer vertexConsumer,
 		List<BakedQuad> list,
 		BitSet bitSet
 	) {
@@ -289,27 +289,27 @@ public class BlockModelRenderer {
 			if (bl) {
 				this.updateShape(blockRenderView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, bitSet);
 				BlockPos blockPos2 = bitSet.get(0) ? blockPos.offset(bakedQuad.getFace()) : blockPos;
-				i = blockRenderView.getLightmapIndex(blockState, blockPos2);
+				i = blockRenderView.getLightmapCoordinates(blockState, blockPos2);
 			}
 
-			this.method_23073(blockRenderView, blockState, blockPos, arg2, arg.method_22910(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, i, i, i, i);
+			this.method_23073(blockRenderView, blockState, blockPos, vertexConsumer, matrixStack.peek(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, i, i, i, i);
 		}
 	}
 
-	public void render(Matrix4f matrix4f, class_4588 arg, @Nullable BlockState blockState, BakedModel bakedModel, float f, float g, float h, int i) {
+	public void render(Matrix4f matrix4f, VertexConsumer vertexConsumer, @Nullable BlockState blockState, BakedModel bakedModel, float f, float g, float h, int i) {
 		Random random = new Random();
 		long l = 42L;
 
 		for (Direction direction : Direction.values()) {
 			random.setSeed(42L);
-			renderQuad(matrix4f, arg, f, g, h, bakedModel.getQuads(blockState, direction, random), i);
+			renderQuad(matrix4f, vertexConsumer, f, g, h, bakedModel.getQuads(blockState, direction, random), i);
 		}
 
 		random.setSeed(42L);
-		renderQuad(matrix4f, arg, f, g, h, bakedModel.getQuads(blockState, null, random), i);
+		renderQuad(matrix4f, vertexConsumer, f, g, h, bakedModel.getQuads(blockState, null, random), i);
 	}
 
-	private static void renderQuad(Matrix4f matrix4f, class_4588 arg, float f, float g, float h, List<BakedQuad> list, int i) {
+	private static void renderQuad(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, List<BakedQuad> list, int i) {
 		for (BakedQuad bakedQuad : list) {
 			float j;
 			float k;
@@ -324,7 +324,7 @@ public class BlockModelRenderer {
 				l = 1.0F;
 			}
 
-			arg.method_22919(matrix4f, bakedQuad, j, k, l, i);
+			vertexConsumer.quad(matrix4f, bakedQuad, j, k, l, i);
 		}
 	}
 
@@ -548,7 +548,7 @@ public class BlockModelRenderer {
 				}
 			}
 
-			int i = blockRenderView.getLightmapIndex(blockState, blockPos);
+			int i = blockRenderView.getLightmapCoordinates(blockState, blockPos);
 			if (this.enabled) {
 				if (this.intCache.size() == 100) {
 					this.intCache.removeFirstInt();
