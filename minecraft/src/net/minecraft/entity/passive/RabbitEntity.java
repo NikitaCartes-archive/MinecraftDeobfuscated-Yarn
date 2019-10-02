@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -52,6 +51,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 
 public class RabbitEntity extends AnimalEntity {
@@ -455,11 +455,11 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(class_4538 arg, BlockPos blockPos) {
-			Block block = arg.getBlockState(blockPos).getBlock();
+		protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
+			Block block = worldView.getBlockState(blockPos).getBlock();
 			if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861) {
 				blockPos = blockPos.up();
-				BlockState blockState = arg.getBlockState(blockPos);
+				BlockState blockState = worldView.getBlockState(blockPos);
 				block = blockState.getBlock();
 				if (block instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
 					this.field_6861 = true;

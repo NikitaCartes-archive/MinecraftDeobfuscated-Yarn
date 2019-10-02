@@ -33,4 +33,9 @@ public class MuleEntity extends AbstractDonkeyEntity {
 	protected void playAddChestSound() {
 		this.playSound(SoundEvents.ENTITY_MULE_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
+
+	@Override
+	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+		return EntityType.MULE.create(this.world);
+	}
 }

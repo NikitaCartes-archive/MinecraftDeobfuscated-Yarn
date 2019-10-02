@@ -2,16 +2,16 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
-import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.ShulkerBulletEntityModel;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEntity> {
@@ -22,30 +22,39 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		super(entityRenderDispatcher);
 	}
 
-	public void method_4103(ShulkerBulletEntity shulkerBulletEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
-		arg.method_22903();
+	public void method_4103(
+		ShulkerBulletEntity shulkerBulletEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		float h,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+	) {
+		matrixStack.push();
 		float i = MathHelper.method_22859(shulkerBulletEntity.prevYaw, shulkerBulletEntity.yaw, h);
 		float j = MathHelper.lerp(h, shulkerBulletEntity.prevPitch, shulkerBulletEntity.pitch);
 		float k = (float)shulkerBulletEntity.age + h;
-		arg.method_22904(0.0, 0.15F, 0.0);
-		arg.method_22907(Vector3f.field_20705.method_23214(MathHelper.sin(k * 0.1F) * 180.0F, true));
-		arg.method_22907(Vector3f.field_20703.method_23214(MathHelper.cos(k * 0.1F) * 180.0F, true));
-		arg.method_22907(Vector3f.field_20707.method_23214(MathHelper.sin(k * 0.15F) * 360.0F, true));
+		matrixStack.translate(0.0, 0.15F, 0.0);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.sin(k * 0.1F) * 180.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.cos(k * 0.1F) * 180.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(k * 0.15F) * 360.0F, true));
 		float l = 0.03125F;
-		arg.method_22905(-1.0F, -1.0F, 1.0F);
+		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		int m = shulkerBulletEntity.getLightmapCoordinates();
-		class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(SKIN));
-		class_4608.method_23211(lv);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
+		OverlayTexture.clearDefaultOverlay(vertexConsumer);
 		this.model.setAngles(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, i, j, 0.03125F);
-		this.model.method_22957(arg, lv, m);
-		lv.method_22923();
-		arg.method_22905(1.5F, 1.5F, 1.5F);
-		class_4588 lv2 = arg2.getBuffer(BlockRenderLayer.method_23019(SKIN, true, true, false));
-		class_4608.method_23211(lv);
-		this.model.method_22957(arg, lv2, m);
-		lv.method_22923();
-		arg.method_22909();
-		super.render(shulkerBulletEntity, d, e, f, g, h, arg, arg2);
+		this.model.method_22957(matrixStack, vertexConsumer, m);
+		vertexConsumer.clearDefaultOverlay();
+		matrixStack.scale(1.5F, 1.5F, 1.5F);
+		VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23019(SKIN, true, true, false));
+		OverlayTexture.clearDefaultOverlay(vertexConsumer);
+		this.model.method_22957(matrixStack, vertexConsumer2, m);
+		vertexConsumer.clearDefaultOverlay();
+		matrixStack.pop();
+		super.render(shulkerBulletEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}
 
 	public Identifier method_4105(ShulkerBulletEntity shulkerBulletEntity) {

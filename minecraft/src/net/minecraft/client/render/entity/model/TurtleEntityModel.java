@@ -5,40 +5,43 @@ import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityModel<T> {
 	private final ModelPart field_3594;
+	private float field_21057;
 
 	public TurtleEntityModel(float f) {
-		super(12, f, true, 120.0F, 0.0F, 6.0F, 6.0F, 120);
+		super(12, f, true, 120.0F, 0.0F, 9.0F, 6.0F, 120);
 		this.textureWidth = 128;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 3, 0);
 		this.head.addCuboid(-3.0F, -1.0F, -3.0F, 6.0F, 5.0F, 6.0F, 0.0F);
-		this.head.setRotationPoint(0.0F, 19.0F, -10.0F);
+		this.head.setPivot(0.0F, 19.0F, -10.0F);
 		this.body = new ModelPart(this);
 		this.body.setTextureOffset(7, 37).addCuboid(-9.5F, 3.0F, -10.0F, 19.0F, 20.0F, 6.0F, 0.0F);
 		this.body.setTextureOffset(31, 1).addCuboid(-5.5F, 3.0F, -13.0F, 11.0F, 18.0F, 3.0F, 0.0F);
-		this.body.setRotationPoint(0.0F, 11.0F, -10.0F);
+		this.body.setPivot(0.0F, 11.0F, -10.0F);
 		this.field_3594 = new ModelPart(this);
 		this.field_3594.setTextureOffset(70, 33).addCuboid(-4.5F, 3.0F, -14.0F, 9.0F, 18.0F, 1.0F, 0.0F);
-		this.field_3594.setRotationPoint(0.0F, 11.0F, -10.0F);
+		this.field_3594.setPivot(0.0F, 11.0F, -10.0F);
 		int i = 1;
 		this.leg1 = new ModelPart(this, 1, 23);
 		this.leg1.addCuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F, 0.0F);
-		this.leg1.setRotationPoint(-3.5F, 22.0F, 11.0F);
+		this.leg1.setPivot(-3.5F, 22.0F, 11.0F);
 		this.leg2 = new ModelPart(this, 1, 12);
 		this.leg2.addCuboid(-2.0F, 0.0F, 0.0F, 4.0F, 1.0F, 10.0F, 0.0F);
-		this.leg2.setRotationPoint(3.5F, 22.0F, 11.0F);
+		this.leg2.setPivot(3.5F, 22.0F, 11.0F);
 		this.leg3 = new ModelPart(this, 27, 30);
 		this.leg3.addCuboid(-13.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F, 0.0F);
-		this.leg3.setRotationPoint(-5.0F, 21.0F, -4.0F);
+		this.leg3.setPivot(-5.0F, 21.0F, -4.0F);
 		this.leg4 = new ModelPart(this, 27, 24);
 		this.leg4.addCuboid(0.0F, 0.0F, -2.0F, 13.0F, 1.0F, 5.0F, 0.0F);
-		this.leg4.setRotationPoint(5.0F, 21.0F, -4.0F);
+		this.leg4.setPivot(5.0F, 21.0F, -4.0F);
 	}
 
 	@Override
@@ -73,19 +76,19 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 			this.leg2.pitch = 0.0F;
 		}
 
-		float l;
-		if (turtleEntity.hasEgg()) {
-			l = -1.28F;
+		this.field_3594.visible = !this.isChild && turtleEntity.hasEgg();
+		if (this.field_3594.visible) {
+			this.field_21057 = -0.08F;
 		} else {
-			l = 0.0F;
+			this.field_21057 = 0.0F;
 		}
+	}
 
-		this.head.rotationPointY = l;
-		this.body.rotationPointY = l;
-		this.leg1.rotationPointY = l;
-		this.leg2.rotationPointY = l;
-		this.leg3.rotationPointY = l;
-		this.leg4.rotationPointY = l;
-		this.field_3594.visible = turtleEntity.hasEgg();
+	@Override
+	public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
+		matrixStack.push();
+		matrixStack.translate(0.0, (double)this.field_21057, 0.0);
+		super.method_17116(matrixStack, vertexConsumer, i, f, g, h);
+		matrixStack.pop();
 	}
 }

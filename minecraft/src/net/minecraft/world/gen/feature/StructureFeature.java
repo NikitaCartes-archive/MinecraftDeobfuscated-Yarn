@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_4543;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
@@ -17,6 +16,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.ChunkRandom;
@@ -150,7 +150,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		return new ChunkPos(i + k, j + l);
 	}
 
-	public abstract boolean shouldStartAt(class_4543 arg, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome);
+	public abstract boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome);
 
 	public abstract StructureFeature.StructureStartFactory getStructureStartFactory();
 

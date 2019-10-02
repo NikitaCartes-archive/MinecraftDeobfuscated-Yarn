@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
@@ -23,13 +22,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
 	@Nullable
-	private BannerBlockEntity field_20785;
+	private BannerBlockEntity preview;
 	private ItemStack banner = ItemStack.EMPTY;
 	private ItemStack dye = ItemStack.EMPTY;
 	private ItemStack pattern = ItemStack.EMPTY;
@@ -82,13 +82,13 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 
 		int m = (int)(41.0F * this.scrollPosition);
 		this.blit(k + 119, l + 13 + m, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
-		if (this.field_20785 != null && !this.hasTooManyPatterns) {
+		if (this.preview != null && !this.hasTooManyPatterns) {
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)(k + 139), (float)(l + 52), 0.0F);
 			RenderSystem.scalef(24.0F, -24.0F, 1.0F);
-			this.field_20785.method_22534(true);
-			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.field_20785, new class_4587(), 15728880);
-			this.field_20785.method_22534(false);
+			this.preview.method_22534(true);
+			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack(), 15728880);
+			this.preview.method_22534(false);
 			RenderSystem.popMatrix();
 		} else if (this.hasTooManyPatterns) {
 			this.blit(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
@@ -138,7 +138,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 		RenderSystem.translatef((float)j + 0.5F, (float)(k + 16), 0.0F);
 		RenderSystem.scalef(6.0F, -6.0F, 1.0F);
 		RenderSystem.translatef(0.5F, 0.5F, 0.0F);
-		BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new class_4587(), 15728880);
+		BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack(), 15728880);
 		RenderSystem.popMatrix();
 		this.minecraft.getSpriteAtlas().method_23207();
 	}
@@ -212,10 +212,10 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 	private void onInventoryChanged() {
 		ItemStack itemStack = this.container.getOutputSlot().getStack();
 		if (itemStack.isEmpty()) {
-			this.field_20785 = null;
+			this.preview = null;
 		} else {
-			this.field_20785 = new BannerBlockEntity();
-			this.field_20785.deserialize(itemStack, ((BannerItem)itemStack.getItem()).getColor());
+			this.preview = new BannerBlockEntity();
+			this.preview.deserialize(itemStack, ((BannerItem)itemStack.getItem()).getColor());
 		}
 
 		ItemStack itemStack2 = this.container.getBannerSlot().getStack();
@@ -224,7 +224,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 		CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
 		this.hasTooManyPatterns = compoundTag.contains("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 		if (this.hasTooManyPatterns) {
-			this.field_20785 = null;
+			this.preview = null;
 		}
 
 		if (!ItemStack.areEqualIgnoreDamage(itemStack2, this.banner)

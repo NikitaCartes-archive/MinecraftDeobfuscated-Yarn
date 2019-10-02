@@ -11,25 +11,25 @@ import net.minecraft.world.gen.ChunkRandom;
 public class TheEndBiomeSource extends BiomeSource {
 	private final SimplexNoiseSampler noise;
 	private final ChunkRandom random;
-	private static final Set<Biome> biomes = ImmutableSet.of(
+	private static final Set<Biome> BIOMES = ImmutableSet.of(
 		Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS
 	);
 
 	public TheEndBiomeSource(TheEndBiomeSourceConfig theEndBiomeSourceConfig) {
-		super(biomes);
+		super(BIOMES);
 		this.random = new ChunkRandom(theEndBiomeSourceConfig.getSeed());
 		this.random.consume(17292);
 		this.noise = new SimplexNoiseSampler(this.random);
 	}
 
 	@Override
-	public Biome getBiome(int i, int j, int k) {
+	public Biome getStoredBiome(int i, int j, int k) {
 		int l = i >> 2;
 		int m = k >> 2;
 		if ((long)l * (long)l + (long)m * (long)m <= 4096L) {
 			return Biomes.THE_END;
 		} else {
-			float f = this.method_8757(l * 2 + 1, m * 2 + 1);
+			float f = this.getNoiseRange(l * 2 + 1, m * 2 + 1);
 			if (f > 40.0F) {
 				return Biomes.END_HIGHLANDS;
 			} else if (f >= 0.0F) {
@@ -41,7 +41,7 @@ public class TheEndBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public float method_8757(int i, int j) {
+	public float getNoiseRange(int i, int j) {
 		int k = i / 2;
 		int l = j / 2;
 		int m = i % 2;

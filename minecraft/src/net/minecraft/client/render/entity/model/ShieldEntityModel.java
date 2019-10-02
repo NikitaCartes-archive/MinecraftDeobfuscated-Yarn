@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ShieldEntityModel extends Model {
@@ -21,8 +21,8 @@ public class ShieldEntityModel extends Model {
 		this.field_3551.addCuboid(-1.0F, -3.0F, -1.0F, 2.0F, 6.0F, 6.0F, 0.0F);
 	}
 
-	public void renderItem(class_4587 arg, class_4588 arg2, int i) {
-		this.field_3550.method_22698(arg, arg2, 0.0625F, i, null);
-		this.field_3551.method_22698(arg, arg2, 0.0625F, i, null);
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i) {
+		this.field_3550.render(matrixStack, vertexConsumer, 0.0625F, i, null);
+		this.field_3551.render(matrixStack, vertexConsumer, 0.0625F, i, null);
 	}
 }

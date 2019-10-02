@@ -16,10 +16,10 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 		super(f, g, i, j);
 		this.rightArm = new ModelPart(this, 32, 48);
 		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightArm.setRotationPoint(-5.0F, 2.0F + g, 0.0F);
+		this.rightArm.setPivot(-5.0F, 2.0F + g, 0.0F);
 		this.rightLeg = new ModelPart(this, 16, 48);
 		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightLeg.setRotationPoint(-1.9F, 12.0F + g, 0.0F);
+		this.rightLeg.setPivot(-1.9F, 12.0F + g, 0.0F);
 	}
 
 	public DrownedEntityModel(float f, boolean bl) {

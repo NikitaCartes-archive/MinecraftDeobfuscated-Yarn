@@ -14,8 +14,6 @@ public abstract class AbstractTexture {
 	protected int glId = -1;
 	protected boolean bilinear;
 	protected boolean mipmap;
-	protected boolean oldBilinear;
-	protected boolean oldMipmap;
 
 	public void setFilter(boolean bl, boolean bl2) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
@@ -33,32 +31,6 @@ public abstract class AbstractTexture {
 
 		GlStateManager.texParameter(3553, 10241, i);
 		GlStateManager.texParameter(3553, 10240, j);
-	}
-
-	public void pushFilter(boolean bl, boolean bl2) {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> this.method_22601(bl, bl2));
-		} else {
-			this.method_22601(bl, bl2);
-		}
-	}
-
-	private void method_22601(boolean bl, boolean bl2) {
-		this.oldBilinear = this.bilinear;
-		this.oldMipmap = this.mipmap;
-		this.setFilter(bl, bl2);
-	}
-
-	public void popFilter() {
-		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(this::method_22603);
-		} else {
-			this.method_22603();
-		}
-	}
-
-	private void method_22603() {
-		this.setFilter(this.oldBilinear, this.oldMipmap);
 	}
 
 	public int getGlId() {

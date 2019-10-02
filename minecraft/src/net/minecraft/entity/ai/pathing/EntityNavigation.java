@@ -145,15 +145,19 @@ public abstract class EntityNavigation {
 				this.currentPath = path;
 			}
 
-			this.method_6359();
-			if (this.currentPath.getLength() <= 0) {
+			if (this.isIdle()) {
 				return false;
 			} else {
-				this.speed = d;
-				Vec3d vec3d = this.getPos();
-				this.field_6674 = this.tickCount;
-				this.field_6672 = vec3d;
-				return true;
+				this.method_6359();
+				if (this.currentPath.getLength() <= 0) {
+					return false;
+				} else {
+					this.speed = d;
+					Vec3d vec3d = this.getPos();
+					this.field_6674 = this.tickCount;
+					this.field_6672 = vec3d;
+					return true;
+				}
 			}
 		}
 	}

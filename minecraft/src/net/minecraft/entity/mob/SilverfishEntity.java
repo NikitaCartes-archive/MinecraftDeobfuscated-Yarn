@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.Random;
-import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InfestedBlock;
@@ -28,6 +27,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class SilverfishEntity extends HostileEntity {
 	private SilverfishEntity.CallForHelpGoal callForHelpGoal;
@@ -116,8 +116,8 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return InfestedBlock.isInfestable(arg.getBlockState(blockPos.method_10074())) ? 10.0F : super.getPathfindingFavor(blockPos, arg);
+	public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+		return InfestedBlock.isInfestable(worldView.getBlockState(blockPos.method_10074())) ? 10.0F : super.getPathfindingFavor(blockPos, worldView);
 	}
 
 	public static boolean canSpawn(EntityType<SilverfishEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {

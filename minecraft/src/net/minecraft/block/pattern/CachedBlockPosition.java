@@ -2,21 +2,21 @@ package net.minecraft.block.pattern;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldView;
 
 public class CachedBlockPosition {
-	private final class_4538 world;
+	private final WorldView world;
 	private final BlockPos pos;
 	private final boolean forceLoad;
 	private BlockState state;
 	private BlockEntity blockEntity;
 	private boolean cachedEntity;
 
-	public CachedBlockPosition(class_4538 arg, BlockPos blockPos, boolean bl) {
-		this.world = arg;
+	public CachedBlockPosition(WorldView worldView, BlockPos blockPos, boolean bl) {
+		this.world = worldView;
 		this.pos = blockPos.toImmutable();
 		this.forceLoad = bl;
 	}
@@ -39,7 +39,7 @@ public class CachedBlockPosition {
 		return this.blockEntity;
 	}
 
-	public class_4538 getWorld() {
+	public WorldView getWorld() {
 		return this.world;
 	}
 

@@ -26,7 +26,7 @@ public abstract class AbstractFileResourcePack implements ResourcePack {
 	}
 
 	private static String getFilename(ResourceType resourceType, Identifier identifier) {
-		return String.format("%s/%s/%s", resourceType.getName(), identifier.getNamespace(), identifier.getPath());
+		return String.format("%s/%s/%s", resourceType.getDirectory(), identifier.getNamespace(), identifier.getPath());
 	}
 
 	protected static String relativize(File file, File file2) {

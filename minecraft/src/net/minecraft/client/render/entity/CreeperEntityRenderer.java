@@ -2,12 +2,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.CreeperChargeFeatureRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
@@ -18,7 +18,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		this.addFeature(new CreeperChargeFeatureRenderer(this));
 	}
 
-	protected void method_3900(CreeperEntity creeperEntity, class_4587 arg, float f) {
+	protected void method_3900(CreeperEntity creeperEntity, MatrixStack matrixStack, float f) {
 		float g = creeperEntity.getClientFuseTime(f);
 		float h = 1.0F + MathHelper.sin(g * 100.0F) * g * 0.01F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
@@ -26,7 +26,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 		g *= g;
 		float i = (1.0F + g * 0.4F) * h;
 		float j = (1.0F + g * 0.1F) / h;
-		arg.method_22905(i, j, i);
+		matrixStack.scale(i, j, i);
 	}
 
 	protected float method_23154(CreeperEntity creeperEntity, float f) {

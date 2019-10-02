@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -12,6 +11,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class TorchBlock extends Block {
 	protected static final VoxelShape BOUNDING_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
@@ -35,8 +35,8 @@ public class TorchBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return sideCoversSmallSquare(arg, blockPos.method_10074(), Direction.UP);
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return sideCoversSmallSquare(worldView, blockPos.method_10074(), Direction.UP);
 	}
 
 	@Environment(EnvType.CLIENT)

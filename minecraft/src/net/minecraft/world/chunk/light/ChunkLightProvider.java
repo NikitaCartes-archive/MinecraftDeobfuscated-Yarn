@@ -103,7 +103,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	}
 
 	protected VoxelShape getOpaqueShape(BlockState blockState, long l, Direction direction) {
-		return blockState.isOpaque() ? blockState.getCullShape(this.chunkProvider.getWorld(), this.reusableBlockPos.set(l), direction) : VoxelShapes.empty();
+		return blockState.isOpaque() ? blockState.getCullingShape(this.chunkProvider.getWorld(), this.reusableBlockPos.set(l), direction) : VoxelShapes.empty();
 	}
 
 	public static int getRealisticOpacity(
@@ -114,8 +114,8 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		if (!bl && !bl2) {
 			return i;
 		} else {
-			VoxelShape voxelShape = bl ? blockState.method_11615(blockView, blockPos) : VoxelShapes.empty();
-			VoxelShape voxelShape2 = bl2 ? blockState2.method_11615(blockView, blockPos2) : VoxelShapes.empty();
+			VoxelShape voxelShape = bl ? blockState.getCullingShape(blockView, blockPos) : VoxelShapes.empty();
+			VoxelShape voxelShape2 = bl2 ? blockState2.getCullingShape(blockView, blockPos2) : VoxelShapes.empty();
 			return VoxelShapes.adjacentSidesCoverSquare(voxelShape, voxelShape2, direction) ? 16 : i;
 		}
 	}

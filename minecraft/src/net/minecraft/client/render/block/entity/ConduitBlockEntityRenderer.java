@@ -2,17 +2,17 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
@@ -39,56 +39,65 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 		this.field_20826.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
 	}
 
-	public void method_22750(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+	public void method_22750(
+		ConduitBlockEntity conduitBlockEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i
+	) {
 		float h = (float)conduitBlockEntity.ticks + g;
-		class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
 		if (!conduitBlockEntity.isActive()) {
 			float j = conduitBlockEntity.getRotation(0.0F);
-			arg.method_22903();
-			arg.method_22904(0.5, 0.5, 0.5);
-			arg.method_22907(Vector3f.field_20705.method_23214(j, true));
-			this.field_20825.method_22698(arg, lv, 0.0625F, i, this.method_23082(BASE_TEX));
-			arg.method_22909();
+			matrixStack.push();
+			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j, true));
+			this.field_20825.render(matrixStack, vertexConsumer, 0.0625F, i, this.getSprite(BASE_TEX));
+			matrixStack.pop();
 		} else {
-			class_4588 lv2 = arg2.getBuffer(BlockRenderLayer.CUTOUT_MIPPED);
+			VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.CUTOUT_MIPPED);
 			float k = conduitBlockEntity.getRotation(g) * (180.0F / (float)Math.PI);
 			float l = MathHelper.sin(h * 0.1F) / 2.0F + 0.5F;
 			l = l * l + l;
-			arg.method_22903();
-			arg.method_22904(0.5, (double)(0.3F + l * 0.2F), 0.5);
+			matrixStack.push();
+			matrixStack.translate(0.5, (double)(0.3F + l * 0.2F), 0.5);
 			Vector3f vector3f = new Vector3f(0.5F, 1.0F, 0.5F);
 			vector3f.reciprocal();
-			arg.method_22907(new Quaternion(vector3f, k, true));
-			this.field_20826.method_22698(arg, lv2, 0.0625F, i, this.method_23082(CAGE_TEX));
-			arg.method_22909();
+			matrixStack.multiply(new Quaternion(vector3f, k, true));
+			this.field_20826.render(matrixStack, vertexConsumer2, 0.0625F, i, this.getSprite(CAGE_TEX));
+			matrixStack.pop();
 			int m = conduitBlockEntity.ticks / 66 % 3;
-			arg.method_22903();
-			arg.method_22904(0.5, 0.5, 0.5);
+			matrixStack.push();
+			matrixStack.translate(0.5, 0.5, 0.5);
 			if (m == 1) {
-				arg.method_22907(Vector3f.field_20703.method_23214(90.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
 			} else if (m == 2) {
-				arg.method_22907(Vector3f.field_20707.method_23214(90.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F, true));
 			}
 
-			Sprite sprite = this.method_23082(m == 1 ? WIND_VERTICAL_TEX : WIND_TEX);
-			this.field_20824.method_22698(arg, lv2, 0.0625F, i, sprite);
-			arg.method_22909();
-			arg.method_22903();
-			arg.method_22904(0.5, 0.5, 0.5);
-			arg.method_22905(0.875F, 0.875F, 0.875F);
-			arg.method_22907(Vector3f.field_20703.method_23214(180.0F, true));
-			arg.method_22907(Vector3f.field_20707.method_23214(180.0F, true));
-			this.field_20824.method_22698(arg, lv2, 0.0625F, i, sprite);
-			arg.method_22909();
+			Sprite sprite = this.getSprite(m == 1 ? WIND_VERTICAL_TEX : WIND_TEX);
+			this.field_20824.render(matrixStack, vertexConsumer2, 0.0625F, i, sprite);
+			matrixStack.pop();
+			matrixStack.push();
+			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.scale(0.875F, 0.875F, 0.875F);
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F, true));
+			this.field_20824.render(matrixStack, vertexConsumer2, 0.0625F, i, sprite);
+			matrixStack.pop();
 			Camera camera = this.field_20989.cameraEntity;
-			arg.method_22903();
-			arg.method_22904(0.5, (double)(0.3F + l * 0.2F), 0.5);
-			arg.method_22905(0.5F, 0.5F, 0.5F);
-			arg.method_22907(Vector3f.field_20705.method_23214(-camera.getYaw(), true));
-			arg.method_22907(Vector3f.field_20703.method_23214(camera.getPitch(), true));
-			arg.method_22907(Vector3f.field_20707.method_23214(180.0F, true));
-			this.field_20823.method_22698(arg, lv2, 0.083333336F, i, this.method_23082(conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEX : CLOSED_EYE_TEX));
-			arg.method_22909();
+			matrixStack.push();
+			matrixStack.translate(0.5, (double)(0.3F + l * 0.2F), 0.5);
+			matrixStack.scale(0.5F, 0.5F, 0.5F);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-camera.getYaw(), true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch(), true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F, true));
+			this.field_20823.render(matrixStack, vertexConsumer2, 0.083333336F, i, this.getSprite(conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEX : CLOSED_EYE_TEX));
+			matrixStack.pop();
 		}
 	}
 }

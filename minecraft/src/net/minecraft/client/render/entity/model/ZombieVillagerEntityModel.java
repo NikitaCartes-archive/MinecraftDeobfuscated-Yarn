@@ -22,11 +22,11 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 			this.body = new ModelPart(this, 16, 16);
 			this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f + 0.1F);
 			this.rightLeg = new ModelPart(this, 0, 16);
-			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
+			this.rightLeg.setPivot(-2.0F, 12.0F, 0.0F);
 			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.1F);
 			this.leftLeg = new ModelPart(this, 0, 16);
 			this.leftLeg.mirror = true;
-			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
+			this.leftLeg.setPivot(2.0F, 12.0F, 0.0F);
 			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.1F);
 		} else {
 			this.head = new ModelPart(this, 0, 0);
@@ -43,17 +43,17 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 			this.body.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, f + 0.05F);
 			this.rightArm = new ModelPart(this, 44, 22);
 			this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-			this.rightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
+			this.rightArm.setPivot(-5.0F, 2.0F, 0.0F);
 			this.leftArm = new ModelPart(this, 44, 22);
 			this.leftArm.mirror = true;
 			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-			this.leftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
+			this.leftArm.setPivot(5.0F, 2.0F, 0.0F);
 			this.rightLeg = new ModelPart(this, 0, 22);
-			this.rightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
+			this.rightLeg.setPivot(-2.0F, 12.0F, 0.0F);
 			this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 			this.leftLeg = new ModelPart(this, 0, 22);
 			this.leftLeg.mirror = true;
-			this.leftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
+			this.leftLeg.setPivot(2.0F, 12.0F, 0.0F);
 			this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		}
 	}

@@ -310,7 +310,7 @@ public class ServerPlayerInteractionManager {
 		} else {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.shouldCancelInteraction() && bl;
-			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
+			if (!bl2 && blockState.onUse(world, playerEntity, hand, blockHitResult)) {
 				return ActionResult.SUCCESS;
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, hand, blockHitResult);

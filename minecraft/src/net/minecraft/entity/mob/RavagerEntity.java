@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -42,6 +41,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class RavagerEntity extends RaiderEntity {
 	private static final Predicate<Entity> IS_NOT_RAVAGER = entity -> entity.isAlive() && !(entity instanceof RavagerEntity);
@@ -316,8 +316,8 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public boolean canSpawn(class_4538 arg) {
-		return !arg.containsFluid(this.getBoundingBox());
+	public boolean canSpawn(WorldView worldView) {
+		return !worldView.containsFluid(this.getBoundingBox());
 	}
 
 	@Override

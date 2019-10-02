@@ -2,8 +2,8 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -21,7 +21,7 @@ public abstract class BillboardParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(class_4588 arg, Camera camera, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
 		float l = this.getSize(f);
 		float m = this.getMinU();
 		float n = this.getMaxU();
@@ -52,25 +52,25 @@ public abstract class BillboardParticle extends Particle {
 			}
 		}
 
-		arg.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z)
+		vertexConsumer.vertex((double)q + vec3ds[0].x, (double)r + vec3ds[0].y, (double)s + vec3ds[0].z)
 			.texture(n, p)
-			.method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.method_22916(t)
+			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.light(t)
 			.next();
-		arg.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z)
+		vertexConsumer.vertex((double)q + vec3ds[1].x, (double)r + vec3ds[1].y, (double)s + vec3ds[1].z)
 			.texture(n, o)
-			.method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.method_22916(t)
+			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.light(t)
 			.next();
-		arg.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z)
+		vertexConsumer.vertex((double)q + vec3ds[2].x, (double)r + vec3ds[2].y, (double)s + vec3ds[2].z)
 			.texture(m, o)
-			.method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.method_22916(t)
+			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.light(t)
 			.next();
-		arg.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z)
+		vertexConsumer.vertex((double)q + vec3ds[3].x, (double)r + vec3ds[3].y, (double)s + vec3ds[3].z)
 			.texture(m, p)
-			.method_22915(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-			.method_22916(t)
+			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.light(t)
 			.next();
 	}
 

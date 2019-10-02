@@ -452,7 +452,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 							if (chunkStatus == ChunkStatus.LIGHT) {
 								completableFuturexx = this.method_20617(chunkHolder, chunkStatus);
 							} else {
-								completableFuturexx = chunkStatus.method_20612(
+								completableFuturexx = chunkStatus.runNoGenTask(
 									this.world, this.structureManager, this.serverLightingProvider, chunkx -> this.convertToFullChunk(chunkHolder), chunk
 								);
 							}

@@ -179,7 +179,7 @@ public class FontManager implements AutoCloseable {
 		}
 
 		@Override
-		public String method_22322() {
+		public String getName() {
 			return "FontManager";
 		}
 	};

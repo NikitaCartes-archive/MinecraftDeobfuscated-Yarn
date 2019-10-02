@@ -9,7 +9,7 @@ import net.minecraft.world.biome.layer.BiomeLayers;
 
 public class VanillaLayeredBiomeSource extends BiomeSource {
 	private final BiomeLayerSampler noiseLayer;
-	private static final Set<Biome> biomes = ImmutableSet.of(
+	private static final Set<Biome> BIOMES = ImmutableSet.of(
 		Biomes.OCEAN,
 		Biomes.PLAINS,
 		Biomes.DESERT,
@@ -79,14 +79,14 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	);
 
 	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig) {
-		super(biomes);
+		super(BIOMES);
 		this.noiseLayer = BiomeLayers.build(
-			vanillaLayeredBiomeSourceConfig.method_22355(), vanillaLayeredBiomeSourceConfig.method_22356(), vanillaLayeredBiomeSourceConfig.getGeneratorSettings()
+			vanillaLayeredBiomeSourceConfig.getSeed(), vanillaLayeredBiomeSourceConfig.getGeneratorType(), vanillaLayeredBiomeSourceConfig.getGeneratorSettings()
 		);
 	}
 
 	@Override
-	public Biome getBiome(int i, int j, int k) {
+	public Biome getStoredBiome(int i, int j, int k) {
 		return this.noiseLayer.sample(i, k);
 	}
 }

@@ -3,11 +3,11 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
@@ -27,62 +27,62 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 
 	public RabbitEntityModel() {
 		this.field_3525.addCuboid(-1.0F, 5.5F, -3.7F, 2.0F, 1.0F, 7.0F);
-		this.field_3525.setRotationPoint(3.0F, 17.5F, 3.7F);
+		this.field_3525.setPivot(3.0F, 17.5F, 3.7F);
 		this.field_3525.mirror = true;
 		this.method_2827(this.field_3525, 0.0F, 0.0F, 0.0F);
 		this.field_3532 = new ModelPart(this, 8, 24);
 		this.field_3532.addCuboid(-1.0F, 5.5F, -3.7F, 2.0F, 1.0F, 7.0F);
-		this.field_3532.setRotationPoint(-3.0F, 17.5F, 3.7F);
+		this.field_3532.setPivot(-3.0F, 17.5F, 3.7F);
 		this.field_3532.mirror = true;
 		this.method_2827(this.field_3532, 0.0F, 0.0F, 0.0F);
 		this.field_3526 = new ModelPart(this, 30, 15);
 		this.field_3526.addCuboid(-1.0F, 0.0F, 0.0F, 2.0F, 4.0F, 5.0F);
-		this.field_3526.setRotationPoint(3.0F, 17.5F, 3.7F);
+		this.field_3526.setPivot(3.0F, 17.5F, 3.7F);
 		this.field_3526.mirror = true;
 		this.method_2827(this.field_3526, (float) (-Math.PI / 9), 0.0F, 0.0F);
 		this.field_3522 = new ModelPart(this, 16, 15);
 		this.field_3522.addCuboid(-1.0F, 0.0F, 0.0F, 2.0F, 4.0F, 5.0F);
-		this.field_3522.setRotationPoint(-3.0F, 17.5F, 3.7F);
+		this.field_3522.setPivot(-3.0F, 17.5F, 3.7F);
 		this.field_3522.mirror = true;
 		this.method_2827(this.field_3522, (float) (-Math.PI / 9), 0.0F, 0.0F);
 		this.field_3528 = new ModelPart(this, 0, 0);
 		this.field_3528.addCuboid(-3.0F, -2.0F, -10.0F, 6.0F, 5.0F, 10.0F);
-		this.field_3528.setRotationPoint(0.0F, 19.0F, 8.0F);
+		this.field_3528.setPivot(0.0F, 19.0F, 8.0F);
 		this.field_3528.mirror = true;
 		this.method_2827(this.field_3528, (float) (-Math.PI / 9), 0.0F, 0.0F);
 		this.field_3527 = new ModelPart(this, 8, 15);
 		this.field_3527.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F);
-		this.field_3527.setRotationPoint(3.0F, 17.0F, -1.0F);
+		this.field_3527.setPivot(3.0F, 17.0F, -1.0F);
 		this.field_3527.mirror = true;
 		this.method_2827(this.field_3527, (float) (-Math.PI / 18), 0.0F, 0.0F);
 		this.field_3521 = new ModelPart(this, 0, 15);
 		this.field_3521.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F);
-		this.field_3521.setRotationPoint(-3.0F, 17.0F, -1.0F);
+		this.field_3521.setPivot(-3.0F, 17.0F, -1.0F);
 		this.field_3521.mirror = true;
 		this.method_2827(this.field_3521, (float) (-Math.PI / 18), 0.0F, 0.0F);
 		this.field_3529 = new ModelPart(this, 32, 0);
 		this.field_3529.addCuboid(-2.5F, -4.0F, -5.0F, 5.0F, 4.0F, 5.0F);
-		this.field_3529.setRotationPoint(0.0F, 16.0F, -1.0F);
+		this.field_3529.setPivot(0.0F, 16.0F, -1.0F);
 		this.field_3529.mirror = true;
 		this.method_2827(this.field_3529, 0.0F, 0.0F, 0.0F);
 		this.field_3523 = new ModelPart(this, 52, 0);
 		this.field_3523.addCuboid(-2.5F, -9.0F, -1.0F, 2.0F, 5.0F, 1.0F);
-		this.field_3523.setRotationPoint(0.0F, 16.0F, -1.0F);
+		this.field_3523.setPivot(0.0F, 16.0F, -1.0F);
 		this.field_3523.mirror = true;
 		this.method_2827(this.field_3523, 0.0F, (float) (-Math.PI / 12), 0.0F);
 		this.field_3520 = new ModelPart(this, 58, 0);
 		this.field_3520.addCuboid(0.5F, -9.0F, -1.0F, 2.0F, 5.0F, 1.0F);
-		this.field_3520.setRotationPoint(0.0F, 16.0F, -1.0F);
+		this.field_3520.setPivot(0.0F, 16.0F, -1.0F);
 		this.field_3520.mirror = true;
 		this.method_2827(this.field_3520, 0.0F, (float) (Math.PI / 12), 0.0F);
 		this.field_3524 = new ModelPart(this, 52, 6);
 		this.field_3524.addCuboid(-1.5F, -1.5F, 0.0F, 3.0F, 3.0F, 2.0F);
-		this.field_3524.setRotationPoint(0.0F, 20.0F, 7.0F);
+		this.field_3524.setPivot(0.0F, 20.0F, 7.0F);
 		this.field_3524.mirror = true;
 		this.method_2827(this.field_3524, -0.3490659F, 0.0F, 0.0F);
 		this.field_3530 = new ModelPart(this, 32, 9);
 		this.field_3530.addCuboid(-0.5F, -2.5F, -5.5F, 1.0F, 1.0F, 1.0F);
-		this.field_3530.setRotationPoint(0.0F, 16.0F, -1.0F);
+		this.field_3530.setPivot(0.0F, 16.0F, -1.0F);
 		this.field_3530.mirror = true;
 		this.method_2827(this.field_3530, 0.0F, 0.0F, 0.0F);
 	}
@@ -94,25 +94,25 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void method_17116(class_4587 arg, class_4588 arg2, int i, float f, float g, float h) {
+	public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
 		if (this.isChild) {
 			float j = 1.5F;
-			arg.method_22903();
-			arg.method_22905(0.56666666F, 0.56666666F, 0.56666666F);
-			arg.method_22904(0.0, 1.375, 0.125);
+			matrixStack.push();
+			matrixStack.scale(0.56666666F, 0.56666666F, 0.56666666F);
+			matrixStack.translate(0.0, 1.375, 0.125);
 			ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530)
-				.forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
-			arg.method_22909();
-			arg.method_22903();
-			arg.method_22905(0.4F, 0.4F, 0.4F);
-			arg.method_22904(0.0, 2.25, 0.0);
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+			matrixStack.pop();
+			matrixStack.push();
+			matrixStack.scale(0.4F, 0.4F, 0.4F);
+			matrixStack.translate(0.0, 2.25, 0.0);
 			ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524)
-				.forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
-			arg.method_22909();
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+			matrixStack.pop();
 		} else {
-			arg.method_22903();
-			arg.method_22905(0.6F, 0.6F, 0.6F);
-			arg.method_22904(0.0, 1.0, 0.0);
+			matrixStack.push();
+			matrixStack.scale(0.6F, 0.6F, 0.6F);
+			matrixStack.translate(0.0, 1.0, 0.0);
 			ImmutableList.of(
 					this.field_3525,
 					this.field_3532,
@@ -127,8 +127,8 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.field_3524,
 					this.field_3530
 				)
-				.forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
-			arg.method_22909();
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+			matrixStack.pop();
 		}
 	}
 

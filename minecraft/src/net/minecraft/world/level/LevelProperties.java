@@ -388,7 +388,7 @@ public class LevelProperties {
 		return this.randomSeed;
 	}
 
-	public static long method_22418(long l) {
+	public static long sha256Hash(long l) {
 		return Hashing.sha256().hashLong(l).asLong();
 	}
 

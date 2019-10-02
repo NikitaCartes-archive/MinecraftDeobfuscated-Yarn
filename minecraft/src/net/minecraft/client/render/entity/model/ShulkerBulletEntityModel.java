@@ -18,11 +18,11 @@ public class ShulkerBulletEntityModel<T extends Entity> extends class_4595<T> {
 		this.field_3556.setTextureOffset(0, 0).addCuboid(-4.0F, -4.0F, -1.0F, 8.0F, 8.0F, 2.0F, 0.0F);
 		this.field_3556.setTextureOffset(0, 10).addCuboid(-1.0F, -4.0F, -4.0F, 2.0F, 8.0F, 8.0F, 0.0F);
 		this.field_3556.setTextureOffset(20, 0).addCuboid(-4.0F, -1.0F, -4.0F, 8.0F, 2.0F, 8.0F, 0.0F);
-		this.field_3556.setRotationPoint(0.0F, 0.0F, 0.0F);
+		this.field_3556.setPivot(0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.field_3556);
 	}
 

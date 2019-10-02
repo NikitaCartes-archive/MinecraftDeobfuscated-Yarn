@@ -18,7 +18,7 @@ public class FixedBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome getBiome(int i, int j, int k) {
+	public Biome getStoredBiome(int i, int j, int k) {
 		return this.biome;
 	}
 

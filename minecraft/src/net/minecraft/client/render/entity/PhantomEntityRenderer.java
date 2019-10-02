@@ -2,12 +2,12 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.PhantomEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.PhantomEntityModel;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
@@ -22,15 +22,15 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 		return SKIN;
 	}
 
-	protected void method_4088(PhantomEntity phantomEntity, class_4587 arg, float f) {
+	protected void method_4088(PhantomEntity phantomEntity, MatrixStack matrixStack, float f) {
 		int i = phantomEntity.getPhantomSize();
 		float g = 1.0F + 0.15F * (float)i;
-		arg.method_22905(g, g, g);
-		arg.method_22904(0.0, 1.3125, 0.1875);
+		matrixStack.scale(g, g, g);
+		matrixStack.translate(0.0, 1.3125, 0.1875);
 	}
 
-	protected void method_4089(PhantomEntity phantomEntity, class_4587 arg, float f, float g, float h) {
-		super.setupTransforms(phantomEntity, arg, f, g, h);
-		arg.method_22907(Vector3f.field_20703.method_23214(phantomEntity.pitch, true));
+	protected void method_4089(PhantomEntity phantomEntity, MatrixStack matrixStack, float f, float g, float h) {
+		super.setupTransforms(phantomEntity, matrixStack, f, g, h);
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(phantomEntity.pitch, true));
 	}
 }

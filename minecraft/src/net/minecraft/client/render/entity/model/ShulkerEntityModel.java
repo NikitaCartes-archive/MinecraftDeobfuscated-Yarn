@@ -18,11 +18,11 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends class_4595<T> {
 		this.field_3553 = new ModelPart(64, 64, 0, 28);
 		this.field_3554 = new ModelPart(64, 64, 0, 52);
 		this.field_3555.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 12.0F, 16.0F);
-		this.field_3555.setRotationPoint(0.0F, 24.0F, 0.0F);
+		this.field_3555.setPivot(0.0F, 24.0F, 0.0F);
 		this.field_3553.addCuboid(-8.0F, -8.0F, -8.0F, 16.0F, 8.0F, 16.0F);
-		this.field_3553.setRotationPoint(0.0F, 24.0F, 0.0F);
+		this.field_3553.setPivot(0.0F, 24.0F, 0.0F);
 		this.field_3554.addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 6.0F, 6.0F);
-		this.field_3554.setRotationPoint(0.0F, 12.0F, 0.0F);
+		this.field_3554.setPivot(0.0F, 12.0F, 0.0F);
 	}
 
 	public void method_17122(T shulkerEntity, float f, float g, float h, float i, float j, float k) {
@@ -34,7 +34,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends class_4595<T> {
 			o = MathHelper.sin(h * 0.1F) * 0.7F;
 		}
 
-		this.field_3555.setRotationPoint(0.0F, 16.0F + MathHelper.sin(m) * 8.0F + o, 0.0F);
+		this.field_3555.setPivot(0.0F, 16.0F + MathHelper.sin(m) * 8.0F + o, 0.0F);
 		if (shulkerEntity.method_7116(l) > 0.3F) {
 			this.field_3555.yaw = n * n * n * n * (float) Math.PI * 0.125F;
 		} else {
@@ -46,7 +46,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends class_4595<T> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.field_3553, this.field_3555);
 	}
 

@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -42,6 +41,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class GuardianEntity extends HostileEntity {
 	private static final TrackedData<Boolean> SPIKES_RETRACTED = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -191,8 +191,10 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, class_4538 arg) {
-		return arg.getFluidState(blockPos).matches(FluidTags.WATER) ? 10.0F + arg.getBrightness(blockPos) - 0.5F : super.getPathfindingFavor(blockPos, arg);
+	public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
+		return worldView.getFluidState(blockPos).matches(FluidTags.WATER)
+			? 10.0F + worldView.getBrightness(blockPos) - 0.5F
+			: super.getPathfindingFavor(blockPos, worldView);
 	}
 
 	@Override
@@ -273,7 +275,7 @@ public class GuardianEntity extends HostileEntity {
 			}
 
 			if (this.isInsideWaterOrBubbleColumn()) {
-				this.setBreath(300);
+				this.setAir(300);
 			} else if (this.onGround) {
 				this.setVelocity(
 					this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F))
@@ -310,8 +312,8 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canSpawn(class_4538 arg) {
-		return arg.intersectsEntities(this);
+	public boolean canSpawn(WorldView worldView) {
+		return worldView.intersectsEntities(this);
 	}
 
 	public static boolean canSpawn(EntityType<? extends GuardianEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {

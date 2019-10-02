@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
@@ -10,6 +9,7 @@ import net.minecraft.client.render.entity.model.VillagerResemblingModel;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity>> {
@@ -26,7 +26,7 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 		return VILLAGER_SKIN;
 	}
 
-	protected void method_4149(VillagerEntity villagerEntity, class_4587 arg, float f) {
+	protected void method_4149(VillagerEntity villagerEntity, MatrixStack matrixStack, float f) {
 		float g = 0.9375F;
 		if (villagerEntity.isBaby()) {
 			g = (float)((double)g * 0.5);
@@ -35,6 +35,6 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 			this.field_4673 = 0.5F;
 		}
 
-		arg.method_22905(g, g, g);
+		matrixStack.scale(g, g, g);
 	}
 }

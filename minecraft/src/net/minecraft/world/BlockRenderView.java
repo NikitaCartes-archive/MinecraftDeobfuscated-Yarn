@@ -2,19 +2,19 @@ package net.minecraft.world;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4543;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public interface BlockRenderView extends BlockView {
-	class_4543 method_22385();
+	BiomeAccess getBiomeAccess();
 
 	LightingProvider getLightingProvider();
 
 	default Biome getBiome(BlockPos blockPos) {
-		return this.method_22385().getBiome(blockPos);
+		return this.getBiomeAccess().getBiome(blockPos);
 	}
 
 	default int getLightLevel(LightType lightType, BlockPos blockPos) {
@@ -30,13 +30,13 @@ public interface BlockRenderView extends BlockView {
 	}
 
 	@Environment(EnvType.CLIENT)
-	default int getLightmapIndex(BlockPos blockPos) {
-		return this.getLightmapIndex(this.getBlockState(blockPos), blockPos);
+	default int getLightmapCoordinates(BlockPos blockPos) {
+		return this.getLightmapCoordinates(this.getBlockState(blockPos), blockPos);
 	}
 
 	@Environment(EnvType.CLIENT)
-	default int getLightmapIndex(BlockState blockState, BlockPos blockPos) {
-		if (blockState.method_22361()) {
+	default int getLightmapCoordinates(BlockState blockState, BlockPos blockPos) {
+		if (blockState.hasEmissiveLighting()) {
 			return 15728880;
 		} else {
 			int i = this.getLightLevel(LightType.SKY, blockPos);

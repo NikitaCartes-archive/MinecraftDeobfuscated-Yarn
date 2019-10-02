@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.WeakHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class RedstoneTorchBlock extends TorchBlock {
 	public static final BooleanProperty LIT = Properties.LIT;
@@ -28,7 +28,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public int getTickRate(class_4538 arg) {
+	public int getTickRate(WorldView worldView) {
 		return 2;
 	}
 
@@ -58,7 +58,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		update(blockState, serverWorld, blockPos, random, this.shouldUnpower(serverWorld, blockPos, blockState));
 	}
 

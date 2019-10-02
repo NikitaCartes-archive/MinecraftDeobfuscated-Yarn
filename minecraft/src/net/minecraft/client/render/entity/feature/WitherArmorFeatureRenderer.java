@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4607;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.entity.boss.WitherEntity;
@@ -10,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WitherArmorFeatureRenderer extends class_4607<WitherEntity, WitherEntityModel<WitherEntity>> {
+public class WitherArmorFeatureRenderer extends SkinOverlayFeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> model = new WitherEntityModel<>(0.5F);
 

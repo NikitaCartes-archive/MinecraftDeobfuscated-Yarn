@@ -5,7 +5,6 @@ import java.util.BitSet;
 import java.util.Map;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_4548;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 
@@ -145,7 +145,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public class_4548 getBiomeArray() {
+	public BiomeArray getBiomeArray() {
 		return this.wrapped.getBiomeArray();
 	}
 
@@ -188,7 +188,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void method_22405(class_4548 arg) {
+	public void method_22405(BiomeArray biomeArray) {
 	}
 
 	@Override

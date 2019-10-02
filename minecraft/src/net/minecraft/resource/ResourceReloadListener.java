@@ -14,7 +14,7 @@ public interface ResourceReloadListener {
 		Executor executor2
 	);
 
-	default String method_22322() {
+	default String getName() {
 		return this.getClass().getSimpleName();
 	}
 

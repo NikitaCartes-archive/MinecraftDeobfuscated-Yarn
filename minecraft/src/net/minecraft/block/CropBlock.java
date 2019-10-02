@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.mob.RavagerEntity;
@@ -20,6 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class CropBlock extends PlantBlock implements Fertilizable {
 	public static final IntProperty AGE = Properties.AGE_7;
@@ -70,8 +70,8 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		super.onScheduledTick(blockState, serverWorld, blockPos, random);
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		super.scheduledTick(blockState, serverWorld, blockPos, random);
 		if (serverWorld.getBaseLightLevel(blockPos, 0) >= 9) {
 			int i = this.getAge(blockState);
 			if (i < this.getMaxAge()) {
@@ -142,8 +142,8 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return (arg.getBaseLightLevel(blockPos, 0) >= 8 || arg.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, arg, blockPos);
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return (worldView.getBaseLightLevel(blockPos, 0) >= 8 || worldView.isSkyVisible(blockPos)) && super.canPlaceAt(blockState, worldView, blockPos);
 	}
 
 	@Override

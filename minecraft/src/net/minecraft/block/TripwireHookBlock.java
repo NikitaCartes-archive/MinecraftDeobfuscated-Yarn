@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.google.common.base.MoreObjects;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -23,6 +22,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class TripwireHookBlock extends Block {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -56,11 +56,11 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
 		Direction direction = blockState.get(FACING);
 		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
-		BlockState blockState2 = arg.getBlockState(blockPos2);
-		return direction.getAxis().isHorizontal() && blockState2.isSideSolidFullSquare(arg, blockPos2, direction) && !blockState2.emitsRedstonePower();
+		BlockState blockState2 = worldView.getBlockState(blockPos2);
+		return direction.getAxis().isHorizontal() && blockState2.isSideSolidFullSquare(worldView, blockPos2, direction) && !blockState2.emitsRedstonePower();
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class TripwireHookBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = this.getDefaultState().with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false));
-		class_4538 lv = itemPlacementContext.getWorld();
+		WorldView worldView = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementDirections();
 
@@ -84,7 +84,7 @@ public class TripwireHookBlock extends Block {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
 				blockState = blockState.with(FACING, direction2);
-				if (blockState.canPlaceAt(lv, blockPos)) {
+				if (blockState.canPlaceAt(worldView, blockPos)) {
 					return blockState;
 				}
 			}
@@ -169,7 +169,7 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		this.update(serverWorld, blockPos, blockState, false, true, -1, null);
 	}
 

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_4538;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.EnumProperty;
@@ -9,6 +8,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class WallMountedBlock extends HorizontalFacingBlock {
 	public static final EnumProperty<WallMountLocation> FACE = Properties.WALL_MOUNT_LOCATION;
@@ -18,13 +18,13 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return canPlaceAt(arg, blockPos, getDirection(blockState).getOpposite());
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return canPlaceAt(worldView, blockPos, getDirection(blockState).getOpposite());
 	}
 
-	public static boolean canPlaceAt(class_4538 arg, BlockPos blockPos, Direction direction) {
+	public static boolean canPlaceAt(WorldView worldView, BlockPos blockPos, Direction direction) {
 		BlockPos blockPos2 = blockPos.offset(direction);
-		return arg.getBlockState(blockPos2).isSideSolidFullSquare(arg, blockPos2, direction.getOpposite());
+		return worldView.getBlockState(blockPos2).isSideSolidFullSquare(worldView, blockPos2, direction.getOpposite());
 	}
 
 	@Nullable

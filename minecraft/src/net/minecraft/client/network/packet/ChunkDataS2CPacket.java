@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4548;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.LongArrayTag;
@@ -19,6 +18,7 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -28,7 +28,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int verticalStripBitmask;
 	private CompoundTag heightmaps;
 	@Nullable
-	private class_4548 field_20664;
+	private BiomeArray field_20664;
 	private byte[] data;
 	private List<CompoundTag> blockEntities;
 	private boolean isFullChunk;
@@ -50,7 +50,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		if (this.isFullChunk) {
-			this.field_20664 = worldChunk.getBiomeArray().method_22403();
+			this.field_20664 = worldChunk.getBiomeArray().copy();
 		}
 
 		this.data = new byte[this.getDataSize(worldChunk, i)];
@@ -76,7 +76,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.verticalStripBitmask = packetByteBuf.readVarInt();
 		this.heightmaps = packetByteBuf.readCompoundTag();
 		if (this.isFullChunk) {
-			this.field_20664 = new class_4548(packetByteBuf);
+			this.field_20664 = new BiomeArray(packetByteBuf);
 		}
 
 		int i = packetByteBuf.readVarInt();
@@ -102,7 +102,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeVarInt(this.verticalStripBitmask);
 		packetByteBuf.writeCompoundTag(this.heightmaps);
 		if (this.field_20664 != null) {
-			this.field_20664.method_22402(packetByteBuf);
+			this.field_20664.toPacket(packetByteBuf);
 		}
 
 		packetByteBuf.writeVarInt(this.data.length);
@@ -191,7 +191,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public class_4548 method_22422() {
-		return this.field_20664 == null ? null : this.field_20664.method_22403();
+	public BiomeArray method_22422() {
+		return this.field_20664 == null ? null : this.field_20664.copy();
 	}
 }

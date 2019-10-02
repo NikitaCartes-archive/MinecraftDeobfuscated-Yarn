@@ -4,20 +4,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.RenderLayer;
 
 @Environment(EnvType.CLIENT)
 public class BlockLayeredBufferBuilder {
-	private final Map<BlockRenderLayer, BufferBuilder> layerBuilders = (Map<BlockRenderLayer, BufferBuilder>)BlockRenderLayer.method_22720()
+	private final Map<RenderLayer, BufferBuilder> layerBuilders = (Map<RenderLayer, BufferBuilder>)RenderLayer.getBlockLayers()
 		.stream()
-		.collect(Collectors.toMap(blockRenderLayer -> blockRenderLayer, blockRenderLayer -> new BufferBuilder(blockRenderLayer.method_22722())));
+		.collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new BufferBuilder(renderLayer.getExpectedBufferSize())));
 
-	public BufferBuilder get(BlockRenderLayer blockRenderLayer) {
-		return (BufferBuilder)this.layerBuilders.get(blockRenderLayer);
+	public BufferBuilder get(RenderLayer renderLayer) {
+		return (BufferBuilder)this.layerBuilders.get(renderLayer);
 	}
 
-	public void method_22705() {
+	public void clear() {
 		this.layerBuilders.values().forEach(BufferBuilder::clear);
 	}
 }

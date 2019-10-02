@@ -2,14 +2,13 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4607;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class CreeperChargeFeatureRenderer extends class_4607<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
+public class CreeperChargeFeatureRenderer extends SkinOverlayFeatureRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> model = new CreeperEntityModel<>(2.0F);
 

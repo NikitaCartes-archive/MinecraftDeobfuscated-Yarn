@@ -2,16 +2,16 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecartEntity> {
@@ -19,7 +19,14 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 		super(entityRenderDispatcher);
 	}
 
-	protected void method_4137(TntMinecartEntity tntMinecartEntity, float f, BlockState blockState, class_4587 arg, class_4597 arg2, int i) {
+	protected void method_4137(
+		TntMinecartEntity tntMinecartEntity,
+		float f,
+		BlockState blockState,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i
+	) {
 		int j = tntMinecartEntity.getFuseTicks();
 		if (j > -1 && (float)j - f + 1.0F < 10.0F) {
 			float g = 1.0F - ((float)j - f + 1.0F) / 10.0F;
@@ -27,22 +34,24 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 			g *= g;
 			g *= g;
 			float h = 1.0F + g * 0.3F;
-			arg.method_22905(h, h, h);
+			matrixStack.scale(h, h, h);
 		}
 
 		if (j > -1 && j / 5 % 2 == 0) {
-			method_23190(blockState, arg, arg2, i);
+			method_23190(blockState, matrixStack, layeredVertexConsumerStorage, i);
 		} else {
-			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, arg, arg2, i, 0, 10);
+			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, 0, 10);
 		}
 	}
 
-	public static void method_23190(BlockState blockState, class_4587 arg, class_4597 arg2, int i) {
-		class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		lv.method_22922(class_4608.method_23210(1.0F), 10);
+	public static void method_23190(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		vertexConsumer.defaultOverlay(OverlayTexture.getU(1.0F), 10);
 		MinecraftClient.getInstance()
 			.getBlockRenderManager()
-			.renderDynamic(blockState, arg, blockRenderLayer -> blockRenderLayer == BlockRenderLayer.SOLID ? lv : arg2.getBuffer(blockRenderLayer), i, 0, 10);
-		lv.method_22923();
+			.renderDynamic(
+				blockState, matrixStack, renderLayer -> renderLayer == RenderLayer.SOLID ? vertexConsumer : layeredVertexConsumerStorage.getBuffer(renderLayer), i, 0, 10
+			);
+		vertexConsumer.clearDefaultOverlay();
 	}
 }

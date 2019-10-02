@@ -2,12 +2,11 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4604;
-import net.minecraft.class_4608;
-import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
@@ -16,6 +15,7 @@ import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -31,8 +31,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		super(entityRenderDispatcher, new GuardianEntityModel(), f);
 	}
 
-	public boolean method_3978(GuardianEntity guardianEntity, class_4604 arg, double d, double e, double f) {
-		if (super.method_4068(guardianEntity, arg, d, e, f)) {
+	public boolean method_3978(GuardianEntity guardianEntity, Frustum frustum, double d, double e, double f) {
+		if (super.method_4068(guardianEntity, frustum, d, e, f)) {
 			return true;
 		} else {
 			if (guardianEntity.hasBeamTarget()) {
@@ -40,7 +40,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 				if (livingEntity != null) {
 					Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0F);
 					Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)guardianEntity.getStandingEyeHeight(), 1.0F);
-					if (arg.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
+					if (frustum.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
 						return true;
 					}
 				}
@@ -57,16 +57,25 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		return new Vec3d(e, g, h);
 	}
 
-	public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h, class_4587 arg, class_4597 arg2) {
-		super.method_4072(guardianEntity, d, e, f, g, h, arg, arg2);
+	public void method_3977(
+		GuardianEntity guardianEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		float h,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+	) {
+		super.method_4072(guardianEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 		LivingEntity livingEntity = guardianEntity.getBeamTarget();
 		if (livingEntity != null) {
 			float i = guardianEntity.getBeamProgress(h);
 			float j = (float)guardianEntity.world.getTime() + h;
 			float k = j * 0.5F % 1.0F;
 			float l = guardianEntity.getStandingEyeHeight();
-			arg.method_22903();
-			arg.method_22904(0.0, (double)l, 0.0);
+			matrixStack.push();
+			matrixStack.translate(0.0, (double)l, 0.0);
 			Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, h);
 			Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)l, h);
 			Vec3d vec3d3 = vec3d.subtract(vec3d2);
@@ -74,8 +83,8 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			vec3d3 = vec3d3.normalize();
 			float n = (float)Math.acos(vec3d3.y);
 			float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
-			arg.method_22907(Vector3f.field_20705.method_23214(((float) (Math.PI / 2) - o) * (180.0F / (float)Math.PI), true));
-			arg.method_22907(Vector3f.field_20703.method_23214(n * (180.0F / (float)Math.PI), true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float) (Math.PI / 2) - o) * (180.0F / (float)Math.PI), true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(n * (180.0F / (float)Math.PI), true));
 			int p = 1;
 			float q = j * 0.05F * -1.5F;
 			float r = i * i;
@@ -104,33 +113,33 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float ap = 0.4999F;
 			float aq = -1.0F + k;
 			float ar = m * 2.5F + aq;
-			class_4588 lv = arg2.getBuffer(BlockRenderLayer.method_23017(EXPLOSION_BEAM_TEX));
-			class_4608.method_23211(lv);
-			Matrix4f matrix4f = arg.method_22910();
-			method_23173(lv, matrix4f, af, m, ag, s, t, u, 0.4999F, ar);
-			method_23173(lv, matrix4f, af, 0.0F, ag, s, t, u, 0.4999F, aq);
-			method_23173(lv, matrix4f, ah, 0.0F, ai, s, t, u, 0.0F, aq);
-			method_23173(lv, matrix4f, ah, m, ai, s, t, u, 0.0F, ar);
-			method_23173(lv, matrix4f, aj, m, ak, s, t, u, 0.4999F, ar);
-			method_23173(lv, matrix4f, aj, 0.0F, ak, s, t, u, 0.4999F, aq);
-			method_23173(lv, matrix4f, al, 0.0F, am, s, t, u, 0.0F, aq);
-			method_23173(lv, matrix4f, al, m, am, s, t, u, 0.0F, ar);
+			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(EXPLOSION_BEAM_TEX));
+			OverlayTexture.clearDefaultOverlay(vertexConsumer);
+			Matrix4f matrix4f = matrixStack.peek();
+			method_23173(vertexConsumer, matrix4f, af, m, ag, s, t, u, 0.4999F, ar);
+			method_23173(vertexConsumer, matrix4f, af, 0.0F, ag, s, t, u, 0.4999F, aq);
+			method_23173(vertexConsumer, matrix4f, ah, 0.0F, ai, s, t, u, 0.0F, aq);
+			method_23173(vertexConsumer, matrix4f, ah, m, ai, s, t, u, 0.0F, ar);
+			method_23173(vertexConsumer, matrix4f, aj, m, ak, s, t, u, 0.4999F, ar);
+			method_23173(vertexConsumer, matrix4f, aj, 0.0F, ak, s, t, u, 0.4999F, aq);
+			method_23173(vertexConsumer, matrix4f, al, 0.0F, am, s, t, u, 0.0F, aq);
+			method_23173(vertexConsumer, matrix4f, al, m, am, s, t, u, 0.0F, ar);
 			float as = 0.0F;
 			if (guardianEntity.age % 2 == 0) {
 				as = 0.5F;
 			}
 
-			method_23173(lv, matrix4f, x, m, y, s, t, u, 0.5F, as + 0.5F);
-			method_23173(lv, matrix4f, z, m, aa, s, t, u, 1.0F, as + 0.5F);
-			method_23173(lv, matrix4f, ad, m, ae, s, t, u, 1.0F, as);
-			method_23173(lv, matrix4f, ab, m, ac, s, t, u, 0.5F, as);
-			lv.method_22923();
-			arg.method_22909();
+			method_23173(vertexConsumer, matrix4f, x, m, y, s, t, u, 0.5F, as + 0.5F);
+			method_23173(vertexConsumer, matrix4f, z, m, aa, s, t, u, 1.0F, as + 0.5F);
+			method_23173(vertexConsumer, matrix4f, ad, m, ae, s, t, u, 1.0F, as);
+			method_23173(vertexConsumer, matrix4f, ab, m, ac, s, t, u, 0.5F, as);
+			vertexConsumer.clearDefaultOverlay();
+			matrixStack.pop();
 		}
 	}
 
-	private static void method_23173(class_4588 arg, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, float l, float m) {
-		arg.method_22918(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).method_22916(15728880).method_22914(0.0F, 1.0F, 0.0F).next();
+	private static void method_23173(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, float l, float m) {
+		vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).light(15728880).normal(0.0F, 1.0F, 0.0F).next();
 	}
 
 	public Identifier method_3976(GuardianEntity guardianEntity) {

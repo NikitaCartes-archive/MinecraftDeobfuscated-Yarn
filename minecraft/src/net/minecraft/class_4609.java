@@ -32,17 +32,17 @@ public class class_4609 {
 
 	public static class_4590 method_23220(class_4590 arg) {
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.method_22668();
+		matrix4f.loadIdentity();
 		matrix4f.set(0, 3, 0.5F);
 		matrix4f.set(1, 3, 0.5F);
 		matrix4f.set(2, 3, 0.5F);
-		matrix4f.method_22672(arg.method_22936());
+		matrix4f.multiply(arg.method_22936());
 		Matrix4f matrix4f2 = new Matrix4f();
-		matrix4f2.method_22668();
+		matrix4f2.loadIdentity();
 		matrix4f2.set(0, 3, -0.5F);
 		matrix4f2.set(1, 3, -0.5F);
 		matrix4f2.set(2, 3, -0.5F);
-		matrix4f.method_22672(matrix4f2);
+		matrix4f.multiply(matrix4f2);
 		return new class_4590(matrix4f);
 	}
 

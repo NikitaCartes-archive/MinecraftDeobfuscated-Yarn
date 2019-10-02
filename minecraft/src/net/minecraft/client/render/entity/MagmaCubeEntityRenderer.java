@@ -2,11 +2,11 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.model.MagmaCubeEntityModel;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>> {
@@ -20,10 +20,10 @@ public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, 
 		return SKIN;
 	}
 
-	protected void method_4000(MagmaCubeEntity magmaCubeEntity, class_4587 arg, float f) {
+	protected void method_4000(MagmaCubeEntity magmaCubeEntity, MatrixStack matrixStack, float f) {
 		int i = magmaCubeEntity.getSize();
 		float g = MathHelper.lerp(f, magmaCubeEntity.lastStretch, magmaCubeEntity.stretch) / ((float)i * 0.5F + 1.0F);
 		float h = 1.0F / (g + 1.0F);
-		arg.method_22905(h * (float)i, 1.0F / h * (float)i, h * (float)i);
+		matrixStack.scale(h * (float)i, 1.0F / h * (float)i, h * (float)i);
 	}
 }

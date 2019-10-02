@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.class_4538;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,6 +9,7 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldView;
 
 public class BreatheAirGoal extends Goal {
 	private final MobEntityWithAi mob;
@@ -21,7 +21,7 @@ public class BreatheAirGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.getBreath() < 140;
+		return this.mob.getAir() < 140;
 	}
 
 	@Override
@@ -71,9 +71,9 @@ public class BreatheAirGoal extends Goal {
 		this.mob.move(MovementType.SELF, this.mob.getVelocity());
 	}
 
-	private boolean isAirPos(class_4538 arg, BlockPos blockPos) {
-		BlockState blockState = arg.getBlockState(blockPos);
-		return (arg.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
-			&& blockState.canPlaceAtSide(arg, blockPos, BlockPlacementEnvironment.LAND);
+	private boolean isAirPos(WorldView worldView, BlockPos blockPos) {
+		BlockState blockState = worldView.getBlockState(blockPos);
+		return (worldView.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
+			&& blockState.canPlaceAtSide(worldView, blockPos, BlockPlacementEnvironment.LAND);
 	}
 }

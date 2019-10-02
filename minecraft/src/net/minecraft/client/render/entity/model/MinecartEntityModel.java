@@ -23,17 +23,17 @@ public class MinecartEntityModel<T extends Entity> extends class_4595<T> {
 		int k = 16;
 		int l = 4;
 		this.field_3432[0].addCuboid(-10.0F, -8.0F, -1.0F, 20.0F, 16.0F, 2.0F, 0.0F);
-		this.field_3432[0].setRotationPoint(0.0F, 4.0F, 0.0F);
+		this.field_3432[0].setPivot(0.0F, 4.0F, 0.0F);
 		this.field_3432[5].addCuboid(-9.0F, -7.0F, -1.0F, 18.0F, 14.0F, 1.0F, 0.0F);
-		this.field_3432[5].setRotationPoint(0.0F, 4.0F, 0.0F);
+		this.field_3432[5].setPivot(0.0F, 4.0F, 0.0F);
 		this.field_3432[1].addCuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F, 0.0F);
-		this.field_3432[1].setRotationPoint(-9.0F, 4.0F, 0.0F);
+		this.field_3432[1].setPivot(-9.0F, 4.0F, 0.0F);
 		this.field_3432[2].addCuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F, 0.0F);
-		this.field_3432[2].setRotationPoint(9.0F, 4.0F, 0.0F);
+		this.field_3432[2].setPivot(9.0F, 4.0F, 0.0F);
 		this.field_3432[3].addCuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F, 0.0F);
-		this.field_3432[3].setRotationPoint(0.0F, 4.0F, -7.0F);
+		this.field_3432[3].setPivot(0.0F, 4.0F, -7.0F);
 		this.field_3432[4].addCuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F, 0.0F);
-		this.field_3432[4].setRotationPoint(0.0F, 4.0F, 7.0F);
+		this.field_3432[4].setPivot(0.0F, 4.0F, 7.0F);
 		this.field_3432[0].pitch = (float) (Math.PI / 2);
 		this.field_3432[1].yaw = (float) (Math.PI * 3.0 / 2.0);
 		this.field_3432[2].yaw = (float) (Math.PI / 2);
@@ -43,11 +43,11 @@ public class MinecartEntityModel<T extends Entity> extends class_4595<T> {
 
 	@Override
 	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		this.field_3432[5].rotationPointY = 4.0F - h;
+		this.field_3432[5].pivotY = 4.0F - h;
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return Arrays.asList(this.field_3432);
 	}
 }

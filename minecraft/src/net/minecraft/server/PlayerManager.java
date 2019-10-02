@@ -138,7 +138,7 @@ public abstract class PlayerManager {
 			new GameJoinS2CPacket(
 				serverPlayerEntity.getEntityId(),
 				serverPlayerEntity.interactionManager.getGameMode(),
-				LevelProperties.method_22418(levelProperties.getSeed()),
+				LevelProperties.sha256Hash(levelProperties.getSeed()),
 				levelProperties.isHardcore(),
 				serverWorld.dimension.getType(),
 				this.getMaxPlayerCount(),
@@ -445,7 +445,7 @@ public abstract class PlayerManager {
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
 					serverPlayerEntity2.dimension,
-					LevelProperties.method_22418(levelProperties.getSeed()),
+					LevelProperties.sha256Hash(levelProperties.getSeed()),
 					levelProperties.getGeneratorType(),
 					serverPlayerEntity2.interactionManager.getGameMode()
 				)
@@ -652,7 +652,7 @@ public abstract class PlayerManager {
 
 	public void method_14594(ServerPlayerEntity serverPlayerEntity) {
 		serverPlayerEntity.openContainer(serverPlayerEntity.playerContainer);
-		serverPlayerEntity.method_14217();
+		serverPlayerEntity.markHealthDirty();
 		serverPlayerEntity.networkHandler.sendPacket(new HeldItemChangeS2CPacket(serverPlayerEntity.inventory.selectedSlot));
 	}
 

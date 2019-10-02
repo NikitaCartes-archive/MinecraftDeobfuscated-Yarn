@@ -24,7 +24,7 @@ public class LlamaSpitEntityModel<T extends Entity> extends class_4595<T> {
 		this.field_3433.setTextureOffset(0, 0).addCuboid(2.0F, 0.0F, 0.0F, 2.0F, 2.0F, 2.0F, f);
 		this.field_3433.setTextureOffset(0, 0).addCuboid(0.0F, 2.0F, 0.0F, 2.0F, 2.0F, 2.0F, f);
 		this.field_3433.setTextureOffset(0, 0).addCuboid(0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 2.0F, f);
-		this.field_3433.setRotationPoint(0.0F, 0.0F, 0.0F);
+		this.field_3433.setPivot(0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class LlamaSpitEntityModel<T extends Entity> extends class_4595<T> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.field_3433);
 	}
 }

@@ -20,7 +20,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class FenceBlock extends HorizontalConnectedBlock {
-	private final VoxelShape[] SHAPES;
+	private final VoxelShape[] cullingShapes;
 
 	public FenceBlock(Block.Settings settings) {
 		super(2.0F, 2.0F, 16.0F, 16.0F, 24.0F, settings);
@@ -33,12 +33,12 @@ public class FenceBlock extends HorizontalConnectedBlock {
 				.with(WEST, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
-		this.SHAPES = this.createShapes(2.0F, 1.0F, 16.0F, 6.0F, 15.0F);
+		this.cullingShapes = this.createShapes(2.0F, 1.0F, 16.0F, 6.0F, 15.0F);
 	}
 
 	@Override
-	public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return this.SHAPES[this.getShapeIndex(blockState)];
+	public VoxelShape getCullingShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return this.cullingShapes[this.getShapeIndex(blockState)];
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class FenceBlock extends HorizontalConnectedBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
 			return LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
 		} else {

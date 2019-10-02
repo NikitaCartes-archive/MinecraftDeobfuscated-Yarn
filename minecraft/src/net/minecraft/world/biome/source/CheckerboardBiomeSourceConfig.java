@@ -11,12 +11,12 @@ public class CheckerboardBiomeSourceConfig implements BiomeSourceConfig {
 	public CheckerboardBiomeSourceConfig(LevelProperties levelProperties) {
 	}
 
-	public CheckerboardBiomeSourceConfig method_8777(Biome[] biomes) {
+	public CheckerboardBiomeSourceConfig setBiomes(Biome[] biomes) {
 		this.biomes = biomes;
 		return this;
 	}
 
-	public CheckerboardBiomeSourceConfig method_8780(int i) {
+	public CheckerboardBiomeSourceConfig setSize(int i) {
 		this.size = i;
 		return this;
 	}

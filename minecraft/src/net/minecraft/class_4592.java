@@ -3,8 +3,10 @@ package net.minecraft;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class class_4592<E extends Entity> extends EntityModel<E> {
@@ -33,26 +35,26 @@ public abstract class class_4592<E extends Entity> extends EntityModel<E> {
 	}
 
 	@Override
-	public void method_17116(class_4587 arg, class_4588 arg2, int i, float f, float g, float h) {
+	public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
 		if (this.isChild) {
-			arg.method_22903();
+			matrixStack.push();
 			if (this.field_20915) {
 				float j = 1.5F / this.field_20918;
-				arg.method_22905(j, j, j);
+				matrixStack.scale(j, j, j);
 			}
 
-			arg.method_22904(0.0, (double)(this.field_20916 / 16.0F), (double)(this.field_20917 / 16.0F));
-			this.method_22946().forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
-			arg.method_22909();
-			arg.method_22903();
+			matrixStack.translate(0.0, (double)(this.field_20916 / 16.0F), (double)(this.field_20917 / 16.0F));
+			this.method_22946().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+			matrixStack.pop();
+			matrixStack.push();
 			float j = 1.0F / this.field_20919;
-			arg.method_22905(j, j, j);
-			arg.method_22904(0.0, (double)(this.field_20920 / 16.0F), 0.0);
-			this.method_22948().forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
-			arg.method_22909();
+			matrixStack.scale(j, j, j);
+			matrixStack.translate(0.0, (double)(this.field_20920 / 16.0F), 0.0);
+			this.method_22948().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+			matrixStack.pop();
 		} else {
-			this.method_22946().forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
-			this.method_22948().forEach(modelPart -> modelPart.method_22699(arg, arg2, 0.0625F, i, null, f, g, h));
+			this.method_22946().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+			this.method_22948().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
 		}
 	}
 

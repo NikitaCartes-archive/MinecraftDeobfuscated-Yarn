@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4538;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
@@ -132,6 +131,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -185,7 +185,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.prevX = this.player.x;
 		this.player.prevY = this.player.y;
 		this.player.prevZ = this.player.z;
-		this.player.method_14226();
+		this.player.playerTick();
 		this.player.setPositionAnglesAndUpdate(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
 		++this.ticks;
 		this.lastTickMovePacketsCount = this.movePacketsCount;
@@ -827,8 +827,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 	}
 
-	private boolean method_20630(class_4538 arg) {
-		return arg.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
+	private boolean method_20630(WorldView worldView) {
+		return worldView.doesNotCollide(this.player, this.player.getBoundingBox().contract(1.0E-5F));
 	}
 
 	public void requestTeleport(double d, double e, double f, float g, float h) {

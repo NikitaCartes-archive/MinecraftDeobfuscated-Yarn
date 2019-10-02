@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_4548;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,6 +23,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
+import net.minecraft.world.biome.BiomeArray;
 import net.minecraft.world.gen.GenerationStep;
 import org.apache.logging.log4j.LogManager;
 
@@ -93,7 +93,7 @@ public interface Chunk extends BlockView, StructureHolder {
 	}
 
 	@Nullable
-	class_4548 getBiomeArray();
+	BiomeArray getBiomeArray();
 
 	void setShouldSave(boolean bl);
 

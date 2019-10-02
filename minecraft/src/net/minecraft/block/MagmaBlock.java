@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class MagmaBlock extends Block {
 	public MagmaBlock(Block.Settings settings) {
@@ -36,12 +36,12 @@ public class MagmaBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_22359(BlockState blockState) {
+	public boolean hasEmissiveLighting(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		BubbleColumnBlock.update(serverWorld, blockPos.up(), true);
 	}
 
@@ -57,7 +57,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void onRandomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.up();
 		if (serverWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			serverWorld.playSound(
@@ -75,7 +75,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public int getTickRate(class_4538 arg) {
+	public int getTickRate(WorldView worldView) {
 		return 20;
 	}
 

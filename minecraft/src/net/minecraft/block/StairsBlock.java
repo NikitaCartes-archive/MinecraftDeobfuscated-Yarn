@@ -4,7 +4,6 @@ import java.util.Random;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.entity.Entity;
@@ -30,6 +29,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 
 public class StairsBlock extends Block implements Waterloggable {
@@ -138,8 +138,8 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public int getTickRate(class_4538 arg) {
-		return this.baseBlock.getTickRate(arg);
+	public int getTickRate(WorldView worldView) {
+		return this.baseBlock.getTickRate(worldView);
 	}
 
 	@Override
@@ -163,13 +163,13 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		this.baseBlock.onScheduledTick(blockState, serverWorld, blockPos, random);
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+		this.baseBlock.scheduledTick(blockState, serverWorld, blockPos, random);
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.baseBlockState.activate(world, playerEntity, hand, blockHitResult);
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		return this.baseBlockState.onUse(world, playerEntity, hand, blockHitResult);
 	}
 
 	@Override

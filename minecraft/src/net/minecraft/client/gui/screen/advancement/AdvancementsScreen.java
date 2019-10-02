@@ -23,7 +23,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private final ClientAdvancementManager advancementHandler;
 	private final Map<Advancement, AdvancementTab> tabs = Maps.<Advancement, AdvancementTab>newLinkedHashMap();
 	private AdvancementTab selectedTab;
-	private boolean field_2718;
+	private boolean movingTab;
 
 	public AdvancementsScreen(ClientAdvancementManager clientAdvancementManager) {
 		super(NarratorManager.EMPTY);
@@ -92,11 +92,11 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
 		if (i != 0) {
-			this.field_2718 = false;
+			this.movingTab = false;
 			return false;
 		} else {
-			if (!this.field_2718) {
-				this.field_2718 = true;
+			if (!this.movingTab) {
+				this.movingTab = true;
 			} else if (this.selectedTab != null) {
 				this.selectedTab.move(f, g);
 			}

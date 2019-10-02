@@ -21,7 +21,7 @@ public class DolphinEntityModel<T extends Entity> extends class_4595<T> {
 		float g = -8.0F;
 		this.field_4658 = new ModelPart(this, 22, 0);
 		this.field_4658.addCuboid(-4.0F, -7.0F, 0.0F, 8.0F, 7.0F, 13.0F);
-		this.field_4658.setRotationPoint(0.0F, 22.0F, -5.0F);
+		this.field_4658.setPivot(0.0F, 22.0F, -5.0F);
 		ModelPart modelPart = new ModelPart(this, 51, 0);
 		modelPart.addCuboid(-0.5F, 0.0F, 8.0F, 1.0F, 4.0F, 5.0F);
 		modelPart.pitch = (float) (Math.PI / 3);
@@ -29,29 +29,29 @@ public class DolphinEntityModel<T extends Entity> extends class_4595<T> {
 		ModelPart modelPart2 = new ModelPart(this, 48, 20);
 		modelPart2.mirror = true;
 		modelPart2.addCuboid(-0.5F, -4.0F, 0.0F, 1.0F, 4.0F, 7.0F);
-		modelPart2.setRotationPoint(2.0F, -2.0F, 4.0F);
+		modelPart2.setPivot(2.0F, -2.0F, 4.0F);
 		modelPart2.pitch = (float) (Math.PI / 3);
 		modelPart2.roll = (float) (Math.PI * 2.0 / 3.0);
 		this.field_4658.addChild(modelPart2);
 		ModelPart modelPart3 = new ModelPart(this, 48, 20);
 		modelPart3.addCuboid(-0.5F, -4.0F, 0.0F, 1.0F, 4.0F, 7.0F);
-		modelPart3.setRotationPoint(-2.0F, -2.0F, 4.0F);
+		modelPart3.setPivot(-2.0F, -2.0F, 4.0F);
 		modelPart3.pitch = (float) (Math.PI / 3);
 		modelPart3.roll = (float) (-Math.PI * 2.0 / 3.0);
 		this.field_4658.addChild(modelPart3);
 		this.field_4657 = new ModelPart(this, 0, 19);
 		this.field_4657.addCuboid(-2.0F, -2.5F, 0.0F, 4.0F, 5.0F, 11.0F);
-		this.field_4657.setRotationPoint(0.0F, -2.5F, 11.0F);
+		this.field_4657.setPivot(0.0F, -2.5F, 11.0F);
 		this.field_4657.pitch = -0.10471976F;
 		this.field_4658.addChild(this.field_4657);
 		this.field_4655 = new ModelPart(this, 19, 20);
 		this.field_4655.addCuboid(-5.0F, -0.5F, 0.0F, 10.0F, 1.0F, 6.0F);
-		this.field_4655.setRotationPoint(0.0F, 0.0F, 9.0F);
+		this.field_4655.setPivot(0.0F, 0.0F, 9.0F);
 		this.field_4655.pitch = 0.0F;
 		this.field_4657.addChild(this.field_4655);
 		ModelPart modelPart4 = new ModelPart(this, 0, 0);
 		modelPart4.addCuboid(-4.0F, -3.0F, -3.0F, 8.0F, 7.0F, 6.0F);
-		modelPart4.setRotationPoint(0.0F, -4.0F, -3.0F);
+		modelPart4.setPivot(0.0F, -4.0F, -3.0F);
 		ModelPart modelPart5 = new ModelPart(this, 0, 13);
 		modelPart5.addCuboid(-1.0F, 2.0F, -7.0F, 2.0F, 2.0F, 4.0F);
 		modelPart4.addChild(modelPart5);
@@ -59,7 +59,7 @@ public class DolphinEntityModel<T extends Entity> extends class_4595<T> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return ImmutableList.<ModelPart>of(this.field_4658);
 	}
 

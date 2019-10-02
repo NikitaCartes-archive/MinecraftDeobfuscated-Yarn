@@ -2,13 +2,13 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
@@ -24,11 +24,11 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 		return SKIN;
 	}
 
-	protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, class_4587 arg, float f, float g, float h) {
+	protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, MatrixStack matrixStack, float f, float g, float h) {
 		if (zombieVillagerEntity.isConverting()) {
 			g += (float)(Math.cos((double)zombieVillagerEntity.age * 3.25) * Math.PI * 0.25);
 		}
 
-		super.setupTransforms(zombieVillagerEntity, arg, f, g, h);
+		super.setupTransforms(zombieVillagerEntity, matrixStack, f, g, h);
 	}
 }

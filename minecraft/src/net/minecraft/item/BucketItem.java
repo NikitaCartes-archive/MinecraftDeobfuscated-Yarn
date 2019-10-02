@@ -117,7 +117,7 @@ public class BucketItem extends Item {
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
 			Material material = blockState.getMaterial();
-			boolean bl = blockState.method_22360(this.fluid);
+			boolean bl = blockState.canBucketPlace(this.fluid);
 			if (blockState.isAir()
 				|| bl
 				|| blockState.getBlock() instanceof FluidFillable && ((FluidFillable)blockState.getBlock()).canFillWithFluid(world, blockPos, blockState, this.fluid)) {

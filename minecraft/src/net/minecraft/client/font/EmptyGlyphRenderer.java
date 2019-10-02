@@ -3,7 +3,7 @@ package net.minecraft.client.font;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4588;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.util.Identifier;
 
@@ -14,7 +14,7 @@ public class EmptyGlyphRenderer extends GlyphRenderer {
 	}
 
 	@Override
-	public void draw(boolean bl, float f, float g, Matrix4f matrix4f, class_4588 arg, float h, float i, float j, float k, int l) {
+	public void draw(boolean bl, float f, float g, Matrix4f matrix4f, VertexConsumer vertexConsumer, float h, float i, float j, float k, int l) {
 	}
 
 	@Nullable

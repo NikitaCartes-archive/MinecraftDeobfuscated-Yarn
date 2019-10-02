@@ -4,20 +4,20 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
 import net.minecraft.block.BedBlock;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> {
@@ -53,38 +53,47 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		this.field_20815[3].roll = (float) Math.PI;
 	}
 
-	public void method_3557(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i) {
+	public void method_3557(
+		BedBlockEntity bedBlockEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i
+	) {
 		Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
-		class_4588 lv = arg2.getBuffer(BlockRenderLayer.SOLID);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
 		if (bedBlockEntity.hasWorld()) {
 			BlockState blockState = bedBlockEntity.getCachedState();
-			this.method_3558(arg, lv, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), identifier, i, false);
+			this.method_3558(matrixStack, vertexConsumer, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), identifier, i, false);
 		} else {
-			this.method_3558(arg, lv, true, Direction.SOUTH, identifier, i, false);
-			this.method_3558(arg, lv, false, Direction.SOUTH, identifier, i, true);
+			this.method_3558(matrixStack, vertexConsumer, true, Direction.SOUTH, identifier, i, false);
+			this.method_3558(matrixStack, vertexConsumer, false, Direction.SOUTH, identifier, i, true);
 		}
 	}
 
-	private void method_3558(class_4587 arg, class_4588 arg2, boolean bl, Direction direction, Identifier identifier, int i, boolean bl2) {
+	private void method_3558(MatrixStack matrixStack, VertexConsumer vertexConsumer, boolean bl, Direction direction, Identifier identifier, int i, boolean bl2) {
 		this.field_20813.visible = bl;
 		this.field_20814.visible = !bl;
 		this.field_20815[0].visible = !bl;
 		this.field_20815[1].visible = bl;
 		this.field_20815[2].visible = !bl;
 		this.field_20815[3].visible = bl;
-		arg.method_22903();
-		arg.method_22904(0.0, 0.5625, bl2 ? -1.0 : 0.0);
-		arg.method_22907(Vector3f.field_20703.method_23214(90.0F, true));
-		arg.method_22904(0.5, 0.5, 0.5);
-		arg.method_22907(Vector3f.field_20707.method_23214(180.0F + direction.asRotation(), true));
-		arg.method_22904(-0.5, -0.5, -0.5);
-		Sprite sprite = this.method_23082(identifier);
-		this.field_20813.method_22698(arg, arg2, 0.0625F, i, sprite);
-		this.field_20814.method_22698(arg, arg2, 0.0625F, i, sprite);
-		this.field_20815[0].method_22698(arg, arg2, 0.0625F, i, sprite);
-		this.field_20815[1].method_22698(arg, arg2, 0.0625F, i, sprite);
-		this.field_20815[2].method_22698(arg, arg2, 0.0625F, i, sprite);
-		this.field_20815[3].method_22698(arg, arg2, 0.0625F, i, sprite);
-		arg.method_22909();
+		matrixStack.push();
+		matrixStack.translate(0.0, 0.5625, bl2 ? -1.0 : 0.0);
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
+		matrixStack.translate(0.5, 0.5, 0.5);
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F + direction.asRotation(), true));
+		matrixStack.translate(-0.5, -0.5, -0.5);
+		Sprite sprite = this.getSprite(identifier);
+		this.field_20813.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20814.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20815[0].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20815[1].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20815[2].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20815[3].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		matrixStack.pop();
 	}
 }

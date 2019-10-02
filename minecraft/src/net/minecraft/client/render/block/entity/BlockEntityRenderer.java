@@ -2,12 +2,12 @@ package net.minecraft.client.render.block.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4597;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class BlockEntityRenderer<T extends BlockEntity> {
@@ -17,9 +17,11 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 		this.field_20989 = blockEntityRenderDispatcher;
 	}
 
-	public abstract void render(T blockEntity, double d, double e, double f, float g, class_4587 arg, class_4597 arg2, int i);
+	public abstract void render(
+		T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i
+	);
 
-	protected Sprite method_23082(Identifier identifier) {
+	protected Sprite getSprite(Identifier identifier) {
 		return MinecraftClient.getInstance().getSpriteAtlas().getSprite(identifier);
 	}
 

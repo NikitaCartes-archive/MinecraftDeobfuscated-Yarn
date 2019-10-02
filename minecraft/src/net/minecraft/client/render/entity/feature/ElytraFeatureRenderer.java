@@ -2,11 +2,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4587;
-import net.minecraft.class_4588;
-import net.minecraft.class_4597;
-import net.minecraft.class_4608;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.ElytraEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -16,6 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
@@ -26,7 +26,19 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 		super(featureRendererContext);
 	}
 
-	public void method_17161(class_4587 arg, class_4597 arg2, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+	public void method_17161(
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i,
+		T livingEntity,
+		float f,
+		float g,
+		float h,
+		float j,
+		float k,
+		float l,
+		float m
+	) {
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
 		if (itemStack.getItem() == Items.ELYTRA) {
 			Identifier identifier;
@@ -45,15 +57,15 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 				identifier = SKIN;
 			}
 
-			arg.method_22903();
-			arg.method_22904(0.0, 0.0, 0.125);
+			matrixStack.push();
+			matrixStack.translate(0.0, 0.0, 0.125);
 			this.getModel().copyStateTo(this.elytra);
 			this.elytra.method_17079(livingEntity, f, g, j, k, l, m);
-			class_4588 lv = ItemRenderer.method_23181(arg2, identifier, false, itemStack.hasEnchantmentGlint(), false);
-			class_4608.method_23211(lv);
-			this.elytra.method_22957(arg, lv, i);
-			lv.method_22923();
-			arg.method_22909();
+			VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, identifier, false, itemStack.hasEnchantmentGlint(), false);
+			OverlayTexture.clearDefaultOverlay(vertexConsumer);
+			this.elytra.method_22957(matrixStack, vertexConsumer, i);
+			vertexConsumer.clearDefaultOverlay();
+			matrixStack.pop();
 		}
 	}
 }

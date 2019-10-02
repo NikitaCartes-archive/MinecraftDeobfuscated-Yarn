@@ -19,7 +19,7 @@ public class GhastEntityModel<T extends Entity> extends class_4595<T> {
 		Builder<ModelPart> builder = ImmutableList.builder();
 		ModelPart modelPart = new ModelPart(this, 0, 0);
 		modelPart.addCuboid(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F);
-		modelPart.rotationPointY = 17.6F;
+		modelPart.pivotY = 17.6F;
 		builder.add(modelPart);
 		Random random = new Random(1660L);
 
@@ -29,9 +29,9 @@ public class GhastEntityModel<T extends Entity> extends class_4595<T> {
 			float g = ((float)(i / 3) / 2.0F * 2.0F - 1.0F) * 5.0F;
 			int j = random.nextInt(7) + 8;
 			this.field_3372[i].addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, (float)j, 2.0F);
-			this.field_3372[i].rotationPointX = f;
-			this.field_3372[i].rotationPointZ = g;
-			this.field_3372[i].rotationPointY = 24.6F;
+			this.field_3372[i].pivotX = f;
+			this.field_3372[i].pivotZ = g;
+			this.field_3372[i].pivotY = 24.6F;
 			builder.add(this.field_3372[i]);
 		}
 
@@ -46,7 +46,7 @@ public class GhastEntityModel<T extends Entity> extends class_4595<T> {
 	}
 
 	@Override
-	public Iterable<ModelPart> method_22960() {
+	public Iterable<ModelPart> getParts() {
 		return this.field_20929;
 	}
 }

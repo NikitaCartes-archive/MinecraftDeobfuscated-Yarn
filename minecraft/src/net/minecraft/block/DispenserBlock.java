@@ -3,7 +3,6 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Random;
-import net.minecraft.class_4538;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -36,6 +35,7 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class DispenserBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = FacingBlock.FACING;
@@ -54,12 +54,12 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public int getTickRate(class_4538 arg) {
+	public int getTickRate(WorldView worldView) {
 		return 4;
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
@@ -109,7 +109,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
 		this.dispense(serverWorld, blockPos);
 	}
 

@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4538;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -19,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldView;
 
 public class BannerBlock extends AbstractBannerBlock {
 	public static final IntProperty ROTATION = Properties.ROTATION;
@@ -32,8 +32,8 @@ public class BannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, class_4538 arg, BlockPos blockPos) {
-		return arg.getBlockState(blockPos.method_10074()).getMaterial().isSolid();
+	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
+		return worldView.getBlockState(blockPos.method_10074()).getMaterial().isSolid();
 	}
 
 	@Override
