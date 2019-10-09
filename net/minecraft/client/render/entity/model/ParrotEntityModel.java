@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.math.MathHelper;
@@ -29,6 +30,7 @@ extends class_4595<ParrotEntity> {
     private final ModelPart field_3457;
 
     public ParrotEntityModel() {
+        super(RenderLayer::getEntityCutoutNoCull);
         this.textureWidth = 32;
         this.textureHeight = 32;
         this.field_3458 = new ModelPart(this, 2, 8);
@@ -83,10 +85,10 @@ extends class_4595<ParrotEntity> {
         this.method_17110(ParrotEntityModel.method_17107(parrotEntity));
     }
 
-    public void method_17106(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h, float j, float k, int l) {
+    public void method_17106(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k, float l, int m) {
         this.method_17110(Pose.ON_SHOULDER);
-        this.method_17111(Pose.ON_SHOULDER, l, f, g, 0.0f, h, j);
-        this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, k, i, null));
+        this.method_17111(Pose.ON_SHOULDER, m, f, g, 0.0f, h, k);
+        this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, l, i, j, null));
     }
 
     private void method_17111(Pose pose, int i, float f, float g, float h, float j, float k) {

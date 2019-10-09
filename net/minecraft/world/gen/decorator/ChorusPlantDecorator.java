@@ -27,11 +27,11 @@ extends Decorator<NopeDecoratorConfig> {
         int i2 = random.nextInt(5);
         return IntStream.range(0, i2).mapToObj(i -> {
             int k;
-            int j = random.nextInt(16);
-            int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k = random.nextInt(16))).getY();
+            int j = random.nextInt(16) + blockPos.getX();
+            int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k = random.nextInt(16) + blockPos.getZ());
             if (l > 0) {
                 int m = l - 1;
-                return new BlockPos(blockPos.getX() + j, m, blockPos.getZ() + k);
+                return new BlockPos(j, m, k);
             }
             return null;
         }).filter(Objects::nonNull);

@@ -3,14 +3,15 @@
  */
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -27,9 +28,9 @@ public class OceanWarmBiome
 extends Biome {
     public OceanWarmBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_SAND_UNDERWATER_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.0f).scale(0.1f).temperature(0.5f).downfall(0.5f).waterColor(4445678).waterFogColor(270131).parent(null));
-        this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3f, 0.9f));
-        this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-        this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false));
+        this.addStructureFeature(Feature.OCEAN_RUIN.method_23397(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3f, 0.9f)));
+        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+        this.addStructureFeature(Feature.SHIPWRECK.method_23397(new ShipwreckFeatureConfig(false)));
         DefaultBiomeFeatures.addOceanCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
@@ -43,9 +44,9 @@ extends Biome {
         DefaultBiomeFeatures.addDefaultMushrooms(this);
         DefaultBiomeFeatures.addDefaultVegetation(this);
         DefaultBiomeFeatures.addSprings(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, OceanWarmBiome.configureFeature(Feature.SIMPLE_RANDOM_SELECTOR, new SimpleRandomFeatureConfig(new Feature[]{Feature.CORAL_TREE, Feature.CORAL_CLAW, Feature.CORAL_MUSHROOM}, new FeatureConfig[]{FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT}), Decorator.TOP_SOLID_HEIGHTMAP_NOISE_BIASED, new TopSolidHeightmapNoiseBiasedDecoratorConfig(20, 400.0, 0.0, Heightmap.Type.OCEAN_FLOOR_WG)));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.SIMPLE_RANDOM_SELECTOR.method_23397(new SimpleRandomFeatureConfig(ImmutableList.of(Feature.CORAL_TREE.method_23397(FeatureConfig.DEFAULT), Feature.CORAL_CLAW.method_23397(FeatureConfig.DEFAULT), Feature.CORAL_MUSHROOM.method_23397(FeatureConfig.DEFAULT)))).method_23388(Decorator.TOP_SOLID_HEIGHTMAP_NOISE_BIASED.method_23475(new TopSolidHeightmapNoiseBiasedDecoratorConfig(20, 400.0, 0.0, Heightmap.Type.OCEAN_FLOOR_WG))));
         DefaultBiomeFeatures.addSeagrass(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, OceanWarmBiome.configureFeature(Feature.SEA_PICKLE, new SeaPickleFeatureConfig(20), Decorator.CHANCE_TOP_SOLID_HEIGHTMAP, new ChanceDecoratorConfig(16)));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.SEA_PICKLE.method_23397(new SeaPickleFeatureConfig(20)).method_23388(Decorator.CHANCE_TOP_SOLID_HEIGHTMAP.method_23475(new LakeDecoratorConfig(16))));
         DefaultBiomeFeatures.addFrozenTopLayer(this);
         this.addSpawn(EntityCategory.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, 10, 4, 4));
         this.addSpawn(EntityCategory.WATER_CREATURE, new Biome.SpawnEntry(EntityType.PUFFERFISH, 15, 1, 3));

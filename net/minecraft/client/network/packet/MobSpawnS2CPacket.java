@@ -23,12 +23,12 @@ implements Packet<ClientPlayPacketListener> {
     private double x;
     private double y;
     private double z;
-    private int yaw;
-    private int pitch;
-    private int headPitch;
-    private byte velocityX;
-    private byte velocityY;
-    private byte velocityZ;
+    private int velocityX;
+    private int velocityY;
+    private int velocityZ;
+    private byte yaw;
+    private byte pitch;
+    private byte headYaw;
 
     public MobSpawnS2CPacket() {
     }
@@ -37,20 +37,20 @@ implements Packet<ClientPlayPacketListener> {
         this.id = livingEntity.getEntityId();
         this.uuid = livingEntity.getUuid();
         this.entityTypeId = Registry.ENTITY_TYPE.getRawId(livingEntity.getType());
-        this.x = livingEntity.x;
-        this.y = livingEntity.y;
-        this.z = livingEntity.z;
-        this.velocityX = (byte)(livingEntity.yaw * 256.0f / 360.0f);
-        this.velocityY = (byte)(livingEntity.pitch * 256.0f / 360.0f);
-        this.velocityZ = (byte)(livingEntity.headYaw * 256.0f / 360.0f);
+        this.x = livingEntity.getX();
+        this.y = livingEntity.getY();
+        this.z = livingEntity.getZ();
+        this.yaw = (byte)(livingEntity.yaw * 256.0f / 360.0f);
+        this.pitch = (byte)(livingEntity.pitch * 256.0f / 360.0f);
+        this.headYaw = (byte)(livingEntity.headYaw * 256.0f / 360.0f);
         double d = 3.9;
         Vec3d vec3d = livingEntity.getVelocity();
         double e = MathHelper.clamp(vec3d.x, -3.9, 3.9);
         double f = MathHelper.clamp(vec3d.y, -3.9, 3.9);
         double g = MathHelper.clamp(vec3d.z, -3.9, 3.9);
-        this.yaw = (int)(e * 8000.0);
-        this.pitch = (int)(f * 8000.0);
-        this.headPitch = (int)(g * 8000.0);
+        this.velocityX = (int)(e * 8000.0);
+        this.velocityY = (int)(f * 8000.0);
+        this.velocityZ = (int)(g * 8000.0);
     }
 
     @Override
@@ -61,12 +61,12 @@ implements Packet<ClientPlayPacketListener> {
         this.x = packetByteBuf.readDouble();
         this.y = packetByteBuf.readDouble();
         this.z = packetByteBuf.readDouble();
-        this.velocityX = packetByteBuf.readByte();
-        this.velocityY = packetByteBuf.readByte();
-        this.velocityZ = packetByteBuf.readByte();
-        this.yaw = packetByteBuf.readShort();
-        this.pitch = packetByteBuf.readShort();
-        this.headPitch = packetByteBuf.readShort();
+        this.yaw = packetByteBuf.readByte();
+        this.pitch = packetByteBuf.readByte();
+        this.headYaw = packetByteBuf.readByte();
+        this.velocityX = packetByteBuf.readShort();
+        this.velocityY = packetByteBuf.readShort();
+        this.velocityZ = packetByteBuf.readShort();
     }
 
     @Override
@@ -77,12 +77,12 @@ implements Packet<ClientPlayPacketListener> {
         packetByteBuf.writeDouble(this.x);
         packetByteBuf.writeDouble(this.y);
         packetByteBuf.writeDouble(this.z);
-        packetByteBuf.writeByte(this.velocityX);
-        packetByteBuf.writeByte(this.velocityY);
-        packetByteBuf.writeByte(this.velocityZ);
-        packetByteBuf.writeShort(this.yaw);
-        packetByteBuf.writeShort(this.pitch);
-        packetByteBuf.writeShort(this.headPitch);
+        packetByteBuf.writeByte(this.yaw);
+        packetByteBuf.writeByte(this.pitch);
+        packetByteBuf.writeByte(this.headYaw);
+        packetByteBuf.writeShort(this.velocityX);
+        packetByteBuf.writeShort(this.velocityY);
+        packetByteBuf.writeShort(this.velocityZ);
     }
 
     public void method_11217(ClientPlayPacketListener clientPlayPacketListener) {
@@ -120,33 +120,33 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getYaw() {
-        return this.yaw;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public int getPitch() {
-        return this.pitch;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public int getHeadPitch() {
-        return this.headPitch;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public byte getVelocityX() {
+    public int getVelocityX() {
         return this.velocityX;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public byte getVelocityY() {
+    public int getVelocityY() {
         return this.velocityY;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public byte getVelocityZ() {
+    public int getVelocityZ() {
         return this.velocityZ;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public byte getYaw() {
+        return this.yaw;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public byte getPitch() {
+        return this.pitch;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public byte getHeadYaw() {
+        return this.headYaw;
     }
 }
 

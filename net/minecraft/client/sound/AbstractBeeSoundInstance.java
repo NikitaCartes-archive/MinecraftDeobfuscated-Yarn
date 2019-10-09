@@ -22,9 +22,9 @@ extends MovingSoundInstance {
     public AbstractBeeSoundInstance(BeeEntity beeEntity, SoundEvent soundEvent, SoundCategory soundCategory) {
         super(soundEvent, soundCategory);
         this.bee = beeEntity;
-        this.x = (float)beeEntity.x;
-        this.y = (float)beeEntity.y;
-        this.z = (float)beeEntity.z;
+        this.x = (float)beeEntity.getX();
+        this.y = (float)beeEntity.getY();
+        this.z = (float)beeEntity.getZ();
         this.repeat = true;
         this.repeatDelay = 0;
         this.volume = 0.0f;
@@ -41,9 +41,9 @@ extends MovingSoundInstance {
             this.done = true;
             return;
         }
-        this.x = (float)this.bee.x;
-        this.y = (float)this.bee.y;
-        this.z = (float)this.bee.z;
+        this.x = (float)this.bee.getX();
+        this.y = (float)this.bee.getY();
+        this.z = (float)this.bee.getZ();
         float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.bee.getVelocity()));
         if ((double)f >= 0.01) {
             this.pitch = MathHelper.lerp(MathHelper.clamp(f, this.getMinPitch(), this.getMaxPitch()), this.getMinPitch(), this.getMaxPitch());

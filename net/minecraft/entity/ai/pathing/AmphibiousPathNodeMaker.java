@@ -192,10 +192,10 @@ extends LandPathNodeMaker {
 
     @Override
     public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
-        PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
+        PathNodeType pathNodeType = AmphibiousPathNodeMaker.getBasicPathNodeType(blockView, i, j, k);
         if (pathNodeType == PathNodeType.WATER) {
             for (Direction direction : Direction.values()) {
-                PathNodeType pathNodeType2 = this.getBasicPathNodeType(blockView, i + direction.getOffsetX(), j + direction.getOffsetY(), k + direction.getOffsetZ());
+                PathNodeType pathNodeType2 = AmphibiousPathNodeMaker.getBasicPathNodeType(blockView, i + direction.getOffsetX(), j + direction.getOffsetY(), k + direction.getOffsetZ());
                 if (pathNodeType2 != PathNodeType.BLOCKED) continue;
                 return PathNodeType.WATER_BORDER;
             }
@@ -203,7 +203,7 @@ extends LandPathNodeMaker {
         }
         if (pathNodeType == PathNodeType.OPEN && j >= 1) {
             Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
-            PathNodeType pathNodeType3 = this.getBasicPathNodeType(blockView, i, j - 1, k);
+            PathNodeType pathNodeType3 = AmphibiousPathNodeMaker.getBasicPathNodeType(blockView, i, j - 1, k);
             pathNodeType = pathNodeType3 == PathNodeType.WALKABLE || pathNodeType3 == PathNodeType.OPEN || pathNodeType3 == PathNodeType.LAVA ? PathNodeType.OPEN : PathNodeType.WALKABLE;
             if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block == Blocks.CAMPFIRE) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
@@ -215,7 +215,7 @@ extends LandPathNodeMaker {
                 pathNodeType = PathNodeType.DAMAGE_OTHER;
             }
         }
-        pathNodeType = this.method_59(blockView, i, j, k, pathNodeType);
+        pathNodeType = AmphibiousPathNodeMaker.method_59(blockView, i, j, k, pathNodeType);
         return pathNodeType;
     }
 }

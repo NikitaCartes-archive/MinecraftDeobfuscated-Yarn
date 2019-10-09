@@ -6,13 +6,13 @@ package net.minecraft.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 
 @Environment(value=EnvType.CLIENT)
 public class OverlayTexture
 implements AutoCloseable {
+    public static final int field_21444 = OverlayTexture.method_23625(0, 10);
     private final NativeImageBackedTexture texture = new NativeImageBackedTexture(16, 16, false);
 
     public OverlayTexture() {
@@ -56,12 +56,16 @@ implements AutoCloseable {
         return bl ? 3 : 10;
     }
 
-    public void teardownOverlayColor() {
-        RenderSystem.teardownOverlayColor();
+    public static int method_23625(int i, int j) {
+        return i | j << 16;
     }
 
-    public static void clearDefaultOverlay(VertexConsumer vertexConsumer) {
-        vertexConsumer.defaultOverlay(0, 10);
+    public static int method_23624(float f, boolean bl) {
+        return OverlayTexture.method_23625(OverlayTexture.getU(f), OverlayTexture.getV(bl));
+    }
+
+    public void teardownOverlayColor() {
+        RenderSystem.teardownOverlayColor();
     }
 }
 

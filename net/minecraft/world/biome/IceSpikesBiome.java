@@ -23,14 +23,14 @@ public final class IceSpikesBiome
 extends Biome {
     public IceSpikesBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, new TernarySurfaceConfig(Blocks.SNOW_BLOCK.getDefaultState(), Blocks.DIRT.getDefaultState(), Blocks.GRAVEL.getDefaultState())).precipitation(Biome.Precipitation.SNOW).category(Biome.Category.ICY).depth(0.425f).scale(0.45000002f).temperature(0.0f).downfall(0.5f).waterColor(4159204).waterFogColor(329011).parent("snowy_tundra"));
-        this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-        this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+        this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);
-        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, IceSpikesBiome.configureFeature(Feature.ICE_SPIKE, FeatureConfig.DEFAULT, Decorator.COUNT_HEIGHTMAP, new CountDecoratorConfig(3)));
-        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, IceSpikesBiome.configureFeature(Feature.ICE_PATCH, new IcePatchFeatureConfig(2), Decorator.COUNT_HEIGHTMAP, new CountDecoratorConfig(2)));
+        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.ICE_SPIKE.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.COUNT_HEIGHTMAP.method_23475(new CountDecoratorConfig(3))));
+        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.ICE_PATCH.method_23397(new IcePatchFeatureConfig(2)).method_23388(Decorator.COUNT_HEIGHTMAP.method_23475(new CountDecoratorConfig(2))));
         DefaultBiomeFeatures.addMineables(this);
         DefaultBiomeFeatures.addDefaultOres(this);
         DefaultBiomeFeatures.addDefaultDisks(this);

@@ -24,7 +24,7 @@ extends Feature<RandomRandomFeatureConfig> {
         int i = random.nextInt(5) - 3 + randomRandomFeatureConfig.count;
         for (int j = 0; j < i; ++j) {
             int k = random.nextInt(randomRandomFeatureConfig.features.size());
-            ConfiguredFeature<?> configuredFeature = randomRandomFeatureConfig.features.get(k);
+            ConfiguredFeature<?, ?> configuredFeature = randomRandomFeatureConfig.features.get(k);
             configuredFeature.generate(iWorld, chunkGenerator, random, blockPos);
         }
         return true;

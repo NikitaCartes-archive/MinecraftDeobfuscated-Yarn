@@ -77,7 +77,7 @@ extends Goal {
         if (livingEntity == null) {
             return;
         }
-        double d = ((Entity)this.actor).squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+        double d = ((Entity)this.actor).squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
         boolean bl = ((MobEntity)this.actor).getVisibilityCache().canSee(livingEntity);
         boolean bl3 = bl2 = this.field_6572 > 0;
         if (bl != bl2) {

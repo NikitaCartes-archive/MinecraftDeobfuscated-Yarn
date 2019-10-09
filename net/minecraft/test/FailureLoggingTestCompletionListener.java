@@ -21,9 +21,5 @@ implements TestCompletionListener {
             LOGGER.warn("(optional) " + gameTest.getStructureName() + " failed. " + SystemUtil.getInnermostMessage(gameTest.getThrowable()));
         }
     }
-
-    @Override
-    public void onTestPassed(GameTest gameTest) {
-    }
 }
 

@@ -49,8 +49,7 @@ extends Entity {
     public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, LivingEntity livingEntity, double d, double e, double f, World world) {
         this(entityType, world);
         this.owner = livingEntity;
-        this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
-        this.setPosition(this.x, this.y, this.z);
+        this.setPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
         this.setVelocity(Vec3d.ZERO);
         double g = MathHelper.sqrt((d += this.random.nextGaussian() * 0.4) * d + (e += this.random.nextGaussian() * 0.4) * e + (f += this.random.nextGaussian() * 0.4) * f);
         this.posX = d / g * 0.1;
@@ -88,21 +87,21 @@ extends Entity {
             this.onCollision(hitResult);
         }
         Vec3d vec3d = this.getVelocity();
-        this.x += vec3d.x;
-        this.y += vec3d.y;
-        this.z += vec3d.z;
+        double d = this.getX() + vec3d.x;
+        double e = this.getY() + vec3d.y;
+        double f = this.getZ() + vec3d.z;
         ProjectileUtil.method_7484(this, 0.2f);
-        float f = this.getDrag();
+        float g = this.getDrag();
         if (this.isInsideWater()) {
             for (int i = 0; i < 4; ++i) {
-                float g = 0.25f;
-                this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+                float h = 0.25f;
+                this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
             }
-            f = 0.8f;
+            g = 0.8f;
         }
-        this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply(f));
-        this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
-        this.setPosition(this.x, this.y, this.z);
+        this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply(g));
+        this.world.addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
+        this.setPosition(d, e, f);
     }
 
     protected boolean isBurning() {
@@ -188,7 +187,7 @@ extends Entity {
     @Override
     public Packet<?> createSpawnPacket() {
         int i = this.owner == null ? 0 : this.owner.getEntityId();
-        return new EntitySpawnS2CPacket(this.getEntityId(), this.getUuid(), this.x, this.y, this.z, this.pitch, this.yaw, this.getType(), i, new Vec3d(this.posX, this.posY, this.posZ));
+        return new EntitySpawnS2CPacket(this.getEntityId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.pitch, this.yaw, this.getType(), i, new Vec3d(this.posX, this.posY, this.posZ));
     }
 }
 

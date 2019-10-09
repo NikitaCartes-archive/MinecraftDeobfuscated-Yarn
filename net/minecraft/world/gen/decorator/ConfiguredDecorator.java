@@ -16,6 +16,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class ConfiguredDecorator<DC extends DecoratorConfig> {
@@ -31,7 +32,7 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
         this.config = decoratorConfig;
     }
 
-    public <FC extends FeatureConfig> boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC> configuredFeature) {
+    public <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC, F> configuredFeature) {
         return this.decorator.generate(iWorld, chunkGenerator, random, blockPos, this.config, configuredFeature);
     }
 

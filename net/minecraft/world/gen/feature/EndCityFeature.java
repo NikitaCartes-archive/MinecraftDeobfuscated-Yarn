@@ -20,7 +20,6 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EndCityFeature
@@ -49,7 +48,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
         ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
         if (i == chunkPos.x && j == chunkPos.z) {
-            if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
+            if (!chunkGenerator.hasStructure(biome, this)) {
                 return false;
             }
             int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);

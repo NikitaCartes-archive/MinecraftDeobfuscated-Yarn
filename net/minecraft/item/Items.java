@@ -799,7 +799,7 @@ public class Items {
     public static final Item ENDER_EYE = Items.register("ender_eye", (Item)new EnderEyeItem(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GLISTERING_MELON_SLICE = Items.register("glistering_melon_slice", new Item(new Item.Settings().group(ItemGroup.BREWING)));
     public static final Item BAT_SPAWN_EGG = Items.register("bat_spawn_egg", (Item)new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings().group(ItemGroup.MISC)));
-    public static final Item BEE_SPAWN_EGG = Items.register("bee_spawn_egg", (Item)new SpawnEggItem(EntityType.BEE, 0xFFE55E, 2500144, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item BEE_SPAWN_EGG = Items.register("bee_spawn_egg", (Item)new SpawnEggItem(EntityType.BEE, 15582019, 4400155, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item BLAZE_SPAWN_EGG = Items.register("blaze_spawn_egg", (Item)new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item CAT_SPAWN_EGG = Items.register("cat_spawn_egg", (Item)new SpawnEggItem(EntityType.CAT, 15714446, 9794134, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item CAVE_SPIDER_SPAWN_EGG = Items.register("cave_spider_spawn_egg", (Item)new SpawnEggItem(EntityType.CAVE_SPIDER, 803406, 11013646, new Item.Settings().group(ItemGroup.MISC)));
@@ -981,8 +981,10 @@ public class Items {
     public static final Item CAMPFIRE = Items.register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
     public static final Item HONEYCOMB = Items.register("honeycomb", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item BEE_NEST = Items.register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
-    public static final Item BEE_HIVE = Items.register(Blocks.BEE_HIVE, ItemGroup.DECORATIONS);
+    public static final Item BEE_HIVE = Items.register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
     public static final Item HONEY_BOTTLE = Items.register("honey_bottle", (Item)new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(1)));
+    public static final Item field_21086 = Items.register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
+    public static final Item field_21087 = Items.register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

@@ -185,9 +185,9 @@ implements RangedAttackMob {
     public void attack(LivingEntity livingEntity, float f) {
         ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
         ProjectileEntity projectileEntity = this.createArrowProjectile(itemStack, f);
-        double d = livingEntity.x - this.x;
-        double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - projectileEntity.y;
-        double g = livingEntity.z - this.z;
+        double d = livingEntity.getX() - this.getX();
+        double e = livingEntity.method_23323(0.3333333333333333) - projectileEntity.getY();
+        double g = livingEntity.getZ() - this.getZ();
         double h = MathHelper.sqrt(d * d + g * g);
         projectileEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));

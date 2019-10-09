@@ -90,12 +90,13 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
-        super.handleFallDamage(f, g);
+    public boolean handleFallDamage(float f, float g) {
+        boolean bl = super.handleFallDamage(f, g);
         this.currentFuseTime = (int)((float)this.currentFuseTime + f * 1.5f);
         if (this.currentFuseTime > this.fuseTime - 5) {
             this.currentFuseTime = this.fuseTime - 5;
         }
+        return bl;
     }
 
     @Override
@@ -209,7 +210,7 @@ implements SkinOverlayOwner {
     protected boolean interactMob(PlayerEntity playerEntity2, Hand hand) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
-            this.world.playSound(playerEntity2, this.x, this.y, this.z, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.4f + 0.8f);
+            this.world.playSound(playerEntity2, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.4f + 0.8f);
             if (!this.world.isClient) {
                 this.setIgnited();
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
@@ -224,7 +225,7 @@ implements SkinOverlayOwner {
             Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
             float f = this.shouldRenderOverlay() ? 2.0f : 1.0f;
             this.dead = true;
-            this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);
+            this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, destructionType);
             this.remove();
             this.spawnEffectsCloud();
         }
@@ -233,7 +234,7 @@ implements SkinOverlayOwner {
     private void spawnEffectsCloud() {
         Collection<StatusEffectInstance> collection = this.getStatusEffects();
         if (!collection.isEmpty()) {
-            AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
+            AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
             areaEffectCloudEntity.setRadius(2.5f);
             areaEffectCloudEntity.setRadiusOnUse(-0.5f);
             areaEffectCloudEntity.setWaitTime(10);

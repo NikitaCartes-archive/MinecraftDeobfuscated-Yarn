@@ -200,9 +200,9 @@ extends WaterCreatureEntity {
                 this.fish.setMovementSpeed(0.0f);
                 return;
             }
-            double d = this.targetX - this.fish.x;
-            double e = this.targetY - this.fish.y;
-            double f = this.targetZ - this.fish.z;
+            double d = this.targetX - this.fish.getX();
+            double e = this.targetY - this.fish.getY();
+            double f = this.targetZ - this.fish.getZ();
             double g = MathHelper.sqrt(d * d + e * e + f * f);
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.fish.bodyYaw = this.fish.yaw = this.changeAngle(this.fish.yaw, h, 90.0f);

@@ -44,7 +44,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
@@ -165,7 +164,7 @@ implements RangedAttackMob {
         float f = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float g = MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.3f;
-        entity.setPosition(this.x + (double)(0.3f * g), this.y + this.getMountedHeightOffset() + entity.getHeightOffset(), this.z - (double)(0.3f * f));
+        entity.setPosition(this.getX() + (double)(0.3f * g), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ() - (double)(0.3f * f));
     }
 
     @Override
@@ -203,7 +202,7 @@ implements RangedAttackMob {
             bl = true;
         }
         if (this.isBaby() && i > 0) {
-            this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()), this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), 0.0, 0.0, 0.0);
+            this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), 0.0, 0.0, 0.0);
             if (!this.world.isClient) {
                 this.growUp(i);
             }
@@ -216,7 +215,7 @@ implements RangedAttackMob {
             }
         }
         if (bl && !this.isSilent()) {
-            this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_LLAMA_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         }
         return bl;
     }
@@ -367,12 +366,12 @@ implements RangedAttackMob {
 
     private void spitAt(LivingEntity livingEntity) {
         LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
-        double d = livingEntity.x - this.x;
-        double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - llamaSpitEntity.y;
-        double f = livingEntity.z - this.z;
+        double d = livingEntity.getX() - this.getX();
+        double e = livingEntity.method_23323(0.3333333333333333) - llamaSpitEntity.getY();
+        double f = livingEntity.getZ() - this.getZ();
         float g = MathHelper.sqrt(d * d + f * f) * 0.2f;
         llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5f, 10.0f);
-        this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_LLAMA_SPIT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+        this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_SPIT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         this.world.spawnEntity(llamaSpitEntity);
         this.field_6999 = true;
     }
@@ -382,11 +381,10 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
-        BlockState blockState;
-        int i = MathHelper.ceil((f * 0.5f - 3.0f) * g);
+    public boolean handleFallDamage(float f, float g) {
+        int i = this.method_23329(f, g);
         if (i <= 0) {
-            return;
+            return false;
         }
         if (f >= 6.0f) {
             this.damage(DamageSource.FALL, i);
@@ -396,10 +394,8 @@ implements RangedAttackMob {
                 }
             }
         }
-        if (!(blockState = this.world.getBlockState(new BlockPos(this.x, this.y - 0.2 - (double)this.prevYaw, this.z))).isAir() && !this.isSilent()) {
-            BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-            this.world.playSound(null, this.x, this.y, this.z, blockSoundGroup.getStepSound(), this.getSoundCategory(), blockSoundGroup.getVolume() * 0.5f, blockSoundGroup.getPitch() * 0.75f);
-        }
+        this.method_23328();
+        return true;
     }
 
     public void method_6797() {

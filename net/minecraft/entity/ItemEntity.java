@@ -82,9 +82,9 @@ extends Entity {
         if (this.pickupDelay > 0 && this.pickupDelay != Short.MAX_VALUE) {
             --this.pickupDelay;
         }
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
+        this.prevX = this.getX();
+        this.prevY = this.getY();
+        this.prevZ = this.getZ();
         Vec3d vec3d = this.getVelocity();
         if (this.isInFluid(FluidTags.WATER)) {
             this.applyBuoyancy();
@@ -96,21 +96,21 @@ extends Entity {
         } else {
             boolean bl = this.noClip = !this.world.doesNotCollide(this);
             if (this.noClip) {
-                this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+                this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
             }
         }
         if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getEntityId()) % 4 == 0) {
             this.move(MovementType.SELF, this.getVelocity());
             float f = 0.98f;
             if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98f;
+                f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98f;
             }
             this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
             if (this.onGround) {
                 this.setVelocity(this.getVelocity().multiply(1.0, -0.5, 1.0));
             }
         }
-        boolean bl = MathHelper.floor(this.prevX) != MathHelper.floor(this.x) || MathHelper.floor(this.prevY) != MathHelper.floor(this.y) || MathHelper.floor(this.prevZ) != MathHelper.floor(this.z);
+        boolean bl = MathHelper.floor(this.prevX) != MathHelper.floor(this.getX()) || MathHelper.floor(this.prevY) != MathHelper.floor(this.getY()) || MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
         int n = i = bl ? 2 : 40;
         if (this.age % i == 0) {
             if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {

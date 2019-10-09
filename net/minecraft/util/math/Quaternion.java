@@ -12,13 +12,12 @@ import net.minecraft.util.math.MathHelper;
 public final class Quaternion {
     private final float[] components;
 
-    public Quaternion() {
-        this.components = new float[4];
-        this.components[3] = 1.0f;
+    private Quaternion(float[] fs) {
+        this.components = fs;
     }
 
     public Quaternion(float f, float g, float h, float i) {
-        this.components = new float[4];
+        this(new float[4]);
         this.components[0] = f;
         this.components[1] = g;
         this.components[2] = h;
@@ -153,6 +152,11 @@ public final class Quaternion {
             this.components[2] = 0.0f;
             this.components[3] = 0.0f;
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Quaternion method_23368() {
+        return new Quaternion((float[])this.components.clone());
     }
 }
 

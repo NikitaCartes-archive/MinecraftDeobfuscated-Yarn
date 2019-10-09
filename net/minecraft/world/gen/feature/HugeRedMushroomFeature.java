@@ -6,88 +6,51 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.MushroomBlock;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.class_4625;
+import net.minecraft.class_4635;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 
 public class HugeRedMushroomFeature
-extends Feature<PlantedFeatureConfig> {
-    public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends PlantedFeatureConfig> function) {
+extends class_4625 {
+    public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends class_4635> function) {
         super(function);
     }
 
-    public boolean method_13398(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, PlantedFeatureConfig plantedFeatureConfig) {
-        int n;
-        int m;
-        int l;
-        int j;
-        int i = random.nextInt(3) + 4;
-        if (random.nextInt(12) == 0) {
-            i *= 2;
-        }
-        if ((j = blockPos.getY()) < 1 || j + i + 1 >= 256) {
-            return false;
-        }
-        Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
-        if (!Block.isNaturalDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
-            return false;
-        }
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int k = 0; k <= i; ++k) {
-            l = 0;
-            if (k < i && k >= i - 3) {
-                l = 2;
-            } else if (k == i) {
-                l = 1;
-            }
-            for (m = -l; m <= l; ++m) {
-                for (n = -l; n <= l; ++n) {
-                    BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).setOffset(m, k, n));
-                    if (blockState.isAir() || blockState.matches(BlockTags.LEAVES)) continue;
-                    return false;
-                }
-            }
-        }
-        BlockState blockState2 = (BlockState)Blocks.RED_MUSHROOM_BLOCK.getDefaultState().with(MushroomBlock.DOWN, false);
-        for (l = i - 3; l <= i; ++l) {
-            m = l < i ? 2 : 1;
-            n = 0;
-            for (int o = -m; o <= m; ++o) {
-                for (int p = -m; p <= m; ++p) {
+    @Override
+    protected void method_23375(IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, class_4635 arg) {
+        for (int j = i - 3; j <= i; ++j) {
+            int k = j < i ? arg.field_21232 : arg.field_21232 - 1;
+            int l = arg.field_21232 - 2;
+            for (int m = -k; m <= k; ++m) {
+                for (int n = -k; n <= k; ++n) {
                     boolean bl6;
-                    boolean bl = o == -m;
-                    boolean bl2 = o == m;
-                    boolean bl3 = p == -m;
-                    boolean bl4 = p == m;
+                    boolean bl = m == -k;
+                    boolean bl2 = m == k;
+                    boolean bl3 = n == -k;
+                    boolean bl4 = n == k;
                     boolean bl5 = bl || bl2;
                     boolean bl7 = bl6 = bl3 || bl4;
-                    if (l < i && bl5 == bl6) continue;
-                    mutable.set(blockPos).setOffset(o, l, p);
+                    if (j < i && bl5 == bl6) continue;
+                    mutable.set(blockPos).setOffset(m, j, n);
                     if (iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) continue;
-                    this.setBlockState(iWorld, mutable, (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)blockState2.with(MushroomBlock.UP, l >= i - 1)).with(MushroomBlock.WEST, o < 0)).with(MushroomBlock.EAST, o > 0)).with(MushroomBlock.NORTH, p < 0)).with(MushroomBlock.SOUTH, p > 0));
+                    this.setBlockState(iWorld, mutable, (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)arg.field_21230.method_23455(random, blockPos).with(MushroomBlock.UP, j >= i - 1)).with(MushroomBlock.WEST, m < -l)).with(MushroomBlock.EAST, m > l)).with(MushroomBlock.NORTH, n < -l)).with(MushroomBlock.SOUTH, n > l));
                 }
             }
         }
-        BlockState blockState3 = (BlockState)((BlockState)Blocks.MUSHROOM_STEM.getDefaultState().with(MushroomBlock.UP, false)).with(MushroomBlock.DOWN, false);
-        for (m = 0; m < i; ++m) {
-            mutable.set(blockPos).setOffset(Direction.UP, m);
-            if (iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) continue;
-            if (plantedFeatureConfig.planted) {
-                iWorld.setBlockState(mutable, blockState3, 3);
-                continue;
-            }
-            this.setBlockState(iWorld, mutable, blockState3);
+    }
+
+    @Override
+    protected int method_23372(int i, int j, int k, int l) {
+        int m = 0;
+        if (l < j && l >= j - 3) {
+            m = k;
+        } else if (l == j) {
+            m = k;
         }
-        return true;
+        return m;
     }
 }
 

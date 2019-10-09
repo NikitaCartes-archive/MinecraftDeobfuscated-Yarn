@@ -169,7 +169,7 @@ extends Feature<EndSpikeFeatureConfig> {
             return this.boundingBox;
         }
 
-        <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+        public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
             ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
             builder.put(dynamicOps.createString("centerX"), dynamicOps.createInt(this.centerX));
             builder.put(dynamicOps.createString("centerZ"), dynamicOps.createInt(this.centerZ));

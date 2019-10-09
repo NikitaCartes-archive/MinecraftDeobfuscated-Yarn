@@ -72,7 +72,7 @@ extends Block {
         if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
             return false;
         }
-        return Block.isFaceFullSquare(blockState2.getCollisionShape(worldView, blockPos.method_10074()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
+        return Block.isFaceFullSquare(blockState2.getOutlineShape(worldView, blockPos.method_10074()), Direction.UP) || block == this && blockState2.get(LAYERS) == 8;
     }
 
     @Override

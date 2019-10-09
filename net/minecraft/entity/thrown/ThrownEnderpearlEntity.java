@@ -77,7 +77,7 @@ extends ThrownItemEntity {
             return;
         }
         for (int i = 0; i < 32; ++i) {
-            this.world.addParticle(ParticleTypes.PORTAL, this.x, this.y + this.random.nextDouble() * 2.0, this.z, this.random.nextGaussian(), 0.0, this.random.nextGaussian());
+            this.world.addParticle(ParticleTypes.PORTAL, this.getX(), this.getY() + this.random.nextDouble() * 2.0, this.getZ(), this.random.nextGaussian(), 0.0, this.random.nextGaussian());
         }
         if (!this.world.isClient) {
             if (livingEntity instanceof ServerPlayerEntity) {
@@ -86,18 +86,18 @@ extends ThrownItemEntity {
                     if (this.random.nextFloat() < 0.05f && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
                         EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
                         endermiteEntity.setPlayerSpawned(true);
-                        endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
+                        endermiteEntity.setPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
                         this.world.spawnEntity(endermiteEntity);
                     }
                     if (livingEntity.hasVehicle()) {
                         livingEntity.stopRiding();
                     }
-                    livingEntity.requestTeleport(this.x, this.y, this.z);
+                    livingEntity.requestTeleport(this.getX(), this.getY(), this.getZ());
                     livingEntity.fallDistance = 0.0f;
                     livingEntity.damage(DamageSource.FALL, 5.0f);
                 }
             } else if (livingEntity != null) {
-                livingEntity.requestTeleport(this.x, this.y, this.z);
+                livingEntity.requestTeleport(this.getX(), this.getY(), this.getZ());
                 livingEntity.fallDistance = 0.0f;
             }
             this.remove();

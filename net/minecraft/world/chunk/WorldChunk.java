@@ -281,13 +281,13 @@ implements Chunk {
     public void addEntity(Entity entity) {
         int k;
         this.unsaved = true;
-        int i = MathHelper.floor(entity.x / 16.0);
-        int j = MathHelper.floor(entity.z / 16.0);
+        int i = MathHelper.floor(entity.getX() / 16.0);
+        int j = MathHelper.floor(entity.getZ() / 16.0);
         if (i != this.pos.x || j != this.pos.z) {
             LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", (Object)i, (Object)j, (Object)this.pos.x, (Object)this.pos.z, (Object)entity);
             entity.removed = true;
         }
-        if ((k = MathHelper.floor(entity.y / 16.0)) < 0) {
+        if ((k = MathHelper.floor(entity.getY() / 16.0)) < 0) {
             k = 0;
         }
         if (k >= this.entitySections.length) {
@@ -372,8 +372,7 @@ implements Chunk {
         if (!(this.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider)) {
             return;
         }
-        blockEntity.setWorld(this.world);
-        blockEntity.setPos(blockPos);
+        blockEntity.setWorld(this.world, blockPos);
         blockEntity.cancelRemoval();
         BlockEntity blockEntity2 = this.blockEntities.put(blockPos.toImmutable(), blockEntity);
         if (blockEntity2 != null && blockEntity2 != blockEntity) {
@@ -443,15 +442,17 @@ implements Chunk {
         }
     }
 
-    public void getEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+    public <T extends Entity> void getEntities(@Nullable EntityType<?> entityType, Box box, List<? super T> list, Predicate<? super T> predicate) {
         int i = MathHelper.floor((box.minY - 2.0) / 16.0);
         int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
             for (Entity entity : this.entitySections[k].getAllOfType(Entity.class)) {
-                if (entityType != null && entity.getType() != entityType || !entity.getBoundingBox().intersects(box) || !predicate.test(entity)) continue;
-                list.add(entity);
+                if (entityType != null && entity.getType() != entityType) continue;
+                Entity entity2 = entity;
+                if (!entity.getBoundingBox().intersects(box) || !predicate.test(entity2)) continue;
+                list.add(entity2);
             }
         }
     }
@@ -661,7 +662,7 @@ implements Chunk {
             blockEntity = BlockEntity.createFromTag(compoundTag);
         }
         if (blockEntity != null) {
-            blockEntity.setPos(blockPos);
+            blockEntity.setWorld(this.world, blockPos);
             this.addBlockEntity(blockEntity);
         } else {
             LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", (Object)this.getBlockState(blockPos), (Object)blockPos);

@@ -36,9 +36,9 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         }
         matrixStack.translate(((FoxEntityModel)this.getModel()).head.pivotX / 16.0f, ((FoxEntityModel)this.getModel()).head.pivotY / 16.0f, ((FoxEntityModel)this.getModel()).head.pivotZ / 16.0f);
         n = foxEntity.getHeadRoll(h);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(n, false));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k, true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.method_23626(n));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
         if (foxEntity.isBaby()) {
             if (bl) {
                 matrixStack.translate(0.4f, 0.26f, 0.15f);
@@ -50,9 +50,9 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         } else {
             matrixStack.translate(0.06f, 0.27f, -0.5);
         }
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
         if (bl) {
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
         }
         ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
         MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, layeredVertexConsumerStorage);

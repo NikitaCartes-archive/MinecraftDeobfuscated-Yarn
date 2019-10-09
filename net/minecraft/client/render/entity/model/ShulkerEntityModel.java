@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -19,6 +20,7 @@ extends class_4595<T> {
     private final ModelPart field_3554;
 
     public ShulkerEntityModel() {
+        super(RenderLayer::getEntityCutoutNoCull);
         this.field_3553 = new ModelPart(64, 64, 0, 28);
         this.field_3554 = new ModelPart(64, 64, 0, 52);
         this.field_3555.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);

@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_4592;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -73,10 +74,8 @@ extends FeatureRenderer<T, M> {
     }
 
     private void method_23192(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, ArmorItem armorItem, boolean bl, A bipedEntityModel, boolean bl2, float f, float g, float h, @Nullable String string) {
-        VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, this.method_4174(armorItem, bl2, string), false, bl, false);
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
-        ((class_4592)bipedEntityModel).method_17116(matrixStack, vertexConsumer, i, f, g, h);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, RenderLayer.getEntityCutoutNoCull(this.method_4174(armorItem, bl2, string)), false, bl);
+        ((class_4592)bipedEntityModel).renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, f, g, h);
     }
 
     public A getArmor(EquipmentSlot equipmentSlot) {

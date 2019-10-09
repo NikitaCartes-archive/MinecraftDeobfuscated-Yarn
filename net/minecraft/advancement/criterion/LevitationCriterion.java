@@ -55,7 +55,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-            if (!this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z)) {
+            if (!this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ())) {
                 return false;
             }
             return this.duration.test(i);

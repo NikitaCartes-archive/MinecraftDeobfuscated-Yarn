@@ -68,7 +68,7 @@ public class TestSet {
             if (!gameTest.isStarted()) {
                 stringBuffer.append(' ');
             } else if (gameTest.isPassed()) {
-                stringBuffer.append('\u221a');
+                stringBuffer.append('+');
             } else if (gameTest.isFailed()) {
                 stringBuffer.append(gameTest.isRequired() ? (char)'X' : (char)'x');
             } else {

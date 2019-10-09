@@ -27,10 +27,12 @@ import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
@@ -42,6 +44,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.MatrixStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -171,14 +174,21 @@ implements Drawable {
         this.fillGradient(m + l + 2, n - 3 + 1, m + l + 3, n + o + 3 - 1, 0x505000FF, 1344798847);
         this.fillGradient(m - 3, n - 3, m + l + 3, n - 3 + 1, 0x505000FF, 0x505000FF);
         this.fillGradient(m - 3, n + o + 2, m + l + 3, n + o + 3, 1344798847, 1344798847);
+        MatrixStack matrixStack = new MatrixStack();
+        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+        matrixStack.translate(0.0, 0.0, this.itemRenderer.zOffset);
+        Matrix4f matrix4f = matrixStack.peek();
         for (int s = 0; s < list.size(); ++s) {
             String string2 = list.get(s);
-            this.font.drawWithShadow(string2, m, n, -1);
+            if (string2 != null) {
+                this.font.method_22942(string2, m, n, -1, true, matrix4f, lv, false, 0, 0xF000F0);
+            }
             if (s == 0) {
                 n += 2;
             }
             n += 10;
         }
+        lv.method_22993();
         this.setBlitOffset(0);
         this.itemRenderer.zOffset = 0.0f;
         RenderSystem.enableDepthTest();
@@ -242,7 +252,7 @@ implements Drawable {
                 this.insertText(text.getStyle().getInsertion(), false);
             }
         } else if (clickEvent != null) {
-            block19: {
+            block21: {
                 if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
                     if (!this.minecraft.options.chatLinks) {
                         return false;
@@ -259,7 +269,7 @@ implements Drawable {
                         if (this.minecraft.options.chatLinksPrompt) {
                             this.clickedLink = uRI;
                             this.minecraft.openScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
-                            break block19;
+                            break block21;
                         }
                         this.openLink(uRI);
                     } catch (URISyntaxException uRISyntaxException) {
@@ -272,6 +282,8 @@ implements Drawable {
                     this.insertText(clickEvent.getValue(), true);
                 } else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
                     this.sendMessage(clickEvent.getValue(), false);
+                } else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
+                    this.minecraft.keyboard.setClipboard(clickEvent.getValue());
                 } else {
                     LOGGER.error("Don't know how to handle {}", (Object)clickEvent);
                 }

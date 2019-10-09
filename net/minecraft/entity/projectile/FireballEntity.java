@@ -43,7 +43,7 @@ extends AbstractFireballEntity {
                 this.dealDamage(this.owner, entity);
             }
             boolean bl = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
-            this.world.createExplosion(null, this.x, this.y, this.z, this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE);
+            this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE);
             this.remove();
         }
     }

@@ -714,7 +714,7 @@ AutoCloseable {
         }
         if (blockEntity != null && !blockEntity.isRemoved()) {
             if (this.iteratingTickingBlockEntities) {
-                blockEntity.setPos(blockPos);
+                blockEntity.setWorld(this, blockPos);
                 Iterator<BlockEntity> iterator = this.pendingBlockEntities.iterator();
                 while (iterator.hasNext()) {
                     BlockEntity blockEntity2 = iterator.next();
@@ -811,12 +811,12 @@ AutoCloseable {
         return list;
     }
 
-    public List<Entity> getEntities(@Nullable EntityType<?> entityType, Box box, Predicate<? super Entity> predicate) {
+    public <T extends Entity> List<T> getEntities(@Nullable EntityType<T> entityType, Box box, Predicate<? super T> predicate) {
         int i = MathHelper.floor((box.minX - 2.0) / 16.0);
         int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
         int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
         int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
-        ArrayList<Entity> list = Lists.newArrayList();
+        ArrayList list = Lists.newArrayList();
         for (int m = i; m < j; ++m) {
             for (int n = k; n < l; ++n) {
                 WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);

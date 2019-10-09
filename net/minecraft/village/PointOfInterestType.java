@@ -44,7 +44,7 @@ public class PointOfInterestType {
     public static final PointOfInterestType WEAPONSMITH = PointOfInterestType.register("weaponsmith", PointOfInterestType.getAllStatesOf(Blocks.GRINDSTONE), 1, 1);
     public static final PointOfInterestType HOME = PointOfInterestType.register("home", BED_STATES, 1, 1);
     public static final PointOfInterestType MEETING = PointOfInterestType.register("meeting", PointOfInterestType.getAllStatesOf(Blocks.BELL), 32, 6);
-    public static final PointOfInterestType BEE_HIVE = PointOfInterestType.register("bee_hive", PointOfInterestType.getAllStatesOf(Blocks.BEE_HIVE), 0, 1);
+    public static final PointOfInterestType BEEHIVE = PointOfInterestType.register("beehive", PointOfInterestType.getAllStatesOf(Blocks.BEEHIVE), 0, 1);
     public static final PointOfInterestType BEE_NEST = PointOfInterestType.register("bee_nest", PointOfInterestType.getAllStatesOf(Blocks.BEE_NEST), 0, 1);
     public static final PointOfInterestType NETHER_PORTAL = PointOfInterestType.register("nether_portal", PointOfInterestType.getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
     private final String id;

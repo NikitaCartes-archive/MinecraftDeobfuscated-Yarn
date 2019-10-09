@@ -7,7 +7,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -23,7 +22,7 @@ extends Feature<BoulderFeatureConfig> {
 
     public boolean method_12813(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig) {
         Block block;
-        while (blockPos.getY() > 3 && (iWorld.isAir(blockPos.method_10074()) || (block = iWorld.getBlockState(blockPos.method_10074()).getBlock()) != Blocks.GRASS_BLOCK && !Block.isNaturalDirt(block) && !Block.isNaturalStone(block))) {
+        while (blockPos.getY() > 3 && (iWorld.isAir(blockPos.method_10074()) || !ForestRockFeature.method_23396(block = iWorld.getBlockState(blockPos.method_10074()).getBlock()) && !ForestRockFeature.method_23395(block))) {
             blockPos = blockPos.method_10074();
         }
         if (blockPos.getY() <= 3) {

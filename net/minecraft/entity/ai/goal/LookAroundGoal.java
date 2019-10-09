@@ -40,7 +40,7 @@ extends Goal {
     @Override
     public void tick() {
         --this.lookTime;
-        this.mob.getLookControl().lookAt(this.mob.x + this.deltaX, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z + this.deltaZ);
+        this.mob.getLookControl().lookAt(this.mob.getX() + this.deltaX, this.mob.method_23320(), this.mob.getZ() + this.deltaZ);
     }
 }
 

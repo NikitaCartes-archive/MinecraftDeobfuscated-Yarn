@@ -25,7 +25,7 @@ extends FeatureRenderer<T, M> {
     }
 
     public void method_23204(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T mobEntity, float f, float g, float h, float j, float k, float l, float m) {
-        FeatureRenderer.method_23195(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h);
+        StrayOverlayFeatureRenderer.method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
     }
 }
 

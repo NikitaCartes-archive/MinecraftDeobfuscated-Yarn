@@ -133,7 +133,7 @@ extends HostileEntity {
         super.tickMovement();
         if (this.world.isClient) {
             for (int i = 0; i < 2; ++i) {
-                this.world.addParticle(ParticleTypes.PORTAL, this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), this.y + this.random.nextDouble() * (double)this.getHeight(), this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), (this.random.nextDouble() - 0.5) * 2.0, -this.random.nextDouble(), (this.random.nextDouble() - 0.5) * 2.0);
+                this.world.addParticle(ParticleTypes.PORTAL, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), (this.random.nextDouble() - 0.5) * 2.0, -this.random.nextDouble(), (this.random.nextDouble() - 0.5) * 2.0);
             }
         } else {
             if (!this.isPersistent()) {

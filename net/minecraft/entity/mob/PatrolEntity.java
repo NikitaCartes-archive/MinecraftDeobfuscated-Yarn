@@ -179,7 +179,7 @@ extends HostileEntity {
                     ((PatrolEntity)this.actor).method_22332(false);
                 } else if (!bl || !((PatrolEntity)this.actor).getPatrolTarget().isWithinDistance(((Entity)this.actor).getPos(), 10.0)) {
                     Vec3d vec3d = new Vec3d(((PatrolEntity)this.actor).getPatrolTarget());
-                    Vec3d vec3d2 = new Vec3d(((PatrolEntity)this.actor).x, ((PatrolEntity)this.actor).y, ((PatrolEntity)this.actor).z);
+                    Vec3d vec3d2 = ((Entity)this.actor).getPos();
                     Vec3d vec3d3 = vec3d2.subtract(vec3d);
                     vec3d = vec3d3.rotateY(90.0f).multiply(0.4).add(vec3d);
                     Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);

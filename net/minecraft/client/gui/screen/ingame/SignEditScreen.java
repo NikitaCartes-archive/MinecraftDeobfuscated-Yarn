@@ -110,7 +110,7 @@ extends Screen {
         RenderSystem.translatef(0.0f, -1.0625f, 0.0f);
         this.sign.setSelectionState(this.currentRow, this.selectionManager.getSelectionStart(), this.selectionManager.getSelectionEnd(), this.ticksSinceOpened / 6 % 2 == 0);
         RenderSystem.translatef(-0.5f, -0.75f, -0.5f);
-        BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, new MatrixStack(), 0xF000F0);
+        BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, new MatrixStack());
         this.sign.resetSelectionState();
         RenderSystem.popMatrix();
         super.render(i, j, f);

@@ -53,11 +53,11 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        this.targetEntity = this.mob.world.getClosestEntityIncludingUngeneratedChunks(this.classToFleeFrom, this.withinRangePredicate, this.mob, this.mob.x, this.mob.y, this.mob.z, this.mob.getBoundingBox().expand(this.fleeDistance, 3.0, this.fleeDistance));
+        this.targetEntity = this.mob.world.getClosestEntityIncludingUngeneratedChunks(this.classToFleeFrom, this.withinRangePredicate, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ(), this.mob.getBoundingBox().expand(this.fleeDistance, 3.0, this.fleeDistance));
         if (this.targetEntity == null) {
             return false;
         }
-        Vec3d vec3d = TargetFinder.findTargetAwayFrom(this.mob, 16, 7, new Vec3d(((LivingEntity)this.targetEntity).x, ((LivingEntity)this.targetEntity).y, ((LivingEntity)this.targetEntity).z));
+        Vec3d vec3d = TargetFinder.findTargetAwayFrom(this.mob, 16, 7, ((Entity)this.targetEntity).getPos());
         if (vec3d == null) {
             return false;
         }

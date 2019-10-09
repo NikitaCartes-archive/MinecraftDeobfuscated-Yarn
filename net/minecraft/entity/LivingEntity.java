@@ -205,7 +205,7 @@ extends Entity {
         this.setHealth(this.getMaximumHealth());
         this.inanimate = true;
         this.randomSmallSeed = (float)((Math.random() + 1.0) * (double)0.01f);
-        this.setPosition(this.x, this.y, this.z);
+        this.method_23311();
         this.randomLargeSeed = (float)Math.random() * 12398.0f;
         this.headYaw = this.yaw = (float)(Math.random() * 6.2831854820251465);
         this.stepHeight = 0.6f;
@@ -258,7 +258,7 @@ extends Entity {
             if (!blockState.isAir()) {
                 double e = Math.min((double)(0.2f + f / 15.0f), 2.5);
                 int i = (int)(150.0 * e);
-                ((ServerWorld)this.world).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.x, this.y, this.z, i, 0.0, 0.0, 0.0, 0.15f);
+                ((ServerWorld)this.world).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.getX(), this.getY(), this.getZ(), i, 0.0, 0.0, 0.0, 0.15f);
             }
         }
         super.fall(d, bl, blockState, blockPos);
@@ -298,7 +298,7 @@ extends Entity {
         boolean bl3 = bl2 = bl && ((PlayerEntity)this).abilities.invulnerable;
         if (this.isAlive()) {
             BlockPos blockPos;
-            if (this.isInFluid(FluidTags.WATER) && this.world.getBlockState(new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z)).getBlock() != Blocks.BUBBLE_COLUMN) {
+            if (this.isInFluid(FluidTags.WATER) && this.world.getBlockState(new BlockPos(this.getX(), this.method_23320(), this.getZ())).getBlock() != Blocks.BUBBLE_COLUMN) {
                 if (!(this.canBreatheInWater() || StatusEffectUtil.hasWaterBreathing(this) || bl2)) {
                     this.setAir(this.getNextAirUnderwater(this.getAir()));
                     if (this.getAir() == -20) {
@@ -308,7 +308,7 @@ extends Entity {
                             float f = this.random.nextFloat() - this.random.nextFloat();
                             float g = this.random.nextFloat() - this.random.nextFloat();
                             float h = this.random.nextFloat() - this.random.nextFloat();
-                            this.world.addParticle(ParticleTypes.BUBBLE, this.x + (double)f, this.y + (double)g, this.z + (double)h, vec3d.x, vec3d.y, vec3d.z);
+                            this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + (double)f, this.getY() + (double)g, this.getZ() + (double)h, vec3d.x, vec3d.y, vec3d.z);
                         }
                         this.damage(DamageSource.DROWN, 2.0f);
                     }
@@ -388,7 +388,7 @@ extends Entity {
                 int j;
                 for (i = this.getCurrentExperience(this.attackingPlayer); i > 0; i -= j) {
                     j = ExperienceOrbEntity.roundToOrbSize(i);
-                    this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y, this.z, j));
+                    this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
                 }
             }
             this.remove();
@@ -396,7 +396,7 @@ extends Entity {
                 double d = this.random.nextGaussian() * 0.02;
                 double e = this.random.nextGaussian() * 0.02;
                 double f = this.random.nextGaussian() * 0.02;
-                this.world.addParticle(ParticleTypes.POOF, this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), this.y + (double)(this.random.nextFloat() * this.getHeight()), this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), d, e, f);
+                this.world.addParticle(ParticleTypes.POOF, this.method_23322(1.0), this.method_23319(), this.method_23325(1.0), d, e, f);
             }
         }
     }
@@ -584,7 +584,7 @@ extends Entity {
                 double d = (double)(i >> 16 & 0xFF) / 255.0;
                 double e = (double)(i >> 8 & 0xFF) / 255.0;
                 double f = (double)(i >> 0 & 0xFF) / 255.0;
-                this.world.addParticle(bl ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT, this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), this.y + this.random.nextDouble() * (double)this.getHeight(), this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), d, e, f);
+                this.world.addParticle(bl ? ParticleTypes.AMBIENT_ENTITY_EFFECT : ParticleTypes.ENTITY_EFFECT, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), d, e, f);
             }
         }
     }
@@ -834,8 +834,8 @@ extends Entity {
                 this.scheduleVelocityUpdate();
             }
             if (entity2 != null) {
-                double d = entity2.x - this.x;
-                double e = entity2.z - this.z;
+                double d = entity2.getX() - this.getX();
+                double e = entity2.getZ() - this.getZ();
                 while (d * d + e * e < 1.0E-4) {
                     d = (Math.random() - Math.random()) * 0.01;
                     e = (Math.random() - Math.random()) * 0.01;
@@ -879,7 +879,7 @@ extends Entity {
     }
 
     protected void knockback(LivingEntity livingEntity) {
-        livingEntity.takeKnockback(this, 0.5f, livingEntity.x - this.x, livingEntity.z - this.z);
+        livingEntity.takeKnockback(this, 0.5f, livingEntity.getX() - this.getX(), livingEntity.getZ() - this.getZ());
     }
 
     private boolean tryUseTotem(DamageSource damageSource) {
@@ -934,7 +934,7 @@ extends Entity {
         }
         if (!damageSource.bypassesArmor() && this.isBlocking() && !bl && (vec3d = damageSource.getPosition()) != null) {
             Vec3d vec3d2 = this.getRotationVec(1.0f);
-            Vec3d vec3d3 = vec3d.reverseSubtract(new Vec3d(this.x, this.y, this.z)).normalize();
+            Vec3d vec3d3 = vec3d.reverseSubtract(this.getPos()).normalize();
             vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
             if (vec3d3.dotProduct(vec3d2) < 0.0) {
                 return true;
@@ -947,7 +947,7 @@ extends Entity {
     private void playEquipmentBreakEffects(ItemStack itemStack) {
         if (!itemStack.isEmpty()) {
             if (!this.isSilent()) {
-                this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_ITEM_BREAK, this.getSoundCategory(), 0.8f, 0.8f + this.world.random.nextFloat() * 0.4f, false);
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ITEM_BREAK, this.getSoundCategory(), 0.8f, 0.8f + this.world.random.nextFloat() * 0.4f, false);
             }
             this.spawnItemParticles(itemStack, 5);
         }
@@ -975,7 +975,7 @@ extends Entity {
             boolean bl = false;
             if (livingEntity instanceof WitherEntity) {
                 if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-                    BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+                    BlockPos blockPos = new BlockPos(this);
                     BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                     if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
                         this.world.setBlockState(blockPos, blockState, 3);
@@ -983,7 +983,7 @@ extends Entity {
                     }
                 }
                 if (!bl) {
-                    ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, new ItemStack(Items.WITHER_ROSE));
+                    ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
                     this.world.spawnEntity(itemEntity);
                 }
             }
@@ -1091,22 +1091,35 @@ extends Entity {
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
-        super.handleFallDamage(f, g);
-        StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
-        float h = statusEffectInstance == null ? 0.0f : (float)(statusEffectInstance.getAmplifier() + 1);
-        int i = MathHelper.ceil((f - 3.0f - h) * g);
+    public boolean handleFallDamage(float f, float g) {
+        boolean bl = super.handleFallDamage(f, g);
+        int i = this.method_23329(f, g);
         if (i > 0) {
             this.playSound(this.getFallSound(i), 1.0f, 1.0f);
+            this.method_23328();
             this.damage(DamageSource.FALL, i);
-            int j = MathHelper.floor(this.x);
-            int k = MathHelper.floor(this.y - (double)0.2f);
-            int l = MathHelper.floor(this.z);
-            BlockState blockState = this.world.getBlockState(new BlockPos(j, k, l));
-            if (!blockState.isAir()) {
-                BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-                this.playSound(blockSoundGroup.getFallSound(), blockSoundGroup.getVolume() * 0.5f, blockSoundGroup.getPitch() * 0.75f);
-            }
+            return true;
+        }
+        return bl;
+    }
+
+    protected int method_23329(float f, float g) {
+        StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
+        float h = statusEffectInstance == null ? 0.0f : (float)(statusEffectInstance.getAmplifier() + 1);
+        return MathHelper.ceil((f - 3.0f - h) * g);
+    }
+
+    protected void method_23328() {
+        int k;
+        int j;
+        if (this.isSilent()) {
+            return;
+        }
+        int i = MathHelper.floor(this.getX());
+        BlockState blockState = this.world.getBlockState(new BlockPos(i, j = MathHelper.floor(this.getY() - (double)0.2f), k = MathHelper.floor(this.getZ())));
+        if (!blockState.isAir()) {
+            BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
+            this.playSound(blockSoundGroup.getFallSound(), blockSoundGroup.getVolume() * 0.5f, blockSoundGroup.getPitch() * 0.75f);
         }
     }
 
@@ -1294,9 +1307,9 @@ extends Entity {
                     float f = (this.random.nextFloat() - 0.5f) * 0.2f;
                     float g = (this.random.nextFloat() - 0.5f) * 0.2f;
                     float h = (this.random.nextFloat() - 0.5f) * 0.2f;
-                    double e = MathHelper.lerp(d, this.prevX, this.x) + (this.random.nextDouble() - 0.5) * (double)this.getWidth() * 2.0;
-                    double k = MathHelper.lerp(d, this.prevY, this.y) + this.random.nextDouble() * (double)this.getHeight();
-                    double l = MathHelper.lerp(d, this.prevZ, this.z) + (this.random.nextDouble() - 0.5) * (double)this.getWidth() * 2.0;
+                    double e = MathHelper.lerp(d, this.prevX, this.getX()) + (this.random.nextDouble() - 0.5) * (double)this.getWidth() * 2.0;
+                    double k = MathHelper.lerp(d, this.prevY, this.getY()) + this.random.nextDouble() * (double)this.getHeight();
+                    double l = MathHelper.lerp(d, this.prevZ, this.getZ()) + (this.random.nextDouble() - 0.5) * (double)this.getWidth() * 2.0;
                     this.world.addParticle(ParticleTypes.PORTAL, e, k, l, f, g, h);
                 }
                 break;
@@ -1472,10 +1485,10 @@ extends Entity {
             float h = -MathHelper.sin(g);
             float j = -MathHelper.cos(g);
             double k = Math.abs(h) > Math.abs(j) ? d / (double)Math.abs(h) : d / (double)Math.abs(j);
-            Box box2 = this.getBoundingBox().offset(-this.x, -this.y, -this.z);
+            Box box2 = this.getBoundingBox().offset(-this.getX(), -this.getY(), -this.getZ());
             ImmutableSet<Entity> immutableSet = ImmutableSet.of(this, entity);
-            double l = this.x + (double)h * k;
-            double m = this.z + (double)j * k;
+            double l = this.getX() + (double)h * k;
+            double m = this.getZ() + (double)j * k;
             double n = 0.001;
             for (int o = 0; o < i; ++o) {
                 double p = e + n;
@@ -1485,18 +1498,18 @@ extends Entity {
                 }
                 n += 1.0;
             }
-            this.setPosition(entity.x, entity.y + (double)this.getHeight() + 0.001, entity.z);
+            this.setPosition(entity.getX(), entity.method_23323(1.0) + 0.001, entity.getZ());
             return;
         }
-        double q = entity.x;
-        double r = entity.getBoundingBox().minY + (double)entity.getHeight();
-        double s = entity.z;
+        double q = entity.getX();
+        double r = entity.method_23323(1.0);
+        double s = entity.getZ();
         Direction direction = entity.getMovementDirection();
         if (direction != null && direction.getAxis() != Direction.Axis.Y) {
             Direction direction2 = direction.rotateYClockwise();
             int[][] is = new int[][]{{0, 1}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}, {-1, 0}, {1, 0}, {0, 1}};
-            double k = Math.floor(this.x) + 0.5;
-            double t = Math.floor(this.z) + 0.5;
+            double k = Math.floor(this.getX()) + 0.5;
+            double t = Math.floor(this.getZ()) + 0.5;
             double l = this.getBoundingBox().maxX - this.getBoundingBox().minX;
             double m = this.getBoundingBox().maxZ - this.getBoundingBox().minZ;
             Box box3 = new Box(k - l / 2.0, entity.getBoundingBox().minY, t - m / 2.0, k + l / 2.0, Math.floor(entity.getBoundingBox().minY) + (double)this.getHeight(), t + m / 2.0);
@@ -1508,22 +1521,22 @@ extends Entity {
                 double x = t + v;
                 Box box4 = box3.offset(u, 0.0, v);
                 if (this.world.doesNotCollide(this, box4)) {
-                    blockPos = new BlockPos(w, this.y, x);
+                    blockPos = new BlockPos(w, this.getY(), x);
                     if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) {
-                        this.requestTeleport(w, this.y + 1.0, x);
+                        this.requestTeleport(w, this.getY() + 1.0, x);
                         return;
                     }
-                    BlockPos blockPos2 = new BlockPos(w, this.y - 1.0, x);
+                    BlockPos blockPos2 = new BlockPos(w, this.getY() - 1.0, x);
                     if (!this.world.getBlockState(blockPos2).hasSolidTopSurface(this.world, blockPos2, this) && !this.world.getFluidState(blockPos2).matches(FluidTags.WATER)) continue;
                     q = w;
-                    r = this.y + 1.0;
+                    r = this.getY() + 1.0;
                     s = x;
                     continue;
                 }
-                blockPos = new BlockPos(w, this.y + 1.0, x);
+                blockPos = new BlockPos(w, this.getY() + 1.0, x);
                 if (!this.world.doesNotCollide(this, box4.offset(0.0, 1.0, 0.0)) || !this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) continue;
                 q = w;
-                r = this.y + 2.0;
+                r = this.getY() + 2.0;
                 s = x;
             }
         }
@@ -1543,7 +1556,7 @@ extends Entity {
     protected void jump() {
         float f = this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? this.getJumpVelocity() + 0.1f * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) : this.getJumpVelocity();
         Vec3d vec3d = this.getVelocity();
-        this.setVelocity(vec3d.x, f, vec3d.z);
+        this.setVelocity(vec3d.x, f *= this.method_23313(), vec3d.z);
         if (this.isSprinting()) {
             float g = this.yaw * ((float)Math.PI / 180);
             this.setVelocity(this.getVelocity().add(-MathHelper.sin(g) * 0.2f, 0.0, MathHelper.cos(g) * 0.2f));
@@ -1566,6 +1579,7 @@ extends Entity {
 
     public void travel(Vec3d vec3d) {
         double r;
+        double s;
         double d;
         if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
             boolean bl;
@@ -1577,7 +1591,7 @@ extends Entity {
             }
             if (!(!this.isInsideWater() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying)) {
                 Vec3d vec3d3;
-                double e = this.y;
+                double e = this.getY();
                 float f = this.isSprinting() ? 0.9f : this.getBaseMovementSpeedMultiplier();
                 float g = 0.02f;
                 float h = EnchantmentHelper.getDepthStrider(this);
@@ -1607,11 +1621,11 @@ extends Entity {
                     this.setVelocity(vec3d3.x, i, vec3d3.z);
                 }
                 vec3d3 = this.getVelocity();
-                if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.y + e, vec3d3.z)) {
+                if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + e, vec3d3.z)) {
                     this.setVelocity(vec3d3.x, 0.3f, vec3d3.z);
                 }
             } else if (!(!this.isInLava() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying)) {
-                double e = this.y;
+                double e = this.getY();
                 this.updateVelocity(0.02f, vec3d);
                 this.move(MovementType.SELF, this.getVelocity());
                 this.setVelocity(this.getVelocity().multiply(0.5));
@@ -1619,7 +1633,7 @@ extends Entity {
                     this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
                 }
                 Vec3d vec3d4 = this.getVelocity();
-                if (this.horizontalCollision && this.doesNotCollide(vec3d4.x, vec3d4.y + (double)0.6f - this.y + e, vec3d4.z)) {
+                if (this.horizontalCollision && this.doesNotCollide(vec3d4.x, vec3d4.y + (double)0.6f - this.getY() + e, vec3d4.z)) {
                     this.setVelocity(vec3d4.x, 0.3f, vec3d4.z);
                 }
             } else if (this.isFallFlying()) {
@@ -1659,7 +1673,7 @@ extends Entity {
                     this.setFlag(7, false);
                 }
             } else {
-                BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z);
+                BlockPos blockPos = this.method_23314();
                 float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
                 float f = this.onGround ? p * 0.91f : 0.91f;
                 this.updateVelocity(this.getMovementSpeed(p), vec3d);
@@ -1678,15 +1692,14 @@ extends Entity {
                         q -= d;
                     }
                 } else {
-                    q = this.y > 0.0 ? -0.1 : 0.0;
+                    q = this.getY() > 0.0 ? -0.1 : 0.0;
                 }
                 this.setVelocity(vec3d7.x * (double)f, q * (double)0.98f, vec3d7.z * (double)f);
             }
         }
         this.lastLimbDistance = this.limbDistance;
-        d = this.x - this.prevX;
-        double s = this instanceof Flutterer ? this.y - this.prevY : 0.0;
-        float g = MathHelper.sqrt(d * d + s * s + (r = this.z - this.prevZ) * r) * 4.0f;
+        d = this.getX() - this.prevX;
+        float g = MathHelper.sqrt(d * d + (s = this instanceof Flutterer ? this.getY() - this.prevY : 0.0) * s + (r = this.getZ() - this.prevZ) * r) * 4.0f;
         if (g > 1.0f) {
             g = 1.0f;
         }
@@ -1803,8 +1816,8 @@ extends Entity {
             }
         }
         this.tickMovement();
-        double d = this.x - this.prevX;
-        double e = this.z - this.prevZ;
+        double d = this.getX() - this.prevX;
+        double e = this.getZ() - this.prevZ;
         float f = (float)(d * d + e * e);
         float g = this.bodyYaw;
         float h = 0.0f;
@@ -1888,12 +1901,12 @@ extends Entity {
         }
         if (this.isLogicalSideForUpdatingMovement()) {
             this.bodyTrackingIncrements = 0;
-            this.updateTrackedPosition(this.x, this.y, this.z);
+            this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
         }
         if (this.bodyTrackingIncrements > 0) {
-            double d = this.x + (this.serverX - this.x) / (double)this.bodyTrackingIncrements;
-            double e = this.y + (this.serverY - this.y) / (double)this.bodyTrackingIncrements;
-            double f = this.z + (this.serverZ - this.z) / (double)this.bodyTrackingIncrements;
+            double d = this.getX() + (this.serverX - this.getX()) / (double)this.bodyTrackingIncrements;
+            double e = this.getY() + (this.serverY - this.getY()) / (double)this.bodyTrackingIncrements;
+            double f = this.getZ() + (this.serverZ - this.getZ()) / (double)this.bodyTrackingIncrements;
             double g = MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw);
             this.yaw = (float)((double)this.yaw + g / (double)this.bodyTrackingIncrements);
             this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
@@ -2092,8 +2105,8 @@ extends Entity {
 
     public boolean canSee(Entity entity) {
         Vec3d vec3d2;
-        Vec3d vec3d = new Vec3d(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
-        return this.world.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d(entity.x, entity.y + (double)entity.getStandingEyeHeight(), entity.z), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
+        Vec3d vec3d = new Vec3d(this.getX(), this.method_23320(), this.getZ());
+        return this.world.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d(entity.getX(), entity.method_23320(), entity.getZ()), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this)).getType() == HitResult.Type.MISS;
     }
 
     @Override
@@ -2274,7 +2287,7 @@ extends Entity {
             Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.3, d, 0.6);
             vec3d2 = vec3d2.rotateX(-this.pitch * ((float)Math.PI / 180));
             vec3d2 = vec3d2.rotateY(-this.yaw * ((float)Math.PI / 180));
-            vec3d2 = vec3d2.add(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
+            vec3d2 = vec3d2.add(this.getX(), this.method_23320(), this.getZ());
             this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
         }
     }
@@ -2354,15 +2367,13 @@ extends Entity {
     }
 
     public boolean teleport(double d, double e, double f, boolean bl) {
-        double g = this.x;
-        double h = this.y;
-        double i = this.z;
-        this.x = d;
-        this.y = e;
-        this.z = f;
+        double g = this.getX();
+        double h = this.getY();
+        double i = this.getZ();
+        double j = e;
         boolean bl2 = false;
         World world = this.world;
-        BlockPos blockPos = new BlockPos(this);
+        BlockPos blockPos = new BlockPos(d, j, f);
         if (world.isChunkLoaded(blockPos)) {
             boolean bl3 = false;
             while (!bl3 && blockPos.getY() > 0) {
@@ -2372,11 +2383,11 @@ extends Entity {
                     bl3 = true;
                     continue;
                 }
-                this.y -= 1.0;
+                j -= 1.0;
                 blockPos = blockPos2;
             }
             if (bl3) {
-                this.requestTeleport(this.x, this.y, this.z);
+                this.requestTeleport(d, j, f);
                 if (world.doesNotCollide(this) && !world.containsFluid(this.getBoundingBox())) {
                     bl2 = true;
                 }
@@ -2503,7 +2514,7 @@ extends Entity {
 
     public ItemStack eatFood(World world, ItemStack itemStack) {
         if (itemStack.isFood()) {
-            world.playSound(null, this.x, this.y, this.z, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
+            world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             this.applyFoodEffects(itemStack, world, this);
             if (this instanceof PlayerEntity && !((PlayerEntity)this).abilities.creativeMode) {
                 itemStack.decrement(1);

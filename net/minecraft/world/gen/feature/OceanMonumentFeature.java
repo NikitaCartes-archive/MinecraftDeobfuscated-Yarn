@@ -23,7 +23,6 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class OceanMonumentFeature
@@ -56,7 +55,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         if (i == chunkPos.x && j == chunkPos.z) {
             Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16);
             for (Biome biome2 : set) {
-                if (chunkGenerator.hasStructure(biome2, Feature.OCEAN_MONUMENT)) continue;
+                if (chunkGenerator.hasStructure(biome2, this)) continue;
                 return false;
             }
             Set<Biome> set2 = chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29);

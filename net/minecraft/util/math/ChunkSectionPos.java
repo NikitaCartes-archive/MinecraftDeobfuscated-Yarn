@@ -34,7 +34,7 @@ extends Vec3i {
     }
 
     public static ChunkSectionPos from(Entity entity) {
-        return new ChunkSectionPos(ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.x)), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.y)), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.z)));
+        return new ChunkSectionPos(ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.getX())), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.getY())), ChunkSectionPos.getSectionCoord(MathHelper.floor(entity.getZ())));
     }
 
     public static ChunkSectionPos from(long l) {

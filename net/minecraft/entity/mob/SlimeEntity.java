@@ -66,7 +66,7 @@ implements Monster {
         this.goalSelector.add(2, new class_1622(this));
         this.goalSelector.add(3, new class_1626(this));
         this.goalSelector.add(5, new class_1624(this));
-        this.targetSelector.add(1, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.y - this.y) <= 4.0));
+        this.targetSelector.add(1, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
         this.targetSelector.add(3, new FollowTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, true));
     }
 
@@ -84,7 +84,7 @@ implements Monster {
 
     protected void setSize(int i, boolean bl) {
         this.dataTracker.set(SLIME_SIZE, i);
-        this.setPosition(this.x, this.y, this.z);
+        this.method_23311();
         this.calculateDimensions();
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(i * i);
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)i);
@@ -140,7 +140,7 @@ implements Monster {
                 float g = this.random.nextFloat() * 0.5f + 0.5f;
                 float h = MathHelper.sin(f) * (float)i * 0.5f * g;
                 float k = MathHelper.cos(f) * (float)i * 0.5f * g;
-                this.world.addParticle(this.getParticles(), this.x + (double)h, this.getBoundingBox().minY, this.z + (double)k, 0.0, 0.0, 0.0);
+                this.world.addParticle(this.getParticles(), this.getX() + (double)h, this.getY(), this.getZ() + (double)k, 0.0, 0.0, 0.0);
             }
             this.playSound(this.getSquishSound(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f) / 0.8f);
             this.targetStretch = -0.5f;
@@ -161,9 +161,9 @@ implements Monster {
 
     @Override
     public void calculateDimensions() {
-        double d = this.x;
-        double e = this.y;
-        double f = this.z;
+        double d = this.getX();
+        double e = this.getY();
+        double f = this.getZ();
         super.calculateDimensions();
         this.setPosition(d, e, f);
     }
@@ -200,8 +200,9 @@ implements Monster {
                 if (this.isPersistent()) {
                     slimeEntity.setPersistent();
                 }
+                slimeEntity.setInvulnerable(this.isInvulnerable());
                 slimeEntity.setSize(i / 2, true);
-                slimeEntity.setPositionAndAngles(this.x + (double)f, this.y + 0.5, this.z + (double)g, this.random.nextFloat() * 360.0f, 0.0f);
+                slimeEntity.setPositionAndAngles(this.getX() + (double)f, this.getY() + 0.5, this.getZ() + (double)g, this.random.nextFloat() * 360.0f, 0.0f);
                 this.world.spawnEntity(slimeEntity);
             }
         }

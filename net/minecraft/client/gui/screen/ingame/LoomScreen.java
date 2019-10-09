@@ -89,7 +89,7 @@ extends AbstractContainerScreen<LoomContainer> {
             RenderSystem.translatef(k + 139, l + 52, 0.0f);
             RenderSystem.scalef(24.0f, -24.0f, 1.0f);
             this.preview.method_22534(true);
-            BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack(), 0xF000F0);
+            BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack());
             this.preview.method_22534(false);
             RenderSystem.popMatrix();
         } else if (this.hasTooManyPatterns) {
@@ -137,7 +137,7 @@ extends AbstractContainerScreen<LoomContainer> {
         RenderSystem.translatef((float)j + 0.5f, k + 16, 0.0f);
         RenderSystem.scalef(6.0f, -6.0f, 1.0f);
         RenderSystem.translatef(0.5f, 0.5f, 0.0f);
-        BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack(), 0xF000F0);
+        BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack());
         RenderSystem.popMatrix();
         this.minecraft.getSpriteAtlas().method_23207();
     }

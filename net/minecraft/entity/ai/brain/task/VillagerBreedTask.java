@@ -111,7 +111,7 @@ extends Task<VillagerEntity> {
         villagerEntity.setBreedingAge(6000);
         villagerEntity2.setBreedingAge(6000);
         villagerEntity3.setBreedingAge(-24000);
-        villagerEntity3.setPositionAndAngles(villagerEntity.x, villagerEntity.y, villagerEntity.z, 0.0f, 0.0f);
+        villagerEntity3.setPositionAndAngles(villagerEntity.getX(), villagerEntity.getY(), villagerEntity.getZ(), 0.0f, 0.0f);
         villagerEntity.world.spawnEntity(villagerEntity3);
         villagerEntity.world.sendEntityStatus(villagerEntity3, (byte)12);
         return Optional.of(villagerEntity3);

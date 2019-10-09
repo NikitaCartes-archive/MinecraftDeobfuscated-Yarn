@@ -84,9 +84,9 @@ extends LivingEntity {
 
     @Override
     public void calculateDimensions() {
-        double d = this.x;
-        double e = this.y;
-        double f = this.z;
+        double d = this.getX();
+        double e = this.getY();
+        double f = this.getZ();
         super.calculateDimensions();
         this.setPosition(d, e, f);
     }
@@ -456,7 +456,7 @@ extends LivingEntity {
     public void handleStatus(byte b) {
         if (b == 32) {
             if (this.world.isClient) {
-                this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_ARMOR_STAND_HIT, this.getSoundCategory(), 0.3f, 1.0f, false);
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_HIT, this.getSoundCategory(), 0.3f, 1.0f, false);
                 this.field_7112 = this.world.getTime();
             }
         } else {
@@ -476,7 +476,7 @@ extends LivingEntity {
 
     private void method_6898() {
         if (this.world instanceof ServerWorld) {
-            ((ServerWorld)this.world).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.getDefaultState()), this.x, this.y + (double)this.getHeight() / 1.5, this.z, 10, this.getWidth() / 4.0f, this.getHeight() / 4.0f, this.getWidth() / 4.0f, 0.05);
+            ((ServerWorld)this.world).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.getDefaultState()), this.getX(), this.method_23323(0.6666666666666666), this.getZ(), 10, this.getWidth() / 4.0f, this.getHeight() / 4.0f, this.getWidth() / 4.0f, 0.05);
         }
     }
 
@@ -515,7 +515,7 @@ extends LivingEntity {
     }
 
     private void method_6920() {
-        this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_ARMOR_STAND_BREAK, this.getSoundCategory(), 1.0f, 1.0f);
+        this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_BREAK, this.getSoundCategory(), 1.0f, 1.0f);
     }
 
     @Override

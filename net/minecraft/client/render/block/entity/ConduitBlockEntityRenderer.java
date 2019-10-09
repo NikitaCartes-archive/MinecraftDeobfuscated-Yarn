@@ -14,6 +14,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -45,55 +46,56 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         this.field_20826.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
     }
 
-    public void method_22750(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+    public void method_22750(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
         float h = (float)conduitBlockEntity.ticks + g;
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
         if (!conduitBlockEntity.isActive()) {
-            float j = conduitBlockEntity.getRotation(0.0f);
+            float k = conduitBlockEntity.getRotation(0.0f);
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
             matrixStack.push();
             matrixStack.translate(0.5, 0.5, 0.5);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j, true));
-            this.field_20825.render(matrixStack, vertexConsumer, 0.0625f, i, this.getSprite(BASE_TEX));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
+            this.field_20825.render(matrixStack, vertexConsumer, 0.0625f, i, j, this.getSprite(BASE_TEX));
             matrixStack.pop();
             return;
         }
-        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.CUTOUT_MIPPED);
-        float k = conduitBlockEntity.getRotation(g) * 57.295776f;
-        float l = MathHelper.sin(h * 0.1f) / 2.0f + 0.5f;
-        l = l * l + l;
+        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        float l = conduitBlockEntity.getRotation(g) * 57.295776f;
+        float m = MathHelper.sin(h * 0.1f) / 2.0f + 0.5f;
+        m = m * m + m;
         matrixStack.push();
-        matrixStack.translate(0.5, 0.3f + l * 0.2f, 0.5);
+        matrixStack.translate(0.5, 0.3f + m * 0.2f, 0.5);
         Vector3f vector3f = new Vector3f(0.5f, 1.0f, 0.5f);
         vector3f.reciprocal();
-        matrixStack.multiply(new Quaternion(vector3f, k, true));
-        this.field_20826.render(matrixStack, vertexConsumer2, 0.0625f, i, this.getSprite(CAGE_TEX));
+        matrixStack.multiply(new Quaternion(vector3f, l, true));
+        this.field_20826.render(matrixStack, vertexConsumer2, 0.0625f, i, j, this.getSprite(CAGE_TEX));
         matrixStack.pop();
-        int m = conduitBlockEntity.ticks / 66 % 3;
+        int n = conduitBlockEntity.ticks / 66 % 3;
         matrixStack.push();
         matrixStack.translate(0.5, 0.5, 0.5);
-        if (m == 1) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
-        } else if (m == 2) {
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f, true));
+        if (n == 1) {
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
+        } else if (n == 2) {
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
         }
-        Sprite sprite = this.getSprite(m == 1 ? WIND_VERTICAL_TEX : WIND_TEX);
-        this.field_20824.render(matrixStack, vertexConsumer2, 0.0625f, i, sprite);
+        Sprite sprite = this.getSprite(n == 1 ? WIND_VERTICAL_TEX : WIND_TEX);
+        this.field_20824.render(matrixStack, vertexConsumer2, 0.0625f, i, j, sprite);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.scale(0.875f, 0.875f, 0.875f);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f, true));
-        this.field_20824.render(matrixStack, vertexConsumer2, 0.0625f, i, sprite);
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
+        this.field_20824.render(matrixStack, vertexConsumer2, 0.0625f, i, j, sprite);
         matrixStack.pop();
         Camera camera = this.field_20989.cameraEntity;
         matrixStack.push();
-        matrixStack.translate(0.5, 0.3f + l * 0.2f, 0.5);
+        matrixStack.translate(0.5, 0.3f + m * 0.2f, 0.5);
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-camera.getYaw(), true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch(), true));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f, true));
-        this.field_20823.render(matrixStack, vertexConsumer2, 0.083333336f, i, this.getSprite(conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEX : CLOSED_EYE_TEX));
+        float o = -camera.getYaw();
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(o));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
+        this.field_20823.render(matrixStack, vertexConsumer2, 0.083333336f, i, j, this.getSprite(conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEX : CLOSED_EYE_TEX));
         matrixStack.pop();
     }
 }

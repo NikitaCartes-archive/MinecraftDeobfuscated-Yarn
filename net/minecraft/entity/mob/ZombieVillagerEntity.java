@@ -161,7 +161,7 @@ implements VillagerDataContainer {
     public void handleStatus(byte b) {
         if (b == 16) {
             if (!this.isSilent()) {
-                this.world.playSound(this.x + 0.5, this.y + 0.5, this.z + 0.5, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0f + this.random.nextFloat(), this.random.nextFloat() * 0.7f + 0.3f, false);
+                this.world.playSound(this.getX(), this.method_23320(), this.getZ(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0f + this.random.nextFloat(), this.random.nextFloat() * 0.7f + 0.3f, false);
             }
             return;
         }
@@ -190,6 +190,10 @@ implements VillagerDataContainer {
             villagerEntity.setCustomName(this.getCustomName());
             villagerEntity.setCustomNameVisible(this.isCustomNameVisible());
         }
+        if (this.isPersistent()) {
+            villagerEntity.setPersistent();
+        }
+        villagerEntity.setInvulnerable(this.isInvulnerable());
         serverWorld.spawnEntity(villagerEntity);
         if (this.converter != null && (playerEntity = serverWorld.getPlayerByUuid(this.converter)) instanceof ServerPlayerEntity) {
             Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
@@ -204,9 +208,9 @@ implements VillagerDataContainer {
         if (this.random.nextFloat() < 0.01f) {
             int j = 0;
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            for (int k = (int)this.x - 4; k < (int)this.x + 4 && j < 14; ++k) {
-                for (int l = (int)this.y - 4; l < (int)this.y + 4 && j < 14; ++l) {
-                    for (int m = (int)this.z - 4; m < (int)this.z + 4 && j < 14; ++m) {
+            for (int k = (int)this.getX() - 4; k < (int)this.getX() + 4 && j < 14; ++k) {
+                for (int l = (int)this.getY() - 4; l < (int)this.getY() + 4 && j < 14; ++l) {
+                    for (int m = (int)this.getZ() - 4; m < (int)this.getZ() + 4 && j < 14; ++m) {
                         Block block = this.world.getBlockState(mutable.set(k, l, m)).getBlock();
                         if (block != Blocks.IRON_BARS && !(block instanceof BedBlock)) continue;
                         if (this.random.nextFloat() < 0.3f) {

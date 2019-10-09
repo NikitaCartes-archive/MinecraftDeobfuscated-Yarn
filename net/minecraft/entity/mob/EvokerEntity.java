@@ -301,25 +301,25 @@ extends SpellcastingIllagerEntity {
         @Override
         protected void castSpell() {
             LivingEntity livingEntity = EvokerEntity.this.getTarget();
-            double d = Math.min(livingEntity.y, EvokerEntity.this.y);
-            double e = Math.max(livingEntity.y, EvokerEntity.this.y) + 1.0;
-            float f = (float)MathHelper.atan2(livingEntity.z - EvokerEntity.this.z, livingEntity.x - EvokerEntity.this.x);
+            double d = Math.min(livingEntity.getY(), EvokerEntity.this.getY());
+            double e = Math.max(livingEntity.getY(), EvokerEntity.this.getY()) + 1.0;
+            float f = (float)MathHelper.atan2(livingEntity.getZ() - EvokerEntity.this.getZ(), livingEntity.getX() - EvokerEntity.this.getX());
             if (EvokerEntity.this.squaredDistanceTo(livingEntity) < 9.0) {
                 float g;
                 int i;
                 for (i = 0; i < 5; ++i) {
                     g = f + (float)i * (float)Math.PI * 0.4f;
-                    this.conjureFangs(EvokerEntity.this.x + (double)MathHelper.cos(g) * 1.5, EvokerEntity.this.z + (double)MathHelper.sin(g) * 1.5, d, e, g, 0);
+                    this.conjureFangs(EvokerEntity.this.getX() + (double)MathHelper.cos(g) * 1.5, EvokerEntity.this.getZ() + (double)MathHelper.sin(g) * 1.5, d, e, g, 0);
                 }
                 for (i = 0; i < 8; ++i) {
                     g = f + (float)i * (float)Math.PI * 2.0f / 8.0f + 1.2566371f;
-                    this.conjureFangs(EvokerEntity.this.x + (double)MathHelper.cos(g) * 2.5, EvokerEntity.this.z + (double)MathHelper.sin(g) * 2.5, d, e, g, 3);
+                    this.conjureFangs(EvokerEntity.this.getX() + (double)MathHelper.cos(g) * 2.5, EvokerEntity.this.getZ() + (double)MathHelper.sin(g) * 2.5, d, e, g, 3);
                 }
             } else {
                 for (int i = 0; i < 16; ++i) {
                     double h = 1.25 * (double)(i + 1);
                     int j = 1 * i;
-                    this.conjureFangs(EvokerEntity.this.x + (double)MathHelper.cos(f) * h, EvokerEntity.this.z + (double)MathHelper.sin(f) * h, d, e, f, j);
+                    this.conjureFangs(EvokerEntity.this.getX() + (double)MathHelper.cos(f) * h, EvokerEntity.this.getZ() + (double)MathHelper.sin(f) * h, d, e, f, j);
                 }
             }
         }

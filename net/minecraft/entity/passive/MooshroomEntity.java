@@ -102,19 +102,24 @@ extends CowEntity {
             return true;
         }
         if (itemStack.getItem() == Items.SHEARS && this.getBreedingAge() >= 0) {
-            this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y + (double)(this.getHeight() / 2.0f), this.z, 0.0, 0.0, 0.0);
+            this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.method_23323(0.5), this.getZ(), 0.0, 0.0, 0.0);
             if (!this.world.isClient) {
                 this.remove();
                 CowEntity cowEntity = EntityType.COW.create(this.world);
-                cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+                cowEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
                 cowEntity.setHealth(this.getHealth());
                 cowEntity.bodyYaw = this.bodyYaw;
                 if (this.hasCustomName()) {
                     cowEntity.setCustomName(this.getCustomName());
+                    cowEntity.setCustomNameVisible(this.isCustomNameVisible());
                 }
+                if (this.isPersistent()) {
+                    cowEntity.setPersistent();
+                }
+                cowEntity.setInvulnerable(this.isInvulnerable());
                 this.world.spawnEntity(cowEntity);
                 for (int i = 0; i < 5; ++i) {
-                    this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+                    this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.method_23323(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
                 }
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
                 this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0f, 1.0f);
@@ -124,7 +129,7 @@ extends CowEntity {
         if (this.getMooshroomType() == Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
             if (this.stewEffect != null) {
                 for (int j = 0; j < 2; ++j) {
-                    this.world.addParticle(ParticleTypes.SMOKE, this.x + (double)(this.random.nextFloat() / 2.0f), this.y + (double)(this.getHeight() / 2.0f), this.z + (double)(this.random.nextFloat() / 2.0f), 0.0, this.random.nextFloat() / 5.0f, 0.0);
+                    this.world.addParticle(ParticleTypes.SMOKE, this.getX() + (double)(this.random.nextFloat() / 2.0f), this.method_23323(0.5), this.getZ() + (double)(this.random.nextFloat() / 2.0f), 0.0, this.random.nextFloat() / 5.0f, 0.0);
                 }
             } else {
                 Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
@@ -132,7 +137,7 @@ extends CowEntity {
                     itemStack.decrement(1);
                 }
                 for (int i = 0; i < 4; ++i) {
-                    this.world.addParticle(ParticleTypes.EFFECT, this.x + (double)(this.random.nextFloat() / 2.0f), this.y + (double)(this.getHeight() / 2.0f), this.z + (double)(this.random.nextFloat() / 2.0f), 0.0, this.random.nextFloat() / 5.0f, 0.0);
+                    this.world.addParticle(ParticleTypes.EFFECT, this.getX() + (double)(this.random.nextFloat() / 2.0f), this.method_23323(0.5), this.getZ() + (double)(this.random.nextFloat() / 2.0f), 0.0, this.random.nextFloat() / 5.0f, 0.0);
                 }
                 this.stewEffect = pair.getLeft();
                 this.stewEffectDuration = pair.getRight();

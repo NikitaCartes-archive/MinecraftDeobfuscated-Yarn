@@ -155,8 +155,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private static double getSquaredDistance(ChunkPos chunkPos, Entity entity) {
         double d = chunkPos.x * 16 + 8;
         double e = chunkPos.z * 16 + 8;
-        double f = d - entity.x;
-        double g = e - entity.z;
+        double f = d - entity.getX();
+        double g = e - entity.getZ();
         return f * f + g * g;
     }
 
@@ -168,8 +168,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             i = chunkSectionPos.getSectionX();
             j = chunkSectionPos.getSectionZ();
         } else {
-            i = MathHelper.floor(serverPlayerEntity.x / 16.0);
-            j = MathHelper.floor(serverPlayerEntity.z / 16.0);
+            i = MathHelper.floor(serverPlayerEntity.getX() / 16.0);
+            j = MathHelper.floor(serverPlayerEntity.getZ() / 16.0);
         }
         return ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, i, j);
     }
@@ -688,8 +688,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     void handlePlayerAddedOrRemoved(ServerPlayerEntity serverPlayerEntity, boolean bl) {
         boolean bl2 = this.doesNotGenerateChunks(serverPlayerEntity);
         boolean bl3 = this.playerChunkWatchingManager.method_21715(serverPlayerEntity);
-        int i = MathHelper.floor(serverPlayerEntity.x) >> 4;
-        int j = MathHelper.floor(serverPlayerEntity.z) >> 4;
+        int i = MathHelper.floor(serverPlayerEntity.getX()) >> 4;
+        int j = MathHelper.floor(serverPlayerEntity.getZ()) >> 4;
         if (bl) {
             this.playerChunkWatchingManager.add(ChunkPos.toLong(i, j), serverPlayerEntity, bl2);
             this.method_20726(serverPlayerEntity);
@@ -727,8 +727,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
             entityTracker.updateCameraPosition(serverPlayerEntity);
         }
-        int i = MathHelper.floor(serverPlayerEntity.x) >> 4;
-        int j = MathHelper.floor(serverPlayerEntity.z) >> 4;
+        int i = MathHelper.floor(serverPlayerEntity.getX()) >> 4;
+        int j = MathHelper.floor(serverPlayerEntity.getZ()) >> 4;
         ChunkSectionPos chunkSectionPos = serverPlayerEntity.getCameraPosition();
         ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(serverPlayerEntity);
         long l = chunkSectionPos.toChunkPos().toLong();
@@ -976,7 +976,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             if (serverPlayerEntity == this.entity) {
                 return;
             }
-            Vec3d vec3d = new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z).subtract(this.entry.method_18759());
+            Vec3d vec3d = serverPlayerEntity.getPos().subtract(this.entry.method_18759());
             int i = Math.min(this.method_22844(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
             boolean bl2 = bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(serverPlayerEntity);
             if (bl) {

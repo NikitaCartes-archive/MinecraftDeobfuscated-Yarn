@@ -14,10 +14,10 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class SimpleBlockFeatureConfig
 implements FeatureConfig {
-    protected final BlockState toPlace;
-    protected final List<BlockState> placeOn;
-    protected final List<BlockState> placeIn;
-    protected final List<BlockState> placeUnder;
+    public final BlockState toPlace;
+    public final List<BlockState> placeOn;
+    public final List<BlockState> placeIn;
+    public final List<BlockState> placeUnder;
 
     public SimpleBlockFeatureConfig(BlockState blockState, List<BlockState> list, List<BlockState> list2, List<BlockState> list3) {
         this.toPlace = blockState;

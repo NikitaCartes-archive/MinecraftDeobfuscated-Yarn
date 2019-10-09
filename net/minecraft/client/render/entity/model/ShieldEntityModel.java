@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MatrixStack;
 
@@ -17,6 +18,7 @@ extends Model {
     private final ModelPart field_3551;
 
     public ShieldEntityModel() {
+        super(RenderLayer::getEntitySolid);
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.field_3550 = new ModelPart(this, 0, 0);
@@ -25,9 +27,10 @@ extends Model {
         this.field_3551.addCuboid(-1.0f, -3.0f, -1.0f, 2.0f, 6.0f, 6.0f, 0.0f);
     }
 
-    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i) {
-        this.field_3550.render(matrixStack, vertexConsumer, 0.0625f, i, null);
-        this.field_3551.render(matrixStack, vertexConsumer, 0.0625f, i, null);
+    @Override
+    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+        this.field_3550.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h);
+        this.field_3551.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h);
     }
 }
 

@@ -152,7 +152,7 @@ public class Keyboard {
                     return false;
                 }
                 this.debugWarn("debug.copy_location.message", new Object[0]);
-                this.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", DimensionType.getId(this.client.player.world.dimension.getType()), this.client.player.x, this.client.player.y, this.client.player.z, Float.valueOf(this.client.player.yaw), Float.valueOf(this.client.player.pitch)));
+                this.setClipboard(String.format(Locale.ROOT, "/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f", DimensionType.getId(this.client.player.world.dimension.getType()), this.client.player.getX(), this.client.player.getY(), this.client.player.getZ(), Float.valueOf(this.client.player.yaw), Float.valueOf(this.client.player.pitch)));
                 return true;
             }
         }
@@ -189,21 +189,20 @@ public class Keyboard {
             case ENTITY: {
                 Entity entity = ((EntityHitResult)hitResult).getEntity();
                 Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
-                Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
                 if (bl) {
                     if (bl2) {
                         this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTag -> {
-                            this.copyEntity(identifier, vec3d, (CompoundTag)compoundTag);
+                            this.copyEntity(identifier, entity.getPos(), (CompoundTag)compoundTag);
                             this.debugWarn("debug.inspect.server.entity", new Object[0]);
                         });
                         break;
                     }
-                    CompoundTag compoundTag3 = entity.toTag(new CompoundTag());
-                    this.copyEntity(identifier, vec3d, compoundTag3);
+                    CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+                    this.copyEntity(identifier, entity.getPos(), compoundTag2);
                     this.debugWarn("debug.inspect.client.entity", new Object[0]);
                     break;
                 }
-                this.copyEntity(identifier, vec3d, null);
+                this.copyEntity(identifier, entity.getPos(), null);
                 this.debugWarn("debug.inspect.client.entity", new Object[0]);
                 break;
             }

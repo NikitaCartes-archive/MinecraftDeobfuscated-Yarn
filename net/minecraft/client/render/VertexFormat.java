@@ -3,59 +3,33 @@
  */
 package net.minecraft.client.render;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import java.util.List;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexFormatElement;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class VertexFormat {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private final List<VertexFormatElement> elements = Lists.newArrayList();
+    private final ImmutableList<VertexFormatElement> elements;
     private final IntList offsets = new IntArrayList();
-    private int size;
+    private final int size;
 
-    public VertexFormat(VertexFormat vertexFormat) {
-        this();
-        for (int i = 0; i < vertexFormat.getElementCount(); ++i) {
-            this.add(vertexFormat.getElement(i));
+    public VertexFormat(ImmutableList<VertexFormatElement> immutableList) {
+        this.elements = immutableList;
+        int i = 0;
+        for (VertexFormatElement vertexFormatElement : immutableList) {
+            this.offsets.add(i);
+            i += vertexFormatElement.getSize();
         }
-        this.size = vertexFormat.getVertexSize();
-    }
-
-    public VertexFormat() {
-    }
-
-    public void clear() {
-        this.elements.clear();
-        this.offsets.clear();
-        this.size = 0;
-    }
-
-    public VertexFormat add(VertexFormatElement vertexFormatElement) {
-        if (vertexFormatElement.isPosition() && this.hasPositionElement()) {
-            LOGGER.warn("VertexFormat error: Trying to add a position VertexFormatElement when one already exists, ignoring.");
-            return this;
-        }
-        this.elements.add(vertexFormatElement);
-        this.offsets.add(this.size);
-        this.size += vertexFormatElement.getSize();
-        return this;
+        this.size = i;
     }
 
     public String toString() {
         return "format: " + this.elements.size() + " elements: " + this.elements.stream().map(Object::toString).collect(Collectors.joining(" "));
-    }
-
-    private boolean hasPositionElement() {
-        return this.elements.stream().anyMatch(VertexFormatElement::isPosition);
     }
 
     public int getVertexSizeInteger() {
@@ -66,16 +40,8 @@ public class VertexFormat {
         return this.size;
     }
 
-    public List<VertexFormatElement> getElements() {
+    public ImmutableList<VertexFormatElement> getElements() {
         return this.elements;
-    }
-
-    public int getElementCount() {
-        return this.elements.size();
-    }
-
-    public VertexFormatElement getElement(int i) {
-        return this.elements.get(i);
     }
 
     public boolean equals(Object object) {
@@ -89,17 +55,11 @@ public class VertexFormat {
         if (this.size != vertexFormat.size) {
             return false;
         }
-        if (!this.elements.equals(vertexFormat.elements)) {
-            return false;
-        }
-        return this.offsets.equals(vertexFormat.offsets);
+        return this.elements.equals(vertexFormat.elements);
     }
 
     public int hashCode() {
-        int i = this.elements.hashCode();
-        i = 31 * i + this.offsets.hashCode();
-        i = 31 * i + this.size;
-        return i;
+        return this.elements.hashCode();
     }
 
     public void method_22649(long l) {
@@ -108,9 +68,9 @@ public class VertexFormat {
             return;
         }
         int i = this.getVertexSize();
-        List<VertexFormatElement> list = this.getElements();
+        ImmutableList<VertexFormatElement> list = this.getElements();
         for (int j = 0; j < list.size(); ++j) {
-            list.get(j).method_22652(l + (long)this.offsets.getInt(j), i);
+            ((VertexFormatElement)list.get(j)).method_22652(l + (long)this.offsets.getInt(j), i);
         }
     }
 

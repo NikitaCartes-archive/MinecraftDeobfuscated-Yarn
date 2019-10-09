@@ -34,7 +34,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void handle(ServerPlayerEntity serverPlayerEntity) {
-        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z));
+        this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ()));
     }
 
     @Override

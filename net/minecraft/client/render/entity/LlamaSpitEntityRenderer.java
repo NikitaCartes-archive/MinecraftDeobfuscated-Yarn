@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -31,14 +30,12 @@ extends EntityRenderer<LlamaSpitEntity> {
     public void method_4061(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         matrixStack.push();
         matrixStack.translate(0.0, 0.15f, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch), true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch)));
         int i = llamaSpitEntity.getLightmapCoordinates();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
         this.model.setAngles(llamaSpitEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        this.model.method_22957(matrixStack, vertexConsumer, i);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(SKIN));
+        this.model.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
         super.render(llamaSpitEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

@@ -276,9 +276,7 @@ extends SpriteBillboardParticle {
             if (this.onGround) {
                 this.markDead();
                 this.world.addParticle(this.nextParticle, this.x, this.y, this.z, 0.0, 0.0, 0.0);
-                if (this.world.random.nextFloat() < 0.3f) {
-                    this.world.playSound(this.x + 0.5, this.y, this.z + 0.5, SoundEvents.BLOCK_BEEHIVE_DRIP, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
-                }
+                this.world.playSound(this.x + 0.5, this.y, this.z + 0.5, SoundEvents.BLOCK_BEEHIVE_DRIP, SoundCategory.BLOCKS, 0.3f + this.world.random.nextFloat() * 2.0f / 3.0f, 1.0f, false);
             }
         }
     }

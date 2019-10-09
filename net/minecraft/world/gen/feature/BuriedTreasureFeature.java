@@ -16,7 +16,6 @@ import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class BuriedTreasureFeature
@@ -27,9 +26,9 @@ extends StructureFeature<BuriedTreasureFeatureConfig> {
 
     @Override
     public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
-        if (chunkGenerator.hasStructure(biome, Feature.BURIED_TREASURE)) {
+        if (chunkGenerator.hasStructure(biome, this)) {
             ((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j, 10387320);
-            BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.BURIED_TREASURE);
+            BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
             return random.nextFloat() < buriedTreasureFeatureConfig.probability;
         }
         return false;

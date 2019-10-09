@@ -62,7 +62,7 @@ extends Goal {
         for (int i = 0; i < Math.min(path.getCurrentNodeIndex() + 2, path.getLength()); ++i) {
             PathNode pathNode = path.getNode(i);
             this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-            if (this.mob.squaredDistanceTo(this.doorPos.getX(), this.mob.y, this.doorPos.getZ()) > 2.25) continue;
+            if (this.mob.squaredDistanceTo(this.doorPos.getX(), this.mob.getY(), this.doorPos.getZ()) > 2.25) continue;
             this.field_6412 = DoorInteractGoal.getDoor(this.mob.world, this.doorPos);
             if (!this.field_6412) continue;
             return true;
@@ -80,15 +80,15 @@ extends Goal {
     @Override
     public void start() {
         this.shouldStop = false;
-        this.field_6410 = (float)((double)((float)this.doorPos.getX() + 0.5f) - this.mob.x);
-        this.field_6409 = (float)((double)((float)this.doorPos.getZ() + 0.5f) - this.mob.z);
+        this.field_6410 = (float)((double)((float)this.doorPos.getX() + 0.5f) - this.mob.getX());
+        this.field_6409 = (float)((double)((float)this.doorPos.getZ() + 0.5f) - this.mob.getZ());
     }
 
     @Override
     public void tick() {
         float g;
-        float f = (float)((double)((float)this.doorPos.getX() + 0.5f) - this.mob.x);
-        float h = this.field_6410 * f + this.field_6409 * (g = (float)((double)((float)this.doorPos.getZ() + 0.5f) - this.mob.z));
+        float f = (float)((double)((float)this.doorPos.getX() + 0.5f) - this.mob.getX());
+        float h = this.field_6410 * f + this.field_6409 * (g = (float)((double)((float)this.doorPos.getZ() + 0.5f) - this.mob.getZ()));
         if (h < 0.0f) {
             this.shouldStop = true;
         }

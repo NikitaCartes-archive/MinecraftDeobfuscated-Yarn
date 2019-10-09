@@ -75,11 +75,15 @@ public interface LayeredVertexConsumerStorage {
 
         public void method_22994(RenderLayer renderLayer) {
             BufferBuilder bufferBuilder = this.method_22995(renderLayer);
+            boolean bl = Objects.equals(this.field_20954, Optional.of(renderLayer));
+            if (!bl && bufferBuilder == this.field_20952) {
+                return;
+            }
             if (!this.field_20955.remove(bufferBuilder)) {
                 return;
             }
             renderLayer.method_23012(bufferBuilder);
-            if (Objects.equals(this.field_20954, Optional.of(renderLayer))) {
+            if (bl) {
                 this.field_20954 = Optional.empty();
             }
         }

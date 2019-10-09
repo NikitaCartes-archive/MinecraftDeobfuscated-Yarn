@@ -36,30 +36,23 @@ extends Task<LivingEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-        return !serverWorld.isSkyVisible(new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z));
+        return !serverWorld.isSkyVisible(new BlockPos(livingEntity));
     }
 
     @Nullable
     private Vec3d findNearbySky(ServerWorld serverWorld, LivingEntity livingEntity) {
         Random random = livingEntity.getRandom();
-        BlockPos blockPos = new BlockPos(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+        BlockPos blockPos = new BlockPos(livingEntity);
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-            if (!SeekSkyTask.isSkyVisible(serverWorld, livingEntity)) continue;
-            return new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+            if (!SeekSkyTask.isSkyVisible(serverWorld, livingEntity, blockPos2)) continue;
+            return new Vec3d(blockPos2);
         }
         return null;
     }
 
-    /*
-     * Enabled force condition propagation
-     * Lifted jumps to return sites
-     */
-    public static boolean isSkyVisible(ServerWorld serverWorld, LivingEntity livingEntity) {
-        if (!serverWorld.isSkyVisible(new BlockPos(livingEntity))) return false;
-        BlockPos blockPos = new BlockPos(livingEntity);
-        if (!((double)serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() <= livingEntity.y)) return false;
-        return true;
+    public static boolean isSkyVisible(ServerWorld serverWorld, LivingEntity livingEntity, BlockPos blockPos) {
+        return serverWorld.isSkyVisible(blockPos) && (double)serverWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() <= livingEntity.getY();
     }
 }
 

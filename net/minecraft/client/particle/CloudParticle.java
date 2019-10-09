@@ -12,7 +12,6 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -54,6 +53,7 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
+        double d;
         this.prevPosX = this.x;
         this.prevPosY = this.y;
         this.prevPosZ = this.z;
@@ -67,13 +67,10 @@ extends SpriteBillboardParticle {
         this.velocityY *= (double)0.96f;
         this.velocityZ *= (double)0.96f;
         PlayerEntity playerEntity = this.world.getClosestPlayer(this.x, this.y, this.z, 2.0, false);
-        if (playerEntity != null) {
-            Box box = playerEntity.getBoundingBox();
-            if (this.y > box.minY) {
-                this.y += (box.minY - this.y) * 0.2;
-                this.velocityY += (playerEntity.getVelocity().y - this.velocityY) * 0.2;
-                this.setPos(this.x, this.y, this.z);
-            }
+        if (playerEntity != null && this.y > (d = playerEntity.getY())) {
+            this.y += (d - this.y) * 0.2;
+            this.velocityY += (playerEntity.getVelocity().y - this.velocityY) * 0.2;
+            this.setPos(this.x, this.y, this.z);
         }
         if (this.onGround) {
             this.velocityX *= (double)0.7f;

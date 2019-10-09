@@ -72,7 +72,15 @@ Element {
         }
         boolean bl = this.isHovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
         if (this.wasHovered != this.isHovered()) {
-            this.nextNarration = this.isHovered() ? (this.focused ? SystemUtil.getMeasuringTimeMs() + 200L : SystemUtil.getMeasuringTimeMs() + 750L) : Long.MAX_VALUE;
+            if (this.isHovered()) {
+                if (this.focused) {
+                    this.queueNarration(200);
+                } else {
+                    this.queueNarration(750);
+                }
+            } else {
+                this.nextNarration = Long.MAX_VALUE;
+            }
         }
         if (this.visible) {
             this.renderButton(i, j, f);
@@ -90,7 +98,7 @@ Element {
     }
 
     protected String getNarrationMessage() {
-        if (this.message.isEmpty()) {
+        if (this.getMessage().isEmpty()) {
             return "";
         }
         return I18n.translate("gui.narrate.button", this.getMessage());
@@ -114,7 +122,7 @@ Element {
         } else if (this.isHovered()) {
             l = 0xFFFFA0;
         }
-        this.drawCenteredString(textRenderer, this.message, this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0f) << 24);
+        this.drawCenteredString(textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 
     protected void renderBg(MinecraftClient minecraftClient, int i, int j) {
@@ -212,9 +220,13 @@ Element {
 
     public void setMessage(String string) {
         if (!Objects.equals(string, this.message)) {
-            this.nextNarration = SystemUtil.getMeasuringTimeMs() + 250L;
+            this.queueNarration(250);
         }
         this.message = string;
+    }
+
+    public void queueNarration(int i) {
+        this.nextNarration = SystemUtil.getMeasuringTimeMs() + (long)i;
     }
 
     public String getMessage() {

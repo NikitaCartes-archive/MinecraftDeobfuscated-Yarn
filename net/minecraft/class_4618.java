@@ -34,7 +34,7 @@ implements LayeredVertexConsumerStorage {
         VertexConsumer vertexConsumer = this.field_21058.getBuffer(renderLayer);
         Optional<Identifier> optional = renderLayer.method_23289();
         if (optional.isPresent()) {
-            VertexConsumer vertexConsumer2 = this.field_21059.getBuffer(RenderLayer.method_23287(optional.get()));
+            VertexConsumer vertexConsumer2 = this.field_21059.getBuffer(RenderLayer.getOutline(optional.get()));
             class_4586 lv = new class_4586(vertexConsumer2, this.field_21060, this.field_21061, this.field_21062, this.field_21063);
             return new DelegatingVertexConsumer(ImmutableList.of(lv, vertexConsumer));
         }
@@ -69,14 +69,6 @@ implements LayeredVertexConsumerStorage {
 
         @Override
         public void method_22901(int i, int j, int k, int l) {
-        }
-
-        @Override
-        public void defaultOverlay(int i, int j) {
-        }
-
-        @Override
-        public void clearDefaultOverlay() {
         }
 
         @Override

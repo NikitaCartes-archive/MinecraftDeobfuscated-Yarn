@@ -17,7 +17,7 @@ public class EndMidlandsBiome
 extends Biome {
     public EndMidlandsBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.THEEND).depth(0.1f).scale(0.2f).temperature(0.5f).downfall(0.5f).waterColor(4159204).waterFogColor(329011).parent(null));
-        this.addStructureFeature(Feature.END_CITY, FeatureConfig.DEFAULT);
+        this.addStructureFeature(Feature.END_CITY.method_23397(FeatureConfig.DEFAULT));
         DefaultBiomeFeatures.method_20826(this);
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
     }

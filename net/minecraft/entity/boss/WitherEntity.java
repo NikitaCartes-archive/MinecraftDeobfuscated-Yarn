@@ -150,12 +150,12 @@ RangedAttackMob {
         Vec3d vec3d = this.getVelocity().multiply(1.0, 0.6, 1.0);
         if (!this.world.isClient && this.getTrackedEntityId(0) > 0 && (entity = this.world.getEntityById(this.getTrackedEntityId(0))) != null) {
             double d = vec3d.y;
-            if (this.y < entity.y || !this.shouldRenderOverlay() && this.y < entity.y + 5.0) {
+            if (this.getY() < entity.getY() || !this.shouldRenderOverlay() && this.getY() < entity.getY() + 5.0) {
                 d = Math.max(0.0, d);
                 d += 0.3 - d * (double)0.6f;
             }
             vec3d = new Vec3d(vec3d.x, d, vec3d.z);
-            Vec3d vec3d2 = new Vec3d(entity.x - this.x, 0.0, entity.z - this.z);
+            Vec3d vec3d2 = new Vec3d(entity.getX() - this.getX(), 0.0, entity.getZ() - this.getZ());
             if (WitherEntity.squaredHorizontalLength(vec3d2) > 9.0) {
                 Vec3d vec3d3 = vec3d2.normalize();
                 vec3d = vec3d.add(vec3d3.x * 0.3 - vec3d.x * 0.6, 0.0, vec3d3.z * 0.3 - vec3d.z * 0.6);
@@ -180,9 +180,9 @@ RangedAttackMob {
                 double e = this.getHeadX(i + 1);
                 double f = this.getHeadY(i + 1);
                 double g = this.getHeadZ(i + 1);
-                double h = entity2.x - e;
-                double k = entity2.y + (double)entity2.getStandingEyeHeight() - f;
-                double l = entity2.z - g;
+                double h = entity2.getX() - e;
+                double k = entity2.method_23320() - f;
+                double l = entity2.getZ() - g;
                 double m = MathHelper.sqrt(h * h + l * l);
                 float n = (float)(MathHelper.atan2(l, h) * 57.2957763671875) - 90.0f;
                 float o = (float)(-(MathHelper.atan2(k, m) * 57.2957763671875));
@@ -203,7 +203,7 @@ RangedAttackMob {
         }
         if (this.getInvulTimer() > 0) {
             for (j = 0; j < 3; ++j) {
-                this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.x + this.random.nextGaussian(), this.y + (double)(this.random.nextFloat() * 3.3f), this.z + this.random.nextGaussian(), 0.7f, 0.7f, 0.9f);
+                this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + this.random.nextGaussian(), this.getY() + (double)(this.random.nextFloat() * 3.3f), this.getZ() + this.random.nextGaussian(), 0.7f, 0.7f, 0.9f);
             }
         }
     }
@@ -216,7 +216,7 @@ RangedAttackMob {
             int i2 = this.getInvulTimer() - 1;
             if (i2 <= 0) {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
-                this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0f, false, destructionType);
+                this.world.createExplosion(this, this.getX(), this.method_23320(), this.getZ(), 7.0f, false, destructionType);
                 this.world.playGlobalEvent(1023, new BlockPos(this), 0);
             }
             this.setInvulTimer(i2);
@@ -236,9 +236,9 @@ RangedAttackMob {
                 if (n2 > 15) {
                     float f = 10.0f;
                     float g = 5.0f;
-                    double d = MathHelper.nextDouble(this.random, this.x - 10.0, this.x + 10.0);
-                    double e = MathHelper.nextDouble(this.random, this.y - 5.0, this.y + 5.0);
-                    double h = MathHelper.nextDouble(this.random, this.z - 10.0, this.z + 10.0);
+                    double d = MathHelper.nextDouble(this.random, this.getX() - 10.0, this.getX() + 10.0);
+                    double e = MathHelper.nextDouble(this.random, this.getY() - 5.0, this.getY() + 5.0);
+                    double h = MathHelper.nextDouble(this.random, this.getZ() - 10.0, this.getZ() + 10.0);
                     this.method_6877(i + 1, d, e, h, true);
                     this.field_7092[i - 1] = 0;
                 }
@@ -281,9 +281,9 @@ RangedAttackMob {
         if (this.field_7082 > 0) {
             --this.field_7082;
             if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-                i = MathHelper.floor(this.y);
-                j = MathHelper.floor(this.x);
-                int l = MathHelper.floor(this.z);
+                i = MathHelper.floor(this.getY());
+                j = MathHelper.floor(this.getX());
+                int l = MathHelper.floor(this.getZ());
                 boolean bl = false;
                 for (int m = -1; m <= 1; ++m) {
                     for (int n = -1; n <= 1; ++n) {
@@ -336,27 +336,27 @@ RangedAttackMob {
 
     private double getHeadX(int i) {
         if (i <= 0) {
-            return this.x;
+            return this.getX();
         }
         float f = (this.bodyYaw + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
         float g = MathHelper.cos(f);
-        return this.x + (double)g * 1.3;
+        return this.getX() + (double)g * 1.3;
     }
 
     private double getHeadY(int i) {
         if (i <= 0) {
-            return this.y + 3.0;
+            return this.getY() + 3.0;
         }
-        return this.y + 2.2;
+        return this.getY() + 2.2;
     }
 
     private double getHeadZ(int i) {
         if (i <= 0) {
-            return this.z;
+            return this.getZ();
         }
         float f = (this.bodyYaw + (float)(180 * (i - 1))) * ((float)Math.PI / 180);
         float g = MathHelper.sin(f);
-        return this.z + (double)g * 1.3;
+        return this.getZ() + (double)g * 1.3;
     }
 
     private float getNextAngle(float f, float g, float h) {
@@ -371,7 +371,7 @@ RangedAttackMob {
     }
 
     private void method_6878(int i, LivingEntity livingEntity) {
-        this.method_6877(i, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() * 0.5, livingEntity.z, i == 0 && this.random.nextFloat() < 0.001f);
+        this.method_6877(i, livingEntity.getX(), livingEntity.getY() + (double)livingEntity.getStandingEyeHeight() * 0.5, livingEntity.getZ(), i == 0 && this.random.nextFloat() < 0.001f);
     }
 
     private void method_6877(int i, double d, double e, double f, boolean bl) {
@@ -386,9 +386,7 @@ RangedAttackMob {
         if (bl) {
             witherSkullEntity.setCharged(true);
         }
-        witherSkullEntity.y = h;
-        witherSkullEntity.x = g;
-        witherSkullEntity.z = j;
+        witherSkullEntity.setPos(g, h, j);
         this.world.spawnEntity(witherSkullEntity);
     }
 
@@ -448,7 +446,8 @@ RangedAttackMob {
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float f, float g) {
+        return false;
     }
 
     @Override

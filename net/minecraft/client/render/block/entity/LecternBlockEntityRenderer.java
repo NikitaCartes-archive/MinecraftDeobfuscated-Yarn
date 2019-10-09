@@ -15,6 +15,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.BookModel;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MatrixStack;
 
@@ -27,7 +28,7 @@ extends BlockEntityRenderer<LecternBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_17582(LecternBlockEntity lecternBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+    public void method_17582(LecternBlockEntity lecternBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
         BlockState blockState = lecternBlockEntity.getCachedState();
         if (!blockState.get(LecternBlock.HAS_BOOK).booleanValue()) {
             return;
@@ -35,12 +36,12 @@ extends BlockEntityRenderer<LecternBlockEntity> {
         matrixStack.push();
         matrixStack.translate(0.5, 1.0625, 0.5);
         float h = blockState.get(LecternBlock.FACING).rotateYClockwise().asRotation();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(67.5f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(67.5f));
         matrixStack.translate(0.0, -0.125, 0.0);
         this.book.setPageAngles(0.0f, 0.1f, 0.9f, 1.2f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
-        this.book.render(matrixStack, vertexConsumer, 0.0625f, i, this.getSprite(EnchantingTableBlockEntityRenderer.BOOK_TEX));
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        this.book.render(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, this.getSprite(EnchantingTableBlockEntityRenderer.BOOK_TEX));
         matrixStack.pop();
     }
 }

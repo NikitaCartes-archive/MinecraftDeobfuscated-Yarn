@@ -33,11 +33,9 @@ extends FeatureRenderer<T, M> {
         EntityModel<T> entityModel = this.method_23203();
         entityModel.animateModel(entity, f, g, h);
         ((EntityModel)this.getModel()).copyStateTo(entityModel);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23018(this.method_23201(), this.method_23202(n), n * 0.01f));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getPowerSwirl(this.method_23201(), this.method_23202(n), n * 0.01f));
         entityModel.setAngles(entity, f, g, j, k, l, m);
-        entityModel.method_17116(matrixStack, vertexConsumer, i, 0.5f, 0.5f, 0.5f);
-        vertexConsumer.clearDefaultOverlay();
+        entityModel.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 0.5f, 0.5f, 0.5f);
     }
 
     protected abstract float method_23202(float var1);

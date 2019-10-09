@@ -67,9 +67,7 @@ extends Entity {
         d -= (double)this.facing.getOffsetX() * 0.46875;
         f -= (double)this.facing.getOffsetZ() * 0.46875;
         Direction direction = this.facing.rotateYCounterclockwise();
-        this.x = d += h * (double)direction.getOffsetX();
-        this.y = e += i;
-        this.z = f += h * (double)direction.getOffsetZ();
+        this.setPos(d += h * (double)direction.getOffsetX(), e += i, f += h * (double)direction.getOffsetZ());
         double j = this.getWidthPixels();
         double k = this.getHeightPixels();
         double l = this.getWidthPixels();
@@ -190,7 +188,7 @@ extends Entity {
 
     @Override
     public ItemEntity dropStack(ItemStack itemStack, float f) {
-        ItemEntity itemEntity = new ItemEntity(this.world, this.x + (double)((float)this.facing.getOffsetX() * 0.15f), this.y + (double)f, this.z + (double)((float)this.facing.getOffsetZ() * 0.15f), itemStack);
+        ItemEntity itemEntity = new ItemEntity(this.world, this.getX() + (double)((float)this.facing.getOffsetX() * 0.15f), this.getY() + (double)f, this.getZ() + (double)((float)this.facing.getOffsetZ() * 0.15f), itemStack);
         itemEntity.setToDefaultPickupDelay();
         this.world.spawnEntity(itemEntity);
         return itemEntity;

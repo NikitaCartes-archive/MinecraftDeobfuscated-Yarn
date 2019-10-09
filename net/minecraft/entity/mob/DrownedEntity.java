@@ -248,9 +248,9 @@ implements RangedAttackMob {
     @Override
     public void attack(LivingEntity livingEntity, float f) {
         TridentEntity tridentEntity = new TridentEntity(this.world, (LivingEntity)this, new ItemStack(Items.TRIDENT));
-        double d = livingEntity.x - this.x;
-        double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0f) - tridentEntity.y;
-        double g = livingEntity.z - this.z;
+        double d = livingEntity.getX() - this.getX();
+        double e = livingEntity.method_23323(0.3333333333333333) - tridentEntity.getY();
+        double g = livingEntity.getZ() - this.getZ();
         double h = MathHelper.sqrt(d * d + g * g);
         tridentEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
@@ -274,16 +274,16 @@ implements RangedAttackMob {
         public void tick() {
             LivingEntity livingEntity = this.drowned.getTarget();
             if (this.drowned.isTargetingUnderwater() && this.drowned.isInsideWater()) {
-                if (livingEntity != null && livingEntity.y > this.drowned.y || this.drowned.targetingUnderwater) {
+                if (livingEntity != null && livingEntity.getY() > this.drowned.getY() || this.drowned.targetingUnderwater) {
                     this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, 0.002, 0.0));
                 }
                 if (this.state != MoveControl.State.MOVE_TO || this.drowned.getNavigation().isIdle()) {
                     this.drowned.setMovementSpeed(0.0f);
                     return;
                 }
-                double d = this.targetX - this.drowned.x;
-                double e = this.targetY - this.drowned.y;
-                double f = this.targetZ - this.drowned.z;
+                double d = this.targetX - this.drowned.getX();
+                double e = this.targetY - this.drowned.getY();
+                double f = this.targetZ - this.drowned.getZ();
                 double g = MathHelper.sqrt(d * d + e * e + f * f);
                 e /= g;
                 float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
@@ -368,11 +368,11 @@ implements RangedAttackMob {
         @Nullable
         private Vec3d getWanderTarget() {
             Random random = this.mob.getRandom();
-            BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
+            BlockPos blockPos = new BlockPos(this.mob);
             for (int i = 0; i < 10; ++i) {
                 BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
                 if (this.world.getBlockState(blockPos2).getBlock() != Blocks.WATER) continue;
-                return new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+                return new Vec3d(blockPos2);
             }
             return null;
         }
@@ -389,7 +389,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return super.canStart() && !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.y >= (double)(this.drowned.world.getSeaLevel() - 3);
+            return super.canStart() && !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.getY() >= (double)(this.drowned.world.getSeaLevel() - 3);
         }
 
         @Override
@@ -434,7 +434,7 @@ implements RangedAttackMob {
 
         @Override
         public boolean canStart() {
-            return !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.y < (double)(this.minY - 2);
+            return !this.drowned.world.isDaylight() && this.drowned.isInsideWater() && this.drowned.getY() < (double)(this.minY - 2);
         }
 
         @Override
@@ -444,8 +444,8 @@ implements RangedAttackMob {
 
         @Override
         public void tick() {
-            if (this.drowned.y < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.method_7016())) {
-                Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.x, this.minY - 1, this.drowned.z));
+            if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.method_7016())) {
+                Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()));
                 if (vec3d == null) {
                     this.field_7248 = true;
                     return;

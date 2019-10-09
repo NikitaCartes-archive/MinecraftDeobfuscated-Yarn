@@ -62,6 +62,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.SetBlockCommand;
 import net.minecraft.server.command.SetWorldSpawnCommand;
 import net.minecraft.server.command.SpawnPointCommand;
+import net.minecraft.server.command.SpectateCommand;
 import net.minecraft.server.command.SpreadPlayersCommand;
 import net.minecraft.server.command.StopSoundCommand;
 import net.minecraft.server.command.SummonCommand;
@@ -146,6 +147,7 @@ public class CommandManager {
         SetBlockCommand.register(this.dispatcher);
         SpawnPointCommand.register(this.dispatcher);
         SetWorldSpawnCommand.register(this.dispatcher);
+        SpectateCommand.register(this.dispatcher);
         SpreadPlayersCommand.register(this.dispatcher);
         StopSoundCommand.register(this.dispatcher);
         SummonCommand.register(this.dispatcher);

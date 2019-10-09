@@ -22,7 +22,7 @@ extends Feature<SimpleRandomFeatureConfig> {
 
     public boolean method_13953(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SimpleRandomFeatureConfig simpleRandomFeatureConfig) {
         int i = random.nextInt(simpleRandomFeatureConfig.features.size());
-        ConfiguredFeature<?> configuredFeature = simpleRandomFeatureConfig.features.get(i);
+        ConfiguredFeature<?, ?> configuredFeature = simpleRandomFeatureConfig.features.get(i);
         return configuredFeature.generate(iWorld, chunkGenerator, random, blockPos);
     }
 }

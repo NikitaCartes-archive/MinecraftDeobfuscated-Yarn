@@ -20,7 +20,7 @@ public final class RiverBiome
 extends Biome {
     public RiverBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.RIVER).depth(-0.5f).scale(0.0f).temperature(0.5f).downfall(0.5f).waterColor(4159204).waterFogColor(329011).parent(null));
-        this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
@@ -34,7 +34,7 @@ extends Biome {
         DefaultBiomeFeatures.addDefaultMushrooms(this);
         DefaultBiomeFeatures.addDefaultVegetation(this);
         DefaultBiomeFeatures.addSprings(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, RiverBiome.configureFeature(Feature.SEAGRASS, new SeagrassFeatureConfig(48, 0.4), Decorator.TOP_SOLID_HEIGHTMAP, DecoratorConfig.DEFAULT));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.SEAGRASS.method_23397(new SeagrassFeatureConfig(48, 0.4)).method_23388(Decorator.TOP_SOLID_HEIGHTMAP.method_23475(DecoratorConfig.DEFAULT)));
         DefaultBiomeFeatures.addFrozenTopLayer(this);
         this.addSpawn(EntityCategory.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, 2, 1, 4));
         this.addSpawn(EntityCategory.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SALMON, 5, 1, 5));

@@ -50,8 +50,8 @@ extends AbstractVertexConsumer {
         this.green = this.field_20891;
         this.blue = this.field_20892;
         this.alpha = this.field_20893;
-        this.u1 = this.defaultOverlayU;
-        this.v1 = this.defaultOverlayV;
+        this.u1 = 0;
+        this.v1 = 10;
         this.light = 0xF000F0;
         this.normalX = 0.0f;
         this.normalY = 1.0f;
@@ -114,9 +114,6 @@ extends AbstractVertexConsumer {
 
     @Override
     public VertexConsumer overlay(int i, int j) {
-        if (this.hasDefaultOverlay) {
-            throw new IllegalStateException();
-        }
         this.u1 = i;
         this.v1 = j;
         return this;

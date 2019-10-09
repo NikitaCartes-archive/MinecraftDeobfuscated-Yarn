@@ -6,6 +6,9 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PigEntityModel;
@@ -30,7 +33,8 @@ extends FeatureRenderer<PigEntity, PigEntityModel<PigEntity>> {
         ((PigEntityModel)this.getModel()).copyStateTo(this.model);
         this.model.animateModel(pigEntity, f, g, h);
         this.model.setAngles(pigEntity, f, g, j, k, l, m);
-        PigSaddleFeatureRenderer.method_23197(this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
+        this.model.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
     }
 }
 

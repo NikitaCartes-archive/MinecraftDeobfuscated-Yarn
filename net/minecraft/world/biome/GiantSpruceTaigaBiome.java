@@ -17,8 +17,8 @@ public final class GiantSpruceTaigaBiome
 extends Biome {
     public GiantSpruceTaigaBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.GIANT_TREE_TAIGA, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.TAIGA).depth(0.2f).scale(0.2f).temperature(0.25f).downfall(0.8f).waterColor(4159204).waterFogColor(329011).parent("giant_tree_taiga"));
-        this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-        this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+        this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);

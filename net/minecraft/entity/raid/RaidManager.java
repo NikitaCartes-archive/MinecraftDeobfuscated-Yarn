@@ -92,7 +92,7 @@ extends PersistentState {
         BlockPos blockPos = new BlockPos(serverPlayerEntity);
         List list = this.world.getPointOfInterestStorage().get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).collect(Collectors.toList());
         int i = 0;
-        Vec3d vec3d = new Vec3d(0.0, 0.0, 0.0);
+        Vec3d vec3d = Vec3d.ZERO;
         for (PointOfInterest pointOfInterest : list) {
             BlockPos blockPos2 = pointOfInterest.getPos();
             vec3d = vec3d.add(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());

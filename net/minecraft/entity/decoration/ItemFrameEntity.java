@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.decoration;
 
-import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractRedstoneGateBlock;
@@ -87,27 +86,28 @@ extends AbstractDecorationEntity {
             return;
         }
         double d = 0.46875;
-        this.x = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
-        this.y = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
-        this.z = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
-        double e = this.getWidthPixels();
-        double f = this.getHeightPixels();
-        double g = this.getWidthPixels();
+        double e = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
+        double f = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
+        double g = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
+        this.setPos(e, f, g);
+        double h = this.getWidthPixels();
+        double i = this.getHeightPixels();
+        double j = this.getWidthPixels();
         Direction.Axis axis = this.facing.getAxis();
         switch (axis) {
             case X: {
-                e = 1.0;
+                h = 1.0;
                 break;
             }
             case Y: {
-                f = 1.0;
+                i = 1.0;
                 break;
             }
             case Z: {
-                g = 1.0;
+                j = 1.0;
             }
         }
-        this.setBoundingBox(new Box(this.x - (e /= 32.0), this.y - (f /= 32.0), this.z - (g /= 32.0), this.x + e, this.y + f, this.z + g));
+        this.setBoundingBox(new Box(e - (h /= 32.0), f - (i /= 32.0), g - (j /= 32.0), e + h, f + i, g + j));
     }
 
     @Override
@@ -119,7 +119,7 @@ extends AbstractDecorationEntity {
         if (!(blockState.getMaterial().isSolid() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.isRedstoneGate(blockState))) {
             return false;
         }
-        return this.world.getEntities(this, this.getBoundingBox(), (Predicate<? super Entity>)PREDICATE).isEmpty();
+        return this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
     }
 
     @Override

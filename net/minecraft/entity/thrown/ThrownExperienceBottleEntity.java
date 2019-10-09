@@ -46,7 +46,7 @@ extends ThrownItemEntity {
             this.world.playLevelEvent(2002, new BlockPos(this), PotionUtil.getColor(Potions.WATER));
             for (int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5); i > 0; i -= j) {
                 j = ExperienceOrbEntity.roundToOrbSize(i);
-                this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y, this.z, j));
+                this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
             }
             this.remove();
         }

@@ -72,7 +72,7 @@ public class MoveControl {
             float m = (h *= j) * l - (i *= j) * k;
             float n = i * l + h * k;
             EntityNavigation entityNavigation = this.entity.getNavigation();
-            if (entityNavigation != null && (pathNodeMaker = entityNavigation.getNodeMaker()) != null && pathNodeMaker.getNodeType(this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)) != PathNodeType.WALKABLE) {
+            if (entityNavigation != null && (pathNodeMaker = entityNavigation.getNodeMaker()) != null && pathNodeMaker.getNodeType(this.entity.world, MathHelper.floor(this.entity.getX() + (double)m), MathHelper.floor(this.entity.getY()), MathHelper.floor(this.entity.getZ() + (double)n)) != PathNodeType.WALKABLE) {
                 this.forwardMovement = 1.0f;
                 this.sidewaysMovement = 0.0f;
                 g = f;
@@ -83,9 +83,9 @@ public class MoveControl {
             this.state = State.WAIT;
         } else if (this.state == State.MOVE_TO) {
             this.state = State.WAIT;
-            double d = this.targetX - this.entity.x;
-            double o = this.targetY - this.entity.y;
-            double e = this.targetZ - this.entity.z;
+            double d = this.targetX - this.entity.getX();
+            double e = this.targetZ - this.entity.getZ();
+            double o = this.targetY - this.entity.getY();
             double p = d * d + o * o + e * e;
             if (p < 2.500000277905201E-7) {
                 this.entity.setForwardSpeed(0.0f);
@@ -98,7 +98,7 @@ public class MoveControl {
             BlockState blockState = this.entity.world.getBlockState(blockPos);
             Block block = blockState.getBlock();
             VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
-            if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0f, this.entity.getWidth()) || !voxelShape.isEmpty() && this.entity.y < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY() && !block.matches(BlockTags.DOORS) && !block.matches(BlockTags.FENCES)) {
+            if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0f, this.entity.getWidth()) || !voxelShape.isEmpty() && this.entity.getY() < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY() && !block.matches(BlockTags.DOORS) && !block.matches(BlockTags.FENCES)) {
                 this.entity.getJumpControl().setActive();
                 this.state = State.JUMPING;
             }

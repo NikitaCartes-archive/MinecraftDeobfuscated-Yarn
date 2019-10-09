@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.ParrotEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -38,10 +37,8 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
             matrixStack.push();
             matrixStack.translate(bl ? (double)0.4f : (double)-0.4f, playerEntity.isInSneakingPose() ? (double)-1.3f : -1.5, 0.0);
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(ParrotEntityRenderer.SKINS[compoundTag.getInt("Variant")]));
-            OverlayTexture.clearDefaultOverlay(vertexConsumer);
-            this.model.method_17106(matrixStack, vertexConsumer, i, f, g, j, k, l, playerEntity.age);
-            vertexConsumer.clearDefaultOverlay();
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(ParrotEntityRenderer.SKINS[compoundTag.getInt("Variant")]));
+            this.model.method_17106(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, f, g, j, k, l, playerEntity.age);
             matrixStack.pop();
         });
     }

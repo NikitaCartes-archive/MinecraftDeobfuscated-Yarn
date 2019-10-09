@@ -81,9 +81,9 @@ extends Overlay {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, o);
         this.blit(n, p, 0, 0, 256, 256);
         float q = this.reloadMonitor.getProgress();
-        this.field_17770 = this.field_17770 * 0.95f + q * 0.050000012f;
+        this.field_17770 = MathHelper.clamp(this.field_17770 * 0.95f + q * 0.050000012f, 0.0f, 1.0f);
         if (g < 1.0f) {
-            this.renderProgressBar(k / 2 - 150, l / 4 * 3, k / 2 + 150, l / 4 * 3 + 10, this.field_17770, 1.0f - MathHelper.clamp(g, 0.0f, 1.0f));
+            this.renderProgressBar(k / 2 - 150, l / 4 * 3, k / 2 + 150, l / 4 * 3 + 10, 1.0f - MathHelper.clamp(g, 0.0f, 1.0f));
         }
         if (g >= 2.0f) {
             this.client.setOverlay(null);
@@ -98,11 +98,11 @@ extends Overlay {
         }
     }
 
-    private void renderProgressBar(int i, int j, int k, int l, float f, float g) {
-        int m = MathHelper.ceil((float)(k - i - 2) * f);
-        SplashScreen.fill(i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0f - g) * 255.0f) << 16 | Math.round((1.0f - g) * 255.0f) << 8 | Math.round((1.0f - g) * 255.0f));
+    private void renderProgressBar(int i, int j, int k, int l, float f) {
+        int m = MathHelper.ceil((float)(k - i - 1) * this.field_17770);
+        SplashScreen.fill(i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0f - f) * 255.0f) << 16 | Math.round((1.0f - f) * 255.0f) << 8 | Math.round((1.0f - f) * 255.0f));
         SplashScreen.fill(i, j, k, l, -1);
-        SplashScreen.fill(i + 1, j + 1, i + m, l - 1, 0xFF000000 | (int)MathHelper.lerp(1.0f - g, 226.0f, 255.0f) << 16 | (int)MathHelper.lerp(1.0f - g, 40.0f, 255.0f) << 8 | (int)MathHelper.lerp(1.0f - g, 55.0f, 255.0f));
+        SplashScreen.fill(i + 1, j + 1, i + m, l - 1, 0xFF000000 | (int)MathHelper.lerp(1.0f - f, 226.0f, 255.0f) << 16 | (int)MathHelper.lerp(1.0f - f, 40.0f, 255.0f) << 8 | (int)MathHelper.lerp(1.0f - f, 55.0f, 255.0f));
     }
 
     @Override

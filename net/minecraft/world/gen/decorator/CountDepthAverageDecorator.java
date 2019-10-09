@@ -23,10 +23,10 @@ extends SimpleDecorator<CountDepthDecoratorConfig> {
         int j = countDepthDecoratorConfig.baseline;
         int k2 = countDepthDecoratorConfig.spread;
         return IntStream.range(0, i).mapToObj(k -> {
-            int l = random.nextInt(16);
-            int m = random.nextInt(k2) + random.nextInt(k2) - k2 + j;
-            int n = random.nextInt(16);
-            return blockPos.add(l, m, n);
+            int l = random.nextInt(16) + blockPos.getX();
+            int m = random.nextInt(16) + blockPos.getZ();
+            int n = random.nextInt(k2) + random.nextInt(k2) - k2 + j;
+            return new BlockPos(l, n, m);
         });
     }
 }

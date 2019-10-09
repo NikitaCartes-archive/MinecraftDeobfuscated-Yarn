@@ -28,7 +28,7 @@ extends AbstractPhase {
             float f = (this.dragon.getRandom().nextFloat() - 0.5f) * 8.0f;
             float g = (this.dragon.getRandom().nextFloat() - 0.5f) * 4.0f;
             float h = (this.dragon.getRandom().nextFloat() - 0.5f) * 8.0f;
-            this.dragon.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.dragon.x + (double)f, this.dragon.y + 2.0 + (double)g, this.dragon.z + (double)h, 0.0, 0.0, 0.0);
+            this.dragon.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.dragon.getX() + (double)f, this.dragon.getY() + 2.0 + (double)g, this.dragon.getZ() + (double)h, 0.0, 0.0, 0.0);
         }
     }
 
@@ -40,7 +40,7 @@ extends AbstractPhase {
             BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
             this.field_7041 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         }
-        if ((d = this.field_7041.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z)) < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
+        if ((d = this.field_7041.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ())) < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
             this.dragon.setHealth(0.0f);
         } else {
             this.dragon.setHealth(1.0f);

@@ -49,10 +49,8 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
             return true;
         }
         if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {
-            BlockPos blockPos = shulkerEntity.method_7120();
-            BlockPos blockPos2 = shulkerEntity.getAttachedBlock();
-            Vec3d vec3d = new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
-            Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            Vec3d vec3d = new Vec3d(shulkerEntity.getAttachedBlock());
+            Vec3d vec3d2 = new Vec3d(shulkerEntity.method_7120());
             if (frustum.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
                 return true;
             }

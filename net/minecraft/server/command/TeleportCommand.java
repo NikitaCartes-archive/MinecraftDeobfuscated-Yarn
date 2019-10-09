@@ -43,7 +43,7 @@ public class TeleportCommand {
 
     private static int execute(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, Entity entity) {
         for (Entity entity2 : collection) {
-            TeleportCommand.teleport(serverCommandSource, entity2, (ServerWorld)entity.world, entity.x, entity.y, entity.z, EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class), entity.yaw, entity.pitch, null);
+            TeleportCommand.teleport(serverCommandSource, entity2, (ServerWorld)entity.world, entity.getX(), entity.getY(), entity.getZ(), EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class), entity.yaw, entity.pitch, null);
         }
         if (collection.size() == 1) {
             serverCommandSource.sendFeedback(new TranslatableText("commands.teleport.success.entity.single", collection.iterator().next().getDisplayName(), entity.getDisplayName()), true);

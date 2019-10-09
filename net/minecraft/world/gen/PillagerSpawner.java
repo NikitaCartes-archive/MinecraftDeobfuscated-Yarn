@@ -18,6 +18,7 @@ public class PillagerSpawner {
     private int ticksUntilNextSpawn;
 
     public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
+        int k;
         if (!bl) {
             return 0;
         }
@@ -46,9 +47,7 @@ public class PillagerSpawner {
             return 0;
         }
         int j = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-        int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        mutable.set(playerEntity.x, playerEntity.y, playerEntity.z).setOffset(j, 0, k);
+        BlockPos.Mutable mutable = new BlockPos.Mutable(playerEntity).setOffset(j, 0, k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1));
         if (!serverWorld.isRegionLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)) {
             return 0;
         }

@@ -8,21 +8,21 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_4634;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
-public abstract class AbstractPileFeature
-extends Feature<DefaultFeatureConfig> {
-    public AbstractPileFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+public class AbstractPileFeature
+extends Feature<class_4634> {
+    public AbstractPileFeature(Function<Dynamic<?>, ? extends class_4634> function) {
         super(function);
     }
 
-    public boolean method_16709(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
+    public boolean method_16709(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, class_4634 arg) {
         if (blockPos.getY() < 5) {
             return false;
         }
@@ -32,11 +32,11 @@ extends Feature<DefaultFeatureConfig> {
             int l;
             int k = blockPos.getX() - blockPos2.getX();
             if ((float)(k * k + (l = blockPos.getZ() - blockPos2.getZ()) * l) <= random.nextFloat() * 10.0f - random.nextFloat() * 6.0f) {
-                this.addPileBlock(iWorld, blockPos2, random);
+                this.addPileBlock(iWorld, blockPos2, random, arg);
                 continue;
             }
             if (!((double)random.nextFloat() < 0.031)) continue;
-            this.addPileBlock(iWorld, blockPos2, random);
+            this.addPileBlock(iWorld, blockPos2, random, arg);
         }
         return true;
     }
@@ -50,12 +50,10 @@ extends Feature<DefaultFeatureConfig> {
         return blockState.isSideSolidFullSquare(iWorld, blockPos2, Direction.UP);
     }
 
-    private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
+    private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random, class_4634 arg) {
         if (iWorld.isAir(blockPos) && this.canPlacePileBlock(iWorld, blockPos, random)) {
-            iWorld.setBlockState(blockPos, this.getPileBlockState(iWorld), 4);
+            iWorld.setBlockState(blockPos, arg.field_21229.method_23455(random, blockPos), 4);
         }
     }
-
-    protected abstract BlockState getPileBlockState(IWorld var1);
 }
 

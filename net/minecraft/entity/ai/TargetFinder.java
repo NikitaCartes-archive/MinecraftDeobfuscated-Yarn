@@ -37,25 +37,25 @@ public class TargetFinder {
 
     @Nullable
     public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
+        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
         return TargetFinder.findTarget(mobEntityWithAi, i, j, vec3d2);
     }
 
     @Nullable
     public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
-        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
+        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
         return TargetFinder.method_21758(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::getPathfindingFavor);
     }
 
     @Nullable
     public static Vec3d findGroundTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-        Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
+        Vec3d vec3d2 = mobEntityWithAi.getPos().subtract(vec3d);
         return TargetFinder.method_21758(mobEntityWithAi, i, j, vec3d2, false, 1.5707963705062866, mobEntityWithAi::getPathfindingFavor);
     }
 
     @Nullable
     public static Vec3d findTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-        Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
+        Vec3d vec3d2 = mobEntityWithAi.getPos().subtract(vec3d);
         return TargetFinder.findTarget(mobEntityWithAi, i, j, vec3d2);
     }
 
@@ -92,10 +92,10 @@ public class TargetFinder {
             int q = blockPos2.getZ();
             if (mobEntityWithAi.hasPositionTarget() && i > 1) {
                 blockPos3 = mobEntityWithAi.getPositionTarget();
-                o = mobEntityWithAi.x > (double)blockPos3.getX() ? (o -= random.nextInt(i / 2)) : (o += random.nextInt(i / 2));
-                q = mobEntityWithAi.z > (double)blockPos3.getZ() ? (q -= random.nextInt(i / 2)) : (q += random.nextInt(i / 2));
+                o = mobEntityWithAi.getX() > (double)blockPos3.getX() ? (o -= random.nextInt(i / 2)) : (o += random.nextInt(i / 2));
+                q = mobEntityWithAi.getZ() > (double)blockPos3.getZ() ? (q -= random.nextInt(i / 2)) : (q += random.nextInt(i / 2));
             }
-            blockPos3 = new BlockPos((double)o + mobEntityWithAi.x, (double)p + mobEntityWithAi.y, (double)q + mobEntityWithAi.z);
+            blockPos3 = new BlockPos((double)o + mobEntityWithAi.getX(), (double)p + mobEntityWithAi.getY(), (double)q + mobEntityWithAi.getZ());
             if (bl4 && !mobEntityWithAi.isInWalkTargetRange(blockPos3) || bl3 && !entityNavigation.isValidPosition(blockPos3)) continue;
             if (bl2) {
                 blockPos3 = TargetFinder.method_21761(blockPos3, random.nextInt(l + 1) + m, mobEntityWithAi.world.getHeight(), predicate);

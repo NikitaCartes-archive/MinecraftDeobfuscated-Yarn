@@ -23,7 +23,6 @@ import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,7 +109,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         this.lastSeed = chunkGenerator.getSeed();
         ArrayList<Biome> list = Lists.newArrayList();
         for (Biome biome : Registry.BIOME) {
-            if (biome == null || !chunkGenerator.hasStructure(biome, Feature.STRONGHOLD)) continue;
+            if (biome == null || !chunkGenerator.hasStructure(biome, this)) continue;
             list.add(biome);
         }
         int i = ((ChunkGeneratorConfig)chunkGenerator.getConfig()).getStrongholdDistance();

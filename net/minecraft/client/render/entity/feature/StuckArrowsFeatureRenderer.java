@@ -35,7 +35,7 @@ extends StickingOutThingsFeatureRenderer<T, M> {
     @Override
     protected void renderThing(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity, float f, float g, float h, float i) {
         float j = MathHelper.sqrt(f * f + h * h);
-        this.field_20528 = new ArrowEntity(entity.world, entity.x, entity.y, entity.z);
+        this.field_20528 = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
         this.field_20528.yaw = (float)(Math.atan2(f, h) * 57.2957763671875);
         this.field_20528.pitch = (float)(Math.atan2(g, j) * 57.2957763671875);
         this.field_20528.prevYaw = this.field_20528.yaw;

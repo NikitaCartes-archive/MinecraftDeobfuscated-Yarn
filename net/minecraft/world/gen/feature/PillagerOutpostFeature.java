@@ -19,15 +19,15 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.AbstractTempleFeature;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.PillagerOutpostFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class PillagerOutpostFeature
-extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
+extends AbstractTempleFeature<DefaultFeatureConfig> {
     private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
-    public PillagerOutpostFeature(Function<Dynamic<?>, ? extends PillagerOutpostFeatureConfig> function) {
+    public PillagerOutpostFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
         super(function);
     }
 
@@ -57,7 +57,7 @@ extends AbstractTempleFeature<PillagerOutpostFeatureConfig> {
             if (random.nextInt(5) != 0) {
                 return false;
             }
-            if (chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST)) {
+            if (chunkGenerator.hasStructure(biome, this)) {
                 for (int m = i - 10; m <= i + 10; ++m) {
                     for (int n = j - 10; n <= j + 10; ++n) {
                         if (!Feature.VILLAGE.shouldStartAt(biomeAccess, chunkGenerator, random, m, n, biomeAccess.getBiome(new BlockPos((m << 4) + 9, 0, (n << 4) + 9)))) continue;

@@ -6,7 +6,6 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -38,13 +37,9 @@ extends EntityRenderer<TntEntity> {
             matrixStack.scale(j, j, j);
         }
         int k = tntEntity.getLightmapCoordinates();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        if (tntEntity.getFuseTimer() / 5 % 2 == 0) {
-            TntMinecartEntityRenderer.method_23190(Blocks.TNT.getDefaultState(), matrixStack, layeredVertexConsumerStorage, k);
-        } else {
-            MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.TNT.getDefaultState(), matrixStack, layeredVertexConsumerStorage, k, 0, 10);
-        }
+        TntMinecartEntityRenderer.method_23190(Blocks.TNT.getDefaultState(), matrixStack, layeredVertexConsumerStorage, k, tntEntity.getFuseTimer() / 5 % 2 == 0);
         matrixStack.pop();
         super.render(tntEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

@@ -81,6 +81,7 @@ import net.minecraft.block.GrassPathBlock;
 import net.minecraft.block.GravelBlock;
 import net.minecraft.block.GrindstoneBlock;
 import net.minecraft.block.HayBlock;
+import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.IceBlock;
 import net.minecraft.block.InfestedBlock;
@@ -382,7 +383,7 @@ public class Blocks {
     public static final Block OAK_FENCE = Blocks.register("oak_fence", new FenceBlock(Block.Settings.of(Material.WOOD, Blocks.OAK_PLANKS.materialColor).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block PUMPKIN = Blocks.register("pumpkin", new PumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block NETHERRACK = Blocks.register("netherrack", new Block(Block.Settings.of(Material.STONE, MaterialColor.NETHER).strength(0.4f)));
-    public static final Block SOUL_SAND = Blocks.register("soul_sand", new SoulSandBlock(Block.Settings.of(Material.SAND, MaterialColor.BROWN).ticksRandomly().strength(0.5f).sounds(BlockSoundGroup.SAND)));
+    public static final Block SOUL_SAND = Blocks.register("soul_sand", new SoulSandBlock(Block.Settings.of(Material.SAND, MaterialColor.BROWN).ticksRandomly().strength(0.5f).method_23351(0.4f).sounds(BlockSoundGroup.SAND)));
     public static final Block GLOWSTONE = Blocks.register("glowstone", new Block(Block.Settings.of(Material.GLASS, MaterialColor.SAND).strength(0.3f).sounds(BlockSoundGroup.GLASS).lightLevel(15)));
     public static final Block NETHER_PORTAL = Blocks.register("nether_portal", new PortalBlock(Block.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0f).sounds(BlockSoundGroup.GLASS).lightLevel(11).dropsNothing()));
     public static final Block CARVED_PUMPKIN = Blocks.register("carved_pumpkin", new CarvedPumpkinBlock(Block.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD)));
@@ -867,7 +868,9 @@ public class Blocks {
     public static final Block JIGSAW = Blocks.register("jigsaw", new JigsawBlock(Block.Settings.of(Material.METAL, MaterialColor.LIGHT_GRAY).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block COMPOSTER = Blocks.register("composter", new ComposterBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BEE_NEST = Blocks.register("bee_nest", new BeeHiveBlock(Block.Settings.of(Material.WOOD).strength(0.3f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block BEE_HIVE = Blocks.register("bee_hive", new BeeHiveBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block BEEHIVE = Blocks.register("beehive", new BeeHiveBlock(Block.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block HONEY_BLOCK = Blocks.register("honey_block", new HoneyBlock(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).method_23351(0.4f).method_23352(0.5f).nonOpaque().sounds(BlockSoundGroup.field_21214)));
+    public static final Block HONEYCOMB_BLOCK = Blocks.register("honeycomb_block", new Block(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).strength(0.6f).sounds(BlockSoundGroup.CORAL)));
 
     private static Block register(String string, Block block) {
         return Registry.register(Registry.BLOCK, string, block);

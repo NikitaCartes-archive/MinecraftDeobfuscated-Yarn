@@ -76,7 +76,7 @@ public interface EntityView {
 
     @Nullable
     default public PlayerEntity getClosestPlayer(Entity entity, double d) {
-        return this.getClosestPlayer(entity.x, entity.y, entity.z, d, false);
+        return this.getClosestPlayer(entity.getX(), entity.getY(), entity.getZ(), d, false);
     }
 
     @Nullable
@@ -91,7 +91,7 @@ public interface EntityView {
         PlayerEntity playerEntity = null;
         for (PlayerEntity playerEntity2 : this.getPlayers()) {
             if (!EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity2)) continue;
-            double h = playerEntity2.squaredDistanceTo(d, playerEntity2.y, e);
+            double h = playerEntity2.squaredDistanceTo(d, playerEntity2.getY(), e);
             if (!(f < 0.0) && !(h < f * f) || g != -1.0 && !(h < g)) continue;
             g = h;
             playerEntity = playerEntity2;
@@ -111,7 +111,7 @@ public interface EntityView {
 
     @Nullable
     default public PlayerEntity getClosestPlayer(TargetPredicate targetPredicate, LivingEntity livingEntity) {
-        return this.getClosestEntity(this.getPlayers(), targetPredicate, livingEntity, livingEntity.x, livingEntity.y, livingEntity.z);
+        return this.getClosestEntity(this.getPlayers(), targetPredicate, livingEntity, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
     }
 
     @Nullable
@@ -151,7 +151,7 @@ public interface EntityView {
     default public List<PlayerEntity> getPlayers(TargetPredicate targetPredicate, LivingEntity livingEntity, Box box) {
         ArrayList<PlayerEntity> list = Lists.newArrayList();
         for (PlayerEntity playerEntity : this.getPlayers()) {
-            if (!box.contains(playerEntity.x, playerEntity.y, playerEntity.z) || !targetPredicate.test(livingEntity, playerEntity)) continue;
+            if (!box.contains(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ()) || !targetPredicate.test(livingEntity, playerEntity)) continue;
             list.add(playerEntity);
         }
         return list;

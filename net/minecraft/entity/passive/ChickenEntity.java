@@ -99,7 +99,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float f, float g) {
+        return false;
     }
 
     @Override
@@ -167,7 +168,7 @@ extends AnimalEntity {
         float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.1f;
         float i = 0.0f;
-        entity.setPosition(this.x + (double)(0.1f * f), this.y + (double)(this.getHeight() * 0.5f) + entity.getHeightOffset() + 0.0, this.z - (double)(0.1f * g));
+        entity.setPosition(this.getX() + (double)(0.1f * f), this.method_23323(0.5) + entity.getHeightOffset() + 0.0, this.getZ() - (double)(0.1f * g));
         if (entity instanceof LivingEntity) {
             ((LivingEntity)entity).bodyYaw = this.bodyYaw;
         }

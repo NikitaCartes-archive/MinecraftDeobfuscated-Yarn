@@ -45,7 +45,7 @@ extends MobNavigation {
     public void tick() {
         if (this.isIdle()) {
             if (this.field_6687 != null) {
-                if (this.field_6687.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth()) || this.entity.y > (double)this.field_6687.getY() && new BlockPos((double)this.field_6687.getX(), this.entity.y, (double)this.field_6687.getZ()).isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())) {
+                if (this.field_6687.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth()) || this.entity.getY() > (double)this.field_6687.getY() && new BlockPos((double)this.field_6687.getX(), this.entity.getY(), (double)this.field_6687.getZ()).isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())) {
                     this.field_6687 = null;
                 } else {
                     this.entity.getMoveControl().moveTo(this.field_6687.getX(), this.field_6687.getY(), this.field_6687.getZ(), this.speed);

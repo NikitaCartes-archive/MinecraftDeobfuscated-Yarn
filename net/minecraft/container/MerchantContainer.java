@@ -147,7 +147,7 @@ extends Container {
     private void playYesSound() {
         if (!this.trader.getTraderWorld().isClient) {
             Entity entity = (Entity)((Object)this.trader);
-            this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.getYesSound(), SoundCategory.NEUTRAL, 1.0f, 1.0f, false);
+            this.trader.getTraderWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.trader.getYesSound(), SoundCategory.NEUTRAL, 1.0f, 1.0f, false);
         }
     }
 

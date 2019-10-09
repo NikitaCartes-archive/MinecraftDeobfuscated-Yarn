@@ -126,8 +126,8 @@ extends Goal {
         if (pathNode == null) {
             return false;
         }
-        int i = pathNode.x - MathHelper.floor(livingEntity.x);
-        return (double)(i * i + (j = pathNode.z - MathHelper.floor(livingEntity.z)) * j) <= 2.25;
+        int i = pathNode.x - MathHelper.floor(livingEntity.getX());
+        return (double)(i * i + (j = pathNode.z - MathHelper.floor(livingEntity.getZ())) * j) <= 2.25;
     }
 
     public TrackTargetGoal setMaxTimeWithoutVisibility(int i) {

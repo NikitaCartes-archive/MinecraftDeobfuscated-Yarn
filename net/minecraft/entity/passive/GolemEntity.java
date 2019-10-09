@@ -17,7 +17,8 @@ extends MobEntityWithAi {
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float f, float g) {
+        return false;
     }
 
     @Override

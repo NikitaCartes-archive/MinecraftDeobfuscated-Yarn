@@ -161,7 +161,7 @@ implements AutoCloseable {
             if (identifier != null) {
                 v = bl4 ? glyph.getBoldOffset() : 0.0f;
                 w = bl ? glyph.getShadowOffset() : 0.0f;
-                VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.method_23030(identifier) : RenderLayer.method_23028(identifier));
+                VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier) : RenderLayer.getText(identifier));
                 this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, vertexConsumer, p, q, r, s, k);
             }
             v = glyph.getAdvance(bl4);
@@ -182,7 +182,7 @@ implements AutoCloseable {
             list.add(new GlyphRenderer.Rectangle(f - 1.0f, g + 9.0f, o + 1.0f, g - 1.0f, 0.01f, y, z, aa, x));
         }
         if (!list.isEmpty() && (identifier2 = (glyphRenderer2 = this.fontStorage.method_22943()).getId()) != null) {
-            VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.method_23030(identifier2) : RenderLayer.method_23028(identifier2));
+            VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier2) : RenderLayer.getText(identifier2));
             for (GlyphRenderer.Rectangle rectangle : list) {
                 glyphRenderer2.method_22944(rectangle, matrix4f, vertexConsumer2, k);
             }

@@ -26,10 +26,10 @@ extends Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> {
         double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor, (double)blockPos.getZ() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor, false);
         int i2 = (int)Math.ceil((d + topSolidHeightmapNoiseBiasedDecoratorConfig.noiseOffset) * (double)topSolidHeightmapNoiseBiasedDecoratorConfig.noiseToCountRatio);
         return IntStream.range(0, i2).mapToObj(i -> {
-            int j = random.nextInt(16);
-            int k = random.nextInt(16);
-            int l = iWorld.getTopY(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, blockPos.getX() + j, blockPos.getZ() + k);
-            return new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
+            int j = random.nextInt(16) + blockPos.getX();
+            int k = random.nextInt(16) + blockPos.getZ();
+            int l = iWorld.getTopY(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, j, k);
+            return new BlockPos(j, l, k);
         });
     }
 }

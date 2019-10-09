@@ -27,7 +27,7 @@ public class LookControl {
     }
 
     public void lookAt(Entity entity, float f, float g) {
-        this.lookAt(entity.x, LookControl.getLookingHeightFor(entity), entity.z, f, g);
+        this.lookAt(entity.getX(), LookControl.getLookingHeightFor(entity), entity.getZ(), f, g);
     }
 
     public void lookAt(double d, double e, double f) {
@@ -80,16 +80,16 @@ public class LookControl {
     }
 
     protected float getTargetPitch() {
-        double d = this.lookX - this.entity.x;
-        double e = this.lookY - (this.entity.y + (double)this.entity.getStandingEyeHeight());
-        double f = this.lookZ - this.entity.z;
+        double d = this.lookX - this.entity.getX();
+        double e = this.lookY - this.entity.method_23320();
+        double f = this.lookZ - this.entity.getZ();
         double g = MathHelper.sqrt(d * d + f * f);
         return (float)(-(MathHelper.atan2(e, g) * 57.2957763671875));
     }
 
     protected float getTargetYaw() {
-        double d = this.lookX - this.entity.x;
-        double e = this.lookZ - this.entity.z;
+        double d = this.lookX - this.entity.getX();
+        double e = this.lookZ - this.entity.getZ();
         return (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
     }
 
@@ -101,7 +101,7 @@ public class LookControl {
 
     private static double getLookingHeightFor(Entity entity) {
         if (entity instanceof LivingEntity) {
-            return entity.y + (double)entity.getStandingEyeHeight();
+            return entity.method_23320();
         }
         return (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
     }

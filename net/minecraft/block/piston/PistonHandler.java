@@ -55,10 +55,14 @@ public class PistonHandler {
         }
         for (int i = 0; i < this.movedBlocks.size(); ++i) {
             BlockPos blockPos = this.movedBlocks.get(i);
-            if (this.world.getBlockState(blockPos).getBlock() != Blocks.SLIME_BLOCK || this.method_11538(blockPos)) continue;
+            if (!this.method_23367(this.world.getBlockState(blockPos).getBlock()) || this.method_11538(blockPos)) continue;
             return false;
         }
         return true;
+    }
+
+    private boolean method_23367(Block block) {
+        return block == Blocks.SLIME_BLOCK || block == Blocks.HONEY_BLOCK;
     }
 
     private boolean tryMove(BlockPos blockPos, Direction direction) {
@@ -81,7 +85,7 @@ public class PistonHandler {
         if (i + this.movedBlocks.size() > 12) {
             return false;
         }
-        while (block == Blocks.SLIME_BLOCK) {
+        while (this.method_23367(block)) {
             BlockPos blockPos2 = blockPos.method_10079(this.direction.getOpposite(), i);
             blockState = this.world.getBlockState(blockPos2);
             block = blockState.getBlock();
@@ -102,7 +106,7 @@ public class PistonHandler {
                 this.method_11539(j, l);
                 for (int m = 0; m <= l + j; ++m) {
                     BlockPos blockPos4 = this.movedBlocks.get(m);
-                    if (this.world.getBlockState(blockPos4).getBlock() != Blocks.SLIME_BLOCK || this.method_11538(blockPos4)) continue;
+                    if (!this.method_23367(this.world.getBlockState(blockPos4).getBlock()) || this.method_11538(blockPos4)) continue;
                     return false;
                 }
                 return true;

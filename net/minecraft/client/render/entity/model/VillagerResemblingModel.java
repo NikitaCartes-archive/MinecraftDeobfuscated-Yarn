@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.entity.Entity;
@@ -34,6 +35,7 @@ ModelWithHat {
     }
 
     public VillagerResemblingModel(float f, int i, int j) {
+        super(RenderLayer::getEntityCutoutNoCull);
         float g = 0.5f;
         this.head = new ModelPart(this).setTextureSize(i, j);
         this.head.setPivot(0.0f, 0.0f, 0.0f);

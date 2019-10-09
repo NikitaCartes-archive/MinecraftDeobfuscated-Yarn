@@ -5,6 +5,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -16,16 +17,12 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class ChatOptionsScreen
-extends Screen {
+extends class_4667 {
     private static final Option[] OPTIONS = new Option[]{Option.VISIBILITY, Option.CHAT_COLOR, Option.CHAT_LINKS, Option.CHAT_LINKS_PROMPT, Option.CHAT_OPACITY, Option.TEXT_BACKGROUND_OPACITY, Option.CHAT_SCALE, Option.CHAT_WIDTH, Option.CHAT_HEIGHT_FOCUSED, Option.SATURATION, Option.REDUCED_DEBUG_INFO, Option.AUTO_SUGGESTIONS, Option.NARRATOR};
-    private final Screen parent;
-    private final GameOptions options;
     private AbstractButtonWidget narratorOptionButton;
 
     public ChatOptionsScreen(Screen screen, GameOptions gameOptions) {
-        super(new TranslatableText("options.chat.title", new Object[0]));
-        this.parent = screen;
-        this.options = gameOptions;
+        super(screen, gameOptions, new TranslatableText("options.chat.title", new Object[0]));
     }
 
     @Override
@@ -41,12 +38,7 @@ extends Screen {
             }
             ++i;
         }
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
-    }
-
-    @Override
-    public void removed() {
-        this.minecraft.options.write();
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.field_21335)));
     }
 
     @Override
@@ -57,7 +49,7 @@ extends Screen {
     }
 
     public void setNarratorMessage() {
-        this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.options));
+        this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.field_21336));
     }
 }
 

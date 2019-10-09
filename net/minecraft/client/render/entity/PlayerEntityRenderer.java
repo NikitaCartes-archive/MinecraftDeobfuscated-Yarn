@@ -10,7 +10,6 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -174,17 +173,14 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         PlayerEntityModel playerEntityModel = (PlayerEntityModel)this.getModel();
         this.setModelPose(abstractClientPlayerEntity);
         int i = abstractClientPlayerEntity.getLightmapCoordinates();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(abstractClientPlayerEntity.getSkinTexture()));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
         playerEntityModel.handSwingProgress = 0.0f;
         playerEntityModel.isSneaking = false;
         playerEntityModel.field_3396 = 0.0f;
         playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
         modelPart.pitch = 0.0f;
-        modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, null);
+        modelPart.render(matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), 0.0625f, i, OverlayTexture.field_21444, null);
         modelPart2.pitch = 0.0f;
-        modelPart2.render(matrixStack, vertexConsumer, 0.0625f, i, null);
-        vertexConsumer.clearDefaultOverlay();
+        modelPart2.render(matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())), 0.0625f, i, OverlayTexture.field_21444, null);
     }
 
     protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
@@ -194,7 +190,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             float j = (float)abstractClientPlayerEntity.getRoll() + h;
             float k = MathHelper.clamp(j * j / 100.0f, 0.0f, 1.0f);
             if (!abstractClientPlayerEntity.isUsingRiptide()) {
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(k * (-90.0f - abstractClientPlayerEntity.pitch), true));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(k * (-90.0f - abstractClientPlayerEntity.pitch)));
             }
             Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
             Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
@@ -203,13 +199,13 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             if (d > 0.0 && e > 0.0) {
                 double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
                 double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(Math.signum(m) * Math.acos(l)), false));
+                matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626((float)(Math.signum(m) * Math.acos(l))));
             }
         } else if (i > 0.0f) {
             super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
             float j = abstractClientPlayerEntity.isInsideWater() ? -90.0f - abstractClientPlayerEntity.pitch : -90.0f;
             float k = MathHelper.lerp(i, 0.0f, j);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(k, true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(k));
             if (abstractClientPlayerEntity.isInSwimmingPose()) {
                 matrixStack.translate(0.0, -1.0, 0.3f);
             }

@@ -130,7 +130,7 @@ extends HostileEntity {
         if (this.age >= this.lastAngrySoundAge + 400) {
             this.lastAngrySoundAge = this.age;
             if (!this.isSilent()) {
-                this.world.playSound(this.x, this.y + (double)this.getStandingEyeHeight(), this.z, SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5f, 1.0f, false);
+                this.world.playSound(this.getX(), this.method_23320(), this.getZ(), SoundEvents.ENTITY_ENDERMAN_STARE, this.getSoundCategory(), 2.5f, 1.0f, false);
             }
         }
     }
@@ -168,7 +168,7 @@ extends HostileEntity {
             return false;
         }
         Vec3d vec3d = playerEntity.getRotationVec(1.0f).normalize();
-        Vec3d vec3d2 = new Vec3d(this.x - playerEntity.x, this.getBoundingBox().minY + (double)this.getStandingEyeHeight() - (playerEntity.y + (double)playerEntity.getStandingEyeHeight()), this.z - playerEntity.z);
+        Vec3d vec3d2 = new Vec3d(this.getX() - playerEntity.getX(), this.method_23320() - playerEntity.method_23320(), this.getZ() - playerEntity.getZ());
         double d = vec3d2.length();
         double e = vec3d.dotProduct(vec3d2 = vec3d2.normalize());
         if (e > 1.0 - 0.025 / d) {
@@ -186,7 +186,7 @@ extends HostileEntity {
     public void tickMovement() {
         if (this.world.isClient) {
             for (int i = 0; i < 2; ++i) {
-                this.world.addParticle(ParticleTypes.PORTAL, this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), this.y + this.random.nextDouble() * (double)this.getHeight() - 0.25, this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), (this.random.nextDouble() - 0.5) * 2.0, -this.random.nextDouble(), (this.random.nextDouble() - 0.5) * 2.0);
+                this.world.addParticle(ParticleTypes.PORTAL, this.method_23322(0.5), this.method_23319() - 0.25, this.method_23325(0.5), (this.random.nextDouble() - 0.5) * 2.0, -this.random.nextDouble(), (this.random.nextDouble() - 0.5) * 2.0);
             }
         }
         this.jumping = false;
@@ -210,19 +210,19 @@ extends HostileEntity {
         if (this.world.isClient() || !this.isAlive()) {
             return false;
         }
-        double d = this.x + (this.random.nextDouble() - 0.5) * 64.0;
-        double e = this.y + (double)(this.random.nextInt(64) - 32);
-        double f = this.z + (this.random.nextDouble() - 0.5) * 64.0;
+        double d = this.getX() + (this.random.nextDouble() - 0.5) * 64.0;
+        double e = this.getY() + (double)(this.random.nextInt(64) - 32);
+        double f = this.getZ() + (this.random.nextDouble() - 0.5) * 64.0;
         return this.teleport(d, e, f);
     }
 
     private boolean teleportTo(Entity entity) {
-        Vec3d vec3d = new Vec3d(this.x - entity.x, this.getBoundingBox().minY + (double)(this.getHeight() / 2.0f) - entity.y + (double)entity.getStandingEyeHeight(), this.z - entity.z);
+        Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.method_23323(0.5) - entity.method_23320(), this.getZ() - entity.getZ());
         vec3d = vec3d.normalize();
         double d = 16.0;
-        double e = this.x + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.x * 16.0;
-        double f = this.y + (double)(this.random.nextInt(16) - 8) - vec3d.y * 16.0;
-        double g = this.z + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.z * 16.0;
+        double e = this.getX() + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.x * 16.0;
+        double f = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3d.y * 16.0;
+        double g = this.getZ() + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.z * 16.0;
         return this.teleport(e, f, g);
     }
 
@@ -334,13 +334,13 @@ extends HostileEntity {
             Vec3d vec3d2;
             Random random = this.enderman.getRandom();
             World world = this.enderman.world;
-            int i = MathHelper.floor(this.enderman.x - 2.0 + random.nextDouble() * 4.0);
-            int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 3.0);
-            int k = MathHelper.floor(this.enderman.z - 2.0 + random.nextDouble() * 4.0);
+            int i = MathHelper.floor(this.enderman.getX() - 2.0 + random.nextDouble() * 4.0);
+            int j = MathHelper.floor(this.enderman.getY() + random.nextDouble() * 3.0);
+            int k = MathHelper.floor(this.enderman.getZ() - 2.0 + random.nextDouble() * 4.0);
             BlockPos blockPos = new BlockPos(i, j, k);
             BlockState blockState = world.getBlockState(blockPos);
             Block block = blockState.getBlock();
-            Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.x) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.z) + 0.5);
+            Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.getX()) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.getZ()) + 0.5);
             BlockHitResult blockHitResult = world.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.enderman));
             boolean bl2 = bl = blockHitResult.getType() != HitResult.Type.MISS && blockHitResult.getBlockPos().equals(blockPos);
             if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
@@ -373,9 +373,9 @@ extends HostileEntity {
         public void tick() {
             Random random = this.enderman.getRandom();
             World iWorld = this.enderman.world;
-            int i = MathHelper.floor(this.enderman.x - 1.0 + random.nextDouble() * 2.0);
-            int j = MathHelper.floor(this.enderman.y + random.nextDouble() * 2.0);
-            int k = MathHelper.floor(this.enderman.z - 1.0 + random.nextDouble() * 2.0);
+            int i = MathHelper.floor(this.enderman.getX() - 1.0 + random.nextDouble() * 2.0);
+            int j = MathHelper.floor(this.enderman.getY() + random.nextDouble() * 2.0);
+            int k = MathHelper.floor(this.enderman.getZ() - 1.0 + random.nextDouble() * 2.0);
             BlockPos blockPos = new BlockPos(i, j, k);
             BlockState blockState = iWorld.getBlockState(blockPos);
             BlockPos blockPos2 = blockPos.method_10074();

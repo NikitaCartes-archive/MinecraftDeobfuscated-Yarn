@@ -106,7 +106,7 @@ extends Screen {
         } else {
             this.initWidgetsNormal(j, 24);
         }
-        this.addButton(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_LOCATION, 256, 256, buttonWidget -> this.minecraft.openScreen(new LanguageOptionsScreen(this, this.minecraft.options, this.minecraft.getLanguageManager())), I18n.translate("narrator.button.language", new Object[0])));
+        this.addButton(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_LOCATION, 256, 256, buttonWidget -> this.minecraft.openScreen(new LanguageOptionsScreen((Screen)this, this.minecraft.options, this.minecraft.getLanguageManager())), I18n.translate("narrator.button.language", new Object[0])));
         this.addButton(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options", new Object[0]), buttonWidget -> this.minecraft.openScreen(new SettingsScreen(this, this.minecraft.options))));
         this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit", new Object[0]), buttonWidget -> this.minecraft.scheduleStop()));
         this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, buttonWidget -> this.minecraft.openScreen(new AccessibilityScreen(this, this.minecraft.options)), I18n.translate("narrator.button.accessibility", new Object[0])));

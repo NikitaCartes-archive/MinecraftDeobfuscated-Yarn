@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -37,16 +36,14 @@ extends EntityRenderer<EvokerFangsEntity> {
             j = (float)((double)j * ((1.0 - (double)i) / (double)0.1f));
         }
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f - evokerFangsEntity.yaw, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f - evokerFangsEntity.yaw));
         matrixStack.scale(-j, -j, j);
         float k = 0.03125f;
         matrixStack.translate(0.0, -0.626f, 0.0);
         int l = evokerFangsEntity.getLightmapCoordinates();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
         this.model.setAngles(evokerFangsEntity, i, 0.0f, 0.0f, evokerFangsEntity.yaw, evokerFangsEntity.pitch, 0.03125f);
-        this.model.method_22957(matrixStack, vertexConsumer, l);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(SKIN));
+        this.model.renderItem(matrixStack, vertexConsumer, l, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
         super.render(evokerFangsEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

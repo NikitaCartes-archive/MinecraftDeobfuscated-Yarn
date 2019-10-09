@@ -10,13 +10,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.SpreadableBlock;
+import net.minecraft.class_4624;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
-import net.minecraft.world.gen.feature.FlowerFeature;
 
 public class GrassBlock
 extends SpreadableBlock
@@ -51,9 +51,10 @@ implements Fertilizable {
             }
             if (!blockState3.isAir()) continue;
             if (random.nextInt(8) == 0) {
-                List<ConfiguredFeature<?>> list = serverWorld.getBiome(blockPos3).getFlowerFeatures();
+                List<ConfiguredFeature<?, ?>> list = serverWorld.getBiome(blockPos3).getFlowerFeatures();
                 if (list.isEmpty()) continue;
-                blockState4 = ((FlowerFeature)((DecoratedFeatureConfig)list.get((int)0).config).feature.feature).getFlowerToPlace(random, blockPos3);
+                ConfiguredFeature<?, ?> configuredFeature = ((DecoratedFeatureConfig)list.get((int)0).config).feature;
+                blockState4 = ((class_4624)configuredFeature.feature).getFlowerToPlace(random, blockPos3, configuredFeature.config);
             } else {
                 blockState4 = blockState2;
             }

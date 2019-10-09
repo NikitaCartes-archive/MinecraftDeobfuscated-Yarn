@@ -18,7 +18,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class NetherFortressFeature
@@ -44,7 +43,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         if (j != (l << 4) + 4 + random.nextInt(8)) {
             return false;
         }
-        return chunkGenerator.hasStructure(biome, Feature.NETHER_BRIDGE);
+        return chunkGenerator.hasStructure(biome, this);
     }
 
     @Override

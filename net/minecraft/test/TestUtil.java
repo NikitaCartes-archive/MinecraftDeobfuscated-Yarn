@@ -3,11 +3,14 @@
  */
 package net.minecraft.test;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Streams;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
@@ -35,24 +38,20 @@ import net.minecraft.test.TestRunner;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class TestUtil {
     public static TestCompletionListener field_20573 = new FailureLoggingTestCompletionListener();
 
     public static void startTest(GameTest gameTest, TestManager testManager) {
+        gameTest.method_23634();
         testManager.start(gameTest);
         gameTest.addListener(new TestListener(){
 
             @Override
             public void onStarted(GameTest gameTest) {
                 TestUtil.createBeacon(gameTest, Blocks.LIGHT_GRAY_STAINED_GLASS);
-            }
-
-            @Override
-            public void onPassed(GameTest gameTest) {
-                TestUtil.createBeacon(gameTest, Blocks.LIME_STAINED_GLASS);
-                TestUtil.handleTestPass(gameTest);
             }
 
             @Override
@@ -82,10 +81,11 @@ public class TestUtil {
             Collection collection = map.computeIfAbsent(string2, string -> Lists.newArrayList());
             collection.add(testFunction);
         });
-        return map.keySet().stream().map(string -> {
+        return map.keySet().stream().flatMap(string -> {
             Collection collection = (Collection)map.get(string);
             Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(string);
-            return new GameTestBatch((String)string, collection, consumer);
+            AtomicInteger atomicInteger = new AtomicInteger();
+            return Streams.stream(Iterables.partition(collection, 100)).map(list -> new GameTestBatch(string + ":" + atomicInteger.incrementAndGet(), collection, consumer));
         }).collect(Collectors.toList());
     }
 
@@ -98,11 +98,6 @@ public class TestUtil {
             TestUtil.addDebugMarker(gameTest.getWorld(), positionedException.getPos(), positionedException.getDebugMessage());
         }
         field_20573.onTestFailed(gameTest);
-    }
-
-    private static void handleTestPass(GameTest gameTest) {
-        TestUtil.sendMessage(gameTest.getWorld(), Formatting.GREEN, gameTest.getStructureName() + " passed!");
-        field_20573.onTestPassed(gameTest);
     }
 
     private static void createBeacon(GameTest gameTest, Block block) {
@@ -162,7 +157,9 @@ public class TestUtil {
         BlockPos blockPos3 = blockPos2.add(i, 0, i);
         BlockPos.stream(blockPos22, blockPos3).filter(blockPos -> serverWorld.getBlockState((BlockPos)blockPos).getBlock() == Blocks.STRUCTURE_BLOCK).forEach(blockPos -> {
             StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity((BlockPos)blockPos);
-            StructureTestUtil.clearArea(structureBlockBlockEntity.getPos(), structureBlockBlockEntity.getSize(), 2, serverWorld);
+            BlockPos blockPos2 = structureBlockBlockEntity.getPos();
+            BlockBox blockBox = StructureTestUtil.method_23646(blockPos2, structureBlockBlockEntity.getSize(), 2);
+            StructureTestUtil.clearArea(blockBox, blockPos2.getY(), serverWorld);
         });
     }
 }

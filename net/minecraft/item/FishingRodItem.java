@@ -42,9 +42,9 @@ extends Item {
                 int i = playerEntity2.fishHook.use(itemStack);
                 itemStack.damage(i, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
-            world.playSound(null, playerEntity2.x, playerEntity2.y, playerEntity2.z, SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+            world.playSound(null, playerEntity2.getX(), playerEntity2.getY(), playerEntity2.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
         } else {
-            world.playSound(null, playerEntity2.x, playerEntity2.y, playerEntity2.z, SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+            world.playSound(null, playerEntity2.getX(), playerEntity2.getY(), playerEntity2.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
             if (!world.isClient) {
                 int i = EnchantmentHelper.getLure(itemStack);
                 int j = EnchantmentHelper.getLuckOfTheSea(itemStack);

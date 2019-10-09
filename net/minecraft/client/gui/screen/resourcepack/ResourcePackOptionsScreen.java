@@ -8,11 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.resourcepack.AvailableResourcePackListWidget;
 import net.minecraft.client.gui.screen.resourcepack.ResourcePackListWidget;
 import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.ResourcePackManager;
@@ -21,15 +23,13 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(value=EnvType.CLIENT)
 public class ResourcePackOptionsScreen
-extends Screen {
-    private final Screen parent;
+extends class_4667 {
     private AvailableResourcePackListWidget availablePacks;
     private SelectedResourcePackListWidget enabledPacks;
     private boolean dirty;
 
-    public ResourcePackOptionsScreen(Screen screen) {
-        super(new TranslatableText("resourcePack.title", new Object[0]));
-        this.parent = screen;
+    public ResourcePackOptionsScreen(Screen screen, GameOptions gameOptions) {
+        super(screen, gameOptions, new TranslatableText("resourcePack.title", new Object[0]));
     }
 
     @Override
@@ -43,19 +43,19 @@ extends Screen {
                 }
                 Collections.reverse(list);
                 this.minecraft.getResourcePackManager().setEnabledProfiles(list);
-                this.minecraft.options.resourcePacks.clear();
-                this.minecraft.options.incompatibleResourcePacks.clear();
+                this.field_21336.resourcePacks.clear();
+                this.field_21336.incompatibleResourcePacks.clear();
                 for (ClientResourcePackProfile clientResourcePackProfile : list) {
                     if (clientResourcePackProfile.isPinned()) continue;
-                    this.minecraft.options.resourcePacks.add(clientResourcePackProfile.getName());
+                    this.field_21336.resourcePacks.add(clientResourcePackProfile.getName());
                     if (clientResourcePackProfile.getCompatibility().isCompatible()) continue;
-                    this.minecraft.options.incompatibleResourcePacks.add(clientResourcePackProfile.getName());
+                    this.field_21336.incompatibleResourcePacks.add(clientResourcePackProfile.getName());
                 }
-                this.minecraft.options.write();
-                this.minecraft.openScreen(this.parent);
+                this.field_21336.write();
+                this.minecraft.openScreen(this.field_21335);
                 this.minecraft.reloadResources();
             } else {
-                this.minecraft.openScreen(this.parent);
+                this.minecraft.openScreen(this.field_21335);
             }
         }));
         AvailableResourcePackListWidget availableResourcePackListWidget = this.availablePacks;

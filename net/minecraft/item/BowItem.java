@@ -84,7 +84,7 @@ extends RangedWeaponItem {
             }
             world.spawnEntity(projectileEntity);
         }
-        world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.4f + 1.2f) + f * 0.5f);
+        world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.4f + 1.2f) + f * 0.5f);
         if (!bl2 && !playerEntity.abilities.creativeMode) {
             itemStack2.decrement(1);
             if (itemStack2.isEmpty()) {

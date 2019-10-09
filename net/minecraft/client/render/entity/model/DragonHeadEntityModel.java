@@ -36,14 +36,18 @@ extends SkullEntityModel {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j) {
+    public void render(float f, float g, float h) {
         this.jaw.pitch = (float)(Math.sin(f * (float)Math.PI * 0.2f) + 1.0) * 0.2f;
         this.head.yaw = g * ((float)Math.PI / 180);
         this.head.pitch = h * ((float)Math.PI / 180);
+    }
+
+    @Override
+    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
         matrixStack.push();
         matrixStack.translate(0.0, -0.374375f, 0.0);
         matrixStack.scale(0.75f, 0.75f, 0.75f);
-        this.head.render(matrixStack, vertexConsumer, i, j, null);
+        this.head.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h);
         matrixStack.pop();
     }
 }

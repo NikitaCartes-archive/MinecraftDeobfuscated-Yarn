@@ -104,7 +104,7 @@ extends RangedWeaponItem {
         if (f >= 1.0f && !CrossbowItem.isCharged(itemStack) && CrossbowItem.loadProjectiles(livingEntity, itemStack)) {
             CrossbowItem.setCharged(itemStack, true);
             SoundCategory soundCategory = livingEntity instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
-            world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.5f + 1.0f) + 0.2f);
+            world.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), SoundEvents.ITEM_CROSSBOW_LOADING_END, soundCategory, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.5f + 1.0f) + 0.2f);
         }
     }
 
@@ -200,7 +200,7 @@ extends RangedWeaponItem {
         }
         boolean bl3 = bl2 = itemStack2.getItem() == Items.FIREWORK_ROCKET;
         if (bl2) {
-            projectile = new FireworkEntity(world, itemStack2, livingEntity2.x, livingEntity2.y + (double)livingEntity2.getStandingEyeHeight() - (double)0.15f, livingEntity2.z, true);
+            projectile = new FireworkEntity(world, itemStack2, livingEntity2.getX(), livingEntity2.method_23320() - (double)0.15f, livingEntity2.getZ(), true);
         } else {
             projectile = CrossbowItem.createArrow(world, livingEntity2, itemStack, itemStack2);
             if (bl || i != 0.0f) {
@@ -220,7 +220,7 @@ extends RangedWeaponItem {
         }
         itemStack.damage(bl2 ? 3 : 1, livingEntity2, livingEntity -> livingEntity.sendToolBreakStatus(hand));
         world.spawnEntity(projectile);
-        world.playSound(null, livingEntity2.x, livingEntity2.y, livingEntity2.z, SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0f, f);
+        world.playSound(null, livingEntity2.getX(), livingEntity2.getY(), livingEntity2.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0f, f);
     }
 
     private static ProjectileEntity createArrow(World world, LivingEntity livingEntity, ItemStack itemStack, ItemStack itemStack2) {
@@ -294,11 +294,11 @@ extends RangedWeaponItem {
             }
             if (f >= 0.2f && !this.charged) {
                 this.charged = true;
-                world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent, SoundCategory.PLAYERS, 0.5f, 1.0f);
+                world.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), soundEvent, SoundCategory.PLAYERS, 0.5f, 1.0f);
             }
             if (f >= 0.5f && soundEvent2 != null && !this.loaded) {
                 this.loaded = true;
-                world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent2, SoundCategory.PLAYERS, 0.5f, 1.0f);
+                world.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), soundEvent2, SoundCategory.PLAYERS, 0.5f, 1.0f);
             }
         }
     }

@@ -5,24 +5,20 @@ package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.class_4668;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
@@ -30,346 +26,178 @@ import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class RenderLayer {
-    public static final RenderLayer SOLID = new RenderLayer("solid", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 0x200000, true, () -> {
-        RenderSystem.enableTexture();
-        MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, true);
-        RenderSystem.enableCull();
-        RenderSystem.shadeModel(7425);
-        RenderSystem.depthMask(true);
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableBlend();
-        RenderSystem.depthFunc(515);
-        MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
-    }, () -> {
-        MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
-        RenderSystem.shadeModel(7424);
-    });
-    public static final RenderLayer CUTOUT_MIPPED = new RenderLayer("cutout_mipped", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 131072, true, () -> {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, true);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.alphaFunc(516, 0.5f);
-        RenderSystem.disableBlend();
-        RenderSystem.shadeModel(7425);
-        MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
-    }, () -> {
-        RenderSystem.disableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
-        MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
-        RenderSystem.shadeModel(7424);
-    });
-    public static final RenderLayer CUTOUT = new RenderLayer("cutout", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 131072, true, () -> {
-        CUTOUT_MIPPED.begin();
-        MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, false);
-    }, () -> CUTOUT_MIPPED.end());
-    public static final RenderLayer TRANSLUCENT = new RenderLayer("translucent", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 262144, true, () -> {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        MinecraftClient.getInstance().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX).setFilter(false, false);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.shadeModel(7425);
-        MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
-    }, () -> {
-        RenderSystem.disableBlend();
-        MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
-        RenderSystem.shadeModel(7424);
-    });
-    public static final RenderLayer TRANSLUCENT_NO_CRUMBLING = new RenderLayer("translucent_no_crumbling", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, TRANSLUCENT::begin, TRANSLUCENT::end);
-    public static final RenderLayer LEASH = new RenderLayer("leash", VertexFormats.POSITION_COLOR, 7, 256, false, () -> {
-        RenderSystem.disableTexture();
-        RenderSystem.disableCull();
-    }, () -> {
-        RenderSystem.enableTexture();
-        RenderSystem.enableCull();
-    });
-    public static final RenderLayer WATER_MASK = new RenderLayer("water_mask", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, () -> {
-        RenderSystem.disableTexture();
-        RenderSystem.colorMask(false, false, false, false);
-    }, () -> {
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableTexture();
-    });
-    public static final RenderLayer GLINT = new RenderLayer("glint", VertexFormats.POSITION_UV, 7, 256, false, () -> RenderLayer.method_23010(8.0f), () -> RenderLayer.method_23039());
-    public static final RenderLayer ENTITY_GLINT = new RenderLayer("entity_glint", VertexFormats.POSITION_UV, 7, 256, false, () -> RenderLayer.method_23010(0.16f), () -> RenderLayer.method_23039());
-    public static final RenderLayer BEACON_BEAM = new RenderLayer("beacon_beam", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, () -> {
-        RenderSystem.defaultAlphaFunc();
-        MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconBlockEntityRenderer.BEAM_TEX);
-        RenderSystem.texParameter(3553, 10242, 10497);
-        RenderSystem.texParameter(3553, 10243, 10497);
-        RenderSystem.disableFog();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.depthMask(false);
-    }, () -> {
-        RenderSystem.enableFog();
-        RenderSystem.depthMask(true);
-    });
-    public static final RenderLayer LIGHTNING = new RenderLayer("lightning", VertexFormats.POSITION_COLOR, 7, 256, false, () -> {
-        RenderSystem.disableTexture();
-        RenderSystem.depthMask(false);
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE);
-        RenderSystem.shadeModel(7425);
-        RenderSystem.disableAlphaTest();
-    }, () -> {
-        RenderSystem.enableTexture();
-        RenderSystem.depthMask(true);
-        RenderSystem.shadeModel(7424);
-        RenderSystem.enableAlphaTest();
-    });
-    public static final RenderLayer LINES = new RenderLayer("lines", VertexFormats.POSITION_COLOR, 1, 256, false, () -> {
-        RenderSystem.disableAlphaTest();
-        RenderSystem.lineWidth(Math.max(2.5f, (float)MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 1920.0f * 2.5f));
-        RenderSystem.disableTexture();
-        RenderSystem.matrixMode(5889);
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(1.0f, 1.0f, 0.999f);
-        RenderSystem.matrixMode(5888);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-    }, () -> {
-        RenderSystem.matrixMode(5889);
-        RenderSystem.popMatrix();
-        RenderSystem.matrixMode(5888);
-        RenderSystem.enableTexture();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.disableBlend();
-    });
+public class RenderLayer
+extends class_4668 {
+    private static final RenderLayer SOLID = new class_4687("solid", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 0x200000, true, false, class_4688.method_23598().method_23612(field_21375).method_23608(field_21383).method_23613(field_21376).method_23617(false));
+    private static final RenderLayer CUTOUT_MIPPED = new class_4687("cutout_mipped", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 131072, true, false, class_4688.method_23598().method_23612(field_21375).method_23608(field_21383).method_23613(field_21376).method_23602(field_21373).method_23617(false));
+    private static final RenderLayer CUTOUT = new class_4687("cutout", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 131072, true, false, class_4688.method_23598().method_23612(field_21375).method_23608(field_21383).method_23613(field_21377).method_23602(field_21373).method_23617(false));
+    private static final RenderLayer TRANSLUCENT = new class_4687("translucent", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 262144, true, true, class_4688.method_23598().method_23612(field_21375).method_23608(field_21383).method_23613(field_21377).method_23615(field_21370).method_23617(false));
+    private static final RenderLayer TRANSLUCENT_NO_CRUMBLING = new RenderLayer("translucent_no_crumbling", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, true, TRANSLUCENT::method_23516, TRANSLUCENT::method_23518);
+    private static final RenderLayer LEASH = new class_4687("leash", VertexFormats.POSITION_COLOR, 7, 256, class_4688.method_23598().method_23613(field_21378).method_23603(field_21345).method_23617(false));
+    private static final RenderLayer WATER_MASK = new class_4687("water_mask", VertexFormats.POSITION, 7, 256, class_4688.method_23598().method_23613(field_21378).method_23616(field_21351).method_23617(false));
+    private static final RenderLayer GLINT = new class_4687("glint", VertexFormats.POSITION_UV, 7, 256, class_4688.method_23598().method_23613(new class_4668.class_4683(ItemRenderer.field_21010, false, false)).method_23616(field_21350).method_23604(field_21347).method_23615(field_21368).method_23614(field_21381).method_23617(false));
+    private static final RenderLayer ENTITY_GLINT = new class_4687("entity_glint", VertexFormats.POSITION_UV, 7, 256, class_4688.method_23598().method_23613(new class_4668.class_4683(ItemRenderer.field_21010, false, false)).method_23616(field_21350).method_23604(field_21347).method_23615(field_21368).method_23614(field_21382).method_23617(false));
+    private static final RenderLayer BEACON_BEAM = new class_4687("beacon_beam", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, true, class_4688.method_23598().method_23613(new class_4668.class_4683(BeaconBlockEntityRenderer.BEAM_TEX, false, false)).method_23615(field_21370).method_23616(field_21350).method_23606(field_21355).method_23617(false));
+    private static final RenderLayer LIGHTNING = new class_4687("lightning", VertexFormats.POSITION_COLOR, 7, 256, false, true, class_4688.method_23598().method_23616(field_21350).method_23615(field_21367).method_23612(field_21375).method_23617(false));
     private static boolean field_20802;
-    private static final Map<Block, RenderLayer> field_20803;
-    private static final Map<Fluid, RenderLayer> field_20804;
-    private final String name;
+    private static final Map<Block, RenderLayer> blockHandler;
+    private static final Map<Fluid, RenderLayer> fluidHandler;
     private final VertexFormat vertexFormat;
     private final int drawMode;
     private final int expectedBufferSize;
-    private final Runnable beginAction;
-    private final Runnable endAction;
     private final boolean field_20975;
+    private final boolean field_21402;
 
-    public static RenderLayer method_23017(Identifier identifier) {
-        return RenderLayer.method_23019(identifier, false, true, false);
+    public static RenderLayer getSolid() {
+        return SOLID;
     }
 
-    public static RenderLayer method_23019(Identifier identifier, boolean bl, boolean bl2, boolean bl3) {
-        return RenderLayer.method_23020(identifier, bl, bl2, bl3, 0.1f, false, true);
+    public static RenderLayer getCutoutMipped() {
+        return CUTOUT_MIPPED;
     }
 
-    public static RenderLayer method_23020(Identifier identifier, boolean bl, boolean bl2, boolean bl3, float f, boolean bl4, boolean bl5) {
-        return new class_4601<class_4600>("new_entity", VertexFormats.POSITION_UV_NORMAL_2, 256, new class_4600(identifier, bl, bl2, bl3, f, bl4, bl5), false, arg -> {
-            RenderSystem.disableCull();
-            RenderSystem.enableRescaleNormal();
-            RenderSystem.shadeModel(((class_4600)arg).field_20979 ? 7425 : 7424);
-            MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
-            MinecraftClient.getInstance().gameRenderer.method_22975().setupOverlayColor();
-            MinecraftClient.getInstance().getTextureManager().bindTexture(((class_4600)arg).field_20976);
-            RenderSystem.texParameter(3553, 10241, 9728);
-            RenderSystem.texParameter(3553, 10240, 9728);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
-            if (((class_4600)arg).field_20977) {
-                RenderSystem.depthMask(false);
-                RenderSystem.enableBlend();
-                RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 0.15f);
-                RenderSystem.blendFunc(GlStateManager.class_4535.CONSTANT_ALPHA, GlStateManager.class_4534.ONE_MINUS_CONSTANT_ALPHA);
-            }
-            if (((class_4600)arg).field_20980 <= 0.0f) {
-                RenderSystem.disableAlphaTest();
-            } else {
-                RenderSystem.enableAlphaTest();
-                RenderSystem.alphaFunc(516, ((class_4600)arg).field_20980);
-            }
-            if (((class_4600)arg).field_20978) {
-                GuiLighting.method_22890();
-            }
-            if (((class_4600)arg).field_20981) {
-                RenderSystem.depthFunc(514);
-            }
-        }, arg -> {
-            RenderSystem.shadeModel(7424);
-            MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
-            MinecraftClient.getInstance().gameRenderer.method_22975().teardownOverlayColor();
-            RenderSystem.enableCull();
-            RenderSystem.cullFace(GlStateManager.FaceSides.BACK);
-            if (((class_4600)arg).field_20977) {
-                RenderSystem.defaultBlendFunc();
-                RenderSystem.blendColor(1.0f, 1.0f, 1.0f, 1.0f);
-                RenderSystem.depthMask(true);
-            }
-            if (((class_4600)arg).field_20978) {
-                GuiLighting.disable();
-            }
-            if (((class_4600)arg).field_20981) {
-                RenderSystem.depthFunc(515);
-            }
-            RenderSystem.disableAlphaTest();
-            RenderSystem.defaultAlphaFunc();
-        }){
-
-            @Override
-            public Optional<Identifier> method_23289() {
-                return ((class_4600)this.method_23294()).field_21069 ? Optional.of(((class_4600)this.method_23294()).field_20976) : Optional.empty();
-            }
-        };
+    public static RenderLayer getCutout() {
+        return CUTOUT;
     }
 
-    public static RenderLayer method_23026(Identifier identifier2) {
-        return new class_4601<Identifier>("eyes", VertexFormats.POSITION_UV_NORMAL_2, 256, identifier2, false, identifier -> {
-            MinecraftClient.getInstance().getTextureManager().bindTexture((Identifier)identifier);
-            RenderSystem.enableBlend();
-            RenderSystem.disableAlphaTest();
-            RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
-            RenderSystem.depthMask(false);
-            BackgroundRenderer.setFogBlack(true);
-            RenderSystem.enableDepthTest();
-        }, identifier -> {
-            RenderSystem.depthMask(true);
-            RenderSystem.disableBlend();
-            RenderSystem.enableAlphaTest();
-            BackgroundRenderer.setFogBlack(false);
-            RenderSystem.defaultBlendFunc();
-        });
+    public static RenderLayer getTranslucent() {
+        return TRANSLUCENT;
     }
 
-    public static RenderLayer method_23018(Identifier identifier, float f, float g) {
-        RenderLayer renderLayer = RenderLayer.method_23017(identifier);
-        return new class_4601<class_4602>("power_swirl", VertexFormats.POSITION_UV_NORMAL_2, 256, new class_4602(identifier, f, g), false, arg -> {
-            renderLayer.begin();
-            RenderSystem.matrixMode(5890);
-            RenderSystem.pushMatrix();
-            RenderSystem.loadIdentity();
-            RenderSystem.translatef(((class_4602)arg).field_20984, ((class_4602)arg).field_20985, 0.0f);
-            RenderSystem.matrixMode(5888);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.class_4535.ONE, GlStateManager.class_4534.ONE);
-            BackgroundRenderer.setFogBlack(true);
-        }, arg -> {
-            renderLayer.end();
-            BackgroundRenderer.setFogBlack(false);
-            RenderSystem.matrixMode(5890);
-            RenderSystem.popMatrix();
-            RenderSystem.matrixMode(5888);
-            RenderSystem.disableBlend();
-            RenderSystem.depthMask(true);
-        });
+    public static RenderLayer getTranslucentNoCrumbling() {
+        return TRANSLUCENT_NO_CRUMBLING;
     }
 
-    public static RenderLayer method_23287(Identifier identifier2) {
-        return new class_4601<Identifier>("outline", VertexFormats.field_20887, 256, identifier2, false, identifier -> {
-            MinecraftClient.getInstance().getTextureManager().bindTexture((Identifier)identifier);
-            RenderSystem.disableCull();
-            RenderSystem.depthFunc(519);
-            RenderSystem.disableFog();
-            RenderSystem.enableAlphaTest();
-            RenderSystem.defaultAlphaFunc();
-            RenderSystem.disableBlend();
-            RenderSystem.setupOutline();
-            MinecraftClient.getInstance().worldRenderer.method_22990().beginWrite(false);
-        }, identifier -> {
-            RenderSystem.enableCull();
-            RenderSystem.depthFunc(515);
-            RenderSystem.disableAlphaTest();
-            RenderSystem.enableFog();
-            RenderSystem.teardownOutline();
-            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
-        });
+    public static RenderLayer getEntitySolid(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23615(field_21364).method_23605(field_21387).method_23608(field_21383).method_23611(field_21385).method_23617(true);
+        return new class_4687("entity_solid", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, lv);
     }
 
-    public static RenderLayer method_23011(int i) {
-        return new class_4601<Integer>("crumbling", VertexFormats.POSITION_COLOR_UV_NORMAL, 256, Integer.valueOf(i), false, integer -> {
-            MinecraftClient.getInstance().getTextureManager().bindTexture(ModelLoader.field_21020.get((int)integer));
-            RenderSystem.polygonOffset(-1.0f, -10.0f);
-            RenderSystem.enablePolygonOffset();
-            RenderSystem.defaultAlphaFunc();
-            RenderSystem.enableAlphaTest();
-            RenderSystem.enableBlend();
-            RenderSystem.depthMask(false);
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.DST_COLOR, GlStateManager.class_4534.SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
-        }, integer -> {
-            RenderSystem.disableAlphaTest();
-            RenderSystem.polygonOffset(0.0f, 0.0f);
-            RenderSystem.disablePolygonOffset();
-            RenderSystem.disableBlend();
-            RenderSystem.depthMask(true);
-        });
+    public static RenderLayer getEntityCutout(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23615(field_21364).method_23605(field_21387).method_23602(field_21372).method_23608(field_21383).method_23611(field_21385).method_23617(true);
+        return new class_4687("entity_cutout", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, lv);
     }
 
-    public static RenderLayer method_23028(Identifier identifier2) {
-        return new class_4601<Identifier>("text", VertexFormats.field_20888, 256, identifier2, false, identifier -> {
-            MinecraftClient.getInstance().getTextureManager().bindTexture((Identifier)identifier);
-            RenderSystem.enableAlphaTest();
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
-        }, identifier -> MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable());
+    public static RenderLayer getEntityCutoutNoCull(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23615(field_21364).method_23605(field_21387).method_23602(field_21372).method_23603(field_21345).method_23608(field_21383).method_23611(field_21385).method_23617(true);
+        return new class_4687("entity_cutout_no_cull", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, lv);
     }
 
-    public static RenderLayer method_23030(Identifier identifier2) {
-        RenderLayer renderLayer = RenderLayer.method_23028(identifier2);
-        return new class_4601<Identifier>("text_see_through", VertexFormats.field_20888, 256, identifier2, false, identifier -> {
-            renderLayer.begin();
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-        }, identifier -> {
-            renderLayer.end();
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthMask(true);
-        });
+    public static RenderLayer getEntityTranslucent(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23615(field_21370).method_23605(field_21387).method_23602(field_21372).method_23603(field_21345).method_23608(field_21383).method_23611(field_21385).method_23617(true);
+        return new class_4687("entity_translucent", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, lv);
     }
 
-    public static RenderLayer method_23021(int i) {
-        return new class_4601<Integer>("portal", VertexFormats.POSITION_COLOR, 256, Integer.valueOf(i), false, integer -> {
-            RenderSystem.enableBlend();
-            if (integer >= 2) {
-                RenderSystem.blendFunc(GlStateManager.class_4535.ONE.value, GlStateManager.class_4534.ONE.value);
-                MinecraftClient.getInstance().getTextureManager().bindTexture(EndPortalBlockEntityRenderer.PORTAL_TEX);
-                BackgroundRenderer.setFogBlack(true);
-            } else {
-                RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA.value, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA.value);
-                MinecraftClient.getInstance().getTextureManager().bindTexture(EndPortalBlockEntityRenderer.SKY_TEX);
-            }
-            RenderSystem.matrixMode(5890);
-            RenderSystem.pushMatrix();
-            RenderSystem.loadIdentity();
-            RenderSystem.translatef(0.5f, 0.5f, 0.0f);
-            RenderSystem.scalef(0.5f, 0.5f, 1.0f);
-            RenderSystem.translatef(17.0f / (float)integer.intValue(), (2.0f + (float)integer.intValue() / 1.5f) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0f), 0.0f);
-            RenderSystem.rotatef(((float)(integer * integer) * 4321.0f + (float)integer.intValue() * 9.0f) * 2.0f, 0.0f, 0.0f, 1.0f);
-            RenderSystem.scalef(4.5f - (float)integer.intValue() / 4.0f, 4.5f - (float)integer.intValue() / 4.0f, 1.0f);
-            RenderSystem.mulTextureByProjModelView();
-            RenderSystem.matrixMode(5888);
-            RenderSystem.setupEndPortalTexGen();
-        }, integer -> {
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.matrixMode(5890);
-            RenderSystem.popMatrix();
-            RenderSystem.matrixMode(5888);
-            RenderSystem.clearTexGen();
-            BackgroundRenderer.setFogBlack(false);
-        });
+    public static RenderLayer getEntityForceTranslucent(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23615(field_21365).method_23605(field_21387).method_23603(field_21345).method_23608(field_21383).method_23611(field_21385).method_23617(true);
+        return new class_4687("entity_force_translucent", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, false, true, lv);
     }
 
-    public RenderLayer(String string, VertexFormat vertexFormat, int i, int j, boolean bl, Runnable runnable, Runnable runnable2) {
-        this.name = string;
+    public static RenderLayer getEntitySmoothCutout(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23602(field_21373).method_23605(field_21387).method_23612(field_21375).method_23603(field_21345).method_23608(field_21383).method_23617(true);
+        return new class_4687("entity_smooth_cutout", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, lv);
+    }
+
+    public static RenderLayer getEntityDecal(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23605(field_21387).method_23602(field_21372).method_23604(field_21347).method_23603(field_21345).method_23608(field_21383).method_23611(field_21385).method_23617(false);
+        return new class_4687("entity_decal", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, lv);
+    }
+
+    public static RenderLayer getEntityNoOutline(Identifier identifier) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23615(field_21370).method_23605(field_21387).method_23602(field_21372).method_23603(field_21345).method_23608(field_21383).method_23611(field_21385).method_23617(false);
+        return new class_4687("entity_no_outline", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, false, true, lv);
+    }
+
+    public static RenderLayer getEntityAlpha(Identifier identifier, float f) {
+        class_4688 lv = class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23602(new class_4668.class_4669(f)).method_23603(field_21345).method_23617(true);
+        return new class_4687("entity_alpha", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, lv);
+    }
+
+    public static RenderLayer getEyes(Identifier identifier) {
+        class_4668.class_4683 lv = new class_4668.class_4683(identifier, false, false);
+        return new class_4687("eyes", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, false, true, class_4688.method_23598().method_23613(lv).method_23615(field_21366).method_23616(field_21350).method_23606(field_21357).method_23617(false));
+    }
+
+    public static RenderLayer getPowerSwirl(Identifier identifier, float f, float g) {
+        return new class_4687("power_swirl", VertexFormats.POSITION_UV_NORMAL_2, 7, 256, false, true, class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23614(new class_4668.class_4682(f, g)).method_23606(field_21357).method_23615(field_21366).method_23605(field_21387).method_23602(field_21372).method_23603(field_21345).method_23608(field_21383).method_23611(field_21385).method_23617(false));
+    }
+
+    public static RenderLayer getLeash() {
+        return LEASH;
+    }
+
+    public static RenderLayer getWaterMask() {
+        return WATER_MASK;
+    }
+
+    public static RenderLayer getOutline(Identifier identifier) {
+        return new class_4687("outline", VertexFormats.field_20887, 7, 256, class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23603(field_21345).method_23604(field_21346).method_23602(field_21372).method_23614(field_21380).method_23606(field_21355).method_23610(field_21359).method_23617(false));
+    }
+
+    public static RenderLayer getGlint() {
+        return GLINT;
+    }
+
+    public static RenderLayer getEntityGlint() {
+        return ENTITY_GLINT;
+    }
+
+    public static RenderLayer getCrumbling(int i) {
+        class_4668.class_4683 lv = new class_4668.class_4683(ModelLoader.field_21020.get(i), false, false);
+        return new class_4687("crumbling", VertexFormats.POSITION_COLOR_UV_NORMAL, 7, 256, false, true, class_4688.method_23598().method_23613(lv).method_23602(field_21372).method_23615(field_21369).method_23616(field_21350).method_23607(field_21353).method_23617(false));
+    }
+
+    public static RenderLayer getText(Identifier identifier) {
+        return new class_4687("text", VertexFormats.field_20888, 7, 256, false, true, class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23602(field_21372).method_23615(field_21370).method_23608(field_21383).method_23617(false));
+    }
+
+    public static RenderLayer getTextSeeThrough(Identifier identifier) {
+        return new class_4687("text_see_through", VertexFormats.field_20888, 7, 256, false, true, class_4688.method_23598().method_23613(new class_4668.class_4683(identifier, false, false)).method_23602(field_21372).method_23615(field_21370).method_23608(field_21383).method_23604(field_21346).method_23616(field_21350).method_23617(false));
+    }
+
+    public static RenderLayer getBeaconBeam() {
+        return BEACON_BEAM;
+    }
+
+    public static RenderLayer getLightning() {
+        return LIGHTNING;
+    }
+
+    public static RenderLayer getEndPortal(int i) {
+        class_4668.class_4683 lv2;
+        class_4668.class_4685 lv;
+        if (i <= 1) {
+            lv = field_21370;
+            lv2 = new class_4668.class_4683(EndPortalBlockEntityRenderer.SKY_TEX, false, false);
+        } else {
+            lv = field_21366;
+            lv2 = new class_4668.class_4683(EndPortalBlockEntityRenderer.PORTAL_TEX, false, false);
+        }
+        return new class_4687("end_portal", VertexFormats.POSITION_COLOR, 7, 256, false, true, class_4688.method_23598().method_23615(lv).method_23613(lv2).method_23614(new class_4668.class_4680(i)).method_23606(field_21357).method_23617(false));
+    }
+
+    public static RenderLayer getLines() {
+        return new class_4687("lines", VertexFormats.POSITION_COLOR, 1, 256, class_4688.method_23598().method_23609(new class_4668.class_4677(Math.max(2.5f, (float)MinecraftClient.getInstance().getWindow().getFramebufferWidth() / 1920.0f * 2.5f))).method_23607(field_21354).method_23615(field_21370).method_23617(false));
+    }
+
+    public RenderLayer(String string, VertexFormat vertexFormat, int i, int j, boolean bl, boolean bl2, Runnable runnable, Runnable runnable2) {
+        super(string, runnable, runnable2);
         this.vertexFormat = vertexFormat;
         this.drawMode = i;
         this.expectedBufferSize = j;
-        this.beginAction = runnable;
-        this.endAction = runnable2;
         this.field_20975 = bl;
+        this.field_21402 = bl2;
     }
 
     public static void method_22719(boolean bl) {
@@ -381,49 +209,61 @@ public class RenderLayer {
             return;
         }
         bufferBuilder.end();
-        this.begin();
+        this.method_23516();
         BufferRenderer.draw(bufferBuilder);
-        this.end();
+        this.method_23518();
     }
 
     public String toString() {
-        return this.name;
+        return this.field_21363;
     }
 
     public static RenderLayer method_22715(BlockState blockState) {
         Block block = blockState.getBlock();
         if (block instanceof LeavesBlock) {
-            return field_20802 ? CUTOUT_MIPPED : SOLID;
+            return field_20802 ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
         }
-        RenderLayer renderLayer = field_20803.get(block);
+        RenderLayer renderLayer = blockHandler.get(block);
         if (renderLayer != null) {
             return renderLayer;
         }
-        return SOLID;
+        return RenderLayer.getSolid();
+    }
+
+    public static RenderLayer method_23575(BlockState blockState) {
+        RenderLayer renderLayer = RenderLayer.method_22715(blockState);
+        if (renderLayer == RenderLayer.getTranslucent()) {
+            return RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        }
+        if (renderLayer == RenderLayer.getCutout() || renderLayer == RenderLayer.getCutoutMipped()) {
+            return RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+        }
+        return RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+    }
+
+    public static RenderLayer method_23571(ItemStack itemStack) {
+        Item item = itemStack.getItem();
+        if (item instanceof BlockItem) {
+            Block block = ((BlockItem)item).getBlock();
+            return RenderLayer.method_23575(block.getDefaultState());
+        }
+        return RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
     }
 
     public static RenderLayer method_22716(FluidState fluidState) {
-        RenderLayer renderLayer = field_20804.get(fluidState.getFluid());
+        RenderLayer renderLayer = fluidHandler.get(fluidState.getFluid());
         if (renderLayer != null) {
             return renderLayer;
         }
-        return SOLID;
+        return RenderLayer.getSolid();
     }
 
     public static List<RenderLayer> getBlockLayers() {
-        return ImmutableList.of(SOLID, CUTOUT_MIPPED, CUTOUT, TRANSLUCENT);
+        return ImmutableList.of(RenderLayer.getSolid(), RenderLayer.getCutoutMipped(), RenderLayer.getCutout(), RenderLayer.getTranslucent());
     }
 
     public int getExpectedBufferSize() {
         return this.expectedBufferSize;
-    }
-
-    public void begin() {
-        this.beginAction.run();
-    }
-
-    public void end() {
-        this.endAction.run();
     }
 
     public VertexFormat getVertexFormat() {
@@ -442,56 +282,8 @@ public class RenderLayer {
         return this.field_20975;
     }
 
-    public boolean equals(@Nullable Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || this.getClass() != object.getClass()) {
-            return false;
-        }
-        RenderLayer renderLayer = (RenderLayer)object;
-        return this.name.equals(renderLayer.name);
-    }
-
-    public int hashCode() {
-        return this.name.hashCode();
-    }
-
-    private static void method_23010(float f) {
-        RenderSystem.enableTexture();
-        TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-        textureManager.bindTexture(ItemRenderer.field_21010);
-        RenderSystem.texParameter(3553, 10241, 9728);
-        RenderSystem.texParameter(3553, 10240, 9728);
-        RenderSystem.texParameter(3553, 10242, 10497);
-        RenderSystem.texParameter(3553, 10243, 10497);
-        RenderSystem.depthMask(false);
-        RenderSystem.depthFunc(514);
-        RenderSystem.enableBlend();
-        RenderSystem.disableAlphaTest();
-        MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
-        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_COLOR, GlStateManager.class_4534.ONE);
-        RenderSystem.matrixMode(5890);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        long l = SystemUtil.getMeasuringTimeMs() * 8L;
-        float g = (float)(l % 110000L) / 110000.0f;
-        float h = (float)(l % 30000L) / 30000.0f;
-        RenderSystem.translatef(-g, h, 0.0f);
-        RenderSystem.rotatef(10.0f, 0.0f, 0.0f, 1.0f);
-        RenderSystem.scalef(f, f, f);
-    }
-
-    private static void method_23039() {
-        RenderSystem.popMatrix();
-        RenderSystem.matrixMode(5888);
-        RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.depthFunc(515);
-        RenderSystem.depthMask(true);
-    }
-
     static {
-        field_20803 = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+        blockHandler = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
             hashMap.put(Blocks.GRASS_BLOCK, CUTOUT_MIPPED);
             hashMap.put(Blocks.IRON_BARS, CUTOUT_MIPPED);
             hashMap.put(Blocks.GLASS_PANE, CUTOUT_MIPPED);
@@ -704,91 +496,39 @@ public class RenderLayer {
             hashMap.put(Blocks.RED_STAINED_GLASS_PANE, TRANSLUCENT);
             hashMap.put(Blocks.BLACK_STAINED_GLASS_PANE, TRANSLUCENT);
             hashMap.put(Blocks.SLIME_BLOCK, TRANSLUCENT);
+            hashMap.put(Blocks.HONEY_BLOCK, TRANSLUCENT);
             hashMap.put(Blocks.FROSTED_ICE, TRANSLUCENT);
             hashMap.put(Blocks.BUBBLE_COLUMN, TRANSLUCENT);
         });
-        field_20804 = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+        fluidHandler = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
             hashMap.put(Fluids.FLOWING_WATER, TRANSLUCENT);
             hashMap.put(Fluids.WATER, TRANSLUCENT);
         });
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static final class class_4600 {
-        private final Identifier field_20976;
-        private final boolean field_20977;
-        private final boolean field_20978;
-        private final boolean field_20979;
-        private final float field_20980;
-        private final boolean field_20981;
-        private final boolean field_21069;
-
-        public class_4600(Identifier identifier, boolean bl, boolean bl2, boolean bl3, float f, boolean bl4, boolean bl5) {
-            this.field_20976 = identifier;
-            this.field_20977 = bl;
-            this.field_20978 = bl2;
-            this.field_20979 = bl3;
-            this.field_20980 = f;
-            this.field_20981 = bl4;
-            this.field_21069 = bl5;
-        }
-
-        public boolean equals(Object object) {
-            if (this == object) {
-                return true;
-            }
-            if (object == null || this.getClass() != object.getClass()) {
-                return false;
-            }
-            class_4600 lv = (class_4600)object;
-            return this.field_20977 == lv.field_20977 && this.field_20978 == lv.field_20978 && this.field_20976.equals(lv.field_20976);
-        }
-
-        public int hashCode() {
-            return Objects.hash(this.field_20976, this.field_20977, this.field_20978);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static final class class_4602 {
-        private final Identifier field_20983;
-        private final float field_20984;
-        private final float field_20985;
-
-        public class_4602(Identifier identifier, float f, float g) {
-            this.field_20983 = identifier;
-            this.field_20984 = f;
-            this.field_20985 = g;
-        }
-
-        public boolean equals(Object object) {
-            if (this == object) {
-                return true;
-            }
-            if (object == null || this.getClass() != object.getClass()) {
-                return false;
-            }
-            class_4602 lv = (class_4602)object;
-            return Float.compare(lv.field_20984, this.field_20984) == 0 && Float.compare(lv.field_20985, this.field_20985) == 0 && this.field_20983.equals(lv.field_20983);
-        }
-
-        public int hashCode() {
-            return Objects.hash(this.field_20983, Float.valueOf(this.field_20984), Float.valueOf(this.field_20985));
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static class class_4601<S>
+    static class class_4687
     extends RenderLayer {
-        private final S field_20982;
+        private final class_4688 field_21403;
+        private int field_21404;
+        private boolean field_21405 = false;
 
-        protected final S method_23294() {
-            return this.field_20982;
+        public class_4687(String string, VertexFormat vertexFormat, int i, int j, class_4688 arg) {
+            this(string, vertexFormat, i, j, false, false, arg);
         }
 
-        public class_4601(String string, VertexFormat vertexFormat, int i, S object, boolean bl, Consumer<S> consumer, Consumer<S> consumer2) {
-            super(string, vertexFormat, 7, i, bl, () -> consumer.accept(object), () -> consumer2.accept(object));
-            this.field_20982 = object;
+        public class_4687(String string, VertexFormat vertexFormat, int i, int j, boolean bl, boolean bl2, class_4688 arg) {
+            super(string, vertexFormat, i, j, bl, bl2, () -> arg.field_21422.forEach(class_4668::method_23516), () -> arg.field_21422.forEach(class_4668::method_23518));
+            this.field_21403 = arg;
+        }
+
+        @Override
+        public Optional<Identifier> method_23289() {
+            return this.method_23597().field_21421 ? this.method_23597().field_21406.method_23564() : Optional.empty();
+        }
+
+        protected final class_4688 method_23597() {
+            return this.field_21403;
         }
 
         @Override
@@ -799,13 +539,178 @@ public class RenderLayer {
             if (this.getClass() != object.getClass()) {
                 return false;
             }
-            class_4601 lv = (class_4601)object;
-            return this.field_20982.equals(lv.field_20982);
+            class_4687 lv = (class_4687)object;
+            return this.field_21403.equals(lv.field_21403);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(super.hashCode(), this.field_20982);
+            if (!this.field_21405) {
+                this.field_21405 = true;
+                this.field_21404 = Objects.hash(super.hashCode(), this.field_21403);
+            }
+            return this.field_21404;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static final class class_4688 {
+        private final class_4668.class_4683 field_21406;
+        private final class_4668.class_4685 field_21407;
+        private final class_4668.class_4673 field_21408;
+        private final class_4668.class_4681 field_21409;
+        private final class_4668.class_4669 field_21410;
+        private final class_4668.class_4672 field_21411;
+        private final class_4668.class_4671 field_21412;
+        private final class_4668.class_4676 field_21413;
+        private final class_4668.class_4679 field_21414;
+        private final class_4668.class_4674 field_21415;
+        private final class_4668.class_4675 field_21416;
+        private final class_4668.class_4678 field_21417;
+        private final class_4668.class_4684 field_21418;
+        private final class_4668.class_4686 field_21419;
+        private final class_4668.class_4677 field_21420;
+        private final boolean field_21421;
+        private final ImmutableList<class_4668> field_21422;
+
+        private class_4688(class_4668.class_4683 arg, class_4668.class_4685 arg2, class_4668.class_4673 arg3, class_4668.class_4681 arg4, class_4668.class_4669 arg5, class_4668.class_4672 arg6, class_4668.class_4671 arg7, class_4668.class_4676 arg8, class_4668.class_4679 arg9, class_4668.class_4674 arg10, class_4668.class_4675 arg11, class_4668.class_4678 arg12, class_4668.class_4684 arg13, class_4668.class_4686 arg14, class_4668.class_4677 arg15, boolean bl) {
+            this.field_21406 = arg;
+            this.field_21407 = arg2;
+            this.field_21408 = arg3;
+            this.field_21409 = arg4;
+            this.field_21410 = arg5;
+            this.field_21411 = arg6;
+            this.field_21412 = arg7;
+            this.field_21413 = arg8;
+            this.field_21414 = arg9;
+            this.field_21415 = arg10;
+            this.field_21416 = arg11;
+            this.field_21417 = arg12;
+            this.field_21418 = arg13;
+            this.field_21419 = arg14;
+            this.field_21420 = arg15;
+            this.field_21421 = bl;
+            this.field_21422 = ImmutableList.of(this.field_21406, this.field_21407, this.field_21408, this.field_21409, this.field_21410, this.field_21411, this.field_21412, this.field_21413, this.field_21414, this.field_21415, this.field_21416, this.field_21417, new class_4668[]{this.field_21418, this.field_21419, this.field_21420});
+        }
+
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (object == null || this.getClass() != object.getClass()) {
+                return false;
+            }
+            class_4688 lv = (class_4688)object;
+            return this.field_21421 == lv.field_21421 && this.field_21422.equals(lv.field_21422);
+        }
+
+        public int hashCode() {
+            return Objects.hash(this.field_21422, this.field_21421);
+        }
+
+        public static class_4689 method_23598() {
+            return new class_4689();
+        }
+
+        @Environment(value=EnvType.CLIENT)
+        public static class class_4689 {
+            private class_4668.class_4683 field_21423 = class_4668.field_21378;
+            private class_4668.class_4685 field_21424 = class_4668.field_21364;
+            private class_4668.class_4673 field_21425 = class_4668.field_21388;
+            private class_4668.class_4681 field_21426 = class_4668.field_21374;
+            private class_4668.class_4669 field_21427 = class_4668.field_21371;
+            private class_4668.class_4672 field_21428 = class_4668.field_21348;
+            private class_4668.class_4671 field_21429 = class_4668.field_21344;
+            private class_4668.class_4676 field_21430 = class_4668.field_21384;
+            private class_4668.class_4679 field_21431 = class_4668.field_21386;
+            private class_4668.class_4674 field_21432 = class_4668.field_21356;
+            private class_4668.class_4675 field_21433 = class_4668.field_21352;
+            private class_4668.class_4678 field_21434 = class_4668.field_21358;
+            private class_4668.class_4684 field_21435 = class_4668.field_21379;
+            private class_4668.class_4686 field_21436 = class_4668.field_21349;
+            private class_4668.class_4677 field_21437 = class_4668.field_21360;
+
+            private class_4689() {
+            }
+
+            public class_4689 method_23613(class_4668.class_4683 arg) {
+                this.field_21423 = arg;
+                return this;
+            }
+
+            public class_4689 method_23615(class_4668.class_4685 arg) {
+                this.field_21424 = arg;
+                return this;
+            }
+
+            public class_4689 method_23605(class_4668.class_4673 arg) {
+                this.field_21425 = arg;
+                return this;
+            }
+
+            public class_4689 method_23612(class_4668.class_4681 arg) {
+                this.field_21426 = arg;
+                return this;
+            }
+
+            public class_4689 method_23602(class_4668.class_4669 arg) {
+                this.field_21427 = arg;
+                return this;
+            }
+
+            public class_4689 method_23604(class_4668.class_4672 arg) {
+                this.field_21428 = arg;
+                return this;
+            }
+
+            public class_4689 method_23603(class_4668.class_4671 arg) {
+                this.field_21429 = arg;
+                return this;
+            }
+
+            public class_4689 method_23608(class_4668.class_4676 arg) {
+                this.field_21430 = arg;
+                return this;
+            }
+
+            public class_4689 method_23611(class_4668.class_4679 arg) {
+                this.field_21431 = arg;
+                return this;
+            }
+
+            public class_4689 method_23606(class_4668.class_4674 arg) {
+                this.field_21432 = arg;
+                return this;
+            }
+
+            public class_4689 method_23607(class_4668.class_4675 arg) {
+                this.field_21433 = arg;
+                return this;
+            }
+
+            public class_4689 method_23610(class_4668.class_4678 arg) {
+                this.field_21434 = arg;
+                return this;
+            }
+
+            public class_4689 method_23614(class_4668.class_4684 arg) {
+                this.field_21435 = arg;
+                return this;
+            }
+
+            public class_4689 method_23616(class_4668.class_4686 arg) {
+                this.field_21436 = arg;
+                return this;
+            }
+
+            public class_4689 method_23609(class_4668.class_4677 arg) {
+                this.field_21437 = arg;
+                return this;
+            }
+
+            public class_4688 method_23617(boolean bl) {
+                return new class_4688(this.field_21423, this.field_21424, this.field_21425, this.field_21426, this.field_21427, this.field_21428, this.field_21429, this.field_21430, this.field_21431, this.field_21432, this.field_21433, this.field_21434, this.field_21435, this.field_21436, this.field_21437, bl);
+            }
         }
     }
 }

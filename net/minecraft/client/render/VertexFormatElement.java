@@ -17,6 +17,7 @@ public class VertexFormatElement {
     private final Type type;
     private final int index;
     private final int count;
+    private final int field_21329;
 
     public VertexFormatElement(int i, Format format, Type type, int j) {
         if (this.isValidType(i, type)) {
@@ -28,6 +29,7 @@ public class VertexFormatElement {
         this.format = format;
         this.index = i;
         this.count = j;
+        this.field_21329 = format.getSize() * this.count;
     }
 
     private boolean isValidType(int i, Type type) {
@@ -55,7 +57,7 @@ public class VertexFormatElement {
     }
 
     public final int getSize() {
-        return this.format.getSize() * this.count;
+        return this.field_21329;
     }
 
     public final boolean isPosition() {

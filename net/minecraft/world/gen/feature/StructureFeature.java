@@ -24,6 +24,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +36,12 @@ extends Feature<C> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public StructureFeature(Function<Dynamic<?>, ? extends C> function) {
-        super(function, false);
+        super(function);
+    }
+
+    @Override
+    public ConfiguredFeature<C, ? extends StructureFeature<C>> method_23397(C featureConfig) {
+        return new ConfiguredFeature<C, StructureFeature>(this, featureConfig);
     }
 
     @Override

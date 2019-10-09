@@ -131,9 +131,9 @@ CommandOutput {
     public double prevX;
     public double prevY;
     public double prevZ;
-    public double x;
-    public double y;
-    public double z;
+    private double x;
+    private double y;
+    private double z;
     private Vec3d velocity = Vec3d.ZERO;
     public float yaw;
     public float pitch;
@@ -304,10 +304,9 @@ CommandOutput {
         if (this.world == null) {
             return;
         }
-        while (this.y > 0.0 && this.y < 256.0) {
-            this.setPosition(this.x, this.y, this.z);
+        for (double d = this.getY(); d > 0.0 && d < 256.0; d += 1.0) {
+            this.setPosition(this.getX(), d, this.getZ());
             if (this.world.doesNotCollide(this)) break;
-            this.y += 1.0;
         }
         this.setVelocity(Vec3d.ZERO);
         this.pitch = 0.0f;
@@ -331,12 +330,14 @@ CommandOutput {
     }
 
     public void setPosition(double d, double e, double f) {
-        this.x = d;
-        this.y = e;
-        this.z = f;
-        float g = this.dimensions.width / 2.0f;
-        float h = this.dimensions.height;
-        this.setBoundingBox(new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
+        this.setPos(d, e, f);
+        this.method_23311();
+    }
+
+    protected void method_23311() {
+        float f = this.dimensions.width / 2.0f;
+        float g = this.dimensions.height;
+        this.setBoundingBox(new Box(this.x - (double)f, this.y, this.z - (double)f, this.x + (double)f, this.y + (double)g, this.z + (double)f));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -394,7 +395,7 @@ CommandOutput {
             this.setOnFireFromLava();
             this.fallDistance *= 0.5f;
         }
-        if (this.y < -64.0) {
+        if (this.getY() < -64.0) {
             this.destroy();
         }
         if (!this.world.isClient) {
@@ -457,9 +458,6 @@ CommandOutput {
     }
 
     public void move(MovementType movementType, Vec3d vec3d) {
-        BlockPos blockPos2;
-        BlockState blockState2;
-        Block block;
         Vec3d vec3d2;
         if (this.noClip) {
             this.setBoundingBox(this.getBoundingBox().offset(vec3d));
@@ -473,7 +471,6 @@ CommandOutput {
         if (this.movementMultiplier.lengthSquared() > 1.0E-7) {
             vec3d = vec3d.multiply(this.movementMultiplier);
             this.movementMultiplier = Vec3d.ZERO;
-            this.setVelocity(Vec3d.ZERO);
         }
         if ((vec3d2 = this.adjustMovementForCollisions(vec3d = this.adjustMovementForSneaking(vec3d, movementType))).lengthSquared() > 1.0E-7) {
             this.setBoundingBox(this.getBoundingBox().offset(vec3d2));
@@ -485,15 +482,8 @@ CommandOutput {
         this.verticalCollision = vec3d.y != vec3d2.y;
         this.onGround = this.verticalCollision && vec3d.y < 0.0;
         this.collided = this.horizontalCollision || this.verticalCollision;
-        int i = MathHelper.floor(this.x);
-        int j = MathHelper.floor(this.y - (double)0.2f);
-        int k = MathHelper.floor(this.z);
-        BlockPos blockPos = new BlockPos(i, j, k);
+        BlockPos blockPos = this.method_23312();
         BlockState blockState = this.world.getBlockState(blockPos);
-        if (blockState.isAir() && ((block = (blockState2 = this.world.getBlockState(blockPos2 = blockPos.method_10074())).getBlock()).matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock)) {
-            blockState = blockState2;
-            blockPos = blockPos2;
-        }
         this.fall(vec3d2.y, this.onGround, blockState, blockPos);
         Vec3d vec3d3 = this.getVelocity();
         if (vec3d.x != vec3d2.x) {
@@ -502,18 +492,18 @@ CommandOutput {
         if (vec3d.z != vec3d2.z) {
             this.setVelocity(vec3d3.x, vec3d3.y, 0.0);
         }
-        Block block2 = blockState.getBlock();
+        Block block = blockState.getBlock();
         if (vec3d.y != vec3d2.y) {
-            block2.onEntityLand(this.world, this);
+            block.onEntityLand(this.world, this);
         }
         if (this.onGround && !this.method_21749()) {
-            block2.onSteppedOn(this.world, blockPos, this);
+            block.onSteppedOn(this.world, blockPos, this);
         }
         if (this.canClimb() && !this.hasVehicle()) {
             double d = vec3d2.x;
             double e = vec3d2.y;
             double f = vec3d2.z;
-            if (block2 != Blocks.LADDER && block2 != Blocks.SCAFFOLDING) {
+            if (block != Blocks.LADDER && block != Blocks.SCAFFOLDING) {
                 e = 0.0;
             }
             this.horizontalSpeed = (float)((double)this.horizontalSpeed + (double)MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d2)) * 0.6);
@@ -545,6 +535,7 @@ CommandOutput {
             this.populateCrashReport(crashReportSection);
             throw new CrashException(crashReport);
         }
+        this.setVelocity(this.getVelocity().multiply(this.method_23326(), 1.0, this.method_23326()));
         boolean bl = this.isTouchingWater();
         if (this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001))) {
             if (!bl) {
@@ -562,6 +553,36 @@ CommandOutput {
             this.fireTicks = -this.getBurningDuration();
         }
         this.world.getProfiler().pop();
+    }
+
+    protected BlockPos method_23312() {
+        BlockPos blockPos2;
+        BlockState blockState;
+        Block block;
+        int k;
+        int j;
+        int i = MathHelper.floor(this.x);
+        BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.y - (double)0.2f), k = MathHelper.floor(this.z));
+        if (this.world.getBlockState(blockPos).isAir() && ((block = (blockState = this.world.getBlockState(blockPos2 = blockPos.method_10074())).getBlock()).matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock)) {
+            return blockPos2;
+        }
+        return blockPos;
+    }
+
+    protected float method_23313() {
+        float f = this.world.getBlockState(new BlockPos(this)).getBlock().method_23350();
+        float g = this.world.getBlockState(this.method_23314()).getBlock().method_23350();
+        return (double)f == 1.0 ? g : f;
+    }
+
+    private float method_23326() {
+        float f = this.world.getBlockState(new BlockPos(this)).getBlock().method_23349();
+        float g = this.world.getBlockState(this.method_23314()).getBlock().method_23349();
+        return (double)f == 1.0 ? g : f;
+    }
+
+    protected BlockPos method_23314() {
+        return new BlockPos(this.x, this.getBoundingBox().minY - 0.5 - 1.0E-7, this.z);
     }
 
     protected Vec3d adjustMovementForSneaking(Vec3d vec3d, MovementType movementType) {
@@ -697,9 +718,7 @@ CommandOutput {
 
     public void moveToBoundingBoxCenter() {
         Box box = this.getBoundingBox();
-        this.x = (box.minX + box.maxX) / 2.0;
-        this.y = box.minY;
-        this.z = (box.minZ + box.maxZ) / 2.0;
+        this.setPos((box.minX + box.maxX) / 2.0, box.minY, (box.minZ + box.maxZ) / 2.0);
     }
 
     protected SoundEvent getSwimSound() {
@@ -768,7 +787,7 @@ CommandOutput {
 
     public void playSound(SoundEvent soundEvent, float f, float g) {
         if (!this.isSilent()) {
-            this.world.playSound(null, this.x, this.y, this.z, soundEvent, this.getSoundCategory(), f, g);
+            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), f, g);
         }
     }
 
@@ -818,12 +837,13 @@ CommandOutput {
         return this.getType().isFireImmune();
     }
 
-    public void handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float f, float g) {
         if (this.hasPassengers()) {
             for (Entity entity : this.getPassengerList()) {
                 entity.handleFallDamage(f, g);
             }
         }
+        return false;
     }
 
     public boolean isInsideWater() {
@@ -832,7 +852,7 @@ CommandOutput {
 
     private boolean isBeingRainedOn() {
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this);){
-            boolean bl = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.method_10112(this.x, this.y + (double)this.dimensions.height, this.z));
+            boolean bl = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.method_10112(this.getX(), this.getY() + (double)this.dimensions.height, this.getZ()));
             return bl;
         }
     }
@@ -906,19 +926,19 @@ CommandOutput {
         } else {
             this.playSound(this.getHighSpeedSplashSound(), g, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
         }
-        float h = MathHelper.floor(this.getBoundingBox().minY);
+        float h = MathHelper.floor(this.getY());
         int i = 0;
         while ((float)i < 1.0f + this.dimensions.width * 20.0f) {
             j = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
             k = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
-            this.world.addParticle(ParticleTypes.BUBBLE, this.x + (double)j, h + 1.0f, this.z + (double)k, vec3d.x, vec3d.y - (double)(this.random.nextFloat() * 0.2f), vec3d.z);
+            this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + (double)j, h + 1.0f, this.getZ() + (double)k, vec3d.x, vec3d.y - (double)(this.random.nextFloat() * 0.2f), vec3d.z);
             ++i;
         }
         i = 0;
         while ((float)i < 1.0f + this.dimensions.width * 20.0f) {
             j = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
             k = (this.random.nextFloat() * 2.0f - 1.0f) * this.dimensions.width;
-            this.world.addParticle(ParticleTypes.SPLASH, this.x + (double)j, h + 1.0f, this.z + (double)k, vec3d.x, vec3d.y, vec3d.z);
+            this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)j, h + 1.0f, this.getZ() + (double)k, vec3d.x, vec3d.y, vec3d.z);
             ++i;
         }
     }
@@ -932,12 +952,12 @@ CommandOutput {
     protected void spawnSprintingParticles() {
         int k;
         int j;
-        int i = MathHelper.floor(this.x);
-        BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.y - (double)0.2f), k = MathHelper.floor(this.z));
+        int i = MathHelper.floor(this.getX());
+        BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.getY() - (double)0.2f), k = MathHelper.floor(this.getZ()));
         BlockState blockState = this.world.getBlockState(blockPos);
         if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
             Vec3d vec3d = this.getVelocity();
-            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width, this.y + 0.1, this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width, vec3d.x * -4.0, 1.5, vec3d.z * -4.0);
+            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width, this.getY() + 0.1, this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.dimensions.width, vec3d.x * -4.0, 1.5, vec3d.z * -4.0);
         }
     }
 
@@ -949,8 +969,8 @@ CommandOutput {
         if (this.getVehicle() instanceof BoatEntity) {
             return false;
         }
-        double d = this.y + (double)this.getStandingEyeHeight();
-        BlockPos blockPos = new BlockPos(this.x, d, this.z);
+        double d = this.method_23320();
+        BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
         if (bl && !this.world.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
             return false;
         }
@@ -984,7 +1004,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public int getLightmapCoordinates() {
-        BlockPos blockPos = new BlockPos(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
+        BlockPos blockPos = new BlockPos(this.getX(), this.method_23320(), this.getZ());
         if (this.world.isChunkLoaded(blockPos)) {
             return this.world.getLightmapCoordinates(blockPos);
         }
@@ -992,9 +1012,9 @@ CommandOutput {
     }
 
     public float getBrightnessAtEyes() {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(this.x, 0.0, this.z);
+        BlockPos.Mutable mutable = new BlockPos.Mutable(this.getX(), 0.0, this.getZ());
         if (this.world.isChunkLoaded(mutable)) {
-            mutable.setY(MathHelper.floor(this.y + (double)this.getStandingEyeHeight()));
+            mutable.setY(MathHelper.floor(this.method_23320()));
             return this.world.getBrightness(mutable);
         }
         return 0.0f;
@@ -1005,13 +1025,12 @@ CommandOutput {
     }
 
     public void setPositionAnglesAndUpdate(double d, double e, double f, float g, float h) {
-        this.x = MathHelper.clamp(d, -3.0E7, 3.0E7);
-        this.y = e;
-        this.z = MathHelper.clamp(f, -3.0E7, 3.0E7);
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
-        this.setPosition(this.x, this.y, this.z);
+        double i = MathHelper.clamp(d, -3.0E7, 3.0E7);
+        double j = MathHelper.clamp(f, -3.0E7, 3.0E7);
+        this.prevX = i;
+        this.prevY = e;
+        this.prevZ = j;
+        this.setPosition(i, e, j);
         this.yaw = g % 360.0f;
         this.pitch = MathHelper.clamp(h, -90.0f, 90.0f) % 360.0f;
         this.prevYaw = this.yaw;
@@ -1026,32 +1045,30 @@ CommandOutput {
         this.method_22862(d, e, f);
         this.yaw = g;
         this.pitch = h;
-        this.setPosition(this.x, this.y, this.z);
+        this.method_23311();
     }
 
     public void method_22862(double d, double e, double f) {
-        this.x = d;
-        this.y = e;
-        this.z = f;
-        this.prevX = this.x;
-        this.prevY = this.y;
-        this.prevZ = this.z;
-        this.prevRenderX = this.x;
-        this.prevRenderY = this.y;
-        this.prevRenderZ = this.z;
+        this.setPos(d, e, f);
+        this.prevX = d;
+        this.prevY = e;
+        this.prevZ = f;
+        this.prevRenderX = d;
+        this.prevRenderY = e;
+        this.prevRenderZ = f;
     }
 
     public float distanceTo(Entity entity) {
-        float f = (float)(this.x - entity.x);
-        float g = (float)(this.y - entity.y);
-        float h = (float)(this.z - entity.z);
+        float f = (float)(this.getX() - entity.getX());
+        float g = (float)(this.getY() - entity.getY());
+        float h = (float)(this.getZ() - entity.getZ());
         return MathHelper.sqrt(f * f + g * g + h * h);
     }
 
     public double squaredDistanceTo(double d, double e, double f) {
-        double g = this.x - d;
-        double h = this.y - e;
-        double i = this.z - f;
+        double g = this.getX() - d;
+        double h = this.getY() - e;
+        double i = this.getZ() - f;
         return g * g + h * h + i * i;
     }
 
@@ -1060,9 +1077,9 @@ CommandOutput {
     }
 
     public double squaredDistanceTo(Vec3d vec3d) {
-        double d = this.x - vec3d.x;
-        double e = this.y - vec3d.y;
-        double f = this.z - vec3d.z;
+        double d = this.getX() - vec3d.x;
+        double e = this.getY() - vec3d.y;
+        double f = this.getZ() - vec3d.z;
         return d * d + e * e + f * f;
     }
 
@@ -1070,15 +1087,15 @@ CommandOutput {
     }
 
     public void pushAwayFrom(Entity entity) {
+        double e;
         if (this.isConnectedThroughVehicle(entity)) {
             return;
         }
         if (entity.noClip || this.noClip) {
             return;
         }
-        double d = entity.x - this.x;
-        double e = entity.z - this.z;
-        double f = MathHelper.absMax(d, e);
+        double d = entity.getX() - this.getX();
+        double f = MathHelper.absMax(d, e = entity.getZ() - this.getZ());
         if (f >= (double)0.01f) {
             f = MathHelper.sqrt(f);
             d /= f;
@@ -1157,11 +1174,11 @@ CommandOutput {
 
     public Vec3d getCameraPosVec(float f) {
         if (f == 1.0f) {
-            return new Vec3d(this.x, this.y + (double)this.getStandingEyeHeight(), this.z);
+            return new Vec3d(this.getX(), this.method_23320(), this.getZ());
         }
-        double d = MathHelper.lerp((double)f, this.prevX, this.x);
-        double e = MathHelper.lerp((double)f, this.prevY, this.y) + (double)this.getStandingEyeHeight();
-        double g = MathHelper.lerp((double)f, this.prevZ, this.z);
+        double d = MathHelper.lerp((double)f, this.prevX, this.getX());
+        double e = MathHelper.lerp((double)f, this.prevY, this.getY()) + (double)this.getStandingEyeHeight();
+        double g = MathHelper.lerp((double)f, this.prevZ, this.getZ());
         return new Vec3d(d, e, g);
     }
 
@@ -1188,9 +1205,9 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public boolean shouldRenderFrom(double d, double e, double f) {
-        double g = this.x - d;
-        double h = this.y - e;
-        double i = this.z - f;
+        double g = this.getX() - d;
+        double h = this.getY() - e;
+        double i = this.getZ() - f;
         double j = g * g + h * h + i * i;
         return this.shouldRenderAtDistance(j);
     }
@@ -1224,7 +1241,7 @@ CommandOutput {
     public CompoundTag toTag(CompoundTag compoundTag) {
         try {
             ListTag listTag;
-            compoundTag.put("Pos", this.toListTag(this.x, this.y, this.z));
+            compoundTag.put("Pos", this.toListTag(this.getX(), this.getY(), this.getZ()));
             Vec3d vec3d = this.getVelocity();
             compoundTag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
             compoundTag.put("Rotation", this.toListTag(this.yaw, this.pitch));
@@ -1309,13 +1326,13 @@ CommandOutput {
                 this.uuid = compoundTag.getUuid("UUID");
                 this.uuidString = this.uuid.toString();
             }
-            if (!(Double.isFinite(this.x) && Double.isFinite(this.y) && Double.isFinite(this.z))) {
+            if (!(Double.isFinite(this.getX()) && Double.isFinite(this.getY()) && Double.isFinite(this.getZ()))) {
                 throw new IllegalStateException("Entity has invalid position");
             }
             if (!Double.isFinite(this.yaw) || !Double.isFinite(this.pitch)) {
                 throw new IllegalStateException("Entity has invalid rotation");
             }
-            this.setPosition(this.x, this.y, this.z);
+            this.method_23311();
             this.setRotation(this.yaw, this.pitch);
             if (compoundTag.contains("CustomName", 8)) {
                 this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
@@ -1334,7 +1351,7 @@ CommandOutput {
             }
             this.readCustomDataFromTag(compoundTag);
             if (this.shouldSetPositionOnLoad()) {
-                this.setPosition(this.x, this.y, this.z);
+                this.setPosition(this.getX(), this.getY(), this.getZ());
             }
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Loading entity NBT");
@@ -1398,7 +1415,7 @@ CommandOutput {
         if (this.world.isClient) {
             return null;
         }
-        ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y + (double)f, this.z, itemStack);
+        ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY() + (double)f, this.getZ(), itemStack);
         itemEntity.setToDefaultPickupDelay();
         this.world.spawnEntity(itemEntity);
         return itemEntity;
@@ -1414,9 +1431,9 @@ CommandOutput {
         }
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (int i = 0; i < 8; ++i) {
-                int j = MathHelper.floor(this.y + (double)(((float)((i >> 0) % 2) - 0.5f) * 0.1f) + (double)this.standingEyeHeight);
-                int k = MathHelper.floor(this.x + (double)(((float)((i >> 1) % 2) - 0.5f) * this.dimensions.width * 0.8f));
-                int l = MathHelper.floor(this.z + (double)(((float)((i >> 2) % 2) - 0.5f) * this.dimensions.width * 0.8f));
+                int j = MathHelper.floor(this.getY() + (double)(((float)((i >> 0) % 2) - 0.5f) * 0.1f) + (double)this.standingEyeHeight);
+                int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5f) * this.dimensions.width * 0.8f));
+                int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * this.dimensions.width * 0.8f));
                 if (pooledMutable.getX() == k && pooledMutable.getY() == j && pooledMutable.getZ() == l) continue;
                 pooledMutable.method_10113(k, j, l);
                 if (!this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) continue;
@@ -1449,7 +1466,7 @@ CommandOutput {
         if (!this.hasPassenger(entity)) {
             return;
         }
-        entity.setPosition(this.x, this.y + this.getMountedHeightOffset() + entity.getHeightOffset(), this.z);
+        entity.setPosition(this.getX(), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -1575,8 +1592,8 @@ CommandOutput {
             PortalBlock cfr_ignored_0 = (PortalBlock)Blocks.NETHER_PORTAL;
             BlockPattern.Result result = PortalBlock.findPortal(this.world, this.lastPortalPosition);
             double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
-            double e = Math.abs(MathHelper.minusDiv((result.getForwards().getAxis() == Direction.Axis.X ? this.z : this.x) - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth()));
-            double f = MathHelper.minusDiv(this.y - 1.0, result.getFrontTopLeft().getY(), result.getFrontTopLeft().getY() - result.getHeight());
+            double e = Math.abs(MathHelper.minusDiv((result.getForwards().getAxis() == Direction.Axis.X ? this.getZ() : this.getX()) - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth()));
+            double f = MathHelper.minusDiv(this.getY() - 1.0, result.getFrontTopLeft().getY(), result.getFrontTopLeft().getY() - result.getHeight());
             this.lastPortalDirectionVector = new Vec3d(e, f, 0.0);
             this.lastPortalDirection = result.getForwards();
         }
@@ -1851,6 +1868,10 @@ CommandOutput {
             Entity.removeClickEvents(text2);
             return text2;
         }
+        return this.method_23315();
+    }
+
+    protected Text method_23315() {
         return this.type.getName();
     }
 
@@ -1877,7 +1898,7 @@ CommandOutput {
     }
 
     public String toString() {
-        return String.format(Locale.ROOT, "%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]", this.getClass().getSimpleName(), this.getName().asString(), this.entityId, this.world == null ? "~NULL~" : this.world.getLevelProperties().getLevelName(), this.x, this.y, this.z);
+        return String.format(Locale.ROOT, "%s['%s'/%d, l='%s', x=%.2f, y=%.2f, z=%.2f]", this.getClass().getSimpleName(), this.getName().asString(), this.entityId, this.world == null ? "~NULL~" : this.world.getLevelProperties().getLevelName(), this.getX(), this.getY(), this.getZ());
     }
 
     public boolean isInvulnerableTo(DamageSource damageSource) {
@@ -1893,7 +1914,7 @@ CommandOutput {
     }
 
     public void copyPositionAndRotation(Entity entity) {
-        this.setPositionAndAngles(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
+        this.setPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
     }
 
     public void copyFrom(Entity entity) {
@@ -1927,8 +1948,8 @@ CommandOutput {
         } else if (dimensionType == DimensionType.THE_END) {
             blockPos = serverWorld2.getForcedSpawnPoint();
         } else {
-            double d = this.x;
-            double e = this.z;
+            double d = this.getX();
+            double e = this.getZ();
             double g = 8.0;
             if (dimensionType2 == DimensionType.OVERWORLD && dimensionType == DimensionType.THE_NETHER) {
                 d /= 8.0;
@@ -1944,7 +1965,7 @@ CommandOutput {
             d = MathHelper.clamp(d, h, j);
             e = MathHelper.clamp(e, i, k);
             Vec3d vec3d2 = this.getLastPortalDirectionVector();
-            blockPos = new BlockPos(d, this.y, e);
+            blockPos = new BlockPos(d, this.getY(), e);
             BlockPattern.TeleportTarget teleportTarget = serverWorld2.getPortalForcer().getPortal(blockPos, vec3d, this.getLastPortalDirection(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
             if (teleportTarget == null) {
                 return null;
@@ -2001,8 +2022,8 @@ CommandOutput {
         crashReportSection.add("Entity Type", () -> EntityType.getId(this.getType()) + " (" + this.getClass().getCanonicalName() + ")");
         crashReportSection.add("Entity ID", this.entityId);
         crashReportSection.add("Entity Name", () -> this.getName().getString());
-        crashReportSection.add("Entity's Exact location", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", this.x, this.y, this.z));
-        crashReportSection.add("Entity's Block location", CrashReportSection.createPositionString(MathHelper.floor(this.x), MathHelper.floor(this.y), MathHelper.floor(this.z)));
+        crashReportSection.add("Entity's Exact location", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", this.getX(), this.getY(), this.getZ()));
+        crashReportSection.add("Entity's Block location", CrashReportSection.createPositionString(MathHelper.floor(this.getX()), MathHelper.floor(this.getY()), MathHelper.floor(this.getZ())));
         Vec3d vec3d = this.getVelocity();
         crashReportSection.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
         crashReportSection.add("Entity's Passengers", () -> this.getPassengerList().toString());
@@ -2111,7 +2132,7 @@ CommandOutput {
         this.standingEyeHeight = this.getEyeHeight(entityPose, entityDimensions2);
         if (entityDimensions2.width < entityDimensions.width) {
             double d = (double)entityDimensions2.width / 2.0;
-            this.setBoundingBox(new Box(this.x - d, this.y, this.z - d, this.x + d, this.y + (double)entityDimensions2.height, this.z + d));
+            this.setBoundingBox(new Box(this.getX() - d, this.getY(), this.getZ() - d, this.getX() + d, this.getY() + (double)entityDimensions2.height, this.getZ() + d));
             return;
         }
         Box box = this.getBoundingBox();
@@ -2157,8 +2178,8 @@ CommandOutput {
     protected Box calculateBoundsForPose(EntityPose entityPose) {
         EntityDimensions entityDimensions = this.getDimensions(entityPose);
         float f = entityDimensions.width / 2.0f;
-        Vec3d vec3d = new Vec3d(this.x - (double)f, this.y, this.z - (double)f);
-        Vec3d vec3d2 = new Vec3d(this.x + (double)f, this.y + (double)entityDimensions.height, this.z + (double)f);
+        Vec3d vec3d = new Vec3d(this.getX() - (double)f, this.getY(), this.getZ() - (double)f);
+        Vec3d vec3d2 = new Vec3d(this.getX() + (double)f, this.getY() + (double)entityDimensions.height, this.getZ() + (double)f);
         return new Box(vec3d, vec3d2);
     }
 
@@ -2192,7 +2213,7 @@ CommandOutput {
     }
 
     public Vec3d getPosVector() {
-        return new Vec3d(this.x, this.y, this.z);
+        return this.getPos();
     }
 
     public World getEntityWorld() {
@@ -2365,7 +2386,7 @@ CommandOutput {
     }
 
     public ServerCommandSource getCommandSource() {
-        return new ServerCommandSource(this, new Vec3d(this.x, this.y, this.z), this.getRotationClient(), this.world instanceof ServerWorld ? (ServerWorld)this.world : null, this.getPermissionLevel(), this.getName().getString(), this.getDisplayName(), this.world.getServer(), this);
+        return new ServerCommandSource(this, this.getPos(), this.getRotationClient(), this.world instanceof ServerWorld ? (ServerWorld)this.world : null, this.getPermissionLevel(), this.getName().getString(), this.getDisplayName(), this.world.getServer(), this);
     }
 
     protected int getPermissionLevel() {
@@ -2486,6 +2507,52 @@ CommandOutput {
 
     public void setVelocity(double d, double e, double f) {
         this.setVelocity(new Vec3d(d, e, f));
+    }
+
+    public final double getX() {
+        return this.x;
+    }
+
+    public double method_23316(double d) {
+        return this.x + (double)this.getWidth() * d;
+    }
+
+    public double method_23322(double d) {
+        return this.method_23316((2.0 * this.random.nextDouble() + 1.0) * d);
+    }
+
+    public final double getY() {
+        return this.y;
+    }
+
+    public double method_23323(double d) {
+        return this.y + (double)this.getHeight() * d;
+    }
+
+    public double method_23319() {
+        return this.method_23323(this.random.nextDouble());
+    }
+
+    public double method_23320() {
+        return this.y + (double)this.standingEyeHeight;
+    }
+
+    public final double getZ() {
+        return this.z;
+    }
+
+    public double method_23324(double d) {
+        return this.z + (double)this.getWidth() * d;
+    }
+
+    public double method_23325(double d) {
+        return this.method_23324((2.0 * this.random.nextDouble() + 1.0) * d);
+    }
+
+    public void setPos(double d, double e, double f) {
+        this.x = d;
+        this.y = e;
+        this.z = f;
     }
 }
 

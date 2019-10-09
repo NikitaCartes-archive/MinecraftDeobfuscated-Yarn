@@ -8,7 +8,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BubbleColumnBlock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.server.world.ServerWorld;
@@ -29,11 +28,6 @@ extends Block {
     @Override
     public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
         return COLLISION_SHAPE;
-    }
-
-    @Override
-    public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-        entity.setVelocity(entity.getVelocity().multiply(0.4, 1.0, 0.4));
     }
 
     @Override

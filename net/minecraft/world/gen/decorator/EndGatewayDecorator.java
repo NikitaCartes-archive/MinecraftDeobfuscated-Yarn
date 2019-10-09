@@ -25,9 +25,9 @@ extends Decorator<NopeDecoratorConfig> {
         int j;
         int i;
         int k;
-        if (random.nextInt(700) == 0 && (k = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i = random.nextInt(16), 0, j = random.nextInt(16))).getY()) > 0) {
+        if (random.nextInt(700) == 0 && (k = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, i = random.nextInt(16) + blockPos.getX(), j = random.nextInt(16) + blockPos.getZ())) > 0) {
             int l = k + 3 + random.nextInt(7);
-            return Stream.of(blockPos.add(i, l, j));
+            return Stream.of(new BlockPos(i, l, j));
         }
         return Stream.empty();
     }

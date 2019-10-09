@@ -124,7 +124,7 @@ extends AbstractDecorationEntity {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-        BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
+        BlockPos blockPos = this.blockPos.add(d - this.getX(), e - this.getY(), f - this.getZ());
         this.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 

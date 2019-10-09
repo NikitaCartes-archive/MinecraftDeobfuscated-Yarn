@@ -55,7 +55,7 @@ extends Task<LivingEntity> {
             return false;
         }
         BlockPos blockPos = optional.get().getPos();
-        return livingEntity.getBrain().hasActivity(Activity.REST) && livingEntity.y > (double)blockPos.getY() + 0.4 && blockPos.isWithinDistance(livingEntity.getPos(), 1.14);
+        return livingEntity.getBrain().hasActivity(Activity.REST) && livingEntity.getY() > (double)blockPos.getY() + 0.4 && blockPos.isWithinDistance(livingEntity.getPos(), 1.14);
     }
 
     @Override

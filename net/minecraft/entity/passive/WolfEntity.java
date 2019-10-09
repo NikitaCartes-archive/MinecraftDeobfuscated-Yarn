@@ -92,7 +92,7 @@ extends TameableEntity {
         this.goalSelector.add(3, new AvoidLlamaGoal<LlamaEntity>(this, LlamaEntity.class, 24.0f, 1.5, 1.5));
         this.goalSelector.add(4, new PounceAtTargetGoal(this, 0.4f));
         this.goalSelector.add(5, new MeleeAttackGoal(this, 1.0, true));
-        this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f));
+        this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
         this.goalSelector.add(7, new AnimalMateGoal(this, 1.0));
         this.goalSelector.add(8, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(9, new WolfBegGoal(this, 8.0f));
@@ -231,13 +231,13 @@ extends TameableEntity {
                 this.shakeProgress = 0.0f;
             }
             if (this.shakeProgress > 0.4f) {
-                float f = (float)this.getBoundingBox().minY;
+                float f = (float)this.getY();
                 int i = (int)(MathHelper.sin((this.shakeProgress - 0.4f) * (float)Math.PI) * 7.0f);
                 Vec3d vec3d = this.getVelocity();
                 for (int j = 0; j < i; ++j) {
                     float g = (this.random.nextFloat() * 2.0f - 1.0f) * this.getWidth() * 0.5f;
                     float h = (this.random.nextFloat() * 2.0f - 1.0f) * this.getWidth() * 0.5f;
-                    this.world.addParticle(ParticleTypes.SPLASH, this.x + (double)g, f + 0.8f, this.z + (double)h, vec3d.x, vec3d.y, vec3d.z);
+                    this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)g, f + 0.8f, this.getZ() + (double)h, vec3d.x, vec3d.y, vec3d.z);
                 }
             }
         }

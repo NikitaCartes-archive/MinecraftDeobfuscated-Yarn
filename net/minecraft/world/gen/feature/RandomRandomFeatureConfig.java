@@ -7,28 +7,17 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class RandomRandomFeatureConfig
 implements FeatureConfig {
-    public final List<ConfiguredFeature<?>> features;
+    public final List<ConfiguredFeature<?, ?>> features;
     public final int count;
 
-    public RandomRandomFeatureConfig(List<ConfiguredFeature<?>> list, int i) {
+    public RandomRandomFeatureConfig(List<ConfiguredFeature<?, ?>> list, int i) {
         this.features = list;
         this.count = i;
-    }
-
-    public RandomRandomFeatureConfig(Feature<?>[] features, FeatureConfig[] featureConfigs, int i2) {
-        this(IntStream.range(0, features.length).mapToObj(i -> RandomRandomFeatureConfig.configure(features[i], featureConfigs[i])).collect(Collectors.toList()), i2);
-    }
-
-    private static <FC extends FeatureConfig> ConfiguredFeature<?> configure(Feature<FC> feature, FeatureConfig featureConfig) {
-        return new ConfiguredFeature<FeatureConfig>(feature, featureConfig);
     }
 
     @Override
@@ -37,7 +26,7 @@ implements FeatureConfig {
     }
 
     public static <T> RandomRandomFeatureConfig deserialize(Dynamic<T> dynamic) {
-        List<ConfiguredFeature<?>> list = dynamic.get("features").asList(ConfiguredFeature::deserialize);
+        List<ConfiguredFeature<?, ?>> list = dynamic.get("features").asList(ConfiguredFeature::deserialize);
         int i = dynamic.get("count").asInt(0);
         return new RandomRandomFeatureConfig(list, i);
     }

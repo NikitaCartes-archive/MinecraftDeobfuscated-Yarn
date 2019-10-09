@@ -3,22 +3,20 @@
  */
 package net.minecraft.block.sapling;
 
-import com.mojang.datafixers.Dynamic;
 import java.util.Random;
-import java.util.function.Function;
 import net.minecraft.block.sapling.SaplingGenerator;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.LargeOakTreeFeature;
-import net.minecraft.world.gen.feature.OakTreeFeature;
+import net.minecraft.class_4640;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
 import org.jetbrains.annotations.Nullable;
 
 public class OakSaplingGenerator
 extends SaplingGenerator {
     @Override
     @Nullable
-    protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
-        return random.nextInt(10) == 0 ? new LargeOakTreeFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize), true) : new OakTreeFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize), true);
+    protected ConfiguredFeature<class_4640, ?> createTreeFeature(Random random) {
+        return random.nextInt(10) == 0 ? Feature.FANCY_TREE.method_23397(DefaultBiomeFeatures.field_21190) : Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21126);
     }
 }
 

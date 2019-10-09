@@ -29,7 +29,7 @@ import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FlyAroundGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
-import net.minecraft.entity.ai.goal.FollowOwnerFlyingGoal;
+import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SitOnOwnerShoulder;
@@ -99,7 +99,6 @@ implements Flutterer {
         hashMap.put(EntityType.ILLUSIONER, SoundEvents.ENTITY_PARROT_IMITATE_ILLUSIONER);
         hashMap.put(EntityType.MAGMA_CUBE, SoundEvents.ENTITY_PARROT_IMITATE_MAGMA_CUBE);
         hashMap.put(EntityType.ZOMBIE_PIGMAN, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_PIGMAN);
-        hashMap.put(EntityType.PANDA, SoundEvents.ENTITY_PARROT_IMITATE_PANDA);
         hashMap.put(EntityType.PHANTOM, SoundEvents.ENTITY_PARROT_IMITATE_PHANTOM);
         hashMap.put(EntityType.PILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_PILLAGER);
         hashMap.put(EntityType.POLAR_BEAR, SoundEvents.ENTITY_PARROT_IMITATE_POLAR_BEAR);
@@ -150,7 +149,7 @@ implements Flutterer {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         this.goalSelector.add(2, this.sitGoal);
-        this.goalSelector.add(2, new FollowOwnerFlyingGoal(this, 1.0, 5.0f, 1.0f));
+        this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0, 5.0f, 1.0f, true));
         this.goalSelector.add(2, new FlyAroundGoal(this, 1.0));
         this.goalSelector.add(3, new SitOnOwnerShoulder(this));
         this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0f, 7.0f));
@@ -226,7 +225,7 @@ implements Flutterer {
         List<MobEntity> list = world.getEntities(MobEntity.class, entity.getBoundingBox().expand(20.0), CAN_IMITATE);
         if (!list.isEmpty() && !(mobEntity = list.get(world.random.nextInt(list.size()))).isSilent()) {
             SoundEvent soundEvent = ParrotEntity.getSound(mobEntity.getType());
-            world.playSound(null, entity.x, entity.y, entity.z, soundEvent, entity.getSoundCategory(), 0.7f, ParrotEntity.getSoundPitch(world.random));
+            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, entity.getSoundCategory(), 0.7f, ParrotEntity.getSoundPitch(world.random));
             return true;
         }
         return false;
@@ -240,7 +239,7 @@ implements Flutterer {
                 itemStack.decrement(1);
             }
             if (!this.isSilent()) {
-                this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_PARROT_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+                this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PARROT_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
             }
             if (!this.world.isClient) {
                 if (this.random.nextInt(10) == 0) {
@@ -281,7 +280,8 @@ implements Flutterer {
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
+    public boolean handleFallDamage(float f, float g) {
+        return false;
     }
 
     @Override
@@ -301,7 +301,7 @@ implements Flutterer {
 
     public static void playMobSound(World world, Entity entity) {
         if (!entity.isSilent() && !ParrotEntity.imitateNearbyMob(world, entity) && world.random.nextInt(200) == 0) {
-            world.playSound(null, entity.x, entity.y, entity.z, ParrotEntity.getRandomSound(world.random), entity.getSoundCategory(), 1.0f, ParrotEntity.getSoundPitch(world.random));
+            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), ParrotEntity.getRandomSound(world.random), entity.getSoundCategory(), 1.0f, ParrotEntity.getSoundPitch(world.random));
         }
     }
 
@@ -386,7 +386,9 @@ implements Flutterer {
         if (this.isInvulnerableTo(damageSource)) {
             return false;
         }
-        this.sitGoal.setEnabledWithOwner(false);
+        if (this.sitGoal != null) {
+            this.sitGoal.setEnabledWithOwner(false);
+        }
         return super.damage(damageSource, f);
     }
 

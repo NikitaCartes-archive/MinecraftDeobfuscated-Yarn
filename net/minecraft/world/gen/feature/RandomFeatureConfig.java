@@ -7,33 +7,18 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
 
 public class RandomFeatureConfig
 implements FeatureConfig {
     public final List<RandomFeatureEntry<?>> features;
-    public final ConfiguredFeature<?> defaultFeature;
+    public final ConfiguredFeature<?, ?> defaultFeature;
 
-    public RandomFeatureConfig(List<RandomFeatureEntry<?>> list, ConfiguredFeature<?> configuredFeature) {
+    public RandomFeatureConfig(List<RandomFeatureEntry<?>> list, ConfiguredFeature<?, ?> configuredFeature) {
         this.features = list;
         this.defaultFeature = configuredFeature;
-    }
-
-    public RandomFeatureConfig(Feature<?>[] features, FeatureConfig[] featureConfigs, float[] fs, Feature<?> feature, FeatureConfig featureConfig) {
-        this(IntStream.range(0, features.length).mapToObj(i -> RandomFeatureConfig.makeEntry(features[i], featureConfigs[i], fs[i])).collect(Collectors.toList()), RandomFeatureConfig.configure(feature, featureConfig));
-    }
-
-    private static <FC extends FeatureConfig> RandomFeatureEntry<FC> makeEntry(Feature<FC> feature, FeatureConfig featureConfig, float f) {
-        return new RandomFeatureEntry<FeatureConfig>(feature, featureConfig, Float.valueOf(f));
-    }
-
-    private static <FC extends FeatureConfig> ConfiguredFeature<FC> configure(Feature<FC> feature, FeatureConfig featureConfig) {
-        return new ConfiguredFeature<FeatureConfig>(feature, featureConfig);
     }
 
     @Override
@@ -45,7 +30,7 @@ implements FeatureConfig {
 
     public static <T> RandomFeatureConfig deserialize(Dynamic<T> dynamic) {
         List<RandomFeatureEntry<?>> list = dynamic.get("features").asList(RandomFeatureEntry::deserialize);
-        ConfiguredFeature<?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("default").orElseEmptyMap());
+        ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("default").orElseEmptyMap());
         return new RandomFeatureConfig(list, configuredFeature);
     }
 }

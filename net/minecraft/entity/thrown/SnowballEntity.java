@@ -52,7 +52,7 @@ extends ThrownItemEntity {
         if (b == 3) {
             ParticleEffect particleEffect = this.getParticleParameters();
             for (int i = 0; i < 8; ++i) {
-                this.world.addParticle(particleEffect, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+                this.world.addParticle(particleEffect, this.getX(), this.getY(), this.getZ(), 0.0, 0.0, 0.0);
             }
         }
     }

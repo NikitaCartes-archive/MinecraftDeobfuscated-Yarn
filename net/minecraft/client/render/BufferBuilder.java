@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.mojang.datafixers.util.Pair;
@@ -133,7 +134,7 @@ implements BufferVertexConsumer {
         ByteBuffer byteBuffer = ByteBuffer.allocate(this.vertexCount * this.format.getVertexSize());
         byteBuffer.put(this.buffer);
         this.buffer.clear();
-        return new State(byteBuffer, new VertexFormat(this.format));
+        return new State(byteBuffer, this.format);
     }
 
     private static float getDistanceSq(FloatBuffer floatBuffer, float f, float g, float h, int i, int j) {
@@ -163,7 +164,7 @@ implements BufferVertexConsumer {
         this.buffer.position(this.field_20776);
         this.buffer.put(state.field_20885);
         this.buffer.clear();
-        this.format = new VertexFormat(state.format);
+        this.format = state.format;
         this.vertexCount = i / this.format.getVertexSize();
         this.field_20884 = this.field_20776 + this.vertexCount * this.format.getVertexSize();
     }
@@ -175,7 +176,7 @@ implements BufferVertexConsumer {
         this.building = true;
         this.drawMode = i;
         this.format = vertexFormat;
-        this.currentElement = vertexFormat.getElement(0);
+        this.currentElement = (VertexFormatElement)vertexFormat.getElements().get(0);
         this.currentElementId = 0;
         this.buffer.clear();
     }
@@ -218,18 +219,16 @@ implements BufferVertexConsumer {
 
     @Override
     public void nextElement() {
-        ++this.currentElementId;
-        this.field_20884 += this.getCurrentElement().getSize();
-        this.currentElementId %= this.format.getElementCount();
-        this.currentElement = this.format.getElement(this.currentElementId);
-        if (this.getCurrentElement().getType() == VertexFormatElement.Type.PADDING) {
+        VertexFormatElement vertexFormatElement;
+        ImmutableList<VertexFormatElement> immutableList = this.format.getElements();
+        this.currentElementId = (this.currentElementId + 1) % immutableList.size();
+        this.field_20884 += this.currentElement.getSize();
+        this.currentElement = vertexFormatElement = (VertexFormatElement)immutableList.get(this.currentElementId);
+        if (vertexFormatElement.getType() == VertexFormatElement.Type.PADDING) {
             this.nextElement();
         }
         if (this.field_20889 && this.currentElement.getType() == VertexFormatElement.Type.COLOR) {
             BufferVertexConsumer.super.color(this.field_20890, this.field_20891, this.field_20892, this.field_20893);
-        }
-        if (this.hasDefaultOverlay && this.currentElement.getType() == VertexFormatElement.Type.UV && this.currentElement.getIndex() == 1) {
-            BufferVertexConsumer.super.overlay(this.defaultOverlayU, this.defaultOverlayV);
         }
     }
 
@@ -239,14 +238,6 @@ implements BufferVertexConsumer {
             throw new IllegalStateException();
         }
         return BufferVertexConsumer.super.color(i, j, k, l);
-    }
-
-    @Override
-    public VertexConsumer overlay(int i, int j) {
-        if (this.hasDefaultOverlay) {
-            throw new IllegalStateException();
-        }
-        return BufferVertexConsumer.super.overlay(i, j);
     }
 
     public Pair<class_4574, ByteBuffer> method_22632() {
@@ -266,6 +257,10 @@ implements BufferVertexConsumer {
         if (this.field_20776 != this.field_20777) {
             LOGGER.warn("Bytes mismatch " + this.field_20776 + " " + this.field_20777);
         }
+        this.method_23477();
+    }
+
+    public void method_23477() {
         this.field_20776 = 0;
         this.field_20777 = 0;
         this.field_20884 = 0;

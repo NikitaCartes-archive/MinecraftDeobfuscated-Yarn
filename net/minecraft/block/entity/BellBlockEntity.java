@@ -129,9 +129,9 @@ implements Tickable {
         int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
         this.field_19156.stream().filter(this::method_20518).forEach(livingEntity -> {
             float f = 1.0f;
-            float g = MathHelper.sqrt((livingEntity.x - (double)blockPos.getX()) * (livingEntity.x - (double)blockPos.getX()) + (livingEntity.z - (double)blockPos.getZ()) * (livingEntity.z - (double)blockPos.getZ()));
-            double d = (double)((float)blockPos.getX() + 0.5f) + (double)(1.0f / g) * (livingEntity.x - (double)blockPos.getX());
-            double e = (double)((float)blockPos.getZ() + 0.5f) + (double)(1.0f / g) * (livingEntity.z - (double)blockPos.getZ());
+            float g = MathHelper.sqrt((livingEntity.getX() - (double)blockPos.getX()) * (livingEntity.getX() - (double)blockPos.getX()) + (livingEntity.getZ() - (double)blockPos.getZ()) * (livingEntity.getZ() - (double)blockPos.getZ()));
+            double d = (double)((float)blockPos.getX() + 0.5f) + (double)(1.0f / g) * (livingEntity.getX() - (double)blockPos.getX());
+            double e = (double)((float)blockPos.getZ() + 0.5f) + (double)(1.0f / g) * (livingEntity.getZ() - (double)blockPos.getZ());
             int j = MathHelper.clamp((i - 21) / -2, 3, 15);
             for (int k = 0; k < j; ++k) {
                 atomicInteger.addAndGet(5);

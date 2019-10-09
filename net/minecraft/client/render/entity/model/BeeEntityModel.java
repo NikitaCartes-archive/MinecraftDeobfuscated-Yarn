@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelUtil;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -30,7 +31,7 @@ extends class_4592<T> {
     private float bodyPitch;
 
     public BeeEntityModel() {
-        super(false, 24.0f, 0.0f);
+        super(RenderLayer::getEntityCutoutNoCull, false, 24.0f, 0.0f, 2.0f, 2.0f, 24.0f);
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.body = new ModelPart(this);

@@ -111,7 +111,7 @@ implements AutoCloseable {
             boolean k = false;
             float f = 0.0f;
             Matrix4f matrix4f = matrixStack.peek();
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23028(this.id));
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(this.id));
             vertexConsumer.vertex(matrix4f, 0.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(i).next();
             vertexConsumer.vertex(matrix4f, 128.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(i).next();
             vertexConsumer.vertex(matrix4f, 128.0f, 0.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(i).next();
@@ -121,7 +121,7 @@ implements AutoCloseable {
                 if (bl && !mapIcon.isAlwaysRendered()) continue;
                 matrixStack.push();
                 matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f));
                 matrixStack.scale(4.0f, 4.0f, 3.0f);
                 matrixStack.translate(-0.125, 0.125, 0.0);
                 byte b = mapIcon.getTypeId();
@@ -131,7 +131,7 @@ implements AutoCloseable {
                 float n = (float)(b / 16 + 1) / 16.0f;
                 Matrix4f matrix4f2 = matrixStack.peek();
                 float o = -0.001f;
-                VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23028(MAP_ICONS_TEXTURE));
+                VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(MAP_ICONS_TEXTURE));
                 vertexConsumer2.vertex(matrix4f2, -1.0f, 1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(g, h).light(i).next();
                 vertexConsumer2.vertex(matrix4f2, 1.0f, 1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(m, h).light(i).next();
                 vertexConsumer2.vertex(matrix4f2, 1.0f, -1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(m, n).light(i).next();

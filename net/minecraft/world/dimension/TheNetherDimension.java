@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class TheNetherDimension
 extends Dimension {
+    private static final Vec3d field_21216 = new Vec3d(0.2f, 0.03f, 0.03f);
+
     public TheNetherDimension(World world, DimensionType dimensionType) {
         super(world, dimensionType);
         this.waterVaporizes = true;
@@ -31,7 +33,7 @@ extends Dimension {
     @Override
     @Environment(value=EnvType.CLIENT)
     public Vec3d getFogColor(float f, float g) {
-        return new Vec3d(0.2f, 0.03f, 0.03f);
+        return field_21216;
     }
 
     @Override

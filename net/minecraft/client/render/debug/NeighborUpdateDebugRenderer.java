@@ -64,7 +64,7 @@ implements DebugRenderer.Renderer {
         HashSet<BlockPos> set = Sets.newHashSet();
         HashMap<BlockPos, Integer> map = Maps.newHashMap();
         LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.LINES);
+        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.getLines());
         Iterator<Map.Entry<Long, Map<BlockPos, Integer>>> iterator = this.field_4623.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Long, Map<BlockPos, Integer>> entry = iterator.next();

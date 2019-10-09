@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -31,11 +30,9 @@ extends EntityRenderer<LeadKnotEntity> {
         float i = 0.0625f;
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         int j = leadKnotEntity.getLightmapCoordinates();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
         this.model.setAngles(leadKnotEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-        this.model.method_22957(matrixStack, vertexConsumer, j);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(SKIN));
+        this.model.renderItem(matrixStack, vertexConsumer, j, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
         super.render(leadKnotEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

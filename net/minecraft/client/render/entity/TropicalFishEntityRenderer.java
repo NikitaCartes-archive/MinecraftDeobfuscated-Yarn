@@ -22,11 +22,11 @@ import net.minecraft.util.math.MatrixStack;
 @Environment(value=EnvType.CLIENT)
 public class TropicalFishEntityRenderer
 extends MobEntityRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
-    private final TropicalFishEntityModelA<TropicalFishEntity> field_4800 = new TropicalFishEntityModelA();
-    private final TropicalFishEntityModelB<TropicalFishEntity> field_4799 = new TropicalFishEntityModelB();
+    private final TropicalFishEntityModelA<TropicalFishEntity> field_4800 = new TropicalFishEntityModelA(0.0f);
+    private final TropicalFishEntityModelB<TropicalFishEntity> field_4799 = new TropicalFishEntityModelB(0.0f);
 
     public TropicalFishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new TropicalFishEntityModelA(), 0.15f);
+        super(entityRenderDispatcher, new TropicalFishEntityModelA(0.0f), 0.15f);
         this.addFeature(new TropicalFishSomethingFeatureRenderer(this));
     }
 
@@ -46,10 +46,10 @@ extends MobEntityRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
     protected void method_4142(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(tropicalFishEntity, matrixStack, f, g, h);
         float i = 4.3f * MathHelper.sin(0.6f * f);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(i, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(i));
         if (!tropicalFishEntity.isInsideWater()) {
             matrixStack.translate(0.2f, 0.1f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
         }
     }
 }

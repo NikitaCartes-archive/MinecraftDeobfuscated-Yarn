@@ -39,7 +39,7 @@ extends AbstractPhase {
     @Override
     public void serverTick() {
         double d;
-        double d2 = d = this.field_7048 == null ? 0.0 : this.field_7048.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
+        double d2 = d = this.field_7048 == null ? 0.0 : this.field_7048.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
         if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
             this.method_6844();
         }
@@ -58,7 +58,7 @@ extends AbstractPhase {
             BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
             PlayerEntity playerEntity = this.dragon.world.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, blockPos.getX(), blockPos.getY(), blockPos.getZ());
             if (playerEntity != null) {
-                Vec3d vec3d = new Vec3d(playerEntity.x, 0.0, playerEntity.z).normalize();
+                Vec3d vec3d = new Vec3d(playerEntity.getX(), 0.0, playerEntity.getZ()).normalize();
                 j = this.dragon.method_6822(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
             } else {
                 j = this.dragon.method_6822(40.0, blockPos.getY(), 0.0);

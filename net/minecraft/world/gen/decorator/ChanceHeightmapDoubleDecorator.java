@@ -12,25 +12,24 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 
 public class ChanceHeightmapDoubleDecorator
-extends Decorator<ChanceDecoratorConfig> {
-    public ChanceHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
+extends Decorator<LakeDecoratorConfig> {
+    public ChanceHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends LakeDecoratorConfig> function) {
         super(function);
     }
 
-    public Stream<BlockPos> method_14342(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
-        if (random.nextFloat() < 1.0f / (float)chanceDecoratorConfig.chance) {
+    public Stream<BlockPos> method_14342(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos) {
+        if (random.nextFloat() < 1.0f / (float)lakeDecoratorConfig.chance) {
             int j;
-            int i = random.nextInt(16);
-            int k = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j = random.nextInt(16))).getY() * 2;
+            int i = random.nextInt(16) + blockPos.getX();
+            int k = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j = random.nextInt(16) + blockPos.getZ()) * 2;
             if (k <= 0) {
                 return Stream.empty();
             }
-            int l = random.nextInt(k);
-            return Stream.of(blockPos.add(i, l, j));
+            return Stream.of(new BlockPos(i, random.nextInt(k), j));
         }
         return Stream.empty();
     }

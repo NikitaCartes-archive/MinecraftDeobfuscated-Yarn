@@ -24,9 +24,9 @@ implements Packet<ClientPlayPacketListener> {
 
     public ExperienceOrbSpawnS2CPacket(ExperienceOrbEntity experienceOrbEntity) {
         this.id = experienceOrbEntity.getEntityId();
-        this.x = experienceOrbEntity.x;
-        this.y = experienceOrbEntity.y;
-        this.z = experienceOrbEntity.z;
+        this.x = experienceOrbEntity.getX();
+        this.y = experienceOrbEntity.getY();
+        this.z = experienceOrbEntity.getZ();
         this.experience = experienceOrbEntity.getExperienceAmount();
     }
 

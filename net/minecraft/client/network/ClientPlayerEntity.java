@@ -179,7 +179,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void tick() {
-        if (!this.world.isChunkLoaded(new BlockPos(this.x, 0.0, this.z))) {
+        if (!this.world.isChunkLoaded(new BlockPos(this.getX(), 0.0, this.getZ()))) {
             return;
         }
         super.tick();
@@ -213,10 +213,9 @@ extends AbstractClientPlayerEntity {
         }
         if (this.isCamera()) {
             boolean bl4;
-            Box box = this.getBoundingBox();
-            double d = this.x - this.lastX;
-            double e = box.minY - this.lastBaseY;
-            double f = this.z - this.lastZ;
+            double d = this.getX() - this.lastX;
+            double e = this.getY() - this.lastBaseY;
+            double f = this.getZ() - this.lastZ;
             double g = this.yaw - this.lastYaw;
             double h = this.pitch - this.lastPitch;
             ++this.field_3923;
@@ -227,18 +226,18 @@ extends AbstractClientPlayerEntity {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
                 bl3 = false;
             } else if (bl3 && bl4) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(this.x, box.minY, this.z, this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, this.onGround));
             } else if (bl3) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionOnly(this.x, box.minY, this.z, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionOnly(this.getX(), this.getY(), this.getZ(), this.onGround));
             } else if (bl4) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
             } else if (this.lastOnGround != this.onGround) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket(this.onGround));
             }
             if (bl3) {
-                this.lastX = this.x;
-                this.lastBaseY = box.minY;
-                this.lastZ = this.z;
+                this.lastX = this.getX();
+                this.lastBaseY = this.getY();
+                this.lastZ = this.getZ();
                 this.field_3923 = 0;
             }
             if (bl4) {
@@ -466,12 +465,12 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void playSound(SoundEvent soundEvent, float f, float g) {
-        this.world.playSound(this.x, this.y, this.z, soundEvent, this.getSoundCategory(), f, g, false);
+        this.world.playSound(this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), f, g, false);
     }
 
     @Override
     public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-        this.world.playSound(this.x, this.y, this.z, soundEvent, soundCategory, f, g, false);
+        this.world.playSound(this.getX(), this.getY(), this.getZ(), soundEvent, soundCategory, f, g, false);
     }
 
     @Override
@@ -638,11 +637,10 @@ extends AbstractClientPlayerEntity {
             this.input.jumping = true;
         }
         if (!this.noClip) {
-            Box box = this.getBoundingBox();
-            this.pushOutOfBlocks(this.x - (double)this.getWidth() * 0.35, box.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.x - (double)this.getWidth() * 0.35, box.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, box.minY + 0.5, this.z - (double)this.getWidth() * 0.35);
-            this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, box.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
+            this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
+            this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
+            this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
+            this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
         }
         boolean bl6 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.abilities.allowFlying;
         if (!(!this.onGround && !this.isInWater() || bl2 || bl3 || !this.method_20623() || this.isSprinting() || !bl5 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
@@ -798,10 +796,10 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void move(MovementType movementType, Vec3d vec3d) {
-        double d = this.x;
-        double e = this.z;
+        double d = this.getX();
+        double e = this.getZ();
         super.move(movementType, vec3d);
-        this.method_3148((float)(this.x - d), (float)(this.z - e));
+        this.method_3148((float)(this.getX() - d), (float)(this.getZ() - e));
     }
 
     public boolean getLastAutoJump() {
@@ -813,8 +811,8 @@ extends AbstractClientPlayerEntity {
         if (!this.method_22119()) {
             return;
         }
-        Vec3d vec3d = new Vec3d(this.x, this.getBoundingBox().minY, this.z);
-        Vec3d vec3d2 = new Vec3d(this.x + (double)f, this.getBoundingBox().minY, this.z + (double)g);
+        Vec3d vec3d = this.getPos();
+        Vec3d vec3d2 = vec3d.add(f, 0.0, g);
         Vec3d vec3d3 = new Vec3d(f, 0.0, g);
         float h = this.getMovementSpeed();
         float i = (float)vec3d3.lengthSquared();
@@ -838,7 +836,7 @@ extends AbstractClientPlayerEntity {
             return;
         }
         EntityContext entityContext = EntityContext.of(this);
-        BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().maxY, this.z);
+        BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().maxY, this.getZ());
         BlockState blockState = this.world.getBlockState(blockPos);
         if (!blockState.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
             return;
@@ -880,7 +878,7 @@ extends AbstractClientPlayerEntity {
                 BlockPos blockPos3 = blockPos2.up(u);
                 BlockState blockState3 = this.world.getBlockState(blockPos3);
                 VoxelShape voxelShape2 = blockState3.getCollisionShape(this.world, blockPos3, entityContext);
-                if (!voxelShape2.isEmpty() && (double)(t = (float)voxelShape2.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getBoundingBox().minY > (double)p) {
+                if (!voxelShape2.isEmpty() && (double)(t = (float)voxelShape2.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)p) {
                     return;
                 }
                 if (u > 1 && !(blockState4 = this.world.getBlockState(blockPos = blockPos.up())).getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
@@ -893,7 +891,7 @@ extends AbstractClientPlayerEntity {
         if (t == Float.MIN_VALUE) {
             return;
         }
-        float v = (float)((double)t - this.getBoundingBox().minY);
+        float v = (float)((double)t - this.getY());
         if (v <= 0.5f || v > p) {
             return;
         }
@@ -901,7 +899,7 @@ extends AbstractClientPlayerEntity {
     }
 
     private boolean method_22119() {
-        return this.getLastAutoJump() && this.field_3934 <= 0 && this.onGround && !this.method_21825() && !this.hasVehicle() && this.method_22120();
+        return this.getLastAutoJump() && this.field_3934 <= 0 && this.onGround && !this.method_21825() && !this.hasVehicle() && this.method_22120() && (double)this.method_23313() >= 1.0;
     }
 
     private boolean method_22120() {
@@ -941,11 +939,11 @@ extends AbstractClientPlayerEntity {
             return this.isInWater;
         }
         if (!bl && bl2) {
-            this.world.playSound(this.x, this.y, this.z, SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundCategory.AMBIENT, 1.0f, 1.0f, false);
+            this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundCategory.AMBIENT, 1.0f, 1.0f, false);
             this.client.getSoundManager().play(new AmbientSoundLoops.Underwater(this));
         }
         if (bl && !bl2) {
-            this.world.playSound(this.x, this.y, this.z, SoundEvents.AMBIENT_UNDERWATER_EXIT, SoundCategory.AMBIENT, 1.0f, 1.0f, false);
+            this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_EXIT, SoundCategory.AMBIENT, 1.0f, 1.0f, false);
         }
         return this.isInWater;
     }

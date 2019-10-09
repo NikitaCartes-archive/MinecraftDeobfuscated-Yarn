@@ -20,10 +20,10 @@ public class OceanDeepLukewarmBiome
 extends Biome {
     public OceanDeepLukewarmBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_SAND_UNDERWATER_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.OCEAN).depth(-1.8f).scale(0.1f).temperature(0.5f).downfall(0.5f).waterColor(4566514).waterFogColor(267827).parent(null));
-        this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3f, 0.9f));
-        this.addStructureFeature(Feature.OCEAN_MONUMENT, FeatureConfig.DEFAULT);
-        this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-        this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false));
+        this.addStructureFeature(Feature.OCEAN_RUIN.method_23397(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3f, 0.9f)));
+        this.addStructureFeature(Feature.OCEAN_MONUMENT.method_23397(FeatureConfig.DEFAULT));
+        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+        this.addStructureFeature(Feature.SHIPWRECK.method_23397(new ShipwreckFeatureConfig(false)));
         DefaultBiomeFeatures.addOceanCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);

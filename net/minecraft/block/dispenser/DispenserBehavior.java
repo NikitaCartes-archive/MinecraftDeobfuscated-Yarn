@@ -21,6 +21,7 @@ import net.minecraft.block.dispenser.BoatDispenserBehavior;
 import net.minecraft.block.dispenser.FallibleItemDispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.dispenser.ProjectileDispenserBehavior;
+import net.minecraft.block.entity.BeeHiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -342,7 +343,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
                 TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
                 world.spawnEntity(tntEntity);
-                world.playSound(null, tntEntity.x, tntEntity.y, tntEntity.z, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 itemStack.decrement(1);
                 return itemStack;
             }
@@ -428,7 +429,7 @@ public interface DispenserBehavior {
                 BlockState blockState = iWorld.getBlockState(blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING)));
                 Block block = blockState.getBlock();
                 if (block.matches(BlockTags.BEEHIVES) && blockState.get(BeeHiveBlock.HONEY_LEVEL) >= 5) {
-                    ((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null);
+                    ((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
                     return this.method_22141(blockPointer, itemStack, new ItemStack(Items.HONEY_BOTTLE));
                 }
                 if (iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
@@ -462,7 +463,7 @@ public interface DispenserBehavior {
                             itemStack.setCount(0);
                         }
                         BeeHiveBlock.dropHoneycomb(world, blockPos);
-                        ((BeeHiveBlock)blockState.getBlock()).emptyHoney(world, blockState, blockPos, null);
+                        ((BeeHiveBlock)blockState.getBlock()).emptyHoney(world, blockState, blockPos, null, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
                         this.success = true;
                     }
                 }

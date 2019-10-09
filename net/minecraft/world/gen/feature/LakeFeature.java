@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -18,18 +17,18 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.LakeFeatureConfig;
 
 public class LakeFeature
-extends Feature<LakeFeatureConfig> {
+extends Feature<BushFeatureConfig> {
     private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-    public LakeFeature(Function<Dynamic<?>, ? extends LakeFeatureConfig> function) {
+    public LakeFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> function) {
         super(function);
     }
 
-    public boolean method_13471(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, LakeFeatureConfig lakeFeatureConfig) {
+    public boolean method_13471(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BushFeatureConfig bushFeatureConfig) {
         int t;
         int j;
         while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
@@ -75,7 +74,7 @@ extends Feature<LakeFeatureConfig> {
                     if (t >= 4 && material.isLiquid()) {
                         return false;
                     }
-                    if (t >= 4 || material.isSolid() || iWorld.getBlockState(blockPos.add(j, t, s)) == lakeFeatureConfig.state) continue;
+                    if (t >= 4 || material.isSolid() || iWorld.getBlockState(blockPos.add(j, t, s)) == bushFeatureConfig.state) continue;
                     return false;
                 }
             }
@@ -84,7 +83,7 @@ extends Feature<LakeFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 0; t < 8; ++t) {
                     if (!bls[(j * 16 + s) * 8 + t]) continue;
-                    iWorld.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : lakeFeatureConfig.state, 2);
+                    iWorld.setBlockState(blockPos.add(j, t, s), t >= 4 ? CAVE_AIR : bushFeatureConfig.state, 2);
                 }
             }
         }
@@ -92,7 +91,7 @@ extends Feature<LakeFeatureConfig> {
             for (int s = 0; s < 16; ++s) {
                 for (t = 4; t < 8; ++t) {
                     BlockPos blockPos2;
-                    if (!bls[(j * 16 + s) * 8 + t] || !Block.isNaturalDirt(iWorld.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || iWorld.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
+                    if (!bls[(j * 16 + s) * 8 + t] || !LakeFeature.method_23396(iWorld.getBlockState(blockPos2 = blockPos.add(j, t - 1, s)).getBlock()) || iWorld.getLightLevel(LightType.SKY, blockPos.add(j, t, s)) <= 0) continue;
                     Biome biome = iWorld.getBiome(blockPos2);
                     if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.MYCELIUM) {
                         iWorld.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
@@ -102,7 +101,7 @@ extends Feature<LakeFeatureConfig> {
                 }
             }
         }
-        if (lakeFeatureConfig.state.getMaterial() == Material.LAVA) {
+        if (bushFeatureConfig.state.getMaterial() == Material.LAVA) {
             for (j = 0; j < 16; ++j) {
                 for (int s = 0; s < 16; ++s) {
                     for (t = 0; t < 8; ++t) {
@@ -114,7 +113,7 @@ extends Feature<LakeFeatureConfig> {
                 }
             }
         }
-        if (lakeFeatureConfig.state.getMaterial() == Material.WATER) {
+        if (bushFeatureConfig.state.getMaterial() == Material.WATER) {
             for (j = 0; j < 16; ++j) {
                 for (int s = 0; s < 16; ++s) {
                     t = 4;

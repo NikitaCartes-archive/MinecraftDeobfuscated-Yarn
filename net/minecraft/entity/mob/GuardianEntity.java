@@ -211,7 +211,7 @@ extends HostileEntity {
                     this.spikesExtensionRate = 2.0f;
                     vec3d = this.getVelocity();
                     if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
-                        this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0f, 1.0f, false);
+                        this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0f, 1.0f, false);
                     }
                     this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).method_10074(), this);
                 } else {
@@ -223,7 +223,7 @@ extends HostileEntity {
                 if (this.areSpikesRetracted() && this.isInsideWater()) {
                     vec3d = this.getRotationVec(0.0f);
                     for (int i = 0; i < 2; ++i) {
-                        this.world.addParticle(ParticleTypes.BUBBLE, this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.x * 1.5, this.y + this.random.nextDouble() * (double)this.getHeight() - vec3d.y * 1.5, this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.z * 1.5, 0.0, 0.0, 0.0);
+                        this.world.addParticle(ParticleTypes.BUBBLE, this.method_23322(0.5) - vec3d.x * 1.5, this.method_23319() - vec3d.y * 1.5, this.method_23325(0.5) - vec3d.z * 1.5, 0.0, 0.0, 0.0);
                     }
                 }
                 if (this.hasBeamTarget()) {
@@ -235,16 +235,16 @@ extends HostileEntity {
                         this.getLookControl().lookAt(livingEntity, 90.0f, 90.0f);
                         this.getLookControl().tick();
                         double d = this.getBeamProgress(0.0f);
-                        double e = livingEntity.x - this.x;
-                        double f = livingEntity.y + (double)(livingEntity.getHeight() * 0.5f) - (this.y + (double)this.getStandingEyeHeight());
-                        double g = livingEntity.z - this.z;
+                        double e = livingEntity.getX() - this.getX();
+                        double f = livingEntity.method_23323(0.5) - this.method_23320();
+                        double g = livingEntity.getZ() - this.getZ();
                         double h = Math.sqrt(e * e + f * f + g * g);
                         e /= h;
                         f /= h;
                         g /= h;
                         double j = this.random.nextDouble();
                         while (j < h) {
-                            this.world.addParticle(ParticleTypes.BUBBLE, this.x + e * (j += 1.8 - d + this.random.nextDouble() * (1.7 - d)), this.y + f * j + (double)this.getStandingEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
+                            this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + e * (j += 1.8 - d + this.random.nextDouble() * (1.7 - d)), this.method_23320() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
                         }
                     }
                 }
@@ -340,7 +340,7 @@ extends HostileEntity {
                 this.guardian.setSpikesRetracted(false);
                 return;
             }
-            Vec3d vec3d = new Vec3d(this.targetX - this.guardian.x, this.targetY - this.guardian.y, this.targetZ - this.guardian.z);
+            Vec3d vec3d = new Vec3d(this.targetX - this.guardian.getX(), this.targetY - this.guardian.getY(), this.targetZ - this.guardian.getZ());
             double d = vec3d.length();
             double e = vec3d.x / d;
             double f = vec3d.y / d;
@@ -356,9 +356,9 @@ extends HostileEntity {
             double n = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.75) * 0.05;
             this.guardian.setVelocity(this.guardian.getVelocity().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
             LookControl lookControl = this.guardian.getLookControl();
-            double o = this.guardian.x + e * 2.0;
-            double p = (double)this.guardian.getStandingEyeHeight() + this.guardian.y + f / d;
-            double q = this.guardian.z + g * 2.0;
+            double o = this.guardian.getX() + e * 2.0;
+            double p = this.guardian.method_23320() + f / d;
+            double q = this.guardian.getZ() + g * 2.0;
             double r = lookControl.getLookX();
             double s = lookControl.getLookY();
             double t = lookControl.getLookZ();

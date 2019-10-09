@@ -4,10 +4,12 @@
 package net.minecraft.client.render.entity.model;
 
 import com.google.common.collect.ImmutableList;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.entity.Entity;
@@ -15,6 +17,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MatrixStack;
 
@@ -36,16 +39,12 @@ ModelWithHead {
     public float field_3396;
     private float itemUsedTime;
 
-    public BipedEntityModel() {
-        this(0.0f);
-    }
-
     public BipedEntityModel(float f) {
-        this(f, 0.0f, 64, 32);
+        this(RenderLayer::getEntitySolid, f, 0.0f, 64, 32);
     }
 
-    public BipedEntityModel(float f, float g, int i, int j) {
-        super(true, 16.0f, 0.0f);
+    public BipedEntityModel(Function<Identifier, RenderLayer> function, float f, float g, int i, int j) {
+        super(function, true, 16.0f, 0.0f, 2.0f, 2.0f, 24.0f);
         this.textureWidth = i;
         this.textureHeight = j;
         this.head = new ModelPart(this, 0, 0);

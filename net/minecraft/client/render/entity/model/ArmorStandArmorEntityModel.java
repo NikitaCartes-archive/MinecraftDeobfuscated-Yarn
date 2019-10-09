@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 
@@ -16,7 +17,7 @@ extends BipedEntityModel<ArmorStandEntity> {
     }
 
     protected ArmorStandArmorEntityModel(float f, int i, int j) {
-        super(f, 0.0f, i, j);
+        super(RenderLayer::getEntitySolid, f, 0.0f, i, j);
     }
 
     public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j, float k) {

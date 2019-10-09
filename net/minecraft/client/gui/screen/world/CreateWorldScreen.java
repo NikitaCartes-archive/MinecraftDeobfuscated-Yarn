@@ -73,7 +73,13 @@ extends Screen {
     @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
-        this.levelNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterName", new Object[0]));
+        this.levelNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterName", new Object[0])){
+
+            @Override
+            protected String getNarrationMessage() {
+                return super.getNarrationMessage() + ". " + I18n.translate("selectWorld.resultFolder", new Object[0]) + " " + CreateWorldScreen.this.saveDirectoryName;
+            }
+        };
         this.levelNameField.setText(this.levelName);
         this.levelNameField.setChangedListener(string -> {
             this.levelName = string;
@@ -95,8 +101,19 @@ extends Screen {
                     this.tweakDefaultsTo(Mode.SURVIVAL);
                 }
             }
-            this.updateSettingsLabels();
-        }));
+            buttonWidget.queueNarration(250);
+        }){
+
+            @Override
+            public String getMessage() {
+                return I18n.translate("selectWorld.gameMode", new Object[0]) + ": " + I18n.translate("selectWorld.gameMode." + CreateWorldScreen.this.currentMode.translationSuffix, new Object[0]);
+            }
+
+            @Override
+            protected String getNarrationMessage() {
+                return super.getNarrationMessage() + ". " + CreateWorldScreen.this.firstGameModeDescriptionLine + " " + CreateWorldScreen.this.secondGameModeDescriptionLine;
+            }
+        });
         this.seedField = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterSeed", new Object[0]));
         this.seedField.setText(this.seed);
         this.seedField.setChangedListener(string -> {
@@ -105,8 +122,19 @@ extends Screen {
         this.children.add(this.seedField);
         this.generateStructuresButton = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures", new Object[0]), buttonWidget -> {
             this.structures = !this.structures;
-            this.updateSettingsLabels();
-        }));
+            buttonWidget.queueNarration(250);
+        }){
+
+            @Override
+            public String getMessage() {
+                return I18n.translate("selectWorld.mapFeatures", new Object[0]) + ' ' + I18n.translate(CreateWorldScreen.this.structures ? "options.on" : "options.off", new Object[0]);
+            }
+
+            @Override
+            protected String getNarrationMessage() {
+                return super.getNarrationMessage() + ". " + I18n.translate("selectWorld.mapFeatures.info", new Object[0]);
+            }
+        });
         this.generateStructuresButton.visible = false;
         this.mapTypeSwitchButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType", new Object[0]), buttonWidget -> {
             ++this.generatorType;
@@ -119,9 +147,24 @@ extends Screen {
                 this.generatorType = 0;
             }
             this.generatorOptionsTag = new CompoundTag();
-            this.updateSettingsLabels();
             this.setMoreOptionsOpen(this.moreOptionsOpen);
-        }));
+            buttonWidget.queueNarration(250);
+        }){
+
+            @Override
+            public String getMessage() {
+                return I18n.translate("selectWorld.mapType", new Object[0]) + ' ' + I18n.translate(LevelGeneratorType.TYPES[CreateWorldScreen.this.generatorType].getTranslationKey(), new Object[0]);
+            }
+
+            @Override
+            protected String getNarrationMessage() {
+                LevelGeneratorType levelGeneratorType = LevelGeneratorType.TYPES[CreateWorldScreen.this.generatorType];
+                if (levelGeneratorType.hasInfo()) {
+                    return super.getNarrationMessage() + ". " + I18n.translate(levelGeneratorType.getInfoTranslationKey(), new Object[0]);
+                }
+                return super.getNarrationMessage();
+            }
+        });
         this.mapTypeSwitchButton.visible = false;
         this.customizeTypeButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType", new Object[0]), buttonWidget -> {
             if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.FLAT) {
@@ -135,13 +178,30 @@ extends Screen {
         this.enableCheatsButton = this.addButton(new ButtonWidget(this.width / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands", new Object[0]), buttonWidget -> {
             this.tweakedCheats = true;
             this.cheatsEnabled = !this.cheatsEnabled;
-            this.updateSettingsLabels();
-        }));
+            buttonWidget.queueNarration(250);
+        }){
+
+            @Override
+            public String getMessage() {
+                return I18n.translate("selectWorld.allowCommands", new Object[0]) + ' ' + I18n.translate(CreateWorldScreen.this.cheatsEnabled && !CreateWorldScreen.this.hardcore ? "options.on" : "options.off", new Object[0]);
+            }
+
+            @Override
+            protected String getNarrationMessage() {
+                return super.getNarrationMessage() + ". " + I18n.translate("selectWorld.allowCommands.info", new Object[0]);
+            }
+        });
         this.enableCheatsButton.visible = false;
         this.generateBonusChestButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems", new Object[0]), buttonWidget -> {
             this.bonusChest = !this.bonusChest;
-            this.updateSettingsLabels();
-        }));
+            buttonWidget.queueNarration(250);
+        }){
+
+            @Override
+            public String getMessage() {
+                return I18n.translate("selectWorld.bonusItems", new Object[0]) + ' ' + I18n.translate(CreateWorldScreen.this.bonusChest && !CreateWorldScreen.this.hardcore ? "options.on" : "options.off", new Object[0]);
+            }
+        });
         this.generateBonusChestButton.visible = false;
         this.moreOptionsButton = this.addButton(new ButtonWidget(this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions", new Object[0]), buttonWidget -> this.toggleMoreOptions()));
         this.createLevelButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create", new Object[0]), buttonWidget -> this.createLevel()));
@@ -151,12 +211,16 @@ extends Screen {
         this.setInitialFocus(this.levelNameField);
         this.tweakDefaultsTo(this.currentMode);
         this.updateSaveFolderName();
-        this.updateSettingsLabels();
+    }
+
+    private void updateSettingsLabels() {
+        this.firstGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1", new Object[0]);
+        this.secondGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2", new Object[0]);
     }
 
     private void updateSaveFolderName() {
         this.saveDirectoryName = this.levelNameField.getText().trim();
-        if (this.saveDirectoryName.length() == 0) {
+        if (this.saveDirectoryName.isEmpty()) {
             this.saveDirectoryName = "World";
         }
         try {
@@ -169,16 +233,6 @@ extends Screen {
                 throw new RuntimeException("Could not create save folder", exception2);
             }
         }
-    }
-
-    private void updateSettingsLabels() {
-        this.gameModeSwitchButton.setMessage(I18n.translate("selectWorld.gameMode", new Object[0]) + ": " + I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix, new Object[0]));
-        this.firstGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1", new Object[0]);
-        this.secondGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2", new Object[0]);
-        this.generateStructuresButton.setMessage(I18n.translate("selectWorld.mapFeatures", new Object[0]) + ' ' + I18n.translate(this.structures ? "options.on" : "options.off", new Object[0]));
-        this.generateBonusChestButton.setMessage(I18n.translate("selectWorld.bonusItems", new Object[0]) + ' ' + I18n.translate(this.bonusChest && !this.hardcore ? "options.on" : "options.off", new Object[0]));
-        this.mapTypeSwitchButton.setMessage(I18n.translate("selectWorld.mapType", new Object[0]) + ' ' + I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getTranslationKey(), new Object[0]));
-        this.enableCheatsButton.setMessage(I18n.translate("selectWorld.allowCommands", new Object[0]) + ' ' + I18n.translate(this.cheatsEnabled && !this.hardcore ? "options.on" : "options.off", new Object[0]));
     }
 
     @Override

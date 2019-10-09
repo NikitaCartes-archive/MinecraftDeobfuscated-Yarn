@@ -17,8 +17,8 @@ public final class ShatteredSavannaBiome
 extends Biome {
     public ShatteredSavannaBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.SHATTERED_SAVANNA, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.SAVANNA).depth(0.3625f).scale(1.225f).temperature(1.1f).downfall(0.0f).waterColor(4159204).waterFogColor(329011).parent("savanna"));
-        this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-        this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+        this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);

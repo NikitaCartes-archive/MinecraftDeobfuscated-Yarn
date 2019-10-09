@@ -74,14 +74,14 @@ extends Item {
         }
         playerEntity.setCurrentHand(hand);
         if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).method_14178().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false)) != null) {
-            EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.x, playerEntity.y + (double)(playerEntity.getHeight() / 2.0f), playerEntity.z);
+            EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.getX(), playerEntity.method_23323(0.5), playerEntity.getZ());
             enderEyeEntity.setItem(itemStack);
             enderEyeEntity.moveTowards(blockPos);
             world.spawnEntity(enderEyeEntity);
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criterions.USED_ENDER_EYE.handle((ServerPlayerEntity)playerEntity, blockPos);
             }
-            world.playSound(null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
+            world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
             world.playLevelEvent(null, 1003, new BlockPos(playerEntity), 0);
             if (!playerEntity.abilities.creativeMode) {
                 itemStack.decrement(1);

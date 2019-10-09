@@ -85,9 +85,9 @@ public class PortalForcer {
         int r;
         int i = 16;
         double d = -1.0;
-        int j = MathHelper.floor(entity.x);
-        int k = MathHelper.floor(entity.y);
-        int l = MathHelper.floor(entity.z);
+        int j = MathHelper.floor(entity.getX());
+        int k = MathHelper.floor(entity.getY());
+        int l = MathHelper.floor(entity.getZ());
         int m = j;
         int n = k;
         int o = l;
@@ -95,9 +95,9 @@ public class PortalForcer {
         int q = this.random.nextInt(4);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (r = j - 16; r <= j + 16; ++r) {
-            e = (double)r + 0.5 - entity.x;
+            e = (double)r + 0.5 - entity.getX();
             for (s = l - 16; s <= l + 16; ++s) {
-                f = (double)s + 0.5 - entity.z;
+                f = (double)s + 0.5 - entity.getZ();
                 block2: for (t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
                     if (!this.world.isAir(mutable.set(r, t, s))) continue;
                     while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
@@ -121,7 +121,7 @@ public class PortalForcer {
                                 }
                             }
                         }
-                        double g = (double)t + 0.5 - entity.y;
+                        double g = (double)t + 0.5 - entity.getY();
                         double h = e * e + g * g + f * f;
                         if (!(d < 0.0) && !(h < d)) continue;
                         d = h;
@@ -135,9 +135,9 @@ public class PortalForcer {
         }
         if (d < 0.0) {
             for (r = j - 16; r <= j + 16; ++r) {
-                e = (double)r + 0.5 - entity.x;
+                e = (double)r + 0.5 - entity.getX();
                 for (s = l - 16; s <= l + 16; ++s) {
-                    f = (double)s + 0.5 - entity.z;
+                    f = (double)s + 0.5 - entity.getZ();
                     block10: for (t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
                         if (!this.world.isAir(mutable.set(r, t, s))) continue;
                         while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
@@ -155,7 +155,7 @@ public class PortalForcer {
                                     if (y < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || y >= 0 && !this.world.isAir(mutable)) continue block10;
                                 }
                             }
-                            double g = (double)t + 0.5 - entity.y;
+                            double g = (double)t + 0.5 - entity.getY();
                             double h = e * e + g * g + f * f;
                             if (!(d < 0.0) && !(h < d)) continue;
                             d = h;

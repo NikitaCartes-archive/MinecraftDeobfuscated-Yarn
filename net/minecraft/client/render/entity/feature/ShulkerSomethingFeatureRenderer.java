@@ -34,32 +34,32 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
                 break;
             }
             case EAST: {
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f, true));
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
                 matrixStack.translate(1.0, -1.0, 0.0);
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
                 break;
             }
             case WEST: {
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f, true));
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
                 matrixStack.translate(-1.0, -1.0, 0.0);
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
                 break;
             }
             case NORTH: {
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
                 matrixStack.translate(0.0, -1.0, -1.0);
                 break;
             }
             case SOUTH: {
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f, true));
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
                 matrixStack.translate(0.0, -1.0, 1.0);
                 break;
             }
             case UP: {
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f, true));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f));
                 matrixStack.translate(0.0, -2.0, 0.0);
             }
         }
@@ -68,10 +68,8 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         modelPart.pitch = l * ((float)Math.PI / 180);
         DyeColor dyeColor = shulkerEntity.getColor();
         Identifier identifier = dyeColor == null ? ShulkerEntityRenderer.SKIN : ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()];
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(identifier));
-        LivingEntityRenderer.method_23184(shulkerEntity, vertexConsumer, 0.0f);
-        modelPart.render(matrixStack, vertexConsumer, m, i, null);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(identifier));
+        modelPart.render(matrixStack, vertexConsumer, m, i, LivingEntityRenderer.method_23622(shulkerEntity, 0.0f), null);
         matrixStack.pop();
     }
 }

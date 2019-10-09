@@ -34,11 +34,11 @@ extends EntityRenderer<FishingBobberEntity> {
     }
 
     public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        double y;
-        float x;
+        double z;
+        float y;
+        double x;
         double w;
         double v;
-        double u;
         PlayerEntity playerEntity = fishingBobberEntity.getOwner();
         if (playerEntity == null) {
             return;
@@ -49,59 +49,58 @@ extends EntityRenderer<FishingBobberEntity> {
         float i = 1.0f;
         float j = 0.5f;
         float k = 0.5f;
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - this.renderManager.cameraYaw, true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - this.renderManager.cameraYaw));
+        float l = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
         Matrix4f matrix4f = matrixStack.peek();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
-        int l = fishingBobberEntity.getLightmapCoordinates();
-        vertexConsumer.vertex(matrix4f, -0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(l).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(l).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(l).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, -0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).light(l).normal(0.0f, 1.0f, 0.0f).next();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutout(SKIN));
+        int m = fishingBobberEntity.getLightmapCoordinates();
+        vertexConsumer.vertex(matrix4f, -0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, 0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, 0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, -0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
         matrixStack.pop();
-        vertexConsumer.clearDefaultOverlay();
-        int m = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
+        int n = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = playerEntity.getMainHandStack();
         if (itemStack.getItem() != Items.FISHING_ROD) {
-            m = -m;
+            n = -n;
         }
-        float n = playerEntity.getHandSwingProgress(h);
-        float o = MathHelper.sin(MathHelper.sqrt(n) * (float)Math.PI);
-        float p = MathHelper.lerp(h, playerEntity.prevBodyYaw, playerEntity.bodyYaw) * ((float)Math.PI / 180);
-        double q = MathHelper.sin(p);
-        double r = MathHelper.cos(p);
-        double s = (double)m * 0.35;
-        double t = 0.8;
+        float o = playerEntity.getHandSwingProgress(h);
+        float p = MathHelper.sin(MathHelper.sqrt(o) * (float)Math.PI);
+        float q = MathHelper.lerp(h, playerEntity.prevBodyYaw, playerEntity.bodyYaw) * ((float)Math.PI / 180);
+        double r = MathHelper.sin(q);
+        double s = MathHelper.cos(q);
+        double t = (double)n * 0.35;
+        double u = 0.8;
         if (this.renderManager.gameOptions != null && this.renderManager.gameOptions.perspective > 0 || playerEntity != MinecraftClient.getInstance().player) {
-            u = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) - r * s - q * 0.8;
-            v = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.y - playerEntity.prevY) * (double)h - 0.45;
-            w = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) - q * s + r * 0.8;
-            x = playerEntity.isInSneakingPose() ? -0.1875f : 0.0f;
+            v = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.getX()) - s * t - r * 0.8;
+            w = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.getY() - playerEntity.prevY) * (double)h - 0.45;
+            x = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.getZ()) - r * t + s * 0.8;
+            y = playerEntity.isInSneakingPose() ? -0.1875f : 0.0f;
         } else {
-            y = this.renderManager.gameOptions.fov;
-            Vec3d vec3d = new Vec3d((double)m * -0.36 * (y /= 100.0), -0.045 * y, 0.4);
+            z = this.renderManager.gameOptions.fov;
+            Vec3d vec3d = new Vec3d((double)n * -0.36 * (z /= 100.0), -0.045 * z, 0.4);
             vec3d = vec3d.rotateX(-MathHelper.lerp(h, playerEntity.prevPitch, playerEntity.pitch) * ((float)Math.PI / 180));
             vec3d = vec3d.rotateY(-MathHelper.lerp(h, playerEntity.prevYaw, playerEntity.yaw) * ((float)Math.PI / 180));
-            vec3d = vec3d.rotateY(o * 0.5f);
-            vec3d = vec3d.rotateX(-o * 0.7f);
-            u = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) + vec3d.x;
-            v = MathHelper.lerp((double)h, playerEntity.prevY, playerEntity.y) + vec3d.y;
-            w = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) + vec3d.z;
-            x = playerEntity.getStandingEyeHeight();
+            vec3d = vec3d.rotateY(p * 0.5f);
+            vec3d = vec3d.rotateX(-p * 0.7f);
+            v = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.getX()) + vec3d.x;
+            w = MathHelper.lerp((double)h, playerEntity.prevY, playerEntity.getY()) + vec3d.y;
+            x = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.getZ()) + vec3d.z;
+            y = playerEntity.getStandingEyeHeight();
         }
-        y = MathHelper.lerp((double)h, fishingBobberEntity.prevX, fishingBobberEntity.x);
-        double z = MathHelper.lerp((double)h, fishingBobberEntity.prevY, fishingBobberEntity.y) + 0.25;
-        double aa = MathHelper.lerp((double)h, fishingBobberEntity.prevZ, fishingBobberEntity.z);
-        float ab = (float)(u - y);
-        float ac = (float)(v - z) + x;
-        float ad = (float)(w - aa);
-        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.LINES);
+        z = MathHelper.lerp((double)h, fishingBobberEntity.prevX, fishingBobberEntity.getX());
+        double aa = MathHelper.lerp((double)h, fishingBobberEntity.prevY, fishingBobberEntity.getY()) + 0.25;
+        double ab = MathHelper.lerp((double)h, fishingBobberEntity.prevZ, fishingBobberEntity.getZ());
+        float ac = (float)(v - z);
+        float ad = (float)(w - aa) + y;
+        float ae = (float)(x - ab);
+        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines());
         Matrix4f matrix4f2 = matrixStack.peek();
-        int ae = 16;
-        for (int af = 0; af < 16; ++af) {
-            FishingBobberEntityRenderer.method_23172(ab, ac, ad, vertexConsumer2, matrix4f2, af / 16);
-            FishingBobberEntityRenderer.method_23172(ab, ac, ad, vertexConsumer2, matrix4f2, (af + 1) / 16);
+        int af = 16;
+        for (int ag = 0; ag < 16; ++ag) {
+            FishingBobberEntityRenderer.method_23172(ac, ad, ae, vertexConsumer2, matrix4f2, ag / 16);
+            FishingBobberEntityRenderer.method_23172(ac, ad, ae, vertexConsumer2, matrix4f2, (ag + 1) / 16);
         }
         matrixStack.pop();
         super.render(fishingBobberEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);

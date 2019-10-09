@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.SnowmanEntityModel;
@@ -32,10 +33,10 @@ extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
         ((SnowmanEntityModel)this.getModel()).method_2834().rotate(matrixStack, 0.0625f);
         float n = 0.625f;
         matrixStack.translate(0.0, -0.34375, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         matrixStack.scale(0.625f, -0.625f, -0.625f);
         ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
-        MinecraftClient.getInstance().getItemRenderer().method_23177(snowGolemEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, layeredVertexConsumerStorage, snowGolemEntity.world, snowGolemEntity.getLightmapCoordinates());
+        MinecraftClient.getInstance().getItemRenderer().method_23177(snowGolemEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, layeredVertexConsumerStorage, snowGolemEntity.world, snowGolemEntity.getLightmapCoordinates(), LivingEntityRenderer.method_23622(snowGolemEntity, 0.0f));
         matrixStack.pop();
     }
 }

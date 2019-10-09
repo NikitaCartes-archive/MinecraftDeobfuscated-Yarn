@@ -15,7 +15,6 @@ import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.EnchantingPhrases;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BookModel;
@@ -99,35 +98,34 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         matrixStack.translate(0.0, 3.3f, 1984.0);
         float g = 5.0f;
         matrixStack.scale(5.0f, 5.0f, 5.0f);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0f));
         float h = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
         matrixStack.translate((1.0f - h) * 0.2f, (1.0f - h) * 0.1f, (1.0f - h) * 0.25f);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-(1.0f - h) * 90.0f - 90.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f, true));
-        float n = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.25f;
-        float o = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.75f;
-        n = (n - (float)MathHelper.fastFloor(n)) * 1.6f - 0.3f;
+        float n = -(1.0f - h) * 90.0f - 90.0f;
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f));
+        float o = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.25f;
+        float p = MathHelper.lerp(f, this.pageAngle, this.nextPageAngle) + 0.75f;
         o = (o - (float)MathHelper.fastFloor(o)) * 1.6f - 0.3f;
-        if (n < 0.0f) {
-            n = 0.0f;
-        }
+        p = (p - (float)MathHelper.fastFloor(p)) * 1.6f - 0.3f;
         if (o < 0.0f) {
             o = 0.0f;
         }
-        if (n > 1.0f) {
-            n = 1.0f;
+        if (p < 0.0f) {
+            p = 0.0f;
         }
         if (o > 1.0f) {
             o = 1.0f;
         }
+        if (p > 1.0f) {
+            p = 1.0f;
+        }
         RenderSystem.enableRescaleNormal();
-        bookModel.setPageAngles(0.0f, n, o, h);
+        bookModel.setPageAngles(0.0f, o, p, h);
         LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.method_23017(BOOK_TEXURE));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
-        bookModel.render(matrixStack, vertexConsumer, 0.0625f, 0xF000F0, null);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = lv.getBuffer(bookModel.method_23500(BOOK_TEXURE));
+        bookModel.renderItem(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
         lv.method_22993();
         matrixStack.pop();
         RenderSystem.matrixMode(5889);
@@ -136,43 +134,43 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         RenderSystem.matrixMode(5888);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         EnchantingPhrases.getInstance().setSeed(((EnchantingTableContainer)this.container).getSeed());
-        int p = ((EnchantingTableContainer)this.container).getLapisCount();
-        for (int q = 0; q < 3; ++q) {
-            int r = k + 60;
-            int s = r + 20;
+        int q = ((EnchantingTableContainer)this.container).getLapisCount();
+        for (int r = 0; r < 3; ++r) {
+            int s = k + 60;
+            int t = s + 20;
             this.setBlitOffset(0);
             this.minecraft.getTextureManager().bindTexture(TEXTURE);
-            int t = ((EnchantingTableContainer)this.container).enchantmentPower[q];
+            int u = ((EnchantingTableContainer)this.container).enchantmentPower[r];
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            if (t == 0) {
-                this.blit(r, l + 14 + 19 * q, 0, 185, 108, 19);
+            if (u == 0) {
+                this.blit(s, l + 14 + 19 * r, 0, 185, 108, 19);
                 continue;
             }
-            String string = "" + t;
-            int u = 86 - this.font.getStringWidth(string);
-            String string2 = EnchantingPhrases.getInstance().generatePhrase(this.font, u);
+            String string = "" + u;
+            int v = 86 - this.font.getStringWidth(string);
+            String string2 = EnchantingPhrases.getInstance().generatePhrase(this.font, v);
             TextRenderer textRenderer = this.minecraft.getFontManager().getTextRenderer(MinecraftClient.ALT_TEXT_RENDERER_ID);
-            int v = 6839882;
-            if (!(p >= q + 1 && this.minecraft.player.experienceLevel >= t || this.minecraft.player.abilities.creativeMode)) {
-                this.blit(r, l + 14 + 19 * q, 0, 185, 108, 19);
-                this.blit(r + 1, l + 15 + 19 * q, 16 * q, 239, 16, 16);
-                textRenderer.drawStringBounded(string2, s, l + 16 + 19 * q, u, (v & 0xFEFEFE) >> 1);
-                v = 4226832;
+            int w = 6839882;
+            if (!(q >= r + 1 && this.minecraft.player.experienceLevel >= u || this.minecraft.player.abilities.creativeMode)) {
+                this.blit(s, l + 14 + 19 * r, 0, 185, 108, 19);
+                this.blit(s + 1, l + 15 + 19 * r, 16 * r, 239, 16, 16);
+                textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 0xFEFEFE) >> 1);
+                w = 4226832;
             } else {
-                int w = i - (k + 60);
-                int x = j - (l + 14 + 19 * q);
-                if (w >= 0 && x >= 0 && w < 108 && x < 19) {
-                    this.blit(r, l + 14 + 19 * q, 0, 204, 108, 19);
-                    v = 0xFFFF80;
+                int x = i - (k + 60);
+                int y = j - (l + 14 + 19 * r);
+                if (x >= 0 && y >= 0 && x < 108 && y < 19) {
+                    this.blit(s, l + 14 + 19 * r, 0, 204, 108, 19);
+                    w = 0xFFFF80;
                 } else {
-                    this.blit(r, l + 14 + 19 * q, 0, 166, 108, 19);
+                    this.blit(s, l + 14 + 19 * r, 0, 166, 108, 19);
                 }
-                this.blit(r + 1, l + 15 + 19 * q, 16 * q, 223, 16, 16);
-                textRenderer.drawStringBounded(string2, s, l + 16 + 19 * q, u, v);
-                v = 8453920;
+                this.blit(s + 1, l + 15 + 19 * r, 16 * r, 223, 16, 16);
+                textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, w);
+                w = 8453920;
             }
             textRenderer = this.minecraft.textRenderer;
-            textRenderer.drawWithShadow(string, s + 86 - textRenderer.getStringWidth(string), l + 16 + 19 * q + 7, v);
+            textRenderer.drawWithShadow(string, t + 86 - textRenderer.getStringWidth(string), l + 16 + 19 * r + 7, w);
         }
     }
 

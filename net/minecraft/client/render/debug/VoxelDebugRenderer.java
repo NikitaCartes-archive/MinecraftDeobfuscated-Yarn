@@ -49,7 +49,7 @@ implements DebugRenderer.Renderer {
         RenderSystem.disableTexture();
         RenderSystem.depthMask(false);
         LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.LINES);
+        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.getLines());
         MatrixStack matrixStack = new MatrixStack();
         for (VoxelShape voxelShape : this.field_4542) {
             WorldRenderer.method_22983(matrixStack, vertexConsumer, voxelShape, -e, -f, -g, 1.0f, 1.0f, 1.0f, 1.0f);

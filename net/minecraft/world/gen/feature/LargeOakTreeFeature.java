@@ -12,32 +12,27 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.LogBlock;
+import net.minecraft.class_4640;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 public class LargeOakTreeFeature
-extends AbstractTreeFeature<DefaultFeatureConfig> {
-    private static final BlockState LOG = Blocks.OAK_LOG.getDefaultState();
-    private static final BlockState LEAVES = Blocks.OAK_LEAVES.getDefaultState();
-
-    public LargeOakTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl) {
-        super(function, bl);
+extends AbstractTreeFeature<class_4640> {
+    public LargeOakTreeFeature(Function<Dynamic<?>, ? extends class_4640> function) {
+        super(function);
     }
 
-    private void makeLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, float f, BlockBox blockBox, Set<BlockPos> set) {
+    private void makeLeafLayer(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, float f, Set<BlockPos> set, BlockBox blockBox, class_4640 arg) {
         int i = (int)((double)f + 0.618);
         for (int j = -i; j <= i; ++j) {
             for (int k = -i; k <= i; ++k) {
-                BlockPos blockPos2;
-                if (!(Math.pow((double)Math.abs(j) + 0.5, 2.0) + Math.pow((double)Math.abs(k) + 0.5, 2.0) <= (double)(f * f)) || !LargeOakTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos2 = blockPos.add(j, 0, k))) continue;
-                this.setBlockState(set, modifiableTestableWorld, blockPos2, LEAVES, blockBox);
+                if (!(Math.pow((double)Math.abs(j) + 0.5, 2.0) + Math.pow((double)Math.abs(k) + 0.5, 2.0) <= (double)(f * f))) continue;
+                this.method_23383(modifiableTestableWorld, random, blockPos.add(j, 0, k), set, blockBox, arg);
             }
         }
     }
@@ -67,13 +62,13 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         return 3.0f;
     }
 
-    private void makeLeaves(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BlockBox blockBox, Set<BlockPos> set) {
+    private void makeLeaves(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, class_4640 arg) {
         for (int i = 0; i < 5; ++i) {
-            this.makeLeafLayer(modifiableTestableWorld, blockPos.up(i), this.getLeafRadiusForLayer(i), blockBox, set);
+            this.makeLeafLayer(modifiableTestableWorld, random, blockPos.up(i), this.getLeafRadiusForLayer(i), set, blockBox, arg);
         }
     }
 
-    private int makeOrCheckBranch(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, BlockPos blockPos2, boolean bl, BlockBox blockBox) {
+    private int makeOrCheckBranch(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockPos blockPos2, boolean bl, Set<BlockPos> set, BlockBox blockBox, class_4640 arg) {
         if (!bl && Objects.equals(blockPos, blockPos2)) {
             return -1;
         }
@@ -85,7 +80,8 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         for (int j = 0; j <= i; ++j) {
             BlockPos blockPos4 = blockPos.add(0.5f + (float)j * f, 0.5f + (float)j * g, 0.5f + (float)j * h);
             if (bl) {
-                this.setBlockState(set, modifiableTestableWorld, blockPos4, (BlockState)LOG.with(LogBlock.AXIS, this.getLogAxis(blockPos, blockPos4)), blockBox);
+                this.setBlockState(modifiableTestableWorld, blockPos4, (BlockState)arg.field_21288.method_23455(random, blockPos4).with(LogBlock.AXIS, this.getLogAxis(blockPos, blockPos4)), blockBox);
+                set.add(blockPos4);
                 continue;
             }
             if (LargeOakTreeFeature.canTreeReplace(modifiableTestableWorld, blockPos4)) continue;
@@ -122,10 +118,10 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         return axis;
     }
 
-    private void makeLeaves(ModifiableTestableWorld modifiableTestableWorld, int i, BlockPos blockPos, List<BranchPosition> list, BlockBox blockBox, Set<BlockPos> set) {
+    private void makeLeaves(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, BlockPos blockPos, List<BranchPosition> list, Set<BlockPos> set, BlockBox blockBox, class_4640 arg) {
         for (BranchPosition branchPosition : list) {
             if (!this.isHighEnough(i, branchPosition.getEndY() - blockPos.getY())) continue;
-            this.makeLeaves(modifiableTestableWorld, branchPosition, blockBox, set);
+            this.makeLeaves(modifiableTestableWorld, random, branchPosition, set, blockBox, arg);
         }
     }
 
@@ -133,24 +129,23 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
         return (double)j >= (double)i * 0.2;
     }
 
-    private void makeTrunk(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox) {
-        this.makeOrCheckBranch(set, modifiableTestableWorld, blockPos, blockPos.up(i), true, blockBox);
+    private void makeTrunk(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, class_4640 arg) {
+        this.makeOrCheckBranch(modifiableTestableWorld, random, blockPos, blockPos.up(i), true, set, blockBox, arg);
     }
 
-    private void makeBranches(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, int i, BlockPos blockPos, List<BranchPosition> list, BlockBox blockBox) {
+    private void makeBranches(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, BlockPos blockPos, List<BranchPosition> list, Set<BlockPos> set, BlockBox blockBox, class_4640 arg) {
         for (BranchPosition branchPosition : list) {
             int j = branchPosition.getEndY();
             BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
             if (blockPos2.equals(branchPosition) || !this.isHighEnough(i, j - blockPos.getY())) continue;
-            this.makeOrCheckBranch(set, modifiableTestableWorld, blockPos2, branchPosition, true, blockBox);
+            this.makeOrCheckBranch(modifiableTestableWorld, random, blockPos2, branchPosition, true, set, blockBox, arg);
         }
     }
 
-    @Override
-    public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
+    public boolean method_23394(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, class_4640 arg) {
         int m;
         Random random2 = new Random(random.nextLong());
-        int i = this.getTreeHeight(set, modifiableTestableWorld, blockPos, 5 + random2.nextInt(12), blockBox);
+        int i = this.getTreeHeight(modifiableTestableWorld, random, blockPos, 5 + random2.nextInt(12), set, blockBox, arg);
         if (i == -1) {
             return false;
         }
@@ -178,27 +173,27 @@ extends AbstractTreeFeature<DefaultFeatureConfig> {
                 double g = 1.0 * (double)f * ((double)random2.nextFloat() + 0.328);
                 double o = g * Math.sin(h = (double)(random2.nextFloat() * 2.0f) * Math.PI) + 0.5;
                 BlockPos blockPos2 = blockPos.add(o, (double)(m - 1), p = g * Math.cos(h) + 0.5);
-                if (this.makeOrCheckBranch(set, modifiableTestableWorld, blockPos2, blockPos3 = blockPos2.up(5), false, blockBox) != -1) continue;
+                if (this.makeOrCheckBranch(modifiableTestableWorld, random, blockPos2, blockPos3 = blockPos2.up(5), false, set, blockBox, arg) != -1) continue;
                 int q = blockPos.getX() - blockPos2.getX();
                 int r = blockPos.getZ() - blockPos2.getZ();
                 double s = (double)blockPos2.getY() - Math.sqrt(q * q + r * r) * 0.381;
                 int t = s > (double)l ? l : (int)s;
                 BlockPos blockPos4 = new BlockPos(blockPos.getX(), t, blockPos.getZ());
-                if (this.makeOrCheckBranch(set, modifiableTestableWorld, blockPos4, blockPos2, false, blockBox) != -1) continue;
+                if (this.makeOrCheckBranch(modifiableTestableWorld, random, blockPos4, blockPos2, false, set, blockBox, arg) != -1) continue;
                 list.add(new BranchPosition(blockPos2, blockPos4.getY()));
             }
         }
-        this.makeLeaves(modifiableTestableWorld, i, blockPos, list, blockBox, set);
-        this.makeTrunk(set, modifiableTestableWorld, blockPos, j, blockBox);
-        this.makeBranches(set, modifiableTestableWorld, i, blockPos, list, blockBox);
+        this.makeLeaves(modifiableTestableWorld, random, i, blockPos, list, set2, blockBox, arg);
+        this.makeTrunk(modifiableTestableWorld, random, blockPos, j, set, blockBox, arg);
+        this.makeBranches(modifiableTestableWorld, random, i, blockPos, list, set, blockBox, arg);
         return true;
     }
 
-    private int getTreeHeight(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox) {
+    private int getTreeHeight(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, class_4640 arg) {
         if (!LargeOakTreeFeature.isDirtOrGrass(modifiableTestableWorld, blockPos.method_10074())) {
             return -1;
         }
-        int j = this.makeOrCheckBranch(set, modifiableTestableWorld, blockPos, blockPos.up(i - 1), false, blockBox);
+        int j = this.makeOrCheckBranch(modifiableTestableWorld, random, blockPos, blockPos.up(i - 1), false, set, blockBox, arg);
         if (j == -1) {
             return i;
         }

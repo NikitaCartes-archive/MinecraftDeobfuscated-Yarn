@@ -40,32 +40,30 @@ extends StickingOutThingsFeatureRenderer<T, M> {
         float k = (float)(Math.atan2(f, h) * 57.2957763671875);
         float l = (float)(Math.atan2(g, j) * 57.2957763671875);
         matrixStack.translate(0.0, 0.0, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k - 90.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(l, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k - 90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(l));
         float m = 0.0f;
         float n = 0.125f;
         float o = 0.0f;
         float p = 0.0625f;
         float q = 0.03125f;
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0f));
         matrixStack.scale(0.03125f, 0.03125f, 0.03125f);
         matrixStack.translate(2.5, 0.0, 0.0);
         int r = entity.getLightmapCoordinates();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(field_20529));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
         for (int s = 0; s < 4; ++s) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
             Matrix4f matrix4f = matrixStack.peek();
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, -4.5f, -1, 0.0f, 0.0f, r);
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, 4.5f, -1, 0.125f, 0.0f, r);
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, 4.5f, 1, 0.125f, 0.0625f, r);
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, -4.5f, 1, 0.0f, 0.0625f, r);
         }
-        vertexConsumer.clearDefaultOverlay();
     }
 
     private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, int i, float g, float h, int j) {
-        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).light(j).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).defaultOverlay(OverlayTexture.field_21444).light(j).normal(0.0f, 1.0f, 0.0f).next();
     }
 }
 

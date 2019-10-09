@@ -19,6 +19,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.math.AxisCycleDirection;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
@@ -52,7 +53,7 @@ implements DynamicSerializable {
     }
 
     public BlockPos(Entity entity) {
-        this(entity.x, entity.y, entity.z);
+        this(entity.getX(), entity.getY(), entity.getZ());
     }
 
     public BlockPos(Vec3d vec3d) {
@@ -238,6 +239,10 @@ implements DynamicSerializable {
         return BlockPos.stream(Math.min(blockPos.getX(), blockPos2.getX()), Math.min(blockPos.getY(), blockPos2.getY()), Math.min(blockPos.getZ(), blockPos2.getZ()), Math.max(blockPos.getX(), blockPos2.getX()), Math.max(blockPos.getY(), blockPos2.getY()), Math.max(blockPos.getZ(), blockPos2.getZ()));
     }
 
+    public static Stream<BlockPos> method_23627(BlockBox blockBox) {
+        return BlockPos.stream(Math.min(blockBox.minX, blockBox.maxX), Math.min(blockBox.minY, blockBox.maxY), Math.min(blockBox.minZ, blockBox.maxZ), Math.max(blockBox.minX, blockBox.maxX), Math.max(blockBox.minY, blockBox.maxY), Math.max(blockBox.minZ, blockBox.maxZ));
+    }
+
     public static Stream<BlockPos> stream(final int i, final int j, final int k, final int l, final int m, final int n) {
         return StreamSupport.stream(new Spliterators.AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64){
             final CuboidBlockIterator connector;
@@ -328,7 +333,7 @@ implements DynamicSerializable {
         }
 
         public static PooledMutable getEntityPos(Entity entity) {
-            return PooledMutable.get(entity.x, entity.y, entity.z);
+            return PooledMutable.get(entity.getX(), entity.getY(), entity.getZ());
         }
 
         public static PooledMutable get(double d, double e, double f) {
@@ -454,6 +459,10 @@ implements DynamicSerializable {
             this(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
         }
 
+        public Mutable(Entity entity) {
+            this(entity.getX(), entity.getY(), entity.getZ());
+        }
+
         @Override
         public BlockPos add(double d, double e, double f) {
             return super.add(d, e, f).toImmutable();
@@ -497,7 +506,7 @@ implements DynamicSerializable {
         }
 
         public Mutable set(Entity entity) {
-            return this.set(entity.x, entity.y, entity.z);
+            return this.set(entity.getX(), entity.getY(), entity.getZ());
         }
 
         public Mutable set(double d, double e, double f) {

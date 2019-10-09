@@ -26,7 +26,8 @@ extends Decorator<CountDecoratorConfig> {
         return IntStream.range(0, countDecoratorConfig.count).mapToObj(i -> {
             int j = random.nextInt(16) + blockPos.getX();
             int k = random.nextInt(16) + blockPos.getZ();
-            return new BlockPos(j, iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, j, k), k);
+            int l = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, j, k);
+            return new BlockPos(j, l, k);
         });
     }
 }

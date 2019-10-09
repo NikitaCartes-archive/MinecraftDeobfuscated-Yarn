@@ -264,7 +264,7 @@ extends ChunkManager {
 
     @Override
     public boolean shouldTickEntity(Entity entity) {
-        long l = ChunkPos.toLong(MathHelper.floor(entity.x) >> 4, MathHelper.floor(entity.z) >> 4);
+        long l = ChunkPos.toLong(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
         return this.method_20585(l, ChunkHolder::getEntityTickingFuture);
     }
 
@@ -280,7 +280,7 @@ extends ChunkManager {
     }
 
     public boolean method_20727(Entity entity) {
-        long l = ChunkPos.toLong(MathHelper.floor(entity.x) >> 4, MathHelper.floor(entity.z) >> 4);
+        long l = ChunkPos.toLong(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
         return this.method_20585(l, ChunkHolder::method_20725);
     }
 

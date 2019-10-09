@@ -223,19 +223,18 @@ JumpingMount {
     private void playEatingAnimation() {
         this.setEating();
         if (!this.isSilent()) {
-            this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_HORSE_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_HORSE_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         }
     }
 
     @Override
-    public void handleFallDamage(float f, float g) {
-        BlockState blockState;
+    public boolean handleFallDamage(float f, float g) {
         int i;
         if (f > 1.0f) {
             this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4f, 1.0f);
         }
-        if ((i = MathHelper.ceil((f * 0.5f - 3.0f) * g)) <= 0) {
-            return;
+        if ((i = this.method_23329(f, g)) <= 0) {
+            return false;
         }
         this.damage(DamageSource.FALL, i);
         if (this.hasPassengers()) {
@@ -243,10 +242,13 @@ JumpingMount {
                 entity.damage(DamageSource.FALL, i);
             }
         }
-        if (!(blockState = this.world.getBlockState(new BlockPos(this.x, this.y - 0.2 - (double)this.prevYaw, this.z))).isAir() && !this.isSilent()) {
-            BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-            this.world.playSound(null, this.x, this.y, this.z, blockSoundGroup.getStepSound(), this.getSoundCategory(), blockSoundGroup.getVolume() * 0.5f, blockSoundGroup.getPitch() * 0.75f);
-        }
+        this.method_23328();
+        return true;
+    }
+
+    @Override
+    protected int method_23329(float f, float g) {
+        return MathHelper.ceil((f * 0.5f - 3.0f) * g);
     }
 
     protected int getInventorySize() {
@@ -431,7 +433,7 @@ JumpingMount {
             bl = true;
         }
         if (this.isBaby() && i > 0) {
-            this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()), this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), 0.0, 0.0, 0.0);
+            this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), 0.0, 0.0, 0.0);
             if (!this.world.isClient) {
                 this.growUp(i);
             }
@@ -512,7 +514,7 @@ JumpingMount {
 
     protected void walkToParent() {
         HorseBaseEntity livingEntity;
-        if (this.isBred() && this.isBaby() && !this.isEatingGrass() && (livingEntity = this.world.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0))) != null && this.squaredDistanceTo(livingEntity) > 4.0) {
+        if (this.isBred() && this.isBaby() && !this.isEatingGrass() && (livingEntity = this.world.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0))) != null && this.squaredDistanceTo(livingEntity) > 4.0) {
             this.navigation.findPathTo(livingEntity, 0);
         }
     }
@@ -678,9 +680,8 @@ JumpingMount {
             this.setInAir(false);
         }
         this.lastLimbDistance = this.limbDistance;
-        d = this.x - this.prevX;
-        e = this.z - this.prevZ;
-        float j = MathHelper.sqrt(d * d + e * e) * 4.0f;
+        d = this.getX() - this.prevX;
+        float j = MathHelper.sqrt(d * d + (e = this.getZ() - this.prevZ) * e) * 4.0f;
         if (j > 1.0f) {
             j = 1.0f;
         }
@@ -816,7 +817,7 @@ JumpingMount {
             double d = this.random.nextGaussian() * 0.02;
             double e = this.random.nextGaussian() * 0.02;
             double f = this.random.nextGaussian() * 0.02;
-            this.world.addParticle(particleEffect, this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()), this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth(), d, e, f);
+            this.world.addParticle(particleEffect, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), d, e, f);
         }
     }
 
@@ -844,7 +845,7 @@ JumpingMount {
             float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            entity.setPosition(this.x + (double)(h * f), this.y + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.z - (double)(h * g));
+            entity.setPosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
             if (entity instanceof LivingEntity) {
                 ((LivingEntity)entity).bodyYaw = this.bodyYaw;
             }

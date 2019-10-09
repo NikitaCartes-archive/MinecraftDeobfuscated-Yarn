@@ -37,8 +37,7 @@ extends WanderAroundGoal {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
         ChunkSectionPos chunkSectionPos2 = LookTargetUtil.getPosClosestToOccupiedPointOfInterest(serverWorld, chunkSectionPos, 2);
         if (chunkSectionPos2 != chunkSectionPos) {
-            BlockPos blockPos2 = chunkSectionPos2.getCenterPos();
-            return TargetFinder.findTargetTowards(this.mob, 10, 7, new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
+            return TargetFinder.findTargetTowards(this.mob, 10, 7, new Vec3d(chunkSectionPos2.getCenterPos()));
         }
         return null;
     }

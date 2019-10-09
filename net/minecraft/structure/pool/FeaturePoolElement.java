@@ -27,18 +27,19 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
 
 public class FeaturePoolElement
 extends StructurePoolElement {
-    private final ConfiguredFeature<?> feature;
+    private final ConfiguredFeature<?, ?> feature;
     private final CompoundTag tag;
 
     @Deprecated
-    public FeaturePoolElement(ConfiguredFeature<?> configuredFeature) {
+    public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature) {
         this(configuredFeature, StructurePool.Projection.RIGID);
     }
 
-    public FeaturePoolElement(ConfiguredFeature<?> configuredFeature, StructurePool.Projection projection) {
+    public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
         super(projection);
         this.feature = configuredFeature;
         this.tag = this.method_19299();
@@ -91,7 +92,7 @@ extends StructurePoolElement {
     }
 
     public String toString() {
-        return "Feature[" + Registry.FEATURE.getId(this.feature.feature) + "]";
+        return "Feature[" + Registry.FEATURE.getId((Feature<?>)this.feature.feature) + "]";
     }
 }
 

@@ -31,11 +31,15 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
@@ -109,8 +113,8 @@ extends GolemEntity {
         if (this.field_6759 > 0) {
             --this.field_6759;
         }
-        if (IronGolemEntity.squaredHorizontalLength(this.getVelocity()) > 2.500000277905201E-7 && this.random.nextInt(5) == 0 && !(blockState = this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.x), j = MathHelper.floor(this.y - (double)0.2f), k = MathHelper.floor(this.z)))).isAir()) {
-            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), this.getBoundingBox().minY + 0.1, this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), 4.0 * ((double)this.random.nextFloat() - 0.5), 0.5, ((double)this.random.nextFloat() - 0.5) * 4.0);
+        if (IronGolemEntity.squaredHorizontalLength(this.getVelocity()) > 2.500000277905201E-7 && this.random.nextInt(5) == 0 && !(blockState = this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.getX()), j = MathHelper.floor(this.getY() - (double)0.2f), k = MathHelper.floor(this.getZ())))).isAir()) {
+            this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), this.getY() + 0.1, this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), 4.0 * ((double)this.random.nextFloat() - 0.5), 0.5, ((double)this.random.nextFloat() - 0.5) * 4.0);
         }
     }
 
@@ -145,13 +149,39 @@ extends GolemEntity {
     public boolean tryAttack(Entity entity) {
         this.field_6762 = 10;
         this.world.sendEntityStatus(this, (byte)4);
-        boolean bl = entity.damage(DamageSource.mob(this), this.method_22328() / 2.0f + (float)this.random.nextInt((int)this.method_22328()));
+        float f = this.method_22328();
+        float g = f > 0.0f ? f / 2.0f + (float)this.random.nextInt((int)f) : 0.0f;
+        boolean bl = entity.damage(DamageSource.mob(this), g);
         if (bl) {
             entity.setVelocity(entity.getVelocity().add(0.0, 0.4f, 0.0));
             this.dealDamage(this, entity);
         }
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0f, 1.0f);
         return bl;
+    }
+
+    @Override
+    public boolean damage(DamageSource damageSource, float f) {
+        class_4621 lv = this.method_23347();
+        boolean bl = super.damage(damageSource, f);
+        if (bl && this.method_23347() != lv) {
+            this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0f, 1.0f);
+        }
+        return bl;
+    }
+
+    public class_4621 method_23347() {
+        float f = this.getHealth();
+        if (f < 25.0f) {
+            return class_4621.HIGH;
+        }
+        if (f < 50.0f) {
+            return class_4621.MEDIUM;
+        }
+        if (f < 75.0f) {
+            return class_4621.LOW;
+        }
+        return class_4621.NONE;
     }
 
     @Override
@@ -192,6 +222,26 @@ extends GolemEntity {
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
+    }
+
+    @Override
+    protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        Item item = itemStack.getItem();
+        if (item != Items.IRON_INGOT) {
+            return false;
+        }
+        float f = this.getHealth();
+        this.heal(25.0f);
+        if (this.getHealth() == f) {
+            return true;
+        }
+        float g = 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f;
+        this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0f, g);
+        if (!playerEntity.abilities.creativeMode) {
+            itemStack.decrement(1);
+        }
+        return true;
     }
 
     @Override
@@ -237,6 +287,14 @@ extends GolemEntity {
             return SpawnHelper.isClearForSpawn(worldView, blockPos, worldView.getBlockState(blockPos), Fluids.EMPTY.getDefaultState()) && worldView.intersectsEntities(this);
         }
         return false;
+    }
+
+    public static enum class_4621 {
+        NONE,
+        LOW,
+        MEDIUM,
+        HIGH;
+
     }
 }
 

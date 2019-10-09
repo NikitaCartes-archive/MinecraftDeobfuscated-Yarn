@@ -42,7 +42,7 @@ public class Camera {
         this.thirdPerson = bl;
         this.inverseView = bl2;
         this.setRotation(entity.getYaw(f), entity.getPitch(f));
-        this.setPos(MathHelper.lerp((double)f, entity.prevX, entity.x), MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)MathHelper.lerp(f, this.lastCameraY, this.cameraY), MathHelper.lerp((double)f, entity.prevZ, entity.z));
+        this.setPos(MathHelper.lerp((double)f, entity.prevX, entity.getX()), MathHelper.lerp((double)f, entity.prevY, entity.getY()) + (double)MathHelper.lerp(f, this.lastCameraY, this.cameraY), MathHelper.lerp((double)f, entity.prevZ, entity.getZ()));
         if (bl) {
             if (bl2) {
                 this.yaw += 180.0f;

@@ -5,6 +5,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -16,16 +17,12 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class AccessibilityScreen
-extends Screen {
-    private static final Option[] OPTIONS = new Option[]{Option.NARRATOR, Option.SUBTITLES, Option.TEXT_BACKGROUND_OPACITY, Option.TEXT_BACKGROUND, Option.CHAT_OPACITY, Option.AUTO_JUMP};
-    private final Screen parent;
-    private final GameOptions gameOptions;
+extends class_4667 {
+    private static final Option[] OPTIONS = new Option[]{Option.NARRATOR, Option.SUBTITLES, Option.TEXT_BACKGROUND_OPACITY, Option.TEXT_BACKGROUND, Option.CHAT_OPACITY, Option.AUTO_JUMP, Option.field_21330, Option.field_21331};
     private AbstractButtonWidget narratorButton;
 
     public AccessibilityScreen(Screen screen, GameOptions gameOptions) {
-        super(new TranslatableText("options.accessibility.title", new Object[0]));
-        this.parent = screen;
-        this.gameOptions = gameOptions;
+        super(screen, gameOptions, new TranslatableText("options.accessibility.title", new Object[0]));
     }
 
     @Override
@@ -41,12 +38,7 @@ extends Screen {
             }
             ++i;
         }
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
-    }
-
-    @Override
-    public void removed() {
-        this.minecraft.options.write();
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.field_21335)));
     }
 
     @Override
@@ -57,7 +49,7 @@ extends Screen {
     }
 
     public void setNarratorMessage() {
-        this.narratorButton.setMessage(Option.NARRATOR.getMessage(this.gameOptions));
+        this.narratorButton.setMessage(Option.NARRATOR.getMessage(this.field_21336));
     }
 }
 

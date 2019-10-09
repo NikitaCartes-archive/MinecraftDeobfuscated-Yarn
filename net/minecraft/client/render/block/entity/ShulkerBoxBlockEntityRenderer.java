@@ -16,6 +16,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -32,7 +33,7 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         this.model = shulkerEntityModel;
     }
 
-    public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+    public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
         DyeColor dyeColor;
         BlockState blockState;
         Direction direction = Direction.UP;
@@ -49,11 +50,11 @@ extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
         matrixStack.scale(0.9995f, 0.9995f, 0.9995f);
         matrixStack.multiply(direction.method_23224());
         matrixStack.translate(0.0, -1.0, 0.0);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.CUTOUT_MIPPED);
-        this.model.method_2831().render(matrixStack, vertexConsumer, 0.0625f, i, sprite);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        this.model.method_2831().render(matrixStack, vertexConsumer, 0.0625f, i, j, sprite);
         matrixStack.translate(0.0, -shulkerBoxBlockEntity.getAnimationProgress(g) * 0.5f, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(g), true));
-        this.model.method_2829().render(matrixStack, vertexConsumer, 0.0625f, i, sprite);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0f * shulkerBoxBlockEntity.getAnimationProgress(g)));
+        this.model.method_2829().render(matrixStack, vertexConsumer, 0.0625f, i, j, sprite);
         matrixStack.pop();
     }
 }

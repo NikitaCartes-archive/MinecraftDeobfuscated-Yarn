@@ -30,10 +30,10 @@ extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
     protected void method_3896(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(codEntity, matrixStack, f, g, h);
         float i = 4.3f * MathHelper.sin(0.6f * f);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(i, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(i));
         if (!codEntity.isInsideWater()) {
             matrixStack.translate(0.1f, 0.1f, -0.1f);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
         }
     }
 }

@@ -60,8 +60,8 @@ Tickable {
         this.field_11963 = this.field_11964;
         PlayerEntity playerEntity = this.world.getClosestPlayer((double)((float)this.pos.getX() + 0.5f), (double)((float)this.pos.getY() + 0.5f), (double)((float)this.pos.getZ() + 0.5f), 3.0, false);
         if (playerEntity != null) {
-            double d = playerEntity.x - (double)((float)this.pos.getX() + 0.5f);
-            double e = playerEntity.z - (double)((float)this.pos.getZ() + 0.5f);
+            double d = playerEntity.getX() - (double)((float)this.pos.getX() + 0.5f);
+            double e = playerEntity.getZ() - (double)((float)this.pos.getZ() + 0.5f);
             this.field_11962 = (float)MathHelper.atan2(e, d);
             this.nextPageTurningSpeed += 0.1f;
             if (this.nextPageTurningSpeed < 0.5f || RANDOM.nextInt(40) == 0) {

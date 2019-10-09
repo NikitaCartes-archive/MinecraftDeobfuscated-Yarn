@@ -59,13 +59,13 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+    public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
         float h = skullBlockEntity.getTicksPowered(g);
         BlockState blockState = skullBlockEntity.getCachedState();
         boolean bl = blockState.getBlock() instanceof WallSkullBlock;
         Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
-        float j = 22.5f * (float)(bl ? (2 + direction.getHorizontal()) * 4 : blockState.get(SkullBlock.ROTATION));
-        SkullBlockEntityRenderer.render(direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, matrixStack, layeredVertexConsumerStorage, i);
+        float k = 22.5f * (float)(bl ? (2 + direction.getHorizontal()) * 4 : blockState.get(SkullBlock.ROTATION));
+        SkullBlockEntityRenderer.render(direction, k, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, matrixStack, layeredVertexConsumerStorage, i);
     }
 
     public static void render(@Nullable Direction direction, float f, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
@@ -93,21 +93,23 @@ extends BlockEntityRenderer<SkullBlockEntity> {
             }
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SkullBlockEntityRenderer.method_3578(skullType, gameProfile)));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
-        skullEntityModel.render(matrixStack, vertexConsumer, g, f, 0.0f, 0.0625f, i);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(SkullBlockEntityRenderer.method_3578(skullType, gameProfile));
+        skullEntityModel.render(g, f, 0.0f);
+        skullEntityModel.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
 
-    private static Identifier method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
+    private static RenderLayer method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
         Identifier identifier = TEXTURES.get(skullType);
-        if (skullType == SkullBlock.Type.PLAYER && gameProfile != null) {
-            MinecraftClient minecraftClient = MinecraftClient.getInstance();
-            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
-            identifier = map.containsKey((Object)MinecraftProfileTexture.Type.SKIN) ? minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN) : DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
+        if (skullType != SkullBlock.Type.PLAYER || gameProfile == null) {
+            return RenderLayer.getEntitySolid(identifier);
         }
-        return identifier;
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
+        if (map.containsKey((Object)MinecraftProfileTexture.Type.SKIN)) {
+            return RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));
+        }
+        return RenderLayer.getEntitySolid(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
     }
 }
 

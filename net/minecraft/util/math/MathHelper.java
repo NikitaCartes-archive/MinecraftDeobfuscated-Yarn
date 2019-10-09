@@ -562,11 +562,6 @@ public class MathHelper {
         return g + f * MathHelper.wrapDegrees(h - g);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public static float method_22451(float f, float g, float h) {
-        return Math.min(f * f * 0.6f + g * g * ((3.0f + g) / 4.0f) + h * h * 0.8f, 1.0f);
-    }
-
     @Deprecated
     public static float method_22859(float f, float g, float h) {
         float i;

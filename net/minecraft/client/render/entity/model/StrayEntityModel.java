@@ -6,6 +6,7 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -24,7 +25,7 @@ extends BipedEntityModel<T> {
     }
 
     public StrayEntityModel(float f, boolean bl) {
-        super(f, 0.0f, 64, 32);
+        super(RenderLayer::getEntityCutoutNoCull, f, 0.0f, 64, 32);
         if (!bl) {
             this.rightArm = new ModelPart(this, 40, 16);
             this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);

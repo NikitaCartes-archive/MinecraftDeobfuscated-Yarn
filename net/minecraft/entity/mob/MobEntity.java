@@ -258,7 +258,7 @@ extends LivingEntity {
                 double e = this.random.nextGaussian() * 0.02;
                 double f = this.random.nextGaussian() * 0.02;
                 double g = 10.0;
-                this.world.addParticle(ParticleTypes.POOF, this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth() - d * 10.0, this.y + (double)(this.random.nextFloat() * this.getHeight()) - e * 10.0, this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0f) - (double)this.getWidth() - f * 10.0, d, e, f);
+                this.world.addParticle(ParticleTypes.POOF, this.method_23316(1.0) - d * 10.0, this.method_23319() - e * 10.0, this.method_23325(1.0) - f * 10.0, d, e, f);
             }
         } else {
             this.world.sendEntityStatus(this, (byte)20);
@@ -598,13 +598,13 @@ extends LivingEntity {
 
     public void lookAtEntity(Entity entity, float f, float g) {
         double h;
-        double d = entity.x - this.x;
-        double e = entity.z - this.z;
+        double d = entity.getX() - this.getX();
+        double e = entity.getZ() - this.getZ();
         if (entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
-            h = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - (this.y + (double)this.getStandingEyeHeight());
+            h = livingEntity.method_23320() - this.method_23320();
         } else {
-            h = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0 - (this.y + (double)this.getStandingEyeHeight());
+            h = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0 - this.method_23320();
         }
         double i = MathHelper.sqrt(d * d + e * e);
         float j = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;
@@ -1170,7 +1170,7 @@ extends LivingEntity {
         if (this.world.isDaylight() && !this.world.isClient) {
             BlockPos blockPos;
             float f = this.getBrightnessAtEyes();
-            BlockPos blockPos2 = blockPos = this.getVehicle() instanceof BoatEntity ? new BlockPos(this.x, Math.round(this.y), this.z).up() : new BlockPos(this.x, Math.round(this.y), this.z);
+            BlockPos blockPos2 = blockPos = this.getVehicle() instanceof BoatEntity ? new BlockPos(this.getX(), Math.round(this.getY()), this.getZ()).up() : new BlockPos(this.getX(), Math.round(this.getY()), this.getZ());
             if (f > 0.5f && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f && this.world.isSkyVisible(blockPos)) {
                 return true;
             }

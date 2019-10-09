@@ -50,7 +50,7 @@ public class AdvancementRewards {
         for (Identifier identifier : this.loot) {
             for (ItemStack itemStack : serverPlayerEntity.server.getLootManager().getSupplier(identifier).getDrops(lootContext)) {
                 if (serverPlayerEntity.giveItemStack(itemStack)) {
-                    serverPlayerEntity.world.playSound(null, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
+                    serverPlayerEntity.world.playSound(null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
                     bl = true;
                     continue;
                 }

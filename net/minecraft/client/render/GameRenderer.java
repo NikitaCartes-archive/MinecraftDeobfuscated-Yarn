@@ -24,7 +24,6 @@ import net.minecraft.client.render.LayeredBufferBuilderStorage;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
@@ -118,6 +117,7 @@ SynchronousResourceReloadListener {
     public void close() {
         this.lightmapTextureManager.close();
         this.mapRenderer.close();
+        this.field_20949.close();
         this.disableShader();
     }
 
@@ -310,7 +310,7 @@ SynchronousResourceReloadListener {
             float g = (float)livingEntity.hurtTime - f;
             if (livingEntity.getHealth() <= 0.0f) {
                 h = Math.min((float)livingEntity.deathTime + f, 20.0f);
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(40.0f - 8000.0f / (h + 200.0f), true));
+                matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(40.0f - 8000.0f / (h + 200.0f)));
             }
             if (g < 0.0f) {
                 return;
@@ -318,9 +318,9 @@ SynchronousResourceReloadListener {
             g /= (float)livingEntity.maxHurtTime;
             g = MathHelper.sin(g * g * g * g * (float)Math.PI);
             h = livingEntity.knockbackVelocity;
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h, true));
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-g * 14.0f, true));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-g * 14.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
         }
     }
 
@@ -333,8 +333,8 @@ SynchronousResourceReloadListener {
         float h = -(playerEntity.horizontalSpeed + g * f);
         float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
         matrixStack.translate(MathHelper.sin(h * (float)Math.PI) * i * 0.5f, -Math.abs(MathHelper.cos(h * (float)Math.PI) * i), 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(h * (float)Math.PI) * i * 3.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(Math.abs(MathHelper.cos(h * (float)Math.PI - 0.2f) * i) * 5.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(h * (float)Math.PI) * i * 3.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(Math.abs(MathHelper.cos(h * (float)Math.PI - 0.2f) * i) * 5.0f));
     }
 
     private void renderHand(MatrixStack matrixStack, Camera camera, float f) {
@@ -420,6 +420,11 @@ SynchronousResourceReloadListener {
             }
             this.client.worldRenderer.drawEntityOutlinesFramebuffer();
             if (this.shader != null && this.shadersEnabled) {
+                RenderSystem.disableBlend();
+                RenderSystem.disableDepthTest();
+                RenderSystem.disableAlphaTest();
+                RenderSystem.disableFog();
+                RenderSystem.enableTexture();
                 RenderSystem.matrixMode(5890);
                 RenderSystem.pushMatrix();
                 RenderSystem.loadIdentity();
@@ -436,7 +441,7 @@ SynchronousResourceReloadListener {
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0f, 0.0f, -2000.0f);
-        GuiLighting.enableForItems();
+        GuiLighting.enableForItems(matrixStack.peek());
         if (bl && this.client.world != null) {
             this.client.getProfiler().swap("gui");
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {
@@ -547,13 +552,14 @@ SynchronousResourceReloadListener {
             float h = 5.0f / (g * g + 5.0f) - g * 0.04f;
             h *= h;
             Vector3f vector3f = new Vector3f(0.0f, 1.0f, 1.0f);
-            matrixStack.multiply(vector3f.getRotationQuaternion(((float)this.ticks + f) * (float)i, true));
+            matrixStack.multiply(vector3f.getRotationQuaternion(((float)this.ticks + f) * (float)i));
             matrixStack.scale(1.0f / h, 1.0f, 1.0f);
-            matrixStack.multiply(vector3f.getRotationQuaternion(-((float)this.ticks + f) * (float)i, true));
+            float j = -((float)this.ticks + f) * (float)i;
+            matrixStack.multiply(vector3f.getRotationQuaternion(j));
         }
         camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), this.client.options.perspective > 0, this.client.options.perspective == 2, f);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch(), true));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0f));
         this.client.worldRenderer.render(matrixStack, f, l, bl, camera, this, this.lightmapTextureManager);
         this.client.getProfiler().swap("hand");
         if (this.renderHand) {
@@ -602,12 +608,11 @@ SynchronousResourceReloadListener {
         matrixStack.translate((float)(i / 2) + o * MathHelper.abs(MathHelper.sin(n * 2.0f)), (float)(j / 2) + p * MathHelper.abs(MathHelper.sin(n * 2.0f)), -50.0);
         float q = 50.0f + 175.0f * MathHelper.sin(n);
         matrixStack.scale(q, -q, q);
-        matrixStack.scale(q, -q, q);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0f * MathHelper.abs(MathHelper.sin(n)), true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f), true));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f), true));
-        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-        this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, matrixStack, lv);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0f * MathHelper.abs(MathHelper.sin(n))));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
+        LayeredVertexConsumerStorage.class_4598 lv = this.field_20948.method_23000();
+        this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.field_21444, matrixStack, lv);
         matrixStack.pop();
         lv.method_22993();
         RenderSystem.popAttributes();

@@ -19,7 +19,6 @@ import net.minecraft.util.math.MatrixStack;
 public class TurtleEntityModel<T extends TurtleEntity>
 extends QuadrupedEntityModel<T> {
     private final ModelPart field_3594;
-    private float field_21057;
 
     public TurtleEntityModel(float f) {
         super(12, f, true, 120.0f, 0.0f, 9.0f, 6.0f, 120);
@@ -82,15 +81,19 @@ extends QuadrupedEntityModel<T> {
             this.leg2.pitch = 0.0f;
         }
         this.field_3594.visible = !this.isChild && ((TurtleEntity)turtleEntity).hasEgg();
-        this.field_21057 = this.field_3594.visible ? -0.08f : 0.0f;
     }
 
     @Override
-    public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
-        matrixStack.push();
-        matrixStack.translate(0.0, this.field_21057, 0.0);
-        super.method_17116(matrixStack, vertexConsumer, i, f, g, h);
-        matrixStack.pop();
+    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+        boolean bl = this.field_3594.visible;
+        if (bl) {
+            matrixStack.push();
+            matrixStack.translate(0.0, -0.08f, 0.0);
+        }
+        super.renderItem(matrixStack, vertexConsumer, i, j, f, g, h);
+        if (bl) {
+            matrixStack.pop();
+        }
     }
 }
 

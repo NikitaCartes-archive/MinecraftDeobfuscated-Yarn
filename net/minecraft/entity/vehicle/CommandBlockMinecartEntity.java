@@ -120,7 +120,7 @@ extends AbstractMinecartEntity {
         @Override
         @Environment(value=EnvType.CLIENT)
         public Vec3d getPos() {
-            return new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z);
+            return CommandBlockMinecartEntity.this.getPos();
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -130,7 +130,7 @@ extends AbstractMinecartEntity {
 
         @Override
         public ServerCommandSource getSource() {
-            return new ServerCommandSource(this, new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z), CommandBlockMinecartEntity.this.getRotationClient(), this.getWorld(), 2, this.getCustomName().getString(), CommandBlockMinecartEntity.this.getDisplayName(), this.getWorld().getServer(), CommandBlockMinecartEntity.this);
+            return new ServerCommandSource(this, CommandBlockMinecartEntity.this.getPos(), CommandBlockMinecartEntity.this.getRotationClient(), this.getWorld(), 2, this.getCustomName().getString(), CommandBlockMinecartEntity.this.getDisplayName(), this.getWorld().getServer(), CommandBlockMinecartEntity.this);
         }
     }
 }

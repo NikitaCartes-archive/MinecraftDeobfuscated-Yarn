@@ -26,9 +26,9 @@ implements Packet<ClientPlayPacketListener> {
 
     public EntityPositionS2CPacket(Entity entity) {
         this.id = entity.getEntityId();
-        this.x = entity.x;
-        this.y = entity.y;
-        this.z = entity.z;
+        this.x = entity.getX();
+        this.y = entity.getY();
+        this.z = entity.getZ();
         this.yaw = (byte)(entity.yaw * 256.0f / 360.0f);
         this.pitch = (byte)(entity.pitch * 256.0f / 360.0f);
         this.onGround = entity.onGround;

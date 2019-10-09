@@ -82,7 +82,7 @@ implements ArgumentType<EntityAnchor> {
         }
 
         public Vec3d positionAt(Entity entity) {
-            return this.offset.apply(new Vec3d(entity.x, entity.y, entity.z), entity);
+            return this.offset.apply(entity.getPos(), entity);
         }
 
         public Vec3d positionAt(ServerCommandSource serverCommandSource) {

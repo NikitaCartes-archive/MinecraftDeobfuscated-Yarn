@@ -24,7 +24,7 @@ extends FeatureRenderer<T, DrownedEntityModel<T>> {
     }
 
     public void method_4182(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T zombieEntity, float f, float g, float h, float j, float k, float l, float m) {
-        DrownedOverlayFeatureRenderer.method_23195(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, zombieEntity, f, g, j, k, l, m, h);
+        DrownedOverlayFeatureRenderer.method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, zombieEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
     }
 }
 

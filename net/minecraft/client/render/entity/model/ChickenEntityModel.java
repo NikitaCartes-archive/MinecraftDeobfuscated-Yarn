@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
@@ -24,6 +25,7 @@ extends class_4592<T> {
     private final ModelPart wattle;
 
     public ChickenEntityModel() {
+        super(RenderLayer::getEntityCutoutNoCull, false, 5.0f, 2.0f, 2.0f, 2.0f, 24.0f);
         int i = 16;
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-2.0f, -6.0f, -2.0f, 4.0f, 6.0f, 3.0f, 0.0f);

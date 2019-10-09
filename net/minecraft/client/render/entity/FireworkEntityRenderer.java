@@ -6,6 +6,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -28,14 +29,15 @@ extends EntityRenderer<FireworkEntity> {
 
     public void method_3968(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw, true));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, true));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
+        float i = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
         if (fireworkEntity.wasShotAtAngle()) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
         } else {
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         }
-        this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, fireworkEntity.getLightmapCoordinates(), matrixStack, layeredVertexConsumerStorage);
+        this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, fireworkEntity.getLightmapCoordinates(), OverlayTexture.field_21444, matrixStack, layeredVertexConsumerStorage);
         matrixStack.pop();
         super.render(fireworkEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

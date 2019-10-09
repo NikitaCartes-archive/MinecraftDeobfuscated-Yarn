@@ -24,7 +24,7 @@ extends Item {
             PigEntity pigEntity = (PigEntity)livingEntity;
             if (pigEntity.isAlive() && !pigEntity.isSaddled() && !pigEntity.isBaby()) {
                 pigEntity.setSaddled(true);
-                pigEntity.world.playSound(playerEntity, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5f, 1.0f);
+                pigEntity.world.playSound(playerEntity, pigEntity.getX(), pigEntity.getY(), pigEntity.getZ(), SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5f, 1.0f);
                 itemStack.decrement(1);
             }
             return true;

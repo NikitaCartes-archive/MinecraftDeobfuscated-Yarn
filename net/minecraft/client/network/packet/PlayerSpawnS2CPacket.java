@@ -28,9 +28,9 @@ implements Packet<ClientPlayPacketListener> {
     public PlayerSpawnS2CPacket(PlayerEntity playerEntity) {
         this.id = playerEntity.getEntityId();
         this.uuid = playerEntity.getGameProfile().getId();
-        this.x = playerEntity.x;
-        this.y = playerEntity.y;
-        this.z = playerEntity.z;
+        this.x = playerEntity.getX();
+        this.y = playerEntity.getY();
+        this.z = playerEntity.getZ();
         this.yaw = (byte)(playerEntity.yaw * 256.0f / 360.0f);
         this.pitch = (byte)(playerEntity.pitch * 256.0f / 360.0f);
     }

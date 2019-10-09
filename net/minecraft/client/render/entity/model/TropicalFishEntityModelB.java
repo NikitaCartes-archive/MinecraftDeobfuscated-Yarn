@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4594;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
@@ -21,11 +22,8 @@ extends class_4594<T> {
     private final ModelPart field_3595;
     private final ModelPart field_3600;
 
-    public TropicalFishEntityModelB() {
-        this(0.0f);
-    }
-
     public TropicalFishEntityModelB(float f) {
+        super(RenderLayer::getEntityCutoutNoCull);
         this.textureWidth = 32;
         this.textureHeight = 32;
         int i = 19;

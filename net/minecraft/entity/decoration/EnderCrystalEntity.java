@@ -98,7 +98,7 @@ extends Entity {
         if (!this.removed && !this.world.isClient) {
             this.remove();
             if (!damageSource.isExplosive()) {
-                this.world.createExplosion(null, this.x, this.y, this.z, 6.0f, Explosion.DestructionType.DESTROY);
+                this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0f, Explosion.DestructionType.DESTROY);
             }
             this.crystalDestroyed(damageSource);
         }

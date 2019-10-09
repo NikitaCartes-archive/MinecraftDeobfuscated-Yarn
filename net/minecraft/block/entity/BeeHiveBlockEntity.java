@@ -44,7 +44,7 @@ implements Tickable {
     @Override
     public void markDirty() {
         if (this.method_23280()) {
-            this.angerBees(null, BeeState.EMERGENCY);
+            this.angerBees(null, this.world.getBlockState(this.getPos()), BeeState.EMERGENCY);
         }
         super.markDirty();
     }
@@ -68,8 +68,8 @@ implements Tickable {
         return this.bees.size() == 3;
     }
 
-    public void angerBees(@Nullable PlayerEntity playerEntity, BeeState beeState) {
-        List<Entity> list = this.tryReleaseBee(beeState);
+    public void angerBees(@Nullable PlayerEntity playerEntity, BlockState blockState, BeeState beeState) {
+        List<Entity> list = this.tryReleaseBee(blockState, beeState);
         if (playerEntity != null) {
             for (Entity entity : list) {
                 if (!(entity instanceof BeeEntity)) continue;
@@ -93,9 +93,9 @@ implements Tickable {
         return false;
     }
 
-    private List<Entity> tryReleaseBee(BeeState beeState) {
+    private List<Entity> tryReleaseBee(BlockState blockState, BeeState beeState) {
         ArrayList<Entity> list = Lists.newArrayList();
-        this.bees.removeIf(bee -> this.releaseBee(((Bee)bee).entityData, list, beeState));
+        this.bees.removeIf(bee -> this.releaseBee(blockState, ((Bee)bee).entityData, list, beeState));
         return list;
     }
 
@@ -124,17 +124,16 @@ implements Tickable {
         entity.remove();
     }
 
-    private boolean releaseBee(CompoundTag compoundTag, @Nullable List<Entity> list, BeeState beeState) {
+    private boolean releaseBee(BlockState blockState, CompoundTag compoundTag, @Nullable List<Entity> list, BeeState beeState) {
         BlockPos blockPos3;
         BlockPos blockPos = this.getPos();
-        if ((!this.world.isDaylight() || this.world.hasRain(blockPos)) && beeState != BeeState.EMERGENCY) {
+        if ((!this.world.isDaylight() || this.world.isRaining()) && beeState != BeeState.EMERGENCY) {
             return false;
         }
         compoundTag.remove("Passengers");
         compoundTag.remove("Leash");
         compoundTag.removeUuid("UUID");
         Optional<Object> optional = Optional.empty();
-        BlockState blockState = this.getCachedState();
         Direction direction = blockState.get(BeeHiveBlock.FACING);
         BlockPos blockPos2 = blockPos.method_10079(direction, 2);
         if (this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) {
@@ -202,12 +201,13 @@ implements Tickable {
 
     private void tickBees() {
         Iterator<Bee> iterator = this.bees.iterator();
+        BlockState blockState = this.getCachedState();
         while (iterator.hasNext()) {
             Bee bee = iterator.next();
             if (bee.ticksInHive > bee.minOccupationTIcks) {
                 CompoundTag compoundTag;
                 BeeState beeState = (compoundTag = bee.entityData).getBoolean("HasNectar") ? BeeState.HONEY_DELIVERED : BeeState.BEE_RELEASED;
-                if (!this.releaseBee(compoundTag, null, beeState)) continue;
+                if (!this.releaseBee(blockState, compoundTag, null, beeState)) continue;
                 iterator.remove();
                 continue;
             }

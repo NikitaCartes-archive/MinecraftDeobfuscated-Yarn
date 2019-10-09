@@ -50,7 +50,7 @@ implements Projectile {
     }
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, LivingEntity livingEntity, World world) {
-        this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - (double)0.1f, livingEntity.z, world);
+        this(entityType, livingEntity.getX(), livingEntity.method_23320() - (double)0.1f, livingEntity.getZ(), world);
         this.owner = livingEntity;
         this.ownerUuid = livingEntity.getUuid();
     }
@@ -100,7 +100,7 @@ implements Projectile {
 
     @Override
     public void tick() {
-        float h;
+        float j;
         super.tick();
         if (this.shake > 0) {
             --this.shake;
@@ -132,12 +132,12 @@ implements Projectile {
             }
         }
         Vec3d vec3d = this.getVelocity();
-        this.x += vec3d.x;
-        this.y += vec3d.y;
-        this.z += vec3d.z;
-        float f = MathHelper.sqrt(ThrownEntity.squaredHorizontalLength(vec3d));
+        double d = this.getX() + vec3d.x;
+        double e = this.getY() + vec3d.y;
+        double f = this.getZ() + vec3d.z;
+        float g = MathHelper.sqrt(ThrownEntity.squaredHorizontalLength(vec3d));
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
+        this.pitch = (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875);
         while (this.pitch - this.prevPitch < -180.0f) {
             this.prevPitch -= 360.0f;
         }
@@ -154,19 +154,19 @@ implements Projectile {
         this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
         if (this.isInsideWater()) {
             for (int i = 0; i < 4; ++i) {
-                float g = 0.25f;
-                this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+                float h = 0.25f;
+                this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
             }
-            h = 0.8f;
+            j = 0.8f;
         } else {
-            h = 0.99f;
+            j = 0.99f;
         }
-        this.setVelocity(vec3d.multiply(h));
+        this.setVelocity(vec3d.multiply(j));
         if (!this.hasNoGravity()) {
             Vec3d vec3d2 = this.getVelocity();
             this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
         }
-        this.setPosition(this.x, this.y, this.z);
+        this.setPosition(d, e, f);
     }
 
     protected float getGravity() {

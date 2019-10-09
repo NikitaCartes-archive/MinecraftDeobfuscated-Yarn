@@ -34,9 +34,9 @@ public class class_4603 {
             BlockState blockState = minecraftClient.world.getBlockState(new BlockPos(minecraftClient.player));
             ClientPlayerEntity playerEntity = minecraftClient.player;
             for (int i = 0; i < 8; ++i) {
-                double d = playerEntity.x + (double)(((float)((i >> 0) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
-                double e = playerEntity.y + (double)(((float)((i >> 1) % 2) - 0.5f) * 0.1f);
-                double f = playerEntity.z + (double)(((float)((i >> 2) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
+                double d = playerEntity.getX() + (double)(((float)((i >> 0) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
+                double e = playerEntity.getY() + (double)(((float)((i >> 1) % 2) - 0.5f) * 0.1f);
+                double f = playerEntity.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
                 BlockPos blockPos = new BlockPos(d, e + (double)playerEntity.getStandingEyeHeight(), f);
                 BlockState blockState2 = minecraftClient.world.getBlockState(blockPos);
                 if (!blockState2.canSuffocate(minecraftClient.world, blockPos)) continue;
@@ -126,7 +126,7 @@ public class class_4603 {
             float o = 0.5f;
             float p = -0.5f;
             matrixStack.translate((float)(-(i * 2 - 1)) * 0.24f, -0.3f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(i * 2 - 1) * 10.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(i * 2 - 1) * 10.0f));
             Matrix4f matrix4f = matrixStack.peek();
             bufferBuilder.begin(7, VertexFormats.field_20887);
             bufferBuilder.vertex(matrix4f, -0.5f, -0.5f, -0.5f).color(1.0f, 1.0f, 1.0f, 0.9f).texture(h, k).next();

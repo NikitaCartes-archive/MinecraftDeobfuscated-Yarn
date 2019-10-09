@@ -72,9 +72,9 @@ extends Goal {
                     return false;
                 }
             } else {
-                this.lastPlayerX = this.closestPlayer.x;
-                this.lastPlayerY = this.closestPlayer.y;
-                this.lastPlayerZ = this.closestPlayer.z;
+                this.lastPlayerX = this.closestPlayer.getX();
+                this.lastPlayerY = this.closestPlayer.getY();
+                this.lastPlayerZ = this.closestPlayer.getZ();
             }
             this.lastPlayerPitch = this.closestPlayer.pitch;
             this.lastPlayerYaw = this.closestPlayer.yaw;
@@ -88,9 +88,9 @@ extends Goal {
 
     @Override
     public void start() {
-        this.lastPlayerX = this.closestPlayer.x;
-        this.lastPlayerY = this.closestPlayer.y;
-        this.lastPlayerZ = this.closestPlayer.z;
+        this.lastPlayerX = this.closestPlayer.getX();
+        this.lastPlayerY = this.closestPlayer.getY();
+        this.lastPlayerZ = this.closestPlayer.getZ();
         this.active = true;
     }
 

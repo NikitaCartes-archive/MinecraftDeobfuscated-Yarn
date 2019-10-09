@@ -21,6 +21,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Consumer;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
@@ -42,7 +43,11 @@ import net.minecraft.test.TestListener;
 import net.minecraft.test.TestManager;
 import net.minecraft.test.TestSet;
 import net.minecraft.test.TestUtil;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -54,7 +59,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TestCommand {
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("test").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("runthis").executes(commandContext -> TestCommand.executeRunThis((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("runthese").executes(commandContext -> TestCommand.executeRunThese((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("run").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", TestFunctionArgumentType.method_22371()).executes(commandContext -> TestCommand.executeRun((ServerCommandSource)commandContext.getSource(), TestFunctionArgumentType.getFunction(commandContext, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("runall").executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource()))).then(CommandManager.argument("testClassName", TestClassArgumentType.method_22370()).executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource(), TestClassArgumentType.getTestClass(commandContext, "testClassName")))))).then(CommandManager.literal("export").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeExport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(CommandManager.literal("import").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeImport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(CommandManager.literal("pos").executes(commandContext -> TestCommand.executePos((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("create").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), 5, 5, 5))).then(((RequiredArgumentBuilder)CommandManager.argument("width", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width")))).then(CommandManager.argument("height", IntegerArgumentType.integer()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("depth", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "height"), IntegerArgumentType.getInteger(commandContext, "depth"))))))))).then(((LiteralArgumentBuilder)CommandManager.literal("clearall").executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), 200))).then(CommandManager.argument("radius", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "radius"))))));
+        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("test").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("runthis").executes(commandContext -> TestCommand.executeRunThis((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("runthese").executes(commandContext -> TestCommand.executeRunThese((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("run").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", TestFunctionArgumentType.method_22371()).executes(commandContext -> TestCommand.executeRun((ServerCommandSource)commandContext.getSource(), TestFunctionArgumentType.getFunction(commandContext, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("runall").executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource()))).then(CommandManager.argument("testClassName", TestClassArgumentType.method_22370()).executes(commandContext -> TestCommand.executeRunAll((ServerCommandSource)commandContext.getSource(), TestClassArgumentType.getTestClass(commandContext, "testClassName")))))).then(CommandManager.literal("export").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeExport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(CommandManager.literal("import").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeImport((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("pos").executes(commandContext -> TestCommand.executePos((ServerCommandSource)commandContext.getSource(), "pos"))).then(CommandManager.argument("var", StringArgumentType.word()).executes(commandContext -> TestCommand.executePos((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "var")))))).then(CommandManager.literal("create").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", StringArgumentType.word()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), 5, 5, 5))).then(((RequiredArgumentBuilder)CommandManager.argument("width", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "width")))).then(CommandManager.argument("height", IntegerArgumentType.integer()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("depth", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeCreate((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "testName"), IntegerArgumentType.getInteger(commandContext, "width"), IntegerArgumentType.getInteger(commandContext, "height"), IntegerArgumentType.getInteger(commandContext, "depth"))))))))).then(((LiteralArgumentBuilder)CommandManager.literal("clearall").executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), 200))).then(CommandManager.argument("radius", IntegerArgumentType.integer()).executes(commandContext -> TestCommand.executeClearAll((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "radius"))))));
     }
 
     private static int executeCreate(ServerCommandSource serverCommandSource, String string, int i, int j, int k) {
@@ -77,7 +82,7 @@ public class TestCommand {
         return 0;
     }
 
-    private static int executePos(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+    private static int executePos(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
         ServerWorld serverWorld;
         BlockHitResult blockHitResult = (BlockHitResult)serverCommandSource.getPlayer().rayTrace(10.0, 1.0f, false);
         BlockPos blockPos = blockHitResult.getBlockPos();
@@ -91,11 +96,11 @@ public class TestCommand {
         }
         StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(optional.get());
         BlockPos blockPos2 = blockPos.subtract(optional.get());
-        String string = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
-        String string2 = structureBlockBlockEntity.getStructurePath();
-        TestCommand.sendMessage(serverCommandSource, "Position relative to " + string2 + ":");
-        TestCommand.sendMessage(serverCommandSource, string);
-        DebugRendererInfoManager.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);
+        String string2 = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
+        String string3 = structureBlockBlockEntity.getStructurePath();
+        Text text = new LiteralText(string2).setStyle(new Style().setBold(true).setColor(Formatting.GREEN).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard"))).setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + string + " = new BlockPos(" + string2 + ");")));
+        serverCommandSource.sendFeedback(new LiteralText("Position relative to " + string3 + ": ").append(text), false);
+        DebugRendererInfoManager.addGameTestMarker(serverWorld, new BlockPos(blockPos), string2, -2147418368, 10000);
         return 1;
     }
 
@@ -136,6 +141,7 @@ public class TestCommand {
             testSet.add(gameTest);
             gameTest.addListener(new Listener(serverWorld, testSet));
         }
+        TestCommand.method_23647(testFunction, serverWorld);
         TestUtil.startTest(gameTest, TestManager.INSTANCE);
     }
 
@@ -166,9 +172,17 @@ public class TestCommand {
         BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
         TestUtil.clearDebugMarkers(serverWorld);
+        TestCommand.method_23647(testFunction, serverWorld);
         GameTest gameTest = new GameTest(testFunction, blockPos2, serverWorld);
         TestUtil.startTest(gameTest, TestManager.INSTANCE);
         return 1;
+    }
+
+    private static void method_23647(TestFunction testFunction, ServerWorld serverWorld) {
+        Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(testFunction.getBatchId());
+        if (consumer != null) {
+            consumer.accept(serverWorld);
+        }
     }
 
     private static int executeRunAll(ServerCommandSource serverCommandSource) {
@@ -253,11 +267,6 @@ public class TestCommand {
 
         @Override
         public void onStarted(GameTest gameTest) {
-        }
-
-        @Override
-        public void onPassed(GameTest gameTest) {
-            TestCommand.onCompletion(this.world, this.tests);
         }
 
         @Override

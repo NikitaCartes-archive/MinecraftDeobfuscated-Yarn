@@ -81,7 +81,7 @@ extends FeatureRenderer<T, M> {
         } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
             n = 0.625f;
             matrixStack.translate(0.0, -0.25, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
             matrixStack.scale(0.625f, -0.625f, -0.625f);
             if (bl) {
                 matrixStack.translate(0.0, 0.1875, 0.0);

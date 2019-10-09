@@ -108,7 +108,7 @@ public class Structure {
         List<Entity> list = world.getEntities(Entity.class, new Box(blockPos, blockPos2), entity -> !(entity instanceof PlayerEntity));
         this.entities.clear();
         for (Entity entity2 : list) {
-            Vec3d vec3d = new Vec3d(entity2.x - (double)blockPos.getX(), entity2.y - (double)blockPos.getY(), entity2.z - (double)blockPos.getZ());
+            Vec3d vec3d = new Vec3d(entity2.getX() - (double)blockPos.getX(), entity2.getY() - (double)blockPos.getY(), entity2.getZ() - (double)blockPos.getZ());
             CompoundTag compoundTag = new CompoundTag();
             entity2.saveToTag(compoundTag);
             BlockPos blockPos3 = entity2 instanceof PaintingEntity ? ((PaintingEntity)entity2).getDecorationBlockPos().subtract(blockPos) : new BlockPos(vec3d);

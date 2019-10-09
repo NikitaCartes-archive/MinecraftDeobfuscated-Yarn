@@ -42,7 +42,7 @@ extends ExplosiveProjectileEntity {
         }
         if (!this.world.isClient) {
             List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
-            AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
+            AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
             areaEffectCloudEntity.setOwner(this.owner);
             areaEffectCloudEntity.setParticleType(ParticleTypes.DRAGON_BREATH);
             areaEffectCloudEntity.setRadius(3.0f);
@@ -53,11 +53,11 @@ extends ExplosiveProjectileEntity {
                 for (LivingEntity livingEntity : list) {
                     double d = this.squaredDistanceTo(livingEntity);
                     if (!(d < 16.0)) continue;
-                    areaEffectCloudEntity.setPosition(livingEntity.x, livingEntity.y, livingEntity.z);
+                    areaEffectCloudEntity.setPosition(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
                     break;
                 }
             }
-            this.world.playLevelEvent(2006, new BlockPos(this.x, this.y, this.z), 0);
+            this.world.playLevelEvent(2006, new BlockPos(this), 0);
             this.world.spawnEntity(areaEffectCloudEntity);
             this.remove();
         }

@@ -271,6 +271,10 @@ extends HostileEntity {
             zombieEntity.setCustomName(this.getCustomName());
             zombieEntity.setCustomNameVisible(this.isCustomNameVisible());
         }
+        if (this.isPersistent()) {
+            zombieEntity.setPersistent();
+        }
+        zombieEntity.setInvulnerable(this.isInvulnerable());
         this.world.spawnEntity(zombieEntity);
         this.remove();
     }
@@ -287,9 +291,9 @@ extends HostileEntity {
                 livingEntity = (LivingEntity)damageSource.getAttacker();
             }
             if (livingEntity != null && this.world.getDifficulty() == Difficulty.HARD && (double)this.random.nextFloat() < this.getAttributeInstance(SPAWN_REINFORCEMENTS).getValue() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-                int i = MathHelper.floor(this.x);
-                int j = MathHelper.floor(this.y);
-                int k = MathHelper.floor(this.z);
+                int i = MathHelper.floor(this.getX());
+                int j = MathHelper.floor(this.getY());
+                int k = MathHelper.floor(this.getZ());
                 ZombieEntity zombieEntity = new ZombieEntity(this.world);
                 for (int l = 0; l < 50; ++l) {
                     int o;
@@ -414,6 +418,10 @@ extends HostileEntity {
                 zombieVillagerEntity.setCustomName(villagerEntity.getCustomName());
                 zombieVillagerEntity.setCustomNameVisible(villagerEntity.isCustomNameVisible());
             }
+            if (this.isPersistent()) {
+                zombieVillagerEntity.setPersistent();
+            }
+            zombieVillagerEntity.setInvulnerable(this.isInvulnerable());
             this.world.spawnEntity(zombieVillagerEntity);
             this.world.playLevelEvent(null, 1026, new BlockPos(this), 0);
         }
@@ -454,7 +462,7 @@ extends HostileEntity {
                     }
                 } else if ((double)iWorld.getRandom().nextFloat() < 0.05) {
                     ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
-                    chickenEntity2.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0f);
+                    chickenEntity2.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
                     chickenEntity2.initialize(iWorld, localDifficulty, SpawnType.JOCKEY, null, null);
                     chickenEntity2.setHasJockey(true);
                     iWorld.spawnEntity(chickenEntity2);

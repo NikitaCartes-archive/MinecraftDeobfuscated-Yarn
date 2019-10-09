@@ -178,7 +178,7 @@ implements Tickable {
             this.targetEntity = null;
         }
         if (this.targetEntity != null) {
-            this.world.playSound(null, this.targetEntity.x, this.targetEntity.y, this.targetEntity.z, SoundEvents.BLOCK_CONDUIT_ATTACK_TARGET, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            this.world.playSound(null, this.targetEntity.getX(), this.targetEntity.getY(), this.targetEntity.getZ(), SoundEvents.BLOCK_CONDUIT_ATTACK_TARGET, SoundCategory.BLOCKS, 1.0f, 1.0f);
             this.targetEntity.damage(DamageSource.MAGIC, 4.0f);
         }
         if (livingEntity2 != this.targetEntity) {
@@ -231,7 +231,7 @@ implements Tickable {
             this.world.addParticle(ParticleTypes.NAUTILUS, vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
         }
         if (this.targetEntity != null) {
-            Vec3d vec3d3 = new Vec3d(this.targetEntity.x, this.targetEntity.y + (double)this.targetEntity.getStandingEyeHeight(), this.targetEntity.z);
+            Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.method_23320(), this.targetEntity.getZ());
             float j = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());
             g = -1.0f + random.nextFloat() * this.targetEntity.getHeight();
             h = (-0.5f + random.nextFloat()) * (3.0f + this.targetEntity.getWidth());

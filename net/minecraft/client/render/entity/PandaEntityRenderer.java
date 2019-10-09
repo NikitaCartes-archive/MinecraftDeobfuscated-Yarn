@@ -56,37 +56,37 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
                 float n = (float)(90 * j) / 7.0f;
                 float o = this.method_4086(m, n, j, h, 8.0f);
                 matrixStack.translate(0.0, (l + 0.2f) * (o / 90.0f), 0.0);
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o, true));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o));
             } else if (i < 16) {
                 float m = ((float)i - 8.0f) / 7.0f;
                 float n = 90.0f + 90.0f * m;
                 float p = 90.0f + 90.0f * ((float)j - 8.0f) / 7.0f;
                 float o = this.method_4086(n, p, j, h, 16.0f);
                 matrixStack.translate(0.0, l + 0.2f + (l - 0.2f) * (o - 90.0f) / 90.0f, 0.0);
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o, true));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o));
             } else if ((float)i < 24.0f) {
                 float m = ((float)i - 16.0f) / 7.0f;
                 float n = 180.0f + 90.0f * m;
                 float p = 180.0f + 90.0f * ((float)j - 16.0f) / 7.0f;
                 float o = this.method_4086(n, p, j, h, 24.0f);
                 matrixStack.translate(0.0, l + l * (270.0f - o) / 90.0f, 0.0);
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o, true));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o));
             } else if (i < 32) {
                 float m = ((float)i - 24.0f) / 7.0f;
                 float n = 270.0f + 90.0f * m;
                 float p = 270.0f + 90.0f * ((float)j - 24.0f) / 7.0f;
                 float o = this.method_4086(n, p, j, h, 32.0f);
                 matrixStack.translate(0.0, l * ((360.0f - o) / 90.0f), 0.0);
-                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o, true));
+                matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-o));
             }
         }
         if ((q = pandaEntity.getScaredAnimationProgress(h)) > 0.0f) {
             matrixStack.translate(0.0, 0.8f * q, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0f), true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0f)));
             matrixStack.translate(0.0, -1.0f * q, 0.0);
             if (pandaEntity.method_6524()) {
                 float r2 = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * (double)0.05f);
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(r2, true));
+                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(r2));
                 if (pandaEntity.isBaby()) {
                     matrixStack.translate(0.0, 0.8f, 0.55f);
                 }
@@ -95,7 +95,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         if ((r = pandaEntity.getLieOnBackAnimationProgress(h)) > 0.0f) {
             k = pandaEntity.isBaby() ? 0.5f : 1.3f;
             matrixStack.translate(0.0, k * r, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0f), true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.lerp(r, pandaEntity.pitch, pandaEntity.pitch + 180.0f)));
         }
     }
 

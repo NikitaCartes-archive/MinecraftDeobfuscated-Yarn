@@ -21,7 +21,7 @@ public final class EndBiome
 extends Biome {
     public EndBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.THEEND).depth(0.1f).scale(0.2f).temperature(0.5f).downfall(0.5f).waterColor(4159204).waterFogColor(329011).parent(null));
-        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, EndBiome.configureFeature(Feature.END_SPIKE, new EndSpikeFeatureConfig(false, ImmutableList.of(), null), Decorator.NOPE, DecoratorConfig.DEFAULT));
+        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.END_SPIKE.method_23397(new EndSpikeFeatureConfig(false, ImmutableList.of(), null)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT)));
         DefaultBiomeFeatures.method_20826(this);
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
     }

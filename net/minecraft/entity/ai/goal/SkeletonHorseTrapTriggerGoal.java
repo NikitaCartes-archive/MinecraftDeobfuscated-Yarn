@@ -28,7 +28,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return this.skeletonHorse.world.isPlayerInRange(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z, 10.0);
+        return this.skeletonHorse.world.isPlayerInRange(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ(), 10.0);
     }
 
     @Override
@@ -37,7 +37,7 @@ extends Goal {
         this.skeletonHorse.setTrapped(false);
         this.skeletonHorse.setTame(true);
         this.skeletonHorse.setBreedingAge(0);
-        ((ServerWorld)this.skeletonHorse.world).addLightning(new LightningEntity(this.skeletonHorse.world, this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z, true));
+        ((ServerWorld)this.skeletonHorse.world).addLightning(new LightningEntity(this.skeletonHorse.world, this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ(), true));
         SkeletonEntity skeletonEntity = this.getSkeleton(localDifficulty, this.skeletonHorse);
         skeletonEntity.startRiding(this.skeletonHorse);
         for (int i = 0; i < 3; ++i) {
@@ -51,7 +51,7 @@ extends Goal {
     private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
         SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
         skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnType.TRIGGERED, null, null);
-        skeletonHorseEntity.setPosition(this.skeletonHorse.x, this.skeletonHorse.y, this.skeletonHorse.z);
+        skeletonHorseEntity.setPosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
         skeletonHorseEntity.timeUntilRegen = 60;
         skeletonHorseEntity.setPersistent();
         skeletonHorseEntity.setTame(true);
@@ -63,7 +63,7 @@ extends Goal {
     private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
         SkeletonEntity skeletonEntity = EntityType.SKELETON.create(horseBaseEntity.world);
         skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.TRIGGERED, null, null);
-        skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
+        skeletonEntity.setPosition(horseBaseEntity.getX(), horseBaseEntity.getY(), horseBaseEntity.getZ());
         skeletonEntity.timeUntilRegen = 60;
         skeletonEntity.setPersistent();
         if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {

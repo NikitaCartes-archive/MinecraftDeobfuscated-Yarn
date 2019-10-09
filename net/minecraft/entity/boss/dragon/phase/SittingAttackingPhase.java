@@ -18,7 +18,7 @@ extends AbstractSittingPhase {
 
     @Override
     public void clientTick() {
-        this.dragon.world.playSound(this.dragon.x, this.dragon.y, this.dragon.z, SoundEvents.ENTITY_ENDER_DRAGON_GROWL, this.dragon.getSoundCategory(), 2.5f, 0.8f + this.dragon.getRandom().nextFloat() * 0.3f, false);
+        this.dragon.world.playSound(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_GROWL, this.dragon.getSoundCategory(), 2.5f, 0.8f + this.dragon.getRandom().nextFloat() * 0.3f, false);
     }
 
     @Override

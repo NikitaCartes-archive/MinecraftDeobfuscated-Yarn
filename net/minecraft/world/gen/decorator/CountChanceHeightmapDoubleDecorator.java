@@ -26,13 +26,12 @@ extends Decorator<CountChanceDecoratorConfig> {
     public Stream<BlockPos> method_15899(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountChanceDecoratorConfig countChanceDecoratorConfig, BlockPos blockPos) {
         return IntStream.range(0, countChanceDecoratorConfig.count).filter(i -> random.nextFloat() < countChanceDecoratorConfig.chance).mapToObj(i -> {
             int k;
-            int j = random.nextInt(16);
-            int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k = random.nextInt(16))).getY() * 2;
+            int j = random.nextInt(16) + blockPos.getX();
+            int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k = random.nextInt(16) + blockPos.getZ()) * 2;
             if (l <= 0) {
                 return null;
             }
-            int m = random.nextInt(l);
-            return blockPos.add(j, m, k);
+            return new BlockPos(j, random.nextInt(l), k);
         }).filter(Objects::nonNull);
     }
 }

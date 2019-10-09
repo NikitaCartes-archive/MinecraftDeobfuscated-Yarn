@@ -56,18 +56,19 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
         FlatChunkGeneratorBiome flatChunkGeneratorBiome = new FlatChunkGeneratorBiome(biome.getSurfaceBuilder(), biome.getPrecipitation(), biome.getCategory(), biome.getDepth(), biome.getScale(), biome.getTemperature(), biome.getRainfall(), biome.getWaterColor(), biome.getWaterFogColor(), biome.getParent());
         Map<String, Map<String, String>> map = ((FlatChunkGeneratorConfig)this.config).getStructures();
         for (String string : map.keySet()) {
-            ConfiguredFeature<?>[] configuredFeatureArray = FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
+            ConfiguredFeature<?, ?>[] configuredFeatureArray = FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
             if (configuredFeatureArray == null) continue;
-            ConfiguredFeature<?>[] configuredFeatureArray2 = configuredFeatureArray;
+            ConfiguredFeature<?, ?>[] configuredFeatureArray2 = configuredFeatureArray;
             int n = configuredFeatureArray2.length;
             for (int i = 0; i < n; ++i) {
-                StructureFeature structureFeature;
-                ConfiguredFeature<?> configuredFeature = configuredFeatureArray2[i];
+                ConfiguredFeature<?, ?> configuredFeature = configuredFeatureArray2[i];
                 flatChunkGeneratorBiome.addFeature(FlatChunkGeneratorConfig.FEATURE_TO_GENERATION_STEP.get(configuredFeature), configuredFeature);
-                ConfiguredFeature<?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.config).feature;
+                ConfiguredFeature<?, ?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.config).feature;
                 if (!(configuredFeature2.feature instanceof StructureFeature)) continue;
-                Object featureConfig = biome.getStructureFeatureConfig(structureFeature = (StructureFeature)configuredFeature2.feature);
-                flatChunkGeneratorBiome.addStructureFeature(structureFeature, featureConfig != null ? featureConfig : FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature));
+                StructureFeature structureFeature = (StructureFeature)configuredFeature2.feature;
+                Object featureConfig = biome.getStructureFeatureConfig(structureFeature);
+                Object featureConfig2 = featureConfig != null ? featureConfig : FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature);
+                flatChunkGeneratorBiome.addStructureFeature(structureFeature.method_23397(featureConfig2));
             }
         }
         boolean bl2 = bl = (!((FlatChunkGeneratorConfig)this.config).hasNoTerrain() || biome == Biomes.THE_VOID) && map.containsKey("decoration");
@@ -77,7 +78,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
             list.add(GenerationStep.Feature.SURFACE_STRUCTURES);
             for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
                 if (list.contains((Object)feature)) continue;
-                for (ConfiguredFeature<?> configuredFeature2 : biome.getFeaturesForStep(feature)) {
+                for (ConfiguredFeature<?, ?> configuredFeature2 : biome.getFeaturesForStep(feature)) {
                     flatChunkGeneratorBiome.addFeature(feature, configuredFeature2);
                 }
             }
@@ -88,7 +89,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
             BlockState blockState = blockStates[var6_11];
             if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
                 ((FlatChunkGeneratorConfig)this.config).removeLayerBlock((int)var6_11);
-                flatChunkGeneratorBiome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Biome.configureFeature(Feature.FILL_LAYER, new FillLayerFeatureConfig((int)var6_11, blockState), Decorator.NOPE, DecoratorConfig.DEFAULT));
+                flatChunkGeneratorBiome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.method_23397(new FillLayerFeatureConfig((int)var6_11, blockState)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT)));
             }
             ++var6_11;
         }

@@ -39,12 +39,12 @@ extends WanderAroundFarGoal {
         BlockPos blockPos = new BlockPos(this.mob);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
-        Iterable<BlockPos> iterable = BlockPos.iterate(MathHelper.floor(this.mob.x - 3.0), MathHelper.floor(this.mob.y - 6.0), MathHelper.floor(this.mob.z - 3.0), MathHelper.floor(this.mob.x + 3.0), MathHelper.floor(this.mob.y + 6.0), MathHelper.floor(this.mob.z + 3.0));
+        Iterable<BlockPos> iterable = BlockPos.iterate(MathHelper.floor(this.mob.getX() - 3.0), MathHelper.floor(this.mob.getY() - 6.0), MathHelper.floor(this.mob.getZ() - 3.0), MathHelper.floor(this.mob.getX() + 3.0), MathHelper.floor(this.mob.getY() + 6.0), MathHelper.floor(this.mob.getZ() + 3.0));
         for (BlockPos blockPos2 : iterable) {
             Block block;
             boolean bl;
             if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.matches(BlockTags.LOGS)) || !this.mob.world.isAir(blockPos2) || !this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) continue;
-            return new Vec3d(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+            return new Vec3d(blockPos2);
         }
         return null;
     }

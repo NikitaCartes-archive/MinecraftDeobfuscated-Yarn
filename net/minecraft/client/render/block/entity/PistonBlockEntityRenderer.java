@@ -33,7 +33,7 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+    public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
         World world = pistonBlockEntity.getWorld();
         if (world == null) {
             return;
@@ -48,30 +48,29 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         matrixStack.translate((float)(-(blockPos.getX() & 0xF)) + pistonBlockEntity.getRenderOffsetX(g), (float)(-(blockPos.getY() & 0xF)) + pistonBlockEntity.getRenderOffsetY(g), (float)(-(blockPos.getZ() & 0xF)) + pistonBlockEntity.getRenderOffsetZ(g));
         if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(g) <= 4.0f) {
             blockState = (BlockState)blockState.with(PistonHeadBlock.SHORT, true);
-            this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false);
+            this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false, j);
         } else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
             PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;
             BlockState blockState2 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.TYPE, pistonType)).with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
             blockState2 = (BlockState)blockState2.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(g) >= 0.5f);
-            this.method_3575(blockPos, blockState2, matrixStack, layeredVertexConsumerStorage, world, false);
+            this.method_3575(blockPos, blockState2, matrixStack, layeredVertexConsumerStorage, world, false, j);
             BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());
             matrixStack.pop();
             matrixStack.translate(-(blockPos2.getX() & 0xF), -(blockPos2.getY() & 0xF), -(blockPos2.getZ() & 0xF));
             blockState = (BlockState)blockState.with(PistonBlock.EXTENDED, true);
-            this.method_3575(blockPos2, blockState, matrixStack, layeredVertexConsumerStorage, world, true);
+            this.method_3575(blockPos2, blockState, matrixStack, layeredVertexConsumerStorage, world, true, j);
             matrixStack.push();
         } else {
-            this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false);
+            this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false, j);
         }
         matrixStack.pop();
         BlockModelRenderer.disableBrightnessCache();
     }
 
-    private void method_3575(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, World world, boolean bl) {
+    private void method_3575(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, World world, boolean bl, int i) {
         RenderLayer renderLayer = RenderLayer.method_22715(blockState);
         VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(renderLayer);
-        this.manager.getModelRenderer().tesselate(world, this.manager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, new Random(), blockState.getRenderingSeed(blockPos));
-        MinecraftClient.getInstance().getBlockRenderManager().tesselateBlock(blockState, blockPos, world, matrixStack, vertexConsumer, bl, new Random());
+        this.manager.getModelRenderer().tesselate(world, this.manager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, new Random(), blockState.getRenderingSeed(blockPos), i);
     }
 }
 

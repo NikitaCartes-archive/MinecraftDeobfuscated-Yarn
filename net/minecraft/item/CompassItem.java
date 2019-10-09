@@ -78,7 +78,7 @@ extends Item {
             @Environment(value=EnvType.CLIENT)
             private double getAngleToSpawn(IWorld iWorld, Entity entity) {
                 BlockPos blockPos = iWorld.getSpawnPos();
-                return Math.atan2((double)blockPos.getZ() - entity.z, (double)blockPos.getX() - entity.x);
+                return Math.atan2((double)blockPos.getZ() - entity.getZ(), (double)blockPos.getX() - entity.getX());
             }
         });
     }

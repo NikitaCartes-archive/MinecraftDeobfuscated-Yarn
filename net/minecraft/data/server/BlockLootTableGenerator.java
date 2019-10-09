@@ -560,6 +560,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.method_16329(Blocks.DIORITE_WALL);
         this.method_16329(Blocks.LOOM);
         this.method_16329(Blocks.SCAFFOLDING);
+        this.method_16329(Blocks.HONEY_BLOCK);
+        this.method_16329(Blocks.HONEYCOMB_BLOCK);
         this.method_16256(Blocks.FARMLAND, Blocks.DIRT);
         this.method_16256(Blocks.TRIPWIRE, Items.STRING);
         this.method_16256(Blocks.GRASS_PATH, Blocks.DIRT);
@@ -725,7 +727,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.method_16293(Blocks.YELLOW_BANNER, BlockLootTableGenerator::method_16877);
         this.method_16293(Blocks.PLAYER_HEAD, block -> LootTable.builder().withPool(BlockLootTableGenerator.method_10392(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Owner", "SkullOwner"))))));
         this.method_16293(Blocks.BEE_NEST, BlockLootTableGenerator::method_22142);
-        this.method_16293(Blocks.BEE_HIVE, BlockLootTableGenerator::method_22143);
+        this.method_16293(Blocks.BEEHIVE, BlockLootTableGenerator::method_22143);
         this.method_16293(Blocks.BIRCH_LEAVES, block -> BlockLootTableGenerator.method_10390(block, Blocks.BIRCH_SAPLING, field_11339));
         this.method_16293(Blocks.ACACIA_LEAVES, block -> BlockLootTableGenerator.method_10390(block, Blocks.ACACIA_SAPLING, field_11339));
         this.method_16293(Blocks.JUNGLE_LEAVES, block -> BlockLootTableGenerator.method_10390(block, Blocks.JUNGLE_SAPLING, field_11338));

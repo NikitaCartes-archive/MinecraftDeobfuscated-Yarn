@@ -5,6 +5,7 @@ package net.minecraft;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -25,10 +26,8 @@ extends FeatureRenderer<T, M> {
 
     @Override
     public void render(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T entity, float f, float g, float h, float j, float k, float l, float m) {
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23026(this.method_23193()));
-        OverlayTexture.clearDefaultOverlay(vertexConsumer);
-        ((EntityModel)this.getModel()).method_22957(matrixStack, vertexConsumer, 0xF00000);
-        vertexConsumer.clearDefaultOverlay();
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEyes(this.method_23193()));
+        ((Model)this.getModel()).renderItem(matrixStack, vertexConsumer, 0xF00000, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
     }
 
     public abstract Identifier method_23193();

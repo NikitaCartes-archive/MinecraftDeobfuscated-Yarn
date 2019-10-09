@@ -52,7 +52,7 @@ extends Goal {
         if (this.field_6509 != null) {
             return true;
         }
-        return this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+        return this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
     }
 
     @Override
@@ -94,12 +94,12 @@ extends Goal {
     public void tick() {
         LivingEntity livingEntity = this.mob.getTarget();
         this.mob.getLookControl().lookAt(livingEntity, 30.0f, 30.0f);
-        double d = this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+        double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
         --this.field_6501;
         if ((this.field_6502 || this.mob.getVisibilityCache().canSee(livingEntity)) && this.field_6501 <= 0 && (this.targetX == 0.0 && this.targetY == 0.0 && this.targetZ == 0.0 || livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0 || this.mob.getRandom().nextFloat() < 0.05f)) {
-            this.targetX = livingEntity.x;
-            this.targetY = livingEntity.getBoundingBox().minY;
-            this.targetZ = livingEntity.z;
+            this.targetX = livingEntity.getX();
+            this.targetY = livingEntity.getY();
+            this.targetZ = livingEntity.getZ();
             this.field_6501 = 4 + this.mob.getRandom().nextInt(7);
             if (d > 1024.0) {
                 this.field_6501 += 10;

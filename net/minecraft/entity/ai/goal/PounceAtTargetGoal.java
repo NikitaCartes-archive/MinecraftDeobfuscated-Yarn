@@ -48,7 +48,7 @@ extends Goal {
     @Override
     public void start() {
         Vec3d vec3d = this.mob.getVelocity();
-        Vec3d vec3d2 = new Vec3d(this.target.x - this.mob.x, 0.0, this.target.z - this.mob.z);
+        Vec3d vec3d2 = new Vec3d(this.target.getX() - this.mob.getX(), 0.0, this.target.getZ() - this.mob.getZ());
         if (vec3d2.lengthSquared() > 1.0E-7) {
             vec3d2 = vec3d2.normalize().multiply(0.4).add(vec3d.multiply(0.2));
         }

@@ -57,7 +57,7 @@ public class EntityPredicate {
     }
 
     public boolean test(ServerPlayerEntity serverPlayerEntity, @Nullable Entity entity) {
-        return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), entity);
+        return this.test(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getPos(), entity);
     }
 
     public boolean test(ServerWorld serverWorld, @Nullable Vec3d vec3d, @Nullable Entity entity) {
@@ -71,10 +71,10 @@ public class EntityPredicate {
         if (!this.type.matches(entity.getType())) {
             return false;
         }
-        if (vec3d == null ? this.distance != DistancePredicate.ANY : !this.distance.test(vec3d.x, vec3d.y, vec3d.z, entity.x, entity.y, entity.z)) {
+        if (vec3d == null ? this.distance != DistancePredicate.ANY : !this.distance.test(vec3d.x, vec3d.y, vec3d.z, entity.getX(), entity.getY(), entity.getZ())) {
             return false;
         }
-        if (!this.location.test(serverWorld, entity.x, entity.y, entity.z)) {
+        if (!this.location.test(serverWorld, entity.getX(), entity.getY(), entity.getZ())) {
             return false;
         }
         if (!this.effects.test(entity)) {

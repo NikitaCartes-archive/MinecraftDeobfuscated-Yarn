@@ -32,9 +32,9 @@ extends MovingSoundInstance {
             this.done = true;
             return;
         }
-        this.x = (float)this.player.x;
-        this.y = (float)this.player.y;
-        this.z = (float)this.player.z;
+        this.x = (float)this.player.getX();
+        this.y = (float)this.player.getY();
+        this.z = (float)this.player.getZ();
         float f = (float)this.player.getVelocity().lengthSquared();
         this.volume = (double)f >= 1.0E-7 ? MathHelper.clamp(f / 4.0f, 0.0f, 1.0f) : 0.0f;
         if (this.tickCount < 20) {

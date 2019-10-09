@@ -133,7 +133,7 @@ public abstract class PlayerManager {
         if (clientConnection.getAddress() != null) {
             string2 = clientConnection.getAddress().toString();
         }
-        LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", (Object)serverPlayerEntity.getName().getString(), (Object)string2, (Object)serverPlayerEntity.getEntityId(), (Object)serverPlayerEntity.x, (Object)serverPlayerEntity.y, (Object)serverPlayerEntity.z);
+        LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", (Object)serverPlayerEntity.getName().getString(), (Object)string2, (Object)serverPlayerEntity.getEntityId(), (Object)serverPlayerEntity.getX(), (Object)serverPlayerEntity.getY(), (Object)serverPlayerEntity.getZ());
         LevelProperties levelProperties = serverWorld.getLevelProperties();
         this.setGameMode(serverPlayerEntity, null, serverWorld);
         ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, clientConnection, serverPlayerEntity);
@@ -154,7 +154,7 @@ public abstract class PlayerManager {
         this.server.forcePlayerSampleUpdate();
         TranslatableText text = serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string) ? new TranslatableText("multiplayer.player.joined", serverPlayerEntity.getDisplayName()) : new TranslatableText("multiplayer.player.joined.renamed", serverPlayerEntity.getDisplayName(), string);
         this.sendToAll(text.formatted(Formatting.YELLOW));
-        serverPlayNetworkHandler.requestTeleport(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
+        serverPlayNetworkHandler.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
         this.players.add(serverPlayerEntity);
         this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
         this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, serverPlayerEntity));
@@ -380,13 +380,13 @@ public abstract class PlayerManager {
                 serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0f));
             }
         }
-        while (!serverWorld.doesNotCollide(serverPlayerEntity2) && serverPlayerEntity2.y < 256.0) {
-            serverPlayerEntity2.setPosition(serverPlayerEntity2.x, serverPlayerEntity2.y + 1.0, serverPlayerEntity2.z);
+        while (!serverWorld.doesNotCollide(serverPlayerEntity2) && serverPlayerEntity2.getY() < 256.0) {
+            serverPlayerEntity2.setPosition(serverPlayerEntity2.getX(), serverPlayerEntity2.getY() + 1.0, serverPlayerEntity2.getZ());
         }
         LevelProperties levelProperties = serverPlayerEntity2.world.getLevelProperties();
         serverPlayerEntity2.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity2.dimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), serverPlayerEntity2.interactionManager.getGameMode()));
         BlockPos blockPos2 = serverWorld.getSpawnPos();
-        serverPlayerEntity2.networkHandler.requestTeleport(serverPlayerEntity2.x, serverPlayerEntity2.y, serverPlayerEntity2.z, serverPlayerEntity2.yaw, serverPlayerEntity2.pitch);
+        serverPlayerEntity2.networkHandler.requestTeleport(serverPlayerEntity2.getX(), serverPlayerEntity2.getY(), serverPlayerEntity2.getZ(), serverPlayerEntity2.yaw, serverPlayerEntity2.pitch);
         serverPlayerEntity2.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos2));
         serverPlayerEntity2.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
         serverPlayerEntity2.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity2.experienceProgress, serverPlayerEntity2.totalExperience, serverPlayerEntity2.experienceLevel));
@@ -516,7 +516,7 @@ public abstract class PlayerManager {
             double j;
             double h;
             ServerPlayerEntity serverPlayerEntity = this.players.get(i);
-            if (serverPlayerEntity == playerEntity || serverPlayerEntity.dimension != dimensionType || !((h = d - serverPlayerEntity.x) * h + (j = e - serverPlayerEntity.y) * j + (k = f - serverPlayerEntity.z) * k < g * g)) continue;
+            if (serverPlayerEntity == playerEntity || serverPlayerEntity.dimension != dimensionType || !((h = d - serverPlayerEntity.getX()) * h + (j = e - serverPlayerEntity.getY()) * j + (k = f - serverPlayerEntity.getZ()) * k < g * g)) continue;
             serverPlayerEntity.networkHandler.sendPacket(packet);
         }
     }

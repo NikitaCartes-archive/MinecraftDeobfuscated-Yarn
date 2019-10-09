@@ -59,7 +59,6 @@ public class BlockTags {
     public static final Tag<Block> CORAL_PLANTS;
     public static final Tag<Block> CORALS;
     public static final Tag<Block> BAMBOO_PLANTABLE_ON;
-    public static final Tag<Block> DIRT_LIKE;
     public static final Tag<Block> STANDING_SIGNS;
     public static final Tag<Block> WALL_SIGNS;
     public static final Tag<Block> SIGNS;
@@ -129,7 +128,6 @@ public class BlockTags {
         CORAL_PLANTS = BlockTags.register("coral_plants");
         CORALS = BlockTags.register("corals");
         BAMBOO_PLANTABLE_ON = BlockTags.register("bamboo_plantable_on");
-        DIRT_LIKE = BlockTags.register("dirt_like");
         STANDING_SIGNS = BlockTags.register("standing_signs");
         WALL_SIGNS = BlockTags.register("wall_signs");
         SIGNS = BlockTags.register("signs");

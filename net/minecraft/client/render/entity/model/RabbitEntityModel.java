@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.entity.passive.RabbitEntity;
@@ -31,6 +32,7 @@ extends EntityModel<T> {
     private float field_3531;
 
     public RabbitEntityModel() {
+        super(RenderLayer::getEntitySolid);
         this.field_3525.addCuboid(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f);
         this.field_3525.setPivot(3.0f, 17.5f, 3.7f);
         this.field_3525.mirror = true;
@@ -99,24 +101,24 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
+    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
         if (this.isChild) {
-            float j = 1.5f;
+            float k = 1.5f;
             matrixStack.push();
             matrixStack.scale(0.56666666f, 0.56666666f, 0.56666666f);
             matrixStack.translate(0.0, 1.375, 0.125);
-            ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, null, f, g, h));
+            ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
             matrixStack.pop();
             matrixStack.push();
             matrixStack.scale(0.4f, 0.4f, 0.4f);
             matrixStack.translate(0.0, 2.25, 0.0);
-            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, null, f, g, h));
+            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
             matrixStack.pop();
         } else {
             matrixStack.push();
             matrixStack.scale(0.6f, 0.6f, 0.6f);
             matrixStack.translate(0.0, 1.0, 0.0);
-            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3529, this.field_3523, this.field_3520, this.field_3524, this.field_3530, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, null, f, g, h));
+            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3529, this.field_3523, this.field_3520, this.field_3524, this.field_3530, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
             matrixStack.pop();
         }
     }

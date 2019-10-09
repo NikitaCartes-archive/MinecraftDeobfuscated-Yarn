@@ -80,16 +80,16 @@ implements FlyingItemEntity {
     }
 
     public void moveTowards(BlockPos blockPos) {
+        double g;
         double d = blockPos.getX();
         int i = blockPos.getY();
-        double f = d - this.x;
         double e = blockPos.getZ();
-        double g = e - this.z;
-        float h = MathHelper.sqrt(f * f + g * g);
+        double f = d - this.getX();
+        float h = MathHelper.sqrt(f * f + (g = e - this.getZ()) * g);
         if (h > 12.0f) {
-            this.velocityX = this.x + f / (double)h * 12.0;
-            this.velocityZ = this.z + g / (double)h * 12.0;
-            this.velocityY = this.y + 8.0;
+            this.velocityX = this.getX() + f / (double)h * 12.0;
+            this.velocityZ = this.getZ() + g / (double)h * 12.0;
+            this.velocityY = this.getY() + 8.0;
         } else {
             this.velocityX = d;
             this.velocityY = i;
@@ -116,12 +116,12 @@ implements FlyingItemEntity {
     public void tick() {
         super.tick();
         Vec3d vec3d = this.getVelocity();
-        this.x += vec3d.x;
-        this.y += vec3d.y;
-        this.z += vec3d.z;
-        float f = MathHelper.sqrt(EnderEyeEntity.squaredHorizontalLength(vec3d));
+        double d = this.getX() + vec3d.x;
+        double e = this.getY() + vec3d.y;
+        double f = this.getZ() + vec3d.z;
+        float g = MathHelper.sqrt(EnderEyeEntity.squaredHorizontalLength(vec3d));
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
+        this.pitch = (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875);
         while (this.pitch - this.prevPitch < -180.0f) {
             this.prevPitch -= 360.0f;
         }
@@ -137,40 +137,42 @@ implements FlyingItemEntity {
         this.pitch = MathHelper.lerp(0.2f, this.prevPitch, this.pitch);
         this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
         if (!this.world.isClient) {
-            double d = this.velocityX - this.x;
-            double e = this.velocityZ - this.z;
-            float g = (float)Math.sqrt(d * d + e * e);
-            float h = (float)MathHelper.atan2(e, d);
-            double i = MathHelper.lerp(0.0025, (double)f, (double)g);
-            double j = vec3d.y;
-            if (g < 1.0f) {
-                i *= 0.8;
-                j *= 0.8;
+            double h = this.velocityX - d;
+            double i = this.velocityZ - f;
+            float j = (float)Math.sqrt(h * h + i * i);
+            float k = (float)MathHelper.atan2(i, h);
+            double l = MathHelper.lerp(0.0025, (double)g, (double)j);
+            double m = vec3d.y;
+            if (j < 1.0f) {
+                l *= 0.8;
+                m *= 0.8;
             }
-            int k = this.y < this.velocityY ? 1 : -1;
-            vec3d = new Vec3d(Math.cos(h) * i, j + ((double)k - j) * (double)0.015f, Math.sin(h) * i);
+            int n = this.getY() < this.velocityY ? 1 : -1;
+            vec3d = new Vec3d(Math.cos(k) * l, m + ((double)n - m) * (double)0.015f, Math.sin(k) * l);
             this.setVelocity(vec3d);
         }
-        float l = 0.25f;
+        float o = 0.25f;
         if (this.isInsideWater()) {
-            for (int m = 0; m < 4; ++m) {
-                this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+            for (int p = 0; p < 4; ++p) {
+                this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
             }
         } else {
-            this.world.addParticle(ParticleTypes.PORTAL, this.x - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3, this.y - vec3d.y * 0.25 - 0.5, this.z - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3, vec3d.x, vec3d.y, vec3d.z);
+            this.world.addParticle(ParticleTypes.PORTAL, d - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3, e - vec3d.y * 0.25 - 0.5, f - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3, vec3d.x, vec3d.y, vec3d.z);
         }
         if (!this.world.isClient) {
-            this.setPosition(this.x, this.y, this.z);
+            this.setPosition(d, e, f);
             ++this.useCount;
             if (this.useCount > 80 && !this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0f, 1.0f);
                 this.remove();
                 if (this.dropsItem) {
-                    this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getStack()));
+                    this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
                 } else {
                     this.world.playLevelEvent(2003, new BlockPos(this), 0);
                 }
             }
+        } else {
+            this.setPos(d, e, f);
         }
     }
 

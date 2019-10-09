@@ -45,17 +45,15 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         if (guardianEntity.hasBeamTarget() && (livingEntity = guardianEntity.getBeamTarget()) != null) {
             Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0f);
             Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, guardianEntity.getStandingEyeHeight(), 1.0f);
-            if (frustum.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
-                return true;
-            }
+            return frustum.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z));
         }
         return false;
     }
 
     private Vec3d fromLerpedPosition(LivingEntity livingEntity, double d, float f) {
-        double e = MathHelper.lerp((double)f, livingEntity.prevRenderX, livingEntity.x);
-        double g = MathHelper.lerp((double)f, livingEntity.prevRenderY, livingEntity.y) + d;
-        double h = MathHelper.lerp((double)f, livingEntity.prevRenderZ, livingEntity.z);
+        double e = MathHelper.lerp((double)f, livingEntity.prevRenderX, livingEntity.getX());
+        double g = MathHelper.lerp((double)f, livingEntity.prevRenderY, livingEntity.getY()) + d;
+        double h = MathHelper.lerp((double)f, livingEntity.prevRenderZ, livingEntity.getZ());
         return new Vec3d(e, g, h);
     }
 
@@ -76,8 +74,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             vec3d3 = vec3d3.normalize();
             float n = (float)Math.acos(vec3d3.y);
             float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((1.5707964f - o) * 57.295776f, true));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(n * 57.295776f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((1.5707964f - o) * 57.295776f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(n * 57.295776f));
             boolean p = true;
             float q = j * 0.05f * -1.5f;
             float r = i * i;
@@ -107,8 +105,7 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             float ap = 0.4999f;
             float aq = -1.0f + k;
             float ar = m * 2.5f + aq;
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(EXPLOSION_BEAM_TEX));
-            OverlayTexture.clearDefaultOverlay(vertexConsumer);
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX));
             Matrix4f matrix4f = matrixStack.peek();
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, af, an, ag, s, t, u, 0.4999f, ar);
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, af, 0.0f, ag, s, t, u, 0.4999f, aq);
@@ -126,13 +123,12 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, z, an, aa, s, t, u, 1.0f, as + 0.5f);
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, ad, an, ae, s, t, u, 1.0f, as);
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, ab, an, ac, s, t, u, 0.5f, as);
-            vertexConsumer.clearDefaultOverlay();
             matrixStack.pop();
         }
     }
 
     private static void method_23173(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, float l, float m) {
-        vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).defaultOverlay(OverlayTexture.field_21444).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
     }
 
     public Identifier method_3976(GuardianEntity guardianEntity) {

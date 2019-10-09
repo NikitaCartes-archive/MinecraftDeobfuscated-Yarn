@@ -66,7 +66,7 @@ public enum EnderDragonSpawnState {
                         }
                         serverWorld.createExplosion(null, (float)spike.getCenterX() + 0.5f, spike.getHeight(), (float)spike.getCenterZ() + 0.5f, 5.0f, Explosion.DestructionType.DESTROY);
                         EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
-                        Feature.END_SPIKE.generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), new Random(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()), endSpikeFeatureConfig);
+                        Feature.END_SPIKE.method_23397(endSpikeFeatureConfig).generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), new Random(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
                     }
                 } else if (bl) {
                     enderDragonFight.setSpawnState(SUMMONING_DRAGON);
@@ -84,7 +84,7 @@ public enum EnderDragonSpawnState {
                 enderDragonFight.resetEndCrystals();
                 for (EnderCrystalEntity enderCrystalEntity : list) {
                     enderCrystalEntity.setBeamTarget(null);
-                    serverWorld.createExplosion(enderCrystalEntity, enderCrystalEntity.x, enderCrystalEntity.y, enderCrystalEntity.z, 6.0f, Explosion.DestructionType.NONE);
+                    serverWorld.createExplosion(enderCrystalEntity, enderCrystalEntity.getX(), enderCrystalEntity.getY(), enderCrystalEntity.getZ(), 6.0f, Explosion.DestructionType.NONE);
                     enderCrystalEntity.remove();
                 }
             } else if (i >= 80) {

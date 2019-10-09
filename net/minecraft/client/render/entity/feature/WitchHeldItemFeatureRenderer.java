@@ -35,7 +35,7 @@ extends FeatureRenderer<T, WitchEntityModel<T>> {
         matrixStack.push();
         if (((WitchEntityModel)this.getModel()).isChild) {
             matrixStack.translate(0.0, 0.625, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0f));
             float n = 0.5f;
             matrixStack.scale(0.5f, 0.5f, 0.5f);
         }
@@ -44,27 +44,27 @@ extends FeatureRenderer<T, WitchEntityModel<T>> {
         Item item = itemStack.getItem();
         if (Block.getBlockFromItem(item).getDefaultState().getRenderType() == BlockRenderType.ENTITYBLOCK_ANIMATED) {
             matrixStack.translate(0.0, 0.0625, -0.25);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(30.0f, true));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-5.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(30.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-5.0f));
             float o = 0.375f;
             matrixStack.scale(0.375f, -0.375f, 0.375f);
         } else if (item == Items.BOW) {
             matrixStack.translate(0.0, 0.125, -0.125);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-45.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-45.0f));
             float o = 0.625f;
             matrixStack.scale(0.625f, -0.625f, 0.625f);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-100.0f, true));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-20.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-100.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-20.0f));
         } else {
             matrixStack.translate(0.1875, 0.1875, 0.0);
             float o = 0.875f;
             matrixStack.scale(0.875f, 0.875f, 0.875f);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-20.0f, true));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-60.0f, true));
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-30.0f, true));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-20.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-60.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-30.0f));
         }
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-15.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(40.0f, true));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-15.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(40.0f));
         MinecraftClient.getInstance().getFirstPersonRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, false, matrixStack, layeredVertexConsumerStorage);
         matrixStack.pop();
     }

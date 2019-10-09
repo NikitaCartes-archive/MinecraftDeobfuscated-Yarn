@@ -22,7 +22,7 @@ extends Feature<RandomFeatureConfig> {
 
     public boolean method_13798(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, RandomFeatureConfig randomFeatureConfig) {
         for (RandomFeatureEntry<?> randomFeatureEntry : randomFeatureConfig.features) {
-            if (!(random.nextFloat() < randomFeatureEntry.chance.floatValue())) continue;
+            if (!(random.nextFloat() < randomFeatureEntry.chance)) continue;
             return randomFeatureEntry.generate(iWorld, chunkGenerator, random, blockPos);
         }
         return randomFeatureConfig.defaultFeature.generate(iWorld, chunkGenerator, random, blockPos);

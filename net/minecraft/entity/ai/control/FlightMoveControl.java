@@ -24,9 +24,9 @@ extends MoveControl {
         if (this.state == MoveControl.State.MOVE_TO) {
             this.state = MoveControl.State.WAIT;
             this.entity.setNoGravity(true);
-            double d = this.targetX - this.entity.x;
-            double e = this.targetY - this.entity.y;
-            double f = this.targetZ - this.entity.z;
+            double d = this.targetX - this.entity.getX();
+            double e = this.targetY - this.entity.getY();
+            double f = this.targetZ - this.entity.getZ();
             double g = d * d + e * e + f * f;
             if (g < 2.500000277905201E-7) {
                 this.entity.setUpwardSpeed(0.0f);

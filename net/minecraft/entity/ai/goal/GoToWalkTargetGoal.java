@@ -7,7 +7,6 @@ import java.util.EnumSet;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class GoToWalkTargetGoal
@@ -29,8 +28,7 @@ extends Goal {
         if (this.mob.isInWalkTargetRange()) {
             return false;
         }
-        BlockPos blockPos = this.mob.getPositionTarget();
-        Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+        Vec3d vec3d = TargetFinder.findTargetTowards(this.mob, 16, 7, new Vec3d(this.mob.getPositionTarget()));
         if (vec3d == null) {
             return false;
         }

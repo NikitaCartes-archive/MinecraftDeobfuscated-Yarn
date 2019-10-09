@@ -15,7 +15,7 @@ implements FeatureConfig {
     }
 
     public static <T> DefaultFeatureConfig deserialize(Dynamic<T> dynamic) {
-        return FeatureConfig.DEFAULT;
+        return DEFAULT;
     }
 }
 

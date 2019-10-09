@@ -84,7 +84,7 @@ implements Projectile {
     }
 
     protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, LivingEntity livingEntity, World world) {
-        this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - (double)0.1f, livingEntity.z, world);
+        this(entityType, livingEntity.getX(), livingEntity.method_23320() - (double)0.1f, livingEntity.getZ(), world);
         this.setOwner(livingEntity);
         if (livingEntity instanceof PlayerEntity) {
             this.pickupType = PickupPermission.ALLOWED;
@@ -149,13 +149,14 @@ implements Projectile {
             this.yaw = (float)(MathHelper.atan2(d, f) * 57.2957763671875);
             this.prevPitch = this.pitch;
             this.prevYaw = this.yaw;
-            this.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+            this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
             this.life = 0;
         }
     }
 
     @Override
     public void tick() {
+        Vec3d vec3d2;
         VoxelShape voxelShape;
         BlockPos blockPos;
         BlockState blockState;
@@ -169,9 +170,10 @@ implements Projectile {
             this.prevYaw = this.yaw;
             this.prevPitch = this.pitch;
         }
-        if (!((blockState = this.world.getBlockState(blockPos = new BlockPos(this.x, this.y, this.z))).isAir() || bl || (voxelShape = blockState.getCollisionShape(this.world, blockPos)).isEmpty())) {
+        if (!((blockState = this.world.getBlockState(blockPos = new BlockPos(this))).isAir() || bl || (voxelShape = blockState.getCollisionShape(this.world, blockPos)).isEmpty())) {
+            vec3d2 = this.getPos();
             for (Box box : voxelShape.getBoundingBoxes()) {
-                if (!box.offset(blockPos).contains(new Vec3d(this.x, this.y, this.z))) continue;
+                if (!box.offset(blockPos).contains(vec3d2)) continue;
                 this.inGround = true;
                 break;
             }
@@ -196,14 +198,13 @@ implements Projectile {
         }
         this.inGroundTime = 0;
         ++this.flyingTick;
-        Vec3d vec3d2 = new Vec3d(this.x, this.y, this.z);
-        Vec3d vec3d3 = vec3d2.add(vec3d);
-        HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
+        Vec3d vec3d3 = this.getPos();
+        HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d3, vec3d2 = vec3d3.add(vec3d), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
         if (hitResult.getType() != HitResult.Type.MISS) {
-            vec3d3 = hitResult.getPos();
+            vec3d2 = hitResult.getPos();
         }
         while (!this.removed) {
-            EntityHitResult entityHitResult = this.getEntityCollision(vec3d2, vec3d3);
+            EntityHitResult entityHitResult = this.getEntityCollision(vec3d3, vec3d2);
             if (entityHitResult != null) {
                 hitResult = entityHitResult;
             }
@@ -228,15 +229,15 @@ implements Projectile {
         double g = vec3d.z;
         if (this.isCritical()) {
             for (int i = 0; i < 4; ++i) {
-                this.world.addParticle(ParticleTypes.CRIT, this.x + d * (double)i / 4.0, this.y + e * (double)i / 4.0, this.z + g * (double)i / 4.0, -d, -e + 0.2, -g);
+                this.world.addParticle(ParticleTypes.CRIT, this.getX() + d * (double)i / 4.0, this.getY() + e * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -d, -e + 0.2, -g);
             }
         }
-        this.x += d;
-        this.y += e;
-        this.z += g;
-        float h = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
+        double h = this.getX() + d;
+        double j = this.getY() + e;
+        double k = this.getZ() + g;
+        float l = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
         this.yaw = bl ? (float)(MathHelper.atan2(-d, -g) * 57.2957763671875) : (float)(MathHelper.atan2(d, g) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(e, h) * 57.2957763671875);
+        this.pitch = (float)(MathHelper.atan2(e, l) * 57.2957763671875);
         while (this.pitch - this.prevPitch < -180.0f) {
             this.prevPitch -= 360.0f;
         }
@@ -251,21 +252,21 @@ implements Projectile {
         }
         this.pitch = MathHelper.lerp(0.2f, this.prevPitch, this.pitch);
         this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
-        float j = 0.99f;
-        float k = 0.05f;
+        float m = 0.99f;
+        float n = 0.05f;
         if (this.isInsideWater()) {
-            for (int l = 0; l < 4; ++l) {
-                float m = 0.25f;
-                this.world.addParticle(ParticleTypes.BUBBLE, this.x - d * 0.25, this.y - e * 0.25, this.z - g * 0.25, d, e, g);
+            for (int o = 0; o < 4; ++o) {
+                float p = 0.25f;
+                this.world.addParticle(ParticleTypes.BUBBLE, h - d * 0.25, j - e * 0.25, k - g * 0.25, d, e, g);
             }
-            j = this.getDragInWater();
+            m = this.getDragInWater();
         }
-        this.setVelocity(vec3d.multiply(j));
+        this.setVelocity(vec3d.multiply(m));
         if (!this.hasNoGravity() && !bl) {
             Vec3d vec3d4 = this.getVelocity();
             this.setVelocity(vec3d4.x, vec3d4.y - (double)0.05f, vec3d4.z);
         }
-        this.setPosition(this.x, this.y, this.z);
+        this.setPosition(h, j, k);
         this.checkBlockCollision();
     }
 
@@ -284,12 +285,10 @@ implements Projectile {
             BlockState blockState;
             BlockHitResult blockHitResult = (BlockHitResult)hitResult;
             this.inBlockState = blockState = this.world.getBlockState(blockHitResult.getBlockPos());
-            Vec3d vec3d = blockHitResult.getPos().subtract(this.x, this.y, this.z);
+            Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
             this.setVelocity(vec3d);
             Vec3d vec3d2 = vec3d.normalize().multiply(0.05f);
-            this.x -= vec3d2.x;
-            this.y -= vec3d2.y;
-            this.z -= vec3d2.z;
+            this.setPos(this.getX() - vec3d2.x, this.getY() - vec3d2.y, this.getZ() - vec3d2.z);
             this.playSound(this.getSound(), 1.0f, 1.2f / (this.random.nextFloat() * 0.2f + 0.9f));
             this.inGround = true;
             this.shake = 7;

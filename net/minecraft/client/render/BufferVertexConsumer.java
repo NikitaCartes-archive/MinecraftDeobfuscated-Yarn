@@ -35,10 +35,11 @@ extends VertexConsumer {
 
     @Override
     default public VertexConsumer color(int i, int j, int k, int l) {
-        if (this.getCurrentElement().getType() != VertexFormatElement.Type.COLOR) {
+        VertexFormatElement vertexFormatElement = this.getCurrentElement();
+        if (vertexFormatElement.getType() != VertexFormatElement.Type.COLOR) {
             return this;
         }
-        if (this.getCurrentElement().getFormat() != VertexFormatElement.Format.UBYTE) {
+        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.UBYTE) {
             throw new IllegalStateException();
         }
         this.putByte(0, (byte)i);
@@ -51,10 +52,11 @@ extends VertexConsumer {
 
     @Override
     default public VertexConsumer texture(float f, float g) {
-        if (this.getCurrentElement().getType() != VertexFormatElement.Type.UV || this.getCurrentElement().getIndex() != 0) {
+        VertexFormatElement vertexFormatElement = this.getCurrentElement();
+        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != 0) {
             return this;
         }
-        if (this.getCurrentElement().getFormat() != VertexFormatElement.Format.FLOAT) {
+        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.FLOAT) {
             throw new IllegalStateException();
         }
         this.putFloat(0, f);
@@ -74,10 +76,11 @@ extends VertexConsumer {
     }
 
     default public VertexConsumer texture(short s, short t, int i) {
-        if (this.getCurrentElement().getType() != VertexFormatElement.Type.UV || this.getCurrentElement().getIndex() != i) {
+        VertexFormatElement vertexFormatElement = this.getCurrentElement();
+        if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != i) {
             return this;
         }
-        if (this.getCurrentElement().getFormat() != VertexFormatElement.Format.SHORT) {
+        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.SHORT) {
             throw new IllegalStateException();
         }
         this.putShort(0, s);
@@ -88,10 +91,11 @@ extends VertexConsumer {
 
     @Override
     default public VertexConsumer normal(float f, float g, float h) {
-        if (this.getCurrentElement().getType() != VertexFormatElement.Type.NORMAL) {
+        VertexFormatElement vertexFormatElement = this.getCurrentElement();
+        if (vertexFormatElement.getType() != VertexFormatElement.Type.NORMAL) {
             return this;
         }
-        if (this.getCurrentElement().getFormat() != VertexFormatElement.Format.BYTE) {
+        if (vertexFormatElement.getFormat() != VertexFormatElement.Format.BYTE) {
             throw new IllegalStateException();
         }
         this.putByte(0, (byte)((int)(f * 127.0f) & 0xFF));

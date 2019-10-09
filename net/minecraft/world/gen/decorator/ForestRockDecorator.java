@@ -25,9 +25,10 @@ extends Decorator<CountDecoratorConfig> {
     public Stream<BlockPos> method_15925(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
         int i2 = random.nextInt(countDecoratorConfig.count);
         return IntStream.range(0, i2).mapToObj(i -> {
-            int j = random.nextInt(16);
-            int k = random.nextInt(16);
-            return iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k));
+            int j = random.nextInt(16) + blockPos.getX();
+            int k = random.nextInt(16) + blockPos.getZ();
+            int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k);
+            return new BlockPos(j, l, k);
         });
     }
 }

@@ -39,15 +39,15 @@ extends LandPathNodeMaker {
         PathNodeType pathNodeType;
         int i;
         if (this.canSwim() && this.entity.isInsideWater()) {
-            i = MathHelper.floor(this.entity.getBoundingBox().minY);
-            BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
+            i = MathHelper.floor(this.entity.getY());
+            BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
             Block block = this.field_20622.getBlockState(mutable).getBlock();
             while (block == Blocks.WATER) {
-                mutable.set(this.entity.x, (double)(++i), this.entity.z);
+                mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ());
                 block = this.field_20622.getBlockState(mutable).getBlock();
             }
         } else {
-            i = MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
+            i = MathHelper.floor(this.entity.getY() + 0.5);
         }
         if (this.entity.getPathfindingPenalty(pathNodeType = this.method_9(this.entity, (blockPos = new BlockPos(this.entity)).getX(), i, blockPos.getZ())) < 0.0f) {
             HashSet<BlockPos> set = Sets.newHashSet();
@@ -232,13 +232,13 @@ extends LandPathNodeMaker {
 
     @Override
     public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
-        PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
+        PathNodeType pathNodeType = BirdPathNodeMaker.getBasicPathNodeType(blockView, i, j, k);
         if (pathNodeType == PathNodeType.OPEN && j >= 1) {
             Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
-            PathNodeType pathNodeType2 = this.getBasicPathNodeType(blockView, i, j - 1, k);
+            PathNodeType pathNodeType2 = BirdPathNodeMaker.getBasicPathNodeType(blockView, i, j - 1, k);
             pathNodeType = pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block == Blocks.CAMPFIRE ? PathNodeType.DAMAGE_FIRE : (pathNodeType2 == PathNodeType.DAMAGE_CACTUS ? PathNodeType.DAMAGE_CACTUS : (pathNodeType2 == PathNodeType.DAMAGE_OTHER ? PathNodeType.DAMAGE_OTHER : (pathNodeType2 == PathNodeType.WALKABLE || pathNodeType2 == PathNodeType.OPEN || pathNodeType2 == PathNodeType.WATER ? PathNodeType.OPEN : PathNodeType.WALKABLE)));
         }
-        pathNodeType = this.method_59(blockView, i, j, k, pathNodeType);
+        pathNodeType = BirdPathNodeMaker.method_59(blockView, i, j, k, pathNodeType);
         return pathNodeType;
     }
 

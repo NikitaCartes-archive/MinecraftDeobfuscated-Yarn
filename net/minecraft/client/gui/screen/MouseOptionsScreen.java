@@ -7,9 +7,11 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
@@ -17,14 +19,12 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class MouseOptionsScreen
-extends Screen {
-    private final Screen parent;
+extends class_4667 {
     private ButtonListWidget buttonList;
     private static final Option[] OPTIONS = new Option[]{Option.SENSITIVITY, Option.INVERT_MOUSE, Option.MOUSE_WHEEL_SENSITIVITY, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN};
 
-    public MouseOptionsScreen(Screen screen) {
-        super(new TranslatableText("options.mouse_settings.title", new Object[0]));
-        this.parent = screen;
+    public MouseOptionsScreen(Screen screen, GameOptions gameOptions) {
+        super(screen, gameOptions, new TranslatableText("options.mouse_settings.title", new Object[0]));
     }
 
     @Override
@@ -37,14 +37,9 @@ extends Screen {
         }
         this.children.add(this.buttonList);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
-            this.minecraft.options.write();
-            this.minecraft.openScreen(this.parent);
+            this.field_21336.write();
+            this.minecraft.openScreen(this.field_21335);
         }));
-    }
-
-    @Override
-    public void removed() {
-        this.minecraft.options.write();
     }
 
     @Override
