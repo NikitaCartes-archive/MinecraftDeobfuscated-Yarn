@@ -7,7 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
@@ -39,9 +38,9 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		float j = (((float)(l >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		float k = (((float)(l >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		matrixStack.translate((double)i, (double)j, (double)k);
-		double m = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderX, abstractMinecartEntity.x);
-		double n = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderY, abstractMinecartEntity.y);
-		double o = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderZ, abstractMinecartEntity.z);
+		double m = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderX, abstractMinecartEntity.getX());
+		double n = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderY, abstractMinecartEntity.getY());
+		double o = MathHelper.lerp((double)h, abstractMinecartEntity.prevRenderZ, abstractMinecartEntity.getZ());
 		double p = 0.3F;
 		Vec3d vec3d = abstractMinecartEntity.method_7508(m, n, o);
 		float q = MathHelper.lerp(h, abstractMinecartEntity.prevPitch, abstractMinecartEntity.pitch);
@@ -66,8 +65,8 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		matrixStack.translate(0.0, 0.375, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-q, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-q));
 		float r = (float)abstractMinecartEntity.getDamageWobbleTicks() - h;
 		float s = abstractMinecartEntity.getDamageWobbleStrength() - h;
 		if (s < 0.0F) {
@@ -75,9 +74,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		if (r > 0.0F) {
-			matrixStack.multiply(
-				Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(r) * r * s / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide(), true)
-			);
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(r) * r * s / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide()));
 		}
 
 		int t = abstractMinecartEntity.getBlockOffset();
@@ -94,10 +91,8 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(this.method_4065(abstractMinecartEntity)));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
-		this.model.method_22957(matrixStack, vertexConsumer, u);
-		vertexConsumer.clearDefaultOverlay();
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(this.method_4065(abstractMinecartEntity)));
+		this.model.renderItem(matrixStack, vertexConsumer, u, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 	}
 
@@ -108,6 +103,6 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	protected void renderBlock(
 		T abstractMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i
 	) {
-		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, 0, 10);
+		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.field_21444);
 	}
 }

@@ -25,22 +25,23 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
 			float h = endGatewayBlockEntity.isRecentlyGenerated()
 				? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(g)
 				: endGatewayBlockEntity.getCooldownBeamHeight(g);
-			double j = endGatewayBlockEntity.isRecentlyGenerated() ? 256.0 - e : 50.0;
+			double k = endGatewayBlockEntity.isRecentlyGenerated() ? 256.0 - e : 50.0;
 			h = MathHelper.sin(h * (float) Math.PI);
-			int k = MathHelper.floor((double)h * j);
+			int l = MathHelper.floor((double)h * k);
 			float[] fs = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
-			long l = endGatewayBlockEntity.getWorld().getTime();
-			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, layeredVertexConsumerStorage, BEAM_TEXTURE, g, h, l, 0, k, fs, 0.15F, 0.175F);
-			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, layeredVertexConsumerStorage, BEAM_TEXTURE, g, h, l, 0, -k, fs, 0.15F, 0.175F);
+			long m = endGatewayBlockEntity.getWorld().getTime();
+			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, layeredVertexConsumerStorage, BEAM_TEXTURE, g, h, m, 0, l, fs, 0.15F, 0.175F);
+			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, layeredVertexConsumerStorage, BEAM_TEXTURE, g, h, m, 0, -l, fs, 0.15F, 0.175F);
 		}
 
-		super.method_3591(endGatewayBlockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i);
+		super.method_3591(endGatewayBlockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i, j);
 	}
 
 	@Override

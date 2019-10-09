@@ -115,7 +115,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public Vec3d getPos() {
-			return new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z);
+			return CommandBlockMinecartEntity.this.getPos();
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -127,7 +127,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		public ServerCommandSource getSource() {
 			return new ServerCommandSource(
 				this,
-				new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z),
+				CommandBlockMinecartEntity.this.getPos(),
 				CommandBlockMinecartEntity.this.getRotationClient(),
 				this.getWorld(),
 				2,

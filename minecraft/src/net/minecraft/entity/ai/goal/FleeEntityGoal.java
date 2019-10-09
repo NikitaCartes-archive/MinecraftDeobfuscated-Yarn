@@ -55,15 +55,15 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 				this.classToFleeFrom,
 				this.withinRangePredicate,
 				this.mob,
-				this.mob.x,
-				this.mob.y,
-				this.mob.z,
+				this.mob.getX(),
+				this.mob.getY(),
+				this.mob.getZ(),
 				this.mob.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance)
 			);
 		if (this.targetEntity == null) {
 			return false;
 		} else {
-			Vec3d vec3d = TargetFinder.findTargetAwayFrom(this.mob, 16, 7, new Vec3d(this.targetEntity.x, this.targetEntity.y, this.targetEntity.z));
+			Vec3d vec3d = TargetFinder.findTargetAwayFrom(this.mob, 16, 7, this.targetEntity.getPos());
 			if (vec3d == null) {
 				return false;
 			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.mob)) {

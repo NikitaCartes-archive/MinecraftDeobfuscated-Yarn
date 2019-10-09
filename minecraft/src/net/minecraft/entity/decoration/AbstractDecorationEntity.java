@@ -65,9 +65,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			Direction direction = this.facing.rotateYCounterclockwise();
 			d += h * (double)direction.getOffsetX();
 			f += h * (double)direction.getOffsetZ();
-			this.x = d;
-			this.y = e;
-			this.z = f;
+			this.setPos(d, e, f);
 			double j = (double)this.getWidthPixels();
 			double k = (double)this.getHeightPixels();
 			double l = (double)this.getWidthPixels();
@@ -198,9 +196,9 @@ public abstract class AbstractDecorationEntity extends Entity {
 	public ItemEntity dropStack(ItemStack itemStack, float f) {
 		ItemEntity itemEntity = new ItemEntity(
 			this.world,
-			this.x + (double)((float)this.facing.getOffsetX() * 0.15F),
-			this.y + (double)f,
-			this.z + (double)((float)this.facing.getOffsetZ() * 0.15F),
+			this.getX() + (double)((float)this.facing.getOffsetX() * 0.15F),
+			this.getY() + (double)f,
+			this.getZ() + (double)((float)this.facing.getOffsetZ() * 0.15F),
 			itemStack
 		);
 		itemEntity.setToDefaultPickupDelay();

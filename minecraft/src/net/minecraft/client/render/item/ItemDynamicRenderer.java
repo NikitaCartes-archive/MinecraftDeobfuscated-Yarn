@@ -19,9 +19,7 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
@@ -57,16 +55,16 @@ public class ItemDynamicRenderer {
 	private final ShieldEntityModel modelShield = new ShieldEntityModel();
 	private final TridentEntityModel modelTrident = new TridentEntityModel();
 
-	public void render(ItemStack itemStack, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+	public void render(ItemStack itemStack, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
 		Item item = itemStack.getItem();
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
 			if (block instanceof AbstractBannerBlock) {
 				this.renderBanner.deserialize(itemStack, ((AbstractBannerBlock)block).getColor());
-				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBanner, matrixStack, layeredVertexConsumerStorage, i);
+				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBanner, matrixStack, layeredVertexConsumerStorage, i, j);
 			} else if (block instanceof BedBlock) {
 				this.renderBed.setColor(((BedBlock)block).getColor());
-				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBed, matrixStack, layeredVertexConsumerStorage, i);
+				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderBed, matrixStack, layeredVertexConsumerStorage, i, j);
 			} else if (block instanceof AbstractSkullBlock) {
 				GameProfile gameProfile = null;
 				if (itemStack.hasTag()) {
@@ -74,8 +72,8 @@ public class ItemDynamicRenderer {
 					if (compoundTag.contains("SkullOwner", 10)) {
 						gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
 					} else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
-						GameProfile var12 = new GameProfile(null, compoundTag.getString("SkullOwner"));
-						gameProfile = SkullBlockEntity.loadProperties(var12);
+						GameProfile var13 = new GameProfile(null, compoundTag.getString("SkullOwner"));
+						gameProfile = SkullBlockEntity.loadProperties(var13);
 						compoundTag.remove("SkullOwner");
 						compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
 					}
@@ -83,19 +81,19 @@ public class ItemDynamicRenderer {
 
 				SkullBlockEntityRenderer.render(null, 180.0F, ((AbstractSkullBlock)block).getSkullType(), gameProfile, 0.0F, matrixStack, layeredVertexConsumerStorage, i);
 			} else if (block == Blocks.CONDUIT) {
-				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderConduit, matrixStack, layeredVertexConsumerStorage, i);
+				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderConduit, matrixStack, layeredVertexConsumerStorage, i, j);
 			} else if (block == Blocks.CHEST) {
-				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestNormal, matrixStack, layeredVertexConsumerStorage, i);
+				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestNormal, matrixStack, layeredVertexConsumerStorage, i, j);
 			} else if (block == Blocks.ENDER_CHEST) {
-				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestEnder, matrixStack, layeredVertexConsumerStorage, i);
+				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestEnder, matrixStack, layeredVertexConsumerStorage, i, j);
 			} else if (block == Blocks.TRAPPED_CHEST) {
-				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestTrapped, matrixStack, layeredVertexConsumerStorage, i);
+				BlockEntityRenderDispatcher.INSTANCE.method_23077(this.renderChestTrapped, matrixStack, layeredVertexConsumerStorage, i, j);
 			} else if (block instanceof ShulkerBoxBlock) {
 				DyeColor dyeColor = ShulkerBoxBlock.getColor(item);
 				if (dyeColor == null) {
-					BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX, matrixStack, layeredVertexConsumerStorage, i);
+					BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX, matrixStack, layeredVertexConsumerStorage, i, j);
 				} else {
-					BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX_DYED[dyeColor.getId()], matrixStack, layeredVertexConsumerStorage, i);
+					BlockEntityRenderDispatcher.INSTANCE.method_23077(RENDER_SHULKER_BOX_DYED[dyeColor.getId()], matrixStack, layeredVertexConsumerStorage, i, j);
 				}
 			}
 		} else {
@@ -110,21 +108,18 @@ public class ItemDynamicRenderer {
 
 				matrixStack.push();
 				matrixStack.scale(1.0F, -1.0F, -1.0F);
-				VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, identifier, false, itemStack.hasEnchantmentGlint(), false);
-				OverlayTexture.clearDefaultOverlay(vertexConsumer);
-				this.modelShield.renderItem(matrixStack, vertexConsumer, i);
-				vertexConsumer.clearDefaultOverlay();
+				VertexConsumer vertexConsumer = ItemRenderer.method_23181(
+					layeredVertexConsumerStorage, this.modelShield.method_23500(identifier), false, itemStack.hasEnchantmentGlint()
+				);
+				this.modelShield.renderItem(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F);
 				matrixStack.pop();
 			} else if (item == Items.TRIDENT) {
-				MinecraftClient.getInstance().getTextureManager().bindTexture(TridentEntityModel.TEXTURE);
 				matrixStack.push();
 				matrixStack.scale(1.0F, -1.0F, -1.0F);
 				VertexConsumer vertexConsumer2 = ItemRenderer.method_23181(
-					layeredVertexConsumerStorage, TridentEntityModel.TEXTURE, false, itemStack.hasEnchantmentGlint(), false
+					layeredVertexConsumerStorage, this.modelTrident.method_23500(TridentEntityModel.TEXTURE), false, itemStack.hasEnchantmentGlint()
 				);
-				OverlayTexture.clearDefaultOverlay(vertexConsumer2);
-				this.modelTrident.renderItem(matrixStack, vertexConsumer2, i);
-				vertexConsumer2.clearDefaultOverlay();
+				this.modelTrident.renderItem(matrixStack, vertexConsumer2, i, j, 1.0F, 1.0F, 1.0F);
 				matrixStack.pop();
 			}
 		}

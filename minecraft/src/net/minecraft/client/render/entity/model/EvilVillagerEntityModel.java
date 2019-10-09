@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
@@ -23,6 +24,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends class_4595
 	private float field_3424;
 
 	public EvilVillagerEntityModel(float f, float g, int i, int j) {
+		super(RenderLayer::getEntityCutoutNoCull);
 		this.field_3422 = new ModelPart(this).setTextureSize(i, j);
 		this.field_3422.setPivot(0.0F, 0.0F + g, 0.0F);
 		this.field_3422.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, f);

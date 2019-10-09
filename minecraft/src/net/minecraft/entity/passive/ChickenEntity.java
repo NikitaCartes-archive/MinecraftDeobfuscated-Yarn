@@ -94,7 +94,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
+		return false;
 	}
 
 	@Override
@@ -159,7 +160,7 @@ public class ChickenEntity extends AnimalEntity {
 		float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 		float h = 0.1F;
 		float i = 0.0F;
-		entity.setPosition(this.x + (double)(0.1F * f), this.y + (double)(this.getHeight() * 0.5F) + entity.getHeightOffset() + 0.0, this.z - (double)(0.1F * g));
+		entity.setPosition(this.getX() + (double)(0.1F * f), this.method_23323(0.5) + entity.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
 		if (entity instanceof LivingEntity) {
 			((LivingEntity)entity).bodyYaw = this.bodyYaw;
 		}

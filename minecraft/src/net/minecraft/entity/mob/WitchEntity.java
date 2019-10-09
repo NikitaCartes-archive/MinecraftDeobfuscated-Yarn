@@ -158,7 +158,10 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), potion));
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
-					this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+					this.world
+						.playSound(
+							null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
+						);
 					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 					entityAttributeInstance.addModifier(DRINKING_SPEED_PENALTY_MODIFIER);
@@ -186,9 +189,9 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				this.world
 					.addParticle(
 						ParticleTypes.WITCH,
-						this.x + this.random.nextGaussian() * 0.13F,
+						this.getX() + this.random.nextGaussian() * 0.13F,
 						this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * 0.13F,
-						this.z + this.random.nextGaussian() * 0.13F,
+						this.getZ() + this.random.nextGaussian() * 0.13F,
 						0.0,
 						0.0,
 						0.0
@@ -217,9 +220,9 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	public void attack(LivingEntity livingEntity, float f) {
 		if (!this.isDrinking()) {
 			Vec3d vec3d = livingEntity.getVelocity();
-			double d = livingEntity.x + vec3d.x - this.x;
-			double e = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 1.1F - this.y;
-			double g = livingEntity.z + vec3d.z - this.z;
+			double d = livingEntity.getX() + vec3d.x - this.getX();
+			double e = livingEntity.method_23320() - 1.1F - this.getY();
+			double g = livingEntity.getZ() + vec3d.z - this.getZ();
 			float h = MathHelper.sqrt(d * d + g * g);
 			Potion potion = Potions.HARMING;
 			if (livingEntity instanceof RaiderEntity) {
@@ -242,7 +245,10 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			thrownPotionEntity.setItemStack(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 			thrownPotionEntity.pitch -= -20.0F;
 			thrownPotionEntity.setVelocity(d, e + (double)(h * 0.2F), g, 0.75F, 8.0F);
-			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
+			this.world
+				.playSound(
+					null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
+				);
 			this.world.spawnEntity(thrownPotionEntity);
 		}
 	}

@@ -127,8 +127,8 @@ public abstract class TrackTargetGoal extends Goal {
 			if (pathNode == null) {
 				return false;
 			} else {
-				int i = pathNode.x - MathHelper.floor(livingEntity.x);
-				int j = pathNode.z - MathHelper.floor(livingEntity.z);
+				int i = pathNode.x - MathHelper.floor(livingEntity.getX());
+				int j = pathNode.z - MathHelper.floor(livingEntity.getZ());
 				return (double)(i * i + j * j) <= 2.25;
 			}
 		}

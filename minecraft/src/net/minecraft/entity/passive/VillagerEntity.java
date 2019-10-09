@@ -55,14 +55,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.GlobalPos;
@@ -546,7 +543,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		if (tradeOffer.shouldRewardPlayerExperience()) {
-			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
+			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5, this.getZ(), i));
 		}
 	}
 
@@ -662,21 +659,8 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	@Override
-	public Text getDisplayName() {
-		AbstractTeam abstractTeam = this.getScoreboardTeam();
-		Text text = this.getCustomName();
-		if (text != null) {
-			return Team.modifyText(abstractTeam, text).styled(style -> style.setHoverEvent(this.getHoverEvent()).setInsertion(this.getUuidAsString()));
-		} else {
-			VillagerProfession villagerProfession = this.getVillagerData().getProfession();
-			Text text2 = new TranslatableText(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(villagerProfession).getPath())
-				.styled(style -> style.setHoverEvent(this.getHoverEvent()).setInsertion(this.getUuidAsString()));
-			if (abstractTeam != null) {
-				text2.formatted(abstractTeam.getColor());
-			}
-
-			return text2;
-		}
+	protected Text method_23315() {
+		return new TranslatableText(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -730,7 +714,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	public void onStruckByLightning(LightningEntity lightningEntity) {
 		WitchEntity witchEntity = EntityType.WITCH.create(this.world);
-		witchEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+		witchEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		witchEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.CONVERSION, null, null);
 		witchEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {

@@ -1,13 +1,11 @@
 package net.minecraft.world.biome;
 
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.feature.DoublePlantFeatureConfig;
+import net.minecraft.world.gen.decorator.LakeDecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -29,8 +27,8 @@ public final class SunflowerPlainsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("plains")
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -38,9 +36,7 @@ public final class SunflowerPlainsBiome extends Biome {
 		DefaultBiomeFeatures.addPlainsTallGrass(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(
-				Feature.DOUBLE_PLANT, new DoublePlantFeatureConfig(Blocks.SUNFLOWER.getDefaultState()), Decorator.COUNT_HEIGHTMAP_32, new CountDecoratorConfig(10)
-			)
+			Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21101).method_23388(Decorator.COUNT_HEIGHTMAP_32.method_23475(new CountDecoratorConfig(10)))
 		);
 		DefaultBiomeFeatures.addMineables(this);
 		DefaultBiomeFeatures.addDefaultOres(this);
@@ -48,12 +44,16 @@ public final class SunflowerPlainsBiome extends Biome {
 		DefaultBiomeFeatures.addPlainsFeatures(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(Feature.REED, FeatureConfig.DEFAULT, Decorator.COUNT_HEIGHTMAP_DOUBLE, new CountDecoratorConfig(10))
+			Feature.RANDOM_PATCH
+				.method_23397(DefaultBiomeFeatures.field_21105)
+				.method_23388(Decorator.COUNT_HEIGHTMAP_DOUBLE.method_23475(new CountDecoratorConfig(10)))
 		);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(Feature.PUMPKIN, FeatureConfig.DEFAULT, Decorator.CHANCE_HEIGHTMAP_DOUBLE, new ChanceDecoratorConfig(32))
+			Feature.RANDOM_PATCH
+				.method_23397(DefaultBiomeFeatures.field_21092)
+				.method_23388(Decorator.CHANCE_HEIGHTMAP_DOUBLE.method_23475(new LakeDecoratorConfig(32)))
 		);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);

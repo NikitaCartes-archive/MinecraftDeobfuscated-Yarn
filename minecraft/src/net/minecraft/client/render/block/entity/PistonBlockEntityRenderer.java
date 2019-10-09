@@ -35,7 +35,8 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		World world = pistonBlockEntity.getWorld();
 		if (world != null) {
@@ -51,7 +52,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 				);
 				if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(g) <= 4.0F) {
 					blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(true));
-					this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false);
+					this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false, j);
 				} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
 					PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;
 					BlockState blockState2 = Blocks.PISTON_HEAD
@@ -59,15 +60,15 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 						.with(PistonHeadBlock.TYPE, pistonType)
 						.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
 					blockState2 = blockState2.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(g) >= 0.5F));
-					this.method_3575(blockPos, blockState2, matrixStack, layeredVertexConsumerStorage, world, false);
+					this.method_3575(blockPos, blockState2, matrixStack, layeredVertexConsumerStorage, world, false, j);
 					BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());
 					matrixStack.pop();
 					matrixStack.translate((double)(-(blockPos2.getX() & 15)), (double)(-(blockPos2.getY() & 15)), (double)(-(blockPos2.getZ() & 15)));
 					blockState = blockState.with(PistonBlock.EXTENDED, Boolean.valueOf(true));
-					this.method_3575(blockPos2, blockState, matrixStack, layeredVertexConsumerStorage, world, true);
+					this.method_3575(blockPos2, blockState, matrixStack, layeredVertexConsumerStorage, world, true, j);
 					matrixStack.push();
 				} else {
-					this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false);
+					this.method_3575(blockPos, blockState, matrixStack, layeredVertexConsumerStorage, world, false, j);
 				}
 
 				matrixStack.pop();
@@ -77,15 +78,14 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 	}
 
 	private void method_3575(
-		BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, World world, boolean bl
+		BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, World world, boolean bl, int i
 	) {
 		RenderLayer renderLayer = RenderLayer.method_22715(blockState);
 		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(renderLayer);
 		this.manager
 			.getModelRenderer()
 			.tesselate(
-				world, this.manager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, new Random(), blockState.getRenderingSeed(blockPos)
+				world, this.manager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, new Random(), blockState.getRenderingSeed(blockPos), i
 			);
-		MinecraftClient.getInstance().getBlockRenderManager().tesselateBlock(blockState, blockPos, world, matrixStack, vertexConsumer, bl, new Random());
 	}
 }

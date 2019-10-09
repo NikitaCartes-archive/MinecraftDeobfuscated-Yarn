@@ -197,9 +197,9 @@ public class RavagerEntity extends RaiderEntity {
 
 	private void spawnStunnedParticles() {
 		if (this.random.nextInt(6) == 0) {
-			double d = this.x - (double)this.getWidth() * Math.sin((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
-			double e = this.y + (double)this.getHeight() - 0.3;
-			double f = this.z + (double)this.getWidth() * Math.cos((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
+			double d = this.getX() - (double)this.getWidth() * Math.sin((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
+			double e = this.getY() + (double)this.getHeight() - 0.3;
+			double f = this.getZ() + (double)this.getWidth() * Math.cos((double)(this.bodyYaw * (float) (Math.PI / 180.0))) + (this.random.nextDouble() * 0.6 - 0.3);
 			this.world.addParticle(ParticleTypes.ENTITY_EFFECT, d, e, f, 0.4980392156862745, 0.5137254901960784, 0.5725490196078431);
 		}
 	}
@@ -252,8 +252,8 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	private void knockBack(Entity entity) {
-		double d = entity.x - this.x;
-		double e = entity.z - this.z;
+		double d = entity.getX() - this.getX();
+		double e = entity.getZ() - this.getZ();
 		double f = Math.max(d * d + e * e, 0.001);
 		entity.addVelocity(d / f * 4.0, 0.2, e / f * 4.0);
 	}

@@ -90,7 +90,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
 				? Explosion.DestructionType.DESTROY
 				: Explosion.DestructionType.NONE;
-			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, destructionType);
+			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, destructionType);
 			this.remove();
 		}
 	}

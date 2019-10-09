@@ -67,9 +67,9 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			if (this.wasHovered != this.isHovered()) {
 				if (this.isHovered()) {
 					if (this.focused) {
-						this.nextNarration = SystemUtil.getMeasuringTimeMs() + 200L;
+						this.queueNarration(200);
 					} else {
-						this.nextNarration = SystemUtil.getMeasuringTimeMs() + 750L;
+						this.queueNarration(750);
 					}
 				} else {
 					this.nextNarration = Long.MAX_VALUE;
@@ -96,7 +96,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	protected String getNarrationMessage() {
-		return this.message.isEmpty() ? "" : I18n.translate("gui.narrate.button", this.getMessage());
+		return this.getMessage().isEmpty() ? "" : I18n.translate("gui.narrate.button", this.getMessage());
 	}
 
 	public void renderButton(int i, int j, float f) {
@@ -118,7 +118,9 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			l = 16777120;
 		}
 
-		this.drawCenteredString(textRenderer, this.message, this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24);
+		this.drawCenteredString(
+			textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24
+		);
 	}
 
 	protected void renderBg(MinecraftClient minecraftClient, int i, int j) {
@@ -223,10 +225,14 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 
 	public void setMessage(String string) {
 		if (!Objects.equals(string, this.message)) {
-			this.nextNarration = SystemUtil.getMeasuringTimeMs() + 250L;
+			this.queueNarration(250);
 		}
 
 		this.message = string;
+	}
+
+	public void queueNarration(int i) {
+		this.nextNarration = SystemUtil.getMeasuringTimeMs() + (long)i;
 	}
 
 	public String getMessage() {

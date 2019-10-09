@@ -51,12 +51,9 @@ public final class ProjectileUtil {
 	private static HitResult getCollision(
 		Entity entity, boolean bl, boolean bl2, @Nullable Entity entity2, RayTraceContext.ShapeType shapeType, boolean bl3, Predicate<Entity> predicate, Box box
 	) {
-		double d = entity.x;
-		double e = entity.y;
-		double f = entity.z;
 		Vec3d vec3d = entity.getVelocity();
 		World world = entity.world;
-		Vec3d vec3d2 = new Vec3d(d, e, f);
+		Vec3d vec3d2 = entity.getPos();
 		if (bl3
 			&& !world.doesNotCollide(entity, entity.getBoundingBox(), (Set<Entity>)(!bl2 && entity2 != null ? getEntityAndRidingEntity(entity2) : ImmutableSet.of()))) {
 			return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(entity), false);

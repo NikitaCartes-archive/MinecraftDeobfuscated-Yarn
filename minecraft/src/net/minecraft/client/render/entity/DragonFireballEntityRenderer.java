@@ -35,20 +35,41 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 		float i = 1.0F;
 		float j = 0.5F;
 		float k = 0.25F;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - this.renderManager.cameraYaw, true));
-		matrixStack.multiply(
-			Vector3f.POSITIVE_X.getRotationQuaternion((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, true)
-		);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - this.renderManager.cameraYaw));
+		float l = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
 		Matrix4f matrix4f = matrixStack.peek();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
-		int l = dragonFireballEntity.getLightmapCoordinates();
-		vertexConsumer.vertex(matrix4f, -0.5F, -0.25F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(l).normal(0.0F, 1.0F, 0.0F).next();
-		vertexConsumer.vertex(matrix4f, 0.5F, -0.25F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(l).normal(0.0F, 1.0F, 0.0F).next();
-		vertexConsumer.vertex(matrix4f, 0.5F, 0.75F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(l).normal(0.0F, 1.0F, 0.0F).next();
-		vertexConsumer.vertex(matrix4f, -0.5F, 0.75F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 0.0F).light(l).normal(0.0F, 1.0F, 0.0F).next();
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
+		int m = dragonFireballEntity.getLightmapCoordinates();
+		vertexConsumer.vertex(matrix4f, -0.5F, -0.25F, 0.0F)
+			.color(255, 255, 255, 255)
+			.texture(0.0F, 1.0F)
+			.defaultOverlay(OverlayTexture.field_21444)
+			.light(m)
+			.normal(0.0F, 1.0F, 0.0F)
+			.next();
+		vertexConsumer.vertex(matrix4f, 0.5F, -0.25F, 0.0F)
+			.color(255, 255, 255, 255)
+			.texture(1.0F, 1.0F)
+			.defaultOverlay(OverlayTexture.field_21444)
+			.light(m)
+			.normal(0.0F, 1.0F, 0.0F)
+			.next();
+		vertexConsumer.vertex(matrix4f, 0.5F, 0.75F, 0.0F)
+			.color(255, 255, 255, 255)
+			.texture(1.0F, 0.0F)
+			.defaultOverlay(OverlayTexture.field_21444)
+			.light(m)
+			.normal(0.0F, 1.0F, 0.0F)
+			.next();
+		vertexConsumer.vertex(matrix4f, -0.5F, 0.75F, 0.0F)
+			.color(255, 255, 255, 255)
+			.texture(0.0F, 0.0F)
+			.defaultOverlay(OverlayTexture.field_21444)
+			.light(m)
+			.normal(0.0F, 1.0F, 0.0F)
+			.next();
 		matrixStack.pop();
-		vertexConsumer.clearDefaultOverlay();
 		super.render(dragonFireballEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}
 

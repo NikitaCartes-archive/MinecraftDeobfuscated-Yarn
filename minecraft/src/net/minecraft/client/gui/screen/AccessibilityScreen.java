@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
@@ -11,18 +12,21 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class AccessibilityScreen extends Screen {
+public class AccessibilityScreen extends class_4667 {
 	private static final Option[] OPTIONS = new Option[]{
-		Option.NARRATOR, Option.SUBTITLES, Option.TEXT_BACKGROUND_OPACITY, Option.TEXT_BACKGROUND, Option.CHAT_OPACITY, Option.AUTO_JUMP
+		Option.NARRATOR,
+		Option.SUBTITLES,
+		Option.TEXT_BACKGROUND_OPACITY,
+		Option.TEXT_BACKGROUND,
+		Option.CHAT_OPACITY,
+		Option.AUTO_JUMP,
+		Option.field_21330,
+		Option.field_21331
 	};
-	private final Screen parent;
-	private final GameOptions gameOptions;
 	private AbstractButtonWidget narratorButton;
 
 	public AccessibilityScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableText("options.accessibility.title"));
-		this.parent = screen;
-		this.gameOptions = gameOptions;
+		super(screen, gameOptions, new TranslatableText("options.accessibility.title"));
 	}
 
 	@Override
@@ -42,13 +46,10 @@ public class AccessibilityScreen extends Screen {
 		}
 
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(
+				this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_21335)
+			)
 		);
-	}
-
-	@Override
-	public void removed() {
-		this.minecraft.options.write();
 	}
 
 	@Override
@@ -59,6 +60,6 @@ public class AccessibilityScreen extends Screen {
 	}
 
 	public void setNarratorMessage() {
-		this.narratorButton.setMessage(Option.NARRATOR.getMessage(this.gameOptions));
+		this.narratorButton.setMessage(Option.NARRATOR.getMessage(this.field_21336));
 	}
 }

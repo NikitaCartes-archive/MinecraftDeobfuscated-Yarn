@@ -180,7 +180,7 @@ public class PigEntity extends AnimalEntity {
 	public void onStruckByLightning(LightningEntity lightningEntity) {
 		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
 		zombiePigmanEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-		zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+		zombiePigmanEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
 			zombiePigmanEntity.setCustomName(this.getCustomName());
@@ -222,8 +222,8 @@ public class PigEntity extends AnimalEntity {
 				}
 
 				this.lastLimbDistance = this.limbDistance;
-				double d = this.x - this.prevX;
-				double e = this.z - this.prevZ;
+				double d = this.getX() - this.prevX;
+				double e = this.getZ() - this.prevZ;
 				float g = MathHelper.sqrt(d * d + e * e) * 4.0F;
 				if (g > 1.0F) {
 					g = 1.0F;

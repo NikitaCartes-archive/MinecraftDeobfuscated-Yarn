@@ -44,9 +44,9 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 			(double)(this.getModel().head.pivotX / 16.0F), (double)(this.getModel().head.pivotY / 16.0F), (double)(this.getModel().head.pivotZ / 16.0F)
 		);
 		float n = foxEntity.getHeadRoll(h);
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(n, false));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k, true));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.method_23626(n));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
 		if (foxEntity.isBaby()) {
 			if (bl) {
 				matrixStack.translate(0.4F, 0.26F, 0.15F);
@@ -59,9 +59,9 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 			matrixStack.translate(0.06F, 0.27F, -0.5);
 		}
 
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 		if (bl) {
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
 		}
 
 		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);

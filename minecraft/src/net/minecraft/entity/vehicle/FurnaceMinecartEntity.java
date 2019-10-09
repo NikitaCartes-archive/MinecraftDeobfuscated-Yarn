@@ -62,7 +62,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 		this.setLit(this.fuel > 0);
 		if (this.isLit() && this.random.nextInt(4) == 0) {
-			this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.x, this.y + 0.8, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getX(), this.getY() + 0.8, this.getZ(), 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -125,8 +125,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 			this.fuel += 3600;
 		}
 
-		this.pushX = this.x - playerEntity.x;
-		this.pushZ = this.z - playerEntity.z;
+		this.pushX = this.getX() - playerEntity.getX();
+		this.pushZ = this.getZ() - playerEntity.getZ();
 		return true;
 	}
 

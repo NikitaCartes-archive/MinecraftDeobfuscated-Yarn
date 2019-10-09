@@ -8,6 +8,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 
 @Environment(EnvType.CLIENT)
 public class OverlayTexture implements AutoCloseable {
+	public static final int field_21444 = method_23625(0, 10);
 	private final NativeImageBackedTexture texture = new NativeImageBackedTexture(16, 16, false);
 
 	public OverlayTexture() {
@@ -52,11 +53,15 @@ public class OverlayTexture implements AutoCloseable {
 		return bl ? 3 : 10;
 	}
 
-	public void teardownOverlayColor() {
-		RenderSystem.teardownOverlayColor();
+	public static int method_23625(int i, int j) {
+		return i | j << 16;
 	}
 
-	public static void clearDefaultOverlay(VertexConsumer vertexConsumer) {
-		vertexConsumer.defaultOverlay(0, 10);
+	public static int method_23624(float f, boolean bl) {
+		return method_23625(getU(f), getV(bl));
+	}
+
+	public void teardownOverlayColor() {
+		RenderSystem.teardownOverlayColor();
 	}
 }

@@ -18,7 +18,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 	}
 
 	public abstract void render(
-		T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i
+		T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j
 	);
 
 	protected Sprite getSprite(Identifier identifier) {

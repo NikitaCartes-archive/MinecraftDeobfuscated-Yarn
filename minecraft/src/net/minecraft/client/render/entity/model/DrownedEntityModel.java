@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityModel<T> {
 	public DrownedEntityModel(float f, float g, int i, int j) {
-		super(f, g, i, j);
+		super(RenderLayer::getEntityCutoutNoCull, f, g, i, j);
 		this.rightArm = new ModelPart(this, 32, 48);
 		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
 		this.rightArm.setPivot(-5.0F, 2.0F + g, 0.0F);
@@ -23,7 +24,7 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 	}
 
 	public DrownedEntityModel(float f, boolean bl) {
-		super(f, 0.0F, 64, bl ? 32 : 64);
+		super(RenderLayer::getEntityCutoutNoCull, f, 0.0F, 64, bl ? 32 : 64);
 	}
 
 	public void method_17077(T zombieEntity, float f, float g, float h) {

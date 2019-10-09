@@ -13,6 +13,7 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -61,20 +62,23 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		if (bedBlockEntity.hasWorld()) {
 			BlockState blockState = bedBlockEntity.getCachedState();
-			this.method_3558(matrixStack, vertexConsumer, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), identifier, i, false);
+			this.method_3558(matrixStack, vertexConsumer, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), identifier, i, j, false);
 		} else {
-			this.method_3558(matrixStack, vertexConsumer, true, Direction.SOUTH, identifier, i, false);
-			this.method_3558(matrixStack, vertexConsumer, false, Direction.SOUTH, identifier, i, true);
+			this.method_3558(matrixStack, vertexConsumer, true, Direction.SOUTH, identifier, i, j, false);
+			this.method_3558(matrixStack, vertexConsumer, false, Direction.SOUTH, identifier, i, j, true);
 		}
 	}
 
-	private void method_3558(MatrixStack matrixStack, VertexConsumer vertexConsumer, boolean bl, Direction direction, Identifier identifier, int i, boolean bl2) {
+	private void method_3558(
+		MatrixStack matrixStack, VertexConsumer vertexConsumer, boolean bl, Direction direction, Identifier identifier, int i, int j, boolean bl2
+	) {
 		this.field_20813.visible = bl;
 		this.field_20814.visible = !bl;
 		this.field_20815[0].visible = !bl;
@@ -83,17 +87,17 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		this.field_20815[3].visible = bl;
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.5625, bl2 ? -1.0 : 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 		matrixStack.translate(0.5, 0.5, 0.5);
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F + direction.asRotation(), true));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F + direction.asRotation()));
 		matrixStack.translate(-0.5, -0.5, -0.5);
 		Sprite sprite = this.getSprite(identifier);
-		this.field_20813.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		this.field_20814.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		this.field_20815[0].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		this.field_20815[1].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		this.field_20815[2].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		this.field_20815[3].render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20813.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.field_20814.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.field_20815[0].render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.field_20815[1].render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.field_20815[2].render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.field_20815[3].render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		matrixStack.pop();
 	}
 }

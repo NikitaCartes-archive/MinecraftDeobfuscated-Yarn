@@ -41,7 +41,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public BlockPos(Entity entity) {
-		this(entity.x, entity.y, entity.z);
+		this(entity.getX(), entity.getY(), entity.getZ());
 	}
 
 	public BlockPos(Vec3d vec3d) {
@@ -232,6 +232,17 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		);
 	}
 
+	public static Stream<BlockPos> method_23627(BlockBox blockBox) {
+		return stream(
+			Math.min(blockBox.minX, blockBox.maxX),
+			Math.min(blockBox.minY, blockBox.maxY),
+			Math.min(blockBox.minZ, blockBox.maxZ),
+			Math.max(blockBox.minX, blockBox.maxX),
+			Math.max(blockBox.minY, blockBox.maxY),
+			Math.max(blockBox.minZ, blockBox.maxZ)
+		);
+	}
+
 	public static Stream<BlockPos> stream(int i, int j, int k, int l, int m, int n) {
 		return StreamSupport.stream(new AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
 			final CuboidBlockIterator connector = new CuboidBlockIterator(i, j, k, l, m, n);
@@ -283,6 +294,10 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 			this(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
 		}
 
+		public Mutable(Entity entity) {
+			this(entity.getX(), entity.getY(), entity.getZ());
+		}
+
 		@Override
 		public BlockPos add(double d, double e, double f) {
 			return super.add(d, e, f).toImmutable();
@@ -326,7 +341,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}
 
 		public BlockPos.Mutable set(Entity entity) {
-			return this.set(entity.x, entity.y, entity.z);
+			return this.set(entity.getX(), entity.getY(), entity.getZ());
 		}
 
 		public BlockPos.Mutable set(double d, double e, double f) {
@@ -392,7 +407,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}
 
 		public static BlockPos.PooledMutable getEntityPos(Entity entity) {
-			return get(entity.x, entity.y, entity.z);
+			return get(entity.getX(), entity.getY(), entity.getZ());
 		}
 
 		public static BlockPos.PooledMutable get(double d, double e, double f) {

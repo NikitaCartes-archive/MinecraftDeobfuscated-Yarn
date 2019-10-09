@@ -31,14 +31,18 @@ public class DragonHeadEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j) {
+	public void render(float f, float g, float h) {
 		this.jaw.pitch = (float)(Math.sin((double)(f * (float) Math.PI * 0.2F)) + 1.0) * 0.2F;
 		this.head.yaw = g * (float) (Math.PI / 180.0);
 		this.head.pitch = h * (float) (Math.PI / 180.0);
+	}
+
+	@Override
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
 		matrixStack.push();
 		matrixStack.translate(0.0, -0.374375F, 0.0);
 		matrixStack.scale(0.75F, 0.75F, 0.75F);
-		this.head.render(matrixStack, vertexConsumer, i, j, null);
+		this.head.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
 		matrixStack.pop();
 	}
 }

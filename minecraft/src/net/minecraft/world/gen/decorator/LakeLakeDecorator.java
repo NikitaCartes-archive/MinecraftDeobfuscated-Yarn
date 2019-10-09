@@ -18,11 +18,11 @@ public class LakeLakeDecorator extends Decorator<LakeDecoratorConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
 	) {
 		if (random.nextInt(lakeDecoratorConfig.chance / 10) == 0) {
-			int i = random.nextInt(16);
-			int j = random.nextInt(random.nextInt(chunkGenerator.getMaxY() - 8) + 8);
-			int k = random.nextInt(16);
-			if (j < iWorld.getSeaLevel() || random.nextInt(lakeDecoratorConfig.chance / 8) == 0) {
-				return Stream.of(blockPos.add(i, j, k));
+			int i = random.nextInt(16) + blockPos.getX();
+			int j = random.nextInt(16) + blockPos.getZ();
+			int k = random.nextInt(random.nextInt(chunkGenerator.getMaxY() - 8) + 8);
+			if (k < iWorld.getSeaLevel() || random.nextInt(lakeDecoratorConfig.chance / 8) == 0) {
+				return Stream.of(new BlockPos(i, k, j));
 			}
 		}
 

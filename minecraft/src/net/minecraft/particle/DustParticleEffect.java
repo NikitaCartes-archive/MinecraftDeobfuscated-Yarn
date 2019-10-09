@@ -31,13 +31,13 @@ public class DustParticleEffect implements ParticleEffect {
 	private final float red;
 	private final float green;
 	private final float blue;
-	private final float alpha;
+	private final float scale;
 
 	public DustParticleEffect(float f, float g, float h, float i) {
 		this.red = f;
 		this.green = g;
 		this.blue = h;
-		this.alpha = MathHelper.clamp(i, 0.01F, 4.0F);
+		this.scale = MathHelper.clamp(i, 0.01F, 4.0F);
 	}
 
 	@Override
@@ -45,12 +45,12 @@ public class DustParticleEffect implements ParticleEffect {
 		packetByteBuf.writeFloat(this.red);
 		packetByteBuf.writeFloat(this.green);
 		packetByteBuf.writeFloat(this.blue);
-		packetByteBuf.writeFloat(this.alpha);
+		packetByteBuf.writeFloat(this.scale);
 	}
 
 	@Override
 	public String asString() {
-		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), this.red, this.green, this.blue, this.alpha);
+		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), this.red, this.green, this.blue, this.scale);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class DustParticleEffect implements ParticleEffect {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getAlpha() {
-		return this.alpha;
+	public float getScale() {
+		return this.scale;
 	}
 }

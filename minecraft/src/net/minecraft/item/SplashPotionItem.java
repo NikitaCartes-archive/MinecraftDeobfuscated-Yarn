@@ -16,9 +16,9 @@ public class SplashPotionItem extends ThrowablePotionItem {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		world.playSound(
 			null,
-			playerEntity.x,
-			playerEntity.y,
-			playerEntity.z,
+			playerEntity.getX(),
+			playerEntity.getY(),
+			playerEntity.getZ(),
 			SoundEvents.ENTITY_SPLASH_POTION_THROW,
 			SoundCategory.PLAYERS,
 			0.5F,

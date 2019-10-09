@@ -16,6 +16,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 
 public class TheNetherDimension extends Dimension {
+	private static final Vec3d field_21216 = new Vec3d(0.2F, 0.03F, 0.03F);
+
 	public TheNetherDimension(World world, DimensionType dimensionType) {
 		super(world, dimensionType);
 		this.waterVaporizes = true;
@@ -25,7 +27,7 @@ public class TheNetherDimension extends Dimension {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d getFogColor(float f, float g) {
-		return new Vec3d(0.2F, 0.03F, 0.03F);
+		return field_21216;
 	}
 
 	@Override

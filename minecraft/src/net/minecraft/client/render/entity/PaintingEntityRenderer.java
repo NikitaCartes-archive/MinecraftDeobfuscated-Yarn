@@ -37,12 +37,11 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage
 	) {
 		matrixStack.push();
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
 		PaintingMotive paintingMotive = paintingEntity.motive;
 		float i = 0.0625F;
 		matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(this.method_4077(paintingEntity)));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(this.method_4077(paintingEntity)));
 		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
 		this.method_4074(
 			matrixStack.peek(),
@@ -53,7 +52,6 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 			paintingManager.getPaintingSprite(paintingMotive),
 			paintingManager.getBackSprite()
 		);
-		vertexConsumer.clearDefaultOverlay();
 		matrixStack.pop();
 		super.render(paintingEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}
@@ -89,24 +87,24 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 				float ab = f + (float)(y * 16);
 				float ac = g + (float)((z + 1) * 16);
 				float ad = g + (float)(z * 16);
-				int ae = MathHelper.floor(paintingEntity.x);
-				int af = MathHelper.floor(paintingEntity.y + (double)((ac + ad) / 2.0F / 16.0F));
-				int ag = MathHelper.floor(paintingEntity.z);
+				int ae = MathHelper.floor(paintingEntity.getX());
+				int af = MathHelper.floor(paintingEntity.getY() + (double)((ac + ad) / 2.0F / 16.0F));
+				int ag = MathHelper.floor(paintingEntity.getZ());
 				Direction direction = paintingEntity.getHorizontalFacing();
 				if (direction == Direction.NORTH) {
-					ae = MathHelper.floor(paintingEntity.x + (double)((aa + ab) / 2.0F / 16.0F));
+					ae = MathHelper.floor(paintingEntity.getX() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
 				if (direction == Direction.WEST) {
-					ag = MathHelper.floor(paintingEntity.z - (double)((aa + ab) / 2.0F / 16.0F));
+					ag = MathHelper.floor(paintingEntity.getZ() - (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
 				if (direction == Direction.SOUTH) {
-					ae = MathHelper.floor(paintingEntity.x - (double)((aa + ab) / 2.0F / 16.0F));
+					ae = MathHelper.floor(paintingEntity.getX() - (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
 				if (direction == Direction.EAST) {
-					ag = MathHelper.floor(paintingEntity.z + (double)((aa + ab) / 2.0F / 16.0F));
+					ag = MathHelper.floor(paintingEntity.getZ() + (double)((aa + ab) / 2.0F / 16.0F));
 				}
 
 				int ah = paintingEntity.world.getLightmapCoordinates(new BlockPos(ae, af, ag));
@@ -143,6 +141,12 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 	}
 
 	private void method_23188(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, int k, int l, int m, int n) {
-		vertexConsumer.vertex(matrix4f, f, g, j).color(255, 255, 255, 255).texture(h, i).light(n).normal((float)k, (float)l, (float)m).next();
+		vertexConsumer.vertex(matrix4f, f, g, j)
+			.color(255, 255, 255, 255)
+			.texture(h, i)
+			.defaultOverlay(OverlayTexture.field_21444)
+			.light(n)
+			.normal((float)k, (float)l, (float)m)
+			.next();
 	}
 }

@@ -29,7 +29,12 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	public StructureFeature(Function<Dynamic<?>, ? extends C> function) {
-		super(function, false);
+		super(function);
+	}
+
+	@Override
+	public ConfiguredFeature<C, ? extends StructureFeature<C>> method_23397(C featureConfig) {
+		return new ConfiguredFeature<>(this, featureConfig);
 	}
 
 	@Override

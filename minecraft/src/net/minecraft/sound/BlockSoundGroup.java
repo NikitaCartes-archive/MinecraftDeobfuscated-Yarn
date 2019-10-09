@@ -88,6 +88,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SLIME_BLOCK_HIT,
 		SoundEvents.BLOCK_SLIME_BLOCK_FALL
 	);
+	public static final BlockSoundGroup field_21214 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_HONEY_BLOCK_BREAK,
+		SoundEvents.BLOCK_HONEY_BLOCK_STEP,
+		SoundEvents.BLOCK_HONEY_BLOCK_PLACE,
+		SoundEvents.BLOCK_HONEY_BLOCK_HIT,
+		SoundEvents.BLOCK_HONEY_BLOCK_FALL
+	);
 	public static final BlockSoundGroup WET_GRASS = new BlockSoundGroup(
 		1.0F,
 		1.0F,

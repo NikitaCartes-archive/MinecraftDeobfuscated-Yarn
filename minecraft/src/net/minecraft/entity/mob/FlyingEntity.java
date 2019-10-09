@@ -14,7 +14,8 @@ public abstract class FlyingEntity extends MobEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
+		return false;
 	}
 
 	@Override
@@ -34,13 +35,13 @@ public abstract class FlyingEntity extends MobEntity {
 		} else {
 			float f = 0.91F;
 			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91F;
 			}
 
 			float g = 0.16277137F / (f * f * f);
 			f = 0.91F;
 			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91F;
 			}
 
 			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, vec3d);
@@ -49,8 +50,8 @@ public abstract class FlyingEntity extends MobEntity {
 		}
 
 		this.lastLimbDistance = this.limbDistance;
-		double d = this.x - this.prevX;
-		double e = this.z - this.prevZ;
+		double d = this.getX() - this.prevX;
+		double e = this.getZ() - this.prevZ;
 		float h = MathHelper.sqrt(d * d + e * e) * 4.0F;
 		if (h > 1.0F) {
 			h = 1.0F;

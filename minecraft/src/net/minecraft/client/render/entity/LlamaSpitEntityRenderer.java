@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.LlamaSpitEntityModel;
 import net.minecraft.client.util.math.Vector3f;
@@ -34,14 +33,12 @@ public class LlamaSpitEntityRenderer extends EntityRenderer<LlamaSpitEntity> {
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.15F, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch), true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch)));
 		int i = llamaSpitEntity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SKIN));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
 		this.model.setAngles(llamaSpitEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		this.model.method_22957(matrixStack, vertexConsumer, i);
-		vertexConsumer.clearDefaultOverlay();
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(SKIN));
+		this.model.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 		super.render(llamaSpitEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}

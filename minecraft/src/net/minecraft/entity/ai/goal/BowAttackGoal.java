@@ -64,7 +64,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	public void tick() {
 		LivingEntity livingEntity = this.actor.getTarget();
 		if (livingEntity != null) {
-			double d = this.actor.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+			double d = this.actor.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 			boolean bl = this.actor.getVisibilityCache().canSee(livingEntity);
 			boolean bl2 = this.field_6572 > 0;
 			if (bl != bl2) {

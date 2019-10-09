@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.gui.widget.SoundSliderWidget;
@@ -12,14 +13,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class SoundOptionsScreen extends Screen {
-	private final Screen parent;
-	private final GameOptions options;
-
+public class SoundOptionsScreen extends class_4667 {
 	public SoundOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableText("options.sounds.title"));
-		this.parent = screen;
-		this.options = gameOptions;
+		super(screen, gameOptions, new TranslatableText("options.sounds.title"));
 	}
 
 	@Override
@@ -37,7 +33,13 @@ public class SoundOptionsScreen extends Screen {
 
 		this.addButton(
 			new OptionButtonWidget(
-				this.width / 2 - 75, this.height / 6 - 12 + 24 * (++i >> 1), 150, 20, Option.SUBTITLES, Option.SUBTITLES.getDisplayString(this.options), buttonWidget -> {
+				this.width / 2 - 75,
+				this.height / 6 - 12 + 24 * (++i >> 1),
+				150,
+				20,
+				Option.SUBTITLES,
+				Option.SUBTITLES.getDisplayString(this.field_21336),
+				buttonWidget -> {
 					Option.SUBTITLES.set(this.minecraft.options);
 					buttonWidget.setMessage(Option.SUBTITLES.getDisplayString(this.minecraft.options));
 					this.minecraft.options.write();
@@ -45,13 +47,10 @@ public class SoundOptionsScreen extends Screen {
 			)
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(
+				this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_21335)
+			)
 		);
-	}
-
-	@Override
-	public void removed() {
-		this.minecraft.options.write();
 	}
 
 	@Override

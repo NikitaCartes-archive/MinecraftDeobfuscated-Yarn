@@ -28,16 +28,17 @@ public class EndHighlandsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.END_CITY, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.END_CITY.method_23397(FeatureConfig.DEFAULT));
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			configureFeature(
-				Feature.END_GATEWAY, EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true), Decorator.END_GATEWAY, DecoratorConfig.DEFAULT
-			)
+			Feature.END_GATEWAY
+				.method_23397(EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true))
+				.method_23388(Decorator.END_GATEWAY.method_23475(DecoratorConfig.DEFAULT))
 		);
 		DefaultBiomeFeatures.method_20826(this);
 		this.addFeature(
-			GenerationStep.Feature.VEGETAL_DECORATION, configureFeature(Feature.CHORUS_PLANT, FeatureConfig.DEFAULT, Decorator.CHORUS_PLANT, DecoratorConfig.DEFAULT)
+			GenerationStep.Feature.VEGETAL_DECORATION,
+			Feature.CHORUS_PLANT.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.CHORUS_PLANT.method_23475(DecoratorConfig.DEFAULT))
 		);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}

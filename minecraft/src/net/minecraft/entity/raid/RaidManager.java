@@ -95,7 +95,7 @@ public class RaidManager extends PersistentState {
 					.get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 					.collect(Collectors.toList());
 				int i = 0;
-				Vec3d vec3d = new Vec3d(0.0, 0.0, 0.0);
+				Vec3d vec3d = Vec3d.ZERO;
 
 				for(PointOfInterest pointOfInterest : list) {
 					BlockPos blockPos2 = pointOfInterest.getPos();

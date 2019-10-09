@@ -83,12 +83,14 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
-		super.handleFallDamage(f, g);
+	public boolean handleFallDamage(float f, float g) {
+		boolean bl = super.handleFallDamage(f, g);
 		this.currentFuseTime = (int)((float)this.currentFuseTime + f * 1.5F);
 		if (this.currentFuseTime > this.fuseTime - 5) {
 			this.currentFuseTime = this.fuseTime - 5;
 		}
+
+		return bl;
 	}
 
 	@Override
@@ -212,7 +214,16 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.FLINT_AND_STEEL) {
 			this.world
-				.playSound(playerEntity, this.x, this.y, this.z, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+				.playSound(
+					playerEntity,
+					this.getX(),
+					this.getY(),
+					this.getZ(),
+					SoundEvents.ITEM_FLINTANDSTEEL_USE,
+					this.getSoundCategory(),
+					1.0F,
+					this.random.nextFloat() * 0.4F + 0.8F
+				);
 			if (!this.world.isClient) {
 				this.setIgnited();
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
@@ -231,7 +242,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				: Explosion.DestructionType.NONE;
 			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
 			this.dead = true;
-			this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);
+			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, destructionType);
 			this.remove();
 			this.spawnEffectsCloud();
 		}
@@ -240,7 +251,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	private void spawnEffectsCloud() {
 		Collection<StatusEffectInstance> collection = this.getStatusEffects();
 		if (!collection.isEmpty()) {
-			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
+			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
 			areaEffectCloudEntity.setRadius(2.5F);
 			areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 			areaEffectCloudEntity.setWaitTime(10);

@@ -36,7 +36,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.375, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
 		float i = (float)boatEntity.getDamageWobbleTicks() - h;
 		float j = boatEntity.getDamageWobbleStrength() - h;
 		if (j < 0.0F) {
@@ -44,7 +44,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		}
 
 		if (i > 0.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(i) * i * j / 10.0F * (float)boatEntity.getDamageWobbleSide(), true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(MathHelper.sin(i) * i * j / 10.0F * (float)boatEntity.getDamageWobbleSide()));
 		}
 
 		float k = boatEntity.interpolateBubbleWobble(h);
@@ -54,15 +54,13 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		int l = boatEntity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(this.method_3891(boatEntity)));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F));
 		this.model.method_22952(boatEntity, h, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		this.model.method_22957(matrixStack, vertexConsumer, l);
-		VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.WATER_MASK);
-		this.model.method_22954().render(matrixStack, vertexConsumer2, 0.0625F, l, null);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(this.method_3891(boatEntity)));
+		this.model.renderItem(matrixStack, vertexConsumer, l, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
+		VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getWaterMask());
+		this.model.method_22954().render(matrixStack, vertexConsumer2, 0.0625F, l, OverlayTexture.field_21444, null);
 		matrixStack.pop();
-		vertexConsumer.clearDefaultOverlay();
 		super.render(boatEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}
 

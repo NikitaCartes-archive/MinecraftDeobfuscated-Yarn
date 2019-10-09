@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MatrixStack;
@@ -14,6 +15,7 @@ public class TridentEntityModel extends Model {
 	private final ModelPart field_3593 = new ModelPart(32, 32, 0, 6);
 
 	public TridentEntityModel() {
+		super(RenderLayer::getEntitySolid);
 		this.field_3593.addCuboid(-0.5F, 2.0F, -0.5F, 1.0F, 25.0F, 1.0F, 0.0F);
 		ModelPart modelPart = new ModelPart(32, 32, 4, 0);
 		modelPart.addCuboid(-1.5F, 0.0F, -0.5F, 3.0F, 2.0F, 1.0F);
@@ -30,7 +32,8 @@ public class TridentEntityModel extends Model {
 		this.field_3593.addChild(modelPart4);
 	}
 
-	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i) {
-		this.field_3593.render(matrixStack, vertexConsumer, 0.0625F, i, null);
+	@Override
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+		this.field_3593.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
 	}
 }

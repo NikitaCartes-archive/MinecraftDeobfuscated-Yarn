@@ -45,7 +45,7 @@ public class WorldBorder {
 	}
 
 	public double getDistanceInsideBorder(Entity entity) {
-		return this.getDistanceInsideBorder(entity.x, entity.z);
+		return this.getDistanceInsideBorder(entity.getX(), entity.getZ());
 	}
 
 	public VoxelShape asVoxelShape() {

@@ -7,7 +7,6 @@ import net.minecraft.block.BambooBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BambooLeaves;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
@@ -48,7 +47,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 							int o = m - blockPos.getZ();
 							if (n * n + o * o <= k * k) {
 								mutable2.set(l, iWorld.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
-								if (iWorld.getBlockState(mutable2).getBlock().matches(BlockTags.DIRT_LIKE)) {
+								if (method_23396(iWorld.getBlockState(mutable2).getBlock())) {
 									iWorld.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
 								}
 							}

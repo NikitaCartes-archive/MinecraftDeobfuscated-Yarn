@@ -41,12 +41,12 @@ public class BreatheAirGoal extends Goal {
 
 	private void moveToAir() {
 		Iterable<BlockPos> iterable = BlockPos.iterate(
-			MathHelper.floor(this.mob.x - 1.0),
-			MathHelper.floor(this.mob.y),
-			MathHelper.floor(this.mob.z - 1.0),
-			MathHelper.floor(this.mob.x + 1.0),
-			MathHelper.floor(this.mob.y + 8.0),
-			MathHelper.floor(this.mob.z + 1.0)
+			MathHelper.floor(this.mob.getX() - 1.0),
+			MathHelper.floor(this.mob.getY()),
+			MathHelper.floor(this.mob.getZ() - 1.0),
+			MathHelper.floor(this.mob.getX() + 1.0),
+			MathHelper.floor(this.mob.getY() + 8.0),
+			MathHelper.floor(this.mob.getZ() + 1.0)
 		);
 		BlockPos blockPos = null;
 
@@ -58,7 +58,7 @@ public class BreatheAirGoal extends Goal {
 		}
 
 		if (blockPos == null) {
-			blockPos = new BlockPos(this.mob.x, this.mob.y + 8.0, this.mob.z);
+			blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 8.0, this.mob.getZ());
 		}
 
 		this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)(blockPos.getY() + 1), (double)blockPos.getZ(), 1.0);

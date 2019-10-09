@@ -15,10 +15,10 @@ public class EmeraldOreDecorator extends SimpleDecorator<NopeDecoratorConfig> {
 	public Stream<BlockPos> method_15922(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
 		int i = 3 + random.nextInt(6);
 		return IntStream.range(0, i).mapToObj(ix -> {
-			int j = random.nextInt(16);
-			int k = random.nextInt(28) + 4;
-			int l = random.nextInt(16);
-			return blockPos.add(j, k, l);
+			int j = random.nextInt(16) + blockPos.getX();
+			int k = random.nextInt(16) + blockPos.getZ();
+			int l = random.nextInt(28) + 4;
+			return new BlockPos(j, l, k);
 		});
 	}
 }

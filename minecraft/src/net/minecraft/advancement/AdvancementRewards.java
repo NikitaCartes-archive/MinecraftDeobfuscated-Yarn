@@ -55,9 +55,9 @@ public class AdvancementRewards {
 					serverPlayerEntity.world
 						.playSound(
 							null,
-							serverPlayerEntity.x,
-							serverPlayerEntity.y,
-							serverPlayerEntity.z,
+							serverPlayerEntity.getX(),
+							serverPlayerEntity.getY(),
+							serverPlayerEntity.getZ(),
 							SoundEvents.ENTITY_ITEM_PICKUP,
 							SoundCategory.PLAYERS,
 							0.2F,

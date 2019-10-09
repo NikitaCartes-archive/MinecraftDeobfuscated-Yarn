@@ -25,15 +25,10 @@ public class CountChanceHeightmapDoubleDecorator extends Decorator<CountChanceDe
 		BlockPos blockPos
 	) {
 		return IntStream.range(0, countChanceDecoratorConfig.count).filter(i -> random.nextFloat() < countChanceDecoratorConfig.chance).mapToObj(i -> {
-			int j = random.nextInt(16);
-			int k = random.nextInt(16);
-			int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY() * 2;
-			if (l <= 0) {
-				return null;
-			} else {
-				int m = random.nextInt(l);
-				return blockPos.add(j, m, k);
-			}
+			int j = random.nextInt(16) + blockPos.getX();
+			int k = random.nextInt(16) + blockPos.getZ();
+			int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k) * 2;
+			return l <= 0 ? null : new BlockPos(j, random.nextInt(l), k);
 		}).filter(Objects::nonNull);
 	}
 }

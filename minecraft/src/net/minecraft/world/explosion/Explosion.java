@@ -172,9 +172,9 @@ public class Explosion {
 			if (!entity.isImmuneToExplosion()) {
 				double x = (double)(MathHelper.sqrt(entity.squaredDistanceTo(new Vec3d(this.x, this.y, this.z))) / r);
 				if (x <= 1.0) {
-					double y = entity.x - this.x;
-					double z = entity.y + (double)entity.getStandingEyeHeight() - this.y;
-					double aa = entity.z - this.z;
+					double y = entity.getX() - this.x;
+					double z = entity.method_23320() - this.y;
+					double aa = entity.getZ() - this.z;
 					double ab = (double)MathHelper.sqrt(y * y + z * z + aa * aa);
 					if (ab != 0.0) {
 						y /= ab;

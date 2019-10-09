@@ -322,13 +322,16 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.ACACIA_TRAPDOOR, Blocks.BIRCH_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, Blocks.JUNGLE_TRAPDOOR, Blocks.OAK_TRAPDOOR, Blocks.SPRUCE_TRAPDOOR);
 		this.method_10512(BlockTags.TRAPDOORS).add(BlockTags.WOODEN_TRAPDOORS).add(Blocks.IRON_TRAPDOOR);
 		this.method_10512(BlockTags.UNDERWATER_BONEMEALS).add(Blocks.SEAGRASS).add(BlockTags.CORALS).add(BlockTags.WALL_CORALS);
-		this.method_10512(BlockTags.DIRT_LIKE).add(Blocks.DIRT).add(Blocks.GRASS_BLOCK).add(Blocks.PODZOL).add(Blocks.COARSE_DIRT).add(Blocks.MYCELIUM);
 		this.method_10512(BlockTags.BAMBOO_PLANTABLE_ON)
 			.add(Blocks.BAMBOO)
 			.add(Blocks.BAMBOO_SAPLING)
 			.add(Blocks.GRAVEL)
 			.add(BlockTags.SAND)
-			.add(BlockTags.DIRT_LIKE);
+			.add(Blocks.DIRT)
+			.add(Blocks.GRASS_BLOCK)
+			.add(Blocks.PODZOL)
+			.add(Blocks.COARSE_DIRT)
+			.add(Blocks.MYCELIUM);
 		this.method_10512(BlockTags.STANDING_SIGNS)
 			.add(Blocks.OAK_SIGN, Blocks.SPRUCE_SIGN, Blocks.BIRCH_SIGN, Blocks.ACACIA_SIGN, Blocks.JUNGLE_SIGN, Blocks.DARK_OAK_SIGN);
 		this.method_10512(BlockTags.WALL_SIGNS)
@@ -387,7 +390,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			);
 		this.method_10512(BlockTags.TALL_FLOWERS).add(Blocks.SUNFLOWER, Blocks.LILAC, Blocks.PEONY, Blocks.ROSE_BUSH);
 		this.method_10512(BlockTags.FLOWERS).add(BlockTags.SMALL_FLOWERS).add(BlockTags.TALL_FLOWERS);
-		this.method_10512(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEE_HIVE);
+		this.method_10512(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEEHIVE);
 		this.method_10512(BlockTags.CROPS).add(Blocks.BEETROOTS, Blocks.CARROTS, Blocks.POTATOES, Blocks.WHEAT, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
 		this.method_10512(BlockTags.BEE_GROWABLES).add(BlockTags.CROPS).add(Blocks.SWEET_BERRY_BUSH);
 	}

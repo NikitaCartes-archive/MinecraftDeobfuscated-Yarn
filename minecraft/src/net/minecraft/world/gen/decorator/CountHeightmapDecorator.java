@@ -20,9 +20,10 @@ public class CountHeightmapDecorator extends Decorator<CountDecoratorConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos
 	) {
 		return IntStream.range(0, countDecoratorConfig.count).mapToObj(i -> {
-			int j = random.nextInt(16);
-			int k = random.nextInt(16);
-			return iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k));
+			int j = random.nextInt(16) + blockPos.getX();
+			int k = random.nextInt(16) + blockPos.getZ();
+			int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k);
+			return new BlockPos(j, l, k);
 		});
 	}
 }

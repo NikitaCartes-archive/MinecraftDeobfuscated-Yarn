@@ -30,7 +30,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	@Override
 	public void serverTick() {
-		double d = this.field_7045 == null ? 0.0 : this.field_7045.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
+		double d = this.field_7045 == null ? 0.0 : this.field_7045.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 			this.method_6841();
 		}

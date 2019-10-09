@@ -39,7 +39,7 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		} else if (i != (k << 4) + 4 + random.nextInt(8)) {
 			return false;
 		} else {
-			return j != (l << 4) + 4 + random.nextInt(8) ? false : chunkGenerator.hasStructure(biome, Feature.NETHER_BRIDGE);
+			return j != (l << 4) + 4 + random.nextInt(8) ? false : chunkGenerator.hasStructure(biome, this);
 		}
 	}
 

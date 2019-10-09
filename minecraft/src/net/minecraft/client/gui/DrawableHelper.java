@@ -141,14 +141,15 @@ public abstract class DrawableHelper {
 	}
 
 	protected static void innerBlit(int i, int j, int k, int l, int m, float f, float g, float h, float n) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex((double)i, (double)l, (double)m).texture(f, n).next();
 		bufferBuilder.vertex((double)j, (double)l, (double)m).texture(g, n).next();
 		bufferBuilder.vertex((double)j, (double)k, (double)m).texture(g, h).next();
 		bufferBuilder.vertex((double)i, (double)k, (double)m).texture(f, h).next();
-		tessellator.draw();
+		bufferBuilder.end();
+		RenderSystem.enableAlphaTest();
+		BufferRenderer.draw(bufferBuilder);
 	}
 
 	public int getBlitOffset() {

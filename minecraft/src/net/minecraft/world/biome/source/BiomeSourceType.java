@@ -24,7 +24,7 @@ public class BiomeSourceType<C extends BiomeSourceConfig, T extends BiomeSource>
 		return Registry.register(Registry.BIOME_SOURCE_TYPE, string, new BiomeSourceType<>(function, function2));
 	}
 
-	public BiomeSourceType(Function<C, T> function, Function<LevelProperties, C> function2) {
+	private BiomeSourceType(Function<C, T> function, Function<LevelProperties, C> function2) {
 		this.biomeSource = function;
 		this.config = function2;
 	}

@@ -33,7 +33,7 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	@Override
 	public void serverTick() {
-		double d = this.field_7048 == null ? 0.0 : this.field_7048.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z);
+		double d = this.field_7048 == null ? 0.0 : this.field_7048.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (d < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 			this.method_6844();
 		}
@@ -54,7 +54,7 @@ public class LandingApproachPhase extends AbstractPhase {
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			int j;
 			if (playerEntity != null) {
-				Vec3d vec3d = new Vec3d(playerEntity.x, 0.0, playerEntity.z).normalize();
+				Vec3d vec3d = new Vec3d(playerEntity.getX(), 0.0, playerEntity.getZ()).normalize();
 				j = this.dragon.method_6822(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
 			} else {
 				j = this.dragon.method_6822(40.0, (double)blockPos.getY(), 0.0);

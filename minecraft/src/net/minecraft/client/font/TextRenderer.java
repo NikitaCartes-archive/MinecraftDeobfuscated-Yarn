@@ -159,7 +159,7 @@ public class TextRenderer implements AutoCloseable {
 				if (identifier != null) {
 					float v = bl4 ? glyph.getBoldOffset() : 0.0F;
 					float w = bl ? glyph.getShadowOffset() : 0.0F;
-					VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.method_23030(identifier) : RenderLayer.method_23028(identifier));
+					VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier) : RenderLayer.getText(identifier));
 					this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, vertexConsumer, p, q, r, s, k);
 				}
 
@@ -190,7 +190,7 @@ public class TextRenderer implements AutoCloseable {
 			Identifier identifier2 = glyphRenderer2.getId();
 			if (identifier2 != null) {
 				VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(
-					bl2 ? RenderLayer.method_23030(identifier2) : RenderLayer.method_23028(identifier2)
+					bl2 ? RenderLayer.getTextSeeThrough(identifier2) : RenderLayer.getText(identifier2)
 				);
 
 				for(GlyphRenderer.Rectangle rectangle : list) {

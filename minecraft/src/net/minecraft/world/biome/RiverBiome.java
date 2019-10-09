@@ -26,7 +26,7 @@ public final class RiverBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -42,7 +42,7 @@ public final class RiverBiome extends Biome {
 		DefaultBiomeFeatures.addSprings(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(Feature.SEAGRASS, new SeagrassFeatureConfig(48, 0.4), Decorator.TOP_SOLID_HEIGHTMAP, DecoratorConfig.DEFAULT)
+			Feature.SEAGRASS.method_23397(new SeagrassFeatureConfig(48, 0.4)).method_23388(Decorator.TOP_SOLID_HEIGHTMAP.method_23475(DecoratorConfig.DEFAULT))
 		);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
 		this.addSpawn(EntityCategory.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, 2, 1, 4));

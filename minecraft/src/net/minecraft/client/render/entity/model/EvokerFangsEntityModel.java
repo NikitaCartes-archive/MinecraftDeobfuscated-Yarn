@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
@@ -15,6 +16,7 @@ public class EvokerFangsEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_3375;
 
 	public EvokerFangsEntityModel() {
+		super(RenderLayer::getEntityCutoutNoCull);
 		this.field_3374.setPivot(-5.0F, 22.0F, -5.0F);
 		this.field_3374.addCuboid(0.0F, 0.0F, 0.0F, 10.0F, 12.0F, 10.0F);
 		this.field_3376 = new ModelPart(this, 40, 0);

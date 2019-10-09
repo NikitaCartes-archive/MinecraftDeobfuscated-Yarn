@@ -27,7 +27,7 @@ public class BirdNavigation extends EntityNavigation {
 
 	@Override
 	protected Vec3d getPos() {
-		return new Vec3d(this.entity.x, this.entity.y, this.entity.z);
+		return this.entity.getPos();
 	}
 
 	@Override
@@ -47,9 +47,9 @@ public class BirdNavigation extends EntityNavigation {
 				this.method_6339();
 			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
-				if (MathHelper.floor(this.entity.x) == MathHelper.floor(vec3d.x)
-					&& MathHelper.floor(this.entity.y) == MathHelper.floor(vec3d.y)
-					&& MathHelper.floor(this.entity.z) == MathHelper.floor(vec3d.z)) {
+				if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x)
+					&& MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y)
+					&& MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
 					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 				}
 			}

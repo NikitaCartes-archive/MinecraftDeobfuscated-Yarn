@@ -25,7 +25,8 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 	protected void method_18334(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(foxEntity, matrixStack, f, g, h);
 		if (foxEntity.isChasing() || foxEntity.isWalking()) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch), true));
+			float i = -MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch);
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
 		}
 	}
 

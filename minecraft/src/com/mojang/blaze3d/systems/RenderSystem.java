@@ -288,16 +288,6 @@ public class RenderSystem {
 		GlStateManager.disableCull();
 	}
 
-	public static void cullFace(GlStateManager.FaceSides faceSides) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.cullFace(faceSides.glValue);
-	}
-
-	public static void cullFace(int i) {
-		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.cullFace(i);
-	}
-
 	public static void polygonMode(int i, int j) {
 		assertThread(RenderSystem::isOnGameThread);
 		GlStateManager.polygonMode(i, j);
@@ -584,7 +574,6 @@ public class RenderSystem {
 		GlStateManager.depthFunc(515);
 		GlStateManager.enableAlphaTest();
 		GlStateManager.alphaFunc(516, 0.1F);
-		GlStateManager.cullFace(GlStateManager.FaceSides.BACK.glValue);
 		GlStateManager.matrixMode(5889);
 		GlStateManager.loadIdentity();
 		GlStateManager.matrixMode(5888);
@@ -704,14 +693,14 @@ public class RenderSystem {
 		GlStateManager.method_22618();
 	}
 
-	public static void setupLevelDiffuseLighting() {
+	public static void setupLevelDiffuseLighting(Matrix4f matrix4f) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_22616();
+		GlStateManager.method_22616(matrix4f);
 	}
 
-	public static void setupGuiDiffuseLighting() {
+	public static void setupGuiDiffuseLighting(Matrix4f matrix4f) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_22617();
+		GlStateManager.method_22617(matrix4f);
 	}
 
 	public static void mulTextureByProjModelView() {

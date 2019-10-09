@@ -1,13 +1,12 @@
 package net.minecraft.world.biome;
 
-import net.minecraft.block.Blocks;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountExtraChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.feature.DoublePlantFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -31,51 +30,48 @@ public final class FlowerForestBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("forest")
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(
-				Feature.RANDOM_RANDOM_SELECTOR,
-				new RandomRandomFeatureConfig(
-					new Feature[]{Feature.DOUBLE_PLANT, Feature.DOUBLE_PLANT, Feature.DOUBLE_PLANT, Feature.GENERAL_FOREST_FLOWER},
-					new FeatureConfig[]{
-						new DoublePlantFeatureConfig(Blocks.LILAC.getDefaultState()),
-						new DoublePlantFeatureConfig(Blocks.ROSE_BUSH.getDefaultState()),
-						new DoublePlantFeatureConfig(Blocks.PEONY.getDefaultState()),
-						FeatureConfig.DEFAULT
-					},
-					2
-				),
-				Decorator.COUNT_HEIGHTMAP_32,
-				new CountDecoratorConfig(5)
-			)
+			Feature.RANDOM_RANDOM_SELECTOR
+				.method_23397(
+					new RandomRandomFeatureConfig(
+						ImmutableList.of(
+							Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21098),
+							Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21099),
+							Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21100),
+							Feature.field_21219.method_23397(DefaultBiomeFeatures.field_21204)
+						),
+						2
+					)
+				)
+				.method_23388(Decorator.COUNT_HEIGHTMAP_32.method_23475(new CountDecoratorConfig(5)))
 		);
 		DefaultBiomeFeatures.addMineables(this);
 		DefaultBiomeFeatures.addDefaultOres(this);
 		DefaultBiomeFeatures.addDefaultDisks(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(
-				Feature.RANDOM_SELECTOR,
-				new RandomFeatureConfig(
-					new Feature[]{Feature.BIRCH_TREE, Feature.FANCY_TREE},
-					new FeatureConfig[]{FeatureConfig.DEFAULT, FeatureConfig.DEFAULT},
-					new float[]{0.2F, 0.1F},
-					Feature.NORMAL_TREE,
-					FeatureConfig.DEFAULT
-				),
-				Decorator.COUNT_EXTRA_HEIGHTMAP,
-				new CountExtraChanceDecoratorConfig(6, 0.1F, 1)
-			)
+			Feature.RANDOM_SELECTOR
+				.method_23397(
+					new RandomFeatureConfig(
+						ImmutableList.of(
+							Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21195).method_23387(0.2F),
+							Feature.FANCY_TREE.method_23397(DefaultBiomeFeatures.field_21194).method_23387(0.1F)
+						),
+						Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21193)
+					)
+				)
+				.method_23388(Decorator.COUNT_EXTRA_HEIGHTMAP.method_23475(new CountExtraChanceDecoratorConfig(6, 0.1F, 1)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(Feature.FOREST_FLOWER, FeatureConfig.DEFAULT, Decorator.COUNT_HEIGHTMAP_32, new CountDecoratorConfig(100))
+			Feature.field_21219.method_23397(DefaultBiomeFeatures.field_21089).method_23388(Decorator.COUNT_HEIGHTMAP_32.method_23475(new CountDecoratorConfig(100)))
 		);
 		DefaultBiomeFeatures.addDefaultGrass(this);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);

@@ -2,13 +2,13 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_4624;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
-import net.minecraft.world.gen.feature.FlowerFeature;
 
 public class GrassBlock extends SpreadableBlock implements Fertilizable {
 	public GrassBlock(Block.Settings settings) {
@@ -49,12 +49,13 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 			if (blockState3.isAir()) {
 				BlockState blockState4;
 				if (random.nextInt(8) == 0) {
-					List<ConfiguredFeature<?>> list = serverWorld.getBiome(blockPos3).getFlowerFeatures();
+					List<ConfiguredFeature<?, ?>> list = serverWorld.getBiome(blockPos3).getFlowerFeatures();
 					if (list.isEmpty()) {
 						continue;
 					}
 
-					blockState4 = ((FlowerFeature)((DecoratedFeatureConfig)((ConfiguredFeature)list.get(0)).config).feature.feature).getFlowerToPlace(random, blockPos3);
+					ConfiguredFeature<?, ?> configuredFeature = ((DecoratedFeatureConfig)((ConfiguredFeature)list.get(0)).config).feature;
+					blockState4 = ((class_4624)configuredFeature.feature).getFlowerToPlace(random, blockPos3, configuredFeature.config);
 				} else {
 					blockState4 = blockState2;
 				}

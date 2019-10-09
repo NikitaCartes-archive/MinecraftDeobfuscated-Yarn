@@ -44,11 +44,11 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 				matrixStack.push();
 				matrixStack.translate(0.0, 0.0, 0.125);
 				double d = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7524, abstractClientPlayerEntity.field_7500)
-					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.x);
+					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.getX());
 				double e = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7502, abstractClientPlayerEntity.field_7521)
-					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.y);
+					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.getY());
 				double n = MathHelper.lerp((double)h, abstractClientPlayerEntity.field_7522, abstractClientPlayerEntity.field_7499)
-					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.z);
+					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.getZ());
 				float o = abstractClientPlayerEntity.prevBodyYaw + (abstractClientPlayerEntity.bodyYaw - abstractClientPlayerEntity.prevBodyYaw);
 				double p = (double)MathHelper.sin(o * (float) (Math.PI / 180.0));
 				double q = (double)(-MathHelper.cos(o * (float) (Math.PI / 180.0)));
@@ -68,13 +68,11 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 					r += 25.0F;
 				}
 
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F + s / 2.0F + r, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t / 2.0F, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - t / 2.0F, true));
-				VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(abstractClientPlayerEntity.getCapeTexture()));
-				OverlayTexture.clearDefaultOverlay(vertexConsumer);
-				this.getModel().renderCape(matrixStack, vertexConsumer, 0.0625F, i);
-				vertexConsumer.clearDefaultOverlay();
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F + s / 2.0F + r));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t / 2.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - t / 2.0F));
+				VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
+				this.getModel().renderCape(matrixStack, vertexConsumer, 0.0625F, i, OverlayTexture.field_21444);
 				matrixStack.pop();
 			}
 		}

@@ -85,8 +85,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 			int i = 1 << mapState.scale;
 			int j = mapState.xCenter;
 			int k = mapState.zCenter;
-			int l = MathHelper.floor(entity.x - (double)j) / i + 64;
-			int m = MathHelper.floor(entity.z - (double)k) / i + 64;
+			int l = MathHelper.floor(entity.getX() - (double)j) / i + 64;
+			int m = MathHelper.floor(entity.getZ() - (double)k) / i + 64;
 			int n = 128 / i;
 			if (world.dimension.isNether()) {
 				n /= 2;

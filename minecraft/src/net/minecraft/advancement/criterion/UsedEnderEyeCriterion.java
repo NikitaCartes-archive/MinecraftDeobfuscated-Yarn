@@ -21,8 +21,8 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
-		double d = serverPlayerEntity.x - (double)blockPos.getX();
-		double e = serverPlayerEntity.z - (double)blockPos.getZ();
+		double d = serverPlayerEntity.getX() - (double)blockPos.getX();
+		double e = serverPlayerEntity.getZ() - (double)blockPos.getZ();
 		double f = d * d + e * e;
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(f));
 	}

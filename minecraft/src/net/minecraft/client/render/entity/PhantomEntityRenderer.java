@@ -31,6 +31,6 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 
 	protected void method_4089(PhantomEntity phantomEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(phantomEntity, matrixStack, f, g, h);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(phantomEntity.pitch, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(phantomEntity.pitch));
 	}
 }

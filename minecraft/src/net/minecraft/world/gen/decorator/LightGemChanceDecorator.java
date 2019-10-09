@@ -14,10 +14,10 @@ public class LightGemChanceDecorator extends SimpleDecorator<CountDecoratorConfi
 
 	public Stream<BlockPos> method_15953(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {
 		return IntStream.range(0, random.nextInt(random.nextInt(countDecoratorConfig.count) + 1)).mapToObj(i -> {
-			int j = random.nextInt(16);
-			int k = random.nextInt(120) + 4;
-			int l = random.nextInt(16);
-			return blockPos.add(j, k, l);
+			int j = random.nextInt(16) + blockPos.getX();
+			int k = random.nextInt(16) + blockPos.getZ();
+			int l = random.nextInt(120) + 4;
+			return new BlockPos(j, l, k);
 		});
 	}
 }

@@ -11,6 +11,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.crash.CrashException;
@@ -119,22 +120,24 @@ public class BlockEntityRenderDispatcher {
 			i = 15728880;
 		}
 
-		blockEntityRenderer.render(blockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i);
+		blockEntityRenderer.render(blockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.field_21444);
 	}
 
 	@Deprecated
-	public <E extends BlockEntity> void renderEntity(E blockEntity, MatrixStack matrixStack, int i) {
+	public <E extends BlockEntity> void renderEntity(E blockEntity, MatrixStack matrixStack) {
 		LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(this.field_20988);
-		this.method_23077(blockEntity, matrixStack, lv, i);
+		this.method_23077(blockEntity, matrixStack, lv, 15728880, OverlayTexture.field_21444);
 		lv.method_22993();
 	}
 
-	public <E extends BlockEntity> boolean method_23077(E blockEntity, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+	public <E extends BlockEntity> boolean method_23077(
+		E blockEntity, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j
+	) {
 		BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer == null) {
 			return true;
 		} else {
-			renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0F, matrixStack, layeredVertexConsumerStorage, i));
+			renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0F, matrixStack, layeredVertexConsumerStorage, i, j));
 			return false;
 		}
 	}

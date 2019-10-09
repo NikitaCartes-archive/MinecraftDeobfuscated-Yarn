@@ -54,7 +54,6 @@ public class BlockTags {
 	public static final Tag<Block> CORAL_PLANTS = register("coral_plants");
 	public static final Tag<Block> CORALS = register("corals");
 	public static final Tag<Block> BAMBOO_PLANTABLE_ON = register("bamboo_plantable_on");
-	public static final Tag<Block> DIRT_LIKE = register("dirt_like");
 	public static final Tag<Block> STANDING_SIGNS = register("standing_signs");
 	public static final Tag<Block> WALL_SIGNS = register("wall_signs");
 	public static final Tag<Block> SIGNS = register("signs");

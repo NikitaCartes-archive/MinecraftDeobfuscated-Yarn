@@ -27,22 +27,22 @@ public final class Matrix4f {
 		float j = 2.0F * f * f;
 		float k = 2.0F * g * g;
 		float l = 2.0F * h * h;
-		this.components[0] = 1.0F - k - l;
-		this.components[5] = 1.0F - l - j;
-		this.components[10] = 1.0F - j - k;
-		this.components[15] = 1.0F;
+		this.set(0, 0, 1.0F - k - l);
+		this.set(1, 1, 1.0F - l - j);
+		this.set(2, 2, 1.0F - j - k);
+		this.set(3, 3, 1.0F);
 		float m = f * g;
 		float n = g * h;
 		float o = h * f;
 		float p = f * i;
 		float q = g * i;
 		float r = h * i;
-		this.components[1] = 2.0F * (m + r);
-		this.components[4] = 2.0F * (m - r);
-		this.components[2] = 2.0F * (o - q);
-		this.components[8] = 2.0F * (o + q);
-		this.components[6] = 2.0F * (n + p);
-		this.components[9] = 2.0F * (n - p);
+		this.set(1, 0, 2.0F * (m + r));
+		this.set(0, 1, 2.0F * (m - r));
+		this.set(2, 0, 2.0F * (o - q));
+		this.set(0, 2, 2.0F * (o + q));
+		this.set(2, 1, 2.0F * (n + p));
+		this.set(1, 2, 2.0F * (n - p));
 	}
 
 	public Matrix4f(Matrix4f matrix4f) {

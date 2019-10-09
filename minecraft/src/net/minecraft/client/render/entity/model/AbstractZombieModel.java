@@ -1,14 +1,17 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractZombieModel<T extends HostileEntity> extends BipedEntityModel<T> {
-	protected AbstractZombieModel(float f, float g, int i, int j) {
-		super(f, g, i, j);
+	protected AbstractZombieModel(Function<Identifier, RenderLayer> function, float f, float g, int i, int j) {
+		super(function, f, g, i, j);
 	}
 
 	public void method_17791(T hostileEntity, float f, float g, float h, float i, float j, float k) {

@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.FullScreenOption;
@@ -12,9 +13,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class VideoOptionsScreen extends Screen {
-	private final Screen parent;
-	private final GameOptions options;
+public class VideoOptionsScreen extends class_4667 {
 	private ButtonListWidget list;
 	private static final Option[] OPTIONS = new Option[]{
 		Option.GRAPHICS,
@@ -36,14 +35,12 @@ public class VideoOptionsScreen extends Screen {
 	private int mipmapLevels;
 
 	public VideoOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableText("options.videoTitle"));
-		this.parent = screen;
-		this.options = gameOptions;
+		super(screen, gameOptions, new TranslatableText("options.videoTitle"));
 	}
 
 	@Override
 	protected void init() {
-		this.mipmapLevels = this.options.mipmapLevels;
+		this.mipmapLevels = this.field_21336.mipmapLevels;
 		this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
 		this.list.addSingleOptionEntry(new FullScreenOption(this.minecraft.getWindow()));
 		this.list.addAll(OPTIONS);
@@ -51,27 +48,27 @@ public class VideoOptionsScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.minecraft.options.write();
 			this.minecraft.getWindow().method_4475();
-			this.minecraft.openScreen(this.parent);
+			this.minecraft.openScreen(this.field_21335);
 		}));
 	}
 
 	@Override
 	public void removed() {
-		if (this.options.mipmapLevels != this.mipmapLevels) {
-			this.minecraft.getSpriteAtlas().setMipLevel(this.options.mipmapLevels);
+		if (this.field_21336.mipmapLevels != this.mipmapLevels) {
+			this.minecraft.getSpriteAtlas().setMipLevel(this.field_21336.mipmapLevels);
 			this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			this.minecraft.getSpriteAtlas().setFilter(false, this.options.mipmapLevels > 0);
+			this.minecraft.getSpriteAtlas().setFilter(false, this.field_21336.mipmapLevels > 0);
 			this.minecraft.reloadResourcesConcurrently();
 		}
 
-		this.minecraft.options.write();
+		super.removed();
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		int j = this.options.guiScale;
+		int j = this.field_21336.guiScale;
 		if (super.mouseClicked(d, e, i)) {
-			if (this.options.guiScale != j) {
+			if (this.field_21336.guiScale != j) {
 				this.minecraft.onResolutionChanged();
 			}
 
@@ -83,11 +80,11 @@ public class VideoOptionsScreen extends Screen {
 
 	@Override
 	public boolean mouseReleased(double d, double e, int i) {
-		int j = this.options.guiScale;
+		int j = this.field_21336.guiScale;
 		if (super.mouseReleased(d, e, i)) {
 			return true;
 		} else if (this.list.mouseReleased(d, e, i)) {
-			if (this.options.guiScale != j) {
+			if (this.field_21336.guiScale != j) {
 				this.minecraft.onResolutionChanged();
 			}
 

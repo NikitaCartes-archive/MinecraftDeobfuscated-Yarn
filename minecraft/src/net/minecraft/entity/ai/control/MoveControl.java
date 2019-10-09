@@ -75,7 +75,10 @@ public class MoveControl {
 				PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
 				if (pathNodeMaker != null
 					&& pathNodeMaker.getNodeType(
-							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
+							this.entity.world,
+							MathHelper.floor(this.entity.getX() + (double)m),
+							MathHelper.floor(this.entity.getY()),
+							MathHelper.floor(this.entity.getZ() + (double)n)
 						)
 						!= PathNodeType.WALKABLE) {
 					this.forwardMovement = 1.0F;
@@ -90,9 +93,9 @@ public class MoveControl {
 			this.state = MoveControl.State.WAIT;
 		} else if (this.state == MoveControl.State.MOVE_TO) {
 			this.state = MoveControl.State.WAIT;
-			double d = this.targetX - this.entity.x;
-			double e = this.targetZ - this.entity.z;
-			double o = this.targetY - this.entity.y;
+			double d = this.targetX - this.entity.getX();
+			double e = this.targetZ - this.entity.getZ();
+			double o = this.targetY - this.entity.getY();
 			double p = d * d + o * o + e * e;
 			if (p < 2.5000003E-7F) {
 				this.entity.setForwardSpeed(0.0F);
@@ -108,7 +111,7 @@ public class MoveControl {
 			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
 				|| !voxelShape.isEmpty()
-					&& this.entity.y < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY()
+					&& this.entity.getY() < voxelShape.getMaximum(Direction.Axis.Y) + (double)blockPos.getY()
 					&& !block.matches(BlockTags.DOORS)
 					&& !block.matches(BlockTags.FENCES)) {
 				this.entity.getJumpControl().setActive();

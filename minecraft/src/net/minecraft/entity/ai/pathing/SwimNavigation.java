@@ -32,7 +32,7 @@ public class SwimNavigation extends EntityNavigation {
 
 	@Override
 	protected Vec3d getPos() {
-		return new Vec3d(this.entity.x, this.entity.y + (double)this.entity.getHeight() * 0.5, this.entity.z);
+		return new Vec3d(this.entity.getX(), this.entity.method_23323(0.5), this.entity.getZ());
 	}
 
 	@Override
@@ -47,9 +47,9 @@ public class SwimNavigation extends EntityNavigation {
 				this.method_6339();
 			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
-				if (MathHelper.floor(this.entity.x) == MathHelper.floor(vec3d.x)
-					&& MathHelper.floor(this.entity.y) == MathHelper.floor(vec3d.y)
-					&& MathHelper.floor(this.entity.z) == MathHelper.floor(vec3d.z)) {
+				if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x)
+					&& MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y)
+					&& MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
 					this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 				}
 			}
@@ -75,9 +75,9 @@ public class SwimNavigation extends EntityNavigation {
 
 			int i = 6;
 			Vec3d vec3d3 = this.currentPath.getCurrentPosition();
-			if (Math.abs(this.entity.x - (vec3d3.x + 0.5)) < (double)g
-				&& Math.abs(this.entity.z - (vec3d3.z + 0.5)) < (double)g
-				&& Math.abs(this.entity.y - vec3d3.y) < (double)(g * 2.0F)) {
+			if (Math.abs(this.entity.getX() - (vec3d3.x + 0.5)) < (double)g
+				&& Math.abs(this.entity.getZ() - (vec3d3.z + 0.5)) < (double)g
+				&& Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0F)) {
 				this.currentPath.next();
 			}
 

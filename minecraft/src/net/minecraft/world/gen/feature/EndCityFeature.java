@@ -44,7 +44,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i != chunkPos.x || j != chunkPos.z) {
 			return false;
-		} else if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
+		} else if (!chunkGenerator.hasStructure(biome, this)) {
 			return false;
 		} else {
 			int k = getGenerationHeight(i, j, chunkGenerator);
