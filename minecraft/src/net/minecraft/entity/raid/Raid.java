@@ -430,14 +430,14 @@ public class Raid {
 		Collection<ServerPlayerEntity> collection = this.bar.getPlayers();
 
 		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
-			Vec3d vec3d = new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
-			Vec3d vec3d2 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			Vec3d vec3d = serverPlayerEntity.getPos();
+			Vec3d vec3d2 = new Vec3d(blockPos);
 			float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
 			double d = vec3d.x + (double)(13.0F / g) * (vec3d2.x - vec3d.x);
 			double e = vec3d.z + (double)(13.0F / g) * (vec3d2.z - vec3d.z);
 			if (g <= 64.0F || collection.contains(serverPlayerEntity)) {
 				serverPlayerEntity.networkHandler
-					.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, d, serverPlayerEntity.y, e, 64.0F, 1.0F));
+					.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, d, serverPlayerEntity.getY(), e, 64.0F, 1.0F));
 			}
 		}
 	}

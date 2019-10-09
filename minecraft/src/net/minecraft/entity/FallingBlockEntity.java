@@ -124,11 +124,7 @@ public class FallingBlockEntity extends Entity {
 					BlockHitResult blockHitResult = this.world
 						.rayTrace(
 							new RayTraceContext(
-								new Vec3d(this.prevX, this.prevY, this.prevZ),
-								new Vec3d(this.x, this.y, this.z),
-								RayTraceContext.ShapeType.COLLIDER,
-								RayTraceContext.FluidHandling.SOURCE_ONLY,
-								this
+								new Vec3d(this.prevX, this.prevY, this.prevZ), this.getPos(), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.SOURCE_ONLY, this
 							)
 						);
 					if (blockHitResult.getType() != HitResult.Type.MISS && this.world.getFluidState(blockHitResult.getBlockPos()).matches(FluidTags.WATER)) {
@@ -195,7 +191,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
 		if (this.hurtEntities) {
 			int i = MathHelper.ceil(f - 1.0F);
 			if (i > 0) {
@@ -217,6 +213,8 @@ public class FallingBlockEntity extends Entity {
 				}
 			}
 		}
+
+		return false;
 	}
 
 	@Override

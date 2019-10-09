@@ -19,7 +19,7 @@ public abstract class class_4593<E extends Entity> extends class_4592<E> {
 	}
 
 	@Override
-	public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
-		super.method_17116(matrixStack, vertexConsumer, i, this.field_20923 * f, this.field_20924 * g, this.field_20925 * h);
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+		super.renderItem(matrixStack, vertexConsumer, i, j, this.field_20923 * f, this.field_20924 * g, this.field_20925 * h);
 	}
 }

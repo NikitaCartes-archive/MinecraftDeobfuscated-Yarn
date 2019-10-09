@@ -96,6 +96,8 @@ public class Block implements ItemConvertible {
 	protected final Material material;
 	protected final MaterialColor materialColor;
 	private final float slipperiness;
+	private final float field_21207;
+	private final float field_21208;
 	protected final StateManager<Block, BlockState> stateFactory;
 	private BlockState defaultState;
 	protected final boolean collidable;
@@ -143,7 +145,7 @@ public class Block implements ItemConvertible {
 
 		for (Entity entity : world.getEntities(null, voxelShape.getBoundingBox())) {
 			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
-			entity.requestTeleport(entity.x, entity.y + 1.0 + d, entity.z);
+			entity.requestTeleport(entity.getX(), entity.getY() + 1.0 + d, entity.getZ());
 		}
 
 		return blockState2;
@@ -251,6 +253,8 @@ public class Block implements ItemConvertible {
 		this.hardness = settings.hardness;
 		this.randomTicks = settings.randomTicks;
 		this.slipperiness = settings.slipperiness;
+		this.field_21207 = settings.field_21209;
+		this.field_21208 = settings.field_21210;
 		this.dynamicBounds = settings.dynamicBounds;
 		this.dropTableId = settings.dropTableId;
 		this.opaque = settings.opaque;
@@ -712,6 +716,14 @@ public class Block implements ItemConvertible {
 		return this.slipperiness;
 	}
 
+	public float method_23349() {
+		return this.field_21207;
+	}
+
+	public float method_23350() {
+		return this.field_21208;
+	}
+
 	@Deprecated
 	@Environment(EnvType.CLIENT)
 	public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
@@ -801,14 +813,6 @@ public class Block implements ItemConvertible {
 	public void buildTooltip(ItemStack itemStack, @Nullable BlockView blockView, List<Text> list, TooltipContext tooltipContext) {
 	}
 
-	public static boolean isNaturalStone(Block block) {
-		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
-	}
-
-	public static boolean isNaturalDirt(Block block) {
-		return block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL;
-	}
-
 	public static final class NeighborGroup {
 		private final BlockState self;
 		private final BlockState other;
@@ -854,6 +858,8 @@ public class Block implements ItemConvertible {
 		private float hardness;
 		private boolean randomTicks;
 		private float slipperiness = 0.6F;
+		private float field_21209 = 1.0F;
+		private float field_21210 = 1.0F;
 		private Identifier dropTableId;
 		private boolean opaque = true;
 		private boolean dynamicBounds;
@@ -886,6 +892,7 @@ public class Block implements ItemConvertible {
 			settings.materialColor = block.materialColor;
 			settings.soundGroup = block.soundGroup;
 			settings.slipperiness = block.getSlipperiness();
+			settings.field_21209 = block.method_23349();
 			settings.dynamicBounds = block.dynamicBounds;
 			settings.opaque = block.opaque;
 			return settings;
@@ -904,6 +911,16 @@ public class Block implements ItemConvertible {
 
 		public Block.Settings slipperiness(float f) {
 			this.slipperiness = f;
+			return this;
+		}
+
+		public Block.Settings method_23351(float f) {
+			this.field_21209 = f;
+			return this;
+		}
+
+		public Block.Settings method_23352(float f) {
+			this.field_21210 = f;
 			return this;
 		}
 

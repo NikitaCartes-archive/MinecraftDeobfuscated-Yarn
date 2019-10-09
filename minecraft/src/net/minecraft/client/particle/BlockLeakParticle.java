@@ -242,9 +242,10 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 			if (this.onGround) {
 				this.markDead();
 				this.world.addParticle(this.nextParticle, this.x, this.y, this.z, 0.0, 0.0, 0.0);
-				if (this.world.random.nextFloat() < 0.3F) {
-					this.world.playSound(this.x + 0.5, this.y, this.z + 0.5, SoundEvents.BLOCK_BEEHIVE_DRIP, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
-				}
+				this.world
+					.playSound(
+						this.x + 0.5, this.y, this.z + 0.5, SoundEvents.BLOCK_BEEHIVE_DRIP, SoundCategory.BLOCKS, 0.3F + this.world.random.nextFloat() * 2.0F / 3.0F, 1.0F, false
+					);
 			}
 		}
 	}

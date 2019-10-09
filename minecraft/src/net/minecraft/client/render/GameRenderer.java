@@ -129,6 +129,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	public void close() {
 		this.lightmapTextureManager.close();
 		this.mapRenderer.close();
+		this.field_20949.close();
 		this.disableShader();
 	}
 
@@ -336,7 +337,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float g = (float)livingEntity.hurtTime - f;
 			if (livingEntity.getHealth() <= 0.0F) {
 				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(40.0F - 8000.0F / (h + 200.0F), true));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(40.0F - 8000.0F / (h + 200.0F)));
 			}
 
 			if (g < 0.0F) {
@@ -346,9 +347,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			g /= (float)livingEntity.maxHurtTime;
 			g = MathHelper.sin(g * g * g * g * (float) Math.PI);
 			float h = livingEntity.knockbackVelocity;
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h, true));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-g * 14.0F, true));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-g * 14.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
 		}
 	}
 
@@ -359,8 +360,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float h = -(playerEntity.horizontalSpeed + g * f);
 			float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
 			matrixStack.translate((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F, true));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
 		}
 	}
 
@@ -461,6 +462,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 				this.client.worldRenderer.drawEntityOutlinesFramebuffer();
 				if (this.shader != null && this.shadersEnabled) {
+					RenderSystem.disableBlend();
+					RenderSystem.disableDepthTest();
+					RenderSystem.disableAlphaTest();
+					RenderSystem.disableFog();
+					RenderSystem.enableTexture();
 					RenderSystem.matrixMode(5890);
 					RenderSystem.pushMatrix();
 					RenderSystem.loadIdentity();
@@ -481,7 +487,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.matrixMode(5888);
 			RenderSystem.loadIdentity();
 			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-			GuiLighting.enableForItems();
+			GuiLighting.enableForItems(matrixStack.peek());
 			if (bl && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
@@ -619,9 +625,10 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
 			h *= h;
 			Vector3f vector3f = new Vector3f(0.0F, 1.0F, 1.0F);
-			matrixStack.multiply(vector3f.getRotationQuaternion(((float)this.ticks + f) * (float)i, true));
+			matrixStack.multiply(vector3f.getRotationQuaternion(((float)this.ticks + f) * (float)i));
 			matrixStack.scale(1.0F / h, 1.0F, 1.0F);
-			matrixStack.multiply(vector3f.getRotationQuaternion(-((float)this.ticks + f) * (float)i, true));
+			float j = -((float)this.ticks + f) * (float)i;
+			matrixStack.multiply(vector3f.getRotationQuaternion(j));
 		}
 
 		camera.update(
@@ -631,8 +638,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			this.client.options.perspective == 2,
 			f
 		);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch(), true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0F));
 		this.client.worldRenderer.render(matrixStack, f, l, bl, camera, this, this.lightmapTextureManager);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
@@ -682,12 +689,11 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			);
 			float q = 50.0F + 175.0F * MathHelper.sin(n);
 			matrixStack.scale(q, -q, q);
-			matrixStack.scale(q, -q, q);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0F * MathHelper.abs(MathHelper.sin(n)), true));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F * MathHelper.cos(g * 8.0F), true));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0F * MathHelper.cos(g * 8.0F), true));
-			LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-			this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 15728880, matrixStack, lv);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0F * MathHelper.abs(MathHelper.sin(n))));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F * MathHelper.cos(g * 8.0F)));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0F * MathHelper.cos(g * 8.0F)));
+			LayeredVertexConsumerStorage.class_4598 lv = this.field_20948.method_23000();
+			this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 15728880, OverlayTexture.field_21444, matrixStack, lv);
 			matrixStack.pop();
 			lv.method_22993();
 			RenderSystem.popAttributes();

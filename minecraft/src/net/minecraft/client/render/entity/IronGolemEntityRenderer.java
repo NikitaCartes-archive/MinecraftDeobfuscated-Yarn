@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.IronGolemCrackFeatureRenderer;
 import net.minecraft.client.render.entity.feature.IronGolemFlowerFeatureRenderer;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
 import net.minecraft.client.util.math.Vector3f;
@@ -11,10 +12,11 @@ import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/iron_golem.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/iron_golem/iron_golem.png");
 
 	public IronGolemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new IronGolemEntityModel<>(), 0.7F);
+		this.addFeature(new IronGolemCrackFeatureRenderer(this));
 		this.addFeature(new IronGolemFlowerFeatureRenderer(this));
 	}
 
@@ -28,7 +30,7 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 			float i = 13.0F;
 			float j = ironGolemEntity.limbAngle - ironGolemEntity.limbDistance * (1.0F - h) + 6.0F;
 			float k = (Math.abs(j % 13.0F - 6.5F) - 3.25F) / 3.25F;
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.5F * k, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.5F * k));
 		}
 	}
 }

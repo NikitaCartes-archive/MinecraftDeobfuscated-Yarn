@@ -31,10 +31,10 @@ public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNo
 			);
 		int i = (int)Math.ceil((d + topSolidHeightmapNoiseBiasedDecoratorConfig.noiseOffset) * (double)topSolidHeightmapNoiseBiasedDecoratorConfig.noiseToCountRatio);
 		return IntStream.range(0, i).mapToObj(ix -> {
-			int j = random.nextInt(16);
-			int k = random.nextInt(16);
-			int l = iWorld.getTopY(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, blockPos.getX() + j, blockPos.getZ() + k);
-			return new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
+			int j = random.nextInt(16) + blockPos.getX();
+			int k = random.nextInt(16) + blockPos.getZ();
+			int l = iWorld.getTopY(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, j, k);
+			return new BlockPos(j, l, k);
 		});
 	}
 }

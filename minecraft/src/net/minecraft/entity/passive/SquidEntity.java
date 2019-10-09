@@ -176,7 +176,7 @@ public class SquidEntity extends WaterCreatureEntity {
 
 	private void squirt() {
 		this.playSound(SoundEvents.ENTITY_SQUID_SQUIRT, this.getSoundVolume(), this.getSoundPitch());
-		Vec3d vec3d = this.method_6671(new Vec3d(0.0, -1.0, 0.0)).add(this.x, this.y, this.z);
+		Vec3d vec3d = this.method_6671(new Vec3d(0.0, -1.0, 0.0)).add(this.getX(), this.getY(), this.getZ());
 
 		for (int i = 0; i < 30; i++) {
 			Vec3d vec3d2 = this.method_6671(new Vec3d((double)this.random.nextFloat() * 0.6 - 0.3, -1.0, (double)this.random.nextFloat() * 0.6 - 0.3));
@@ -236,11 +236,13 @@ public class SquidEntity extends WaterCreatureEntity {
 			this.timer++;
 			LivingEntity livingEntity = SquidEntity.this.getAttacker();
 			if (livingEntity != null) {
-				Vec3d vec3d = new Vec3d(SquidEntity.this.x - livingEntity.x, SquidEntity.this.y - livingEntity.y, SquidEntity.this.z - livingEntity.z);
+				Vec3d vec3d = new Vec3d(
+					SquidEntity.this.getX() - livingEntity.getX(), SquidEntity.this.getY() - livingEntity.getY(), SquidEntity.this.getZ() - livingEntity.getZ()
+				);
 				BlockState blockState = SquidEntity.this.world
-					.getBlockState(new BlockPos(SquidEntity.this.x + vec3d.x, SquidEntity.this.y + vec3d.y, SquidEntity.this.z + vec3d.z));
+					.getBlockState(new BlockPos(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
 				FluidState fluidState = SquidEntity.this.world
-					.getFluidState(new BlockPos(SquidEntity.this.x + vec3d.x, SquidEntity.this.y + vec3d.y, SquidEntity.this.z + vec3d.z));
+					.getFluidState(new BlockPos(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
 				if (fluidState.matches(FluidTags.WATER) || blockState.isAir()) {
 					double d = vec3d.length();
 					if (d > 0.0) {
@@ -263,7 +265,7 @@ public class SquidEntity extends WaterCreatureEntity {
 				}
 
 				if (this.timer % 10 == 5) {
-					SquidEntity.this.world.addParticle(ParticleTypes.BUBBLE, SquidEntity.this.x, SquidEntity.this.y, SquidEntity.this.z, 0.0, 0.0, 0.0);
+					SquidEntity.this.world.addParticle(ParticleTypes.BUBBLE, SquidEntity.this.getX(), SquidEntity.this.getY(), SquidEntity.this.getZ(), 0.0, 0.0, 0.0);
 				}
 			}
 		}

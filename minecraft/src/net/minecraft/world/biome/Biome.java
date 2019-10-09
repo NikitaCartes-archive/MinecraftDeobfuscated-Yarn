@@ -27,6 +27,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.IdList;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.WeightedPicker;
+import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
@@ -44,13 +45,9 @@ import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.FlowerFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -78,8 +75,8 @@ public abstract class Biome {
 	protected final Biome.Category category;
 	protected final Biome.Precipitation precipitation;
 	protected final Map<GenerationStep.Carver, List<ConfiguredCarver<?>>> carvers = Maps.<GenerationStep.Carver, List<ConfiguredCarver<?>>>newHashMap();
-	protected final Map<GenerationStep.Feature, List<ConfiguredFeature<?>>> features = Maps.<GenerationStep.Feature, List<ConfiguredFeature<?>>>newHashMap();
-	protected final List<ConfiguredFeature<?>> flowerFeatures = Lists.<ConfiguredFeature<?>>newArrayList();
+	protected final Map<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>> features = Maps.<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>>newHashMap();
+	protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.<ConfiguredFeature<?, ?>>newArrayList();
 	protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.<StructureFeature<?>, FeatureConfig>newHashMap();
 	private final Map<EntityCategory, List<Biome.SpawnEntry>> spawns = Maps.<EntityCategory, List<Biome.SpawnEntry>>newHashMap();
 	private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> SystemUtil.get(() -> {
@@ -99,13 +96,6 @@ public abstract class Biome {
 
 	public static <C extends CarverConfig> ConfiguredCarver<C> configureCarver(Carver<C> carver, C carverConfig) {
 		return new ConfiguredCarver<>(carver, carverConfig);
-	}
-
-	public static <F extends FeatureConfig, D extends DecoratorConfig> ConfiguredFeature<?> configureFeature(
-		Feature<F> feature, F featureConfig, Decorator<D> decorator, D decoratorConfig
-	) {
-		Feature<DecoratedFeatureConfig> feature2 = feature instanceof FlowerFeature ? Feature.DECORATED_FLOWER : Feature.DECORATED;
-		return new ConfiguredFeature<>(feature2, new DecoratedFeatureConfig(feature, featureConfig, decorator, decoratorConfig));
 	}
 
 	protected Biome(Biome.Settings settings) {
@@ -243,7 +233,7 @@ public abstract class Biome {
 		}
 	}
 
-	public void addFeature(GenerationStep.Feature feature, ConfiguredFeature<?> configuredFeature) {
+	public void addFeature(GenerationStep.Feature feature, ConfiguredFeature<?, ?> configuredFeature) {
 		if (configuredFeature.feature == Feature.DECORATED_FLOWER) {
 			this.flowerFeatures.add(configuredFeature);
 		}
@@ -259,8 +249,8 @@ public abstract class Biome {
 		return (List<ConfiguredCarver<?>>)this.carvers.computeIfAbsent(carver, carverx -> Lists.newArrayList());
 	}
 
-	public <C extends FeatureConfig> void addStructureFeature(StructureFeature<C> structureFeature, C featureConfig) {
-		this.structureFeatures.put(structureFeature, featureConfig);
+	public <C extends FeatureConfig> void addStructureFeature(ConfiguredFeature<C, ? extends StructureFeature<C>> configuredFeature) {
+		this.structureFeatures.put(configuredFeature.feature, configuredFeature.config);
 	}
 
 	public <C extends FeatureConfig> boolean hasStructureFeature(StructureFeature<C> structureFeature) {
@@ -272,12 +262,12 @@ public abstract class Biome {
 		return (C)this.structureFeatures.get(structureFeature);
 	}
 
-	public List<ConfiguredFeature<?>> getFlowerFeatures() {
+	public List<ConfiguredFeature<?, ?>> getFlowerFeatures() {
 		return this.flowerFeatures;
 	}
 
-	public List<ConfiguredFeature<?>> getFeaturesForStep(GenerationStep.Feature feature) {
-		return (List<ConfiguredFeature<?>>)this.features.get(feature);
+	public List<ConfiguredFeature<?, ?>> getFeaturesForStep(GenerationStep.Feature feature) {
+		return (List<ConfiguredFeature<?, ?>>)this.features.get(feature);
 	}
 
 	public void generateFeatureStep(
@@ -290,14 +280,16 @@ public abstract class Biome {
 	) {
 		int i = 0;
 
-		for (ConfiguredFeature<?> configuredFeature : (List)this.features.get(feature)) {
+		for (ConfiguredFeature<?, ?> configuredFeature : (List)this.features.get(feature)) {
 			chunkRandom.setFeatureSeed(l, i, feature.ordinal());
 
 			try {
 				configuredFeature.generate(iWorld, chunkGenerator, chunkRandom, blockPos);
 			} catch (Exception var13) {
 				CrashReport crashReport = CrashReport.create(var13, "Feature placement");
-				crashReport.addElement("Feature").add("Id", Registry.FEATURE.getId(configuredFeature.feature)).add("Description", configuredFeature.feature::toString);
+				crashReport.addElement("Feature")
+					.add("Id", Registry.FEATURE.getId(configuredFeature.feature))
+					.add("Description", (CrashCallable<String>)(() -> configuredFeature.feature.toString()));
 				throw new CrashException(crashReport);
 			}
 

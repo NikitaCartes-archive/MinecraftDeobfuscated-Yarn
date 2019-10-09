@@ -82,7 +82,7 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 		}
 
 		public Vec3d positionAt(Entity entity) {
-			return (Vec3d)this.offset.apply(new Vec3d(entity.x, entity.y, entity.z), entity);
+			return (Vec3d)this.offset.apply(entity.getPos(), entity);
 		}
 
 		public Vec3d positionAt(ServerCommandSource serverCommandSource) {

@@ -32,10 +32,9 @@ public class GoToNearbyEntityTask extends Task<MobEntityWithAi> {
 
 	public static void method_19596(MobEntityWithAi mobEntityWithAi, Entity entity, float f) {
 		for (int i = 0; i < 10; i++) {
-			Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
-			Vec3d vec3d2 = TargetFinder.findGroundTargetAwayFrom(mobEntityWithAi, 16, 7, vec3d);
-			if (vec3d2 != null) {
-				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d2, f, 0));
+			Vec3d vec3d = TargetFinder.findGroundTargetAwayFrom(mobEntityWithAi, 16, 7, entity.getPos());
+			if (vec3d != null) {
+				mobEntityWithAi.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, f, 0));
 				return;
 			}
 		}

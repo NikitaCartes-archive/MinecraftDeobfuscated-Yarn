@@ -115,16 +115,7 @@ public class ArrowEntity extends ProjectileEntity {
 			double f = (double)(j >> 0 & 0xFF) / 255.0;
 
 			for (int k = 0; k < i; k++) {
-				this.world
-					.addParticle(
-						ParticleTypes.ENTITY_EFFECT,
-						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-						this.y + this.random.nextDouble() * (double)this.getHeight(),
-						this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-						d,
-						e,
-						f
-					);
+				this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), d, e, f);
 			}
 		}
 	}
@@ -228,16 +219,7 @@ public class ArrowEntity extends ProjectileEntity {
 				double f = (double)(i >> 0 & 0xFF) / 255.0;
 
 				for (int j = 0; j < 20; j++) {
-					this.world
-						.addParticle(
-							ParticleTypes.ENTITY_EFFECT,
-							this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-							this.y + this.random.nextDouble() * (double)this.getHeight(),
-							this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-							d,
-							e,
-							f
-						);
+					this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.method_23322(0.5), this.method_23319(), this.method_23325(0.5), d, e, f);
 				}
 			}
 		} else {

@@ -22,9 +22,10 @@ public class DarkOakTreeDecorator extends Decorator<NopeDecoratorConfig> {
 		return IntStream.range(0, 16).mapToObj(i -> {
 			int j = i / 4;
 			int k = i % 4;
-			int l = j * 4 + 1 + random.nextInt(3);
-			int m = k * 4 + 1 + random.nextInt(3);
-			return iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(l, 0, m));
+			int l = j * 4 + 1 + random.nextInt(3) + blockPos.getX();
+			int m = k * 4 + 1 + random.nextInt(3) + blockPos.getZ();
+			int n = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, l, m);
+			return new BlockPos(l, n, m);
 		});
 	}
 }

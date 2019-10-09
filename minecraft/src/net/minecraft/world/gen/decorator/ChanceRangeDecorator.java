@@ -13,10 +13,10 @@ public class ChanceRangeDecorator extends SimpleDecorator<ChanceRangeDecoratorCo
 
 	public Stream<BlockPos> method_15944(Random random, ChanceRangeDecoratorConfig chanceRangeDecoratorConfig, BlockPos blockPos) {
 		if (random.nextFloat() < chanceRangeDecoratorConfig.chance) {
-			int i = random.nextInt(16);
-			int j = random.nextInt(chanceRangeDecoratorConfig.top - chanceRangeDecoratorConfig.topOffset) + chanceRangeDecoratorConfig.bottomOffset;
-			int k = random.nextInt(16);
-			return Stream.of(blockPos.add(i, j, k));
+			int i = random.nextInt(16) + blockPos.getX();
+			int j = random.nextInt(16) + blockPos.getZ();
+			int k = random.nextInt(chanceRangeDecoratorConfig.top - chanceRangeDecoratorConfig.topOffset) + chanceRangeDecoratorConfig.bottomOffset;
+			return Stream.of(new BlockPos(i, k, j));
 		} else {
 			return Stream.empty();
 		}

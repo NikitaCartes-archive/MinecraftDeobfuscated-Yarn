@@ -27,11 +27,15 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.SpawnHelper;
@@ -108,17 +112,17 @@ public class IronGolemEntity extends GolemEntity {
 		}
 
 		if (squaredHorizontalLength(this.getVelocity()) > 2.5000003E-7F && this.random.nextInt(5) == 0) {
-			int i = MathHelper.floor(this.x);
-			int j = MathHelper.floor(this.y - 0.2F);
-			int k = MathHelper.floor(this.z);
+			int i = MathHelper.floor(this.getX());
+			int j = MathHelper.floor(this.getY() - 0.2F);
+			int k = MathHelper.floor(this.getZ());
 			BlockState blockState = this.world.getBlockState(new BlockPos(i, j, k));
 			if (!blockState.isAir()) {
 				this.world
 					.addParticle(
 						new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
-						this.x + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
-						this.getBoundingBox().minY + 0.1,
-						this.z + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
+						this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
+						this.getY() + 0.1,
+						this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
 						4.0 * ((double)this.random.nextFloat() - 0.5),
 						0.5,
 						((double)this.random.nextFloat() - 0.5) * 4.0
@@ -156,7 +160,9 @@ public class IronGolemEntity extends GolemEntity {
 	public boolean tryAttack(Entity entity) {
 		this.field_6762 = 10;
 		this.world.sendEntityStatus(this, (byte)4);
-		boolean bl = entity.damage(DamageSource.mob(this), this.method_22328() / 2.0F + (float)this.random.nextInt((int)this.method_22328()));
+		float f = this.method_22328();
+		float g = f > 0.0F ? f / 2.0F + (float)this.random.nextInt((int)f) : 0.0F;
+		boolean bl = entity.damage(DamageSource.mob(this), g);
 		if (bl) {
 			entity.setVelocity(entity.getVelocity().add(0.0, 0.4F, 0.0));
 			this.dealDamage(this, entity);
@@ -164,6 +170,28 @@ public class IronGolemEntity extends GolemEntity {
 
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
 		return bl;
+	}
+
+	@Override
+	public boolean damage(DamageSource damageSource, float f) {
+		IronGolemEntity.class_4621 lv = this.method_23347();
+		boolean bl = super.damage(damageSource, f);
+		if (bl && this.method_23347() != lv) {
+			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0F, 1.0F);
+		}
+
+		return bl;
+	}
+
+	public IronGolemEntity.class_4621 method_23347() {
+		float f = this.getHealth();
+		if (f < 25.0F) {
+			return IronGolemEntity.class_4621.HIGH;
+		} else if (f < 50.0F) {
+			return IronGolemEntity.class_4621.MEDIUM;
+		} else {
+			return f < 75.0F ? IronGolemEntity.class_4621.LOW : IronGolemEntity.class_4621.NONE;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -204,6 +232,29 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	protected SoundEvent getDeathSound() {
 		return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
+	}
+
+	@Override
+	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		Item item = itemStack.getItem();
+		if (item != Items.IRON_INGOT) {
+			return false;
+		} else {
+			float f = this.getHealth();
+			this.heal(25.0F);
+			if (this.getHealth() == f) {
+				return true;
+			} else {
+				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
+				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
+				if (!playerEntity.abilities.creativeMode) {
+					itemStack.decrement(1);
+				}
+
+				return true;
+			}
+		}
 	}
 
 	@Override
@@ -253,5 +304,12 @@ public class IronGolemEntity extends GolemEntity {
 			return SpawnHelper.isClearForSpawn(worldView, blockPos, worldView.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
 				&& worldView.intersectsEntities(this);
 		}
+	}
+
+	public static enum class_4621 {
+		NONE,
+		LOW,
+		MEDIUM,
+		HIGH;
 	}
 }

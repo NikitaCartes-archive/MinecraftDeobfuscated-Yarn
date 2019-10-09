@@ -1,5 +1,6 @@
 package net.minecraft.world.biome;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
@@ -12,7 +13,6 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.PlantedFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -31,27 +31,28 @@ public final class DarkForestHillsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("dark_forest")
 		);
-		this.addStructureFeature(Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.WOODLAND_MANSION.method_23397(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(
-				Feature.RANDOM_SELECTOR,
-				new RandomFeatureConfig(
-					new Feature[]{Feature.HUGE_RED_MUSHROOM, Feature.HUGE_BROWN_MUSHROOM, Feature.DARK_OAK_TREE, Feature.FANCY_TREE},
-					new FeatureConfig[]{new PlantedFeatureConfig(false), new PlantedFeatureConfig(false), FeatureConfig.DEFAULT, FeatureConfig.DEFAULT},
-					new float[]{0.025F, 0.05F, 0.6666667F, 0.1F},
-					Feature.NORMAL_TREE,
-					FeatureConfig.DEFAULT
-				),
-				Decorator.DARK_OAK_TREE,
-				DecoratorConfig.DEFAULT
-			)
+			Feature.RANDOM_SELECTOR
+				.method_23397(
+					new RandomFeatureConfig(
+						ImmutableList.of(
+							Feature.HUGE_RED_MUSHROOM.method_23397(DefaultBiomeFeatures.field_21142).method_23387(0.025F),
+							Feature.HUGE_BROWN_MUSHROOM.method_23397(DefaultBiomeFeatures.field_21143).method_23387(0.05F),
+							Feature.DARK_OAK_TREE.method_23397(DefaultBiomeFeatures.field_21197).method_23387(0.6666667F),
+							Feature.FANCY_TREE.method_23397(DefaultBiomeFeatures.field_21190).method_23387(0.1F)
+						),
+						Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21126)
+					)
+				)
+				.method_23388(Decorator.DARK_OAK_TREE.method_23475(DecoratorConfig.DEFAULT))
 		);
 		DefaultBiomeFeatures.addForestFlowers(this);
 		DefaultBiomeFeatures.addMineables(this);

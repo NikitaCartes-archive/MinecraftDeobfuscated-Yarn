@@ -45,7 +45,7 @@ public class MeleeAttackGoal extends Goal {
 				this.field_6509 = this.mob.getNavigation().findPathTo(livingEntity, 0);
 				return this.field_6509 != null
 					? true
-					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+					: this.getSquaredMaxAttackDistance(livingEntity) >= this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 			}
 		}
 	}
@@ -88,7 +88,7 @@ public class MeleeAttackGoal extends Goal {
 	public void tick() {
 		LivingEntity livingEntity = this.mob.getTarget();
 		this.mob.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
-		double d = this.mob.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+		double d = this.mob.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 		this.field_6501--;
 		if ((this.field_6502 || this.mob.getVisibilityCache().canSee(livingEntity))
 			&& this.field_6501 <= 0
@@ -97,9 +97,9 @@ public class MeleeAttackGoal extends Goal {
 					|| livingEntity.squaredDistanceTo(this.targetX, this.targetY, this.targetZ) >= 1.0
 					|| this.mob.getRandom().nextFloat() < 0.05F
 			)) {
-			this.targetX = livingEntity.x;
-			this.targetY = livingEntity.getBoundingBox().minY;
-			this.targetZ = livingEntity.z;
+			this.targetX = livingEntity.getX();
+			this.targetY = livingEntity.getY();
+			this.targetZ = livingEntity.getZ();
 			this.field_6501 = 4 + this.mob.getRandom().nextInt(7);
 			if (d > 1024.0) {
 				this.field_6501 += 10;

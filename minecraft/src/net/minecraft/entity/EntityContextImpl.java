@@ -25,9 +25,7 @@ public class EntityContextImpl implements EntityContext {
 
 	@Deprecated
 	protected EntityContextImpl(Entity entity) {
-		boolean var10001 = entity.method_21752();
-		Item var10003 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR;
-		this(var10001, entity.getBoundingBox().minY, var10003);
+		this(entity.method_21752(), entity.getY(), entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR);
 	}
 
 	@Override

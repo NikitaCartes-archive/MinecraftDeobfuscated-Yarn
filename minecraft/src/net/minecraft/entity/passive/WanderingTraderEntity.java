@@ -177,7 +177,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	protected void afterUsing(TradeOffer tradeOffer) {
 		if (tradeOffer.shouldRewardPlayerExperience()) {
 			int i = 3 + this.random.nextInt(4);
-			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
+			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5, this.getZ(), i));
 		}
 	}
 
@@ -272,9 +272,11 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			BlockPos blockPos = this.trader.getWanderTarget();
 			if (blockPos != null && WanderingTraderEntity.this.navigation.isIdle()) {
 				if (this.isTooFarFrom(blockPos, 10.0)) {
-					Vec3d vec3d = new Vec3d((double)blockPos.getX() - this.trader.x, (double)blockPos.getY() - this.trader.y, (double)blockPos.getZ() - this.trader.z)
+					Vec3d vec3d = new Vec3d(
+							(double)blockPos.getX() - this.trader.getX(), (double)blockPos.getY() - this.trader.getY(), (double)blockPos.getZ() - this.trader.getZ()
+						)
 						.normalize();
-					Vec3d vec3d2 = vec3d.multiply(10.0).add(this.trader.x, this.trader.y, this.trader.z);
+					Vec3d vec3d2 = vec3d.multiply(10.0).add(this.trader.getX(), this.trader.getY(), this.trader.getZ());
 					WanderingTraderEntity.this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
 				} else {
 					WanderingTraderEntity.this.navigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.speed);

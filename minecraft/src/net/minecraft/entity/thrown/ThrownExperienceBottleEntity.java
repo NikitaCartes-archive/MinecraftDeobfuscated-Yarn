@@ -43,7 +43,7 @@ public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 			while (i > 0) {
 				int j = ExperienceOrbEntity.roundToOrbSize(i);
 				i -= j;
-				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y, this.z, j));
+				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));
 			}
 
 			this.remove();

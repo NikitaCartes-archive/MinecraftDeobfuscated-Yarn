@@ -325,14 +325,14 @@ public class WorldChunk implements Chunk {
 	@Override
 	public void addEntity(Entity entity) {
 		this.unsaved = true;
-		int i = MathHelper.floor(entity.x / 16.0);
-		int j = MathHelper.floor(entity.z / 16.0);
+		int i = MathHelper.floor(entity.getX() / 16.0);
+		int j = MathHelper.floor(entity.getZ() / 16.0);
 		if (i != this.pos.x || j != this.pos.z) {
 			LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", i, j, this.pos.x, this.pos.z, entity);
 			entity.removed = true;
 		}
 
-		int k = MathHelper.floor(entity.y / 16.0);
+		int k = MathHelper.floor(entity.getY() / 16.0);
 		if (k < 0) {
 			k = 0;
 		}
@@ -423,8 +423,7 @@ public class WorldChunk implements Chunk {
 	@Override
 	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
 		if (this.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
-			blockEntity.setWorld(this.world);
-			blockEntity.setPos(blockPos);
+			blockEntity.setWorld(this.world, blockPos);
 			blockEntity.cancelRemoval();
 			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(blockPos.toImmutable(), blockEntity);
 			if (blockEntity2 != null && blockEntity2 != blockEntity) {
@@ -505,7 +504,7 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public void getEntities(@Nullable EntityType<?> entityType, Box box, List<Entity> list, Predicate<? super Entity> predicate) {
+	public <T extends Entity> void getEntities(@Nullable EntityType<?> entityType, Box box, List<? super T> list, Predicate<? super T> predicate) {
 		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -743,7 +742,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		if (blockEntity != null) {
-			blockEntity.setPos(blockPos);
+			blockEntity.setWorld(this.world, blockPos);
 			this.addBlockEntity(blockEntity);
 		} else {
 			LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", this.getBlockState(blockPos), blockPos);

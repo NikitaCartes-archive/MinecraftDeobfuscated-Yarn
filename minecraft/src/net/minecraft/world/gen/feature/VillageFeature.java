@@ -40,7 +40,7 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 	@Override
 	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-		return i == chunkPos.x && j == chunkPos.z ? chunkGenerator.hasStructure(biome, Feature.VILLAGE) : false;
+		return i == chunkPos.x && j == chunkPos.z ? chunkGenerator.hasStructure(biome, this) : false;
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MatrixStack;
@@ -110,14 +111,13 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		boolean bl = this.method_4056(livingEntity, false);
 		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		int q = livingEntity.getLightmapCoordinates();
+		this.model.setAngles(livingEntity, p, o, lx, k, m, 0.0625F);
 		if (bl || bl2) {
-			this.model.setAngles(livingEntity, p, o, lx, k, m, 0.0625F);
+			Identifier identifier = this.getTexture(livingEntity);
 			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(
-				bl2 ? RenderLayer.method_23019(this.getTexture(livingEntity), true, true, false) : RenderLayer.method_23017(this.getTexture(livingEntity))
+				bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : this.model.method_23500(identifier)
 			);
-			method_23184(livingEntity, vertexConsumer, this.method_23185(livingEntity, h));
-			this.model.method_22957(matrixStack, vertexConsumer, q);
-			vertexConsumer.clearDefaultOverlay();
+			this.model.renderItem(matrixStack, vertexConsumer, q, method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0F, 1.0F, 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {
@@ -130,8 +130,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}
 
-	public static void method_23184(LivingEntity livingEntity, VertexConsumer vertexConsumer, float f) {
-		vertexConsumer.defaultOverlay(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
+	public static int method_23622(LivingEntity livingEntity, float f) {
+		return OverlayTexture.method_23625(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
 	}
 
 	protected boolean method_4056(T livingEntity, boolean bl) {
@@ -156,7 +156,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	protected void setupTransforms(T livingEntity, MatrixStack matrixStack, float f, float g, float h) {
 		EntityPose entityPose = livingEntity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
 		}
 
 		if (livingEntity.deathTime > 0) {
@@ -166,21 +166,22 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				i = 1.0F;
 			}
 
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(i * this.getLyingAngle(livingEntity), true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(i * this.getLyingAngle(livingEntity)));
 		} else if (livingEntity.isUsingRiptide()) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F - livingEntity.pitch, true));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)livingEntity.age + h) * -75.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F - livingEntity.pitch));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)livingEntity.age + h) * -75.0F));
 		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(direction != null ? method_18656(direction) : g, true));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(livingEntity), true));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F, true));
+			float j = direction != null ? method_18656(direction) : g;
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(livingEntity)));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F));
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
 			String string = Formatting.strip(livingEntity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
 				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
 				matrixStack.translate(0.0, (double)(livingEntity.getHeight() + 0.1F), 0.0);
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
 			}
 		}
 	}

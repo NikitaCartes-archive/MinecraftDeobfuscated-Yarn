@@ -6,8 +6,11 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class Vec3i implements Comparable<Vec3i> {
 	public static final Vec3i ZERO = new Vec3i(0, 0, 0);
+	@Deprecated
 	private final int x;
+	@Deprecated
 	private final int y;
+	@Deprecated
 	private final int z;
 
 	public Vec3i(int i, int j, int k) {
@@ -82,7 +85,7 @@ public class Vec3i implements Comparable<Vec3i> {
 	}
 
 	public boolean isWithinDistance(Vec3i vec3i, double d) {
-		return this.getSquaredDistance((double)vec3i.x, (double)vec3i.y, (double)vec3i.z, false) < d * d;
+		return this.getSquaredDistance((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ(), false) < d * d;
 	}
 
 	public boolean isWithinDistance(Position position, double d) {
@@ -106,9 +109,9 @@ public class Vec3i implements Comparable<Vec3i> {
 	}
 
 	public int getManhattanDistance(Vec3i vec3i) {
-		float f = (float)Math.abs(vec3i.getX() - this.x);
-		float g = (float)Math.abs(vec3i.getY() - this.y);
-		float h = (float)Math.abs(vec3i.getZ() - this.z);
+		float f = (float)Math.abs(vec3i.getX() - this.getX());
+		float g = (float)Math.abs(vec3i.getY() - this.getY());
+		float h = (float)Math.abs(vec3i.getZ() - this.getZ());
 		return (int)(f + g + h);
 	}
 

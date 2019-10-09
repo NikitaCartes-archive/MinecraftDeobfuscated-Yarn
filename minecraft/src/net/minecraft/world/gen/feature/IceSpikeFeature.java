@@ -46,14 +46,14 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(random.nextFloat() > 0.75F))) {
 							BlockState blockState = iWorld.getBlockState(blockPos.add(m, k, n));
 							Block block = blockState.getBlock();
-							if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+							if (blockState.isAir() || method_23396(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
 								this.setBlockState(iWorld, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
 							}
 
 							if (k != 0 && l > 1) {
 								blockState = iWorld.getBlockState(blockPos.add(m, -k, n));
 								block = blockState.getBlock();
-								if (blockState.isAir() || Block.isNaturalDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
+								if (blockState.isAir() || method_23396(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
 									this.setBlockState(iWorld, blockPos.add(m, -k, n), Blocks.PACKED_ICE.getDefaultState());
 								}
 							}
@@ -80,7 +80,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					while (blockPos2.getY() > 50) {
 						BlockState blockState2 = iWorld.getBlockState(blockPos2);
 						Block block2 = blockState2.getBlock();
-						if (!blockState2.isAir() && !Block.isNaturalDirt(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) {
+						if (!blockState2.isAir() && !method_23396(block2) && block2 != Blocks.SNOW_BLOCK && block2 != Blocks.ICE && block2 != Blocks.PACKED_ICE) {
 							break;
 						}
 

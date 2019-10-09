@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
@@ -15,11 +16,7 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	private final ModelPart field_3602;
 
 	public VexEntityModel() {
-		this(0.0F);
-	}
-
-	public VexEntityModel(float f) {
-		super(f, 0.0F, 64, 64);
+		super(RenderLayer::getEntityCutoutNoCull, 0.0F, 0.0F, 64, 64);
 		this.leftLeg.visible = false;
 		this.headwear.visible = false;
 		this.rightLeg = new ModelPart(this, 32, 0);

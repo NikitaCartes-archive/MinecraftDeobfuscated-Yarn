@@ -51,18 +51,10 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 			this.targetEntity = this.mob
 				.world
 				.getClosestEntityIncludingUngeneratedChunks(
-					this.targetClass,
-					this.targetPredicate,
-					this.mob,
-					this.mob.x,
-					this.mob.y + (double)this.mob.getStandingEyeHeight(),
-					this.mob.z,
-					this.getSearchBox(this.getFollowRange())
+					this.targetClass, this.targetPredicate, this.mob, this.mob.getX(), this.mob.method_23320(), this.mob.getZ(), this.getSearchBox(this.getFollowRange())
 				);
 		} else {
-			this.targetEntity = this.mob
-				.world
-				.getClosestPlayer(this.targetPredicate, this.mob, this.mob.x, this.mob.y + (double)this.mob.getStandingEyeHeight(), this.mob.z);
+			this.targetEntity = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.method_23320(), this.mob.getZ());
 		}
 	}
 

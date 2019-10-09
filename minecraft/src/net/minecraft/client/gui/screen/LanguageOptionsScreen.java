@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -16,18 +17,14 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class LanguageOptionsScreen extends Screen {
-	protected final Screen parent;
+public class LanguageOptionsScreen extends class_4667 {
 	private LanguageOptionsScreen.LanguageSelectionListWidget languageSelectionList;
-	private final GameOptions options;
 	private final LanguageManager languageManager;
 	private OptionButtonWidget forceUnicodeButton;
 	private ButtonWidget doneButton;
 
 	public LanguageOptionsScreen(Screen screen, GameOptions gameOptions, LanguageManager languageManager) {
-		super(new TranslatableText("options.language"));
-		this.parent = screen;
-		this.options = gameOptions;
+		super(screen, gameOptions, new TranslatableText("options.language"));
 		this.languageManager = languageManager;
 	}
 
@@ -37,10 +34,10 @@ public class LanguageOptionsScreen extends Screen {
 		this.children.add(this.languageSelectionList);
 		this.forceUnicodeButton = this.addButton(
 			new OptionButtonWidget(
-				this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.getDisplayString(this.options), buttonWidget -> {
-					Option.FORCE_UNICODE_FONT.set(this.options);
-					this.options.write();
-					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.options));
+				this.width / 2 - 155, this.height - 38, 150, 20, Option.FORCE_UNICODE_FONT, Option.FORCE_UNICODE_FONT.getDisplayString(this.field_21336), buttonWidget -> {
+					Option.FORCE_UNICODE_FONT.set(this.field_21336);
+					this.field_21336.write();
+					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.field_21336));
 					this.minecraft.onResolutionChanged();
 				}
 			)
@@ -49,15 +46,15 @@ public class LanguageOptionsScreen extends Screen {
 			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelected();
 			if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
 				this.languageManager.setLanguage(languageEntry.languageDefinition);
-				this.options.language = languageEntry.languageDefinition.getCode();
+				this.field_21336.language = languageEntry.languageDefinition.getCode();
 				this.minecraft.reloadResources();
 				this.font.setRightToLeft(this.languageManager.isRightToLeft());
 				this.doneButton.setMessage(I18n.translate("gui.done"));
-				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.options));
-				this.options.write();
+				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.field_21336));
+				this.field_21336.write();
 			}
 
-			this.minecraft.openScreen(this.parent);
+			this.minecraft.openScreen(this.field_21335);
 		}));
 		super.init();
 	}

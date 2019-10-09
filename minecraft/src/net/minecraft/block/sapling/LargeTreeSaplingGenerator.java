@@ -2,6 +2,7 @@ package net.minecraft.block.sapling;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4636;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,9 +11,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
@@ -29,11 +28,11 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	}
 
 	@Nullable
-	protected abstract AbstractTreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random);
+	protected abstract ConfiguredFeature<class_4636, ?> createLargeTreeFeature(Random random);
 
 	public boolean generateLargeTree(IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
-		AbstractTreeFeature<DefaultFeatureConfig> abstractTreeFeature = this.createLargeTreeFeature(random);
-		if (abstractTreeFeature == null) {
+		ConfiguredFeature<class_4636, ?> configuredFeature = this.createLargeTreeFeature(random);
+		if (configuredFeature == null) {
 			return false;
 		} else {
 			BlockState blockState2 = Blocks.AIR.getDefaultState();
@@ -41,9 +40,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 			iWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
 			iWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
 			iWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
-			if (abstractTreeFeature.method_22362(
-				iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos.add(i, 0, j), FeatureConfig.DEFAULT, false
-			)) {
+			if (configuredFeature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos.add(i, 0, j))) {
 				return true;
 			} else {
 				iWorld.setBlockState(blockPos.add(i, 0, j), blockState, 4);

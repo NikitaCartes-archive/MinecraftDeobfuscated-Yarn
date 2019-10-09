@@ -124,9 +124,9 @@ public abstract class PlayerManager {
 			serverPlayerEntity.getName().getString(),
 			string2,
 			serverPlayerEntity.getEntityId(),
-			serverPlayerEntity.x,
-			serverPlayerEntity.y,
-			serverPlayerEntity.z
+			serverPlayerEntity.getX(),
+			serverPlayerEntity.getY(),
+			serverPlayerEntity.getZ()
 		);
 		LevelProperties levelProperties = serverWorld.getLevelProperties();
 		this.setGameMode(serverPlayerEntity, null, serverWorld);
@@ -169,7 +169,9 @@ public abstract class PlayerManager {
 		}
 
 		this.sendToAll(text.formatted(Formatting.YELLOW));
-		serverPlayNetworkHandler.requestTeleport(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z, serverPlayerEntity.yaw, serverPlayerEntity.pitch);
+		serverPlayNetworkHandler.requestTeleport(
+			serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch
+		);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
 		this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, serverPlayerEntity));
@@ -434,8 +436,8 @@ public abstract class PlayerManager {
 			}
 		}
 
-		while (!serverWorld.doesNotCollide(serverPlayerEntity2) && serverPlayerEntity2.y < 256.0) {
-			serverPlayerEntity2.setPosition(serverPlayerEntity2.x, serverPlayerEntity2.y + 1.0, serverPlayerEntity2.z);
+		while (!serverWorld.doesNotCollide(serverPlayerEntity2) && serverPlayerEntity2.getY() < 256.0) {
+			serverPlayerEntity2.setPosition(serverPlayerEntity2.getX(), serverPlayerEntity2.getY() + 1.0, serverPlayerEntity2.getZ());
 		}
 
 		LevelProperties levelProperties = serverPlayerEntity2.world.getLevelProperties();
@@ -450,7 +452,7 @@ public abstract class PlayerManager {
 			);
 		BlockPos blockPos2 = serverWorld.getSpawnPos();
 		serverPlayerEntity2.networkHandler
-			.requestTeleport(serverPlayerEntity2.x, serverPlayerEntity2.y, serverPlayerEntity2.z, serverPlayerEntity2.yaw, serverPlayerEntity2.pitch);
+			.requestTeleport(serverPlayerEntity2.getX(), serverPlayerEntity2.getY(), serverPlayerEntity2.getZ(), serverPlayerEntity2.yaw, serverPlayerEntity2.pitch);
 		serverPlayerEntity2.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos2));
 		serverPlayerEntity2.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
 		serverPlayerEntity2.networkHandler
@@ -597,9 +599,9 @@ public abstract class PlayerManager {
 		for (int i = 0; i < this.players.size(); i++) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
 			if (serverPlayerEntity != playerEntity && serverPlayerEntity.dimension == dimensionType) {
-				double h = d - serverPlayerEntity.x;
-				double j = e - serverPlayerEntity.y;
-				double k = f - serverPlayerEntity.z;
+				double h = d - serverPlayerEntity.getX();
+				double j = e - serverPlayerEntity.getY();
+				double k = f - serverPlayerEntity.getZ();
 				if (h * h + j * j + k * k < g * g) {
 					serverPlayerEntity.networkHandler.sendPacket(packet);
 				}

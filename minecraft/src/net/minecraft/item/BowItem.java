@@ -78,9 +78,9 @@ public class BowItem extends RangedWeaponItem {
 
 					world.playSound(
 						null,
-						playerEntity.x,
-						playerEntity.y,
-						playerEntity.z,
+						playerEntity.getX(),
+						playerEntity.getY(),
+						playerEntity.getZ(),
 						SoundEvents.ENTITY_ARROW_SHOOT,
 						SoundCategory.PLAYERS,
 						1.0F,

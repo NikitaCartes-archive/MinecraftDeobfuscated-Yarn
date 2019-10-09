@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.Matrix4f;
@@ -41,22 +42,11 @@ public class PostProcessShader implements AutoCloseable {
 		this.samplerHeights.add(this.samplerHeights.size(), j);
 	}
 
-	private void setGlState() {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.disableBlend();
-		RenderSystem.disableDepthTest();
-		RenderSystem.disableAlphaTest();
-		RenderSystem.disableFog();
-		RenderSystem.enableTexture();
-		RenderSystem.bindTexture(0);
-	}
-
 	public void setProjectionMatrix(Matrix4f matrix4f) {
 		this.projectionMatrix = matrix4f;
 	}
 
 	public void render(float f) {
-		this.setGlState();
 		this.input.endWrite();
 		float g = (float)this.output.texWidth;
 		float h = (float)this.output.texHeight;
@@ -82,17 +72,15 @@ public class PostProcessShader implements AutoCloseable {
 		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
 		this.output.beginWrite(false);
 		RenderSystem.depthMask(false);
-		RenderSystem.colorMask(true, true, true, true);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)g, 0.0, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)g, (double)h, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex(0.0, (double)h, 500.0).color(255, 255, 255, 255).next();
-		tessellator.draw();
+		bufferBuilder.end();
+		BufferRenderer.draw(bufferBuilder);
 		RenderSystem.depthMask(true);
-		RenderSystem.colorMask(true, true, true, true);
 		this.program.disable();
 		this.output.endWrite();
 		this.input.endRead();

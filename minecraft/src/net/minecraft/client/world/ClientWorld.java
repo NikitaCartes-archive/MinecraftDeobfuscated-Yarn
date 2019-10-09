@@ -149,7 +149,7 @@ public class ClientWorld extends World {
 
 	public void tickEntity(Entity entity) {
 		if (entity instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity)) {
-			entity.method_22862(entity.x, entity.y, entity.z);
+			entity.method_22862(entity.getX(), entity.getY(), entity.getZ());
 			entity.prevYaw = entity.yaw;
 			entity.prevPitch = entity.pitch;
 			if (entity.updateNeeded || entity.isSpectator()) {
@@ -172,7 +172,7 @@ public class ClientWorld extends World {
 		if (entity2.removed || entity2.getVehicle() != entity) {
 			entity2.stopRiding();
 		} else if (entity2 instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity2)) {
-			entity2.method_22862(entity2.x, entity2.y, entity2.z);
+			entity2.method_22862(entity2.getX(), entity2.getY(), entity2.getZ());
 			entity2.prevYaw = entity2.yaw;
 			entity2.prevPitch = entity2.pitch;
 			if (entity2.updateNeeded) {
@@ -191,9 +191,9 @@ public class ClientWorld extends World {
 
 	public void checkChunk(Entity entity) {
 		this.getProfiler().push("chunkCheck");
-		int i = MathHelper.floor(entity.x / 16.0);
-		int j = MathHelper.floor(entity.y / 16.0);
-		int k = MathHelper.floor(entity.z / 16.0);
+		int i = MathHelper.floor(entity.getX() / 16.0);
+		int j = MathHelper.floor(entity.getY() / 16.0);
+		int k = MathHelper.floor(entity.getZ() / 16.0);
 		if (!entity.updateNeeded || entity.chunkX != i || entity.chunkY != j || entity.chunkZ != k) {
 			if (entity.updateNeeded && this.isChunkLoaded(entity.chunkX, entity.chunkZ)) {
 				this.method_8497(entity.chunkX, entity.chunkZ).remove(entity, entity.chunkY);
@@ -267,7 +267,7 @@ public class ClientWorld extends World {
 	private void addEntityPrivate(int i, Entity entity) {
 		this.removeEntity(i);
 		this.regularEntities.put(i, entity);
-		this.method_2935().method_2857(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
+		this.method_2935().method_2857(MathHelper.floor(entity.getX() / 16.0), MathHelper.floor(entity.getZ() / 16.0), ChunkStatus.FULL, true).addEntity(entity);
 	}
 
 	public void removeEntity(int i) {
@@ -290,8 +290,8 @@ public class ClientWorld extends World {
 	public void addEntitiesToChunk(WorldChunk worldChunk) {
 		for (Entry<Entity> entry : this.regularEntities.int2ObjectEntrySet()) {
 			Entity entity = (Entity)entry.getValue();
-			int i = MathHelper.floor(entity.x / 16.0);
-			int j = MathHelper.floor(entity.z / 16.0);
+			int i = MathHelper.floor(entity.getX() / 16.0);
+			int j = MathHelper.floor(entity.getZ() / 16.0);
 			if (i == worldChunk.getPos().x && j == worldChunk.getPos().z) {
 				worldChunk.addEntity(entity);
 			}

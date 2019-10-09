@@ -20,10 +20,10 @@ public class MagmaDecorator extends Decorator<CountDecoratorConfig> {
 	) {
 		int i = iWorld.getSeaLevel() / 2 + 1;
 		return IntStream.range(0, countDecoratorConfig.count).mapToObj(j -> {
-			int k = random.nextInt(16);
-			int l = i - 5 + random.nextInt(10);
-			int m = random.nextInt(16);
-			return blockPos.add(k, l, m);
+			int k = random.nextInt(16) + blockPos.getX();
+			int l = random.nextInt(16) + blockPos.getZ();
+			int m = i - 5 + random.nextInt(10);
+			return new BlockPos(k, m, l);
 		});
 	}
 }

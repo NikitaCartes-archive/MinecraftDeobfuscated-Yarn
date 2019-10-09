@@ -645,7 +645,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			if (this.world != null) {
 				Entity entity = this.client.getCameraEntity();
 				if (entity != null) {
-					this.chunkRenderDispatcher.updateCameraPosition(entity.x, entity.z);
+					this.chunkRenderDispatcher.updateCameraPosition(entity.getX(), entity.getZ());
 				}
 			}
 		}
@@ -699,20 +699,20 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.world.getProfiler().push("camera");
-		double d = this.client.player.x - this.lastCameraChunkUpdateX;
-		double e = this.client.player.y - this.lastCameraChunkUpdateY;
-		double f = this.client.player.z - this.lastCameraChunkUpdateZ;
+		double d = this.client.player.getX() - this.lastCameraChunkUpdateX;
+		double e = this.client.player.getY() - this.lastCameraChunkUpdateY;
+		double f = this.client.player.getZ() - this.lastCameraChunkUpdateZ;
 		if (this.cameraChunkX != this.client.player.chunkX
 			|| this.cameraChunkY != this.client.player.chunkY
 			|| this.cameraChunkZ != this.client.player.chunkZ
 			|| d * d + e * e + f * f > 16.0) {
-			this.lastCameraChunkUpdateX = this.client.player.x;
-			this.lastCameraChunkUpdateY = this.client.player.y;
-			this.lastCameraChunkUpdateZ = this.client.player.z;
+			this.lastCameraChunkUpdateX = this.client.player.getX();
+			this.lastCameraChunkUpdateY = this.client.player.getY();
+			this.lastCameraChunkUpdateZ = this.client.player.getZ();
 			this.cameraChunkX = this.client.player.chunkX;
 			this.cameraChunkY = this.client.player.chunkY;
 			this.cameraChunkZ = this.client.player.chunkZ;
-			this.chunkRenderDispatcher.updateCameraPosition(this.client.player.x, this.client.player.z);
+			this.chunkRenderDispatcher.updateCameraPosition(this.client.player.getX(), this.client.player.getZ());
 		}
 
 		this.chunkBatcher.setCameraPosition(vec3d);
@@ -932,11 +932,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		profiler.swap("updatechunks");
 		this.updateChunks(l);
 		profiler.swap("terrain");
-		this.renderLayer(RenderLayer.SOLID, matrixStack, d, e, g);
-		this.renderLayer(RenderLayer.CUTOUT_MIPPED, matrixStack, d, e, g);
-		this.renderLayer(RenderLayer.CUTOUT, matrixStack, d, e, g);
-		RenderSystem.pushMatrix();
-		GuiLighting.enable();
+		this.renderLayer(RenderLayer.getSolid(), matrixStack, d, e, g);
+		this.renderLayer(RenderLayer.getCutoutMipped(), matrixStack, d, e, g);
+		this.renderLayer(RenderLayer.getCutout(), matrixStack, d, e, g);
+		GuiLighting.enable(matrixStack.peek());
 		profiler.swap("entities");
 		profiler.push("prepare");
 		this.regularEntityCount = 0;
@@ -963,9 +962,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				&& (!(entity instanceof ClientPlayerEntity) || camera.getFocusedEntity() == entity)) {
 				this.regularEntityCount++;
 				if (entity.age == 0) {
-					entity.prevRenderX = entity.x;
-					entity.prevRenderY = entity.y;
-					entity.prevRenderZ = entity.z;
+					entity.prevRenderX = entity.getX();
+					entity.prevRenderY = entity.getY();
+					entity.prevRenderZ = entity.getZ();
 				}
 
 				boolean bl5 = this.canDrawEntityOutlines()
@@ -990,20 +989,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.checkEmpty(matrixStack);
-		this.field_20951.method_23003().method_23285();
-		RenderSystem.depthMask(false);
-		if (bl4) {
-			this.entityOutlineShader.render(f);
-		}
-
-		RenderSystem.depthMask(true);
-		RenderSystem.enableFog();
-		RenderSystem.enableBlend();
-		RenderSystem.depthFunc(515);
-		RenderSystem.enableDepthTest();
-		RenderSystem.enableAlphaTest();
-		this.client.getFramebuffer().beginWrite(false);
-		this.checkEmpty(matrixStack);
 		profiler.swap("blockentities");
 
 		for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
@@ -1018,7 +1003,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					if (sortedSet != null && !sortedSet.isEmpty()) {
 						int m = ((PartiallyBrokenBlockEntry)sortedSet.last()).getStage();
 						if (m >= 0) {
-							VertexConsumer vertexConsumer = new MatrixVertexConsumer(this.field_20951.method_23001().getBuffer(RenderLayer.method_23011(m)), matrixStack.peek());
+							VertexConsumer vertexConsumer = new MatrixVertexConsumer(this.field_20951.method_23001().getBuffer(RenderLayer.getCrumbling(m)), matrixStack.peek());
 							layeredVertexConsumerStorage2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = lv.getBuffer(renderLayer);
 								return (VertexConsumer)(renderLayer.method_23037()
@@ -1045,6 +1030,15 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		this.checkEmpty(matrixStack);
+		lv.method_22994(RenderLayer.getSolid());
+		lv.method_22994(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		lv.method_22994(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		this.field_20951.method_23003().method_23285();
+		if (bl4) {
+			this.entityOutlineShader.render(f);
+			this.client.getFramebuffer().beginWrite(false);
+		}
+
 		profiler.swap("destroyProgress");
 
 		for (Entry<SortedSet<PartiallyBrokenBlockEntry>> entry : this.field_20950.long2ObjectEntrySet()) {
@@ -1058,7 +1052,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				SortedSet<PartiallyBrokenBlockEntry> sortedSet2 = (SortedSet<PartiallyBrokenBlockEntry>)entry.getValue();
 				if (sortedSet2 != null && !sortedSet2.isEmpty()) {
 					int r = ((PartiallyBrokenBlockEntry)sortedSet2.last()).getStage();
-					VertexConsumer vertexConsumer2 = new MatrixVertexConsumer(this.field_20951.method_23001().getBuffer(RenderLayer.method_23011(r)), matrixStack.peek());
+					VertexConsumer vertexConsumer2 = new MatrixVertexConsumer(this.field_20951.method_23001().getBuffer(RenderLayer.getCrumbling(r)), matrixStack.peek());
 					this.client.getBlockRenderManager().tesselateDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrixStack, vertexConsumer2);
 					matrixStack.pop();
 				}
@@ -1067,29 +1061,33 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.checkEmpty(matrixStack);
 		profiler.pop();
-		if (bl && this.client.hitResult != null) {
+		HitResult hitResult = this.client.hitResult;
+		if (bl && hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 			profiler.swap("outline");
-			this.drawBlockOutline(matrixStack, lv.getBuffer(RenderLayer.LINES), camera.getFocusedEntity(), this.client.hitResult, 0, d, e, g);
+			BlockPos blockPos4 = ((BlockHitResult)hitResult).getBlockPos();
+			BlockState blockState = this.world.getBlockState(blockPos4);
+			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos4)) {
+				VertexConsumer vertexConsumer3 = lv.getBuffer(RenderLayer.getLines());
+				this.drawBlockOutline(matrixStack, vertexConsumer3, camera.getFocusedEntity(), d, e, g, blockPos4, blockState);
+			}
 		}
 
-		lv.method_22994(RenderLayer.SOLID);
 		lv.method_22993();
 		this.field_20951.method_23001().method_22993();
-		RenderSystem.popMatrix();
 		RenderSystem.pushMatrix();
 		RenderSystem.multMatrix(matrixStack.peek());
 		this.client.debugRenderer.method_23099(l);
 		this.renderWorldBorder(camera, f);
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		BackgroundRenderer.applyFog(camera, BackgroundRenderer.class_4596.FOG_TERRAIN, h, bl3);
-		RenderSystem.shadeModel(7425);
 		profiler.swap("translucent");
-		this.renderLayer(RenderLayer.TRANSLUCENT, matrixStack, d, e, g);
+		this.renderLayer(RenderLayer.getTranslucent(), matrixStack, d, e, g);
 		lightmapTextureManager.enable();
 		BackgroundRenderer.applyFog(camera, BackgroundRenderer.class_4596.FOG_TERRAIN, h, bl3);
 		profiler.swap("particles");
 		RenderSystem.enableAlphaTest();
 		RenderSystem.defaultAlphaFunc();
+		RenderSystem.enableDepthTest();
 		this.client.particleManager.renderParticles(camera, f);
 		lightmapTextureManager.disable();
 		profiler.swap("cloudsLayers");
@@ -1133,16 +1131,16 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private void renderEntity(
 		Entity entity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
 	) {
-		double h = MathHelper.lerp((double)g, entity.prevRenderX, entity.x);
-		double i = MathHelper.lerp((double)g, entity.prevRenderY, entity.y);
-		double j = MathHelper.lerp((double)g, entity.prevRenderZ, entity.z);
+		double h = MathHelper.lerp((double)g, entity.prevRenderX, entity.getX());
+		double i = MathHelper.lerp((double)g, entity.prevRenderY, entity.getY());
+		double j = MathHelper.lerp((double)g, entity.prevRenderZ, entity.getZ());
 		float k = MathHelper.lerp(g, entity.prevYaw, entity.yaw);
 		this.entityRenderDispatcher.render(entity, h - d, i - e, j - f, k, g, matrixStack, layeredVertexConsumerStorage);
 	}
 
 	private void renderLayer(RenderLayer renderLayer, MatrixStack matrixStack, double d, double e, double f) {
-		renderLayer.begin();
-		if (renderLayer == RenderLayer.TRANSLUCENT) {
+		renderLayer.method_23516();
+		if (renderLayer == RenderLayer.getTranslucent()) {
 			this.client.getProfiler().push("translucent_sort");
 			double g = d - this.lastTranslucentSortX;
 			double h = e - this.lastTranslucentSortY;
@@ -1166,7 +1164,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.client.getProfiler().push("filterempty");
 		List<ChunkBatcher.ChunkRenderer> list = Lists.<ChunkBatcher.ChunkRenderer>newArrayList();
 
-		for (WorldRenderer.ChunkInfo chunkInfo2 : renderLayer == RenderLayer.TRANSLUCENT ? Lists.reverse(this.chunkInfos) : this.chunkInfos) {
+		for (WorldRenderer.ChunkInfo chunkInfo2 : renderLayer == RenderLayer.getTranslucent() ? Lists.reverse(this.chunkInfos) : this.chunkInfos) {
 			ChunkBatcher.ChunkRenderer chunkRenderer = chunkInfo2.renderer;
 			if (!chunkRenderer.getData().isEmpty(renderLayer)) {
 				list.add(chunkRenderer);
@@ -1190,7 +1188,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		RenderSystem.clearCurrentColor();
 		this.field_20791.method_22651();
 		this.client.getProfiler().pop();
-		renderLayer.end();
+		renderLayer.method_23518();
 	}
 
 	private void method_22989(Camera camera) {
@@ -1411,23 +1409,23 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		for (int i = 0; i < 6; i++) {
 			matrixStack.push();
 			if (i == 1) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 			}
 
 			if (i == 2) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F));
 			}
 
 			if (i == 3) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F));
 			}
 
 			if (i == 4) {
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
 			}
 
 			if (i == 5) {
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F));
 			}
 
 			Matrix4f matrix4f = matrixStack.peek();
@@ -1474,22 +1472,23 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				RenderSystem.disableTexture();
 				RenderSystem.shadeModel(7425);
 				matrixStack.push();
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.sin(this.world.getSkyAngleRadians(f)) < 0.0F ? 180.0F : 0.0F, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F, true));
-				float j = fs[0];
-				float k = fs[1];
-				float l = fs[2];
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
+				float j = MathHelper.sin(this.world.getSkyAngleRadians(f)) < 0.0F ? 180.0F : 0.0F;
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(j));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
+				float k = fs[0];
+				float l = fs[1];
+				float m = fs[2];
 				Matrix4f matrix4f = matrixStack.peek();
 				bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
-				bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(j, k, l, fs[3]).next();
-				int m = 16;
+				bufferBuilder.vertex(matrix4f, 0.0F, 100.0F, 0.0F).color(k, l, m, fs[3]).next();
+				int n = 16;
 
-				for (int n = 0; n <= 16; n++) {
-					float o = (float)n * (float) (Math.PI * 2) / 16.0F;
-					float p = MathHelper.sin(o);
-					float q = MathHelper.cos(o);
-					bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
+				for (int o = 0; o <= 16; o++) {
+					float p = (float)o * (float) (Math.PI * 2) / 16.0F;
+					float q = MathHelper.sin(p);
+					float r = MathHelper.cos(p);
+					bufferBuilder.vertex(matrix4f, q * 120.0F, r * 120.0F, -r * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
 				}
 
 				bufferBuilder.end();
@@ -1505,8 +1504,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			matrixStack.push();
 			float j = 1.0F - this.world.getRainGradient(f);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, j);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0F, true));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.world.getSkyAngle(f) * 360.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.world.getSkyAngle(f) * 360.0F));
 			Matrix4f matrix4f2 = matrixStack.peek();
 			float l = 30.0F;
 			this.textureManager.bindTexture(SUN_TEX);
@@ -1519,24 +1518,24 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			BufferRenderer.draw(bufferBuilder);
 			l = 20.0F;
 			this.textureManager.bindTexture(MOON_PHASES_TEX);
-			int r = this.world.getMoonPhase();
-			int m = r % 4;
-			int n = r / 4 % 2;
-			float o = (float)(m + 0) / 4.0F;
+			int s = this.world.getMoonPhase();
+			int t = s % 4;
+			int n = s / 4 % 2;
+			float u = (float)(t + 0) / 4.0F;
 			float p = (float)(n + 0) / 2.0F;
-			float q = (float)(m + 1) / 4.0F;
-			float s = (float)(n + 1) / 2.0F;
+			float q = (float)(t + 1) / 4.0F;
+			float r = (float)(n + 1) / 2.0F;
 			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
-			bufferBuilder.vertex(matrix4f2, -l, -100.0F, l).texture(q, s).next();
-			bufferBuilder.vertex(matrix4f2, l, -100.0F, l).texture(o, s).next();
-			bufferBuilder.vertex(matrix4f2, l, -100.0F, -l).texture(o, p).next();
+			bufferBuilder.vertex(matrix4f2, -l, -100.0F, l).texture(q, r).next();
+			bufferBuilder.vertex(matrix4f2, l, -100.0F, l).texture(u, r).next();
+			bufferBuilder.vertex(matrix4f2, l, -100.0F, -l).texture(u, p).next();
 			bufferBuilder.vertex(matrix4f2, -l, -100.0F, -l).texture(q, p).next();
 			bufferBuilder.end();
 			BufferRenderer.draw(bufferBuilder);
 			RenderSystem.disableTexture();
-			float t = this.world.getStarsBrightness(f) * j;
-			if (t > 0.0F) {
-				RenderSystem.color4f(t, t, t, t);
+			float v = this.world.getStarsBrightness(f) * j;
+			if (v > 0.0F) {
+				RenderSystem.color4f(v, v, v, v);
 				this.starsBuffer.bind();
 				this.field_4100.method_22649(0L);
 				this.starsBuffer.draw(matrixStack.peek(), 7);
@@ -1985,25 +1984,21 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		bufferBuilder.vertex(g - d, (double)i - e, h - f).texture(j, k).next();
 	}
 
-	private void drawBlockOutline(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, HitResult hitResult, int i, double d, double e, double f) {
-		if (i == 0 && hitResult.getType() == HitResult.Type.BLOCK) {
-			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-			BlockState blockState = this.world.getBlockState(blockPos);
-			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
-				drawShapeOutline(
-					matrixStack,
-					vertexConsumer,
-					blockState.getOutlineShape(this.world, blockPos, EntityContext.of(entity)),
-					(double)blockPos.getX() - d,
-					(double)blockPos.getY() - e,
-					(double)blockPos.getZ() - f,
-					0.0F,
-					0.0F,
-					0.0F,
-					0.4F
-				);
-			}
-		}
+	private void drawBlockOutline(
+		MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState
+	) {
+		drawShapeOutline(
+			matrixStack,
+			vertexConsumer,
+			blockState.getOutlineShape(this.world, blockPos, EntityContext.of(entity)),
+			(double)blockPos.getX() - d,
+			(double)blockPos.getY() - e,
+			(double)blockPos.getZ() - f,
+			0.0F,
+			0.0F,
+			0.0F,
+			0.4F
+		);
 	}
 
 	public static void method_22983(

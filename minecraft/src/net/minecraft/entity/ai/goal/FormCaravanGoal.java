@@ -105,10 +105,10 @@ public class FormCaravanGoal extends Goal {
 			LlamaEntity llamaEntity = this.llama.getFollowing();
 			double d = (double)this.llama.distanceTo(llamaEntity);
 			float f = 2.0F;
-			Vec3d vec3d = new Vec3d(llamaEntity.x - this.llama.x, llamaEntity.y - this.llama.y, llamaEntity.z - this.llama.z)
+			Vec3d vec3d = new Vec3d(llamaEntity.getX() - this.llama.getX(), llamaEntity.getY() - this.llama.getY(), llamaEntity.getZ() - this.llama.getZ())
 				.normalize()
 				.multiply(Math.max(d - 2.0, 0.0));
-			this.llama.getNavigation().startMovingTo(this.llama.x + vec3d.x, this.llama.y + vec3d.y, this.llama.z + vec3d.z, this.speed);
+			this.llama.getNavigation().startMovingTo(this.llama.getX() + vec3d.x, this.llama.getY() + vec3d.y, this.llama.getZ() + vec3d.z, this.speed);
 		}
 	}
 

@@ -32,9 +32,9 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		this(EntityType.LLAMA_SPIT, world);
 		this.owner = llamaEntity;
 		this.setPosition(
-			llamaEntity.x - (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(llamaEntity.bodyYaw * (float) (Math.PI / 180.0)),
-			llamaEntity.y + (double)llamaEntity.getStandingEyeHeight() - 0.1F,
-			llamaEntity.z + (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(llamaEntity.bodyYaw * (float) (Math.PI / 180.0))
+			llamaEntity.getX() - (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(llamaEntity.bodyYaw * (float) (Math.PI / 180.0)),
+			llamaEntity.method_23320() - 0.1F,
+			llamaEntity.getZ() + (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(llamaEntity.bodyYaw * (float) (Math.PI / 180.0))
 		);
 	}
 
@@ -66,12 +66,12 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.method_7481(hitResult);
 		}
 
-		this.x = this.x + vec3d.x;
-		this.y = this.y + vec3d.y;
-		this.z = this.z + vec3d.z;
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		double d = this.getX() + vec3d.x;
+		double e = this.getY() + vec3d.y;
+		double f = this.getZ() + vec3d.z;
+		float g = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)g) * 180.0F / (float)Math.PI);
 
 		while (this.pitch - this.prevPitch < -180.0F) {
 			this.prevPitch -= 360.0F;
@@ -91,8 +91,8 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-		float g = 0.99F;
-		float h = 0.06F;
+		float h = 0.99F;
+		float i = 0.06F;
 		if (!this.world.containsBlockWithMaterial(this.getBoundingBox(), Material.AIR)) {
 			this.remove();
 		} else if (this.isInsideWaterOrBubbleColumn()) {
@@ -103,7 +103,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 				this.setVelocity(this.getVelocity().add(0.0, -0.06F, 0.0));
 			}
 
-			this.setPosition(this.x, this.y, this.z);
+			this.setPosition(d, e, f);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
 			this.prevPitch = this.pitch;
 			this.prevYaw = this.yaw;
-			this.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+			this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		}
 	}
 

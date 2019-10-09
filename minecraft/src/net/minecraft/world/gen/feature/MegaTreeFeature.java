@@ -4,30 +4,22 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.block.BlockState;
+import net.minecraft.class_4636;
+import net.minecraft.class_4643;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
-public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractTreeFeature<T> {
-	protected final int baseHeight;
-	protected final BlockState log;
-	protected final BlockState leaves;
-	protected final int maxExtraHeight;
-
-	public MegaTreeFeature(Function<Dynamic<?>, ? extends T> function, boolean bl, int i, int j, BlockState blockState, BlockState blockState2) {
-		super(function, bl);
-		this.baseHeight = i;
-		this.maxExtraHeight = j;
-		this.log = blockState;
-		this.leaves = blockState2;
+public abstract class MegaTreeFeature<T extends class_4643> extends AbstractTreeFeature<T> {
+	public MegaTreeFeature(Function<Dynamic<?>, ? extends T> function) {
+		super(function);
 	}
 
-	protected int getHeight(Random random) {
-		int i = random.nextInt(3) + this.baseHeight;
-		if (this.maxExtraHeight > 1) {
-			i += random.nextInt(this.maxExtraHeight);
+	protected int getHeight(Random random, class_4636 arg) {
+		int i = random.nextInt(3) + arg.field_21291;
+		if (arg.field_21233 > 1) {
+			i += random.nextInt(arg.field_21233);
 		}
 
 		return i;
@@ -76,7 +68,9 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 		return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
 	}
 
-	protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox, Set<BlockPos> set) {
+	protected void makeSquaredLeafLayer(
+		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, class_4643 arg
+	) {
 		int j = i * i;
 
 		for (int k = -i; k <= i + 1; k++) {
@@ -84,25 +78,51 @@ public abstract class MegaTreeFeature<T extends FeatureConfig> extends AbstractT
 				int m = Math.min(Math.abs(k), Math.abs(k - 1));
 				int n = Math.min(Math.abs(l), Math.abs(l - 1));
 				if (m + n < 7 && m * m + n * n <= j) {
-					BlockPos blockPos2 = blockPos.add(k, 0, l);
-					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
-					}
+					this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, arg);
 				}
 			}
 		}
 	}
 
-	protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos, int i, BlockBox blockBox, Set<BlockPos> set) {
+	protected void makeRoundLeafLayer(
+		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, class_4643 arg
+	) {
 		int j = i * i;
 
 		for (int k = -i; k <= i; k++) {
 			for (int l = -i; l <= i; l++) {
 				if (k * k + l * l <= j) {
-					BlockPos blockPos2 = blockPos.add(k, 0, l);
-					if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
-					}
+					this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, arg);
+				}
+			}
+		}
+	}
+
+	protected void method_23400(
+		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, class_4636 arg
+	) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (int j = 0; j < i; j++) {
+			mutable.set(blockPos).setOffset(0, j, 0);
+			if (canTreeReplace(modifiableTestableWorld, mutable)) {
+				this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, arg);
+			}
+
+			if (j < i - 1) {
+				mutable.set(blockPos).setOffset(1, j, 0);
+				if (canTreeReplace(modifiableTestableWorld, mutable)) {
+					this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, arg);
+				}
+
+				mutable.set(blockPos).setOffset(1, j, 1);
+				if (canTreeReplace(modifiableTestableWorld, mutable)) {
+					this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, arg);
+				}
+
+				mutable.set(blockPos).setOffset(0, j, 1);
+				if (canTreeReplace(modifiableTestableWorld, mutable)) {
+					this.method_23382(modifiableTestableWorld, random, mutable, set, blockBox, arg);
 				}
 			}
 		}

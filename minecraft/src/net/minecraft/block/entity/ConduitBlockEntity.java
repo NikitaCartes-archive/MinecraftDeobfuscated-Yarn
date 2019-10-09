@@ -188,7 +188,16 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 
 		if (this.targetEntity != null) {
 			this.world
-				.playSound(null, this.targetEntity.x, this.targetEntity.y, this.targetEntity.z, SoundEvents.BLOCK_CONDUIT_ATTACK_TARGET, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				.playSound(
+					null,
+					this.targetEntity.getX(),
+					this.targetEntity.getY(),
+					this.targetEntity.getZ(),
+					SoundEvents.BLOCK_CONDUIT_ATTACK_TARGET,
+					SoundCategory.BLOCKS,
+					1.0F,
+					1.0F
+				);
 			this.targetEntity.damage(DamageSource.MAGIC, 4.0F);
 		}
 
@@ -240,7 +249,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		if (this.targetEntity != null) {
-			Vec3d vec3d3 = new Vec3d(this.targetEntity.x, this.targetEntity.y + (double)this.targetEntity.getStandingEyeHeight(), this.targetEntity.z);
+			Vec3d vec3d3 = new Vec3d(this.targetEntity.getX(), this.targetEntity.method_23320(), this.targetEntity.getZ());
 			float j = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());
 			float g = -1.0F + random.nextFloat() * this.targetEntity.getHeight();
 			float h = (-0.5F + random.nextFloat()) * (3.0F + this.targetEntity.getWidth());

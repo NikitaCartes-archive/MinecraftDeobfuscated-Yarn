@@ -168,8 +168,8 @@ public class MapState extends PersistentState {
 						MapIcon.Type.PLAYER,
 						playerUpdateTracker2.player.world,
 						string,
-						playerUpdateTracker2.player.x,
-						playerUpdateTracker2.player.z,
+						playerUpdateTracker2.player.getX(),
+						playerUpdateTracker2.player.getZ(),
 						(double)playerUpdateTracker2.player.yaw,
 						null
 					);

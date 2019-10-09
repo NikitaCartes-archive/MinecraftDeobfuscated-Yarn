@@ -25,7 +25,8 @@ public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawne
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.5, 0.0, 0.5);
@@ -33,17 +34,17 @@ public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawne
 		Entity entity = mobSpawnerLogic.getRenderedEntity();
 		if (entity != null) {
 			float h = 0.53125F;
-			float j = Math.max(entity.getWidth(), entity.getHeight());
-			if ((double)j > 1.0) {
-				h /= j;
+			float k = Math.max(entity.getWidth(), entity.getHeight());
+			if ((double)k > 1.0) {
+				h /= k;
 			}
 
 			matrixStack.translate(0.0, 0.4F, 0.0);
 			matrixStack.multiply(
-				Vector3f.POSITIVE_Y.getRotationQuaternion((float)MathHelper.lerp((double)g, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0F, true)
+				Vector3f.POSITIVE_Y.getRotationQuaternion((float)MathHelper.lerp((double)g, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0F)
 			);
 			matrixStack.translate(0.0, -0.2F, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-30.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-30.0F));
 			matrixStack.scale(h, h, h);
 			entity.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
 			MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0F, g, matrixStack, layeredVertexConsumerStorage);

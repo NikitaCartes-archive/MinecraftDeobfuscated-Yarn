@@ -16,14 +16,14 @@ public class ChorusFruitItem extends Item {
 	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		ItemStack itemStack2 = super.finishUsing(itemStack, world, livingEntity);
 		if (!world.isClient) {
-			double d = livingEntity.x;
-			double e = livingEntity.y;
-			double f = livingEntity.z;
+			double d = livingEntity.getX();
+			double e = livingEntity.getY();
+			double f = livingEntity.getZ();
 
 			for (int i = 0; i < 16; i++) {
-				double g = livingEntity.x + (livingEntity.getRandom().nextDouble() - 0.5) * 16.0;
-				double h = MathHelper.clamp(livingEntity.y + (double)(livingEntity.getRandom().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
-				double j = livingEntity.z + (livingEntity.getRandom().nextDouble() - 0.5) * 16.0;
+				double g = livingEntity.getX() + (livingEntity.getRandom().nextDouble() - 0.5) * 16.0;
+				double h = MathHelper.clamp(livingEntity.getY() + (double)(livingEntity.getRandom().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
+				double j = livingEntity.getZ() + (livingEntity.getRandom().nextDouble() - 0.5) * 16.0;
 				if (livingEntity.hasVehicle()) {
 					livingEntity.stopRiding();
 				}

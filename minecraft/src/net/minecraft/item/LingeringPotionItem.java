@@ -29,9 +29,9 @@ public class LingeringPotionItem extends ThrowablePotionItem {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		world.playSound(
 			null,
-			playerEntity.x,
-			playerEntity.y,
-			playerEntity.z,
+			playerEntity.getX(),
+			playerEntity.getY(),
+			playerEntity.getZ(),
 			SoundEvents.ENTITY_LINGERING_POTION_THROW,
 			SoundCategory.NEUTRAL,
 			0.5F,

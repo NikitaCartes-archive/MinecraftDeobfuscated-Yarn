@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.EndermanEntity;
@@ -33,12 +34,12 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 		if (blockState != null) {
 			matrixStack.push();
 			matrixStack.translate(0.0, 0.6875, -0.75);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0F, true));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(45.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(45.0F));
 			matrixStack.translate(0.25, 0.1875, 0.25);
 			float n = 0.5F;
 			matrixStack.scale(-0.5F, -0.5F, 0.5F);
-			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, 0, 10);
+			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.field_21444);
 			matrixStack.pop();
 		}
 	}

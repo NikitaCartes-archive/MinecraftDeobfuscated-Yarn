@@ -37,8 +37,8 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void tick() {
 		super.tick();
 		this.lastLimbDistance = this.limbDistance;
-		double d = this.x - this.prevX;
-		double e = this.z - this.prevZ;
+		double d = this.getX() - this.prevX;
+		double e = this.getZ() - this.prevZ;
 		float f = MathHelper.sqrt(d * d + e * e) * 4.0F;
 		if (f > 1.0F) {
 			f = 1.0F;
@@ -51,9 +51,9 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void tickMovement() {
 		if (this.bodyTrackingIncrements > 0) {
-			double d = this.x + (this.serverX - this.x) / (double)this.bodyTrackingIncrements;
-			double e = this.y + (this.serverY - this.y) / (double)this.bodyTrackingIncrements;
-			double f = this.z + (this.serverZ - this.z) / (double)this.bodyTrackingIncrements;
+			double d = this.getX() + (this.serverX - this.getX()) / (double)this.bodyTrackingIncrements;
+			double e = this.getY() + (this.serverY - this.getY()) / (double)this.bodyTrackingIncrements;
+			double f = this.getZ() + (this.serverZ - this.getZ()) / (double)this.bodyTrackingIncrements;
 			this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw) / (double)this.bodyTrackingIncrements);
 			this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
 			this.bodyTrackingIncrements--;

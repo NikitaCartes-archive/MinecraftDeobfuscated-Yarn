@@ -103,9 +103,9 @@ public class CrossbowItem extends RangedWeaponItem {
 			SoundCategory soundCategory = livingEntity instanceof PlayerEntity ? SoundCategory.PLAYERS : SoundCategory.HOSTILE;
 			world.playSound(
 				null,
-				livingEntity.x,
-				livingEntity.y,
-				livingEntity.z,
+				livingEntity.getX(),
+				livingEntity.getY(),
+				livingEntity.getZ(),
 				SoundEvents.ITEM_CROSSBOW_LOADING_END,
 				soundCategory,
 				1.0F,
@@ -220,9 +220,7 @@ public class CrossbowItem extends RangedWeaponItem {
 			boolean bl2 = itemStack2.getItem() == Items.FIREWORK_ROCKET;
 			Projectile projectile;
 			if (bl2) {
-				projectile = new FireworkEntity(
-					world, itemStack2, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 0.15F, livingEntity.z, true
-				);
+				projectile = new FireworkEntity(world, itemStack2, livingEntity.getX(), livingEntity.method_23320() - 0.15F, livingEntity.getZ(), true);
 			} else {
 				projectile = createArrow(world, livingEntity, itemStack, itemStack2);
 				if (bl || i != 0.0F) {
@@ -244,7 +242,7 @@ public class CrossbowItem extends RangedWeaponItem {
 
 			itemStack.damage(bl2 ? 3 : 1, livingEntity, livingEntityx -> livingEntityx.sendToolBreakStatus(hand));
 			world.spawnEntity((Entity)projectile);
-			world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, f);
+			world.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, f);
 		}
 	}
 
@@ -323,12 +321,12 @@ public class CrossbowItem extends RangedWeaponItem {
 
 			if (f >= 0.2F && !this.charged) {
 				this.charged = true;
-				world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent, SoundCategory.PLAYERS, 0.5F, 1.0F);
+				world.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), soundEvent, SoundCategory.PLAYERS, 0.5F, 1.0F);
 			}
 
 			if (f >= 0.5F && soundEvent2 != null && !this.loaded) {
 				this.loaded = true;
-				world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, soundEvent2, SoundCategory.PLAYERS, 0.5F, 1.0F);
+				world.playSound(null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), soundEvent2, SoundCategory.PLAYERS, 0.5F, 1.0F);
 			}
 		}
 	}

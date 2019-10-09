@@ -31,7 +31,7 @@ public class MobNavigation extends EntityNavigation {
 
 	@Override
 	protected Vec3d getPos() {
-		return new Vec3d(this.entity.x, (double)this.method_6362(), this.entity.z);
+		return new Vec3d(this.entity.getX(), (double)this.method_6362(), this.entity.getZ());
 	}
 
 	@Override
@@ -74,20 +74,20 @@ public class MobNavigation extends EntityNavigation {
 
 	private int method_6362() {
 		if (this.entity.isInsideWater() && this.canSwim()) {
-			int i = MathHelper.floor(this.entity.getBoundingBox().minY);
-			Block block = this.world.getBlockState(new BlockPos(this.entity.x, (double)i, this.entity.z)).getBlock();
+			int i = MathHelper.floor(this.entity.getY());
+			Block block = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)i, this.entity.getZ())).getBlock();
 			int j = 0;
 
 			while (block == Blocks.WATER) {
-				block = this.world.getBlockState(new BlockPos(this.entity.x, (double)(++i), this.entity.z)).getBlock();
+				block = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)(++i), this.entity.getZ())).getBlock();
 				if (++j > 16) {
-					return MathHelper.floor(this.entity.getBoundingBox().minY);
+					return MathHelper.floor(this.entity.getY());
 				}
 			}
 
 			return i;
 		} else {
-			return MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
+			return MathHelper.floor(this.entity.getY() + 0.5);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class MobNavigation extends EntityNavigation {
 	protected void method_6359() {
 		super.method_6359();
 		if (this.avoidSunlight) {
-			if (this.world.isSkyVisible(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY + 0.5, this.entity.z))) {
+			if (this.world.isSkyVisible(new BlockPos(this.entity.getX(), this.entity.getY() + 0.5, this.entity.getZ()))) {
 				return;
 			}
 

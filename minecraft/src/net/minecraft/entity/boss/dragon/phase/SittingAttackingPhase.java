@@ -15,9 +15,9 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 		this.dragon
 			.world
 			.playSound(
-				this.dragon.x,
-				this.dragon.y,
-				this.dragon.z,
+				this.dragon.getX(),
+				this.dragon.getY(),
+				this.dragon.getZ(),
 				SoundEvents.ENTITY_ENDER_DRAGON_GROWL,
 				this.dragon.getSoundCategory(),
 				2.5F,

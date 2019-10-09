@@ -1,21 +1,20 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> implements ModelWithHat {
 	private ModelPart hat;
 
-	public ZombieVillagerEntityModel() {
-		this(0.0F, false);
-	}
-
-	public ZombieVillagerEntityModel(float f, boolean bl) {
-		super(f, 0.0F, 64, bl ? 32 : 64);
+	public ZombieVillagerEntityModel(Function<Identifier, RenderLayer> function, float f, boolean bl) {
+		super(function, f, 0.0F, 64, bl ? 32 : 64);
 		if (bl) {
 			this.head = new ModelPart(this, 0, 0);
 			this.head.addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, f);

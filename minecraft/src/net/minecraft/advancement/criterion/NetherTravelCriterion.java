@@ -28,7 +28,7 @@ public class NetherTravelCriterion extends AbstractCriterion<NetherTravelCriteri
 	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
 		this.test(
 			serverPlayerEntity.getAdvancementManager(),
-			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z)
+			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ())
 		);
 	}
 

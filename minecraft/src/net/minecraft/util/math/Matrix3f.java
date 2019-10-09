@@ -17,7 +17,11 @@ public final class Matrix3f {
 	private final float[] components;
 
 	public Matrix3f() {
-		this.components = new float[9];
+		this(new float[9]);
+	}
+
+	private Matrix3f(float[] fs) {
+		this.components = fs;
 	}
 
 	public Matrix3f(Quaternion quaternion) {
@@ -29,21 +33,21 @@ public final class Matrix3f {
 		float j = 2.0F * f * f;
 		float k = 2.0F * g * g;
 		float l = 2.0F * h * h;
-		this.components[0] = 1.0F - k - l;
-		this.components[4] = 1.0F - l - j;
-		this.components[8] = 1.0F - j - k;
+		this.set(0, 0, 1.0F - k - l);
+		this.set(1, 1, 1.0F - l - j);
+		this.set(2, 2, 1.0F - j - k);
 		float m = f * g;
 		float n = g * h;
 		float o = h * f;
 		float p = f * i;
 		float q = g * i;
 		float r = h * i;
-		this.components[1] = 2.0F * (m + r);
-		this.components[3] = 2.0F * (m - r);
-		this.components[2] = 2.0F * (o - q);
-		this.components[6] = 2.0F * (o + q);
-		this.components[5] = 2.0F * (n + p);
-		this.components[7] = 2.0F * (n - p);
+		this.set(1, 0, 2.0F * (m + r));
+		this.set(0, 1, 2.0F * (m - r));
+		this.set(2, 0, 2.0F * (o - q));
+		this.set(0, 2, 2.0F * (o + q));
+		this.set(2, 1, 2.0F * (n + p));
+		this.set(1, 2, 2.0F * (n - p));
 	}
 
 	public Matrix3f(Matrix3f matrix3f, boolean bl) {
@@ -61,21 +65,18 @@ public final class Matrix3f {
 	}
 
 	public Matrix3f(float[] fs, boolean bl) {
+		this(bl ? new float[9] : Arrays.copyOf(fs, fs.length));
 		if (bl) {
-			this.components = new float[9];
-
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
 					this.components[j + i * 3] = fs[i + j * 3];
 				}
 			}
-		} else {
-			this.components = Arrays.copyOf(fs, fs.length);
 		}
 	}
 
 	public Matrix3f(Matrix3f matrix3f) {
-		this.components = Arrays.copyOf(matrix3f.components, 9);
+		this(Arrays.copyOf(matrix3f.components, 9));
 	}
 
 	private static Pair<Float, Float> method_22849(float f, float g, float h) {
@@ -305,40 +306,6 @@ public final class Matrix3f {
 		this.components[8] = 1.0F;
 	}
 
-	public float determinantAndAdjugate() {
-		float f = this.minor(1, 2, 1, 2);
-		float g = -this.minor(1, 2, 0, 2);
-		float h = this.minor(1, 2, 0, 1);
-		float i = -this.minor(0, 2, 1, 2);
-		float j = this.minor(0, 2, 0, 2);
-		float k = -this.minor(0, 2, 0, 1);
-		float l = this.minor(0, 1, 1, 2);
-		float m = -this.minor(0, 1, 0, 2);
-		float n = this.minor(0, 1, 0, 1);
-		float o = this.get(0, 0) * f + this.get(0, 1) * g + this.get(0, 2) * h;
-		this.set(0, 0, f);
-		this.set(1, 0, g);
-		this.set(2, 0, h);
-		this.set(0, 1, i);
-		this.set(1, 1, j);
-		this.set(2, 1, k);
-		this.set(0, 2, l);
-		this.set(1, 2, m);
-		this.set(2, 2, n);
-		return o;
-	}
-
-	public float determinant() {
-		float f = this.minor(1, 2, 1, 2);
-		float g = -this.minor(1, 2, 0, 2);
-		float h = this.minor(1, 2, 0, 1);
-		return this.get(0, 0) * f + this.get(0, 1) * g + this.get(0, 2) * h;
-	}
-
-	private float minor(int i, int j, int k, int l) {
-		return this.get(i, k) * this.get(j, l) - this.get(i, l) * this.get(j, k);
-	}
-
 	public float get(int i, int j) {
 		return this.components[3 * j + i];
 	}
@@ -361,9 +328,11 @@ public final class Matrix3f {
 		}
 	}
 
-	public void multiply(float f) {
-		for (int i = 0; i < 9; i++) {
-			this.components[i] = this.components[i] * f;
-		}
+	public void multiply(Quaternion quaternion) {
+		this.multiply(new Matrix3f(quaternion));
+	}
+
+	public Matrix3f method_23296() {
+		return new Matrix3f((float[])this.components.clone());
 	}
 }

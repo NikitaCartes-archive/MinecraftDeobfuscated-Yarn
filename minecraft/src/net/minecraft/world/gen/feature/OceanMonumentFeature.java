@@ -48,7 +48,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16)) {
-				if (!chunkGenerator.hasStructure(biome2, Feature.OCEAN_MONUMENT)) {
+				if (!chunkGenerator.hasStructure(biome2, this)) {
 					return false;
 				}
 			}

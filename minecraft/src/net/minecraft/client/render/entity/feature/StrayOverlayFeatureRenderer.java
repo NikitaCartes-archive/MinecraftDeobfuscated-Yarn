@@ -32,6 +32,6 @@ public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttackMob, 
 		float l,
 		float m
 	) {
-		FeatureRenderer.method_23195(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h);
+		method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h, 1.0F, 1.0F, 1.0F);
 	}
 }

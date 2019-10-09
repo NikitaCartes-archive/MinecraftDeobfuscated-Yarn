@@ -33,7 +33,7 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends Fea
 	) {
 		matrixStack.push();
 		matrixStack.translate(0.0, 0.4F, -0.4F);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0F));
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		MinecraftClient.getInstance()
 			.getFirstPersonRenderer()

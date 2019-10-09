@@ -78,7 +78,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, LivingEntity livingEntity, World world) {
-		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 0.1F, livingEntity.z, world);
+		this(entityType, livingEntity.getX(), livingEntity.method_23320() - 0.1F, livingEntity.getZ(), world);
 		this.setOwner(livingEntity);
 		if (livingEntity instanceof PlayerEntity) {
 			this.pickupType = ProjectileEntity.PickupPermission.ALLOWED;
@@ -148,7 +148,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
 			this.prevPitch = this.pitch;
 			this.prevYaw = this.yaw;
-			this.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+			this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			this.life = 0;
 		}
 	}
@@ -166,13 +166,15 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.prevPitch = this.pitch;
 		}
 
-		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+		BlockPos blockPos = new BlockPos(this);
 		BlockState blockState = this.world.getBlockState(blockPos);
 		if (!blockState.isAir() && !bl) {
 			VoxelShape voxelShape = blockState.getCollisionShape(this.world, blockPos);
 			if (!voxelShape.isEmpty()) {
+				Vec3d vec3d2 = this.getPos();
+
 				for (Box box : voxelShape.getBoundingBoxes()) {
-					if (box.offset(blockPos).contains(new Vec3d(this.x, this.y, this.z))) {
+					if (box.offset(blockPos).contains(vec3d2)) {
 						this.inGround = true;
 						break;
 					}
@@ -204,15 +206,15 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		} else {
 			this.inGroundTime = 0;
 			this.flyingTick++;
-			Vec3d vec3d2 = new Vec3d(this.x, this.y, this.z);
-			Vec3d vec3d3 = vec3d2.add(vec3d);
-			HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d2, vec3d3, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
+			Vec3d vec3d3 = this.getPos();
+			Vec3d vec3d2 = vec3d3.add(vec3d);
+			HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d3, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
 			if (hitResult.getType() != HitResult.Type.MISS) {
-				vec3d3 = hitResult.getPos();
+				vec3d2 = hitResult.getPos();
 			}
 
 			while (!this.removed) {
-				EntityHitResult entityHitResult = this.getEntityCollision(vec3d2, vec3d3);
+				EntityHitResult entityHitResult = this.getEntityCollision(vec3d3, vec3d2);
 				if (entityHitResult != null) {
 					hitResult = entityHitResult;
 				}
@@ -244,21 +246,24 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			double g = vec3d.z;
 			if (this.isCritical()) {
 				for (int i = 0; i < 4; i++) {
-					this.world.addParticle(ParticleTypes.CRIT, this.x + d * (double)i / 4.0, this.y + e * (double)i / 4.0, this.z + g * (double)i / 4.0, -d, -e + 0.2, -g);
+					this.world
+						.addParticle(
+							ParticleTypes.CRIT, this.getX() + d * (double)i / 4.0, this.getY() + e * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -d, -e + 0.2, -g
+						);
 				}
 			}
 
-			this.x += d;
-			this.y += e;
-			this.z += g;
-			float h = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+			double h = this.getX() + d;
+			double j = this.getY() + e;
+			double k = this.getZ() + g;
+			float l = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 			if (bl) {
 				this.yaw = (float)(MathHelper.atan2(-d, -g) * 180.0F / (float)Math.PI);
 			} else {
 				this.yaw = (float)(MathHelper.atan2(d, g) * 180.0F / (float)Math.PI);
 			}
 
-			this.pitch = (float)(MathHelper.atan2(e, (double)h) * 180.0F / (float)Math.PI);
+			this.pitch = (float)(MathHelper.atan2(e, (double)l) * 180.0F / (float)Math.PI);
 
 			while (this.pitch - this.prevPitch < -180.0F) {
 				this.prevPitch -= 360.0F;
@@ -278,24 +283,24 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 			this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 			this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-			float j = 0.99F;
-			float k = 0.05F;
+			float m = 0.99F;
+			float n = 0.05F;
 			if (this.isInsideWater()) {
-				for (int l = 0; l < 4; l++) {
-					float m = 0.25F;
-					this.world.addParticle(ParticleTypes.BUBBLE, this.x - d * 0.25, this.y - e * 0.25, this.z - g * 0.25, d, e, g);
+				for (int o = 0; o < 4; o++) {
+					float p = 0.25F;
+					this.world.addParticle(ParticleTypes.BUBBLE, h - d * 0.25, j - e * 0.25, k - g * 0.25, d, e, g);
 				}
 
-				j = this.getDragInWater();
+				m = this.getDragInWater();
 			}
 
-			this.setVelocity(vec3d.multiply((double)j));
+			this.setVelocity(vec3d.multiply((double)m));
 			if (!this.hasNoGravity() && !bl) {
 				Vec3d vec3d4 = this.getVelocity();
 				this.setVelocity(vec3d4.x, vec3d4.y - 0.05F, vec3d4.z);
 			}
 
-			this.setPosition(this.x, this.y, this.z);
+			this.setPosition(h, j, k);
 			this.checkBlockCollision();
 		}
 	}
@@ -315,12 +320,10 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockState blockState = this.world.getBlockState(blockHitResult.getBlockPos());
 			this.inBlockState = blockState;
-			Vec3d vec3d = blockHitResult.getPos().subtract(this.x, this.y, this.z);
+			Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
 			this.setVelocity(vec3d);
 			Vec3d vec3d2 = vec3d.normalize().multiply(0.05F);
-			this.x = this.x - vec3d2.x;
-			this.y = this.y - vec3d2.y;
-			this.z = this.z - vec3d2.z;
+			this.setPos(this.getX() - vec3d2.x, this.getY() - vec3d2.y, this.getZ() - vec3d2.z);
 			this.playSound(this.getSound(), 1.0F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
 			this.inGround = true;
 			this.shake = 7;

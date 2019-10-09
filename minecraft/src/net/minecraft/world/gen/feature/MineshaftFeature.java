@@ -24,8 +24,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	@Override
 	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
 		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j);
-		if (chunkGenerator.hasStructure(biome, Feature.MINESHAFT)) {
-			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
+		if (chunkGenerator.hasStructure(biome, this)) {
+			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
 			double d = mineshaftFeatureConfig.probability;
 			return random.nextDouble() < d;
 		} else {

@@ -13,6 +13,7 @@ import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
 import net.minecraft.datafixers.fixes.BedItemColorFix;
+import net.minecraft.datafixers.fixes.BeehiveRenameFix;
 import net.minecraft.datafixers.fixes.BiomeFormatFix;
 import net.minecraft.datafixers.fixes.BiomesFix;
 import net.minecraft.datafixers.fixes.BlockEntityBannerColorFix;
@@ -94,7 +95,6 @@ import net.minecraft.datafixers.fixes.OptionsForceVBOFix;
 import net.minecraft.datafixers.fixes.OptionsKeyLwjgl3Fix;
 import net.minecraft.datafixers.fixes.OptionsKeyTranslationFix;
 import net.minecraft.datafixers.fixes.OptionsLowerCaseLanguageFix;
-import net.minecraft.datafixers.fixes.PoiRebuildFix;
 import net.minecraft.datafixers.fixes.PointOfInterestReorganizationFix;
 import net.minecraft.datafixers.fixes.RecipeFix;
 import net.minecraft.datafixers.fixes.RecipeRenamingFix;
@@ -516,6 +516,15 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new ChoiceTypesFix(schema96, "Add beehive", TypeReferences.BLOCK_ENTITY));
 		Schema schema97 = dataFixerBuilder.addSchema(2202, EMPTY_IDENTIFIER_NORMALIZE);
 		dataFixerBuilder.addFixer(new BiomeFormatFix(schema97, false));
-		dataFixerBuilder.addFixer(new PoiRebuildFix(schema97, false));
+		Schema schema98 = dataFixerBuilder.addSchema(2209, EMPTY_IDENTIFIER_NORMALIZE);
+		dataFixerBuilder.addFixer(
+			ItemNameFix.create(schema98, "Rename bee_hive item to beehive", string -> Objects.equals(string, "minecraft:bee_hive") ? "minecraft:beehive" : string)
+		);
+		dataFixerBuilder.addFixer(new BeehiveRenameFix(schema98));
+		dataFixerBuilder.addFixer(
+			BlockNameFix.create(
+				schema98, "Rename bee_hive block to beehive", string -> ImmutableMap.of("minecraft:bee_hive", "minecraft:beehive").getOrDefault(string, string)
+			)
+		);
 	}
 }

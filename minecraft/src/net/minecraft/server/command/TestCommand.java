@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -33,7 +34,11 @@ import net.minecraft.test.TestListener;
 import net.minecraft.test.TestManager;
 import net.minecraft.test.TestSet;
 import net.minecraft.test.TestUtil;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -78,7 +83,14 @@ public class TestCommand {
 								.executes(commandContext -> executeImport(commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))
 						)
 				)
-				.then(CommandManager.literal("pos").executes(commandContext -> executePos(commandContext.getSource())))
+				.then(
+					CommandManager.literal("pos")
+						.executes(commandContext -> executePos(commandContext.getSource(), "pos"))
+						.then(
+							CommandManager.argument("var", StringArgumentType.word())
+								.executes(commandContext -> executePos(commandContext.getSource(), StringArgumentType.getString(commandContext, "var")))
+						)
+				)
 				.then(
 					CommandManager.literal("create")
 						.then(
@@ -149,7 +161,7 @@ public class TestCommand {
 		}
 	}
 
-	private static int executePos(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+	private static int executePos(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
 		BlockHitResult blockHitResult = (BlockHitResult)serverCommandSource.getPlayer().rayTrace(10.0, 1.0F, false);
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		ServerWorld serverWorld = serverCommandSource.getWorld();
@@ -164,11 +176,18 @@ public class TestCommand {
 		} else {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity((BlockPos)optional.get());
 			BlockPos blockPos2 = blockPos.subtract((Vec3i)optional.get());
-			String string = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
-			String string2 = structureBlockBlockEntity.getStructurePath();
-			sendMessage(serverCommandSource, "Position relative to " + string2 + ":");
-			sendMessage(serverCommandSource, string);
-			DebugRendererInfoManager.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);
+			String string2 = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
+			String string3 = structureBlockBlockEntity.getStructurePath();
+			Text text = new LiteralText(string2)
+				.setStyle(
+					new Style()
+						.setBold(true)
+						.setColor(Formatting.GREEN)
+						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard")))
+						.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + string + " = new BlockPos(" + string2 + ");"))
+				);
+			serverCommandSource.sendFeedback(new LiteralText("Position relative to " + string3 + ": ").append(text), false);
+			DebugRendererInfoManager.addGameTestMarker(serverWorld, new BlockPos(blockPos), string2, -2147418368, 10000);
 			return 1;
 		}
 	}
@@ -213,6 +232,7 @@ public class TestCommand {
 			gameTest.addListener(new TestCommand.Listener(serverWorld, testSet));
 		}
 
+		method_23647(testFunction, serverWorld);
 		TestUtil.startTest(gameTest, TestManager.INSTANCE);
 	}
 
@@ -250,9 +270,17 @@ public class TestCommand {
 			blockPos.getX(), serverCommandSource.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3
 		);
 		TestUtil.clearDebugMarkers(serverWorld);
+		method_23647(testFunction, serverWorld);
 		GameTest gameTest = new GameTest(testFunction, blockPos2, serverWorld);
 		TestUtil.startTest(gameTest, TestManager.INSTANCE);
 		return 1;
+	}
+
+	private static void method_23647(TestFunction testFunction, ServerWorld serverWorld) {
+		Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(testFunction.getBatchId());
+		if (consumer != null) {
+			consumer.accept(serverWorld);
+		}
 	}
 
 	private static int executeRunAll(ServerCommandSource serverCommandSource) {
@@ -341,11 +369,6 @@ public class TestCommand {
 
 		@Override
 		public void onStarted(GameTest gameTest) {
-		}
-
-		@Override
-		public void onPassed(GameTest gameTest) {
-			TestCommand.onCompletion(this.world, this.tests);
 		}
 
 		@Override

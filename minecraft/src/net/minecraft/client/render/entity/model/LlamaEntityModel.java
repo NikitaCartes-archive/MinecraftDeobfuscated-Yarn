@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.util.math.MathHelper;
@@ -21,6 +22,7 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 	private final ModelPart field_3429;
 
 	public LlamaEntityModel(float f) {
+		super(RenderLayer::getEntitySolid);
 		this.textureWidth = 128;
 		this.textureHeight = 64;
 		this.field_20935 = new ModelPart(this, 0, 0);
@@ -78,32 +80,32 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 	}
 
 	@Override
-	public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
 		if (this.isChild) {
-			float j = 2.0F;
+			float k = 2.0F;
 			matrixStack.push();
-			float k = 0.7F;
+			float l = 0.7F;
 			matrixStack.scale(0.71428573F, 0.64935064F, 0.7936508F);
 			matrixStack.translate(0.0, 1.3125, 0.22F);
-			this.field_20935.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h);
+			this.field_20935.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
 			matrixStack.pop();
 			matrixStack.push();
-			float l = 1.1F;
+			float m = 1.1F;
 			matrixStack.scale(0.625F, 0.45454544F, 0.45454544F);
 			matrixStack.translate(0.0, 2.0625, 0.0);
-			this.field_20936.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h);
+			this.field_20936.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.scale(0.45454544F, 0.41322312F, 0.45454544F);
 			matrixStack.translate(0.0, 2.0625, 0.0);
 			ImmutableList.of(this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
 			matrixStack.pop();
 		} else {
 			ImmutableList.of(
 					this.field_20935, this.field_20936, this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429
 				)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
 		}
 	}
 }

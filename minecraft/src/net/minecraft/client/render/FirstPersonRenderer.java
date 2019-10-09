@@ -53,7 +53,17 @@ public class FirstPersonRenderer {
 	) {
 		if (!itemStack.isEmpty()) {
 			this.itemRenderer
-				.method_23177(livingEntity, itemStack, type, bl, matrixStack, layeredVertexConsumerStorage, livingEntity.world, livingEntity.getLightmapCoordinates());
+				.method_23177(
+					livingEntity,
+					itemStack,
+					type,
+					bl,
+					matrixStack,
+					layeredVertexConsumerStorage,
+					livingEntity.world,
+					livingEntity.getLightmapCoordinates(),
+					OverlayTexture.field_21444
+				);
 		}
 	}
 
@@ -68,9 +78,9 @@ public class FirstPersonRenderer {
 		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.<AbstractClientPlayerEntity>getRenderer(this.client.player);
 		matrixStack.push();
 		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(92.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(f * -41.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(92.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(f * -41.0F));
 		matrixStack.translate((double)(f * 0.3F), -1.1F, 0.45F);
 		if (arm == Arm.RIGHT) {
 			playerEntityRenderer.renderRightArm(matrixStack, layeredVertexConsumerStorage, this.client.player);
@@ -88,7 +98,7 @@ public class FirstPersonRenderer {
 		matrixStack.translate((double)(h * 0.125F), -0.125, 0.0);
 		if (!this.client.player.isInvisible()) {
 			matrixStack.push();
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(h * 10.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(h * 10.0F));
 			this.renderArmHoldingItem(matrixStack, layeredVertexConsumerStorage, f, g, arm);
 			matrixStack.pop();
 		}
@@ -101,8 +111,8 @@ public class FirstPersonRenderer {
 		float l = 0.4F * MathHelper.sin(i * (float) (Math.PI * 2));
 		float m = -0.3F * MathHelper.sin(g * (float) Math.PI);
 		matrixStack.translate((double)(h * k), (double)(l - 0.3F * j), (double)m);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(j * -45.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * j * -30.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(j * -45.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * j * -30.0F));
 		this.renderFirstPersonMap(matrixStack, layeredVertexConsumerStorage, itemStack);
 		matrixStack.pop();
 	}
@@ -114,28 +124,28 @@ public class FirstPersonRenderer {
 		matrixStack.translate(0.0, (double)(-j / 2.0F), (double)k);
 		float l = this.getMapAngle(f);
 		matrixStack.translate(0.0, (double)(0.04F + g * -1.2F + l * -0.5F), -0.72F);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l * -85.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l * -85.0F));
 		if (!this.client.player.isInvisible()) {
 			matrixStack.push();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F));
 			this.renderArm(matrixStack, layeredVertexConsumerStorage, Arm.RIGHT);
 			this.renderArm(matrixStack, layeredVertexConsumerStorage, Arm.LEFT);
 			matrixStack.pop();
 		}
 
 		float m = MathHelper.sin(i * (float) Math.PI);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(m * 20.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(m * 20.0F));
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		this.renderFirstPersonMap(matrixStack, layeredVertexConsumerStorage, this.mainHand);
 	}
 
 	private void renderFirstPersonMap(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, ItemStack itemStack) {
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
 		matrixStack.scale(0.38F, 0.38F, 0.38F);
 		matrixStack.translate(-0.5, -0.5, 0.0);
 		matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23028(MapRenderer.field_21056));
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(MapRenderer.field_21056));
 		Matrix4f matrix4f = matrixStack.peek();
 		vertexConsumer.vertex(matrix4f, -7.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(15728880).next();
 		vertexConsumer.vertex(matrix4f, 135.0F, 135.0F, 0.0F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(15728880).next();
@@ -155,17 +165,17 @@ public class FirstPersonRenderer {
 		float k = 0.4F * MathHelper.sin(i * (float) (Math.PI * 2));
 		float l = -0.4F * MathHelper.sin(g * (float) Math.PI);
 		matrixStack.translate((double)(h * (j + 0.64000005F)), (double)(k + -0.6F + f * -0.6F), (double)(l + -0.71999997F));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * 45.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * 45.0F));
 		float m = MathHelper.sin(g * g * (float) Math.PI);
 		float n = MathHelper.sin(i * (float) Math.PI);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * n * 70.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(h * m * -20.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * n * 70.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(h * m * -20.0F));
 		AbstractClientPlayerEntity abstractClientPlayerEntity = this.client.player;
 		this.client.getTextureManager().bindTexture(abstractClientPlayerEntity.getSkinTexture());
 		matrixStack.translate((double)(h * -1.0F), 3.6F, 3.5);
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(h * 120.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(200.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * -135.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(h * 120.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(200.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * -135.0F));
 		matrixStack.translate((double)(h * 5.6F), 0.0, 0.0);
 		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.<AbstractClientPlayerEntity>getRenderer(abstractClientPlayerEntity);
 		if (bl) {
@@ -186,19 +196,19 @@ public class FirstPersonRenderer {
 		float i = 1.0F - (float)Math.pow((double)h, 27.0);
 		int j = arm == Arm.RIGHT ? 1 : -1;
 		matrixStack.translate((double)(i * 0.6F * (float)j), (double)(i * -0.5F), (double)(i * 0.0F));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)j * i * 90.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i * 10.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)j * i * 30.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)j * i * 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i * 10.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)j * i * 30.0F));
 	}
 
 	private void method_3217(MatrixStack matrixStack, Arm arm, float f) {
 		int i = arm == Arm.RIGHT ? 1 : -1;
 		float g = MathHelper.sin(f * f * (float) Math.PI);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)i * (45.0F + g * -20.0F), true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)i * (45.0F + g * -20.0F)));
 		float h = MathHelper.sin(MathHelper.sqrt(f) * (float) Math.PI);
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)i * h * -20.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h * -80.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)i * -45.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)i * h * -20.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h * -80.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)i * -45.0F));
 	}
 
 	private void applyHandOffset(MatrixStack matrixStack, Arm arm, float f) {
@@ -242,8 +252,8 @@ public class FirstPersonRenderer {
 
 		float i = MathHelper.lerp(f, clientPlayerEntity.lastRenderPitch, clientPlayerEntity.renderPitch);
 		float j = MathHelper.lerp(f, clientPlayerEntity.lastRenderYaw, clientPlayerEntity.renderYaw);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion((clientPlayerEntity.getPitch(f) - i) * 0.1F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((clientPlayerEntity.getYaw(f) - j) * 0.1F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion((clientPlayerEntity.getPitch(f) - i) * 0.1F));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((clientPlayerEntity.getYaw(f) - j) * 0.1F));
 		if (bl) {
 			float k = hand == Hand.MAIN_HAND ? g : 0.0F;
 			float l = 1.0F - MathHelper.lerp(f, this.prevEquipProgressMainHand, this.equipProgressMainHand);
@@ -290,9 +300,9 @@ public class FirstPersonRenderer {
 			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.getItemUseTimeLeft() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
 				this.applyHandOffset(matrixStack, arm, i);
 				matrixStack.translate((double)((float)j * -0.4785682F), -0.094387F, 0.05731531F);
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-11.935F, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)j * 65.3F, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)j * -9.785F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-11.935F));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)j * 65.3F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)j * -9.785F));
 				float k = (float)itemStack.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - f + 1.0F);
 				float l = k / (float)CrossbowItem.getPullTime(itemStack);
 				if (l > 1.0F) {
@@ -308,7 +318,7 @@ public class FirstPersonRenderer {
 
 				matrixStack.translate((double)(l * 0.0F), (double)(l * 0.0F), (double)(l * 0.04F));
 				matrixStack.scale(1.0F, 1.0F, 1.0F + l * 0.2F);
-				matrixStack.multiply(Vector3f.NEGATIVE_Y.getRotationQuaternion((float)j * 45.0F, true));
+				matrixStack.multiply(Vector3f.NEGATIVE_Y.getRotationQuaternion((float)j * 45.0F));
 			} else {
 				float kx = -0.4F * MathHelper.sin(MathHelper.sqrt(h) * (float) Math.PI);
 				float lx = 0.2F * MathHelper.sin(MathHelper.sqrt(h) * (float) (Math.PI * 2));
@@ -318,7 +328,7 @@ public class FirstPersonRenderer {
 				this.method_3217(matrixStack, arm, h);
 				if (bl2 && h < 0.001F) {
 					matrixStack.translate((double)((float)j * -0.641864F), 0.0, 0.0);
-					matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)j * 10.0F, true));
+					matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)j * 10.0F));
 				}
 			}
 
@@ -349,9 +359,9 @@ public class FirstPersonRenderer {
 					case BOW:
 						this.applyHandOffset(matrixStack, arm, i);
 						matrixStack.translate((double)((float)p * -0.2785682F), 0.18344387F, 0.15731531F);
-						matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-13.935F, true));
-						matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)p * 35.3F, true));
-						matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)p * -9.785F, true));
+						matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-13.935F));
+						matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)p * 35.3F));
+						matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)p * -9.785F));
 						float qx = (float)itemStack.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - f + 1.0F);
 						float kxx = qx / 20.0F;
 						kxx = (kxx * kxx + kxx * 2.0F) / 3.0F;
@@ -368,14 +378,14 @@ public class FirstPersonRenderer {
 
 						matrixStack.translate((double)(kxx * 0.0F), (double)(kxx * 0.0F), (double)(kxx * 0.04F));
 						matrixStack.scale(1.0F, 1.0F, 1.0F + kxx * 0.2F);
-						matrixStack.multiply(Vector3f.NEGATIVE_Y.getRotationQuaternion((float)p * 45.0F, true));
+						matrixStack.multiply(Vector3f.NEGATIVE_Y.getRotationQuaternion((float)p * 45.0F));
 						break;
 					case SPEAR:
 						this.applyHandOffset(matrixStack, arm, i);
 						matrixStack.translate((double)((float)p * -0.5F), 0.7F, 0.1F);
-						matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-55.0F, true));
-						matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)p * 35.3F, true));
-						matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)p * -9.785F, true));
+						matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-55.0F));
+						matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)p * 35.3F));
+						matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)p * -9.785F));
 						float q = (float)itemStack.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - f + 1.0F);
 						float kx = q / 10.0F;
 						if (kx > 1.0F) {
@@ -391,14 +401,14 @@ public class FirstPersonRenderer {
 
 						matrixStack.translate(0.0, 0.0, (double)(kx * 0.2F));
 						matrixStack.scale(1.0F, 1.0F, 1.0F + kx * 0.2F);
-						matrixStack.multiply(Vector3f.NEGATIVE_Y.getRotationQuaternion((float)p * 45.0F, true));
+						matrixStack.multiply(Vector3f.NEGATIVE_Y.getRotationQuaternion((float)p * 45.0F));
 				}
 			} else if (abstractClientPlayerEntity.isUsingRiptide()) {
 				this.applyHandOffset(matrixStack, arm, i);
 				int p = bl2 ? 1 : -1;
 				matrixStack.translate((double)((float)p * -0.4F), 0.8F, 0.3F);
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)p * 65.0F, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)p * -85.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)p * 65.0F));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)p * -85.0F));
 			} else {
 				float r = -0.4F * MathHelper.sin(MathHelper.sqrt(h) * (float) Math.PI);
 				float qxx = 0.2F * MathHelper.sin(MathHelper.sqrt(h) * (float) (Math.PI * 2));

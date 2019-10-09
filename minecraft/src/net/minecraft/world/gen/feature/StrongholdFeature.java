@@ -111,7 +111,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		List<Biome> list = Lists.<Biome>newArrayList();
 
 		for (Biome biome : Registry.BIOME) {
-			if (biome != null && chunkGenerator.hasStructure(biome, Feature.STRONGHOLD)) {
+			if (biome != null && chunkGenerator.hasStructure(biome, this)) {
 				list.add(biome);
 			}
 		}

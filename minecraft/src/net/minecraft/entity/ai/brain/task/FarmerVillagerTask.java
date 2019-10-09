@@ -70,13 +70,13 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				}
 			}
 
-			BlockPos.Mutable mutable = new BlockPos.Mutable(villagerEntity.x, villagerEntity.y, villagerEntity.z);
+			BlockPos.Mutable mutable = new BlockPos.Mutable(villagerEntity);
 			this.field_19351.clear();
 
 			for (int k = -1; k <= 1; k++) {
 				for (int l = -1; l <= 1; l++) {
 					for (int m = -1; m <= 1; m++) {
-						mutable.set(villagerEntity.x + (double)k, villagerEntity.y + (double)l, villagerEntity.z + (double)m);
+						mutable.set(villagerEntity.getX() + (double)k, villagerEntity.getY() + (double)l, villagerEntity.getZ() + (double)m);
 						if (this.method_20640(mutable, serverWorld)) {
 							this.field_19351.add(new BlockPos(mutable));
 						}

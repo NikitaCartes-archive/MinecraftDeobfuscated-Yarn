@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.math.MathHelper;
@@ -25,6 +26,7 @@ public class GuardianEntityModel extends class_4595<GuardianEntity> {
 	private final ModelPart[] field_3378;
 
 	public GuardianEntityModel() {
+		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.field_3380 = new ModelPart[12];

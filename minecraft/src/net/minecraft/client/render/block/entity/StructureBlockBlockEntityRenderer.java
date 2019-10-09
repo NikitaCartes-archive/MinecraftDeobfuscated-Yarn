@@ -29,7 +29,8 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
@@ -37,61 +38,61 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 			if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
 				if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.getMode() == StructureBlockMode.LOAD) {
 					double h = (double)blockPos.getX();
-					double j = (double)blockPos.getZ();
-					double k = (double)blockPos.getY();
-					double l = k + (double)blockPos2.getY();
-					double m;
+					double k = (double)blockPos.getZ();
+					double l = (double)blockPos.getY();
+					double m = l + (double)blockPos2.getY();
 					double n;
+					double o;
 					switch (structureBlockBlockEntity.getMirror()) {
 						case LEFT_RIGHT:
-							m = (double)blockPos2.getX();
-							n = (double)(-blockPos2.getZ());
+							n = (double)blockPos2.getX();
+							o = (double)(-blockPos2.getZ());
 							break;
 						case FRONT_BACK:
-							m = (double)(-blockPos2.getX());
-							n = (double)blockPos2.getZ();
+							n = (double)(-blockPos2.getX());
+							o = (double)blockPos2.getZ();
 							break;
 						default:
-							m = (double)blockPos2.getX();
-							n = (double)blockPos2.getZ();
+							n = (double)blockPos2.getX();
+							o = (double)blockPos2.getZ();
 					}
 
-					double o;
 					double p;
 					double q;
 					double r;
+					double s;
 					switch (structureBlockBlockEntity.getRotation()) {
 						case CLOCKWISE_90:
-							o = n < 0.0 ? h : h + 1.0;
-							p = m < 0.0 ? j + 1.0 : j;
-							q = o - n;
-							r = p + m;
+							p = o < 0.0 ? h : h + 1.0;
+							q = n < 0.0 ? k + 1.0 : k;
+							r = p - o;
+							s = q + n;
 							break;
 						case CLOCKWISE_180:
-							o = m < 0.0 ? h : h + 1.0;
-							p = n < 0.0 ? j : j + 1.0;
-							q = o - m;
+							p = n < 0.0 ? h : h + 1.0;
+							q = o < 0.0 ? k : k + 1.0;
 							r = p - n;
+							s = q - o;
 							break;
 						case COUNTERCLOCKWISE_90:
-							o = n < 0.0 ? h + 1.0 : h;
-							p = m < 0.0 ? j : j + 1.0;
-							q = o + n;
-							r = p - m;
+							p = o < 0.0 ? h + 1.0 : h;
+							q = n < 0.0 ? k : k + 1.0;
+							r = p + o;
+							s = q - n;
 							break;
 						default:
-							o = m < 0.0 ? h + 1.0 : h;
-							p = n < 0.0 ? j + 1.0 : j;
-							q = o + m;
+							p = n < 0.0 ? h + 1.0 : h;
+							q = o < 0.0 ? k + 1.0 : k;
 							r = p + n;
+							s = q + o;
 					}
 
-					float s = 1.0F;
-					float t = 0.9F;
-					float u = 0.5F;
-					VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.LINES);
+					float t = 1.0F;
+					float u = 0.9F;
+					float v = 0.5F;
+					VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines());
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {
-						WorldRenderer.method_22981(matrixStack, vertexConsumer, o, k, p, q, l, r, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
+						WorldRenderer.method_22981(matrixStack, vertexConsumer, p, l, q, r, m, s, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
 					}
 
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE && structureBlockBlockEntity.shouldShowAir()) {

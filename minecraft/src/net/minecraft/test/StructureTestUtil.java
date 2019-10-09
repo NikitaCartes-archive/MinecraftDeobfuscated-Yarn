@@ -27,6 +27,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -51,7 +52,8 @@ public class StructureTestUtil {
 	}
 
 	public static void createTestArea(String string, BlockPos blockPos, BlockPos blockPos2, int i, ServerWorld serverWorld) {
-		clearArea(blockPos, blockPos2, i, serverWorld);
+		BlockBox blockBox = method_23646(blockPos, blockPos2, i);
+		clearArea(blockBox, blockPos.getY(), serverWorld);
 		serverWorld.setBlockState(blockPos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos);
 		structureBlockBlockEntity.setIgnoreEntities(false);
@@ -62,9 +64,13 @@ public class StructureTestUtil {
 	}
 
 	public static StructureBlockBlockEntity method_22250(String string, BlockPos blockPos, int i, ServerWorld serverWorld, boolean bl) {
+		BlockBox blockBox = method_23646(blockPos, method_22369(string, serverWorld).getSize(), i);
 		forceLoadNearbyChunks(blockPos, serverWorld);
-		clearArea(blockPos, method_22369(string, serverWorld).getSize(), i, serverWorld);
-		return placeStructure(string, blockPos, serverWorld, bl);
+		clearArea(blockBox, blockPos.getY(), serverWorld);
+		StructureBlockBlockEntity structureBlockBlockEntity = placeStructure(string, blockPos, serverWorld, bl);
+		serverWorld.method_14196().getScheduledTicks(blockBox, true, false);
+		serverWorld.method_23658(blockBox);
+		return structureBlockBlockEntity;
 	}
 
 	private static void forceLoadNearbyChunks(BlockPos blockPos, ServerWorld serverWorld) {
@@ -79,13 +85,19 @@ public class StructureTestUtil {
 		}
 	}
 
-	public static void clearArea(BlockPos blockPos, BlockPos blockPos2, int i, ServerWorld serverWorld) {
+	public static void clearArea(BlockBox blockBox, int i, ServerWorld serverWorld) {
+		BlockPos.method_23627(blockBox).forEach(blockPos -> method_22368(i, blockPos, serverWorld));
+		serverWorld.method_14196().getScheduledTicks(blockBox, true, false);
+		serverWorld.method_23658(blockBox);
+		Box box = new Box((double)blockBox.minX, (double)blockBox.minY, (double)blockBox.minZ, (double)blockBox.maxX, (double)blockBox.maxY, (double)blockBox.maxZ);
+		List<Entity> list = serverWorld.getEntities(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
+		list.forEach(Entity::remove);
+	}
+
+	public static BlockBox method_23646(BlockPos blockPos, BlockPos blockPos2, int i) {
 		BlockPos blockPos3 = blockPos.add(-i, -3, -i);
 		BlockPos blockPos4 = blockPos.add(blockPos2).add(i - 1, 30, i - 1);
-		BlockPos.stream(blockPos3, blockPos4).forEach(blockPos2x -> method_22368(blockPos.getY(), blockPos2x, serverWorld));
-		Box box = new Box(blockPos3, blockPos4);
-		List<Entity> list = serverWorld.getEntities(Entity.class, box, entity -> !(entity instanceof PlayerEntity));
-		list.forEach(Entity::kill);
+		return BlockBox.create(blockPos3.getX(), blockPos3.getY(), blockPos3.getZ(), blockPos4.getX(), blockPos4.getY(), blockPos4.getZ());
 	}
 
 	public static Optional<BlockPos> findContainingStructureBlock(BlockPos blockPos, int i, ServerWorld serverWorld) {

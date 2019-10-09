@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
@@ -11,7 +12,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class ChatOptionsScreen extends Screen {
+public class ChatOptionsScreen extends class_4667 {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.VISIBILITY,
 		Option.CHAT_COLOR,
@@ -27,14 +28,10 @@ public class ChatOptionsScreen extends Screen {
 		Option.AUTO_SUGGESTIONS,
 		Option.NARRATOR
 	};
-	private final Screen parent;
-	private final GameOptions options;
 	private AbstractButtonWidget narratorOptionButton;
 
 	public ChatOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(new TranslatableText("options.chat.title"));
-		this.parent = screen;
-		this.options = gameOptions;
+		super(screen, gameOptions, new TranslatableText("options.chat.title"));
 	}
 
 	@Override
@@ -55,14 +52,9 @@ public class ChatOptionsScreen extends Screen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
+				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_21335)
 			)
 		);
-	}
-
-	@Override
-	public void removed() {
-		this.minecraft.options.write();
 	}
 
 	@Override
@@ -73,6 +65,6 @@ public class ChatOptionsScreen extends Screen {
 	}
 
 	public void setNarratorMessage() {
-		this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.options));
+		this.narratorOptionButton.setMessage(Option.NARRATOR.getMessage(this.field_21336));
 	}
 }

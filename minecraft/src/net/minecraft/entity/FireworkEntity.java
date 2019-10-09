@@ -77,7 +77,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	public FireworkEntity(World world, ItemStack itemStack, LivingEntity livingEntity) {
-		this(world, livingEntity.x, livingEntity.y, livingEntity.z, itemStack);
+		this(world, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), itemStack);
 		this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(livingEntity.getEntityId()));
 		this.shooter = livingEntity;
 	}
@@ -127,7 +127,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 						);
 				}
 
-				this.setPosition(this.shooter.x, this.shooter.y, this.shooter.z);
+				this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
 				this.setVelocity(this.shooter.getVelocity());
 			}
 		} else {
@@ -174,14 +174,20 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
 		if (this.life == 0 && !this.isSilent()) {
-			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
+			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
 		}
 
 		this.life++;
 		if (this.world.isClient && this.life % 2 < 2) {
 			this.world
 				.addParticle(
-					ParticleTypes.FIREWORK, this.x, this.y - 0.3, this.z, this.random.nextGaussian() * 0.05, -this.getVelocity().y * 0.5, this.random.nextGaussian() * 0.05
+					ParticleTypes.FIREWORK,
+					this.getX(),
+					this.getY() - 0.3,
+					this.getZ(),
+					this.random.nextGaussian() * 0.05,
+					-this.getVelocity().y * 0.5,
+					this.random.nextGaussian() * 0.05
 				);
 		}
 
@@ -236,14 +242,14 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 			}
 
 			double d = 5.0;
-			Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
+			Vec3d vec3d = this.getPos();
 
 			for (LivingEntity livingEntity : this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(5.0))) {
 				if (livingEntity != this.shooter && !(this.squaredDistanceTo(livingEntity) > 25.0)) {
 					boolean bl = false;
 
 					for (int i = 0; i < 2; i++) {
-						Vec3d vec3d2 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5 * (double)i, livingEntity.z);
+						Vec3d vec3d2 = new Vec3d(livingEntity.getX(), livingEntity.method_23323(0.5 * (double)i), livingEntity.getZ());
 						HitResult hitResult = this.world
 							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
 						if (hitResult.getType() == HitResult.Type.MISS) {
@@ -275,13 +281,14 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		if (b == 17 && this.world.isClient) {
 			if (!this.hasExplosionEffects()) {
 				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
-					this.world.addParticle(ParticleTypes.POOF, this.x, this.y, this.z, this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
+					this.world
+						.addParticle(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
 				}
 			} else {
 				ItemStack itemStack = this.dataTracker.get(ITEM);
 				CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
 				Vec3d vec3d = this.getVelocity();
-				this.world.addFireworkParticle(this.x, this.y, this.z, vec3d.x, vec3d.y, vec3d.z, compoundTag);
+				this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, compoundTag);
 			}
 		}
 

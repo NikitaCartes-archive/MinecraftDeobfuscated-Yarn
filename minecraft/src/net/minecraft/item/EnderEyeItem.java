@@ -71,7 +71,7 @@ public class EnderEyeItem extends Item {
 			if (world instanceof ServerWorld) {
 				BlockPos blockPos = ((ServerWorld)world).method_14178().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(playerEntity), 100, false);
 				if (blockPos != null) {
-					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.x, playerEntity.y + (double)(playerEntity.getHeight() / 2.0F), playerEntity.z);
+					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, playerEntity.getX(), playerEntity.method_23323(0.5), playerEntity.getZ());
 					enderEyeEntity.setItem(itemStack);
 					enderEyeEntity.moveTowards(blockPos);
 					world.spawnEntity(enderEyeEntity);
@@ -81,9 +81,9 @@ public class EnderEyeItem extends Item {
 
 					world.playSound(
 						null,
-						playerEntity.x,
-						playerEntity.y,
-						playerEntity.z,
+						playerEntity.getX(),
+						playerEntity.getY(),
+						playerEntity.getZ(),
 						SoundEvents.ENTITY_ENDER_EYE_LAUNCH,
 						SoundCategory.NEUTRAL,
 						0.5F,

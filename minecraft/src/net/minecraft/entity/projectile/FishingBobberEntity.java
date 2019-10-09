@@ -72,9 +72,9 @@ public class FishingBobberEntity extends Entity {
 	public FishingBobberEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
 		this(world, playerEntity, 0, 0);
 		this.setPosition(d, e, f);
-		this.prevX = this.x;
-		this.prevY = this.y;
-		this.prevZ = this.z;
+		this.prevX = this.getX();
+		this.prevY = this.getY();
+		this.prevZ = this.getZ();
 	}
 
 	public FishingBobberEntity(PlayerEntity playerEntity, World world, int i, int j) {
@@ -85,9 +85,9 @@ public class FishingBobberEntity extends Entity {
 		float k = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
 		float l = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
 		float m = MathHelper.sin(-f * (float) (Math.PI / 180.0));
-		double d = this.owner.x - (double)k * 0.3;
-		double e = this.owner.y + (double)this.owner.getStandingEyeHeight();
-		double n = this.owner.z - (double)h * 0.3;
+		double d = this.owner.getX() - (double)k * 0.3;
+		double e = this.owner.method_23320();
+		double n = this.owner.getZ() - (double)h * 0.3;
 		this.setPositionAndAngles(d, e, n, g, f);
 		Vec3d vec3d = new Vec3d((double)(-k), (double)MathHelper.clamp(-(m / l), -5.0F, 5.0F), (double)(-h));
 		double o = vec3d.length();
@@ -181,10 +181,7 @@ public class FishingBobberEntity extends Entity {
 							this.hookedEntity = null;
 							this.state = FishingBobberEntity.State.FLYING;
 						} else {
-							this.x = this.hookedEntity.x;
-							this.y = this.hookedEntity.getBoundingBox().minY + (double)this.hookedEntity.getHeight() * 0.8;
-							this.z = this.hookedEntity.z;
-							this.setPosition(this.x, this.y, this.z);
+							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.method_23323(0.8), this.hookedEntity.getZ());
 						}
 					}
 
@@ -193,7 +190,7 @@ public class FishingBobberEntity extends Entity {
 
 				if (this.state == FishingBobberEntity.State.BOBBING) {
 					Vec3d vec3d = this.getVelocity();
-					double d = this.y + vec3d.y - (double)blockPos.getY() - (double)f;
+					double d = this.getY() + vec3d.y - (double)blockPos.getY() - (double)f;
 					if (Math.abs(d) < 0.01) {
 						d += Math.signum(d) * 0.1;
 					}
@@ -213,7 +210,6 @@ public class FishingBobberEntity extends Entity {
 			this.smoothenMovement();
 			double e = 0.92;
 			this.setVelocity(this.getVelocity().multiply(0.92));
-			this.setPosition(this.x, this.y, this.z);
 		}
 	}
 
@@ -305,9 +301,9 @@ public class FishingBobberEntity extends Entity {
 				float f = this.fishAngle * (float) (Math.PI / 180.0);
 				float g = MathHelper.sin(f);
 				float h = MathHelper.cos(f);
-				double d = this.x + (double)(g * (float)this.fishTravelCountdown * 0.1F);
-				double e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0F);
-				double j = this.z + (double)(h * (float)this.fishTravelCountdown * 0.1F);
+				double d = this.getX() + (double)(g * (float)this.fishTravelCountdown * 0.1F);
+				double e = (double)((float)MathHelper.floor(this.getY()) + 1.0F);
+				double j = this.getZ() + (double)(h * (float)this.fishTravelCountdown * 0.1F);
 				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
 				if (block == Blocks.WATER) {
 					if (this.random.nextFloat() < 0.15F) {
@@ -323,12 +319,12 @@ public class FishingBobberEntity extends Entity {
 				Vec3d vec3d = this.getVelocity();
 				this.setVelocity(vec3d.x, (double)(-0.4F * MathHelper.nextFloat(this.random, 0.6F, 1.0F)), vec3d.z);
 				this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
-				double m = this.getBoundingBox().minY + 0.5;
+				double m = this.getY() + 0.5;
 				serverWorld.spawnParticles(
-					ParticleTypes.BUBBLE, this.x, m, this.z, (int)(1.0F + this.getWidth() * 20.0F), (double)this.getWidth(), 0.0, (double)this.getWidth(), 0.2F
+					ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0F + this.getWidth() * 20.0F), (double)this.getWidth(), 0.0, (double)this.getWidth(), 0.2F
 				);
 				serverWorld.spawnParticles(
-					ParticleTypes.FISHING, this.x, m, this.z, (int)(1.0F + this.getWidth() * 20.0F), (double)this.getWidth(), 0.0, (double)this.getWidth(), 0.2F
+					ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0F + this.getWidth() * 20.0F), (double)this.getWidth(), 0.0, (double)this.getWidth(), 0.2F
 				);
 				this.hookCountdown = MathHelper.nextInt(this.random, 20, 40);
 			}
@@ -346,9 +342,9 @@ public class FishingBobberEntity extends Entity {
 			if (this.random.nextFloat() < f) {
 				float g = MathHelper.nextFloat(this.random, 0.0F, 360.0F) * (float) (Math.PI / 180.0);
 				float h = MathHelper.nextFloat(this.random, 25.0F, 60.0F);
-				double d = this.x + (double)(MathHelper.sin(g) * h * 0.1F);
-				double e = (double)((float)MathHelper.floor(this.getBoundingBox().minY) + 1.0F);
-				double j = this.z + (double)(MathHelper.cos(g) * h * 0.1F);
+				double d = this.getX() + (double)(MathHelper.sin(g) * h * 0.1F);
+				double e = (double)((float)MathHelper.floor(this.getY()) + 1.0F);
+				double j = this.getZ() + (double)(MathHelper.cos(g) * h * 0.1F);
 				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
 				if (block == Blocks.WATER) {
 					serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
@@ -392,14 +388,16 @@ public class FishingBobberEntity extends Entity {
 				Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, list);
 
 				for (ItemStack itemStack2 : list) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, itemStack2);
-					double d = this.owner.x - this.x;
-					double e = this.owner.y - this.y;
-					double f = this.owner.z - this.z;
+					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack2);
+					double d = this.owner.getX() - this.getX();
+					double e = this.owner.getY() - this.getY();
+					double f = this.owner.getZ() - this.getZ();
 					double g = 0.1;
 					itemEntity.setVelocity(d * 0.1, e * 0.1 + Math.sqrt(Math.sqrt(d * d + e * e + f * f)) * 0.08, f * 0.1);
 					this.world.spawnEntity(itemEntity);
-					this.owner.world.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.x, this.owner.y + 0.5, this.owner.z + 0.5, this.random.nextInt(6) + 1));
+					this.owner
+						.world
+						.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.getX(), this.owner.getY() + 0.5, this.owner.getZ() + 0.5, this.random.nextInt(6) + 1));
 					if (itemStack2.getItem().isIn(ItemTags.FISHES)) {
 						this.owner.increaseStat(Stats.FISH_CAUGHT, 1);
 					}
@@ -431,7 +429,7 @@ public class FishingBobberEntity extends Entity {
 
 	protected void pullHookedEntity() {
 		if (this.owner != null) {
-			Vec3d vec3d = new Vec3d(this.owner.x - this.x, this.owner.y - this.y, this.owner.z - this.z).multiply(0.1);
+			Vec3d vec3d = new Vec3d(this.owner.getX() - this.getX(), this.owner.getY() - this.getY(), this.owner.getZ() - this.getZ()).multiply(0.1);
 			this.hookedEntity.setVelocity(this.hookedEntity.getVelocity().add(vec3d));
 		}
 	}

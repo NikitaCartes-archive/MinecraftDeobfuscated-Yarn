@@ -42,7 +42,9 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		}
 
 		public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z) ? false : this.duration.test(i);
+			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ())
+				? false
+				: this.duration.test(i);
 		}
 
 		@Override

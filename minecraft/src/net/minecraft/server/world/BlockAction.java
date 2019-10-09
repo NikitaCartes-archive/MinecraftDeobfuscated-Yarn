@@ -41,6 +41,13 @@ public class BlockAction {
 		}
 	}
 
+	public int hashCode() {
+		int i = this.pos.hashCode();
+		i = 31 * i + this.block.hashCode();
+		i = 31 * i + this.type;
+		return 31 * i + this.data;
+	}
+
 	public String toString() {
 		return "TE(" + this.pos + ")," + this.type + "," + this.data + "," + this.block;
 	}

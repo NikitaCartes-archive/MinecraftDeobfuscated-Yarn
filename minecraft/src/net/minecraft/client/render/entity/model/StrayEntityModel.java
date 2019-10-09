@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
@@ -19,7 +20,7 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	public StrayEntityModel(float f, boolean bl) {
-		super(f, 0.0F, 64, 32);
+		super(RenderLayer::getEntityCutoutNoCull, f, 0.0F, 64, 32);
 		if (!bl) {
 			this.rightArm = new ModelPart(this, 40, 16);
 			this.rightArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, f);

@@ -109,7 +109,7 @@ public class CatEntity extends TameableEntity {
 		this.goalSelector.add(2, this.sitGoal);
 		this.goalSelector.add(3, this.temptGoal);
 		this.goalSelector.add(5, new GoToOwnerAndPurrGoal(this, 1.1, 8));
-		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F));
+		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F, false));
 		this.goalSelector.add(7, new CatSitOnBlockGoal(this, 0.8));
 		this.goalSelector.add(8, new PounceAtTargetGoal(this, 0.3F));
 		this.goalSelector.add(9, new AttackGoal(this));
@@ -243,7 +243,8 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
+		return false;
 	}
 
 	@Override

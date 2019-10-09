@@ -8,6 +8,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
@@ -26,7 +27,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	private final boolean thinArms;
 
 	public PlayerEntityModel(float f, boolean bl) {
-		super(f, 0.0F, 64, 64);
+		super(RenderLayer::getEntityTranslucent, f, 0.0F, 64, 64);
 		this.thinArms = bl;
 		this.ears = new ModelPart(this, 24, 0);
 		this.ears.addCuboid(-3.0F, -6.0F, -1.0F, 6.0F, 6.0F, 1.0F, f);
@@ -79,15 +80,15 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		);
 	}
 
-	public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i) {
+	public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j) {
 		this.ears.copyRotation(this.head);
 		this.ears.pivotX = 0.0F;
 		this.ears.pivotY = 0.0F;
-		this.ears.render(matrixStack, vertexConsumer, f, i, null);
+		this.ears.render(matrixStack, vertexConsumer, f, i, j, null);
 	}
 
-	public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i) {
-		this.cape.render(matrixStack, vertexConsumer, f, i, null);
+	public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j) {
+		this.cape.render(matrixStack, vertexConsumer, f, i, j, null);
 	}
 
 	@Override
@@ -135,7 +136,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void onPartAdded(ModelPart modelPart) {
+	public void method_22696(ModelPart modelPart) {
 		if (this.parts == null) {
 			this.parts = Lists.<ModelPart>newArrayList();
 		}

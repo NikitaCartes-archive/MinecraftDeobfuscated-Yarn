@@ -38,7 +38,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
@@ -152,7 +151,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			float f = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float g = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.3F;
-			entity.setPosition(this.x + (double)(0.3F * g), this.y + this.getMountedHeightOffset() + entity.getHeightOffset(), this.z - (double)(0.3F * f));
+			entity.setPosition(
+				this.getX() + (double)(0.3F * g), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset(), this.getZ() - (double)(0.3F * f)
+			);
 		}
 	}
 
@@ -193,16 +194,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		if (this.isBaby() && i > 0) {
-			this.world
-				.addParticle(
-					ParticleTypes.HAPPY_VILLAGER,
-					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
-					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					0.0,
-					0.0,
-					0.0
-				);
+			this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.growUp(i);
 			}
@@ -221,9 +213,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			this.world
 				.playSound(
 					null,
-					this.x,
-					this.y,
-					this.z,
+					this.getX(),
+					this.getY(),
+					this.getZ(),
 					SoundEvents.ENTITY_LLAMA_EAT,
 					this.getSoundCategory(),
 					1.0F,
@@ -380,17 +372,17 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	private void spitAt(LivingEntity livingEntity) {
 		LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
-		double d = livingEntity.x - this.x;
-		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - llamaSpitEntity.y;
-		double f = livingEntity.z - this.z;
+		double d = livingEntity.getX() - this.getX();
+		double e = livingEntity.method_23323(0.3333333333333333) - llamaSpitEntity.getY();
+		double f = livingEntity.getZ() - this.getZ();
 		float g = MathHelper.sqrt(d * d + f * f) * 0.2F;
 		llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5F, 10.0F);
 		this.world
 			.playSound(
 				null,
-				this.x,
-				this.y,
-				this.z,
+				this.getX(),
+				this.getY(),
+				this.getZ(),
 				SoundEvents.ENTITY_LLAMA_SPIT,
 				this.getSoundCategory(),
 				1.0F,
@@ -405,9 +397,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
-		int i = MathHelper.ceil((f * 0.5F - 3.0F) * g);
-		if (i > 0) {
+	public boolean handleFallDamage(float f, float g) {
+		int i = this.method_23329(f, g);
+		if (i <= 0) {
+			return false;
+		} else {
 			if (f >= 6.0F) {
 				this.damage(DamageSource.FALL, (float)i);
 				if (this.hasPassengers()) {
@@ -417,21 +411,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 				}
 			}
 
-			BlockState blockState = this.world.getBlockState(new BlockPos(this.x, this.y - 0.2 - (double)this.prevYaw, this.z));
-			if (!blockState.isAir() && !this.isSilent()) {
-				BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-				this.world
-					.playSound(
-						null,
-						this.x,
-						this.y,
-						this.z,
-						blockSoundGroup.getStepSound(),
-						this.getSoundCategory(),
-						blockSoundGroup.getVolume() * 0.5F,
-						blockSoundGroup.getPitch() * 0.75F
-					);
-			}
+			this.method_23328();
+			return true;
 		}
 	}
 

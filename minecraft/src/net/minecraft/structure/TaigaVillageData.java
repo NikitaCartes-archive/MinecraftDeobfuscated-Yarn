@@ -20,9 +20,8 @@ import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class TaigaVillageData {
 	public static void initialize() {
@@ -250,11 +249,11 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_4"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_5"), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_6"), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SPRUCE_TREE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PINE_TREE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PUMPKIN_PILE, FeatureConfig.DEFAULT)), 2),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.TAIGA_GRASS, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SWEET_BERRY_BUSH, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21185)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21184)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21109)), 2),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21202)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21093)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID
@@ -270,11 +269,11 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_2"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_3"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_4"), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SPRUCE_TREE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PINE_TREE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PUMPKIN_PILE, FeatureConfig.DEFAULT)), 2),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.TAIGA_GRASS, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SWEET_BERRY_BUSH, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21185)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21184)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21109)), 2),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21202)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21093)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID

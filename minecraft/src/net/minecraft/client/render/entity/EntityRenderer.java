@@ -32,7 +32,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		} else {
 			Box box = entity.getVisibilityBoundingBox().expand(0.5);
 			if (box.isValid() || box.getAverageSideLength() == 0.0) {
-				box = new Box(entity.x - 2.0, entity.y - 2.0, entity.z - 2.0, entity.x + 2.0, entity.y + 2.0, entity.z + 2.0);
+				box = new Box(entity.getX() - 2.0, entity.getY() - 2.0, entity.getZ() - 2.0, entity.getX() + 2.0, entity.getY() + 2.0, entity.getZ() + 2.0);
 			}
 
 			return frustum.method_23093(box);
@@ -74,8 +74,8 @@ public abstract class EntityRenderer<T extends Entity> {
 			int j = "deadmau5".equals(string) ? -10 : 0;
 			matrixStack.push();
 			matrixStack.translate(0.0, (double)f, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw, true));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch));
 			matrixStack.scale(-0.025F, -0.025F, 0.025F);
 			Matrix4f matrix4f = matrixStack.peek();
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);

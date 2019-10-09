@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -52,8 +53,8 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
 		double i = 0.46875;
 		matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(itemFrameEntity.pitch, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - itemFrameEntity.yaw, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(itemFrameEntity.pitch));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - itemFrameEntity.yaw));
 		BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
 		BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
 		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
@@ -62,7 +63,16 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		int j = itemFrameEntity.getLightmapCoordinates();
 		blockRenderManager.getModelRenderer()
 			.render(
-				matrixStack.peek(), layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID), null, bakedModelManager.getModel(modelIdentifier), 1.0F, 1.0F, 1.0F, j
+				matrixStack.peek(),
+				matrixStack.method_23478(),
+				layeredVertexConsumerStorage.getBuffer(RenderLayer.getSolid()),
+				null,
+				bakedModelManager.getModel(modelIdentifier),
+				1.0F,
+				1.0F,
+				1.0F,
+				j,
+				OverlayTexture.field_21444
 			);
 		matrixStack.pop();
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
@@ -70,10 +80,10 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			boolean bl = itemStack.getItem() == Items.FILLED_MAP;
 			matrixStack.translate(0.0, 0.0, 0.4375);
 			int k = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)k * 360.0F / 8.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)k * 360.0F / 8.0F));
 			if (bl) {
 				this.renderManager.textureManager.bindTexture(MapRenderer.field_21056);
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F, true));
+				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
 				float l = 0.0078125F;
 				matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
 				matrixStack.translate(-64.0, -64.0, 0.0);
@@ -84,7 +94,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, matrixStack, layeredVertexConsumerStorage);
+				this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.field_21444, matrixStack, layeredVertexConsumerStorage);
 			}
 		}
 

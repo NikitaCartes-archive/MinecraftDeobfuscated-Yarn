@@ -1,10 +1,13 @@
 package net.minecraft.test;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Streams;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
@@ -21,23 +24,19 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.SystemUtil;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class TestUtil {
 	public static TestCompletionListener field_20573 = new FailureLoggingTestCompletionListener();
 
 	public static void startTest(GameTest gameTest, TestManager testManager) {
+		gameTest.method_23634();
 		testManager.start(gameTest);
 		gameTest.addListener(new TestListener() {
 			@Override
 			public void onStarted(GameTest gameTest) {
 				TestUtil.createBeacon(gameTest, Blocks.LIGHT_GRAY_STAINED_GLASS);
-			}
-
-			@Override
-			public void onPassed(GameTest gameTest) {
-				TestUtil.createBeacon(gameTest, Blocks.LIME_STAINED_GLASS);
-				TestUtil.handleTestPass(gameTest);
 			}
 
 			@Override
@@ -67,11 +66,18 @@ public class TestUtil {
 			Collection<TestFunction> collectionx = (Collection<TestFunction>)map.computeIfAbsent(string, stringx -> Lists.newArrayList());
 			collectionx.add(testFunction);
 		});
-		return (Collection<GameTestBatch>)map.keySet().stream().map(string -> {
-			Collection<TestFunction> collectionx = (Collection<TestFunction>)map.get(string);
-			Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(string);
-			return new GameTestBatch(string, collectionx, consumer);
-		}).collect(Collectors.toList());
+		return (Collection<GameTestBatch>)map.keySet()
+			.stream()
+			.flatMap(
+				string -> {
+					Collection<TestFunction> collectionx = (Collection<TestFunction>)map.get(string);
+					Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(string);
+					AtomicInteger atomicInteger = new AtomicInteger();
+					return Streams.stream(Iterables.partition(collectionx, 100))
+						.map(list -> new GameTestBatch(string + ":" + atomicInteger.incrementAndGet(), collectionx, consumer));
+				}
+			)
+			.collect(Collectors.toList());
 	}
 
 	private static void handleTestFail(GameTest gameTest) {
@@ -84,11 +90,6 @@ public class TestUtil {
 		}
 
 		field_20573.onTestFailed(gameTest);
-	}
-
-	private static void handleTestPass(GameTest gameTest) {
-		sendMessage(gameTest.getWorld(), Formatting.GREEN, gameTest.getStructureName() + " passed!");
-		field_20573.onTestPassed(gameTest);
 	}
 
 	private static void createBeacon(GameTest gameTest, Block block) {
@@ -151,7 +152,9 @@ public class TestUtil {
 		BlockPos blockPos3 = blockPos.add(i, 0, i);
 		BlockPos.stream(blockPos2, blockPos3).filter(blockPosx -> serverWorld.getBlockState(blockPosx).getBlock() == Blocks.STRUCTURE_BLOCK).forEach(blockPosx -> {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPosx);
-			StructureTestUtil.clearArea(structureBlockBlockEntity.getPos(), structureBlockBlockEntity.getSize(), 2, serverWorld);
+			BlockPos blockPos2x = structureBlockBlockEntity.getPos();
+			BlockBox blockBox = StructureTestUtil.method_23646(blockPos2x, structureBlockBlockEntity.getSize(), 2);
+			StructureTestUtil.clearArea(blockBox, blockPos2x.getY(), serverWorld);
 		});
 	}
 }

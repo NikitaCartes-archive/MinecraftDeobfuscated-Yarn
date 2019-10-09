@@ -399,7 +399,7 @@ public class PandaEntity extends AnimalEntity {
 				double d = (double)(-this.random.nextFloat()) * 0.6 - 0.3;
 				Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.8, d, 1.0 + ((double)this.random.nextFloat() - 0.5) * 0.4);
 				vec3d2 = vec3d2.rotateY(-this.bodyYaw * (float) (Math.PI / 180.0));
-				vec3d2 = vec3d2.add(this.x, this.y + (double)this.getStandingEyeHeight() + 1.0, this.z);
+				vec3d2 = vec3d2.add(this.getX(), this.method_23320() + 1.0, this.getZ());
 				this.world
 					.addParticle(
 						new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.MAINHAND)),
@@ -482,9 +482,9 @@ public class PandaEntity extends AnimalEntity {
 		this.world
 			.addParticle(
 				ParticleTypes.SNEEZE,
-				this.x - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0)),
-				this.y + (double)this.getStandingEyeHeight() - 0.1F,
-				this.z + (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0)),
+				this.getX() - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0)),
+				this.method_23320() - 0.1F,
+				this.getZ() + (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0)),
 				vec3d.x,
 				0.0,
 				vec3d.z

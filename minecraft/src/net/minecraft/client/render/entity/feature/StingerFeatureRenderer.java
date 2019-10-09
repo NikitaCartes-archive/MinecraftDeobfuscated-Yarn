@@ -37,33 +37,36 @@ public class StingerFeatureRenderer<T extends LivingEntity, M extends PlayerEnti
 		float k = (float)(Math.atan2((double)f, (double)h) * 180.0F / (float)Math.PI);
 		float l = (float)(Math.atan2((double)g, (double)j) * 180.0F / (float)Math.PI);
 		matrixStack.translate(0.0, 0.0, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k - 90.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(l, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k - 90.0F));
+		matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(l));
 		float m = 0.0F;
 		float n = 0.125F;
 		float o = 0.0F;
 		float p = 0.0625F;
 		float q = 0.03125F;
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F, true));
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0F));
 		matrixStack.scale(0.03125F, 0.03125F, 0.03125F);
 		matrixStack.translate(2.5, 0.0, 0.0);
 		int r = entity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(field_20529));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
 
 		for (int s = 0; s < 4; s++) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 			Matrix4f matrix4f = matrixStack.peek();
 			method_23295(vertexConsumer, matrix4f, -4.5F, -1, 0.0F, 0.0F, r);
 			method_23295(vertexConsumer, matrix4f, 4.5F, -1, 0.125F, 0.0F, r);
 			method_23295(vertexConsumer, matrix4f, 4.5F, 1, 0.125F, 0.0625F, r);
 			method_23295(vertexConsumer, matrix4f, -4.5F, 1, 0.0F, 0.0625F, r);
 		}
-
-		vertexConsumer.clearDefaultOverlay();
 	}
 
 	private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, int i, float g, float h, int j) {
-		vertexConsumer.vertex(matrix4f, f, (float)i, 0.0F).color(255, 255, 255, 255).texture(g, h).light(j).normal(0.0F, 1.0F, 0.0F).next();
+		vertexConsumer.vertex(matrix4f, f, (float)i, 0.0F)
+			.color(255, 255, 255, 255)
+			.texture(g, h)
+			.defaultOverlay(OverlayTexture.field_21444)
+			.light(j)
+			.normal(0.0F, 1.0F, 0.0F)
+			.next();
 	}
 }

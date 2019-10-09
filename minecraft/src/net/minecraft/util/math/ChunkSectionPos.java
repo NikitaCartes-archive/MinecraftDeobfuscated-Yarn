@@ -26,7 +26,7 @@ public class ChunkSectionPos extends Vec3i {
 
 	public static ChunkSectionPos from(Entity entity) {
 		return new ChunkSectionPos(
-			getSectionCoord(MathHelper.floor(entity.x)), getSectionCoord(MathHelper.floor(entity.y)), getSectionCoord(MathHelper.floor(entity.z))
+			getSectionCoord(MathHelper.floor(entity.getX())), getSectionCoord(MathHelper.floor(entity.getY())), getSectionCoord(MathHelper.floor(entity.getZ()))
 		);
 	}
 

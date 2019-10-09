@@ -31,10 +31,10 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 	}
 
 	protected void method_3877(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
 		float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
 		if (i < 5.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.sin(i / 1.5F * (float) Math.PI) * 3.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.sin(i / 1.5F * (float) Math.PI) * 3.0F));
 		}
 	}
 

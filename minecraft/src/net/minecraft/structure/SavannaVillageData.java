@@ -19,9 +19,8 @@ import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class SavannaVillageData {
 	public static void initialize() {
@@ -268,7 +267,7 @@ public class SavannaVillageData {
 				new StructurePool(
 					new Identifier("village/savanna/trees"),
 					new Identifier("empty"),
-					ImmutableList.of(new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SAVANNA_TREE, FeatureConfig.DEFAULT)), 1)),
+					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.method_23397(DefaultBiomeFeatures.field_21186)), 1)),
 					StructurePool.Projection.RIGID
 				)
 			);
@@ -279,9 +278,9 @@ public class SavannaVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/savanna/savanna_lamp_post_01"), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SAVANNA_TREE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.HAY_PILE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.MELON_PILE, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.method_23397(DefaultBiomeFeatures.field_21186)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21108)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID
@@ -294,9 +293,9 @@ public class SavannaVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/savanna/savanna_lamp_post_01", immutableList), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.SAVANNA_TREE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.HAY_PILE, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.MELON_PILE, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.method_23397(DefaultBiomeFeatures.field_21186)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21108)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID

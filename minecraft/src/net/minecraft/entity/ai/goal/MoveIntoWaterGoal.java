@@ -22,12 +22,12 @@ public class MoveIntoWaterGoal extends Goal {
 		BlockPos blockPos = null;
 
 		for (BlockPos blockPos2 : BlockPos.iterate(
-			MathHelper.floor(this.mob.x - 2.0),
-			MathHelper.floor(this.mob.y - 2.0),
-			MathHelper.floor(this.mob.z - 2.0),
-			MathHelper.floor(this.mob.x + 2.0),
-			MathHelper.floor(this.mob.y),
-			MathHelper.floor(this.mob.z + 2.0)
+			MathHelper.floor(this.mob.getX() - 2.0),
+			MathHelper.floor(this.mob.getY() - 2.0),
+			MathHelper.floor(this.mob.getZ() - 2.0),
+			MathHelper.floor(this.mob.getX() + 2.0),
+			MathHelper.floor(this.mob.getY()),
+			MathHelper.floor(this.mob.getZ() + 2.0)
 		)) {
 			if (this.mob.world.getFluidState(blockPos2).matches(FluidTags.WATER)) {
 				blockPos = blockPos2;

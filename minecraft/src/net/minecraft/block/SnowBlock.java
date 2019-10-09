@@ -70,7 +70,7 @@ public class SnowBlock extends Block {
 		BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
 		Block block = blockState2.getBlock();
 		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER
-			? Block.isFaceFullSquare(blockState2.getCollisionShape(worldView, blockPos.method_10074()), Direction.UP)
+			? Block.isFaceFullSquare(blockState2.getOutlineShape(worldView, blockPos.method_10074()), Direction.UP)
 				|| block == this && (Integer)blockState2.get(LAYERS) == 8
 			: false;
 	}

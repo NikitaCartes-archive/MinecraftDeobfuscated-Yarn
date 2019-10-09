@@ -62,7 +62,7 @@ public class CauldronBlock extends Block {
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		int i = (Integer)blockState.get(LEVEL);
 		float f = (float)blockPos.getY() + (6.0F + (float)(3 * i)) / 16.0F;
-		if (!world.isClient && entity.isOnFire() && i > 0 && entity.getBoundingBox().minY <= (double)f) {
+		if (!world.isClient && entity.isOnFire() && i > 0 && entity.getY() <= (double)f) {
 			entity.extinguish();
 			this.setLevel(world, blockPos, blockState, i - 1);
 		}

@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.util.math.MathHelper;
@@ -26,6 +27,7 @@ public class VillagerResemblingModel<T extends Entity> extends class_4595<T> imp
 	}
 
 	public VillagerResemblingModel(float f, int i, int j) {
+		super(RenderLayer::getEntityCutoutNoCull);
 		float g = 0.5F;
 		this.head = new ModelPart(this).setTextureSize(i, j);
 		this.head.setPivot(0.0F, 0.0F, 0.0F);

@@ -34,27 +34,25 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 		if ("deadmau5".equals(abstractClientPlayerEntity.getName().getString())
 			&& abstractClientPlayerEntity.hasSkinTexture()
 			&& !abstractClientPlayerEntity.isInvisible()) {
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(abstractClientPlayerEntity.getSkinTexture()));
-			LivingEntityRenderer.method_23184(abstractClientPlayerEntity, vertexConsumer, 0.0F);
+			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture()));
+			int n = LivingEntityRenderer.method_23622(abstractClientPlayerEntity, 0.0F);
 
-			for (int n = 0; n < 2; n++) {
-				float o = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw)
+			for (int o = 0; o < 2; o++) {
+				float p = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw)
 					- MathHelper.lerp(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
-				float p = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
+				float q = MathHelper.lerp(h, abstractClientPlayerEntity.prevPitch, abstractClientPlayerEntity.pitch);
 				matrixStack.push();
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(o, true));
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(p, true));
-				matrixStack.translate((double)(0.375F * (float)(n * 2 - 1)), 0.0, 0.0);
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(p));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(q));
+				matrixStack.translate((double)(0.375F * (float)(o * 2 - 1)), 0.0, 0.0);
 				matrixStack.translate(0.0, -0.375, 0.0);
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-p, true));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-o, true));
-				float q = 1.3333334F;
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-q));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-p));
+				float r = 1.3333334F;
 				matrixStack.scale(1.3333334F, 1.3333334F, 1.3333334F);
-				this.getModel().renderEars(matrixStack, vertexConsumer, 0.0625F, i);
+				this.getModel().renderEars(matrixStack, vertexConsumer, 0.0625F, i, n);
 				matrixStack.pop();
 			}
-
-			vertexConsumer.clearDefaultOverlay();
 		}
 	}
 }

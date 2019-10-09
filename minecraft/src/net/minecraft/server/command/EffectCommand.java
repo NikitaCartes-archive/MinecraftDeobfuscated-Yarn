@@ -1,5 +1,6 @@
 package net.minecraft.server.command;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -30,6 +31,7 @@ public class EffectCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
 					CommandManager.literal("clear")
+						.executes(commandContext -> executeClear(commandContext.getSource(), ImmutableList.of(commandContext.getSource().getEntityOrThrow())))
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))

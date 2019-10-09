@@ -43,6 +43,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -73,17 +74,17 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		return this.models;
 	}
 
-	private void method_23182(BakedModel bakedModel, ItemStack itemStack, int i, MatrixStack matrixStack, VertexConsumer vertexConsumer) {
+	private void method_23182(BakedModel bakedModel, ItemStack itemStack, int i, int j, MatrixStack matrixStack, VertexConsumer vertexConsumer) {
 		Random random = new Random();
 		long l = 42L;
 
 		for (Direction direction : Direction.values()) {
 			random.setSeed(42L);
-			this.method_23180(matrixStack, vertexConsumer, bakedModel.getQuads(null, direction, random), itemStack, i);
+			this.method_23180(matrixStack, vertexConsumer, bakedModel.getQuads(null, direction, random), itemStack, i, j);
 		}
 
 		random.setSeed(42L);
-		this.method_23180(matrixStack, vertexConsumer, bakedModel.getQuads(null, null, random), itemStack, i);
+		this.method_23180(matrixStack, vertexConsumer, bakedModel.getQuads(null, null, random), itemStack, i, j);
 	}
 
 	public void method_23179(
@@ -93,6 +94,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
 		int i,
+		int j,
 		BakedModel bakedModel
 	) {
 		if (!itemStack.isEmpty()) {
@@ -104,47 +106,41 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 			bakedModel.getTransformation().getTransformation(type).method_23075(bl, matrixStack);
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			if (!bakedModel.isBuiltin() && (itemStack.getItem() != Items.TRIDENT || type == ModelTransformation.Type.GUI)) {
-				VertexConsumer vertexConsumer = method_23181(
-					layeredVertexConsumerStorage, SpriteAtlasTexture.BLOCK_ATLAS_TEX, true, itemStack.hasEnchantmentGlint(), bakedModel.hasDepthInGui()
-				);
-				OverlayTexture.clearDefaultOverlay(vertexConsumer);
-				this.method_23182(bakedModel, itemStack, i, matrixStack, vertexConsumer);
-				vertexConsumer.clearDefaultOverlay();
+				VertexConsumer vertexConsumer = method_23181(layeredVertexConsumerStorage, RenderLayer.method_23571(itemStack), true, itemStack.hasEnchantmentGlint());
+				this.method_23182(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
 			} else {
-				ItemDynamicRenderer.INSTANCE.render(itemStack, matrixStack, layeredVertexConsumerStorage, i);
+				ItemDynamicRenderer.INSTANCE.render(itemStack, matrixStack, layeredVertexConsumerStorage, i, j);
 			}
 
 			matrixStack.pop();
 		}
 	}
 
-	public static VertexConsumer method_23181(
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage, Identifier identifier, boolean bl, boolean bl2, boolean bl3
-	) {
+	public static VertexConsumer method_23181(LayeredVertexConsumerStorage layeredVertexConsumerStorage, RenderLayer renderLayer, boolean bl, boolean bl2) {
 		return (VertexConsumer)(bl2
 			? new DelegatingVertexConsumer(
 				ImmutableList.of(
-					layeredVertexConsumerStorage.getBuffer(bl ? RenderLayer.GLINT : RenderLayer.ENTITY_GLINT),
-					layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(identifier))
+					layeredVertexConsumerStorage.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), layeredVertexConsumerStorage.getBuffer(renderLayer)
 				)
 			)
-			: layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(identifier)));
+			: layeredVertexConsumerStorage.getBuffer(renderLayer));
 	}
 
-	private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i) {
+	private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
 		boolean bl = !itemStack.isEmpty();
 		Matrix4f matrix4f = matrixStack.peek();
+		Matrix3f matrix3f = matrixStack.method_23478();
 
 		for (BakedQuad bakedQuad : list) {
-			int j = -1;
+			int k = -1;
 			if (bl && bakedQuad.hasColor()) {
-				j = this.colorMap.getColorMultiplier(itemStack, bakedQuad.getColorIndex());
+				k = this.colorMap.getColorMultiplier(itemStack, bakedQuad.getColorIndex());
 			}
 
-			float f = (float)(j >> 16 & 0xFF) / 255.0F;
-			float g = (float)(j >> 8 & 0xFF) / 255.0F;
-			float h = (float)(j & 0xFF) / 255.0F;
-			vertexConsumer.quad(matrix4f, bakedQuad, f, g, h, i);
+			float f = (float)(k >> 16 & 0xFF) / 255.0F;
+			float g = (float)(k >> 8 & 0xFF) / 255.0F;
+			float h = (float)(k & 0xFF) / 255.0F;
+			vertexConsumer.quad(matrix4f, matrix3f, bakedQuad, f, g, h, i, j);
 		}
 	}
 
@@ -166,9 +162,9 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	}
 
 	public void method_23178(
-		ItemStack itemStack, ModelTransformation.Type type, int i, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		ItemStack itemStack, ModelTransformation.Type type, int i, int j, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
 	) {
-		this.method_23177(null, itemStack, type, false, matrixStack, layeredVertexConsumerStorage, null, i);
+		this.method_23177(null, itemStack, type, false, matrixStack, layeredVertexConsumerStorage, null, i, j);
 	}
 
 	public void method_23177(
@@ -179,11 +175,12 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
 		@Nullable World world,
-		int i
+		int i,
+		int j
 	) {
 		if (!itemStack.isEmpty()) {
 			BakedModel bakedModel = this.getHeldItemModel(itemStack, world, livingEntity);
-			this.method_23179(itemStack, type, bl, matrixStack, layeredVertexConsumerStorage, i, bakedModel);
+			this.method_23179(itemStack, type, bl, matrixStack, layeredVertexConsumerStorage, i, j, bakedModel);
 		}
 	}
 
@@ -207,7 +204,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		RenderSystem.scalef(16.0F, 16.0F, 16.0F);
 		MatrixStack matrixStack = new MatrixStack();
 		LayeredVertexConsumerStorage.class_4598 lv = MinecraftClient.getInstance().method_22940().method_23000();
-		this.method_23179(itemStack, ModelTransformation.Type.GUI, false, matrixStack, lv, 15728880, bakedModel);
+		this.method_23179(itemStack, ModelTransformation.Type.GUI, false, matrixStack, lv, 15728880, OverlayTexture.field_21444, bakedModel);
 		lv.method_22993();
 		RenderSystem.disableAlphaTest();
 		RenderSystem.disableRescaleNormal();
@@ -244,13 +241,15 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 	public void renderGuiItemOverlay(TextRenderer textRenderer, ItemStack itemStack, int i, int j, @Nullable String string) {
 		if (!itemStack.isEmpty()) {
+			MatrixStack matrixStack = new MatrixStack();
 			if (itemStack.getCount() != 1 || string != null) {
 				String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
-				RenderSystem.disableDepthTest();
-				RenderSystem.disableBlend();
-				textRenderer.drawWithShadow(string2, (float)(i + 19 - 2 - textRenderer.getStringWidth(string2)), (float)(j + 6 + 3), 16777215);
-				RenderSystem.enableBlend();
-				RenderSystem.enableDepthTest();
+				matrixStack.translate(0.0, 0.0, (double)(this.zOffset + 200.0F));
+				LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+				textRenderer.method_22942(
+					string2, (float)(i + 19 - 2 - textRenderer.getStringWidth(string2)), (float)(j + 6 + 3), 16777215, true, matrixStack.peek(), lv, false, 0, 15728880
+				);
+				lv.method_22993();
 			}
 
 			if (itemStack.isDamaged()) {

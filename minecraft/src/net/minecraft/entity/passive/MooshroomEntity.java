@@ -100,22 +100,28 @@ public class MooshroomEntity extends CowEntity {
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return true;
 		} else if (itemStack.getItem() == Items.SHEARS && this.getBreedingAge() >= 0) {
-			this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y + (double)(this.getHeight() / 2.0F), this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.method_23323(0.5), this.getZ(), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.remove();
 				CowEntity cowEntity = EntityType.COW.create(this.world);
-				cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+				cowEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 				cowEntity.setHealth(this.getHealth());
 				cowEntity.bodyYaw = this.bodyYaw;
 				if (this.hasCustomName()) {
 					cowEntity.setCustomName(this.getCustomName());
+					cowEntity.setCustomNameVisible(this.isCustomNameVisible());
 				}
 
+				if (this.isPersistent()) {
+					cowEntity.setPersistent();
+				}
+
+				cowEntity.setInvulnerable(this.isInvulnerable());
 				this.world.spawnEntity(cowEntity);
 
 				for (int i = 0; i < 5; i++) {
 					this.world
-						.spawnEntity(new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+						.spawnEntity(new ItemEntity(this.world, this.getX(), this.method_23323(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
 				}
 
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
@@ -130,9 +136,9 @@ public class MooshroomEntity extends CowEntity {
 						this.world
 							.addParticle(
 								ParticleTypes.SMOKE,
-								this.x + (double)(this.random.nextFloat() / 2.0F),
-								this.y + (double)(this.getHeight() / 2.0F),
-								this.z + (double)(this.random.nextFloat() / 2.0F),
+								this.getX() + (double)(this.random.nextFloat() / 2.0F),
+								this.method_23323(0.5),
+								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
 								0.0,
 								(double)(this.random.nextFloat() / 5.0F),
 								0.0
@@ -148,9 +154,9 @@ public class MooshroomEntity extends CowEntity {
 						this.world
 							.addParticle(
 								ParticleTypes.EFFECT,
-								this.x + (double)(this.random.nextFloat() / 2.0F),
-								this.y + (double)(this.getHeight() / 2.0F),
-								this.z + (double)(this.random.nextFloat() / 2.0F),
+								this.getX() + (double)(this.random.nextFloat() / 2.0F),
+								this.method_23323(0.5),
+								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
 								0.0,
 								(double)(this.random.nextFloat() / 5.0F),
 								0.0

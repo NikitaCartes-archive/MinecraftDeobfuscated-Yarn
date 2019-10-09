@@ -15,7 +15,6 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 
@@ -40,7 +39,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(
 				PointOfInterestType.HOME.getCompletionCondition(), blockPos -> true, new BlockPos(livingEntity), 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
-			return optional.isPresent() && !(((BlockPos)optional.get()).getSquaredDistance(new Vec3i(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z)) <= 4.0);
+			return optional.isPresent() && !(((BlockPos)optional.get()).getSquaredDistance(new BlockPos(mobEntityWithAi)) <= 4.0);
 		}
 	}
 

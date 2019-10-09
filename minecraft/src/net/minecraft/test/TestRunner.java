@@ -1,10 +1,9 @@
 package net.minecraft.test;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
@@ -12,47 +11,31 @@ import org.apache.logging.log4j.Logger;
 
 public class TestRunner {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
 	private final ServerWorld world;
 	private final TestManager testManager;
 	private final List<GameTest> tests = Lists.<GameTest>newArrayList();
-	private final Map<String, Collection<GameTest>> testsByBatch = Maps.<String, Collection<GameTest>>newHashMap();
+	private final List<Pair<GameTestBatch, Collection<GameTest>>> batches = Lists.<Pair<GameTestBatch, Collection<GameTest>>>newArrayList();
 	private TestSet currentBatchTests;
 	private int currentBatchIndex = 0;
 	private BlockPos.Mutable reusablePos;
 	private int sizeZ = 0;
 
 	public TestRunner(Collection<GameTestBatch> collection, BlockPos blockPos, ServerWorld serverWorld, TestManager testManager) {
-		this.batches = Lists.<GameTestBatch>newArrayList(collection);
 		this.reusablePos = new BlockPos.Mutable(blockPos);
 		this.pos = blockPos;
 		this.world = serverWorld;
 		this.testManager = testManager;
-	}
-
-	private void init() {
-		this.batches.forEach(gameTestBatch -> {
-			Collection<GameTest> collection = Lists.<GameTest>newArrayList();
+		collection.forEach(gameTestBatch -> {
+			Collection<GameTest> collectionx = Lists.<GameTest>newArrayList();
 
 			for (TestFunction testFunction : gameTestBatch.getTestFunctions()) {
-				BlockPos blockPos = new BlockPos(this.reusablePos);
-				StructureTestUtil.method_22250(testFunction.getStructureName(), blockPos, 2, this.world, true);
-				GameTest gameTest = new GameTest(testFunction, blockPos, this.world);
-				collection.add(gameTest);
+				GameTest gameTest = new GameTest(testFunction, serverWorld);
+				collectionx.add(gameTest);
 				this.tests.add(gameTest);
-				this.testsByBatch.put(gameTestBatch.getId(), collection);
-				BlockPos blockPos2 = gameTest.getSize();
-				int i = blockPos2 == null ? 1 : blockPos2.getX();
-				int j = blockPos2 == null ? 1 : blockPos2.getZ();
-				this.sizeZ = Math.max(this.sizeZ, j);
-				this.reusablePos.setOffset(i + 4, 0, 0);
-				if (this.tests.size() % 8 == 0) {
-					this.reusablePos.setOffset(0, 0, this.sizeZ + 5);
-					this.reusablePos.setX(this.pos.getX());
-					this.sizeZ = 0;
-				}
 			}
+
+			this.batches.add(Pair.of(gameTestBatch, collectionx));
 		});
 	}
 
@@ -61,7 +44,6 @@ public class TestRunner {
 	}
 
 	public void run() {
-		this.init();
 		this.runBatch(0);
 	}
 
@@ -69,22 +51,18 @@ public class TestRunner {
 		this.currentBatchIndex = i;
 		this.currentBatchTests = new TestSet();
 		if (i < this.batches.size()) {
-			GameTestBatch gameTestBatch = (GameTestBatch)this.batches.get(this.currentBatchIndex);
+			Pair<GameTestBatch, Collection<GameTest>> pair = (Pair<GameTestBatch, Collection<GameTest>>)this.batches.get(this.currentBatchIndex);
+			GameTestBatch gameTestBatch = pair.getFirst();
+			Collection<GameTest> collection = pair.getSecond();
+			this.method_23632(collection);
 			gameTestBatch.setWorld(this.world);
-			this.runBatch(gameTestBatch);
 			String string = gameTestBatch.getId();
-			Collection<GameTest> collection = (Collection<GameTest>)this.testsByBatch.get(string);
 			LOGGER.info("Running test batch '" + string + "' (" + collection.size() + " tests)...");
 			collection.forEach(gameTest -> {
 				this.currentBatchTests.add(gameTest);
 				this.currentBatchTests.addListener(new TestListener() {
 					@Override
 					public void onStarted(GameTest gameTest) {
-					}
-
-					@Override
-					public void onPassed(GameTest gameTest) {
-						TestRunner.this.onTestCompleted(gameTest);
 					}
 
 					@Override
@@ -103,8 +81,23 @@ public class TestRunner {
 		}
 	}
 
-	private void runBatch(GameTestBatch gameTestBatch) {
-		Collection<GameTest> collection = (Collection<GameTest>)this.testsByBatch.get(gameTestBatch.getId());
-		collection.forEach(gameTest -> gameTest.start(2));
+	private void method_23632(Collection<GameTest> collection) {
+		int i = 0;
+
+		for (GameTest gameTest : collection) {
+			BlockPos blockPos = new BlockPos(this.reusablePos);
+			gameTest.method_23635(blockPos);
+			StructureTestUtil.method_22250(gameTest.method_23638(), blockPos, 2, this.world, true);
+			BlockPos blockPos2 = gameTest.getSize();
+			int j = blockPos2 == null ? 1 : blockPos2.getX();
+			int k = blockPos2 == null ? 1 : blockPos2.getZ();
+			this.sizeZ = Math.max(this.sizeZ, k);
+			this.reusablePos.setOffset(j + 4, 0, 0);
+			if (i++ % 8 == 0) {
+				this.reusablePos.setOffset(0, 0, this.sizeZ + 5);
+				this.reusablePos.setX(this.pos.getX());
+				this.sizeZ = 0;
+			}
+		}
 	}
 }

@@ -86,6 +86,7 @@ public class CommandManager {
 		SetBlockCommand.register(this.dispatcher);
 		SpawnPointCommand.register(this.dispatcher);
 		SetWorldSpawnCommand.register(this.dispatcher);
+		SpectateCommand.register(this.dispatcher);
 		SpreadPlayersCommand.register(this.dispatcher);
 		StopSoundCommand.register(this.dispatcher);
 		SummonCommand.register(this.dispatcher);

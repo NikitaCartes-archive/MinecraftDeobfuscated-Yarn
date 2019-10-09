@@ -3,9 +3,12 @@ package net.minecraft.nbt;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
+import it.unimi.dsi.fastutil.bytes.ByteSet;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.text.LiteralText;
@@ -46,6 +49,7 @@ public class ListTag extends AbstractListTag<Tag> {
 			return "TAG_List";
 		}
 	};
+	private static final ByteSet field_21461 = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
 	private final List<Tag> value;
 	private byte type;
 
@@ -276,28 +280,44 @@ public class ListTag extends AbstractListTag<Tag> {
 	public Text toText(String string, int i) {
 		if (this.isEmpty()) {
 			return new LiteralText("[]");
-		} else {
+		} else if (field_21461.contains(this.type) && this.size() <= 8) {
+			String string2 = ", ";
 			Text text = new LiteralText("[");
-			if (!string.isEmpty()) {
-				text.append("\n");
-			}
 
 			for (int j = 0; j < this.value.size(); j++) {
-				Text text2 = new LiteralText(Strings.repeat(string, i + 1));
-				text2.append(((Tag)this.value.get(j)).toText(string, i + 1));
-				if (j != this.value.size() - 1) {
-					text2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
+				if (j != 0) {
+					text.append(", ");
 				}
 
-				text.append(text2);
-			}
-
-			if (!string.isEmpty()) {
-				text.append("\n").append(Strings.repeat(string, i));
+				text.append(((Tag)this.value.get(j)).toText());
 			}
 
 			text.append("]");
 			return text;
+		} else {
+			Text text2 = new LiteralText("[");
+			if (!string.isEmpty()) {
+				text2.append("\n");
+			}
+
+			String string3 = String.valueOf(',');
+
+			for (int j = 0; j < this.value.size(); j++) {
+				Text text3 = new LiteralText(Strings.repeat(string, i + 1));
+				text3.append(((Tag)this.value.get(j)).toText(string, i + 1));
+				if (j != this.value.size() - 1) {
+					text3.append(string3).append(string.isEmpty() ? " " : "\n");
+				}
+
+				text2.append(text3);
+			}
+
+			if (!string.isEmpty()) {
+				text2.append("\n").append(Strings.repeat(string, i));
+			}
+
+			text2.append("]");
+			return text2;
 		}
 	}
 

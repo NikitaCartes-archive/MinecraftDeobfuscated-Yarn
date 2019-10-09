@@ -44,11 +44,8 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	}
 
 	private void method_20430(MobEntityWithAi mobEntityWithAi, ChunkSectionPos chunkSectionPos) {
-		BlockPos blockPos = chunkSectionPos.getCenterPos();
 		Optional<Vec3d> optional = Optional.ofNullable(
-			TargetFinder.findTargetTowards(
-				mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
-			)
+			TargetFinder.findTargetTowards(mobEntityWithAi, this.field_19352, this.field_19353, new Vec3d(chunkSectionPos.getCenterPos()))
 		);
 		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}

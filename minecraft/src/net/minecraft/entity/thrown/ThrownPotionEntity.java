@@ -171,7 +171,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void applyLingeringPotion(ItemStack itemStack, Potion potion) {
-		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
+		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
 		areaEffectCloudEntity.setOwner(this.getOwner());
 		areaEffectCloudEntity.setRadius(3.0F);
 		areaEffectCloudEntity.setRadiusOnUse(-0.5F);

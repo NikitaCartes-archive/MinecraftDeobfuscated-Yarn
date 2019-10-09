@@ -23,10 +23,12 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
@@ -40,6 +42,7 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.math.MatrixStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -172,10 +175,17 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			this.fillGradient(m + k + 2, n - 3 + 1, m + k + 3, n + o + 3 - 1, 1347420415, 1344798847);
 			this.fillGradient(m - 3, n - 3, m + k + 3, n - 3 + 1, 1347420415, 1347420415);
 			this.fillGradient(m - 3, n + o + 2, m + k + 3, n + o + 3, 1344798847, 1344798847);
+			MatrixStack matrixStack = new MatrixStack();
+			LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+			matrixStack.translate(0.0, 0.0, (double)this.itemRenderer.zOffset);
+			Matrix4f matrix4f = matrixStack.peek();
 
 			for (int s = 0; s < list.size(); s++) {
 				String string2 = (String)list.get(s);
-				this.font.drawWithShadow(string2, (float)m, (float)n, -1);
+				if (string2 != null) {
+					this.font.method_22942(string2, (float)m, (float)n, -1, true, matrix4f, lv, false, 0, 15728880);
+				}
+
 				if (s == 0) {
 					n += 2;
 				}
@@ -183,6 +193,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				n += 10;
 			}
 
+			lv.method_22993();
 			this.setBlitOffset(0);
 			this.itemRenderer.zOffset = 0.0F;
 			RenderSystem.enableDepthTest();
@@ -281,6 +292,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 					this.insertText(clickEvent.getValue(), true);
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 					this.sendMessage(clickEvent.getValue(), false);
+				} else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
+					this.minecraft.keyboard.setClipboard(clickEvent.getValue());
 				} else {
 					LOGGER.error("Don't know how to handle {}", clickEvent);
 				}

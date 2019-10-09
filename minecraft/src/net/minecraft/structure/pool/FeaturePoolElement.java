@@ -22,15 +22,15 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
-	private final ConfiguredFeature<?> feature;
+	private final ConfiguredFeature<?, ?> feature;
 	private final CompoundTag tag;
 
 	@Deprecated
-	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature) {
+	public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature) {
 		this(configuredFeature, StructurePool.Projection.RIGID);
 	}
 
-	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature, StructurePool.Projection projection) {
+	public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
 		super(projection);
 		this.feature = configuredFeature;
 		this.tag = this.method_19299();

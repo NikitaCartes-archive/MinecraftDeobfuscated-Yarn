@@ -14,6 +14,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
@@ -47,7 +48,8 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		float h = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
@@ -62,11 +64,13 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 			BlockState blockState = bannerBlockEntity.getCachedState();
 			if (blockState.getBlock() instanceof BannerBlock) {
 				matrixStack.translate(0.5, 0.5, 0.5);
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F, true));
+				float k = (float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F;
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
 				this.field_20811.visible = true;
 			} else {
 				matrixStack.translate(0.5, -0.16666667F, 0.5);
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-((Direction)blockState.get(WallBannerBlock.FACING)).asRotation(), true));
+				float k = -((Direction)blockState.get(WallBannerBlock.FACING)).asRotation();
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
 				matrixStack.translate(0.0, -0.3125, -0.4375);
 				this.field_20811.visible = false;
 			}
@@ -75,33 +79,33 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		Sprite sprite = this.getSprite(ModelLoader.field_20847);
 		matrixStack.push();
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
-		float j = 0.0625F;
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
-		this.field_20811.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		this.field_20812.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		float k = 0.0625F;
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		this.field_20811.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.field_20812.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		if (bannerBlockEntity.method_22535()) {
 			this.field_20810.pitch = 0.0F;
 		} else {
 			BlockPos blockPos = bannerBlockEntity.getPos();
-			float k = (float)((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l) + g;
-			this.field_20810.pitch = (-0.0125F + 0.01F * MathHelper.cos(k * (float) Math.PI * 0.02F)) * (float) Math.PI;
+			float m = (float)((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l) + g;
+			this.field_20810.pitch = (-0.0125F + 0.01F * MathHelper.cos(m * (float) Math.PI * 0.02F)) * (float) Math.PI;
 		}
 
 		this.field_20810.pivotY = -32.0F;
-		this.field_20810.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		this.field_20810.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		List<BannerPattern> list = bannerBlockEntity.getPatterns();
 		List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
-		VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.TRANSLUCENT_NO_CRUMBLING);
+		VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		if (list == null) {
 			LOGGER.error("patterns are null");
 		} else if (list2 == null) {
 			LOGGER.error("colors are null");
 		} else {
-			for (int m = 0; m < 17 && m < list.size() && m < list2.size(); m++) {
-				BannerPattern bannerPattern = (BannerPattern)list.get(m);
-				DyeColor dyeColor = (DyeColor)list2.get(m);
+			for (int n = 0; n < 17 && n < list.size() && n < list2.size(); n++) {
+				BannerPattern bannerPattern = (BannerPattern)list.get(n);
+				DyeColor dyeColor = (DyeColor)list2.get(n);
 				float[] fs = dyeColor.getColorComponents();
-				this.field_20810.render(matrixStack, vertexConsumer2, 0.0625F, i, this.getSprite(bannerPattern.method_22536()), fs[0], fs[1], fs[2]);
+				this.field_20810.render(matrixStack, vertexConsumer2, 0.0625F, i, j, this.getSprite(bannerPattern.method_22536()), fs[0], fs[1], fs[2]);
 			}
 		}
 

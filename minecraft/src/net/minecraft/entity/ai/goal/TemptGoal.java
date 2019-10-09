@@ -71,9 +71,9 @@ public class TemptGoal extends Goal {
 					return false;
 				}
 			} else {
-				this.lastPlayerX = this.closestPlayer.x;
-				this.lastPlayerY = this.closestPlayer.y;
-				this.lastPlayerZ = this.closestPlayer.z;
+				this.lastPlayerX = this.closestPlayer.getX();
+				this.lastPlayerY = this.closestPlayer.getY();
+				this.lastPlayerZ = this.closestPlayer.getZ();
 			}
 
 			this.lastPlayerPitch = (double)this.closestPlayer.pitch;
@@ -89,9 +89,9 @@ public class TemptGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.lastPlayerX = this.closestPlayer.x;
-		this.lastPlayerY = this.closestPlayer.y;
-		this.lastPlayerZ = this.closestPlayer.z;
+		this.lastPlayerX = this.closestPlayer.getX();
+		this.lastPlayerY = this.closestPlayer.getY();
+		this.lastPlayerZ = this.closestPlayer.getZ();
 		this.active = true;
 	}
 

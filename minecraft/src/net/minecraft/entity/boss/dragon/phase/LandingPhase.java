@@ -21,9 +21,9 @@ public class LandingPhase extends AbstractPhase {
 	public void clientTick() {
 		Vec3d vec3d = this.dragon.method_6834(1.0F).normalize();
 		vec3d.rotateY((float) (-Math.PI / 4));
-		double d = this.dragon.partHead.x;
-		double e = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0F);
-		double f = this.dragon.partHead.z;
+		double d = this.dragon.partHead.getX();
+		double e = this.dragon.partHead.method_23323(0.5);
+		double f = this.dragon.partHead.getZ();
 
 		for (int i = 0; i < 8; i++) {
 			Random random = this.dragon.getRandom();
@@ -42,7 +42,7 @@ public class LandingPhase extends AbstractPhase {
 			this.field_7046 = new Vec3d(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
 		}
 
-		if (this.field_7046.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z) < 1.0) {
+		if (this.field_7046.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ()) < 1.0) {
 			this.dragon.getPhaseManager().create(PhaseType.SITTING_FLAMING).method_6857();
 			this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
 		}

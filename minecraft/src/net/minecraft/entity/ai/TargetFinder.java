@@ -48,25 +48,25 @@ public class TargetFinder {
 
 	@Nullable
 	public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
+		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
 		return findTarget(mobEntityWithAi, i, j, vec3d2);
 	}
 
 	@Nullable
 	public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
-		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
+		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
 		return method_21758(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
 	public static Vec3d findGroundTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-		Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
+		Vec3d vec3d2 = mobEntityWithAi.getPos().subtract(vec3d);
 		return method_21758(mobEntityWithAi, i, j, vec3d2, false, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
 	}
 
 	@Nullable
 	public static Vec3d findTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-		Vec3d vec3d2 = new Vec3d(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z).subtract(vec3d);
+		Vec3d vec3d2 = mobEntityWithAi.getPos().subtract(vec3d);
 		return findTarget(mobEntityWithAi, i, j, vec3d2);
 	}
 
@@ -126,20 +126,20 @@ public class TargetFinder {
 				int q = blockPos2.getZ();
 				if (mobEntityWithAi.hasPositionTarget() && i > 1) {
 					BlockPos blockPos3 = mobEntityWithAi.getPositionTarget();
-					if (mobEntityWithAi.x > (double)blockPos3.getX()) {
+					if (mobEntityWithAi.getX() > (double)blockPos3.getX()) {
 						o -= random.nextInt(i / 2);
 					} else {
 						o += random.nextInt(i / 2);
 					}
 
-					if (mobEntityWithAi.z > (double)blockPos3.getZ()) {
+					if (mobEntityWithAi.getZ() > (double)blockPos3.getZ()) {
 						q -= random.nextInt(i / 2);
 					} else {
 						q += random.nextInt(i / 2);
 					}
 				}
 
-				BlockPos blockPos3x = new BlockPos((double)o + mobEntityWithAi.x, (double)p + mobEntityWithAi.y, (double)q + mobEntityWithAi.z);
+				BlockPos blockPos3x = new BlockPos((double)o + mobEntityWithAi.getX(), (double)p + mobEntityWithAi.getY(), (double)q + mobEntityWithAi.getZ());
 				if ((!bl4 || mobEntityWithAi.isInWalkTargetRange(blockPos3x)) && (!bl3 || entityNavigation.isValidPosition(blockPos3x))) {
 					if (bl2) {
 						blockPos3x = method_21761(blockPos3x, random.nextInt(l + 1) + m, mobEntityWithAi.world.getHeight(), predicate);

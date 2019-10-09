@@ -55,9 +55,20 @@ public class LightningEntity extends Entity {
 		super.tick();
 		if (this.ambientTick == 2) {
 			this.world
-				.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
+				.playSound(
+					null,
+					this.getX(),
+					this.getY(),
+					this.getZ(),
+					SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER,
+					SoundCategory.WEATHER,
+					10000.0F,
+					0.8F + this.random.nextFloat() * 0.2F
+				);
 			this.world
-				.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
+				.playSound(
+					null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F
+				);
 		}
 
 		this.ambientTick--;
@@ -78,7 +89,9 @@ public class LightningEntity extends Entity {
 			} else if (!this.cosmetic) {
 				double d = 3.0;
 				List<Entity> list = this.world
-					.getEntities(this, new Box(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0), Entity::isAlive);
+					.getEntities(
+						this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive
+					);
 
 				for (Entity entity : list) {
 					entity.onStruckByLightning(this);

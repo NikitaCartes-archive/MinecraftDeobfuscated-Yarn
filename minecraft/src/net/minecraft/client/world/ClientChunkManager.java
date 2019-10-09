@@ -177,7 +177,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public boolean shouldTickEntity(Entity entity) {
-		return this.isChunkLoaded(MathHelper.floor(entity.x) >> 4, MathHelper.floor(entity.z) >> 4);
+		return this.isChunkLoaded(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -65,7 +65,7 @@ public class PointOfInterestType {
 	public static final PointOfInterestType WEAPONSMITH = register("weaponsmith", getAllStatesOf(Blocks.GRINDSTONE), 1, 1);
 	public static final PointOfInterestType HOME = register("home", BED_STATES, 1, 1);
 	public static final PointOfInterestType MEETING = register("meeting", getAllStatesOf(Blocks.BELL), 32, 6);
-	public static final PointOfInterestType BEE_HIVE = register("bee_hive", getAllStatesOf(Blocks.BEE_HIVE), 0, 1);
+	public static final PointOfInterestType BEEHIVE = register("beehive", getAllStatesOf(Blocks.BEEHIVE), 0, 1);
 	public static final PointOfInterestType BEE_NEST = register("bee_nest", getAllStatesOf(Blocks.BEE_NEST), 0, 1);
 	public static final PointOfInterestType NETHER_PORTAL = register("nether_portal", getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
 	private final String id;

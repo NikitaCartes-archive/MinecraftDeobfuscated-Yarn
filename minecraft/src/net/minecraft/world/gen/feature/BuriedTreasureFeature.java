@@ -20,9 +20,9 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 
 	@Override
 	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
-		if (chunkGenerator.hasStructure(biome, Feature.BURIED_TREASURE)) {
+		if (chunkGenerator.hasStructure(biome, this)) {
 			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j, 10387320);
-			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.BURIED_TREASURE);
+			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
 			return random.nextFloat() < buriedTreasureFeatureConfig.probability;
 		} else {
 			return false;

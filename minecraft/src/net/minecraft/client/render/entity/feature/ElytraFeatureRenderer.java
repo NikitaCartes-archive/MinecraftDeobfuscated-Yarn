@@ -61,10 +61,10 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			matrixStack.translate(0.0, 0.0, 0.125);
 			this.getModel().copyStateTo(this.elytra);
 			this.elytra.method_17079(livingEntity, f, g, j, k, l, m);
-			VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, identifier, false, itemStack.hasEnchantmentGlint(), false);
-			OverlayTexture.clearDefaultOverlay(vertexConsumer);
-			this.elytra.method_22957(matrixStack, vertexConsumer, i);
-			vertexConsumer.clearDefaultOverlay();
+			VertexConsumer vertexConsumer = ItemRenderer.method_23181(
+				layeredVertexConsumerStorage, this.elytra.method_23500(identifier), false, itemStack.hasEnchantmentGlint()
+			);
+			this.elytra.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
 		}
 	}

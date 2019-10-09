@@ -105,7 +105,7 @@ public class BatEntity extends AmbientEntity {
 		super.tick();
 		if (this.isRoosting()) {
 			this.setVelocity(Vec3d.ZERO);
-			this.y = (double)MathHelper.floor(this.y) + 1.0 - (double)this.getHeight();
+			this.setPos(this.getX(), (double)MathHelper.floor(this.getY()) + 1.0 - (double)this.getHeight(), this.getZ());
 		} else {
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
 		}
@@ -137,15 +137,15 @@ public class BatEntity extends AmbientEntity {
 
 			if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
 				this.hangingPosition = new BlockPos(
-					this.x + (double)this.random.nextInt(7) - (double)this.random.nextInt(7),
-					this.y + (double)this.random.nextInt(6) - 2.0,
-					this.z + (double)this.random.nextInt(7) - (double)this.random.nextInt(7)
+					this.getX() + (double)this.random.nextInt(7) - (double)this.random.nextInt(7),
+					this.getY() + (double)this.random.nextInt(6) - 2.0,
+					this.getZ() + (double)this.random.nextInt(7) - (double)this.random.nextInt(7)
 				);
 			}
 
-			double d = (double)this.hangingPosition.getX() + 0.5 - this.x;
-			double e = (double)this.hangingPosition.getY() + 0.1 - this.y;
-			double f = (double)this.hangingPosition.getZ() + 0.5 - this.z;
+			double d = (double)this.hangingPosition.getX() + 0.5 - this.getX();
+			double e = (double)this.hangingPosition.getY() + 0.1 - this.getY();
+			double f = (double)this.hangingPosition.getZ() + 0.5 - this.getZ();
 			Vec3d vec3d = this.getVelocity();
 			Vec3d vec3d2 = vec3d.add((Math.signum(d) * 0.5 - vec3d.x) * 0.1F, (Math.signum(e) * 0.7F - vec3d.y) * 0.1F, (Math.signum(f) * 0.5 - vec3d.z) * 0.1F);
 			this.setVelocity(vec3d2);
@@ -165,7 +165,8 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
+		return false;
 	}
 
 	@Override

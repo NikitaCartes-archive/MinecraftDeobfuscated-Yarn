@@ -33,7 +33,9 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		float f = 0.125F;
 		float g = 0.1875F;
 		float h = 0.25F;
-		this.setBoundingBox(new Box(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
+		this.setBoundingBox(
+			new Box(this.getX() - 0.1875, this.getY() - 0.25 + 0.125, this.getZ() - 0.1875, this.getX() + 0.1875, this.getY() + 0.25 + 0.125, this.getZ() + 0.1875)
+		);
 		this.teleporting = true;
 	}
 
@@ -44,9 +46,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	protected void method_6895() {
-		this.x = (double)this.blockPos.getX() + 0.5;
-		this.y = (double)this.blockPos.getY() + 0.5;
-		this.z = (double)this.blockPos.getZ() + 0.5;
+		this.setPos((double)this.blockPos.getX() + 0.5, (double)this.blockPos.getY() + 0.5, (double)this.blockPos.getZ() + 0.5);
 	}
 
 	@Override
@@ -95,7 +95,9 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 			boolean bl = false;
 			double d = 7.0;
 			List<MobEntity> list = this.world
-				.getNonSpectatingEntities(MobEntity.class, new Box(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
+				.getNonSpectatingEntities(
+					MobEntity.class, new Box(this.getX() - 7.0, this.getY() - 7.0, this.getZ() - 7.0, this.getX() + 7.0, this.getY() + 7.0, this.getZ() + 7.0)
+				);
 
 			for (MobEntity mobEntity : list) {
 				if (mobEntity.getHoldingEntity() == playerEntity) {

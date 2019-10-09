@@ -30,7 +30,7 @@ public class DamageTracker {
 	public void setFallDeathSuffix() {
 		this.clearFallDeathSuffix();
 		if (this.entity.isClimbing()) {
-			Block block = this.entity.world.getBlockState(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY, this.entity.z)).getBlock();
+			Block block = this.entity.world.getBlockState(new BlockPos(this.entity)).getBlock();
 			if (block == Blocks.LADDER) {
 				this.fallDeathSuffix = "ladder";
 			} else if (block == Blocks.VINE) {

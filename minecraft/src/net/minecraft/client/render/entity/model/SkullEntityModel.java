@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MatrixStack;
 
@@ -16,6 +17,7 @@ public class SkullEntityModel extends Model {
 	}
 
 	public SkullEntityModel(int i, int j, int k, int l) {
+		super(RenderLayer::getEntityTranslucent);
 		this.textureWidth = k;
 		this.textureHeight = l;
 		this.skull = new ModelPart(this, i, j);
@@ -23,9 +25,13 @@ public class SkullEntityModel extends Model {
 		this.skull.setPivot(0.0F, 0.0F, 0.0F);
 	}
 
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j) {
+	public void render(float f, float g, float h) {
 		this.skull.yaw = g * (float) (Math.PI / 180.0);
 		this.skull.pitch = h * (float) (Math.PI / 180.0);
-		this.skull.render(matrixStack, vertexConsumer, i, j, null);
+	}
+
+	@Override
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+		this.skull.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
 	}
 }

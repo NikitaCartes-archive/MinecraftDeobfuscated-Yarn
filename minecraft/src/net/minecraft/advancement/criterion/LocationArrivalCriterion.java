@@ -28,7 +28,7 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 	public void handle(ServerPlayerEntity serverPlayerEntity) {
 		this.test(
 			serverPlayerEntity.getAdvancementManager(),
-			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z)
+			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ())
 		);
 	}
 

@@ -2,20 +2,19 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4667;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class SkinOptionsScreen extends Screen {
-	private final Screen parent;
-
-	public SkinOptionsScreen(Screen screen) {
-		super(new TranslatableText("options.skinCustomisation.title"));
-		this.parent = screen;
+public class SkinOptionsScreen extends class_4667 {
+	public SkinOptionsScreen(Screen screen, GameOptions gameOptions) {
+		super(screen, gameOptions, new TranslatableText("options.skinCustomisation.title"));
 	}
 
 	@Override
@@ -26,7 +25,7 @@ public class SkinOptionsScreen extends Screen {
 			this.addButton(
 				new ButtonWidget(
 					this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, this.getPlayerModelPartDisplayString(playerModelPart), buttonWidget -> {
-						this.minecraft.options.togglePlayerModelPart(playerModelPart);
+						this.field_21336.togglePlayerModelPart(playerModelPart);
 						buttonWidget.setMessage(this.getPlayerModelPartDisplayString(playerModelPart));
 					}
 				)
@@ -41,12 +40,12 @@ public class SkinOptionsScreen extends Screen {
 				150,
 				20,
 				Option.MAIN_HAND,
-				Option.MAIN_HAND.getMessage(this.minecraft.options),
+				Option.MAIN_HAND.getMessage(this.field_21336),
 				buttonWidget -> {
-					Option.MAIN_HAND.cycle(this.minecraft.options, 1);
-					this.minecraft.options.write();
-					buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.minecraft.options));
-					this.minecraft.options.onPlayerModelPartChange();
+					Option.MAIN_HAND.cycle(this.field_21336, 1);
+					this.field_21336.write();
+					buttonWidget.setMessage(Option.MAIN_HAND.getMessage(this.field_21336));
+					this.field_21336.onPlayerModelPartChange();
 				}
 			)
 		);
@@ -56,14 +55,9 @@ public class SkinOptionsScreen extends Screen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
+				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_21335)
 			)
 		);
-	}
-
-	@Override
-	public void removed() {
-		this.minecraft.options.write();
 	}
 
 	@Override
@@ -75,7 +69,7 @@ public class SkinOptionsScreen extends Screen {
 
 	private String getPlayerModelPartDisplayString(PlayerModelPart playerModelPart) {
 		String string;
-		if (this.minecraft.options.getEnabledPlayerModelParts().contains(playerModelPart)) {
+		if (this.field_21336.getEnabledPlayerModelParts().contains(playerModelPart)) {
 			string = I18n.translate("options.on");
 		} else {
 			string = I18n.translate("options.off");

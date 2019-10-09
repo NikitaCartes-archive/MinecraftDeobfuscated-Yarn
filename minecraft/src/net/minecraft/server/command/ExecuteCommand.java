@@ -121,7 +121,12 @@ public class ExecuteCommand {
 					CommandManager.literal("positioned")
 						.then(
 							CommandManager.argument("pos", Vec3ArgumentType.vec3())
-								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withPosition(Vec3ArgumentType.getVec3(commandContext, "pos")))
+								.redirect(
+									literalCommandNode,
+									commandContext -> commandContext.getSource()
+											.withPosition(Vec3ArgumentType.getVec3(commandContext, "pos"))
+											.withEntityAnchor(EntityAnchorArgumentType.EntityAnchor.FEET)
+								)
 						)
 						.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, commandContext -> {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();

@@ -153,7 +153,7 @@ public class MerchantContainer extends Container {
 	private void playYesSound() {
 		if (!this.trader.getTraderWorld().isClient) {
 			Entity entity = (Entity)this.trader;
-			this.trader.getTraderWorld().playSound(entity.x, entity.y, entity.z, this.trader.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
+			this.trader.getTraderWorld().playSound(entity.getX(), entity.getY(), entity.getZ(), this.trader.getYesSound(), SoundCategory.NEUTRAL, 1.0F, 1.0F, false);
 		}
 	}
 

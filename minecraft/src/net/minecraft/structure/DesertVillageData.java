@@ -17,9 +17,8 @@ import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class DesertVillageData {
 	public static void initialize() {
@@ -219,8 +218,8 @@ public class DesertVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/desert/desert_lamp_1"), 10),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.CACTUS, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.HAY_PILE, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21104)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 10)
 					),
 					StructurePool.Projection.RIGID
@@ -233,8 +232,8 @@ public class DesertVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/desert/desert_lamp_1", immutableList), 10),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.CACTUS, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.HAY_PILE, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21104)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 10)
 					),
 					StructurePool.Projection.RIGID

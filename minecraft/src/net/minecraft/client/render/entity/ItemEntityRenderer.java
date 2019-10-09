@@ -4,6 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -58,7 +59,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.GROUND).scale.getY();
 		matrixStack.translate(0.0, (double)(l + 0.25F * m), 0.0);
 		float n = ((float)itemEntity.getAge() + h) / 20.0F + itemEntity.hoverHeight;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n, false));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(n));
 		float o = bakedModel.getTransformation().ground.scale.getX();
 		float p = bakedModel.getTransformation().ground.scale.getY();
 		float q = bakedModel.getTransformation().ground.scale.getZ();
@@ -85,7 +86,16 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 
 			this.itemRenderer
-				.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, layeredVertexConsumerStorage, itemEntity.getLightmapCoordinates(), bakedModel);
+				.method_23179(
+					itemStack,
+					ModelTransformation.Type.GROUND,
+					false,
+					matrixStack,
+					layeredVertexConsumerStorage,
+					itemEntity.getLightmapCoordinates(),
+					OverlayTexture.field_21444,
+					bakedModel
+				);
 			matrixStack.pop();
 			if (!bl) {
 				matrixStack.translate((double)(0.0F * o), (double)(0.0F * p), (double)(0.09375F * q));

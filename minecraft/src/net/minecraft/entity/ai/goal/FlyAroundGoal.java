@@ -38,18 +38,18 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(
-			MathHelper.floor(this.mob.x - 3.0),
-			MathHelper.floor(this.mob.y - 6.0),
-			MathHelper.floor(this.mob.z - 3.0),
-			MathHelper.floor(this.mob.x + 3.0),
-			MathHelper.floor(this.mob.y + 6.0),
-			MathHelper.floor(this.mob.z + 3.0)
+			MathHelper.floor(this.mob.getX() - 3.0),
+			MathHelper.floor(this.mob.getY() - 6.0),
+			MathHelper.floor(this.mob.getZ() - 3.0),
+			MathHelper.floor(this.mob.getX() + 3.0),
+			MathHelper.floor(this.mob.getY() + 6.0),
+			MathHelper.floor(this.mob.getZ() + 3.0)
 		)) {
 			if (!blockPos.equals(blockPos2)) {
 				Block block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock();
 				boolean bl = block instanceof LeavesBlock || block.matches(BlockTags.LOGS);
 				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) {
-					return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
+					return new Vec3d(blockPos2);
 				}
 			}
 		}

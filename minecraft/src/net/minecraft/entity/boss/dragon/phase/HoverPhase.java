@@ -14,7 +14,7 @@ public class HoverPhase extends AbstractPhase {
 	@Override
 	public void serverTick() {
 		if (this.field_7042 == null) {
-			this.field_7042 = new Vec3d(this.dragon.x, this.dragon.y, this.dragon.z);
+			this.field_7042 = this.dragon.getPos();
 		}
 	}
 

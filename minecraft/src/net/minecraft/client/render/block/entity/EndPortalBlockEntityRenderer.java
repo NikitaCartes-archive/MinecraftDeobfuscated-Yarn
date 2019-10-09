@@ -23,17 +23,25 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extend
 	}
 
 	public void method_3591(
-		T endPortalBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i
+		T endPortalBlockEntity,
+		double d,
+		double e,
+		double f,
+		float g,
+		MatrixStack matrixStack,
+		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		int i,
+		int j
 	) {
 		RANDOM.setSeed(31100L);
 		double h = d * d + e * e + f * f;
-		int j = this.method_3592(h);
-		float k = this.method_3594();
+		int k = this.method_3592(h);
+		float l = this.method_3594();
 		Matrix4f matrix4f = matrixStack.peek();
-		this.method_23084(endPortalBlockEntity, k, 0.15F, matrix4f, layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23021(1)));
+		this.method_23084(endPortalBlockEntity, l, 0.15F, matrix4f, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEndPortal(1)));
 
-		for (int l = 1; l < j; l++) {
-			this.method_23084(endPortalBlockEntity, k, 2.0F / (float)(18 - l), matrix4f, layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23021(l + 1)));
+		for (int m = 1; m < k; m++) {
+			this.method_23084(endPortalBlockEntity, l, 2.0F / (float)(18 - m), matrix4f, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEndPortal(m + 1)));
 		}
 	}
 

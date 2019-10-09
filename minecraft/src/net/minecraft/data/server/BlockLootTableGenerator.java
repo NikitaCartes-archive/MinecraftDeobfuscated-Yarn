@@ -781,6 +781,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16329(Blocks.DIORITE_WALL);
 		this.method_16329(Blocks.LOOM);
 		this.method_16329(Blocks.SCAFFOLDING);
+		this.method_16329(Blocks.HONEY_BLOCK);
+		this.method_16329(Blocks.HONEYCOMB_BLOCK);
 		this.method_16256(Blocks.FARMLAND, Blocks.DIRT);
 		this.method_16256(Blocks.TRIPWIRE, Items.STRING);
 		this.method_16256(Blocks.GRASS_PATH, Blocks.DIRT);
@@ -1024,7 +1026,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					)
 		);
 		this.method_16293(Blocks.BEE_NEST, BlockLootTableGenerator::method_22142);
-		this.method_16293(Blocks.BEE_HIVE, BlockLootTableGenerator::method_22143);
+		this.method_16293(Blocks.BEEHIVE, BlockLootTableGenerator::method_22143);
 		this.method_16293(Blocks.BIRCH_LEAVES, blockx -> method_10390(blockx, Blocks.BIRCH_SAPLING, field_11339));
 		this.method_16293(Blocks.ACACIA_LEAVES, blockx -> method_10390(blockx, Blocks.ACACIA_SAPLING, field_11339));
 		this.method_16293(Blocks.JUNGLE_LEAVES, blockx -> method_10390(blockx, Blocks.JUNGLE_SAPLING, field_11338));

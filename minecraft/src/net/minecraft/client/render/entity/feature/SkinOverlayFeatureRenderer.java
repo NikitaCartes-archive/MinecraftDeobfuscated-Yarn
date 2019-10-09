@@ -36,11 +36,9 @@ public abstract class SkinOverlayFeatureRenderer<T extends Entity & SkinOverlayO
 			EntityModel<T> entityModel = this.method_23203();
 			entityModel.animateModel(entity, f, g, h);
 			this.getModel().copyStateTo(entityModel);
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23018(this.method_23201(), this.method_23202(n), n * 0.01F));
-			OverlayTexture.clearDefaultOverlay(vertexConsumer);
+			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getPowerSwirl(this.method_23201(), this.method_23202(n), n * 0.01F));
 			entityModel.setAngles(entity, f, g, j, k, l, m);
-			entityModel.method_17116(matrixStack, vertexConsumer, i, 0.5F, 0.5F, 0.5F);
-			vertexConsumer.clearDefaultOverlay();
+			entityModel.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 0.5F, 0.5F, 0.5F);
 		}
 	}
 

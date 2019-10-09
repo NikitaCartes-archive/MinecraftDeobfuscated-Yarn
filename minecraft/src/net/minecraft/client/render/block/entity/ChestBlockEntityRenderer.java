@@ -16,6 +16,7 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -68,7 +69,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 
 	@Override
 	public void render(
-		T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i
+		T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j
 	) {
 		BlockState blockState = blockEntity.hasWorld() ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
@@ -87,33 +88,33 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		matrixStack.push();
 		float h = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
 		matrixStack.translate(0.5, 0.5, 0.5);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h, true));
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h));
 		matrixStack.translate(-0.5, -0.5, -0.5);
-		float j = blockEntity.getAnimationProgress(g);
-		j = 1.0F - j;
-		j = 1.0F - j * j * j;
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
+		float k = blockEntity.getAnimationProgress(g);
+		k = 1.0F - k;
+		k = 1.0F - k * k * k;
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		Sprite sprite = this.getSprite(identifier);
 		if (bl) {
 			if (chestType == ChestType.LEFT) {
 				matrixStack.translate(-1.0, 0.0, 0.0);
 			}
 
-			this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, j, i, sprite);
+			this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, k, i, j, sprite);
 		} else {
-			this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, j, i, sprite);
+			this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, k, i, j, sprite);
 		}
 
 		matrixStack.pop();
 	}
 
 	private void method_22749(
-		MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, Sprite sprite
+		MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j, Sprite sprite
 	) {
 		modelPart.pitch = -(f * (float) (Math.PI / 2));
 		modelPart2.pitch = modelPart.pitch;
-		modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		modelPart2.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
-		modelPart3.render(matrixStack, vertexConsumer, 0.0625F, i, sprite);
+		modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		modelPart2.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		modelPart3.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 	}
 }

@@ -26,7 +26,7 @@ import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FlyAroundGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
-import net.minecraft.entity.ai.goal.FollowOwnerFlyingGoal;
+import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SitOnOwnerShoulder;
@@ -84,7 +84,6 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		hashMap.put(EntityType.ILLUSIONER, SoundEvents.ENTITY_PARROT_IMITATE_ILLUSIONER);
 		hashMap.put(EntityType.MAGMA_CUBE, SoundEvents.ENTITY_PARROT_IMITATE_MAGMA_CUBE);
 		hashMap.put(EntityType.ZOMBIE_PIGMAN, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_PIGMAN);
-		hashMap.put(EntityType.PANDA, SoundEvents.ENTITY_PARROT_IMITATE_PANDA);
 		hashMap.put(EntityType.PHANTOM, SoundEvents.ENTITY_PARROT_IMITATE_PHANTOM);
 		hashMap.put(EntityType.PILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_PILLAGER);
 		hashMap.put(EntityType.POLAR_BEAR, SoundEvents.ENTITY_PARROT_IMITATE_POLAR_BEAR);
@@ -138,7 +137,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(2, this.sitGoal);
-		this.goalSelector.add(2, new FollowOwnerFlyingGoal(this, 1.0, 5.0F, 1.0F));
+		this.goalSelector.add(2, new FollowOwnerGoal(this, 1.0, 5.0F, 1.0F, true));
 		this.goalSelector.add(2, new FlyAroundGoal(this, 1.0));
 		this.goalSelector.add(3, new SitOnOwnerShoulder(this));
 		this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
@@ -218,7 +217,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 				MobEntity mobEntity = (MobEntity)list.get(world.random.nextInt(list.size()));
 				if (!mobEntity.isSilent()) {
 					SoundEvent soundEvent = getSound(mobEntity.getType());
-					world.playSound(null, entity.x, entity.y, entity.z, soundEvent, entity.getSoundCategory(), 0.7F, getSoundPitch(world.random));
+					world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), soundEvent, entity.getSoundCategory(), 0.7F, getSoundPitch(world.random));
 					return true;
 				}
 			}
@@ -241,9 +240,9 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 				this.world
 					.playSound(
 						null,
-						this.x,
-						this.y,
-						this.z,
+						this.getX(),
+						this.getY(),
+						this.getZ(),
 						SoundEvents.ENTITY_PARROT_EAT,
 						this.getSoundCategory(),
 						1.0F,
@@ -295,7 +294,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
+		return false;
 	}
 
 	@Override
@@ -315,7 +315,9 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	public static void playMobSound(World world, Entity entity) {
 		if (!entity.isSilent() && !imitateNearbyMob(world, entity) && world.random.nextInt(200) == 0) {
-			world.playSound(null, entity.x, entity.y, entity.z, getRandomSound(world.random), entity.getSoundCategory(), 1.0F, getSoundPitch(world.random));
+			world.playSound(
+				null, entity.getX(), entity.getY(), entity.getZ(), getRandomSound(world.random), entity.getSoundCategory(), 1.0F, getSoundPitch(world.random)
+			);
 		}
 	}
 
@@ -400,7 +402,10 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			this.sitGoal.setEnabledWithOwner(false);
+			if (this.sitGoal != null) {
+				this.sitGoal.setEnabledWithOwner(false);
+			}
+
 			return super.damage(damageSource, f);
 		}
 	}

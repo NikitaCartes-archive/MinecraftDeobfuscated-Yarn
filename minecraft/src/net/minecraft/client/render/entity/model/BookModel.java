@@ -2,10 +2,12 @@ package net.minecraft.client.render.entity.model;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.MathHelper;
@@ -23,6 +25,7 @@ public class BookModel extends Model {
 	private final List<ModelPart> field_20786;
 
 	public BookModel() {
+		super(RenderLayer::getEntitySolid);
 		this.leftBlock = new ModelPart(64, 32, 0, 10).addCuboid(0.0F, -4.0F, -0.99F, 5.0F, 8.0F, 1.0F);
 		this.rightBlock = new ModelPart(64, 32, 12, 10).addCuboid(0.0F, -4.0F, -0.01F, 5.0F, 8.0F, 1.0F);
 		this.leftPage = new ModelPart(64, 32, 24, 10).addCuboid(0.0F, -4.0F, 0.0F, 5.0F, 8.0F, 0.005F);
@@ -33,8 +36,13 @@ public class BookModel extends Model {
 		this.spine.yaw = (float) (Math.PI / 2);
 	}
 
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, Sprite sprite) {
-		this.field_20786.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, f, i, sprite));
+	@Override
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+		this.render(matrixStack, vertexConsumer, i, j, f, g, h, null);
+	}
+
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, @Nullable Sprite sprite) {
+		this.field_20786.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite, f, g, h));
 	}
 
 	public void setPageAngles(float f, float g, float h, float i) {

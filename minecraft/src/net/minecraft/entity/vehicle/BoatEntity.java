@@ -165,9 +165,13 @@ public class BoatEntity extends Entity {
 			}
 		}
 
-		this.world.addParticle(ParticleTypes.SPLASH, this.x + (double)this.random.nextFloat(), this.y + 0.7, this.z + (double)this.random.nextFloat(), 0.0, 0.0, 0.0);
+		this.world
+			.addParticle(
+				ParticleTypes.SPLASH, this.getX() + (double)this.random.nextFloat(), this.getY() + 0.7, this.getZ() + (double)this.random.nextFloat(), 0.0, 0.0, 0.0
+			);
 		if (this.random.nextInt(20) == 0) {
-			this.world.playSound(this.x, this.y, this.z, this.getSplashSound(), this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
+			this.world
+				.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
 		}
 	}
 
@@ -281,7 +285,8 @@ public class BoatEntity extends Entity {
 						Vec3d vec3d = this.getRotationVec(1.0F);
 						double d = i == 1 ? -vec3d.z : vec3d.z;
 						double e = i == 1 ? vec3d.x : -vec3d.x;
-						this.world.playSound(null, this.x + d, this.y, this.z + e, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+						this.world
+							.playSound(null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
 					}
 				}
 
@@ -370,13 +375,13 @@ public class BoatEntity extends Entity {
 	private void method_7555() {
 		if (this.isLogicalSideForUpdatingMovement()) {
 			this.field_7708 = 0;
-			this.updateTrackedPosition(this.x, this.y, this.z);
+			this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
 		}
 
 		if (this.field_7708 > 0) {
-			double d = this.x + (this.field_7686 - this.x) / (double)this.field_7708;
-			double e = this.y + (this.field_7700 - this.y) / (double)this.field_7708;
-			double f = this.z + (this.field_7685 - this.z) / (double)this.field_7708;
+			double d = this.getX() + (this.field_7686 - this.getX()) / (double)this.field_7708;
+			double e = this.getY() + (this.field_7700 - this.getY()) / (double)this.field_7708;
+			double f = this.getZ() + (this.field_7685 - this.getZ()) / (double)this.field_7708;
 			double g = MathHelper.wrapDegrees(this.field_7699 - (double)this.yaw);
 			this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
 			this.pitch = (float)((double)this.pitch + (this.field_7684 - (double)this.pitch) / (double)this.field_7708);
@@ -567,14 +572,14 @@ public class BoatEntity extends Entity {
 		double f = 0.0;
 		this.velocityDecay = 0.05F;
 		if (this.lastLocation == BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.ON_LAND) {
-			this.waterLevel = this.getBoundingBox().minY + (double)this.getHeight();
-			this.setPosition(this.x, (double)(this.method_7544() - this.getHeight()) + 0.101, this.z);
+			this.waterLevel = this.method_23323(1.0);
+			this.setPosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
 			this.fallVelocity = 0.0;
 			this.location = BoatEntity.Location.IN_WATER;
 		} else {
 			if (this.location == BoatEntity.Location.IN_WATER) {
-				f = (this.waterLevel - this.getBoundingBox().minY) / (double)this.getHeight();
+				f = (this.waterLevel - this.getY()) / (double)this.getHeight();
 				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.UNDER_FLOWING_WATER) {
 				e = -7.0E-4;
@@ -652,7 +657,7 @@ public class BoatEntity extends Entity {
 			}
 
 			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.yaw * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
-			entity.setPosition(this.x + vec3d.x, this.y + (double)g, this.z + vec3d.z);
+			entity.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
 			entity.yaw = entity.yaw + this.yawVelocity;
 			entity.setHeadYaw(entity.getHeadYaw() + this.yawVelocity);
 			this.copyEntityData(entity);

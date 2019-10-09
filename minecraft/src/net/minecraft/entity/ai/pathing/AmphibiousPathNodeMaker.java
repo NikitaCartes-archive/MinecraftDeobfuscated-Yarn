@@ -229,10 +229,10 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
-		PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
+		PathNodeType pathNodeType = getBasicPathNodeType(blockView, i, j, k);
 		if (pathNodeType == PathNodeType.WATER) {
 			for (Direction direction : Direction.values()) {
-				PathNodeType pathNodeType2 = this.getBasicPathNodeType(blockView, i + direction.getOffsetX(), j + direction.getOffsetY(), k + direction.getOffsetZ());
+				PathNodeType pathNodeType2 = getBasicPathNodeType(blockView, i + direction.getOffsetX(), j + direction.getOffsetY(), k + direction.getOffsetZ());
 				if (pathNodeType2 == PathNodeType.BLOCKED) {
 					return PathNodeType.WATER_BORDER;
 				}
@@ -242,7 +242,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		} else {
 			if (pathNodeType == PathNodeType.OPEN && j >= 1) {
 				Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
-				PathNodeType pathNodeType3 = this.getBasicPathNodeType(blockView, i, j - 1, k);
+				PathNodeType pathNodeType3 = getBasicPathNodeType(blockView, i, j - 1, k);
 				if (pathNodeType3 != PathNodeType.WALKABLE && pathNodeType3 != PathNodeType.OPEN && pathNodeType3 != PathNodeType.LAVA) {
 					pathNodeType = PathNodeType.WALKABLE;
 				} else {
@@ -262,7 +262,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 				}
 			}
 
-			return this.method_59(blockView, i, j, k, pathNodeType);
+			return method_59(blockView, i, j, k, pathNodeType);
 		}
 	}
 }

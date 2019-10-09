@@ -154,8 +154,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private static double getSquaredDistance(ChunkPos chunkPos, Entity entity) {
 		double d = (double)(chunkPos.x * 16 + 8);
 		double e = (double)(chunkPos.z * 16 + 8);
-		double f = d - entity.x;
-		double g = e - entity.z;
+		double f = d - entity.getX();
+		double g = e - entity.getZ();
 		return f * f + g * g;
 	}
 
@@ -167,8 +167,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			i = chunkSectionPos.getSectionX();
 			j = chunkSectionPos.getSectionZ();
 		} else {
-			i = MathHelper.floor(serverPlayerEntity.x / 16.0);
-			j = MathHelper.floor(serverPlayerEntity.z / 16.0);
+			i = MathHelper.floor(serverPlayerEntity.getX() / 16.0);
+			j = MathHelper.floor(serverPlayerEntity.getZ() / 16.0);
 		}
 
 		return getChebyshevDistance(chunkPos, i, j);
@@ -786,8 +786,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	void handlePlayerAddedOrRemoved(ServerPlayerEntity serverPlayerEntity, boolean bl) {
 		boolean bl2 = this.doesNotGenerateChunks(serverPlayerEntity);
 		boolean bl3 = this.playerChunkWatchingManager.method_21715(serverPlayerEntity);
-		int i = MathHelper.floor(serverPlayerEntity.x) >> 4;
-		int j = MathHelper.floor(serverPlayerEntity.z) >> 4;
+		int i = MathHelper.floor(serverPlayerEntity.getX()) >> 4;
+		int j = MathHelper.floor(serverPlayerEntity.getZ()) >> 4;
 		if (bl) {
 			this.playerChunkWatchingManager.add(ChunkPos.toLong(i, j), serverPlayerEntity, bl2);
 			this.method_20726(serverPlayerEntity);
@@ -826,8 +826,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		int i = MathHelper.floor(serverPlayerEntity.x) >> 4;
-		int j = MathHelper.floor(serverPlayerEntity.z) >> 4;
+		int i = MathHelper.floor(serverPlayerEntity.getX()) >> 4;
+		int j = MathHelper.floor(serverPlayerEntity.getZ()) >> 4;
 		ChunkSectionPos chunkSectionPos = serverPlayerEntity.getCameraPosition();
 		ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(serverPlayerEntity);
 		long l = chunkSectionPos.toChunkPos().toLong();
@@ -1084,7 +1084,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 		public void updateCameraPosition(ServerPlayerEntity serverPlayerEntity) {
 			if (serverPlayerEntity != this.entity) {
-				Vec3d vec3d = new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z).subtract(this.entry.method_18759());
+				Vec3d vec3d = serverPlayerEntity.getPos().subtract(this.entry.method_18759());
 				int i = Math.min(this.method_22844(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
 				boolean bl = vec3d.x >= (double)(-i)
 					&& vec3d.x <= (double)i

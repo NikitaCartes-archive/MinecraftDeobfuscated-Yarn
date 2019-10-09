@@ -27,22 +27,24 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
 		DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
 
-		for (int j = 0; j < defaultedList.size(); j++) {
-			ItemStack itemStack = defaultedList.get(j);
+		for (int k = 0; k < defaultedList.size(); k++) {
+			ItemStack itemStack = defaultedList.get(k);
 			if (itemStack != ItemStack.EMPTY) {
 				matrixStack.push();
 				matrixStack.translate(0.5, 0.44921875, 0.5);
-				Direction direction2 = Direction.fromHorizontal((j + direction.getHorizontal()) % 4);
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-direction2.asRotation(), true));
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
+				Direction direction2 = Direction.fromHorizontal((k + direction.getHorizontal()) % 4);
+				float h = -direction2.asRotation();
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 				matrixStack.translate(-0.3125, -0.3125, 0.0);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
-				MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, matrixStack, layeredVertexConsumerStorage);
+				MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, layeredVertexConsumerStorage);
 				matrixStack.pop();
 			}
 		}

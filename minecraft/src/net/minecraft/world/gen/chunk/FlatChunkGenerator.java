@@ -57,17 +57,18 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 		Map<String, Map<String, String>> map = this.config.getStructures();
 
 		for (String string : map.keySet()) {
-			ConfiguredFeature<?>[] configuredFeatures = (ConfiguredFeature<?>[])FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
+			ConfiguredFeature<?, ?>[] configuredFeatures = (ConfiguredFeature<?, ?>[])FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
 			if (configuredFeatures != null) {
-				for (ConfiguredFeature<?> configuredFeature : configuredFeatures) {
+				for (ConfiguredFeature<?, ?> configuredFeature : configuredFeatures) {
 					flatChunkGeneratorBiome.addFeature((GenerationStep.Feature)FlatChunkGeneratorConfig.FEATURE_TO_GENERATION_STEP.get(configuredFeature), configuredFeature);
-					ConfiguredFeature<?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.config).feature;
+					ConfiguredFeature<?, ?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.config).feature;
 					if (configuredFeature2.feature instanceof StructureFeature) {
 						StructureFeature<FeatureConfig> structureFeature = (StructureFeature<FeatureConfig>)configuredFeature2.feature;
 						FeatureConfig featureConfig = biome.getStructureFeatureConfig(structureFeature);
-						flatChunkGeneratorBiome.addStructureFeature(
-							structureFeature, featureConfig != null ? featureConfig : (FeatureConfig)FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature)
-						);
+						FeatureConfig featureConfig2 = featureConfig != null
+							? featureConfig
+							: (FeatureConfig)FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature);
+						flatChunkGeneratorBiome.addStructureFeature(structureFeature.method_23397(featureConfig2));
 					}
 				}
 			}
@@ -81,7 +82,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 				if (!list.contains(feature)) {
-					for (ConfiguredFeature<?> configuredFeature2 : biome.getFeaturesForStep(feature)) {
+					for (ConfiguredFeature<?, ?> configuredFeature2 : biome.getFeaturesForStep(feature)) {
 						flatChunkGeneratorBiome.addFeature(feature, configuredFeature2);
 					}
 				}
@@ -96,7 +97,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 				this.config.removeLayerBlock(i);
 				flatChunkGeneratorBiome.addFeature(
 					GenerationStep.Feature.TOP_LAYER_MODIFICATION,
-					Biome.configureFeature(Feature.FILL_LAYER, new FillLayerFeatureConfig(i, blockState), Decorator.NOPE, DecoratorConfig.DEFAULT)
+					Feature.FILL_LAYER.method_23397(new FillLayerFeatureConfig(i, blockState)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT))
 				);
 			}
 		}

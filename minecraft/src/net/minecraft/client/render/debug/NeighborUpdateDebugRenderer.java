@@ -61,7 +61,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Map<BlockPos, Integer> map = Maps.<BlockPos, Integer>newHashMap();
 		LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-		VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.LINES);
+		VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.getLines());
 		Iterator<Entry<Long, Map<BlockPos, Integer>>> iterator = this.field_4623.entrySet().iterator();
 
 		while (iterator.hasNext()) {

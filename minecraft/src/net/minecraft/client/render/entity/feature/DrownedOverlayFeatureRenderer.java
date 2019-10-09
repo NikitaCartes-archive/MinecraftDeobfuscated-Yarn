@@ -30,6 +30,6 @@ public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends Featu
 		float l,
 		float m
 	) {
-		method_23195(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, zombieEntity, f, g, j, k, l, m, h);
+		method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, zombieEntity, f, g, j, k, l, m, h, 1.0F, 1.0F, 1.0F);
 	}
 }

@@ -595,8 +595,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			if (!entity.isLogicalSideForUpdatingMovement()) {
 				float g = (float)(entityPositionS2CPacket.getYaw() * 360) / 256.0F;
 				float h = (float)(entityPositionS2CPacket.getPitch() * 360) / 256.0F;
-				if (!(Math.abs(entity.x - d) >= 0.03125) && !(Math.abs(entity.y - e) >= 0.015625) && !(Math.abs(entity.z - f) >= 0.03125)) {
-					entity.updateTrackedPositionAndAngles(entity.x, entity.y, entity.z, g, h, 0, true);
+				if (!(Math.abs(entity.getX() - d) >= 0.03125) && !(Math.abs(entity.getY() - e) >= 0.015625) && !(Math.abs(entity.getZ() - f) >= 0.03125)) {
+					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 0, true);
 				} else {
 					entity.updateTrackedPositionAndAngles(d, e, f, g, h, 3, true);
 				}
@@ -631,7 +631,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				} else if (entityS2CPacket.hasRotation()) {
 					float h = (float)entityS2CPacket.getYaw();
 					float f = (float)entityS2CPacket.getPitch();
-					entity.updateTrackedPositionAndAngles(entity.x, entity.y, entity.z, h, f, 3, false);
+					entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, f, 3, false);
 				}
 
 				entity.onGround = entityS2CPacket.isOnGround();
@@ -671,50 +671,42 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double e;
 		if (bl) {
 			d = vec3d.getX();
-			e = playerEntity.x + playerPositionLookS2CPacket.getX();
+			e = playerEntity.getX() + playerPositionLookS2CPacket.getX();
 			playerEntity.prevRenderX = playerEntity.prevRenderX + playerPositionLookS2CPacket.getX();
-			playerEntity.x = e;
-			playerEntity.prevX = e;
 		} else {
 			d = 0.0;
 			e = playerPositionLookS2CPacket.getX();
 			playerEntity.prevRenderX = e;
-			playerEntity.x = e;
-			playerEntity.prevX = e;
 		}
 
 		double f;
 		double g;
 		if (bl2) {
 			f = vec3d.getY();
-			g = playerEntity.y + playerPositionLookS2CPacket.getY();
+			g = playerEntity.getY() + playerPositionLookS2CPacket.getY();
 			playerEntity.prevRenderY = playerEntity.prevRenderY + playerPositionLookS2CPacket.getY();
-			playerEntity.y = g;
-			playerEntity.prevY = g;
 		} else {
 			f = 0.0;
 			g = playerPositionLookS2CPacket.getY();
 			playerEntity.prevRenderY = g;
-			playerEntity.y = g;
-			playerEntity.prevY = g;
 		}
 
 		double h;
 		double i;
 		if (bl3) {
 			h = vec3d.getZ();
-			i = playerEntity.z + playerPositionLookS2CPacket.getZ();
+			i = playerEntity.getZ() + playerPositionLookS2CPacket.getZ();
 			playerEntity.prevRenderZ = playerEntity.prevRenderZ + playerPositionLookS2CPacket.getZ();
-			playerEntity.z = i;
-			playerEntity.prevZ = i;
 		} else {
 			h = 0.0;
 			i = playerPositionLookS2CPacket.getZ();
 			playerEntity.prevRenderZ = i;
-			playerEntity.z = i;
-			playerEntity.prevZ = i;
 		}
 
+		playerEntity.setPos(e, g, i);
+		playerEntity.prevX = e;
+		playerEntity.prevY = g;
+		playerEntity.prevZ = i;
 		playerEntity.setVelocity(d, f, h);
 		float j = playerPositionLookS2CPacket.getYaw();
 		float k = playerPositionLookS2CPacket.getPitch();
@@ -729,7 +721,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		playerEntity.setPositionAnglesAndUpdate(e, g, i, j, k);
 		this.connection.send(new TeleportConfirmC2SPacket(playerPositionLookS2CPacket.getTeleportId()));
 		this.connection
-			.send(new PlayerMoveC2SPacket.Both(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false));
+			.send(new PlayerMoveC2SPacket.Both(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.yaw, playerEntity.pitch, false));
 		if (!this.field_3698) {
 			this.field_3698 = true;
 			this.client.openScreen(null);
@@ -837,9 +829,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			if (entity instanceof ExperienceOrbEntity) {
 				this.world
 					.playSound(
-						entity.x,
-						entity.y,
-						entity.z,
+						entity.getX(),
+						entity.getY(),
+						entity.getZ(),
 						SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
 						SoundCategory.PLAYERS,
 						0.1F,
@@ -849,9 +841,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else {
 				this.world
 					.playSound(
-						entity.x,
-						entity.y,
-						entity.z,
+						entity.getX(),
+						entity.getY(),
+						entity.getZ(),
 						SoundEvents.ENTITY_ITEM_PICKUP,
 						SoundCategory.PLAYERS,
 						0.2F,
@@ -907,13 +899,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double d = mobSpawnS2CPacket.getX();
 		double e = mobSpawnS2CPacket.getY();
 		double f = mobSpawnS2CPacket.getZ();
-		float g = (float)(mobSpawnS2CPacket.getVelocityX() * 360) / 256.0F;
-		float h = (float)(mobSpawnS2CPacket.getVelocityY() * 360) / 256.0F;
+		float g = (float)(mobSpawnS2CPacket.getYaw() * 360) / 256.0F;
+		float h = (float)(mobSpawnS2CPacket.getPitch() * 360) / 256.0F;
 		LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(mobSpawnS2CPacket.getEntityTypeId(), this.client.world);
 		if (livingEntity != null) {
 			livingEntity.updateTrackedPosition(d, e, f);
-			livingEntity.bodyYaw = (float)(mobSpawnS2CPacket.getVelocityZ() * 360) / 256.0F;
-			livingEntity.headYaw = (float)(mobSpawnS2CPacket.getVelocityZ() * 360) / 256.0F;
+			livingEntity.bodyYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0F;
+			livingEntity.headYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0F;
 			if (livingEntity instanceof EnderDragonEntity) {
 				EnderDragonPart[] enderDragonParts = ((EnderDragonEntity)livingEntity).method_5690();
 
@@ -926,9 +918,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			livingEntity.setUuid(mobSpawnS2CPacket.getUuid());
 			livingEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
 			livingEntity.setVelocity(
-				(double)((float)mobSpawnS2CPacket.getYaw() / 8000.0F),
-				(double)((float)mobSpawnS2CPacket.getPitch() / 8000.0F),
-				(double)((float)mobSpawnS2CPacket.getHeadPitch() / 8000.0F)
+				(double)((float)mobSpawnS2CPacket.getVelocityX() / 8000.0F),
+				(double)((float)mobSpawnS2CPacket.getVelocityY() / 8000.0F),
+				(double)((float)mobSpawnS2CPacket.getVelocityZ() / 8000.0F)
 			);
 			this.world.addEntity(mobSpawnS2CPacket.getId(), livingEntity);
 			if (livingEntity instanceof BeeEntity) {
@@ -1013,7 +1005,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (entityStatusS2CPacket.getStatus() == 35) {
 				int i = 40;
 				this.client.particleManager.addEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
-				this.world.playSound(entity.x, entity.y, entity.z, SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
+				this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
 				if (entity == this.client.player) {
 					this.client.gameRenderer.showFloatingItem(method_19691(this.client.player));
 				}
@@ -1206,8 +1198,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		BlockEntity blockEntity = this.world.getBlockEntity(signEditorOpenS2CPacket.getPos());
 		if (!(blockEntity instanceof SignBlockEntity)) {
 			blockEntity = new SignBlockEntity();
-			blockEntity.setWorld(this.world);
-			blockEntity.setPos(signEditorOpenS2CPacket.getPos());
+			blockEntity.setWorld(this.world, signEditorOpenS2CPacket.getPos());
 		}
 
 		this.client.player.openEditSignScreen((SignBlockEntity)blockEntity);
@@ -1341,9 +1332,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.world
 				.playSound(
 					playerEntity,
-					playerEntity.x,
-					playerEntity.y + (double)playerEntity.getStandingEyeHeight(),
-					playerEntity.z,
+					playerEntity.getX(),
+					playerEntity.method_23320(),
+					playerEntity.getZ(),
 					SoundEvents.ENTITY_ARROW_HIT_PLAYER,
 					SoundCategory.PLAYERS,
 					0.18F,
@@ -1354,11 +1345,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (i == 8) {
 			this.world.setThunderGradient(f);
 		} else if (i == 9) {
-			this.world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_PUFFER_FISH_STING, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-		} else if (i == 10) {
-			this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.x, playerEntity.y, playerEntity.z, 0.0, 0.0, 0.0);
 			this.world
-				.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F);
+				.playSound(
+					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PUFFER_FISH_STING, SoundCategory.NEUTRAL, 1.0F, 1.0F
+				);
+		} else if (i == 10) {
+			this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 0.0, 0.0, 0.0);
+			this.world
+				.playSound(
+					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F
+				);
 		} else if (i == 11) {
 			this.client.player.method_22420(f == 0.0F);
 		}

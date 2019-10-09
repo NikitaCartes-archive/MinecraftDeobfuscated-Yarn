@@ -157,7 +157,7 @@ public class DebugHud extends DrawableHelper {
 			string = String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
 		}
 
-		BlockPos blockPos = new BlockPos(this.client.getCameraEntity().x, this.client.getCameraEntity().getBoundingBox().minY, this.client.getCameraEntity().z);
+		BlockPos blockPos = new BlockPos(this.client.getCameraEntity());
 		if (this.client.hasReducedDebugInfo()) {
 			return Lists.<String>newArrayList(
 				"Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")",
@@ -224,11 +224,7 @@ public class DebugHud extends DrawableHelper {
 			list.add("");
 			list.add(
 				String.format(
-					Locale.ROOT,
-					"XYZ: %.3f / %.5f / %.3f",
-					this.client.getCameraEntity().x,
-					this.client.getCameraEntity().getBoundingBox().minY,
-					this.client.getCameraEntity().z
+					Locale.ROOT, "XYZ: %.3f / %.5f / %.3f", this.client.getCameraEntity().getX(), this.client.getCameraEntity().getY(), this.client.getCameraEntity().getZ()
 				)
 			);
 			list.add(String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));

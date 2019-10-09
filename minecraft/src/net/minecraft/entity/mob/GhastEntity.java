@@ -46,7 +46,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		this.goalSelector.add(5, new GhastEntity.FlyRandomlyGoal(this));
 		this.goalSelector.add(7, new GhastEntity.LookAtTargetGoal(this));
 		this.goalSelector.add(7, new GhastEntity.ShootFireballGoal(this));
-		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.y - this.y) <= 4.0));
+		this.targetSelector
+			.add(1, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -162,9 +163,9 @@ public class GhastEntity extends FlyingEntity implements Monster {
 			if (!moveControl.isMoving()) {
 				return true;
 			} else {
-				double d = moveControl.getTargetX() - this.ghast.x;
-				double e = moveControl.getTargetY() - this.ghast.y;
-				double f = moveControl.getTargetZ() - this.ghast.z;
+				double d = moveControl.getTargetX() - this.ghast.getX();
+				double e = moveControl.getTargetY() - this.ghast.getY();
+				double f = moveControl.getTargetZ() - this.ghast.getZ();
 				double g = d * d + e * e + f * f;
 				return g < 1.0 || g > 3600.0;
 			}
@@ -178,9 +179,9 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		@Override
 		public void start() {
 			Random random = this.ghast.getRandom();
-			double d = this.ghast.x + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-			double e = this.ghast.y + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-			double f = this.ghast.z + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+			double d = this.ghast.getX() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+			double e = this.ghast.getY() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+			double f = this.ghast.getZ() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
 			this.ghast.getMoveControl().moveTo(d, e, f, 1.0);
 		}
 	}
@@ -199,7 +200,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 			if (this.state == MoveControl.State.MOVE_TO) {
 				if (this.field_7276-- <= 0) {
 					this.field_7276 = this.field_7276 + this.ghast.getRandom().nextInt(5) + 2;
-					Vec3d vec3d = new Vec3d(this.targetX - this.ghast.x, this.targetY - this.ghast.y, this.targetZ - this.ghast.z);
+					Vec3d vec3d = new Vec3d(this.targetX - this.ghast.getX(), this.targetY - this.ghast.getY(), this.targetZ - this.ghast.getZ());
 					double d = vec3d.length();
 					vec3d = vec3d.normalize();
 					if (this.method_7051(vec3d, MathHelper.ceil(d))) {
@@ -248,8 +249,8 @@ public class GhastEntity extends FlyingEntity implements Monster {
 				LivingEntity livingEntity = this.ghast.getTarget();
 				double d = 64.0;
 				if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0) {
-					double e = livingEntity.x - this.ghast.x;
-					double f = livingEntity.z - this.ghast.z;
+					double e = livingEntity.getX() - this.ghast.getX();
+					double f = livingEntity.getZ() - this.ghast.getZ();
 					this.ghast.yaw = -((float)MathHelper.atan2(e, f)) * (180.0F / (float)Math.PI);
 					this.ghast.bodyYaw = this.ghast.yaw;
 				}
@@ -294,15 +295,13 @@ public class GhastEntity extends FlyingEntity implements Monster {
 				if (this.cooldown == 20) {
 					double e = 4.0;
 					Vec3d vec3d = this.ghast.getRotationVec(1.0F);
-					double f = livingEntity.x - (this.ghast.x + vec3d.x * 4.0);
-					double g = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (0.5 + this.ghast.y + (double)(this.ghast.getHeight() / 2.0F));
-					double h = livingEntity.z - (this.ghast.z + vec3d.z * 4.0);
+					double f = livingEntity.getX() - (this.ghast.getX() + vec3d.x * 4.0);
+					double g = livingEntity.method_23323(0.5) - (0.5 + this.ghast.method_23323(0.5));
+					double h = livingEntity.getZ() - (this.ghast.getZ() + vec3d.z * 4.0);
 					world.playLevelEvent(null, 1016, new BlockPos(this.ghast), 0);
 					FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
 					fireballEntity.explosionPower = this.ghast.getFireballStrength();
-					fireballEntity.x = this.ghast.x + vec3d.x * 4.0;
-					fireballEntity.y = this.ghast.y + (double)(this.ghast.getHeight() / 2.0F) + 0.5;
-					fireballEntity.z = this.ghast.z + vec3d.z * 4.0;
+					fireballEntity.setPosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.method_23323(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
 					world.spawnEntity(fireballEntity);
 					this.cooldown = -40;
 				}

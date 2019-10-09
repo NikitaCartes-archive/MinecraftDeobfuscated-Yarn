@@ -55,7 +55,7 @@ public class SleepTask extends Task<LivingEntity> {
 		} else {
 			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
 			return livingEntity.getBrain().hasActivity(Activity.REST)
-				&& livingEntity.y > (double)blockPos.getY() + 0.4
+				&& livingEntity.getY() > (double)blockPos.getY() + 0.4
 				&& blockPos.isWithinDistance(livingEntity.getPos(), 1.14);
 		}
 	}

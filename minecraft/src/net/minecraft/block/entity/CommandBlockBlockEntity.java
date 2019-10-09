@@ -130,11 +130,22 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		boolean bl2 = this.auto;
 		this.auto = bl;
 		if (!bl2 && bl && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
-			Block block = this.getCachedState().getBlock();
-			if (block instanceof CommandBlock) {
-				this.updateConditionMet();
-				this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
-			}
+			this.method_23360();
+		}
+	}
+
+	public void method_23359() {
+		CommandBlockBlockEntity.Type type = this.getCommandBlockType();
+		if (type == CommandBlockBlockEntity.Type.AUTO && (this.powered || this.auto) && this.world != null) {
+			this.method_23360();
+		}
+	}
+
+	private void method_23360() {
+		Block block = this.getCachedState().getBlock();
+		if (block instanceof CommandBlock) {
+			this.updateConditionMet();
+			this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
 		}
 	}
 

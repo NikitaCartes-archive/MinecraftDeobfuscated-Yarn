@@ -80,7 +80,7 @@ public class TargetPredicate {
 				if (this.baseMaxDistance > 0.0) {
 					double d = this.useDistanceScalingFactor ? livingEntity2.getAttackDistanceScalingFactor(livingEntity) : 1.0;
 					double e = this.baseMaxDistance * d;
-					double f = livingEntity.squaredDistanceTo(livingEntity2.x, livingEntity2.y, livingEntity2.z);
+					double f = livingEntity.squaredDistanceTo(livingEntity2.getX(), livingEntity2.getY(), livingEntity2.getZ());
 					if (f > e * e) {
 						return false;
 					}

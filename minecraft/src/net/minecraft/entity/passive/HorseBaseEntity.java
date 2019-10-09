@@ -223,9 +223,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			this.world
 				.playSound(
 					null,
-					this.x,
-					this.y,
-					this.z,
+					this.getX(),
+					this.getY(),
+					this.getZ(),
 					SoundEvents.ENTITY_HORSE_EAT,
 					this.getSoundCategory(),
 					1.0F,
@@ -235,13 +235,15 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
 		if (f > 1.0F) {
 			this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4F, 1.0F);
 		}
 
-		int i = MathHelper.ceil((f * 0.5F - 3.0F) * g);
-		if (i > 0) {
+		int i = this.method_23329(f, g);
+		if (i <= 0) {
+			return false;
+		} else {
 			this.damage(DamageSource.FALL, (float)i);
 			if (this.hasPassengers()) {
 				for (Entity entity : this.getPassengersDeep()) {
@@ -249,22 +251,14 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				}
 			}
 
-			BlockState blockState = this.world.getBlockState(new BlockPos(this.x, this.y - 0.2 - (double)this.prevYaw, this.z));
-			if (!blockState.isAir() && !this.isSilent()) {
-				BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-				this.world
-					.playSound(
-						null,
-						this.x,
-						this.y,
-						this.z,
-						blockSoundGroup.getStepSound(),
-						this.getSoundCategory(),
-						blockSoundGroup.getVolume() * 0.5F,
-						blockSoundGroup.getPitch() * 0.75F
-					);
-			}
+			this.method_23328();
+			return true;
 		}
+	}
+
+	@Override
+	protected int method_23329(float f, float g) {
+		return MathHelper.ceil((f * 0.5F - 3.0F) * g);
 	}
 
 	protected int getInventorySize() {
@@ -455,16 +449,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		}
 
 		if (this.isBaby() && i > 0) {
-			this.world
-				.addParticle(
-					ParticleTypes.HAPPY_VILLAGER,
-					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
-					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					0.0,
-					0.0,
-					0.0
-				);
+			this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.growUp(i);
 			}
@@ -556,7 +541,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	protected void walkToParent() {
 		if (this.isBred() && this.isBaby() && !this.isEatingGrass()) {
 			LivingEntity livingEntity = this.world
-				.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.x, this.y, this.z, this.getBoundingBox().expand(16.0));
+				.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0));
 			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
 				this.navigation.findPathTo(livingEntity, 0);
 			}
@@ -740,8 +725,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				}
 
 				this.lastLimbDistance = this.limbDistance;
-				double dx = this.x - this.prevX;
-				double ex = this.z - this.prevZ;
+				double dx = this.getX() - this.prevX;
+				double ex = this.getZ() - this.prevZ;
 				float j = MathHelper.sqrt(dx * dx + ex * ex) * 4.0F;
 				if (j > 1.0F) {
 					j = 1.0F;
@@ -902,16 +887,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world
-				.addParticle(
-					particleEffect,
-					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
-					this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-					d,
-					e,
-					f
-				);
+			this.world.addParticle(particleEffect, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), d, e, f);
 		}
 	}
 
@@ -940,7 +916,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.7F * this.lastAngryAnimationProgress;
 			float i = 0.15F * this.lastAngryAnimationProgress;
-			entity.setPosition(this.x + (double)(h * f), this.y + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.z - (double)(h * g));
+			entity.setPosition(
+				this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + entity.getHeightOffset() + (double)i, this.getZ() - (double)(h * g)
+			);
 			if (entity instanceof LivingEntity) {
 				((LivingEntity)entity).bodyYaw = this.bodyYaw;
 			}

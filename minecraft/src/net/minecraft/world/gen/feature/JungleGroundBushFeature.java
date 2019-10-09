@@ -4,43 +4,33 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.block.BlockState;
+import net.minecraft.class_4643;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
-public class JungleGroundBushFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private final BlockState leaves;
-	private final BlockState log;
-
-	public JungleGroundBushFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, BlockState blockState, BlockState blockState2) {
-		super(function, false);
-		this.log = blockState;
-		this.leaves = blockState2;
+public class JungleGroundBushFeature extends AbstractTreeFeature<class_4643> {
+	public JungleGroundBushFeature(Function<Dynamic<?>, ? extends class_4643> function) {
+		super(function);
 	}
 
 	@Override
-	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BlockBox blockBox) {
+	public boolean generate(
+		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, class_4643 arg
+	) {
 		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos).method_10074();
 		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos)) {
 			blockPos = blockPos.up();
-			this.setBlockState(set, modifiableTestableWorld, blockPos, this.log, blockBox);
+			this.method_23382(modifiableTestableWorld, random, blockPos, set, blockBox, arg);
 
-			for (int i = blockPos.getY(); i <= blockPos.getY() + 2; i++) {
-				int j = i - blockPos.getY();
-				int k = 2 - j;
+			for (int i = 0; i <= 2; i++) {
+				int j = 2 - i;
 
-				for (int l = blockPos.getX() - k; l <= blockPos.getX() + k; l++) {
-					int m = l - blockPos.getX();
-
-					for (int n = blockPos.getZ() - k; n <= blockPos.getZ() + k; n++) {
-						int o = n - blockPos.getZ();
-						if (Math.abs(m) != k || Math.abs(o) != k || random.nextInt(2) != 0) {
-							BlockPos blockPos2 = new BlockPos(l, i, n);
-							if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-								this.setBlockState(set, modifiableTestableWorld, blockPos2, this.leaves, blockBox);
-							}
+				for (int k = -j; k <= j; k++) {
+					for (int l = -j; l <= j; l++) {
+						if (Math.abs(k) != j || Math.abs(l) != j || random.nextInt(2) != 0) {
+							this.method_23383(modifiableTestableWorld, random, new BlockPos(k + blockPos.getX(), i + blockPos.getY(), l + blockPos.getZ()), set2, blockBox, arg);
 						}
 					}
 				}

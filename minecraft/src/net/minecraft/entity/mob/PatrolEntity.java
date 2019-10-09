@@ -176,7 +176,7 @@ public abstract class PatrolEntity extends HostileEntity {
 					this.actor.setRandomPatrolTarget();
 				} else {
 					Vec3d vec3d = new Vec3d(this.actor.getPatrolTarget());
-					Vec3d vec3d2 = new Vec3d(this.actor.x, this.actor.y, this.actor.z);
+					Vec3d vec3d2 = this.actor.getPos();
 					Vec3d vec3d3 = vec3d2.subtract(vec3d);
 					vec3d = vec3d3.rotateY(90.0F).multiply(0.4).add(vec3d);
 					Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);

@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 
@@ -15,6 +16,7 @@ public class ElytraEntityModel<T extends LivingEntity> extends class_4592<T> {
 	private final ModelPart field_3365 = new ModelPart(this, 22, 0);
 
 	public ElytraEntityModel() {
+		super(RenderLayer::getEntityCutoutNoCull, false, 5.0F, 2.0F, 2.0F, 2.0F, 24.0F);
 		this.field_3365.addCuboid(-10.0F, 0.0F, 0.0F, 10.0F, 20.0F, 2.0F, 1.0F);
 		this.field_3364 = new ModelPart(this, 22, 0);
 		this.field_3364.mirror = true;

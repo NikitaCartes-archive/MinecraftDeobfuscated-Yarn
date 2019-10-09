@@ -294,6 +294,16 @@ public abstract class Option {
 
 		return false;
 	}, (gameOptions, boolean_) -> gameOptions.snooperEnabled = boolean_);
+	public static final CyclingOption field_21330 = new CyclingOption(
+		"key.sneak",
+		(gameOptions, integer) -> gameOptions.field_21332 = !gameOptions.field_21332,
+		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.field_21332 ? "options.key.toggle" : "options.key.hold")
+	);
+	public static final CyclingOption field_21331 = new CyclingOption(
+		"key.sprint",
+		(gameOptions, integer) -> gameOptions.field_21333 = !gameOptions.field_21333,
+		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.field_21333 ? "options.key.toggle" : "options.key.hold")
+	);
 	public static final BooleanOption TOUCHSCREEN = new BooleanOption(
 		"options.touchscreen", gameOptions -> gameOptions.touchscreen, (gameOptions, boolean_) -> gameOptions.touchscreen = boolean_
 	);

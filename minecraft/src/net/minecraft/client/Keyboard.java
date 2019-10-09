@@ -102,9 +102,9 @@ public class Keyboard {
 							Locale.ROOT,
 							"/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f",
 							DimensionType.getId(this.client.player.world.dimension.getType()),
-							this.client.player.x,
-							this.client.player.y,
-							this.client.player.z,
+							this.client.player.getX(),
+							this.client.player.getY(),
+							this.client.player.getZ(),
 							this.client.player.yaw,
 							this.client.player.pitch
 						)
@@ -218,20 +218,19 @@ public class Keyboard {
 				case ENTITY:
 					Entity entity = ((EntityHitResult)hitResult).getEntity();
 					Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
-					Vec3d vec3d = new Vec3d(entity.x, entity.y, entity.z);
 					if (bl) {
 						if (bl2) {
 							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTagx -> {
-								this.copyEntity(identifier, vec3d, compoundTagx);
+								this.copyEntity(identifier, entity.getPos(), compoundTagx);
 								this.debugWarn("debug.inspect.server.entity");
 							});
 						} else {
-							CompoundTag compoundTag = entity.toTag(new CompoundTag());
-							this.copyEntity(identifier, vec3d, compoundTag);
+							CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+							this.copyEntity(identifier, entity.getPos(), compoundTag2);
 							this.debugWarn("debug.inspect.client.entity");
 						}
 					} else {
-						this.copyEntity(identifier, vec3d, null);
+						this.copyEntity(identifier, entity.getPos(), null);
 						this.debugWarn("debug.inspect.client.entity");
 					}
 			}

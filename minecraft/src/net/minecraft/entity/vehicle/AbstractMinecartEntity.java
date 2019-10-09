@@ -213,16 +213,16 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0F);
 		}
 
-		if (this.y < -64.0) {
+		if (this.getY() < -64.0) {
 			this.destroy();
 		}
 
 		this.tickPortal();
 		if (this.world.isClient) {
 			if (this.field_7669 > 0) {
-				double d = this.x + (this.field_7665 - this.x) / (double)this.field_7669;
-				double e = this.y + (this.field_7666 - this.y) / (double)this.field_7669;
-				double f = this.z + (this.field_7662 - this.z) / (double)this.field_7669;
+				double d = this.getX() + (this.field_7665 - this.getX()) / (double)this.field_7669;
+				double e = this.getY() + (this.field_7666 - this.getY()) / (double)this.field_7669;
+				double f = this.getZ() + (this.field_7662 - this.getZ()) / (double)this.field_7669;
 				double g = MathHelper.wrapDegrees(this.field_7659 - (double)this.yaw);
 				this.yaw = (float)((double)this.yaw + g / (double)this.field_7669);
 				this.pitch = (float)((double)this.pitch + (this.field_7657 - (double)this.pitch) / (double)this.field_7669);
@@ -230,7 +230,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.setPosition(d, e, f);
 				this.setRotation(this.yaw, this.pitch);
 			} else {
-				this.setPosition(this.x, this.y, this.z);
+				this.method_23311();
 				this.setRotation(this.yaw, this.pitch);
 			}
 		} else {
@@ -238,9 +238,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
-			int i = MathHelper.floor(this.x);
-			int j = MathHelper.floor(this.y);
-			int k = MathHelper.floor(this.z);
+			int i = MathHelper.floor(this.getX());
+			int j = MathHelper.floor(this.getY());
+			int k = MathHelper.floor(this.getZ());
 			if (this.world.getBlockState(new BlockPos(i, j - 1, k)).matches(BlockTags.RAILS)) {
 				j--;
 			}
@@ -258,8 +258,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 			this.checkBlockCollision();
 			this.pitch = 0.0F;
-			double h = this.prevX - this.x;
-			double l = this.prevZ - this.z;
+			double h = this.prevX - this.getX();
+			double l = this.prevZ - this.getZ();
 			if (h * h + l * l > 0.001) {
 				this.yaw = (float)(MathHelper.atan2(l, h) * 180.0 / Math.PI);
 				if (this.field_7660) {
@@ -325,8 +325,11 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	protected void method_7513(BlockPos blockPos, BlockState blockState) {
 		this.fallDistance = 0.0F;
-		Vec3d vec3d = this.method_7508(this.x, this.y, this.z);
-		this.y = (double)blockPos.getY();
+		double d = this.getX();
+		double e = this.getY();
+		double f = this.getZ();
+		Vec3d vec3d = this.method_7508(d, e, f);
+		e = (double)blockPos.getY();
 		boolean bl = false;
 		boolean bl2 = false;
 		AbstractRailBlock abstractRailBlock = (AbstractRailBlock)blockState.getBlock();
@@ -335,131 +338,131 @@ public abstract class AbstractMinecartEntity extends Entity {
 			bl2 = !bl;
 		}
 
-		double d = 0.0078125;
+		double g = 0.0078125;
 		Vec3d vec3d2 = this.getVelocity();
 		RailShape railShape = blockState.get(abstractRailBlock.getShapeProperty());
 		switch (railShape) {
 			case ASCENDING_EAST:
 				this.setVelocity(vec3d2.add(-0.0078125, 0.0, 0.0));
-				this.y++;
+				e++;
 				break;
 			case ASCENDING_WEST:
 				this.setVelocity(vec3d2.add(0.0078125, 0.0, 0.0));
-				this.y++;
+				e++;
 				break;
 			case ASCENDING_NORTH:
 				this.setVelocity(vec3d2.add(0.0, 0.0, 0.0078125));
-				this.y++;
+				e++;
 				break;
 			case ASCENDING_SOUTH:
 				this.setVelocity(vec3d2.add(0.0, 0.0, -0.0078125));
-				this.y++;
+				e++;
 		}
 
 		vec3d2 = this.getVelocity();
 		Pair<Vec3i, Vec3i> pair = method_22864(railShape);
 		Vec3i vec3i = pair.getFirst();
 		Vec3i vec3i2 = pair.getSecond();
-		double e = (double)(vec3i2.getX() - vec3i.getX());
-		double f = (double)(vec3i2.getZ() - vec3i.getZ());
-		double g = Math.sqrt(e * e + f * f);
-		double h = vec3d2.x * e + vec3d2.z * f;
-		if (h < 0.0) {
-			e = -e;
-			f = -f;
+		double h = (double)(vec3i2.getX() - vec3i.getX());
+		double i = (double)(vec3i2.getZ() - vec3i.getZ());
+		double j = Math.sqrt(h * h + i * i);
+		double k = vec3d2.x * h + vec3d2.z * i;
+		if (k < 0.0) {
+			h = -h;
+			i = -i;
 		}
 
-		double i = Math.min(2.0, Math.sqrt(squaredHorizontalLength(vec3d2)));
-		vec3d2 = new Vec3d(i * e / g, vec3d2.y, i * f / g);
+		double l = Math.min(2.0, Math.sqrt(squaredHorizontalLength(vec3d2)));
+		vec3d2 = new Vec3d(l * h / j, vec3d2.y, l * i / j);
 		this.setVelocity(vec3d2);
 		Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 		if (entity instanceof PlayerEntity) {
 			Vec3d vec3d3 = entity.getVelocity();
-			double j = squaredHorizontalLength(vec3d3);
-			double k = squaredHorizontalLength(this.getVelocity());
-			if (j > 1.0E-4 && k < 0.01) {
+			double m = squaredHorizontalLength(vec3d3);
+			double n = squaredHorizontalLength(this.getVelocity());
+			if (m > 1.0E-4 && n < 0.01) {
 				this.setVelocity(this.getVelocity().add(vec3d3.x * 0.1, 0.0, vec3d3.z * 0.1));
 				bl2 = false;
 			}
 		}
 
 		if (bl2) {
-			double l = Math.sqrt(squaredHorizontalLength(this.getVelocity()));
-			if (l < 0.03) {
+			double o = Math.sqrt(squaredHorizontalLength(this.getVelocity()));
+			if (o < 0.03) {
 				this.setVelocity(Vec3d.ZERO);
 			} else {
 				this.setVelocity(this.getVelocity().multiply(0.5, 0.0, 0.5));
 			}
 		}
 
-		double l = (double)blockPos.getX() + 0.5 + (double)vec3i.getX() * 0.5;
-		double m = (double)blockPos.getZ() + 0.5 + (double)vec3i.getZ() * 0.5;
-		double n = (double)blockPos.getX() + 0.5 + (double)vec3i2.getX() * 0.5;
-		double o = (double)blockPos.getZ() + 0.5 + (double)vec3i2.getZ() * 0.5;
-		e = n - l;
-		f = o - m;
-		double p;
-		if (e == 0.0) {
-			this.x = (double)blockPos.getX() + 0.5;
-			p = this.z - (double)blockPos.getZ();
-		} else if (f == 0.0) {
-			this.z = (double)blockPos.getZ() + 0.5;
-			p = this.x - (double)blockPos.getX();
+		double o = (double)blockPos.getX() + 0.5 + (double)vec3i.getX() * 0.5;
+		double p = (double)blockPos.getZ() + 0.5 + (double)vec3i.getZ() * 0.5;
+		double q = (double)blockPos.getX() + 0.5 + (double)vec3i2.getX() * 0.5;
+		double r = (double)blockPos.getZ() + 0.5 + (double)vec3i2.getZ() * 0.5;
+		h = q - o;
+		i = r - p;
+		double s;
+		if (h == 0.0) {
+			s = f - (double)blockPos.getZ();
+		} else if (i == 0.0) {
+			s = d - (double)blockPos.getX();
 		} else {
-			double q = this.x - l;
-			double r = this.z - m;
-			p = (q * e + r * f) * 2.0;
+			double t = d - o;
+			double u = f - p;
+			s = (t * h + u * i) * 2.0;
 		}
 
-		this.x = l + e * p;
-		this.z = m + f * p;
-		this.setPosition(this.x, this.y, this.z);
-		double q = this.hasPassengers() ? 0.75 : 1.0;
-		double r = this.method_7504();
+		d = o + h * s;
+		f = p + i * s;
+		this.setPosition(d, e, f);
+		double t = this.hasPassengers() ? 0.75 : 1.0;
+		double u = this.method_7504();
 		vec3d2 = this.getVelocity();
-		this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(q * vec3d2.x, -r, r), 0.0, MathHelper.clamp(q * vec3d2.z, -r, r)));
-		if (vec3i.getY() != 0 && MathHelper.floor(this.x) - blockPos.getX() == vec3i.getX() && MathHelper.floor(this.z) - blockPos.getZ() == vec3i.getZ()) {
-			this.setPosition(this.x, this.y + (double)vec3i.getY(), this.z);
-		} else if (vec3i2.getY() != 0 && MathHelper.floor(this.x) - blockPos.getX() == vec3i2.getX() && MathHelper.floor(this.z) - blockPos.getZ() == vec3i2.getZ()) {
-			this.setPosition(this.x, this.y + (double)vec3i2.getY(), this.z);
+		this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
+		if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - blockPos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - blockPos.getZ() == vec3i.getZ()) {
+			this.setPosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
+		} else if (vec3i2.getY() != 0
+			&& MathHelper.floor(this.getX()) - blockPos.getX() == vec3i2.getX()
+			&& MathHelper.floor(this.getZ()) - blockPos.getZ() == vec3i2.getZ()) {
+			this.setPosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
 		}
 
 		this.method_7525();
-		Vec3d vec3d4 = this.method_7508(this.x, this.y, this.z);
+		Vec3d vec3d4 = this.method_7508(this.getX(), this.getY(), this.getZ());
 		if (vec3d4 != null && vec3d != null) {
-			double s = (vec3d.y - vec3d4.y) * 0.05;
+			double v = (vec3d.y - vec3d4.y) * 0.05;
 			Vec3d vec3d5 = this.getVelocity();
-			double t = Math.sqrt(squaredHorizontalLength(vec3d5));
-			if (t > 0.0) {
-				this.setVelocity(vec3d5.multiply((t + s) / t, 1.0, (t + s) / t));
+			double w = Math.sqrt(squaredHorizontalLength(vec3d5));
+			if (w > 0.0) {
+				this.setVelocity(vec3d5.multiply((w + v) / w, 1.0, (w + v) / w));
 			}
 
-			this.setPosition(this.x, vec3d4.y, this.z);
+			this.setPosition(this.getX(), vec3d4.y, this.getZ());
 		}
 
-		int u = MathHelper.floor(this.x);
-		int v = MathHelper.floor(this.z);
-		if (u != blockPos.getX() || v != blockPos.getZ()) {
+		int x = MathHelper.floor(this.getX());
+		int y = MathHelper.floor(this.getZ());
+		if (x != blockPos.getX() || y != blockPos.getZ()) {
 			Vec3d vec3d5 = this.getVelocity();
-			double t = Math.sqrt(squaredHorizontalLength(vec3d5));
-			this.setVelocity(t * (double)(u - blockPos.getX()), vec3d5.y, t * (double)(v - blockPos.getZ()));
+			double w = Math.sqrt(squaredHorizontalLength(vec3d5));
+			this.setVelocity(w * (double)(x - blockPos.getX()), vec3d5.y, w * (double)(y - blockPos.getZ()));
 		}
 
 		if (bl) {
 			Vec3d vec3d5 = this.getVelocity();
-			double t = Math.sqrt(squaredHorizontalLength(vec3d5));
-			if (t > 0.01) {
-				double w = 0.06;
-				this.setVelocity(vec3d5.add(vec3d5.x / t * 0.06, 0.0, vec3d5.z / t * 0.06));
+			double w = Math.sqrt(squaredHorizontalLength(vec3d5));
+			if (w > 0.01) {
+				double z = 0.06;
+				this.setVelocity(vec3d5.add(vec3d5.x / w * 0.06, 0.0, vec3d5.z / w * 0.06));
 			} else {
 				Vec3d vec3d6 = this.getVelocity();
-				double x = vec3d6.x;
-				double y = vec3d6.z;
+				double aa = vec3d6.x;
+				double ab = vec3d6.z;
 				if (railShape == RailShape.EAST_WEST) {
 					if (this.method_18803(blockPos.west())) {
-						x = 0.02;
+						aa = 0.02;
 					} else if (this.method_18803(blockPos.east())) {
-						x = -0.02;
+						aa = -0.02;
 					}
 				} else {
 					if (railShape != RailShape.NORTH_SOUTH) {
@@ -467,13 +470,13 @@ public abstract class AbstractMinecartEntity extends Entity {
 					}
 
 					if (this.method_18803(blockPos.north())) {
-						y = 0.02;
+						ab = 0.02;
 					} else if (this.method_18803(blockPos.south())) {
-						y = -0.02;
+						ab = -0.02;
 					}
 				}
 
-				this.setVelocity(x, vec3d6.y, y);
+				this.setVelocity(aa, vec3d6.y, ab);
 			}
 		}
 	}
@@ -606,8 +609,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 		if (!this.world.isClient) {
 			if (!entity.noClip && !this.noClip) {
 				if (!this.hasPassenger(entity)) {
-					double d = entity.x - this.x;
-					double e = entity.z - this.z;
+					double d = entity.getX() - this.getX();
+					double e = entity.getZ() - this.getZ();
 					double f = d * d + e * e;
 					if (f >= 1.0E-4F) {
 						f = (double)MathHelper.sqrt(f);
@@ -627,8 +630,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 						d *= 0.5;
 						e *= 0.5;
 						if (entity instanceof AbstractMinecartEntity) {
-							double h = entity.x - this.x;
-							double i = entity.z - this.z;
+							double h = entity.getX() - this.getX();
+							double i = entity.getZ() - this.getZ();
 							Vec3d vec3d = new Vec3d(h, 0.0, i).normalize();
 							Vec3d vec3d2 = new Vec3d((double)MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)), 0.0, (double)MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)))
 								.normalize();

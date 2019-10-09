@@ -37,8 +37,9 @@ public abstract class BlockEntity {
 		return this.world;
 	}
 
-	public void setWorld(World world) {
+	public void setWorld(World world, BlockPos blockPos) {
 		this.world = world;
+		this.pos = blockPos;
 	}
 
 	public boolean hasWorld() {

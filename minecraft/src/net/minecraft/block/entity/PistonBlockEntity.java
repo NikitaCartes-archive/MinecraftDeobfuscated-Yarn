@@ -1,8 +1,10 @@
 package net.minecraft.block.entity;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4623;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -107,14 +109,15 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		if (!voxelShape.isEmpty()) {
 			List<Box> list = voxelShape.getBoundingBoxes();
 			Box box = this.offsetHeadBox(this.getApproximateHeadBox(list));
-			List<Entity> list2 = this.world.getEntities(null, this.extendBox(box, direction, d).union(box));
+			Box box2 = class_4623.method_23362(box, direction, d).union(box);
+			List<Entity> list2 = this.world.getEntities(null, box2);
 			if (!list2.isEmpty()) {
-				boolean bl = this.pushedBlock.getBlock() == Blocks.SLIME_BLOCK;
+				boolean bl = this.method_23366();
+				boolean bl2 = this.pushedBlock.getBlock() == Blocks.SLIME_BLOCK;
 
-				for (int i = 0; i < list2.size(); i++) {
-					Entity entity = (Entity)list2.get(i);
+				for (Entity entity : list2) {
 					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
-						if (bl) {
+						if (bl2) {
 							Vec3d vec3d = entity.getVelocity();
 							double e = vec3d.x;
 							double g = vec3d.y;
@@ -133,23 +136,24 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 							entity.setVelocity(e, g, h);
 						}
 
-						double j = 0.0;
+						double i = 0.0;
 
-						for (int k = 0; k < list.size(); k++) {
-							Box box2 = this.extendBox(this.offsetHeadBox((Box)list.get(k)), direction, d);
-							Box box3 = entity.getBoundingBox();
-							if (box2.intersects(box3)) {
-								j = Math.max(j, this.getIntersectionSize(box2, direction, box3));
-								if (j >= d) {
+						for (Box box3 : list) {
+							Box box4 = entity.getBoundingBox();
+							List<Box> list3 = class_4623.method_23363(bl, this.offsetHeadBox(box3), direction, d);
+							Box box5 = this.method_23365(box4, list3);
+							if (box5 != null) {
+								i = Math.max(i, this.getIntersectionSize(box5, direction, box4));
+								if (i >= d) {
 									break;
 								}
 							}
 						}
 
-						if (!(j <= 0.0)) {
-							j = Math.min(j, d) + 0.01;
+						if (!(i <= 0.0)) {
+							i = Math.min(i, d) + 0.01;
 							field_12205.set(direction);
-							entity.move(MovementType.PISTON, new Vec3d(j * (double)direction.getOffsetX(), j * (double)direction.getOffsetY(), j * (double)direction.getOffsetZ()));
+							entity.move(MovementType.PISTON, new Vec3d(i * (double)direction.getOffsetX(), i * (double)direction.getOffsetY(), i * (double)direction.getOffsetZ()));
 							field_12205.set(null);
 							if (!this.extending && this.source) {
 								this.push(entity, direction, d);
@@ -159,6 +163,38 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 				}
 			}
 		}
+	}
+
+	@Nullable
+	private Box method_23365(Box box, List<Box> list) {
+		for (Box box2 : list) {
+			if (box.intersects(box2)) {
+				return box2;
+			}
+		}
+
+		return null;
+	}
+
+	private boolean method_23366() {
+		if (method_23364(this.pushedBlock.getBlock())) {
+			return true;
+		} else {
+			BlockEntity blockEntity = this.world.getBlockEntity(this.getPos().method_10074());
+			if (blockEntity instanceof PistonBlockEntity) {
+				BlockState blockState = ((PistonBlockEntity)blockEntity).getPushedBlock();
+				double d = this.pushedBlock.getCollisionShape(this.world, this.getPos()).getMaximum(Direction.Axis.Y);
+				if (d <= 0.5 && method_23364(blockState.getBlock())) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	}
+
+	private static boolean method_23364(Block block) {
+		return block == Blocks.HONEY_BLOCK;
 	}
 
 	public Direction getMovementDirection() {
@@ -204,27 +240,6 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			(double)this.pos.getY() + d * (double)this.facing.getOffsetY(),
 			(double)this.pos.getZ() + d * (double)this.facing.getOffsetZ()
 		);
-	}
-
-	private Box extendBox(Box box, Direction direction, double d) {
-		double e = d * (double)direction.getDirection().offset();
-		double f = Math.min(e, 0.0);
-		double g = Math.max(e, 0.0);
-		switch (direction) {
-			case WEST:
-				return new Box(box.minX + f, box.minY, box.minZ, box.minX + g, box.maxY, box.maxZ);
-			case EAST:
-				return new Box(box.maxX + f, box.minY, box.minZ, box.maxX + g, box.maxY, box.maxZ);
-			case DOWN:
-				return new Box(box.minX, box.minY + f, box.minZ, box.maxX, box.minY + g, box.maxZ);
-			case UP:
-			default:
-				return new Box(box.minX, box.maxY + f, box.minZ, box.maxX, box.maxY + g, box.maxZ);
-			case NORTH:
-				return new Box(box.minX, box.minY, box.minZ + f, box.maxX, box.maxY, box.minZ + g);
-			case SOUTH:
-				return new Box(box.minX, box.minY, box.maxZ + f, box.maxX, box.maxY, box.maxZ + g);
-		}
 	}
 
 	private void push(Entity entity, Direction direction, double d) {

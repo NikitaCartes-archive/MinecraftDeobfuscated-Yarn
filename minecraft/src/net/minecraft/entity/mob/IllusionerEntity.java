@@ -52,8 +52,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		this.field_7297 = new Vec3d[2][4];
 
 		for (int i = 0; i < 4; i++) {
-			this.field_7297[0][i] = new Vec3d(0.0, 0.0, 0.0);
-			this.field_7297[1][i] = new Vec3d(0.0, 0.0, 0.0);
+			this.field_7297[0][i] = Vec3d.ZERO;
+			this.field_7297[1][i] = Vec3d.ZERO;
 		}
 	}
 
@@ -125,19 +125,10 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 				}
 
 				for (int j = 0; j < 16; j++) {
-					this.world
-						.addParticle(
-							ParticleTypes.CLOUD,
-							this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-							this.y + this.random.nextDouble() * (double)this.getHeight(),
-							this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
-							0.0,
-							0.0,
-							0.0
-						);
+					this.world.addParticle(ParticleTypes.CLOUD, this.method_23322(0.5), this.method_23319(), this.method_23324(0.5), 0.0, 0.0, 0.0);
 				}
 
-				this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, this.getSoundCategory(), 1.0F, 1.0F, false);
+				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, this.getSoundCategory(), 1.0F, 1.0F, false);
 			} else if (this.hurtTime == this.maxHurtTime - 1) {
 				this.field_7296 = 3;
 
@@ -210,9 +201,9 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	public void attack(LivingEntity livingEntity, float f) {
 		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
 		ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
-		double d = livingEntity.x - this.x;
-		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
-		double g = livingEntity.z - this.z;
+		double d = livingEntity.getX() - this.getX();
+		double e = livingEntity.method_23323(0.3333333333333333) - projectileEntity.getY();
+		double g = livingEntity.getZ() - this.getZ();
 		double h = (double)MathHelper.sqrt(d * d + g * g);
 		projectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));

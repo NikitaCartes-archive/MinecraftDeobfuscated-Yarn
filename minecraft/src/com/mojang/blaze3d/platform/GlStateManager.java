@@ -12,6 +12,8 @@ import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.client.util.Untracker;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.util.math.Vector4f;
+import net.minecraft.util.SystemUtil;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
@@ -42,8 +44,8 @@ public class GlStateManager {
 	private static final GlStateManager.ClearState CLEAR = new GlStateManager.ClearState();
 	private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
 	private static final FloatBuffer field_20771 = GlAllocationUtils.allocateFloatBuffer(4);
-	private static final Vector3f field_20772 = method_22612(0.2F, 1.0F, -0.7F);
-	private static final Vector3f field_20773 = method_22612(-0.2F, 1.0F, 0.7F);
+	private static final Vector3f field_20772 = SystemUtil.consume(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::reciprocal);
+	private static final Vector3f field_20773 = SystemUtil.consume(new Vector3f(-0.2F, 1.0F, 0.7F), Vector3f::reciprocal);
 	private static int activeTexture;
 	private static final GlStateManager.Texture2DState[] TEXTURES = (GlStateManager.Texture2DState[])IntStream.range(0, 8)
 		.mapToObj(i -> new GlStateManager.Texture2DState())
@@ -638,19 +640,23 @@ public class GlStateManager {
 		texEnv(8960, 34200, 770);
 	}
 
-	public static void method_22616() {
+	public static void method_22616(Matrix4f matrix4f) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		enableLighting();
 		enableLight(0);
 		enableLight(1);
 		enableColorMaterial();
 		colorMaterial(1032, 5634);
-		light(16384, 4611, method_22613(field_20772.getX(), field_20772.getY(), field_20772.getZ(), 0.0F));
+		Vector4f vector4f = new Vector4f(field_20772);
+		vector4f.multiply(matrix4f);
+		light(16384, 4611, method_22613(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0F));
 		float f = 0.6F;
 		light(16384, 4609, method_22613(0.6F, 0.6F, 0.6F, 1.0F));
 		light(16384, 4608, method_22613(0.0F, 0.0F, 0.0F, 1.0F));
 		light(16384, 4610, method_22613(0.0F, 0.0F, 0.0F, 1.0F));
-		light(16385, 4611, method_22613(field_20773.getX(), field_20773.getY(), field_20773.getZ(), 0.0F));
+		Vector4f vector4f2 = new Vector4f(field_20773);
+		vector4f2.multiply(matrix4f);
+		light(16385, 4611, method_22613(vector4f2.getX(), vector4f2.getY(), vector4f2.getZ(), 0.0F));
 		light(16385, 4609, method_22613(0.6F, 0.6F, 0.6F, 1.0F));
 		light(16385, 4608, method_22613(0.0F, 0.0F, 0.0F, 1.0F));
 		light(16385, 4610, method_22613(0.0F, 0.0F, 0.0F, 1.0F));
@@ -661,14 +667,12 @@ public class GlStateManager {
 		disableColorMaterial();
 	}
 
-	public static void method_22617() {
+	public static void method_22617(Matrix4f matrix4f) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		pushMatrix();
-		loadIdentity();
-		rotatef(-22.5F, 0.0F, 1.0F, 0.0F);
-		rotatef(135.0F, 1.0F, 0.0F, 0.0F);
-		method_22616();
-		popMatrix();
+		Matrix4f matrix4f2 = new Matrix4f(matrix4f);
+		matrix4f2.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-22.5F));
+		matrix4f2.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(135.0F));
+		method_22616(matrix4f2);
 	}
 
 	private static FloatBuffer method_22613(float f, float g, float h, float i) {
@@ -676,12 +680,6 @@ public class GlStateManager {
 		field_20771.put(f).put(g).put(h).put(i);
 		field_20771.flip();
 		return field_20771;
-	}
-
-	private static Vector3f method_22612(float f, float g, float h) {
-		Vector3f vector3f = new Vector3f(f, g, h);
-		vector3f.reciprocal();
-		return vector3f;
 	}
 
 	public static void method_22887() {
@@ -777,14 +775,6 @@ public class GlStateManager {
 	public static void disableCull() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		CULL.capState.disable();
-	}
-
-	public static void cullFace(int i) {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		if (i != CULL.mode) {
-			CULL.mode = i;
-			GL11.glCullFace(i);
-		}
 	}
 
 	public static void polygonMode(int i, int j) {
@@ -1387,19 +1377,6 @@ public class GlStateManager {
 		BASE,
 		ARB,
 		EXT;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum FaceSides {
-		FRONT(1028),
-		BACK(1029),
-		FRONT_AND_BACK(1032);
-
-		public final int glValue;
-
-		private FaceSides(int j) {
-			this.glValue = j;
-		}
 	}
 
 	@Deprecated

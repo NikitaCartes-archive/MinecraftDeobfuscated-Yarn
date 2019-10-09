@@ -18,7 +18,14 @@ public class EggItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		world.playSound(
-			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null,
+			playerEntity.getX(),
+			playerEntity.getY(),
+			playerEntity.getZ(),
+			SoundEvents.ENTITY_EGG_THROW,
+			SoundCategory.PLAYERS,
+			0.5F,
+			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
 			ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, playerEntity);

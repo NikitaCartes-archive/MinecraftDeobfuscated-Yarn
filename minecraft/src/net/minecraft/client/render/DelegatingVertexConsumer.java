@@ -40,7 +40,7 @@ public class DelegatingVertexConsumer implements VertexConsumer {
 
 	@Override
 	public VertexConsumer overlay(int i, int j) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.light(i, j));
+		this.delegates.forEach(vertexConsumer -> vertexConsumer.overlay(i, j));
 		return this;
 	}
 
@@ -59,15 +59,5 @@ public class DelegatingVertexConsumer implements VertexConsumer {
 	@Override
 	public void next() {
 		this.delegates.forEach(VertexConsumer::next);
-	}
-
-	@Override
-	public void defaultOverlay(int i, int j) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.defaultOverlay(i, j));
-	}
-
-	@Override
-	public void clearDefaultOverlay() {
-		this.delegates.forEach(VertexConsumer::clearDefaultOverlay);
 	}
 }

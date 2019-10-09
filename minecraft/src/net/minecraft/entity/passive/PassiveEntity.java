@@ -61,7 +61,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 				PassiveEntity passiveEntity = this.createChild(this);
 				if (passiveEntity != null) {
 					passiveEntity.setBreedingAge(-24000);
-					passiveEntity.setPositionAndAngles(this.x, this.y, this.z, 0.0F, 0.0F);
+					passiveEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
 					this.world.spawnEntity(passiveEntity);
 					if (itemStack.hasCustomName()) {
 						passiveEntity.setCustomName(itemStack.getName());
@@ -157,16 +157,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		if (this.world.isClient) {
 			if (this.happyTicksRemaining > 0) {
 				if (this.happyTicksRemaining % 4 == 0) {
-					this.world
-						.addParticle(
-							ParticleTypes.HAPPY_VILLAGER,
-							this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-							this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
-							this.z + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
-							0.0,
-							0.0,
-							0.0
-						);
+					this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.method_23322(1.0), this.method_23319() + 0.5, this.method_23325(1.0), 0.0, 0.0, 0.0);
 				}
 
 				this.happyTicksRemaining--;

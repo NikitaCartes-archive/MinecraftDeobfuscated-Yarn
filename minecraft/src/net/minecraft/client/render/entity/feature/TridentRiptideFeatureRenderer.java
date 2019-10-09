@@ -37,20 +37,18 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 		float m
 	) {
 		if (livingEntity.isUsingRiptide()) {
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(TEXTURE));
-			OverlayTexture.clearDefaultOverlay(vertexConsumer);
+			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
 
 			for (int n = 0; n < 3; n++) {
 				matrixStack.push();
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j * (float)(-(45 + n * 5)), true));
-				float o = 0.75F * (float)n;
-				matrixStack.scale(o, o, o);
+				float o = j * (float)(-(45 + n * 5));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(o));
+				float p = 0.75F * (float)n;
+				matrixStack.scale(p, p, p);
 				matrixStack.translate(0.0, (double)(-0.2F + 0.6F * (float)n), 0.0);
-				this.field_21012.render(matrixStack, vertexConsumer, m, i, null);
+				this.field_21012.render(matrixStack, vertexConsumer, m, i, OverlayTexture.field_21444, null);
 				matrixStack.pop();
 			}
-
-			vertexConsumer.clearDefaultOverlay();
 		}
 	}
 }

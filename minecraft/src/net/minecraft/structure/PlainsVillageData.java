@@ -19,9 +19,8 @@ import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class PlainsVillageData {
 	public static void initialize() {
@@ -323,7 +322,7 @@ public class PlainsVillageData {
 				new StructurePool(
 					new Identifier("village/plains/trees"),
 					new Identifier("empty"),
-					ImmutableList.of(new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.NORMAL_TREE, FeatureConfig.DEFAULT)), 1)),
+					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21126)), 1)),
 					StructurePool.Projection.RIGID
 				)
 			);
@@ -334,9 +333,9 @@ public class PlainsVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/plains/plains_lamp_1"), 2),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.NORMAL_TREE, FeatureConfig.DEFAULT)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PLAIN_FLOWER, FeatureConfig.DEFAULT)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.HAY_PILE, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21126)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.field_21219.method_23397(DefaultBiomeFeatures.field_21088)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)
 					),
 					StructurePool.Projection.RIGID
@@ -349,9 +348,9 @@ public class PlainsVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/plains/plains_lamp_1", immutableList), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.NORMAL_TREE, FeatureConfig.DEFAULT)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.PLAIN_FLOWER, FeatureConfig.DEFAULT)), 1),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.HAY_PILE, FeatureConfig.DEFAULT)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21126)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.field_21219.method_23397(DefaultBiomeFeatures.field_21088)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)
 					),
 					StructurePool.Projection.RIGID

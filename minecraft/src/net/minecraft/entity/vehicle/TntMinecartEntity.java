@@ -46,7 +46,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		super.tick();
 		if (this.fuseTicks > 0) {
 			this.fuseTicks--;
-			this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
 		} else if (this.fuseTicks == 0) {
 			this.explode(squaredHorizontalLength(this.getVelocity()));
 		}
@@ -95,19 +95,19 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 				e = 5.0;
 			}
 
-			this.world.createExplosion(this, this.x, this.y, this.z, (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.BREAK);
+			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.BREAK);
 			this.remove();
 		}
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
 		if (f >= 3.0F) {
 			float h = f / 10.0F;
 			this.explode((double)(h * h));
 		}
 
-		super.handleFallDamage(f, g);
+		return super.handleFallDamage(f, g);
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		if (!this.world.isClient) {
 			this.world.sendEntityStatus(this, (byte)10);
 			if (!this.isSilent()) {
-				this.world.playSound(null, this.x, this.y, this.z, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			}
 		}
 	}

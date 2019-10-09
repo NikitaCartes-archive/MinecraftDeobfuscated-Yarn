@@ -32,7 +32,7 @@ public class EscapeSunlightGoal extends Goal {
 			return false;
 		} else if (!this.mob.isOnFire()) {
 			return false;
-		} else if (!this.world.isSkyVisible(new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z))) {
+		} else if (!this.world.isSkyVisible(new BlockPos(this.mob))) {
 			return false;
 		} else {
 			return !this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() ? false : this.method_18250();
@@ -64,12 +64,12 @@ public class EscapeSunlightGoal extends Goal {
 	@Nullable
 	protected Vec3d locateShadedPos() {
 		Random random = this.mob.getRandom();
-		BlockPos blockPos = new BlockPos(this.mob.x, this.mob.getBoundingBox().minY, this.mob.z);
+		BlockPos blockPos = new BlockPos(this.mob);
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
 			if (!this.world.isSkyVisible(blockPos2) && this.mob.getPathfindingFavor(blockPos2) < 0.0F) {
-				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
+				return new Vec3d(blockPos2);
 			}
 		}
 

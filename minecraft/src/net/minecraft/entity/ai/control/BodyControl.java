@@ -54,8 +54,8 @@ public class BodyControl {
 	}
 
 	private boolean isMoving() {
-		double d = this.entity.x - this.entity.prevX;
-		double e = this.entity.z - this.entity.prevZ;
+		double d = this.entity.getX() - this.entity.prevX;
+		double e = this.entity.getZ() - this.entity.prevZ;
 		return d * d + e * e > 2.5000003E-7F;
 	}
 }

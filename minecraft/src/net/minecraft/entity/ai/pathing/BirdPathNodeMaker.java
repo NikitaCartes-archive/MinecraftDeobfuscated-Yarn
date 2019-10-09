@@ -29,14 +29,14 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	public PathNode getStart() {
 		int i;
 		if (this.canSwim() && this.entity.isInsideWater()) {
-			i = MathHelper.floor(this.entity.getBoundingBox().minY);
-			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.x, (double)i, this.entity.z);
+			i = MathHelper.floor(this.entity.getY());
+			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
 
 			for (Block block = this.field_20622.getBlockState(mutable).getBlock(); block == Blocks.WATER; block = this.field_20622.getBlockState(mutable).getBlock()) {
-				mutable.set(this.entity.x, (double)(++i), this.entity.z);
+				mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ());
 			}
 		} else {
-			i = MathHelper.floor(this.entity.getBoundingBox().minY + 0.5);
+			i = MathHelper.floor(this.entity.getY() + 0.5);
 		}
 
 		BlockPos blockPos = new BlockPos(this.entity);
@@ -253,10 +253,10 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
-		PathNodeType pathNodeType = this.getBasicPathNodeType(blockView, i, j, k);
+		PathNodeType pathNodeType = getBasicPathNodeType(blockView, i, j, k);
 		if (pathNodeType == PathNodeType.OPEN && j >= 1) {
 			Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
-			PathNodeType pathNodeType2 = this.getBasicPathNodeType(blockView, i, j - 1, k);
+			PathNodeType pathNodeType2 = getBasicPathNodeType(blockView, i, j - 1, k);
 			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block == Blocks.CAMPFIRE) {
 				pathNodeType = PathNodeType.DAMAGE_FIRE;
 			} else if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
@@ -270,7 +270,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			}
 		}
 
-		return this.method_59(blockView, i, j, k, pathNodeType);
+		return method_59(blockView, i, j, k, pathNodeType);
 	}
 
 	private PathNodeType method_10(MobEntity mobEntity, BlockPos blockPos) {

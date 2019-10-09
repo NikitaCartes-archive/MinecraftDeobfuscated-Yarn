@@ -145,13 +145,13 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			Entity entity = this.world.getEntityById(this.getTrackedEntityId(0));
 			if (entity != null) {
 				double d = vec3d.y;
-				if (this.y < entity.y || !this.shouldRenderOverlay() && this.y < entity.y + 5.0) {
+				if (this.getY() < entity.getY() || !this.shouldRenderOverlay() && this.getY() < entity.getY() + 5.0) {
 					d = Math.max(0.0, d);
 					d += 0.3 - d * 0.6F;
 				}
 
 				vec3d = new Vec3d(vec3d.x, d, vec3d.z);
-				Vec3d vec3d2 = new Vec3d(entity.x - this.x, 0.0, entity.z - this.z);
+				Vec3d vec3d2 = new Vec3d(entity.getX() - this.getX(), 0.0, entity.getZ() - this.getZ());
 				if (squaredHorizontalLength(vec3d2) > 9.0) {
 					Vec3d vec3d3 = vec3d2.normalize();
 					vec3d = vec3d.add(vec3d3.x * 0.3 - vec3d.x * 0.6, 0.0, vec3d3.z * 0.3 - vec3d.z * 0.6);
@@ -182,9 +182,9 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				double e = this.getHeadX(i + 1);
 				double f = this.getHeadY(i + 1);
 				double g = this.getHeadZ(i + 1);
-				double h = entity2.x - e;
-				double k = entity2.y + (double)entity2.getStandingEyeHeight() - f;
-				double l = entity2.z - g;
+				double h = entity2.getX() - e;
+				double k = entity2.method_23320() - f;
+				double l = entity2.getZ() - g;
 				double m = (double)MathHelper.sqrt(h * h + l * l);
 				float n = (float)(MathHelper.atan2(l, h) * 180.0F / (float)Math.PI) - 90.0F;
 				float o = (float)(-(MathHelper.atan2(k, m) * 180.0F / (float)Math.PI));
@@ -224,9 +224,9 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				this.world
 					.addParticle(
 						ParticleTypes.ENTITY_EFFECT,
-						this.x + this.random.nextGaussian(),
-						this.y + (double)(this.random.nextFloat() * 3.3F),
-						this.z + this.random.nextGaussian(),
+						this.getX() + this.random.nextGaussian(),
+						this.getY() + (double)(this.random.nextFloat() * 3.3F),
+						this.getZ() + this.random.nextGaussian(),
 						0.7F,
 						0.7F,
 						0.9F
@@ -243,7 +243,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
 					? Explosion.DestructionType.DESTROY
 					: Explosion.DestructionType.NONE;
-				this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, destructionType);
+				this.world.createExplosion(this, this.getX(), this.method_23320(), this.getZ(), 7.0F, false, destructionType);
 				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
 			}
 
@@ -260,9 +260,9 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					if ((this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) && this.field_7092[ix - 1]++ > 15) {
 						float f = 10.0F;
 						float g = 5.0F;
-						double d = MathHelper.nextDouble(this.random, this.x - 10.0, this.x + 10.0);
-						double e = MathHelper.nextDouble(this.random, this.y - 5.0, this.y + 5.0);
-						double h = MathHelper.nextDouble(this.random, this.z - 10.0, this.z + 10.0);
+						double d = MathHelper.nextDouble(this.random, this.getX() - 10.0, this.getX() + 10.0);
+						double e = MathHelper.nextDouble(this.random, this.getY() - 5.0, this.getY() + 5.0);
+						double h = MathHelper.nextDouble(this.random, this.getZ() - 10.0, this.getZ() + 10.0);
 						this.method_6877(ix + 1, d, e, h, true);
 						this.field_7092[ix - 1] = 0;
 					}
@@ -310,9 +310,9 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			if (this.field_7082 > 0) {
 				this.field_7082--;
 				if (this.field_7082 == 0 && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-					int ixx = MathHelper.floor(this.y);
-					int j = MathHelper.floor(this.x);
-					int l = MathHelper.floor(this.z);
+					int ixx = MathHelper.floor(this.getY());
+					int j = MathHelper.floor(this.getX());
+					int l = MathHelper.floor(this.getZ());
 					boolean bl = false;
 
 					for (int m = -1; m <= 1; m++) {
@@ -371,25 +371,25 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	private double getHeadX(int i) {
 		if (i <= 0) {
-			return this.x;
+			return this.getX();
 		} else {
 			float f = (this.bodyYaw + (float)(180 * (i - 1))) * (float) (Math.PI / 180.0);
 			float g = MathHelper.cos(f);
-			return this.x + (double)g * 1.3;
+			return this.getX() + (double)g * 1.3;
 		}
 	}
 
 	private double getHeadY(int i) {
-		return i <= 0 ? this.y + 3.0 : this.y + 2.2;
+		return i <= 0 ? this.getY() + 3.0 : this.getY() + 2.2;
 	}
 
 	private double getHeadZ(int i) {
 		if (i <= 0) {
-			return this.z;
+			return this.getZ();
 		} else {
 			float f = (this.bodyYaw + (float)(180 * (i - 1))) * (float) (Math.PI / 180.0);
 			float g = MathHelper.sin(f);
-			return this.z + (double)g * 1.3;
+			return this.getZ() + (double)g * 1.3;
 		}
 	}
 
@@ -408,7 +408,11 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	private void method_6878(int i, LivingEntity livingEntity) {
 		this.method_6877(
-			i, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() * 0.5, livingEntity.z, i == 0 && this.random.nextFloat() < 0.001F
+			i,
+			livingEntity.getX(),
+			livingEntity.getY() + (double)livingEntity.getStandingEyeHeight() * 0.5,
+			livingEntity.getZ(),
+			i == 0 && this.random.nextFloat() < 0.001F
 		);
 	}
 
@@ -425,9 +429,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			witherSkullEntity.setCharged(true);
 		}
 
-		witherSkullEntity.y = h;
-		witherSkullEntity.x = g;
-		witherSkullEntity.z = j;
+		witherSkullEntity.setPos(g, h, j);
 		this.world.spawnEntity(witherSkullEntity);
 	}
 
@@ -490,7 +492,8 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float f, float g) {
+		return false;
 	}
 
 	@Override

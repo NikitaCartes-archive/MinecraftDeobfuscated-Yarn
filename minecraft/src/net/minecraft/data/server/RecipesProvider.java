@@ -162,6 +162,13 @@ public class RecipesProvider implements DataProvider {
 			.group("bark")
 			.criterion("has_log", this.method_10426(Blocks.ACACIA_LOG))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.STRIPPED_ACACIA_WOOD, 3)
+			.input('#', Blocks.STRIPPED_ACACIA_LOG)
+			.pattern("##")
+			.pattern("##")
+			.group("bark")
+			.criterion("has_log", this.method_10426(Blocks.STRIPPED_ACACIA_LOG))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.ACACIA_BOAT)
 			.input('#', Blocks.ACACIA_PLANKS)
 			.pattern("# #")
@@ -288,7 +295,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("OOO")
 			.criterion("has_nether_star", this.method_10426(Items.NETHER_STAR))
 			.offerTo(consumer);
-		ShapedRecipeJsonFactory.create(Blocks.BEE_HIVE)
+		ShapedRecipeJsonFactory.create(Blocks.BEEHIVE)
 			.input('P', ItemTags.PLANKS)
 			.input('H', Items.HONEYCOMB)
 			.pattern("PPP")
@@ -307,6 +314,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.group("bark")
 			.criterion("has_log", this.method_10426(Blocks.BIRCH_LOG))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.STRIPPED_BIRCH_WOOD, 3)
+			.input('#', Blocks.STRIPPED_BIRCH_LOG)
+			.pattern("##")
+			.pattern("##")
+			.group("bark")
+			.criterion("has_log", this.method_10426(Blocks.STRIPPED_BIRCH_LOG))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.BIRCH_BOAT)
 			.input('#', Blocks.BIRCH_PLANKS)
@@ -1044,6 +1058,13 @@ public class RecipesProvider implements DataProvider {
 			.group("bark")
 			.criterion("has_log", this.method_10426(Blocks.DARK_OAK_LOG))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.STRIPPED_DARK_OAK_WOOD, 3)
+			.input('#', Blocks.STRIPPED_DARK_OAK_LOG)
+			.pattern("##")
+			.pattern("##")
+			.group("bark")
+			.criterion("has_log", this.method_10426(Blocks.STRIPPED_DARK_OAK_LOG))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.DARK_OAK_BOAT)
 			.input('#', Blocks.DARK_OAK_PLANKS)
 			.pattern("# #")
@@ -1713,6 +1734,18 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.criterion("has_iron_ingot", this.method_10426(Items.IRON_INGOT))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.HONEY_BLOCK, 1)
+			.input('S', Items.HONEY_BOTTLE)
+			.pattern("SS")
+			.pattern("SS")
+			.criterion("has_honey_block", this.method_10426(Blocks.HONEY_BLOCK))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.HONEYCOMB_BLOCK)
+			.input('H', Items.HONEYCOMB)
+			.pattern("HH")
+			.pattern("HH")
+			.criterion("has_honeycomb", this.method_10426(Items.HONEYCOMB))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.HOPPER)
 			.input('C', Blocks.CHEST)
 			.input('I', Items.IRON_INGOT)
@@ -1861,6 +1894,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.group("bark")
 			.criterion("has_log", this.method_10426(Blocks.JUNGLE_LOG))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.STRIPPED_JUNGLE_WOOD, 3)
+			.input('#', Blocks.STRIPPED_JUNGLE_LOG)
+			.pattern("##")
+			.pattern("##")
+			.group("bark")
+			.criterion("has_log", this.method_10426(Blocks.STRIPPED_JUNGLE_LOG))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.JUNGLE_BOAT)
 			.input('#', Blocks.JUNGLE_PLANKS)
@@ -2561,6 +2601,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.group("bark")
 			.criterion("has_log", this.method_10426(Blocks.OAK_LOG))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.STRIPPED_OAK_WOOD, 3)
+			.input('#', Blocks.STRIPPED_OAK_LOG)
+			.pattern("##")
+			.pattern("##")
+			.group("bark")
+			.criterion("has_log", this.method_10426(Blocks.STRIPPED_OAK_LOG))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Blocks.OAK_BUTTON)
 			.input(Blocks.OAK_PLANKS)
@@ -3405,6 +3452,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.group("bark")
 			.criterion("has_log", this.method_10426(Blocks.SPRUCE_LOG))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.STRIPPED_SPRUCE_WOOD, 3)
+			.input('#', Blocks.STRIPPED_SPRUCE_LOG)
+			.pattern("##")
+			.pattern("##")
+			.group("bark")
+			.criterion("has_log", this.method_10426(Blocks.STRIPPED_SPRUCE_LOG))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.SPRUCE_BOAT)
 			.input('#', Blocks.SPRUCE_PLANKS)

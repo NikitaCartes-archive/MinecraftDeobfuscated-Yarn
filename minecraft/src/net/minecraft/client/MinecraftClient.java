@@ -1314,7 +1314,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 			this.profiler.swap("animateTick");
 			if (!this.paused && this.world != null) {
-				this.world.doRandomBlockDisplayTicks(MathHelper.floor(this.player.x), MathHelper.floor(this.player.y), MathHelper.floor(this.player.z));
+				this.world.doRandomBlockDisplayTicks(MathHelper.floor(this.player.getX()), MathHelper.floor(this.player.getY()), MathHelper.floor(this.player.getZ()));
 			}
 
 			this.profiler.swap("particles");

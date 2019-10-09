@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.util.math.MathHelper;
@@ -26,6 +27,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	private float field_3531;
 
 	public RabbitEntityModel() {
+		super(RenderLayer::getEntitySolid);
 		this.field_3525.addCuboid(-1.0F, 5.5F, -3.7F, 2.0F, 1.0F, 7.0F);
 		this.field_3525.setPivot(3.0F, 17.5F, 3.7F);
 		this.field_3525.mirror = true;
@@ -94,20 +96,20 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void method_17116(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, float f, float g, float h) {
+	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
 		if (this.isChild) {
-			float j = 1.5F;
+			float k = 1.5F;
 			matrixStack.push();
 			matrixStack.scale(0.56666666F, 0.56666666F, 0.56666666F);
 			matrixStack.translate(0.0, 1.375, 0.125);
 			ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.scale(0.4F, 0.4F, 0.4F);
 			matrixStack.translate(0.0, 2.25, 0.0);
 			ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
 			matrixStack.pop();
 		} else {
 			matrixStack.push();
@@ -127,7 +129,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.field_3524,
 					this.field_3530
 				)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
 			matrixStack.pop();
 		}
 	}

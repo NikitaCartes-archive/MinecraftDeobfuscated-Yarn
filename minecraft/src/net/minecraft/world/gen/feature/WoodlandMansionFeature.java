@@ -49,7 +49,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32)) {
-				if (!chunkGenerator.hasStructure(biome2, Feature.WOODLAND_MANSION)) {
+				if (!chunkGenerator.hasStructure(biome2, this)) {
 					return false;
 				}
 			}

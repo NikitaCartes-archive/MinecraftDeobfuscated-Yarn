@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4666;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackProfile;
@@ -112,13 +113,15 @@ public class GameOptions {
 	public boolean touchscreen;
 	public boolean fullscreen;
 	public boolean bobView = true;
+	public boolean field_21332;
+	public boolean field_21333;
 	public final KeyBinding keyForward = new KeyBinding("key.forward", 87, "key.categories.movement");
 	public final KeyBinding keyLeft = new KeyBinding("key.left", 65, "key.categories.movement");
 	public final KeyBinding keyBack = new KeyBinding("key.back", 83, "key.categories.movement");
 	public final KeyBinding keyRight = new KeyBinding("key.right", 68, "key.categories.movement");
 	public final KeyBinding keyJump = new KeyBinding("key.jump", 32, "key.categories.movement");
-	public final KeyBinding keySneak = new KeyBinding("key.sneak", 340, "key.categories.movement");
-	public final KeyBinding keySprint = new KeyBinding("key.sprint", 341, "key.categories.movement");
+	public final KeyBinding keySneak = new class_4666("key.sneak", 340, "key.categories.movement", () -> this.field_21332);
+	public final KeyBinding keySprint = new class_4666("key.sprint", 341, "key.categories.movement", () -> this.field_21333);
 	public final KeyBinding keyInventory = new KeyBinding("key.inventory", 69, "key.categories.inventory");
 	public final KeyBinding keySwapHands = new KeyBinding("key.swapHands", 70, "key.categories.inventory");
 	public final KeyBinding keyDrop = new KeyBinding("key.drop", 81, "key.categories.inventory");
@@ -314,6 +317,14 @@ public class GameOptions {
 
 					if ("bobView".equals(string)) {
 						Option.VIEW_BOBBING.set(this, string2);
+					}
+
+					if ("toggleCrouch".equals(string)) {
+						this.field_21332 = "true".equals(string2);
+					}
+
+					if ("toggleSprint".equals(string)) {
+						this.field_21333 = "true".equals(string2);
 					}
 
 					if ("mouseSensitivity".equals(string)) {
@@ -568,6 +579,8 @@ public class GameOptions {
 				printWriter.println("touchscreen:" + Option.TOUCHSCREEN.get(this));
 				printWriter.println("fullscreen:" + Option.FULLSCREEN.get(this));
 				printWriter.println("bobView:" + Option.VIEW_BOBBING.get(this));
+				printWriter.println("toggleCrouch:" + this.field_21332);
+				printWriter.println("toggleSprint:" + this.field_21333);
 				printWriter.println("mouseSensitivity:" + this.mouseSensitivity);
 				printWriter.println("fov:" + (this.fov - 70.0) / 40.0);
 				printWriter.println("gamma:" + this.gamma);

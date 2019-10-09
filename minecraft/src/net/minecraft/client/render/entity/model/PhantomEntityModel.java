@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
@@ -19,6 +20,7 @@ public class PhantomEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_3473;
 
 	public PhantomEntityModel() {
+		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 0, 8);

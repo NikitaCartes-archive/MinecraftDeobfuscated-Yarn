@@ -21,9 +21,10 @@ public class ForestRockDecorator extends Decorator<CountDecoratorConfig> {
 	) {
 		int i = random.nextInt(countDecoratorConfig.count);
 		return IntStream.range(0, i).mapToObj(ix -> {
-			int j = random.nextInt(16);
-			int k = random.nextInt(16);
-			return iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k));
+			int j = random.nextInt(16) + blockPos.getX();
+			int k = random.nextInt(16) + blockPos.getZ();
+			int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k);
+			return new BlockPos(j, l, k);
 		});
 	}
 }

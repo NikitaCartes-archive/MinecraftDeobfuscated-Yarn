@@ -48,7 +48,7 @@ public class DamageSourcePredicate {
 	}
 
 	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource) {
-		return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), damageSource);
+		return this.test(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getPos(), damageSource);
 	}
 
 	public boolean test(ServerWorld serverWorld, Vec3d vec3d, DamageSource damageSource) {

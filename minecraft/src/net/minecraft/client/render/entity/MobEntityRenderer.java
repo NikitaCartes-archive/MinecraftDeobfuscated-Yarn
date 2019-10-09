@@ -57,23 +57,23 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		}
 
 		double j = Math.cos(e);
-		double k = MathHelper.lerp((double)f, entity.prevX, entity.x) - g * 0.7 - h * 0.5 * j;
-		double l = MathHelper.lerp((double)f, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.y + (double)entity.getStandingEyeHeight() * 0.7)
+		double k = MathHelper.lerp((double)f, entity.prevX, entity.getX()) - g * 0.7 - h * 0.5 * j;
+		double l = MathHelper.lerp((double)f, entity.prevY + (double)entity.getStandingEyeHeight() * 0.7, entity.getY() + (double)entity.getStandingEyeHeight() * 0.7)
 			- i * 0.5
 			- 0.25;
-		double m = MathHelper.lerp((double)f, entity.prevZ, entity.z) - h * 0.7 + g * 0.5 * j;
+		double m = MathHelper.lerp((double)f, entity.prevZ, entity.getZ()) - h * 0.7 + g * 0.5 * j;
 		double n = (double)(MathHelper.lerp(f, mobEntity.bodyYaw, mobEntity.prevBodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
 		g = Math.cos(n) * (double)mobEntity.getWidth() * 0.4;
 		h = Math.sin(n) * (double)mobEntity.getWidth() * 0.4;
-		double o = MathHelper.lerp((double)f, mobEntity.prevX, mobEntity.x) + g;
-		double p = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.y);
-		double q = MathHelper.lerp((double)f, mobEntity.prevZ, mobEntity.z) + h;
+		double o = MathHelper.lerp((double)f, mobEntity.prevX, mobEntity.getX()) + g;
+		double p = MathHelper.lerp((double)f, mobEntity.prevY, mobEntity.getY());
+		double q = MathHelper.lerp((double)f, mobEntity.prevZ, mobEntity.getZ()) + h;
 		matrixStack.translate(g, -(1.6 - (double)mobEntity.getHeight()) * 0.5, h);
 		float r = (float)(k - o);
 		float s = (float)(l - p);
 		float t = (float)(m - q);
 		float u = 0.025F;
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.LEASH);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLeash());
 		Matrix4f matrix4f = matrixStack.peek();
 		float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025F / 2.0F;
 		float w = t * v;

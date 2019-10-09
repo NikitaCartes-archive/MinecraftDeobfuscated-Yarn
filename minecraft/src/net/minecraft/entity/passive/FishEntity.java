@@ -199,9 +199,9 @@ public abstract class FishEntity extends WaterCreatureEntity {
 			}
 
 			if (this.state == MoveControl.State.MOVE_TO && !this.fish.getNavigation().isIdle()) {
-				double d = this.targetX - this.fish.x;
-				double e = this.targetY - this.fish.y;
-				double f = this.targetZ - this.fish.z;
+				double d = this.targetX - this.fish.getX();
+				double e = this.targetY - this.fish.getY();
+				double f = this.targetZ - this.fish.getZ();
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;

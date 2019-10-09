@@ -17,7 +17,7 @@ public class ItemScatterer {
 	}
 
 	public static void spawn(World world, Entity entity, Inventory inventory) {
-		spawn(world, entity.x, entity.y, entity.z, inventory);
+		spawn(world, entity.getX(), entity.getY(), entity.getZ(), inventory);
 	}
 
 	private static void spawn(World world, double d, double e, double f, Inventory inventory) {

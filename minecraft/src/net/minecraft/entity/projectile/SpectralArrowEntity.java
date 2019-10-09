@@ -29,7 +29,7 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient && !this.inGround) {
-			this.world.addParticle(ParticleTypes.INSTANT_EFFECT, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.INSTANT_EFFECT, this.getX(), this.getY(), this.getZ(), 0.0, 0.0, 0.0);
 		}
 	}
 

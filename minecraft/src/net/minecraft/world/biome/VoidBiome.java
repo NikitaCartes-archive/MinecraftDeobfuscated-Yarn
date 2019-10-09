@@ -23,7 +23,8 @@ public final class VoidBiome extends Biome {
 				.parent(null)
 		);
 		this.addFeature(
-			GenerationStep.Feature.TOP_LAYER_MODIFICATION, configureFeature(Feature.VOID_START_PLATFORM, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT)
+			GenerationStep.Feature.TOP_LAYER_MODIFICATION,
+			Feature.VOID_START_PLATFORM.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT))
 		);
 	}
 }

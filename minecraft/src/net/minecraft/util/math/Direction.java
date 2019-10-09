@@ -105,23 +105,23 @@ public enum Direction implements StringIdentifiable {
 
 	@Environment(EnvType.CLIENT)
 	public Quaternion method_23224() {
-		Quaternion quaternion = Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true);
+		Quaternion quaternion = Vector3f.POSITIVE_X.getRotationQuaternion(90.0F);
 		switch (this) {
 			case DOWN:
-				return Vector3f.POSITIVE_X.getRotationQuaternion(180.0F, true);
+				return Vector3f.POSITIVE_X.getRotationQuaternion(180.0F);
 			case UP:
-				return Vector3f.POSITIVE_Y.getRotationQuaternion(0.0F, true);
+				return Vector3f.POSITIVE_Y.getRotationQuaternion(0.0F);
 			case NORTH:
-				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F, true));
+				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
 				return quaternion;
 			case SOUTH:
 				return quaternion;
 			case WEST:
-				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F, true));
+				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F));
 				return quaternion;
 			case EAST:
 			default:
-				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F, true));
+				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
 				return quaternion;
 		}
 	}

@@ -3,105 +3,54 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.class_4625;
+import net.minecraft.class_4635;
 import net.minecraft.block.MushroomBlock;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class HugeBrownMushroomFeature extends Feature<PlantedFeatureConfig> {
-	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends PlantedFeatureConfig> function) {
+public class HugeBrownMushroomFeature extends class_4625 {
+	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends class_4635> function) {
 		super(function);
 	}
 
-	public boolean method_13362(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, PlantedFeatureConfig plantedFeatureConfig
-	) {
-		int i = random.nextInt(3) + 4;
-		if (random.nextInt(12) == 0) {
-			i *= 2;
-		}
+	@Override
+	protected void method_23375(IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, class_4635 arg) {
+		int j = arg.field_21232;
 
-		int j = blockPos.getY();
-		if (j >= 1 && j + i + 1 < 256) {
-			Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
-			if (!Block.isNaturalDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM) {
-				return false;
-			} else {
-				BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-				for (int k = 0; k <= 1 + i; k++) {
-					int l = k <= 3 ? 0 : 3;
-
-					for (int m = -l; m <= l; m++) {
-						for (int n = -l; n <= l; n++) {
-							BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).setOffset(m, k, n));
-							if (!blockState.isAir() && !blockState.matches(BlockTags.LEAVES)) {
-								return false;
-							}
-						}
-					}
-				}
-
-				BlockState blockState2 = Blocks.BROWN_MUSHROOM_BLOCK
-					.getDefaultState()
-					.with(MushroomBlock.UP, Boolean.valueOf(true))
-					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
-				int l = 3;
-
-				for (int m = -3; m <= 3; m++) {
-					for (int nx = -3; nx <= 3; nx++) {
-						boolean bl = m == -3;
-						boolean bl2 = m == 3;
-						boolean bl3 = nx == -3;
-						boolean bl4 = nx == 3;
-						boolean bl5 = bl || bl2;
-						boolean bl6 = bl3 || bl4;
-						if (!bl5 || !bl6) {
-							mutable.set(blockPos).setOffset(m, i, nx);
-							if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
-								boolean bl7 = bl || bl6 && m == -2;
-								boolean bl8 = bl2 || bl6 && m == 2;
-								boolean bl9 = bl3 || bl5 && nx == -2;
-								boolean bl10 = bl4 || bl5 && nx == 2;
-								this.setBlockState(
-									iWorld,
-									mutable,
-									blockState2.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
-										.with(MushroomBlock.EAST, Boolean.valueOf(bl8))
-										.with(MushroomBlock.NORTH, Boolean.valueOf(bl9))
-										.with(MushroomBlock.SOUTH, Boolean.valueOf(bl10))
-								);
-							}
-						}
-					}
-				}
-
-				BlockState blockState3 = Blocks.MUSHROOM_STEM
-					.getDefaultState()
-					.with(MushroomBlock.UP, Boolean.valueOf(false))
-					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
-
-				for (int nxx = 0; nxx < i; nxx++) {
-					mutable.set(blockPos).setOffset(Direction.UP, nxx);
+		for (int k = -j; k <= j; k++) {
+			for (int l = -j; l <= j; l++) {
+				boolean bl = k == -j;
+				boolean bl2 = k == j;
+				boolean bl3 = l == -j;
+				boolean bl4 = l == j;
+				boolean bl5 = bl || bl2;
+				boolean bl6 = bl3 || bl4;
+				if (!bl5 || !bl6) {
+					mutable.set(blockPos).setOffset(k, i, l);
 					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
-						if (plantedFeatureConfig.planted) {
-							iWorld.setBlockState(mutable, blockState3, 3);
-						} else {
-							this.setBlockState(iWorld, mutable, blockState3);
-						}
+						boolean bl7 = bl || bl6 && k == 1 - j;
+						boolean bl8 = bl2 || bl6 && k == j - 1;
+						boolean bl9 = bl3 || bl5 && l == 1 - j;
+						boolean bl10 = bl4 || bl5 && l == j - 1;
+						this.setBlockState(
+							iWorld,
+							mutable,
+							arg.field_21230
+								.method_23455(random, blockPos)
+								.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
+								.with(MushroomBlock.EAST, Boolean.valueOf(bl8))
+								.with(MushroomBlock.NORTH, Boolean.valueOf(bl9))
+								.with(MushroomBlock.SOUTH, Boolean.valueOf(bl10))
+						);
 					}
 				}
-
-				return true;
 			}
-		} else {
-			return false;
 		}
+	}
+
+	@Override
+	protected int method_23372(int i, int j, int k, int l) {
+		return l <= 3 ? 0 : k;
 	}
 }

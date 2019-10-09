@@ -21,9 +21,9 @@ public class EntitySpawnGlobalS2CPacket implements Packet<ClientPlayPacketListen
 
 	public EntitySpawnGlobalS2CPacket(Entity entity) {
 		this.id = entity.getEntityId();
-		this.x = entity.x;
-		this.y = entity.y;
-		this.z = entity.z;
+		this.x = entity.getX();
+		this.y = entity.getY();
+		this.z = entity.getZ();
 		if (entity instanceof LightningEntity) {
 			this.entityTypeId = 1;
 		}

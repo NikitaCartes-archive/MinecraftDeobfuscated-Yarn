@@ -206,7 +206,7 @@ public class GuardianEntity extends HostileEntity {
 					this.spikesExtensionRate = 2.0F;
 					Vec3d vec3d = this.getVelocity();
 					if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
-						this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
+						this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
 					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).method_10074(), this);
@@ -237,9 +237,9 @@ public class GuardianEntity extends HostileEntity {
 						this.world
 							.addParticle(
 								ParticleTypes.BUBBLE,
-								this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.x * 1.5,
-								this.y + this.random.nextDouble() * (double)this.getHeight() - vec3d.y * 1.5,
-								this.z + (this.random.nextDouble() - 0.5) * (double)this.getWidth() - vec3d.z * 1.5,
+								this.method_23322(0.5) - vec3d.x * 1.5,
+								this.method_23319() - vec3d.y * 1.5,
+								this.method_23325(0.5) - vec3d.z * 1.5,
 								0.0,
 								0.0,
 								0.0
@@ -257,9 +257,9 @@ public class GuardianEntity extends HostileEntity {
 						this.getLookControl().lookAt(livingEntity, 90.0F, 90.0F);
 						this.getLookControl().tick();
 						double d = (double)this.getBeamProgress(0.0F);
-						double e = livingEntity.x - this.x;
-						double f = livingEntity.y + (double)(livingEntity.getHeight() * 0.5F) - (this.y + (double)this.getStandingEyeHeight());
-						double g = livingEntity.z - this.z;
+						double e = livingEntity.getX() - this.getX();
+						double f = livingEntity.method_23323(0.5) - this.method_23320();
+						double g = livingEntity.getZ() - this.getZ();
 						double h = Math.sqrt(e * e + f * f + g * g);
 						e /= h;
 						f /= h;
@@ -268,7 +268,7 @@ public class GuardianEntity extends HostileEntity {
 
 						while (j < h) {
 							j += 1.8 - d + this.random.nextDouble() * (1.7 - d);
-							this.world.addParticle(ParticleTypes.BUBBLE, this.x + e * j, this.y + f * j + (double)this.getStandingEyeHeight(), this.z + g * j, 0.0, 0.0, 0.0);
+							this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + e * j, this.method_23320() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -437,7 +437,7 @@ public class GuardianEntity extends HostileEntity {
 		@Override
 		public void tick() {
 			if (this.state == MoveControl.State.MOVE_TO && !this.guardian.getNavigation().isIdle()) {
-				Vec3d vec3d = new Vec3d(this.targetX - this.guardian.x, this.targetY - this.guardian.y, this.targetZ - this.guardian.z);
+				Vec3d vec3d = new Vec3d(this.targetX - this.guardian.getX(), this.targetY - this.guardian.getY(), this.targetZ - this.guardian.getZ());
 				double d = vec3d.length();
 				double e = vec3d.x / d;
 				double f = vec3d.y / d;
@@ -454,9 +454,9 @@ public class GuardianEntity extends HostileEntity {
 				double n = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.75) * 0.05;
 				this.guardian.setVelocity(this.guardian.getVelocity().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
 				LookControl lookControl = this.guardian.getLookControl();
-				double o = this.guardian.x + e * 2.0;
-				double p = (double)this.guardian.getStandingEyeHeight() + this.guardian.y + f / d;
-				double q = this.guardian.z + g * 2.0;
+				double o = this.guardian.getX() + e * 2.0;
+				double p = this.guardian.method_23320() + f / d;
+				double q = this.guardian.getZ() + g * 2.0;
 				double r = lookControl.getLookX();
 				double s = lookControl.getLookY();
 				double t = lookControl.getLookZ();

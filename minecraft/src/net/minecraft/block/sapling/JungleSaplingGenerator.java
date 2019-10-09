@@ -2,24 +2,23 @@ package net.minecraft.block.sapling;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.block.Blocks;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.MegaJungleTreeFeature;
+import net.minecraft.class_4636;
+import net.minecraft.class_4640;
+import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OakTreeFeature;
 
 public class JungleSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
-		return new OakTreeFeature(
-			DefaultFeatureConfig::deserialize, true, 4 + random.nextInt(7), Blocks.JUNGLE_LOG.getDefaultState(), Blocks.JUNGLE_LEAVES.getDefaultState(), false
-		);
+	protected ConfiguredFeature<class_4640, ?> createTreeFeature(Random random) {
+		return new OakTreeFeature(class_4640::method_23426).method_23397(DefaultBiomeFeatures.field_21183);
 	}
 
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random) {
-		return new MegaJungleTreeFeature(DefaultFeatureConfig::deserialize, true, 10, 20, Blocks.JUNGLE_LOG.getDefaultState(), Blocks.JUNGLE_LEAVES.getDefaultState());
+	protected ConfiguredFeature<class_4636, ?> createLargeTreeFeature(Random random) {
+		return Feature.MEGA_JUNGLE_TREE.method_23397(DefaultBiomeFeatures.field_21200);
 	}
 }

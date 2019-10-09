@@ -831,7 +831,7 @@ public class Items {
 		"bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings().group(ItemGroup.MISC))
 	);
 	public static final Item BEE_SPAWN_EGG = register(
-		"bee_spawn_egg", new SpawnEggItem(EntityType.BEE, 16770398, 2500144, new Item.Settings().group(ItemGroup.MISC))
+		"bee_spawn_egg", new SpawnEggItem(EntityType.BEE, 15582019, 4400155, new Item.Settings().group(ItemGroup.MISC))
 	);
 	public static final Item BLAZE_SPAWN_EGG = register(
 		"blaze_spawn_egg", new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, new Item.Settings().group(ItemGroup.MISC))
@@ -1256,10 +1256,12 @@ public class Items {
 	public static final Item CAMPFIRE = register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
 	public static final Item HONEYCOMB = register("honeycomb", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item BEE_NEST = register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
-	public static final Item BEE_HIVE = register(Blocks.BEE_HIVE, ItemGroup.DECORATIONS);
+	public static final Item BEE_HIVE = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
 	public static final Item HONEY_BOTTLE = register(
 		"honey_bottle", new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(1))
 	);
+	public static final Item field_21086 = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
+	public static final Item field_21087 = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

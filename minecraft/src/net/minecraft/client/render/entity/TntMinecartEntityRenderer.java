@@ -6,9 +6,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MatrixStack;
@@ -37,21 +34,17 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 			matrixStack.scale(h, h, h);
 		}
 
-		if (j > -1 && j / 5 % 2 == 0) {
-			method_23190(blockState, matrixStack, layeredVertexConsumerStorage, i);
-		} else {
-			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, 0, 10);
-		}
+		method_23190(blockState, matrixStack, layeredVertexConsumerStorage, i, j > -1 && j / 5 % 2 == 0);
 	}
 
-	public static void method_23190(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		vertexConsumer.defaultOverlay(OverlayTexture.getU(1.0F), 10);
-		MinecraftClient.getInstance()
-			.getBlockRenderManager()
-			.renderDynamic(
-				blockState, matrixStack, renderLayer -> renderLayer == RenderLayer.SOLID ? vertexConsumer : layeredVertexConsumerStorage.getBuffer(renderLayer), i, 0, 10
-			);
-		vertexConsumer.clearDefaultOverlay();
+	public static void method_23190(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, boolean bl) {
+		int j;
+		if (bl) {
+			j = OverlayTexture.method_23625(OverlayTexture.getU(1.0F), 10);
+		} else {
+			j = OverlayTexture.field_21444;
+		}
+
+		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, j);
 	}
 }

@@ -87,7 +87,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 			RenderSystem.translatef((float)(k + 139), (float)(l + 52), 0.0F);
 			RenderSystem.scalef(24.0F, -24.0F, 1.0F);
 			this.preview.method_22534(true);
-			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack(), 15728880);
+			BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack());
 			this.preview.method_22534(false);
 			RenderSystem.popMatrix();
 		} else if (this.hasTooManyPatterns) {
@@ -138,7 +138,7 @@ public class LoomScreen extends AbstractContainerScreen<LoomContainer> {
 		RenderSystem.translatef((float)j + 0.5F, (float)(k + 16), 0.0F);
 		RenderSystem.scalef(6.0F, -6.0F, 1.0F);
 		RenderSystem.translatef(0.5F, 0.5F, 0.0F);
-		BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack(), 15728880);
+		BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack());
 		RenderSystem.popMatrix();
 		this.minecraft.getSpriteAtlas().method_23207();
 	}

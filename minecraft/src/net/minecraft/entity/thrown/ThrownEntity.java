@@ -45,7 +45,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	}
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, LivingEntity livingEntity, World world) {
-		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 0.1F, livingEntity.z, world);
+		this(entityType, livingEntity.getX(), livingEntity.method_23320() - 0.1F, livingEntity.getZ(), world);
 		this.owner = livingEntity;
 		this.ownerUuid = livingEntity.getUuid();
 	}
@@ -143,12 +143,12 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		Vec3d vec3d = this.getVelocity();
-		this.x = this.x + vec3d.x;
-		this.y = this.y + vec3d.y;
-		this.z = this.z + vec3d.z;
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		double d = this.getX() + vec3d.x;
+		double e = this.getY() + vec3d.y;
+		double f = this.getZ() + vec3d.z;
+		float g = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)g) * 180.0F / (float)Math.PI);
 
 		while (this.pitch - this.prevPitch < -180.0F) {
 			this.prevPitch -= 360.0F;
@@ -168,25 +168,25 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-		float h;
+		float j;
 		if (this.isInsideWater()) {
 			for (int i = 0; i < 4; i++) {
-				float g = 0.25F;
-				this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				float h = 0.25F;
+				this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 
-			h = 0.8F;
+			j = 0.8F;
 		} else {
-			h = 0.99F;
+			j = 0.99F;
 		}
 
-		this.setVelocity(vec3d.multiply((double)h));
+		this.setVelocity(vec3d.multiply((double)j));
 		if (!this.hasNoGravity()) {
 			Vec3d vec3d2 = this.getVelocity();
 			this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
 		}
 
-		this.setPosition(this.x, this.y, this.z);
+		this.setPosition(d, e, f);
 	}
 
 	protected float getGravity() {

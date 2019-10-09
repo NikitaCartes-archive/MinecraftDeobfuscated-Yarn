@@ -71,9 +71,9 @@ public class ExperienceOrbEntity extends Entity {
 			this.pickupDelay--;
 		}
 
-		this.prevX = this.x;
-		this.prevY = this.y;
-		this.prevZ = this.z;
+		this.prevX = this.getX();
+		this.prevY = this.getY();
+		this.prevZ = this.getZ();
 		if (this.isInFluid(FluidTags.WATER)) {
 			this.applyWaterMovement();
 		} else if (!this.hasNoGravity()) {
@@ -88,7 +88,7 @@ public class ExperienceOrbEntity extends Entity {
 		}
 
 		if (!this.world.doesNotCollide(this.getBoundingBox())) {
-			this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+			this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 		}
 
 		double d = 8.0;
@@ -105,7 +105,9 @@ public class ExperienceOrbEntity extends Entity {
 		}
 
 		if (this.target != null) {
-			Vec3d vec3d = new Vec3d(this.target.x - this.x, this.target.y + (double)this.target.getStandingEyeHeight() / 2.0 - this.y, this.target.z - this.z);
+			Vec3d vec3d = new Vec3d(
+				this.target.getX() - this.getX(), this.target.getY() + (double)this.target.getStandingEyeHeight() / 2.0 - this.getY(), this.target.getZ() - this.getZ()
+			);
 			double e = vec3d.lengthSquared();
 			if (e < 64.0) {
 				double f = 1.0 - Math.sqrt(e) / 8.0;
@@ -116,7 +118,7 @@ public class ExperienceOrbEntity extends Entity {
 		this.move(MovementType.SELF, this.getVelocity());
 		float g = 0.98F;
 		if (this.onGround) {
-			g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getSlipperiness() * 0.98F;
+			g = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
 		}
 
 		this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));

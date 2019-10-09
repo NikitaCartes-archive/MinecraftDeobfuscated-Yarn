@@ -256,7 +256,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 
 	private boolean method_23147(PointOfInterestDebugRenderer.class_4232 arg) {
 		PlayerEntity playerEntity = this.field_18786.player;
-		BlockPos blockPos = new BlockPos(playerEntity.x, arg.field_18926.getY(), playerEntity.z);
+		BlockPos blockPos = new BlockPos(playerEntity.getX(), arg.field_18926.getY(), playerEntity.getZ());
 		BlockPos blockPos2 = new BlockPos(arg.field_18926);
 		return blockPos.isWithinDistance(blockPos2, 30.0);
 	}

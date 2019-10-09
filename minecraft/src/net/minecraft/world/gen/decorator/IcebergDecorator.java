@@ -10,18 +10,19 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
-public class IcebergDecorator extends Decorator<ChanceDecoratorConfig> {
-	public IcebergDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
+public class IcebergDecorator extends Decorator<LakeDecoratorConfig> {
+	public IcebergDecorator(Function<Dynamic<?>, ? extends LakeDecoratorConfig> function) {
 		super(function);
 	}
 
 	public Stream<BlockPos> method_15929(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, LakeDecoratorConfig lakeDecoratorConfig, BlockPos blockPos
 	) {
-		if (random.nextFloat() < 1.0F / (float)chanceDecoratorConfig.chance) {
-			int i = random.nextInt(8) + 4;
-			int j = random.nextInt(8) + 4;
-			return Stream.of(iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j)));
+		if (random.nextFloat() < 1.0F / (float)lakeDecoratorConfig.chance) {
+			int i = random.nextInt(8) + 4 + blockPos.getX();
+			int j = random.nextInt(8) + 4 + blockPos.getZ();
+			int k = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j);
+			return Stream.of(new BlockPos(i, k, j));
 		} else {
 			return Stream.empty();
 		}

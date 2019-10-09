@@ -108,7 +108,7 @@ public class Structure {
 		this.entities.clear();
 
 		for (Entity entity : list) {
-			Vec3d vec3d = new Vec3d(entity.x - (double)blockPos.getX(), entity.y - (double)blockPos.getY(), entity.z - (double)blockPos.getZ());
+			Vec3d vec3d = new Vec3d(entity.getX() - (double)blockPos.getX(), entity.getY() - (double)blockPos.getY(), entity.getZ() - (double)blockPos.getZ());
 			CompoundTag compoundTag = new CompoundTag();
 			entity.saveToTag(compoundTag);
 			BlockPos blockPos3;

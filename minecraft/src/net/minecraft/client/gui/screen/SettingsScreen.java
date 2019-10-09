@@ -101,7 +101,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.skinCustomisation"),
-				buttonWidget -> this.minecraft.openScreen(new SkinOptionsScreen(this))
+				buttonWidget -> this.minecraft.openScreen(new SkinOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(
@@ -161,7 +161,7 @@ public class SettingsScreen extends Screen {
 				150,
 				20,
 				I18n.translate("options.resourcepack"),
-				buttonWidget -> this.minecraft.openScreen(new ResourcePackOptionsScreen(this))
+				buttonWidget -> this.minecraft.openScreen(new ResourcePackOptionsScreen(this, this.settings))
 			)
 		);
 		this.addButton(

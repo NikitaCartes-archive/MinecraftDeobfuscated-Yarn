@@ -472,7 +472,7 @@ public class FireBlock extends Block {
 		fireBlock.registerFlammableBlock(Blocks.LECTERN, 30, 20);
 		fireBlock.registerFlammableBlock(Blocks.COMPOSTER, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.SWEET_BERRY_BUSH, 60, 100);
-		fireBlock.registerFlammableBlock(Blocks.BEE_HIVE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.BEEHIVE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.BEE_NEST, 30, 20);
 	}
 }

@@ -63,7 +63,7 @@ public class TestSet {
 			if (!gameTest.isStarted()) {
 				stringBuffer.append(' ');
 			} else if (gameTest.isPassed()) {
-				stringBuffer.append('√');
+				stringBuffer.append('+');
 			} else if (gameTest.isFailed()) {
 				stringBuffer.append((char)(gameTest.isRequired() ? 'X' : 'x'));
 			} else {

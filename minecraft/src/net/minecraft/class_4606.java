@@ -33,10 +33,8 @@ public abstract class class_4606<T extends Entity, M extends EntityModel<T>> ext
 		float l,
 		float m
 	) {
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23026(this.method_23193()));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
-		this.getModel().method_22957(matrixStack, vertexConsumer, 15728640);
-		vertexConsumer.clearDefaultOverlay();
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEyes(this.method_23193()));
+		this.getModel().renderItem(matrixStack, vertexConsumer, 15728640, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
 	}
 
 	public abstract Identifier method_23193();

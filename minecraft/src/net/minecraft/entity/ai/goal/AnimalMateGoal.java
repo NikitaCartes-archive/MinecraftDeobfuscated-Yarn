@@ -103,11 +103,12 @@ public class AnimalMateGoal extends Goal {
 			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
 			passiveEntity.setBreedingAge(-24000);
-			passiveEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
+			passiveEntity.setPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0F, 0.0F);
 			this.world.spawnEntity(passiveEntity);
 			this.world.sendEntityStatus(this.animal, (byte)18);
 			if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRandom().nextInt(7) + 1));
+				this.world
+					.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
 			}
 		}
 	}

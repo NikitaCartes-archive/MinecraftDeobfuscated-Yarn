@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -101,10 +102,10 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		float h,
 		@Nullable String string
 	) {
-		VertexConsumer vertexConsumer = ItemRenderer.method_23181(layeredVertexConsumerStorage, this.method_4174(armorItem, bl2, string), false, bl, false);
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
-		bipedEntityModel.method_17116(matrixStack, vertexConsumer, i, f, g, h);
-		vertexConsumer.clearDefaultOverlay();
+		VertexConsumer vertexConsumer = ItemRenderer.method_23181(
+			layeredVertexConsumerStorage, RenderLayer.getEntityCutoutNoCull(this.method_4174(armorItem, bl2, string)), false, bl
+		);
+		bipedEntityModel.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, f, g, h);
 	}
 
 	public A getArmor(EquipmentSlot equipmentSlot) {

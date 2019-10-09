@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -31,18 +32,24 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage
 	) {
 		matrixStack.push();
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw, true));
-		matrixStack.multiply(
-			Vector3f.POSITIVE_X.getRotationQuaternion((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch, true)
-		);
+		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
+		float i = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
+		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
 		if (fireworkEntity.wasShotAtAngle()) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 		} else {
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 		}
 
 		this.itemRenderer
-			.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, fireworkEntity.getLightmapCoordinates(), matrixStack, layeredVertexConsumerStorage);
+			.method_23178(
+				fireworkEntity.getStack(),
+				ModelTransformation.Type.GROUND,
+				fireworkEntity.getLightmapCoordinates(),
+				OverlayTexture.field_21444,
+				matrixStack,
+				layeredVertexConsumerStorage
+			);
 		matrixStack.pop();
 		super.render(fireworkEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}

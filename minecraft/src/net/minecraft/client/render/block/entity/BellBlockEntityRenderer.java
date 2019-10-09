@@ -7,6 +7,7 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -35,27 +36,28 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 		float g,
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i
+		int i,
+		int j
 	) {
 		float h = (float)bellBlockEntity.ringTicks + g;
-		float j = 0.0F;
 		float k = 0.0F;
+		float l = 0.0F;
 		if (bellBlockEntity.isRinging) {
-			float l = MathHelper.sin(h / (float) Math.PI) / (4.0F + h / 3.0F);
+			float m = MathHelper.sin(h / (float) Math.PI) / (4.0F + h / 3.0F);
 			if (bellBlockEntity.lastSideHit == Direction.NORTH) {
-				j = -l;
+				k = -m;
 			} else if (bellBlockEntity.lastSideHit == Direction.SOUTH) {
-				j = l;
+				k = m;
 			} else if (bellBlockEntity.lastSideHit == Direction.EAST) {
-				k = -l;
+				l = -m;
 			} else if (bellBlockEntity.lastSideHit == Direction.WEST) {
-				k = l;
+				l = m;
 			}
 		}
 
-		this.field_20816.pitch = j;
-		this.field_20816.roll = k;
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.SOLID);
-		this.field_20816.render(matrixStack, vertexConsumer, 0.0625F, i, this.getSprite(BELL_BODY_TEXTURE));
+		this.field_20816.pitch = k;
+		this.field_20816.roll = l;
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		this.field_20816.render(matrixStack, vertexConsumer, 0.0625F, i, j, this.getSprite(BELL_BODY_TEXTURE));
 	}
 }

@@ -19,9 +19,9 @@ public class SnowballItem extends Item {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		world.playSound(
 			null,
-			playerEntity.x,
-			playerEntity.y,
-			playerEntity.z,
+			playerEntity.getX(),
+			playerEntity.getY(),
+			playerEntity.getZ(),
 			SoundEvents.ENTITY_SNOWBALL_THROW,
 			SoundCategory.NEUTRAL,
 			0.5F,

@@ -49,8 +49,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	) {
 		this(entityType, world);
 		this.owner = livingEntity;
-		this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
-		this.setPosition(this.x, this.y, this.z);
+		this.setPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
 		this.setVelocity(Vec3d.ZERO);
 		d += this.random.nextGaussian() * 0.4;
 		e += this.random.nextGaussian() * 0.4;
@@ -92,23 +91,23 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			}
 
 			Vec3d vec3d = this.getVelocity();
-			this.x = this.x + vec3d.x;
-			this.y = this.y + vec3d.y;
-			this.z = this.z + vec3d.z;
+			double d = this.getX() + vec3d.x;
+			double e = this.getY() + vec3d.y;
+			double f = this.getZ() + vec3d.z;
 			ProjectileUtil.method_7484(this, 0.2F);
-			float f = this.getDrag();
+			float g = this.getDrag();
 			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {
-					float g = 0.25F;
-					this.world.addParticle(ParticleTypes.BUBBLE, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+					float h = 0.25F;
+					this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
-				f = 0.8F;
+				g = 0.8F;
 			}
 
-			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)f));
-			this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
-			this.setPosition(this.x, this.y, this.z);
+			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)g));
+			this.world.addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
+			this.setPosition(d, e, f);
 		} else {
 			this.remove();
 		}
@@ -204,7 +203,16 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	public Packet<?> createSpawnPacket() {
 		int i = this.owner == null ? 0 : this.owner.getEntityId();
 		return new EntitySpawnS2CPacket(
-			this.getEntityId(), this.getUuid(), this.x, this.y, this.z, this.pitch, this.yaw, this.getType(), i, new Vec3d(this.posX, this.posY, this.posZ)
+			this.getEntityId(),
+			this.getUuid(),
+			this.getX(),
+			this.getY(),
+			this.getZ(),
+			this.pitch,
+			this.yaw,
+			this.getType(),
+			i,
+			new Vec3d(this.posX, this.posY, this.posZ)
 		);
 	}
 }

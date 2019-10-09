@@ -37,9 +37,9 @@ public class ThrownEggEntity extends ThrownItemEntity {
 				this.world
 					.addParticle(
 						new ItemStackParticleEffect(ParticleTypes.ITEM, this.getStack()),
-						this.x,
-						this.y,
-						this.z,
+						this.getX(),
+						this.getY(),
+						this.getZ(),
 						((double)this.random.nextFloat() - 0.5) * 0.08,
 						((double)this.random.nextFloat() - 0.5) * 0.08,
 						((double)this.random.nextFloat() - 0.5) * 0.08
@@ -64,7 +64,7 @@ public class ThrownEggEntity extends ThrownItemEntity {
 				for (int j = 0; j < i; j++) {
 					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
 					chickenEntity.setBreedingAge(-24000);
-					chickenEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
+					chickenEntity.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
 					this.world.spawnEntity(chickenEntity);
 				}
 			}

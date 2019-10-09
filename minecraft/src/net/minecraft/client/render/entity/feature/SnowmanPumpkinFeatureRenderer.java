@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.SnowmanEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.Vector3f;
@@ -36,7 +37,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 			this.getModel().method_2834().rotate(matrixStack, 0.0625F);
 			float n = 0.625F;
 			matrixStack.translate(0.0, -0.34375, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F, true));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 			matrixStack.scale(0.625F, -0.625F, -0.625F);
 			ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
 			MinecraftClient.getInstance()
@@ -49,7 +50,8 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 					matrixStack,
 					layeredVertexConsumerStorage,
 					snowGolemEntity.world,
-					snowGolemEntity.getLightmapCoordinates()
+					snowGolemEntity.getLightmapCoordinates(),
+					LivingEntityRenderer.method_23622(snowGolemEntity, 0.0F)
 				);
 			matrixStack.pop();
 		}

@@ -18,9 +18,9 @@ public class HeightmapDecorator extends Decorator<NopeDecoratorConfig> {
 	public Stream<BlockPos> method_15940(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos
 	) {
-		int i = random.nextInt(16);
-		int j = random.nextInt(16);
-		int k = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + i, blockPos.getZ() + j);
-		return Stream.of(new BlockPos(blockPos.getX() + i, k, blockPos.getZ() + j));
+		int i = random.nextInt(16) + blockPos.getX();
+		int j = random.nextInt(16) + blockPos.getZ();
+		int k = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, i, j);
+		return Stream.of(new BlockPos(i, k, j));
 	}
 }

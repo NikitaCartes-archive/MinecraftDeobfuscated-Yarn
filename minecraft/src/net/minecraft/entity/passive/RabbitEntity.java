@@ -86,11 +86,11 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	protected float getJumpVelocity() {
-		if (!this.horizontalCollision && (!this.moveControl.isMoving() || !(this.moveControl.getTargetY() > this.y + 0.5))) {
+		if (!this.horizontalCollision && (!this.moveControl.isMoving() || !(this.moveControl.getTargetY() > this.getY() + 0.5))) {
 			Path path = this.navigation.getCurrentPath();
 			if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
 				Vec3d vec3d = path.getNodePosition(this);
-				if (vec3d.y > this.y + 0.5) {
+				if (vec3d.y > this.getY() + 0.5) {
 					return 0.5F;
 				}
 			}
@@ -169,8 +169,8 @@ public class RabbitEntity extends AnimalEntity {
 			if (this.getRabbitType() == 99 && this.ticksUntilJump == 0) {
 				LivingEntity livingEntity = this.getTarget();
 				if (livingEntity != null && this.squaredDistanceTo(livingEntity) < 16.0) {
-					this.lookTowards(livingEntity.x, livingEntity.z);
-					this.moveControl.moveTo(livingEntity.x, livingEntity.y, livingEntity.z, this.moveControl.getSpeed());
+					this.lookTowards(livingEntity.getX(), livingEntity.getZ());
+					this.moveControl.moveTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), this.moveControl.getSpeed());
 					this.startJump();
 					this.lastOnGround = true;
 				}
@@ -201,7 +201,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private void lookTowards(double d, double e) {
-		this.yaw = (float)(MathHelper.atan2(e - this.z, d - this.x) * 180.0F / (float)Math.PI) - 90.0F;
+		this.yaw = (float)(MathHelper.atan2(e - this.getZ(), d - this.getX()) * 180.0F / (float)Math.PI) - 90.0F;
 	}
 
 	private void method_6611() {

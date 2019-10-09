@@ -7,7 +7,6 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
@@ -193,17 +192,28 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
 		this.setModelPose(abstractClientPlayerEntity);
 		int i = abstractClientPlayerEntity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23017(abstractClientPlayerEntity.getSkinTexture()));
-		OverlayTexture.clearDefaultOverlay(vertexConsumer);
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
 		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		modelPart.pitch = 0.0F;
-		modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, null);
+		modelPart.render(
+			matrixStack,
+			layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())),
+			0.0625F,
+			i,
+			OverlayTexture.field_21444,
+			null
+		);
 		modelPart2.pitch = 0.0F;
-		modelPart2.render(matrixStack, vertexConsumer, 0.0625F, i, null);
-		vertexConsumer.clearDefaultOverlay();
+		modelPart2.render(
+			matrixStack,
+			layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())),
+			0.0625F,
+			i,
+			OverlayTexture.field_21444,
+			null
+		);
 	}
 
 	protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
@@ -213,7 +223,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			float j = (float)abstractClientPlayerEntity.getRoll() + h;
 			float k = MathHelper.clamp(j * j / 100.0F, 0.0F, 1.0F);
 			if (!abstractClientPlayerEntity.isUsingRiptide()) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(k * (-90.0F - abstractClientPlayerEntity.pitch), true));
+				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(k * (-90.0F - abstractClientPlayerEntity.pitch)));
 			}
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
@@ -223,13 +233,13 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			if (d > 0.0 && e > 0.0) {
 				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
 				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(Math.signum(m) * Math.acos(l)), false));
+				matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626((float)(Math.signum(m) * Math.acos(l))));
 			}
 		} else if (i > 0.0F) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
 			float jx = abstractClientPlayerEntity.isInsideWater() ? -90.0F - abstractClientPlayerEntity.pitch : -90.0F;
 			float kx = MathHelper.lerp(i, 0.0F, jx);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(kx, true));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(kx));
 			if (abstractClientPlayerEntity.isInSwimmingPose()) {
 				matrixStack.translate(0.0, -1.0, 0.3F);
 			}

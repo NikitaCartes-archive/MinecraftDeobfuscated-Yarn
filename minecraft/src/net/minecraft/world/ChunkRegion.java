@@ -254,8 +254,8 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public boolean spawnEntity(Entity entity) {
-		int i = MathHelper.floor(entity.x / 16.0);
-		int j = MathHelper.floor(entity.z / 16.0);
+		int i = MathHelper.floor(entity.getX() / 16.0);
+		int j = MathHelper.floor(entity.getZ() / 16.0);
 		this.getChunk(i, j).addEntity(entity);
 		return true;
 	}

@@ -335,7 +335,7 @@ public class ClientPlayerInteractionManager {
 
 	public ActionResult interactEntityAtLocation(PlayerEntity playerEntity, Entity entity, EntityHitResult entityHitResult, Hand hand) {
 		this.syncSelectedSlot();
-		Vec3d vec3d = entityHitResult.getPos().subtract(entity.x, entity.y, entity.z);
+		Vec3d vec3d = entityHitResult.getPos().subtract(entity.getX(), entity.getY(), entity.getZ());
 		this.networkHandler.sendPacket(new PlayerInteractEntityC2SPacket(entity, hand, vec3d));
 		return this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : entity.interactAt(playerEntity, vec3d, hand);
 	}

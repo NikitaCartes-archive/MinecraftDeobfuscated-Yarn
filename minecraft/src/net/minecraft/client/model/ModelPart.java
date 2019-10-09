@@ -11,7 +11,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
@@ -34,13 +33,13 @@ public class ModelPart {
 	private final List<ModelPart> children = Lists.<ModelPart>newArrayList();
 
 	public ModelPart(Model model) {
-		model.onPartAdded(this);
+		model.method_22696(this);
 		this.setTextureSize(model.textureWidth, model.textureHeight);
 	}
 
 	public ModelPart(Model model, int i, int j) {
 		this(model.textureWidth, model.textureHeight, i, j);
-		model.onPartAdded(this);
+		model.method_22696(this);
 	}
 
 	public ModelPart(int i, int j, int k, int l) {
@@ -105,19 +104,19 @@ public class ModelPart {
 		this.pivotZ = h;
 	}
 
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, @Nullable Sprite sprite) {
-		this.render(matrixStack, vertexConsumer, f, i, sprite, 1.0F, 1.0F, 1.0F);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j, @Nullable Sprite sprite) {
+		this.render(matrixStack, vertexConsumer, f, i, j, sprite, 1.0F, 1.0F, 1.0F);
 	}
 
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, @Nullable Sprite sprite, float g, float h, float j) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j, @Nullable Sprite sprite, float g, float h, float k) {
 		if (this.visible) {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
 				matrixStack.push();
 				this.rotate(matrixStack, f);
-				this.renderCuboids(matrixStack.peek(), vertexConsumer, f, i, sprite, g, h, j);
+				this.renderCuboids(matrixStack.peek(), vertexConsumer, f, i, j, sprite, g, h, k);
 
 				for (ModelPart modelPart : this.children) {
-					modelPart.render(matrixStack, vertexConsumer, f, i, sprite, g, h, j);
+					modelPart.render(matrixStack, vertexConsumer, f, i, j, sprite, g, h, k);
 				}
 
 				matrixStack.pop();
@@ -128,19 +127,19 @@ public class ModelPart {
 	public void rotate(MatrixStack matrixStack, float f) {
 		matrixStack.translate((double)(this.pivotX * f), (double)(this.pivotY * f), (double)(this.pivotZ * f));
 		if (this.roll != 0.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.roll, false));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.method_23626(this.roll));
 		}
 
 		if (this.yaw != 0.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(this.yaw, false));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626(this.yaw));
 		}
 
 		if (this.pitch != 0.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.pitch, false));
+			matrixStack.multiply(Vector3f.POSITIVE_X.method_23626(this.pitch));
 		}
 	}
 
-	private void renderCuboids(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, int i, @Nullable Sprite sprite, float g, float h, float j) {
+	private void renderCuboids(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, int i, int j, @Nullable Sprite sprite, float g, float h, float k) {
 		Matrix3f matrix3f = new Matrix3f(matrix4f);
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
@@ -151,15 +150,14 @@ public class ModelPart {
 				vector3f2.multiply(matrix3f);
 				vector3f2.cross(vector3f);
 				vector3f2.reciprocal();
-				float k = vector3f2.getX();
-				float l = vector3f2.getY();
-				float m = vector3f2.getZ();
+				float l = vector3f2.getX();
+				float m = vector3f2.getY();
+				float n = vector3f2.getZ();
 
-				for (int n = 0; n < 4; n++) {
-					ModelPart.Vertex vertex = quad.vertices[n];
+				for (int o = 0; o < 4; o++) {
+					ModelPart.Vertex vertex = quad.vertices[o];
 					Vector4f vector4f = new Vector4f((float)vertex.pos.x * f, (float)vertex.pos.y * f, (float)vertex.pos.z * f, 1.0F);
 					vector4f.multiply(matrix4f);
-					float o = MathHelper.method_22451(k, l, m);
 					float p;
 					float q;
 					if (sprite == null) {
@@ -171,10 +169,11 @@ public class ModelPart {
 					}
 
 					vertexConsumer.vertex((double)vector4f.getX(), (double)vector4f.getY(), (double)vector4f.getZ())
-						.color(o * g, o * h, o * j, 1.0F)
+						.color(g, h, k, 1.0F)
 						.texture(p, q)
+						.defaultOverlay(j)
 						.light(i)
-						.normal(k, l, m)
+						.normal(l, m, n)
 						.next();
 				}
 			}

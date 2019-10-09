@@ -10,6 +10,7 @@ public class TestFunction {
 	private final boolean required;
 	private final Consumer<class_4516> field_20587;
 	private final int tickLimit;
+	private final long field_21460;
 
 	public void method_22297(class_4516 arg) {
 		this.field_20587.accept(arg);
@@ -37,5 +38,9 @@ public class TestFunction {
 
 	public String getBatchId() {
 		return this.batchId;
+	}
+
+	public long method_23649() {
+		return this.field_21460;
 	}
 }

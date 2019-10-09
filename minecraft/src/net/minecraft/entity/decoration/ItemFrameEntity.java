@@ -80,28 +80,29 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	protected void method_6895() {
 		if (this.facing != null) {
 			double d = 0.46875;
-			this.x = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
-			this.y = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
-			this.z = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
-			double e = (double)this.getWidthPixels();
-			double f = (double)this.getHeightPixels();
-			double g = (double)this.getWidthPixels();
+			double e = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
+			double f = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
+			double g = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
+			this.setPos(e, f, g);
+			double h = (double)this.getWidthPixels();
+			double i = (double)this.getHeightPixels();
+			double j = (double)this.getWidthPixels();
 			Direction.Axis axis = this.facing.getAxis();
 			switch (axis) {
 				case X:
-					e = 1.0;
+					h = 1.0;
 					break;
 				case Y:
-					f = 1.0;
+					i = 1.0;
 					break;
 				case Z:
-					g = 1.0;
+					j = 1.0;
 			}
 
-			e /= 32.0;
-			f /= 32.0;
-			g /= 32.0;
-			this.setBoundingBox(new Box(this.x - e, this.y - f, this.z - g, this.x + e, this.y + f, this.z + g));
+			h /= 32.0;
+			i /= 32.0;
+			j /= 32.0;
+			this.setBoundingBox(new Box(e - h, f - i, g - j, e + h, f + i, g + j));
 		}
 	}
 

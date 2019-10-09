@@ -11,10 +11,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criterions;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -90,7 +88,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -204,8 +201,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		} else {
 			this.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 
-			while (!serverWorld.doesNotCollide(this) && this.y < 255.0) {
-				this.setPosition(this.x, this.y + 1.0, this.z);
+			while (!serverWorld.doesNotCollide(this) && this.getY() < 255.0) {
+				this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
 			}
 		}
 	}
@@ -348,7 +345,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Entity entity = this.getCameraEntity();
 		if (entity != this) {
 			if (entity.isAlive()) {
-				this.setPositionAnglesAndUpdate(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
+				this.setPositionAnglesAndUpdate(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
 				this.getServerWorld().method_14178().updateCameraPosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
@@ -485,7 +482,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			if (!this.world.isClient && livingEntity instanceof WitherEntity) {
 				boolean bl2 = false;
 				if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-					BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+					BlockPos blockPos = new BlockPos(this);
 					BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
 					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
 						this.world.setBlockState(blockPos, blockState, 3);
@@ -494,7 +491,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				}
 
 				if (!bl2) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, new ItemStack(Items.WITHER_ROSE));
+					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
 					this.world.spawnEntity(itemEntity);
 				}
 			}
@@ -608,16 +605,16 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			playerManager.sendCommandTree(this);
 			serverWorld.removePlayer(this);
 			this.removed = false;
-			double d = this.x;
-			double e = this.y;
-			double f = this.z;
+			double d = this.getX();
+			double e = this.getY();
+			double f = this.getZ();
 			float g = this.pitch;
 			float h = this.yaw;
 			double i = 8.0;
 			float j = h;
 			serverWorld.getProfiler().push("moving");
 			if (dimensionType2 == DimensionType.OVERWORLD && dimensionType == DimensionType.THE_NETHER) {
-				this.enteredNetherPos = new Vec3d(this.x, this.y, this.z);
+				this.enteredNetherPos = this.getPos();
 				d /= 8.0;
 				f /= 8.0;
 			} else if (dimensionType2 == DimensionType.THE_NETHER && dimensionType == DimensionType.OVERWORLD) {
@@ -643,9 +640,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			f = MathHelper.clamp(f, l, n);
 			this.setPositionAndAngles(d, e, f, h, g);
 			if (dimensionType == DimensionType.THE_END) {
-				int o = MathHelper.floor(this.x);
-				int p = MathHelper.floor(this.y) - 1;
-				int q = MathHelper.floor(this.z);
+				int o = MathHelper.floor(this.getX());
+				int p = MathHelper.floor(this.getY()) - 1;
+				int q = MathHelper.floor(this.getZ());
 				int r = 1;
 				int s = 0;
 
@@ -672,7 +669,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.setWorld(serverWorld2);
 			serverWorld2.method_18211(this);
 			this.dimensionChanged(serverWorld);
-			this.networkHandler.requestTeleport(this.x, this.y, this.z, h, g);
+			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), h, g);
 			this.interactionManager.setWorld(serverWorld2);
 			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
 			playerManager.sendWorldInfo(this, serverWorld2);
@@ -743,7 +740,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		super.wakeUp(bl, bl2);
 		if (this.networkHandler != null) {
-			this.networkHandler.requestTeleport(this.x, this.y, this.z, this.yaw, this.pitch);
+			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		}
 	}
 
@@ -755,7 +752,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		} else {
 			Entity entity3 = this.getVehicle();
 			if (entity3 != entity2 && this.networkHandler != null) {
-				this.networkHandler.requestTeleport(this.x, this.y, this.z, this.yaw, this.pitch);
+				this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 			}
 
 			return true;
@@ -768,7 +765,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		super.stopRiding();
 		Entity entity2 = this.getVehicle();
 		if (entity2 != entity && this.networkHandler != null) {
-			this.networkHandler.requestTeleport(this.x, this.y, this.z, this.yaw, this.pitch);
+			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		}
 	}
 
@@ -789,22 +786,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void method_14207(double d, boolean bl) {
-		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.y - 0.2F);
-		int k = MathHelper.floor(this.z);
-		BlockPos blockPos = new BlockPos(i, j, k);
+		BlockPos blockPos = this.method_23312();
 		if (this.world.isChunkLoaded(blockPos)) {
 			BlockState blockState = this.world.getBlockState(blockPos);
-			if (blockState.isAir()) {
-				BlockPos blockPos2 = blockPos.method_10074();
-				BlockState blockState2 = this.world.getBlockState(blockPos2);
-				Block block = blockState2.getBlock();
-				if (block.matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock) {
-					blockPos = blockPos2;
-					blockState = blockState2;
-				}
-			}
-
 			super.fall(d, bl, blockState, blockPos);
 		}
 	}
@@ -1060,7 +1044,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
 		if (statusEffectInstance.getEffectType() == StatusEffects.LEVITATION) {
 			this.field_13973 = this.age;
-			this.field_13992 = new Vec3d(this.x, this.y, this.z);
+			this.field_13992 = this.getPos();
 		}
 
 		Criterions.EFFECTS_CHANGED.handle(this);
@@ -1227,7 +1211,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.cameraEntity = (Entity)(entity == null ? this : entity);
 		if (entity2 != this.cameraEntity) {
 			this.networkHandler.sendPacket(new SetCameraEntityS2CPacket(this.cameraEntity));
-			this.requestTeleport(this.cameraEntity.x, this.cameraEntity.y, this.cameraEntity.z);
+			this.requestTeleport(this.cameraEntity.getX(), this.cameraEntity.getY(), this.cameraEntity.getZ());
 		}
 	}
 
@@ -1334,7 +1318,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-		this.networkHandler.sendPacket(new PlaySoundS2CPacket(soundEvent, soundCategory, this.x, this.y, this.z, f, g));
+		this.networkHandler.sendPacket(new PlaySoundS2CPacket(soundEvent, soundCategory, this.getX(), this.getY(), this.getZ(), f, g));
 	}
 
 	@Override

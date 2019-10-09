@@ -22,12 +22,12 @@ public class ChorusPlantDecorator extends Decorator<NopeDecoratorConfig> {
 	) {
 		int i = random.nextInt(5);
 		return IntStream.range(0, i).mapToObj(ix -> {
-			int j = random.nextInt(16);
-			int k = random.nextInt(16);
-			int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY();
+			int j = random.nextInt(16) + blockPos.getX();
+			int k = random.nextInt(16) + blockPos.getZ();
+			int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k);
 			if (l > 0) {
 				int m = l - 1;
-				return new BlockPos(blockPos.getX() + j, m, blockPos.getZ() + k);
+				return new BlockPos(j, m, k);
 			} else {
 				return null;
 			}

@@ -70,7 +70,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
 		if (!world.isClient) {
 			if (blockEntity instanceof BeeHiveBlockEntity && EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
-				((BeeHiveBlockEntity)blockEntity).angerBees(playerEntity, BeeHiveBlockEntity.BeeState.EMERGENCY);
+				((BeeHiveBlockEntity)blockEntity).angerBees(playerEntity, blockState, BeeHiveBlockEntity.BeeState.EMERGENCY);
 				world.updateHorizontalAdjacent(blockPos, this);
 			}
 
@@ -101,13 +101,17 @@ public class BeeHiveBlock extends BlockWithEntity {
 		boolean bl = false;
 		if (i >= 5) {
 			if (itemStack.getItem() == Items.SHEARS) {
-				world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+				world.playSound(
+					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1.0F, 1.0F
+				);
 				dropHoneycomb(world, blockPos);
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				bl = true;
 			} else if (itemStack.getItem() == Items.GLASS_BOTTLE) {
 				itemStack.decrement(1);
-				world.playSound(playerEntity, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+				world.playSound(
+					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F
+				);
 				if (itemStack.isEmpty()) {
 					playerEntity.setStackInHand(hand, new ItemStack(Items.HONEY_BOTTLE));
 				} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.HONEY_BOTTLE))) {
@@ -119,19 +123,19 @@ public class BeeHiveBlock extends BlockWithEntity {
 		}
 
 		if (bl) {
-			this.emptyHoney(world, blockState, blockPos, playerEntity);
+			this.emptyHoney(world, blockState, blockPos, playerEntity, BeeHiveBlockEntity.BeeState.EMERGENCY);
 			return true;
 		} else {
 			return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 
-	public void emptyHoney(World world, BlockState blockState, BlockPos blockPos, @Nullable PlayerEntity playerEntity) {
+	public void emptyHoney(World world, BlockState blockState, BlockPos blockPos, @Nullable PlayerEntity playerEntity, BeeHiveBlockEntity.BeeState beeState) {
 		world.setBlockState(blockPos, blockState.with(HONEY_LEVEL, Integer.valueOf(0)), 3);
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof BeeHiveBlockEntity) {
 			BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-			beeHiveBlockEntity.angerBees(playerEntity, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
+			beeHiveBlockEntity.angerBees(playerEntity, blockState, beeState);
 		}
 	}
 
@@ -147,7 +151,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	private void method_21843(World world, BlockPos blockPos, BlockState blockState) {
-		if (blockState.getFluidState().isEmpty()) {
+		if (blockState.getFluidState().isEmpty() && !(world.random.nextFloat() < 0.3F)) {
 			VoxelShape voxelShape = blockState.getCollisionShape(world, blockPos);
 			double d = voxelShape.getMaximum(Direction.Axis.Y);
 			if (d >= 1.0 && !blockState.matches(BlockTags.IMPERMEABLE)) {
@@ -243,7 +247,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 			BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
 			if (blockEntity instanceof BeeHiveBlockEntity) {
 				BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-				beeHiveBlockEntity.angerBees(null, BeeHiveBlockEntity.BeeState.EMERGENCY);
+				beeHiveBlockEntity.angerBees(null, blockState, BeeHiveBlockEntity.BeeState.EMERGENCY);
 			}
 		}
 
@@ -258,7 +262,7 @@ public class BeeHiveBlock extends BlockWithEntity {
 			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 			if (blockEntity instanceof BeeHiveBlockEntity) {
 				BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
-				beeHiveBlockEntity.angerBees(null, BeeHiveBlockEntity.BeeState.EMERGENCY);
+				beeHiveBlockEntity.angerBees(null, blockState, BeeHiveBlockEntity.BeeState.EMERGENCY);
 			}
 		}
 

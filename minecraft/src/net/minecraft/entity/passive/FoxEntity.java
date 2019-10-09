@@ -63,7 +63,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -257,9 +256,9 @@ public class FoxEntity extends AnimalEntity {
 					this.world
 						.addParticle(
 							new ItemStackParticleEffect(ParticleTypes.ITEM, itemStack),
-							this.x + this.getRotationVector().x / 2.0,
-							this.y,
-							this.z + this.getRotationVector().z / 2.0,
+							this.getX() + this.getRotationVector().x / 2.0,
+							this.getY(),
+							this.getZ() + this.getRotationVector().z / 2.0,
 							vec3d.x,
 							vec3d.y + 0.05,
 							vec3d.z
@@ -457,7 +456,9 @@ public class FoxEntity extends AnimalEntity {
 
 	private void spit(ItemStack itemStack) {
 		if (!itemStack.isEmpty() && !this.world.isClient) {
-			ItemEntity itemEntity = new ItemEntity(this.world, this.x + this.getRotationVector().x, this.y + 1.0, this.z + this.getRotationVector().z, itemStack);
+			ItemEntity itemEntity = new ItemEntity(
+				this.world, this.getX() + this.getRotationVector().x, this.getY() + 1.0, this.getZ() + this.getRotationVector().z, itemStack
+			);
 			itemEntity.setPickupDelay(40);
 			itemEntity.setThrower(this.getUuid());
 			this.playSound(SoundEvents.ENTITY_FOX_SPIT, 1.0F, 1.0F);
@@ -466,7 +467,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	private void dropItem(ItemStack itemStack) {
-		ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, itemStack);
+		ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack);
 		this.world.spawnEntity(itemEntity);
 	}
 
@@ -502,7 +503,7 @@ public class FoxEntity extends AnimalEntity {
 			}
 
 			if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
-				BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+				BlockPos blockPos = new BlockPos(this);
 				BlockState blockState = this.world.getBlockState(blockPos);
 				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 			}
@@ -585,32 +586,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void handleFallDamage(float f, float g) {
-		int i = MathHelper.ceil((f - 5.0F) * g);
-		if (i > 0) {
-			this.damage(DamageSource.FALL, (float)i);
-			if (this.hasPassengers()) {
-				for (Entity entity : this.getPassengersDeep()) {
-					entity.damage(DamageSource.FALL, (float)i);
-				}
-			}
-
-			BlockState blockState = this.world.getBlockState(new BlockPos(this.x, this.y - 0.2 - (double)this.prevYaw, this.z));
-			if (!blockState.isAir() && !this.isSilent()) {
-				BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
-				this.world
-					.playSound(
-						null,
-						this.x,
-						this.y,
-						this.z,
-						blockSoundGroup.getStepSound(),
-						this.getSoundCategory(),
-						blockSoundGroup.getVolume() * 0.5F,
-						blockSoundGroup.getPitch() * 0.75F
-					);
-			}
-		}
+	protected int method_23329(float f, float g) {
+		return MathHelper.ceil((f - 5.0F) * g);
 	}
 
 	private void wakeUp() {
@@ -685,8 +662,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	public static boolean canJumpChase(FoxEntity foxEntity, LivingEntity livingEntity) {
-		double d = livingEntity.z - foxEntity.z;
-		double e = livingEntity.x - foxEntity.x;
+		double d = livingEntity.getZ() - foxEntity.getZ();
+		double e = livingEntity.getX() - foxEntity.getX();
 		double f = d / e;
 		int i = 6;
 
@@ -695,7 +672,7 @@ public class FoxEntity extends AnimalEntity {
 			double h = f == 0.0 ? e * (double)((float)j / 6.0F) : g / f;
 
 			for (int k = 1; k < 4; k++) {
-				if (!foxEntity.world.getBlockState(new BlockPos(foxEntity.x + h, foxEntity.y + (double)k, foxEntity.z + g)).getMaterial().isReplaceable()) {
+				if (!foxEntity.world.getBlockState(new BlockPos(foxEntity.getX() + h, foxEntity.getY() + (double)k, foxEntity.getZ() + g)).getMaterial().isReplaceable()) {
 					return false;
 				}
 			}
@@ -874,7 +851,7 @@ public class FoxEntity extends AnimalEntity {
 			FoxEntity.this.setJumping(false);
 			FoxEntity.this.setSleeping(true);
 			FoxEntity.this.getNavigation().stop();
-			FoxEntity.this.getMoveControl().moveTo(FoxEntity.this.x, FoxEntity.this.y, FoxEntity.this.z, 0.0);
+			FoxEntity.this.getMoveControl().moveTo(FoxEntity.this.getX(), FoxEntity.this.getY(), FoxEntity.this.getZ(), 0.0);
 		}
 	}
 
@@ -1120,7 +1097,10 @@ public class FoxEntity extends AnimalEntity {
 			FoxEntity.this.setRollingHead(false);
 			LivingEntity livingEntity = FoxEntity.this.getTarget();
 			FoxEntity.this.getLookControl().lookAt(livingEntity, 60.0F, 30.0F);
-			Vec3d vec3d = new Vec3d(livingEntity.x - FoxEntity.this.x, livingEntity.y - FoxEntity.this.y, livingEntity.z - FoxEntity.this.z).normalize();
+			Vec3d vec3d = new Vec3d(
+					livingEntity.getX() - FoxEntity.this.getX(), livingEntity.getY() - FoxEntity.this.getY(), livingEntity.getZ() - FoxEntity.this.getZ()
+				)
+				.normalize();
 			FoxEntity.this.setVelocity(FoxEntity.this.getVelocity().add(vec3d.x * 0.8, 0.9, vec3d.z * 0.8));
 			FoxEntity.this.getNavigation().stop();
 		}
@@ -1221,11 +1201,12 @@ public class FoxEntity extends AnimalEntity {
 				this.animal.resetLoveTicks();
 				this.mate.resetLoveTicks();
 				foxEntity.setBreedingAge(-24000);
-				foxEntity.setPositionAndAngles(this.animal.x, this.animal.y, this.animal.z, 0.0F, 0.0F);
+				foxEntity.setPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0F, 0.0F);
 				this.world.spawnEntity(foxEntity);
 				this.world.sendEntityStatus(this.animal, (byte)18);
 				if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-					this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.x, this.animal.y, this.animal.z, this.animal.getRandom().nextInt(7) + 1));
+					this.world
+						.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
 				}
 			}
 		}
@@ -1378,9 +1359,9 @@ public class FoxEntity extends AnimalEntity {
 
 			FoxEntity.this.getLookControl()
 				.lookAt(
-					FoxEntity.this.x + this.lookX,
-					FoxEntity.this.y + (double)FoxEntity.this.getStandingEyeHeight(),
-					FoxEntity.this.z + this.lookZ,
+					FoxEntity.this.getX() + this.lookX,
+					FoxEntity.this.method_23320(),
+					FoxEntity.this.getZ() + this.lookZ,
 					(float)FoxEntity.this.method_5986(),
 					(float)FoxEntity.this.getLookPitchSpeed()
 				);
