@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.world.MobSpawnerLogic;
 
 @Environment(EnvType.CLIENT)

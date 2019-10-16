@@ -52,8 +52,8 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity$1();
-			((PassiveEntity$1)entityData).method_22434(false);
+			entityData = new PassiveEntity.class_4697();
+			((PassiveEntity.class_4697)entityData).method_22434(false);
 		}
 
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);

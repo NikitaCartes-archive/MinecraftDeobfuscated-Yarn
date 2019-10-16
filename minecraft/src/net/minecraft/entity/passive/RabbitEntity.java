@@ -511,7 +511,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	public static class RabbitEntityData extends PassiveEntity$1 {
+	public static class RabbitEntityData extends PassiveEntity.class_4697 {
 		public final int type;
 
 		public RabbitEntityData(int i) {

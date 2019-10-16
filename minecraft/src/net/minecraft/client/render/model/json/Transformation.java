@@ -9,9 +9,9 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)

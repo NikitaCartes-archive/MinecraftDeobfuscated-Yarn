@@ -22,7 +22,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	public EnterBlockCriterion.Conditions method_8883(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		Block block = method_22466(jsonObject);
+		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
 			statePredicate.check(block.getStateFactory(), string -> {
@@ -34,7 +34,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	@Nullable
-	private static Block method_22466(JsonObject jsonObject) {
+	private static Block getBlock(JsonObject jsonObject) {
 		if (jsonObject.has("block")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			return (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
@@ -43,7 +43,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		}
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState));
 	}
 

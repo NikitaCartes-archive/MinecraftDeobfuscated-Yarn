@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
@@ -29,12 +29,12 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 	) {
 		if (wolfEntity.isWet()) {
 			float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
-			this.model.method_22955(i, i, i);
+			this.model.setColorMultiplier(i, i, i);
 		}
 
 		super.method_4072(wolfEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 		if (wolfEntity.isWet()) {
-			this.model.method_22955(1.0F, 1.0F, 1.0F);
+			this.model.setColorMultiplier(1.0F, 1.0F, 1.0F);
 		}
 	}
 

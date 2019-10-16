@@ -4,9 +4,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.context.LootContext;
 
 public class WallPlayerSkullBlock extends WallSkullBlock {
 	protected WallPlayerSkullBlock(Block.Settings settings) {

@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WitherArmorFeatureRenderer extends SkinOverlayFeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
+public class WitherArmorFeatureRenderer extends EnergySwirlOverlayFeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> model = new WitherEntityModel<>(0.5F);
 
@@ -18,17 +18,17 @@ public class WitherArmorFeatureRenderer extends SkinOverlayFeatureRenderer<Withe
 	}
 
 	@Override
-	protected float method_23202(float f) {
+	protected float getEnergySwirlX(float f) {
 		return MathHelper.cos(f * 0.02F) * 3.0F;
 	}
 
 	@Override
-	protected Identifier method_23201() {
+	protected Identifier getEnergySwirlTexture() {
 		return SKIN;
 	}
 
 	@Override
-	protected EntityModel<WitherEntity> method_23203() {
+	protected EntityModel<WitherEntity> getEnergySwirlModel() {
 		return this.model;
 	}
 }

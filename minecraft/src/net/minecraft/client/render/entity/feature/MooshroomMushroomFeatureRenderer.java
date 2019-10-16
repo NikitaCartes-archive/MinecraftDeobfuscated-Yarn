@@ -8,9 +8,9 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.CowEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.MooshroomEntity;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends FeatureRenderer<T, CowEntityModel<T>> {
@@ -41,13 +41,13 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			int n = LivingEntityRenderer.method_23622(mooshroomEntity, 0.0F);
 			matrixStack.push();
 			matrixStack.translate(-0.5, -0.5, 0.5);
-			blockRenderManager.renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+			blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.translate(-0.1F, 0.0, -0.6F);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-42.0F));
 			matrixStack.translate(-0.5, -0.5, 0.5);
-			blockRenderManager.renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+			blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
 			matrixStack.pop();
 			matrixStack.pop();
 			matrixStack.push();
@@ -56,7 +56,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			matrixStack.translate(0.0, 0.7F, -0.2F);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-12.0F));
 			matrixStack.translate(-0.5, -0.5, 0.5);
-			blockRenderManager.renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+			blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
 			matrixStack.pop();
 		}
 	}

@@ -16,13 +16,13 @@ public class class_4666 extends KeyBinding {
 	}
 
 	@Override
-	public void method_23481(boolean bl) {
+	public void setPressed(boolean bl) {
 		if (this.field_21334.getAsBoolean()) {
 			if (bl) {
-				super.method_23481(!this.isPressed());
+				super.setPressed(!this.isPressed());
 			}
 		} else {
-			super.method_23481(bl);
+			super.setPressed(bl);
 		}
 	}
 }

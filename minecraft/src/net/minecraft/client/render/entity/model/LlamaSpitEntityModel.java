@@ -3,12 +3,11 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class LlamaSpitEntityModel<T extends Entity> extends class_4595<T> {
+public class LlamaSpitEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart field_3433 = new ModelPart(this);
 
 	public LlamaSpitEntityModel() {

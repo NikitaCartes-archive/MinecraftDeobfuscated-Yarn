@@ -10,8 +10,8 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class BookModel extends Model {
@@ -22,7 +22,7 @@ public class BookModel extends Model {
 	private final ModelPart leftPage;
 	private final ModelPart rightPage;
 	private final ModelPart spine = new ModelPart(64, 32, 12, 0).addCuboid(-1.0F, -5.0F, 0.0F, 2.0F, 10.0F, 0.005F);
-	private final List<ModelPart> field_20786;
+	private final List<ModelPart> parts;
 
 	public BookModel() {
 		super(RenderLayer::getEntitySolid);
@@ -30,19 +30,19 @@ public class BookModel extends Model {
 		this.rightBlock = new ModelPart(64, 32, 12, 10).addCuboid(0.0F, -4.0F, -0.01F, 5.0F, 8.0F, 1.0F);
 		this.leftPage = new ModelPart(64, 32, 24, 10).addCuboid(0.0F, -4.0F, 0.0F, 5.0F, 8.0F, 0.005F);
 		this.rightPage = new ModelPart(64, 32, 24, 10).addCuboid(0.0F, -4.0F, 0.0F, 5.0F, 8.0F, 0.005F);
-		this.field_20786 = ImmutableList.of(this.leftCover, this.rightCover, this.spine, this.leftBlock, this.rightBlock, this.leftPage, this.rightPage);
+		this.parts = ImmutableList.of(this.leftCover, this.rightCover, this.spine, this.leftBlock, this.rightBlock, this.leftPage, this.rightPage);
 		this.leftCover.setPivot(0.0F, 0.0F, -1.0F);
 		this.rightCover.setPivot(0.0F, 0.0F, 1.0F);
 		this.spine.yaw = (float) (Math.PI / 2);
 	}
 
 	@Override
-	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
 		this.render(matrixStack, vertexConsumer, i, j, f, g, h, null);
 	}
 
 	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, @Nullable Sprite sprite) {
-		this.field_20786.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite, f, g, h));
+		this.parts.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite, f, g, h));
 	}
 
 	public void setPageAngles(float f, float g, float h, float i) {

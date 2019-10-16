@@ -10,9 +10,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<T> {
@@ -74,14 +74,14 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
+	protected Iterable<ModelPart> getBodyParts() {
 		return Iterables.concat(
-			super.method_22948(), ImmutableList.of(this.leftLegOverlay, this.rightLegOverlay, this.leftArmOverlay, this.rightArmOverlay, this.bodyOverlay)
+			super.getBodyParts(), ImmutableList.of(this.leftLegOverlay, this.rightLegOverlay, this.leftArmOverlay, this.rightArmOverlay, this.bodyOverlay)
 		);
 	}
 
 	public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j) {
-		this.ears.copyRotation(this.head);
+		this.ears.copyPositionAndRotation(this.head);
 		this.ears.pivotX = 0.0F;
 		this.ears.pivotY = 0.0F;
 		this.ears.render(matrixStack, vertexConsumer, f, i, j, null);
@@ -94,11 +94,11 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	@Override
 	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(livingEntity, f, g, h, i, j, k);
-		this.leftLegOverlay.copyRotation(this.leftLeg);
-		this.rightLegOverlay.copyRotation(this.rightLeg);
-		this.leftArmOverlay.copyRotation(this.leftArm);
-		this.rightArmOverlay.copyRotation(this.rightArm);
-		this.bodyOverlay.copyRotation(this.body);
+		this.leftLegOverlay.copyPositionAndRotation(this.leftLeg);
+		this.rightLegOverlay.copyPositionAndRotation(this.rightLeg);
+		this.leftArmOverlay.copyPositionAndRotation(this.leftArm);
+		this.rightArmOverlay.copyPositionAndRotation(this.rightArm);
+		this.bodyOverlay.copyPositionAndRotation(this.body);
 		if (livingEntity.isInSneakingPose()) {
 			this.cape.pivotY = 2.0F;
 		} else {

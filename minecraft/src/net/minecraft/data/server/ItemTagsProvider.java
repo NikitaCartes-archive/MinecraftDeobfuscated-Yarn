@@ -98,6 +98,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 			);
 		this.method_10512(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
 		this.method_10512(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
+		this.method_10512(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
 	}
 
 	protected void copy(Tag<Block> tag, Tag<Item> tag2) {

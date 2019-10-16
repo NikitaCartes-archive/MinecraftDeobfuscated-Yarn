@@ -3,14 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4594;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TropicalFishEntityModelA<T extends Entity> extends class_4594<T> {
+public class TropicalFishEntityModelA<T extends Entity> extends TintableCompositeModel<T> {
 	private final ModelPart field_3589;
 	private final ModelPart field_3591;
 	private final ModelPart field_3590;
@@ -18,7 +16,6 @@ public class TropicalFishEntityModelA<T extends Entity> extends class_4594<T> {
 	private final ModelPart field_3587;
 
 	public TropicalFishEntityModelA(float f) {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 32;
 		this.textureHeight = 32;
 		int i = 22;

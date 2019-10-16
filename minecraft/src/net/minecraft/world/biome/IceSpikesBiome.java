@@ -31,19 +31,19 @@ public final class IceSpikesBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("snowy_tundra")
 		);
-		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-		this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			Feature.ICE_SPIKE.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.COUNT_HEIGHTMAP.method_23475(new CountDecoratorConfig(3)))
+			Feature.ICE_SPIKE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(3)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			Feature.ICE_PATCH.method_23397(new IcePatchFeatureConfig(2)).method_23388(Decorator.COUNT_HEIGHTMAP.method_23475(new CountDecoratorConfig(2)))
+			Feature.ICE_PATCH.configure(new IcePatchFeatureConfig(2)).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(2)))
 		);
 		DefaultBiomeFeatures.addMineables(this);
 		DefaultBiomeFeatures.addDefaultOres(this);

@@ -6,8 +6,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class BlockEntityRenderer<T extends BlockEntity> {
@@ -17,7 +17,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 		this.field_20989 = blockEntityRenderDispatcher;
 	}
 
-	public abstract void render(
+	public abstract void method_3569(
 		T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j
 	);
 

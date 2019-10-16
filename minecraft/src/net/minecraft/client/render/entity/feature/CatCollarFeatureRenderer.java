@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.CatEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
@@ -32,7 +32,7 @@ public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEnti
 	) {
 		if (catEntity.isTamed()) {
 			float[] fs = catEntity.getCollarColor().getColorComponents();
-			method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, catEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
+			render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, catEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
 		}
 	}
 }

@@ -24,7 +24,7 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 		return new PlayerHurtEntityCriterion.Conditions(damagePredicate, entityPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, entity, damageSource, f, g, bl));
 	}
 

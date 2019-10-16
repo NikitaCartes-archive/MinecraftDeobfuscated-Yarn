@@ -6,10 +6,10 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity> {
@@ -36,9 +36,9 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 		float i = MathHelper.method_22859(witherSkullEntity.prevYaw, witherSkullEntity.yaw, h);
 		float j = MathHelper.lerp(h, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
 		int k = witherSkullEntity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(this.method_4160(witherSkullEntity)));
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(this.method_4160(witherSkullEntity)));
 		this.model.render(0.0F, i, j);
-		this.model.renderItem(matrixStack, vertexConsumer, k, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
+		this.model.render(matrixStack, vertexConsumer, k, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 		super.render(witherSkullEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}

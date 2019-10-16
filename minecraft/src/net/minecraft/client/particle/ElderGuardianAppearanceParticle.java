@@ -49,7 +49,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 			RenderSystem.depthMask(true);
 			RenderSystem.enableBlend();
 			RenderSystem.enableDepthTest();
-			RenderSystem.blendFunc(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			float n = 240.0F;
 			RenderSystem.glMultiTexCoord2f(33986, 240.0F, 240.0F);
 			RenderSystem.pushMatrix();

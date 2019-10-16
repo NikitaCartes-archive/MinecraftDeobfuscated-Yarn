@@ -7,9 +7,9 @@ import net.minecraft.client.render.LayeredBufferBuilderStorage;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -57,9 +57,9 @@ public class ItemPickupParticle extends Particle {
 		double n = MathHelper.lerp((double)l, this.field_3823.getX(), d);
 		double o = MathHelper.lerp((double)l, this.field_3823.getY(), e);
 		double p = MathHelper.lerp((double)l, this.field_3823.getZ(), m);
-		LayeredVertexConsumerStorage.class_4598 lv = this.field_20944.method_23000();
-		this.field_3824.render(this.field_3823, n - cameraX, o - cameraY, p - cameraZ, this.field_3823.yaw, f, new MatrixStack(), lv);
-		lv.method_22993();
+		LayeredVertexConsumerStorage.Drawer drawer = this.field_20944.getGeneralDrawer();
+		this.field_3824.render(this.field_3823, n - cameraX, o - cameraY, p - cameraZ, this.field_3823.yaw, f, new MatrixStack(), drawer);
+		drawer.draw();
 	}
 
 	@Override

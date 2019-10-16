@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4590;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
@@ -43,15 +43,15 @@ public enum ModelRotation implements ModelBakeSettings {
 	private ModelRotation(int j, int k) {
 		this.index = getIndex(j, k);
 		Quaternion quaternion = new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), (float)(-k), true);
-		quaternion.copyFrom(new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), (float)(-j), true));
+		quaternion.hamiltonProduct(new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), (float)(-j), true));
 		this.quaternion = quaternion;
 		this.xRotations = MathHelper.abs(j / 90);
 		this.yRotations = MathHelper.abs(k / 90);
 	}
 
 	@Override
-	public class_4590 getRotation() {
-		return new class_4590(null, this.quaternion, null, null);
+	public Rotation3 getRotation() {
+		return new Rotation3(null, this.quaternion, null, null);
 	}
 
 	public static ModelRotation get(int i, int j) {

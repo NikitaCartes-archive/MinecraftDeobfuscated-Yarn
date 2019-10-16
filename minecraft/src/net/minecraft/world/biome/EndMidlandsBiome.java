@@ -23,7 +23,7 @@ public class EndMidlandsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.END_CITY.method_23397(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.END_CITY.configure(FeatureConfig.DEFAULT));
 		DefaultBiomeFeatures.method_20826(this);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}

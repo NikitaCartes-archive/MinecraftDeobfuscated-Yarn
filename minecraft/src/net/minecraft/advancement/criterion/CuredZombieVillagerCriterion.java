@@ -23,7 +23,7 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 		return new CuredZombieVillagerCriterion.Conditions(entityPredicate, entityPredicate2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, zombieEntity, villagerEntity));
 	}
 

@@ -11,6 +11,7 @@ import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingMotive;
@@ -18,7 +19,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
@@ -144,7 +144,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		vertexConsumer.vertex(matrix4f, f, g, j)
 			.color(255, 255, 255, 255)
 			.texture(h, i)
-			.defaultOverlay(OverlayTexture.field_21444)
+			.defaultOverlay(OverlayTexture.DEFAULT_UV)
 			.light(n)
 			.normal((float)k, (float)l, (float)m)
 			.next();

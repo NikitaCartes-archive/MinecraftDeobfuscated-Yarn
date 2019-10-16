@@ -2,6 +2,7 @@ package net.minecraft.entity.projectile;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -50,6 +52,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this(entityType, world);
 		this.owner = livingEntity;
 		this.setPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
+		this.method_23311();
 		this.setVelocity(Vec3d.ZERO);
 		d += this.random.nextGaussian() * 0.4;
 		e += this.random.nextGaussian() * 0.4;
@@ -125,7 +128,14 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return 0.95F;
 	}
 
-	protected abstract void onCollision(HitResult hitResult);
+	protected void onCollision(HitResult hitResult) {
+		HitResult.Type type = hitResult.getType();
+		if (type == HitResult.Type.BLOCK) {
+			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+			BlockState blockState = this.world.getBlockState(blockHitResult.getBlockPos());
+			blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
+		}
+	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {

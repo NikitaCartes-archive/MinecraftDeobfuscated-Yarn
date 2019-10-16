@@ -149,7 +149,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 			ItemStack itemStack2 = this.getFishBucketItem();
 			this.copyDataToStack(itemStack2);
 			if (!this.world.isClient) {
-				Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, itemStack2);
+				Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)playerEntity, itemStack2);
 			}
 
 			if (itemStack.isEmpty()) {

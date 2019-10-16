@@ -7,10 +7,10 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> extends EntityRenderer<T> {
@@ -71,7 +71,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		vertexConsumer.vertex(matrix4f, (float)i, (float)j, (float)k)
 			.color(255, 255, 255, 255)
 			.texture(f, g)
-			.defaultOverlay(OverlayTexture.field_21444)
+			.defaultOverlay(OverlayTexture.DEFAULT_UV)
 			.light(o)
 			.normal((float)l, (float)n, (float)m)
 			.next();

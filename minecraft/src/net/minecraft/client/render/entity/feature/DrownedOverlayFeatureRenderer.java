@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.DrownedEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends FeatureRenderer<T, DrownedEntityModel<T>> {
@@ -30,6 +30,6 @@ public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends Featu
 		float l,
 		float m
 	) {
-		method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, zombieEntity, f, g, j, k, l, m, h, 1.0F, 1.0F, 1.0F);
+		render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, zombieEntity, f, g, j, k, l, m, h, 1.0F, 1.0F, 1.0F);
 	}
 }

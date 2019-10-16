@@ -6,7 +6,7 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.util.math.MatrixStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SkullEntityModel extends Model {
@@ -31,7 +31,7 @@ public class SkullEntityModel extends Model {
 	}
 
 	@Override
-	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
 		this.skull.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
 	}
 }

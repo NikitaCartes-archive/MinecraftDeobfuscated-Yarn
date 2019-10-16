@@ -6,13 +6,13 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.loot.LootTables;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.loot.LootTables;
 
 public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 	public BonusChestFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {

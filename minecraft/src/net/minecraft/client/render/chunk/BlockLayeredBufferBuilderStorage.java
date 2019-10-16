@@ -21,7 +21,7 @@ public class BlockLayeredBufferBuilderStorage {
 		this.layerBuilders.values().forEach(BufferBuilder::clear);
 	}
 
-	public void method_23501() {
-		this.layerBuilders.values().forEach(BufferBuilder::method_23477);
+	public void reset() {
+		this.layerBuilders.values().forEach(BufferBuilder::reset);
 	}
 }

@@ -35,7 +35,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		return new InventoryChangedCriterion.Conditions(intRange, intRange2, intRange3, itemPredicates);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
 	}
 
@@ -66,8 +66,8 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 					itemConvertibles[i].asItem(),
 					NumberRange.IntRange.ANY,
 					NumberRange.IntRange.ANY,
-					EnchantmentPredicate.field_20687,
-					EnchantmentPredicate.field_20687,
+					EnchantmentPredicate.ARRAY_OF_ANY,
+					EnchantmentPredicate.ARRAY_OF_ANY,
 					null,
 					NbtPredicate.ANY
 				);

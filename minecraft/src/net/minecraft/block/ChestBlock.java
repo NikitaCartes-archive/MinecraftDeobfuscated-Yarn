@@ -28,6 +28,7 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -212,9 +213,9 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
-			return true;
+			return ActionResult.SUCCESS;
 		} else {
 			NameableContainerProvider nameableContainerProvider = this.createContainerProvider(blockState, world, blockPos);
 			if (nameableContainerProvider != null) {
@@ -222,7 +223,7 @@ public class ChestBlock extends BlockWithEntity implements Waterloggable {
 				playerEntity.incrementStat(this.getOpenStat());
 			}
 
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

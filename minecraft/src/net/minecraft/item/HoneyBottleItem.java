@@ -23,7 +23,7 @@ public class HoneyBottleItem extends Item {
 		super.finishUsing(itemStack, world, livingEntity);
 		if (livingEntity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
-			Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
+			Criterions.CONSUME_ITEM.trigger(serverPlayerEntity, itemStack);
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 

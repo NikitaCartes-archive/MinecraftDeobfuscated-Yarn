@@ -3,6 +3,7 @@ package net.minecraft.block;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -25,9 +26,9 @@ public class DragonEggBlock extends FallingBlock {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		this.teleport(blockState, world, blockPos);
-		return true;
+		return ActionResult.SUCCESS;
 	}
 
 	@Override

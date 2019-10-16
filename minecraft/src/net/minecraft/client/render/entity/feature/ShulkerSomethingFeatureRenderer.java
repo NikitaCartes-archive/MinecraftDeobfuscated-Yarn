@@ -9,11 +9,11 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.ShulkerEntityRenderer;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
@@ -65,7 +65,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 				matrixStack.translate(0.0, -2.0, 0.0);
 		}
 
-		ModelPart modelPart = this.getModel().method_2830();
+		ModelPart modelPart = this.getModel().getHead();
 		modelPart.yaw = k * (float) (Math.PI / 180.0);
 		modelPart.pitch = l * (float) (Math.PI / 180.0);
 		DyeColor dyeColor = shulkerEntity.getColor();

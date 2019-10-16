@@ -28,7 +28,7 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.test(serverPlayerEntity, entity, damageSource));
 	}
 

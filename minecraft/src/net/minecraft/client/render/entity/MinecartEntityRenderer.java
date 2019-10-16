@@ -10,11 +10,11 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -91,8 +91,8 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(this.method_4065(abstractMinecartEntity)));
-		this.model.renderItem(matrixStack, vertexConsumer, u, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
+		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(this.method_4065(abstractMinecartEntity)));
+		this.model.render(matrixStack, vertexConsumer, u, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 	}
 
@@ -103,6 +103,6 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	protected void renderBlock(
 		T abstractMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i
 	) {
-		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.field_21444);
+		MinecraftClient.getInstance().getBlockRenderManager().renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
 	}
 }

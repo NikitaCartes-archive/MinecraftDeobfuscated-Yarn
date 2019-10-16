@@ -219,7 +219,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings, identifier));
 					} else {
 						builder.addQuad(
-							Direction.method_23225(modelBakeSettings.getRotation().method_22936(), modelElementFace.cullFace),
+							Direction.transform(modelBakeSettings.getRotation().getMatrix(), modelElementFace.cullFace),
 							createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings, identifier)
 						);
 					}

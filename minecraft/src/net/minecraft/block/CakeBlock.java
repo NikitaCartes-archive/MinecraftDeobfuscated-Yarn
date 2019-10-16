@@ -7,6 +7,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -40,18 +41,24 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if (!world.isClient) {
-			return this.tryEat(world, blockPos, blockState, playerEntity);
-		} else {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if (world.isClient) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			return this.tryEat(world, blockPos, blockState, playerEntity) || itemStack.isEmpty();
+			if (this.tryEat(world, blockPos, blockState, playerEntity) == ActionResult.SUCCESS) {
+				return ActionResult.SUCCESS;
+			}
+
+			if (itemStack.isEmpty()) {
+				return ActionResult.CONSUME;
+			}
 		}
+
+		return this.tryEat(world, blockPos, blockState, playerEntity);
 	}
 
-	private boolean tryEat(IWorld iWorld, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+	private ActionResult tryEat(IWorld iWorld, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		if (!playerEntity.canConsume(false)) {
-			return false;
+			return ActionResult.PASS;
 		} else {
 			playerEntity.incrementStat(Stats.EAT_CAKE_SLICE);
 			playerEntity.getHungerManager().add(2, 0.1F);
@@ -62,7 +69,7 @@ public class CakeBlock extends Block {
 				iWorld.removeBlock(blockPos, false);
 			}
 
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

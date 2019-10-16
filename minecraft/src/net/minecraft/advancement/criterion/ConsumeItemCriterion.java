@@ -24,7 +24,7 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 		return new ConsumeItemCriterion.Conditions(ItemPredicate.deserialize(jsonObject.get("item")));
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
 	}
 
@@ -47,8 +47,8 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 					itemConvertible.asItem(),
 					NumberRange.IntRange.ANY,
 					NumberRange.IntRange.ANY,
-					EnchantmentPredicate.field_20687,
-					EnchantmentPredicate.field_20687,
+					EnchantmentPredicate.ARRAY_OF_ANY,
+					EnchantmentPredicate.ARRAY_OF_ANY,
 					null,
 					NbtPredicate.ANY
 				)

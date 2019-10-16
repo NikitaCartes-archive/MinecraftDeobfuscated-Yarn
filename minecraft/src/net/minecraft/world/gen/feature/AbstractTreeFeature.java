@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.class_4643;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -30,7 +29,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 
-public abstract class AbstractTreeFeature<T extends class_4643> extends Feature<T> {
+public abstract class AbstractTreeFeature<T extends AbstractTreeFeatureConfig> extends Feature<T> {
 	public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> function) {
 		super(function);
 	}
@@ -98,28 +97,38 @@ public abstract class AbstractTreeFeature<T extends class_4643> extends Feature<
 	}
 
 	protected boolean method_23382(
-		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, class_4643 arg
+		ModifiableTestableWorld modifiableTestableWorld,
+		Random random,
+		BlockPos blockPos,
+		Set<BlockPos> set,
+		BlockBox blockBox,
+		AbstractTreeFeatureConfig abstractTreeFeatureConfig
 	) {
 		if (!isAirOrLeaves(modifiableTestableWorld, blockPos)
 			&& !isReplaceablePlant(modifiableTestableWorld, blockPos)
 			&& !isWater(modifiableTestableWorld, blockPos)) {
 			return false;
 		} else {
-			this.setBlockState(modifiableTestableWorld, blockPos, arg.field_21288.method_23455(random, blockPos), blockBox);
+			this.setBlockState(modifiableTestableWorld, blockPos, abstractTreeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
 			set.add(blockPos.toImmutable());
 			return true;
 		}
 	}
 
 	protected boolean method_23383(
-		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, class_4643 arg
+		ModifiableTestableWorld modifiableTestableWorld,
+		Random random,
+		BlockPos blockPos,
+		Set<BlockPos> set,
+		BlockBox blockBox,
+		AbstractTreeFeatureConfig abstractTreeFeatureConfig
 	) {
 		if (!isAirOrLeaves(modifiableTestableWorld, blockPos)
 			&& !isReplaceablePlant(modifiableTestableWorld, blockPos)
 			&& !isWater(modifiableTestableWorld, blockPos)) {
 			return false;
 		} else {
-			this.setBlockState(modifiableTestableWorld, blockPos, arg.field_21289.method_23455(random, blockPos), blockBox);
+			this.setBlockState(modifiableTestableWorld, blockPos, abstractTreeFeatureConfig.leavesProvider.getBlockState(random, blockPos), blockBox);
 			set.add(blockPos.toImmutable());
 			return true;
 		}
@@ -139,19 +148,21 @@ public abstract class AbstractTreeFeature<T extends class_4643> extends Feature<
 		modifiableWorld.setBlockState(blockPos, blockState, 19);
 	}
 
-	public final boolean method_22362(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T arg) {
+	public final boolean method_22362(
+		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T abstractTreeFeatureConfig
+	) {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set2 = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set3 = Sets.<BlockPos>newHashSet();
 		BlockBox blockBox = BlockBox.empty();
-		boolean bl = this.generate(iWorld, random, blockPos, set, set2, blockBox, arg);
+		boolean bl = this.generate(iWorld, random, blockPos, set, set2, blockBox, abstractTreeFeatureConfig);
 		if (blockBox.minX <= blockBox.maxX && bl && !set.isEmpty()) {
-			if (!arg.field_21290.isEmpty()) {
+			if (!abstractTreeFeatureConfig.decorators.isEmpty()) {
 				List<BlockPos> list = Lists.<BlockPos>newArrayList(set);
 				List<BlockPos> list2 = Lists.<BlockPos>newArrayList(set2);
 				list.sort(Comparator.comparingInt(Vec3i::getY));
 				list2.sort(Comparator.comparingInt(Vec3i::getY));
-				arg.field_21290.forEach(treeDecorator -> treeDecorator.method_23469(iWorld, random, list, list2, set3, blockBox));
+				abstractTreeFeatureConfig.decorators.forEach(treeDecorator -> treeDecorator.method_23469(iWorld, random, list, list2, set3, blockBox));
 			}
 
 			VoxelSet voxelSet = this.method_23380(iWorld, blockBox, set, set3);
@@ -233,6 +244,12 @@ public abstract class AbstractTreeFeature<T extends class_4643> extends Feature<
 	}
 
 	protected abstract boolean generate(
-		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, T arg
+		ModifiableTestableWorld modifiableTestableWorld,
+		Random random,
+		BlockPos blockPos,
+		Set<BlockPos> set,
+		Set<BlockPos> set2,
+		BlockBox blockBox,
+		T abstractTreeFeatureConfig
 	);
 }

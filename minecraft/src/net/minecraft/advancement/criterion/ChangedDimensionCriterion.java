@@ -23,7 +23,7 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		return new ChangedDimensionCriterion.Conditions(dimensionType, dimensionType2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(dimensionType, dimensionType2));
 	}
 

@@ -429,8 +429,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 									pathNodeType = PathNodeType.DANGER_FIRE;
 								} else if (block == Blocks.SWEET_BERRY_BUSH) {
 									pathNodeType = PathNodeType.DANGER_OTHER;
-								} else if (block == Blocks.HONEY_BLOCK) {
-									pathNodeType = PathNodeType.STICKY_HONEY;
 								}
 							}
 						}

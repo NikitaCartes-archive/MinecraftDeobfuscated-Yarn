@@ -5,14 +5,12 @@ import com.google.common.collect.ImmutableList.Builder;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SilverfishEntityModel<T extends Entity> extends class_4595<T> {
+public class SilverfishEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart[] field_3560;
 	private final ModelPart[] field_3557;
 	private final ImmutableList<ModelPart> field_20941;
@@ -21,7 +19,6 @@ public class SilverfishEntityModel<T extends Entity> extends class_4595<T> {
 	private static final int[][] field_3559 = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
 
 	public SilverfishEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.field_3560 = new ModelPart[7];
 		float f = -3.5F;
 

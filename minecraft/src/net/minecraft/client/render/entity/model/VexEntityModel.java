@@ -5,7 +5,6 @@ import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
@@ -16,7 +15,7 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	private final ModelPart field_3602;
 
 	public VexEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull, 0.0F, 0.0F, 64, 64);
+		super(0.0F, 0.0F, 64, 64);
 		this.leftLeg.visible = false;
 		this.headwear.visible = false;
 		this.rightLeg = new ModelPart(this, 32, 0);
@@ -30,8 +29,8 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
-		return Iterables.concat(super.method_22948(), ImmutableList.of(this.field_3602, this.field_3601));
+	protected Iterable<ModelPart> getBodyParts() {
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3602, this.field_3601));
 	}
 
 	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {

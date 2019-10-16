@@ -15,6 +15,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
@@ -57,9 +58,9 @@ public class BrewingStandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
-			return true;
+			return ActionResult.SUCCESS;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BrewingStandBlockEntity) {
@@ -67,7 +68,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 				playerEntity.incrementStat(Stats.INTERACT_WITH_BREWINGSTAND);
 			}
 
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

@@ -7,11 +7,11 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
@@ -43,13 +43,13 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 			}
 
-			this.method_4192(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, layeredVertexConsumerStorage);
-			this.method_4192(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, layeredVertexConsumerStorage);
+			this.renderItem(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, layeredVertexConsumerStorage);
+			this.renderItem(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, layeredVertexConsumerStorage);
 			matrixStack.pop();
 		}
 	}
 
-	private void method_4192(
+	private void renderItem(
 		LivingEntity livingEntity,
 		ItemStack itemStack,
 		ModelTransformation.Type type,
@@ -60,10 +60,6 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		if (!itemStack.isEmpty()) {
 			matrixStack.push();
 			this.getModel().setArmAngle(0.0625F, arm, matrixStack);
-			if (livingEntity.isInSneakingPose()) {
-				matrixStack.translate(0.0, 0.2F, 0.0);
-			}
-
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 			boolean bl = arm == Arm.LEFT;

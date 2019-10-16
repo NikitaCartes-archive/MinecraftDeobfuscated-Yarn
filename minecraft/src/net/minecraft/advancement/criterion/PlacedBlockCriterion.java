@@ -27,7 +27,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 	}
 
 	public PlacedBlockCriterion.Conditions method_9088(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		Block block = method_22492(jsonObject);
+		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
 			statePredicate.check(block.getStateFactory(), string -> {
@@ -41,7 +41,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 	}
 
 	@Nullable
-	private static Block method_22492(JsonObject jsonObject) {
+	private static Block getBlock(JsonObject jsonObject) {
 		if (jsonObject.has("block")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			return (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
@@ -50,7 +50,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		}
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
 		BlockState blockState = serverPlayerEntity.getServerWorld().getBlockState(blockPos);
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack));
 	}

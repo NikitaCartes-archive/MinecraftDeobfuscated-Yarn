@@ -173,7 +173,7 @@ public class BrewingStandContainer extends Container {
 		public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 			Potion potion = PotionUtil.getPotion(itemStack);
 			if (playerEntity instanceof ServerPlayerEntity) {
-				Criterions.BREWED_POTION.handle((ServerPlayerEntity)playerEntity, potion);
+				Criterions.BREWED_POTION.trigger((ServerPlayerEntity)playerEntity, potion);
 			}
 
 			super.onTakeItem(playerEntity, itemStack);

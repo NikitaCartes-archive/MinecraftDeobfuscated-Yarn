@@ -3,14 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SalmonEntityModel<T extends Entity> extends class_4595<T> {
+public class SalmonEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart field_3546;
 	private final ModelPart field_3548;
 	private final ModelPart field_3547;
@@ -18,7 +16,6 @@ public class SalmonEntityModel<T extends Entity> extends class_4595<T> {
 	private final ModelPart field_3544;
 
 	public SalmonEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 32;
 		this.textureHeight = 32;
 		int i = 20;

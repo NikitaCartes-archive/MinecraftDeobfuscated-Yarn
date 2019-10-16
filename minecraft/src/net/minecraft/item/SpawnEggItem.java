@@ -89,32 +89,30 @@ public class SpawnEggItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (world.isClient) {
+		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
+		if (hitResult.getType() != HitResult.Type.BLOCK) {
 			return TypedActionResult.pass(itemStack);
+		} else if (world.isClient) {
+			return TypedActionResult.successWithSwing(itemStack);
 		} else {
-			HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
-			if (hitResult.getType() != HitResult.Type.BLOCK) {
+			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+			BlockPos blockPos = blockHitResult.getBlockPos();
+			if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 				return TypedActionResult.pass(itemStack);
-			} else {
-				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-				BlockPos blockPos = blockHitResult.getBlockPos();
-				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
+			} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
+				EntityType<?> entityType = this.getEntityType(itemStack.getTag());
+				if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.SPAWN_EGG, false, false) == null) {
 					return TypedActionResult.pass(itemStack);
-				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
-					EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.SPAWN_EGG, false, false) == null) {
-						return TypedActionResult.pass(itemStack);
-					} else {
-						if (!playerEntity.abilities.creativeMode) {
-							itemStack.decrement(1);
-						}
-
-						playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-						return TypedActionResult.successWithSwing(itemStack);
-					}
 				} else {
-					return TypedActionResult.fail(itemStack);
+					if (!playerEntity.abilities.creativeMode) {
+						itemStack.decrement(1);
+					}
+
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
+					return TypedActionResult.successWithSwing(itemStack);
 				}
+			} else {
+				return TypedActionResult.fail(itemStack);
 			}
 		}
 	}

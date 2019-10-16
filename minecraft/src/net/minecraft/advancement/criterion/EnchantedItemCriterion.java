@@ -23,7 +23,7 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		return new EnchantedItemCriterion.Conditions(itemPredicate, intRange);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack, i));
 	}
 

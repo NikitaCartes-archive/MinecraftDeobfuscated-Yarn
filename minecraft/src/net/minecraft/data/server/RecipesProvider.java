@@ -1738,7 +1738,7 @@ public class RecipesProvider implements DataProvider {
 			.input('S', Items.HONEY_BOTTLE)
 			.pattern("SS")
 			.pattern("SS")
-			.criterion("has_honey_block", this.method_10426(Blocks.HONEY_BLOCK))
+			.criterion("has_honey_bottle", this.method_10426(Items.HONEY_BOTTLE))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.HONEYCOMB_BLOCK)
 			.input('H', Items.HONEYCOMB)

@@ -68,7 +68,7 @@ public class WeightedList<U> {
 		return this.entries.stream();
 	}
 
-	public U method_23337(Random random) {
+	public U pickRandom(Random random) {
 		return (U)this.method_23333(random).stream().findFirst().orElseThrow(RuntimeException::new);
 	}
 

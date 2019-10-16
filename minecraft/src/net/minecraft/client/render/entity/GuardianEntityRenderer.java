@@ -9,13 +9,13 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -40,7 +40,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 				if (livingEntity != null) {
 					Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, 1.0F);
 					Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, (double)guardianEntity.getStandingEyeHeight(), 1.0F);
-					return frustum.method_23093(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z));
+					return frustum.isVisible(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z));
 				}
 			}
 
@@ -138,7 +138,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		vertexConsumer.vertex(matrix4f, f, g, h)
 			.color(i, j, k, 255)
 			.texture(l, m)
-			.defaultOverlay(OverlayTexture.field_21444)
+			.defaultOverlay(OverlayTexture.DEFAULT_UV)
 			.light(15728880)
 			.normal(0.0F, 1.0F, 0.0F)
 			.next();

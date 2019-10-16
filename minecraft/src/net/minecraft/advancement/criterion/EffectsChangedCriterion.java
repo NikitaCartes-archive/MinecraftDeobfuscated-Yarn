@@ -21,7 +21,7 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity));
 	}
 

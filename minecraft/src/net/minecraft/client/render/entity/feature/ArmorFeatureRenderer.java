@@ -11,13 +11,13 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
@@ -71,7 +71,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 				A bipedEntityModel = this.getArmor(equipmentSlot);
 				this.getModel().setAttributes(bipedEntityModel);
 				bipedEntityModel.method_17086(livingEntity, f, g, h);
-				this.method_4170(bipedEntityModel, equipmentSlot);
+				this.setVisible(bipedEntityModel, equipmentSlot);
 				bipedEntityModel.method_17087(livingEntity, f, g, i, j, k, l);
 				boolean bl = this.isLegs(equipmentSlot);
 				boolean bl2 = itemStack.hasEnchantmentGlint();
@@ -80,16 +80,16 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 					float o = (float)(n >> 16 & 0xFF) / 255.0F;
 					float p = (float)(n >> 8 & 0xFF) / 255.0F;
 					float q = (float)(n & 0xFF) / 255.0F;
-					this.method_23192(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, o, p, q, null);
-					this.method_23192(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0F, 1.0F, 1.0F, "overlay");
+					this.renderArmorParts(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, o, p, q, null);
+					this.renderArmorParts(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0F, 1.0F, 1.0F, "overlay");
 				} else {
-					this.method_23192(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0F, 1.0F, 1.0F, null);
+					this.renderArmorParts(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0F, 1.0F, 1.0F, null);
 				}
 			}
 		}
 	}
 
-	private void method_23192(
+	private void renderArmorParts(
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
 		int i,
@@ -102,10 +102,10 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		float h,
 		@Nullable String string
 	) {
-		VertexConsumer vertexConsumer = ItemRenderer.method_23181(
-			layeredVertexConsumerStorage, RenderLayer.getEntityCutoutNoCull(this.method_4174(armorItem, bl2, string)), false, bl
+		VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
+			layeredVertexConsumerStorage, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(armorItem, bl2, string)), false, bl
 		);
-		bipedEntityModel.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, f, g, h);
+		bipedEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h);
 	}
 
 	public A getArmor(EquipmentSlot equipmentSlot) {
@@ -116,12 +116,12 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		return equipmentSlot == EquipmentSlot.LEGS;
 	}
 
-	private Identifier method_4174(ArmorItem armorItem, boolean bl, @Nullable String string) {
+	private Identifier getArmorTexture(ArmorItem armorItem, boolean bl, @Nullable String string) {
 		String string2 = "textures/models/armor/" + armorItem.getMaterial().getName() + "_layer_" + (bl ? 2 : 1) + (string == null ? "" : "_" + string) + ".png";
 		return (Identifier)ARMOR_TEXTURE_CACHE.computeIfAbsent(string2, Identifier::new);
 	}
 
-	protected abstract void method_4170(A bipedEntityModel, EquipmentSlot equipmentSlot);
+	protected abstract void setVisible(A bipedEntityModel, EquipmentSlot equipmentSlot);
 
-	protected abstract void method_4190(A bipedEntityModel);
+	protected abstract void setInvisible(A bipedEntityModel);
 }

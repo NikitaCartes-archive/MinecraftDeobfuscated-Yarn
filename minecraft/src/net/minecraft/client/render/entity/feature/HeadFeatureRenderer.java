@@ -11,6 +11,7 @@ import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -22,7 +23,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.math.MatrixStack;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -48,10 +48,6 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			matrixStack.push();
-			if (livingEntity.isInSneakingPose()) {
-				matrixStack.translate(0.0, 0.2F, 0.0);
-			}
-
 			boolean bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
 			if (livingEntity.isBaby() && !(livingEntity instanceof VillagerEntity)) {
 				float n = 2.0F;

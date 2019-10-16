@@ -19,6 +19,7 @@ import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.CrossbowItem;
@@ -32,7 +33,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -90,8 +90,8 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_SLEEVE);
 			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_SLEEVE);
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
-			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
-			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
+			BipedEntityModel.ArmPose armPose = this.getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN_HAND);
+			BipedEntityModel.ArmPose armPose2 = this.getArmPose(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF_HAND);
 			if (abstractClientPlayerEntity.getMainArm() == Arm.RIGHT) {
 				playerEntityModel.rightArmPose = armPose;
 				playerEntityModel.leftArmPose = armPose2;
@@ -102,7 +102,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		}
 	}
 
-	private BipedEntityModel.ArmPose method_4210(AbstractClientPlayerEntity abstractClientPlayerEntity, ItemStack itemStack, ItemStack itemStack2, Hand hand) {
+	private BipedEntityModel.ArmPose getArmPose(AbstractClientPlayerEntity abstractClientPlayerEntity, ItemStack itemStack, ItemStack itemStack2, Hand hand) {
 		BipedEntityModel.ArmPose armPose = BipedEntityModel.ArmPose.EMPTY;
 		ItemStack itemStack3 = hand == Hand.MAIN_HAND ? itemStack : itemStack2;
 		if (!itemStack3.isEmpty()) {
@@ -148,7 +148,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	protected void method_4213(
 		AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
 	) {
-		double d = this.renderManager.method_23168(abstractClientPlayerEntity);
+		double d = this.renderManager.getSquaredDistanceToCamera(abstractClientPlayerEntity);
 		matrixStack.push();
 		if (d < 100.0) {
 			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();
@@ -202,7 +202,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())),
 			0.0625F,
 			i,
-			OverlayTexture.field_21444,
+			OverlayTexture.DEFAULT_UV,
 			null
 		);
 		modelPart2.pitch = 0.0F;
@@ -211,7 +211,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())),
 			0.0625F,
 			i,
-			OverlayTexture.field_21444,
+			OverlayTexture.DEFAULT_UV,
 			null
 		);
 	}

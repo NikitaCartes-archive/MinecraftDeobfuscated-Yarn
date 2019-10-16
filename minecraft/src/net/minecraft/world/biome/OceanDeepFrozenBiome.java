@@ -31,10 +31,10 @@ public class OceanDeepFrozenBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.OCEAN_RUIN.method_23397(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F)));
-		this.addStructureFeature(Feature.OCEAN_MONUMENT.method_23397(FeatureConfig.DEFAULT));
-		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-		this.addStructureFeature(Feature.SHIPWRECK.method_23397(new ShipwreckFeatureConfig(false)));
+		this.addStructureFeature(Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F)));
+		this.addStructureFeature(Feature.OCEAN_MONUMENT.configure(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.SHIPWRECK.configure(new ShipwreckFeatureConfig(false)));
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

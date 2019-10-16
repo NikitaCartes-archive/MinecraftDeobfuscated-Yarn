@@ -12,7 +12,7 @@ import net.minecraft.world.level.LevelGeneratorType;
 
 public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int playerEntityId;
-	private long field_20665;
+	private long seed;
 	private boolean hardcore;
 	private GameMode gameMode;
 	private DimensionType dimension;
@@ -20,7 +20,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private LevelGeneratorType generatorType;
 	private int chunkLoadDistance;
 	private boolean reducedDebugInfo;
-	private boolean field_20666;
+	private boolean showsDeathScreen;
 
 	public GameJoinS2CPacket() {
 	}
@@ -30,14 +30,14 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	) {
 		this.playerEntityId = i;
 		this.dimension = dimensionType;
-		this.field_20665 = l;
+		this.seed = l;
 		this.gameMode = gameMode;
 		this.maxPlayers = j;
 		this.hardcore = bl;
 		this.generatorType = levelGeneratorType;
 		this.chunkLoadDistance = k;
 		this.reducedDebugInfo = bl2;
-		this.field_20666 = bl3;
+		this.showsDeathScreen = bl3;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		i &= -9;
 		this.gameMode = GameMode.byId(i);
 		this.dimension = DimensionType.byRawId(packetByteBuf.readInt());
-		this.field_20665 = packetByteBuf.readLong();
+		this.seed = packetByteBuf.readLong();
 		this.maxPlayers = packetByteBuf.readUnsignedByte();
 		this.generatorType = LevelGeneratorType.getTypeFromName(packetByteBuf.readString(16));
 		if (this.generatorType == null) {
@@ -57,7 +57,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		this.chunkLoadDistance = packetByteBuf.readVarInt();
 		this.reducedDebugInfo = packetByteBuf.readBoolean();
-		this.field_20666 = packetByteBuf.readBoolean();
+		this.showsDeathScreen = packetByteBuf.readBoolean();
 	}
 
 	@Override
@@ -70,12 +70,12 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		packetByteBuf.writeByte(i);
 		packetByteBuf.writeInt(this.dimension.getRawId());
-		packetByteBuf.writeLong(this.field_20665);
+		packetByteBuf.writeLong(this.seed);
 		packetByteBuf.writeByte(this.maxPlayers);
 		packetByteBuf.writeString(this.generatorType.getName());
 		packetByteBuf.writeVarInt(this.chunkLoadDistance);
 		packetByteBuf.writeBoolean(this.reducedDebugInfo);
-		packetByteBuf.writeBoolean(this.field_20666);
+		packetByteBuf.writeBoolean(this.showsDeathScreen);
 	}
 
 	public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {
@@ -88,8 +88,8 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public long method_22423() {
-		return this.field_20665;
+	public long getSeed() {
+		return this.seed;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -123,7 +123,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_22424() {
-		return this.field_20666;
+	public boolean showsDeathScreen() {
+		return this.showsDeathScreen;
 	}
 }

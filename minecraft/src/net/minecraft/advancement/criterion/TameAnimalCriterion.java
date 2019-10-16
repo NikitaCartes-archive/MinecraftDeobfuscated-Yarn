@@ -21,7 +21,7 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		return new TameAnimalCriterion.Conditions(entityPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, animalEntity));
 	}
 

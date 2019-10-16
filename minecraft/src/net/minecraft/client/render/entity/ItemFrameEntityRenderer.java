@@ -13,6 +13,7 @@ import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
@@ -21,7 +22,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -64,15 +64,15 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		blockRenderManager.getModelRenderer()
 			.render(
 				matrixStack.peek(),
-				matrixStack.method_23478(),
-				layeredVertexConsumerStorage.getBuffer(RenderLayer.getSolid()),
+				matrixStack.peekNormal(),
+				layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)),
 				null,
 				bakedModelManager.getModel(modelIdentifier),
 				1.0F,
 				1.0F,
 				1.0F,
 				j,
-				OverlayTexture.field_21444
+				OverlayTexture.DEFAULT_UV
 			);
 		matrixStack.pop();
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
@@ -94,7 +94,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				}
 			} else {
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
-				this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.field_21444, matrixStack, layeredVertexConsumerStorage);
+				this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.DEFAULT_UV, matrixStack, layeredVertexConsumerStorage);
 			}
 		}
 
@@ -118,7 +118,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()
 			&& this.renderManager.targetedEntity == itemFrameEntity) {
-			double d = this.renderManager.method_23168(itemFrameEntity);
+			double d = this.renderManager.getSquaredDistanceToCamera(itemFrameEntity);
 			float f = itemFrameEntity.method_21751() ? 32.0F : 64.0F;
 			return d < (double)(f * f);
 		} else {

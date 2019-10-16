@@ -37,7 +37,7 @@ public class PotionItem extends Item {
 	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		PlayerEntity playerEntity = livingEntity instanceof PlayerEntity ? (PlayerEntity)livingEntity : null;
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
+			Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, itemStack);
 		}
 
 		if (!world.isClient) {

@@ -5,16 +5,15 @@ import com.google.common.collect.ImmutableList.Builder;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BoatEntityModel extends class_4595<BoatEntity> {
+public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 	private final ModelPart[] paddles = new ModelPart[2];
 	private final ModelPart bottom;
-	private final ImmutableList<ModelPart> field_20922;
+	private final ImmutableList<ModelPart> parts;
 
 	public BoatEntityModel() {
 		ModelPart[] modelParts = new ModelPart[]{
@@ -57,7 +56,7 @@ public class BoatEntityModel extends class_4595<BoatEntity> {
 		Builder<ModelPart> builder = ImmutableList.builder();
 		builder.addAll(Arrays.asList(modelParts));
 		builder.addAll(Arrays.asList(this.paddles));
-		this.field_20922 = builder.build();
+		this.parts = builder.build();
 	}
 
 	public void method_22952(BoatEntity boatEntity, float f, float g, float h, float i, float j, float k) {
@@ -66,10 +65,10 @@ public class BoatEntityModel extends class_4595<BoatEntity> {
 	}
 
 	public ImmutableList<ModelPart> method_22953() {
-		return this.field_20922;
+		return this.parts;
 	}
 
-	public ModelPart method_22954() {
+	public ModelPart getBottom() {
 		return this.bottom;
 	}
 

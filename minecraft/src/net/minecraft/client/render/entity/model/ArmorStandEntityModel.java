@@ -5,9 +5,9 @@ import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
@@ -81,8 +81,8 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
-		return Iterables.concat(super.method_22948(), ImmutableList.of(this.bodyStickRight, this.bodyStickLeft, this.hip, this.plate));
+	protected Iterable<ModelPart> getBodyParts() {
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.bodyStickRight, this.bodyStickLeft, this.hip, this.plate));
 	}
 
 	@Override

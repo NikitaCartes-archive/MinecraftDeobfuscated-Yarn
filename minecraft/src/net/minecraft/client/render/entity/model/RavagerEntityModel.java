@@ -3,14 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class RavagerEntityModel extends class_4595<RavagerEntity> {
+public class RavagerEntityModel extends CompositeEntityModel<RavagerEntity> {
 	private final ModelPart field_3386;
 	private final ModelPart field_3388;
 	private final ModelPart field_3387;
@@ -21,7 +19,6 @@ public class RavagerEntityModel extends class_4595<RavagerEntity> {
 	private final ModelPart field_3384;
 
 	public RavagerEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 128;
 		this.textureHeight = 128;
 		int i = 16;

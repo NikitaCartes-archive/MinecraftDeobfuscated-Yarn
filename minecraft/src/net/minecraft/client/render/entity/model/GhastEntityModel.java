@@ -5,13 +5,12 @@ import com.google.common.collect.ImmutableList.Builder;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class GhastEntityModel<T extends Entity> extends class_4595<T> {
+public class GhastEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart[] field_3372 = new ModelPart[9];
 	private final ImmutableList<ModelPart> field_20929;
 

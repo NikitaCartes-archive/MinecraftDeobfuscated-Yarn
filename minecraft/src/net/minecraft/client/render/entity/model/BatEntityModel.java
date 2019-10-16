@@ -3,14 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BatEntityModel extends class_4595<BatEntity> {
+public class BatEntityModel extends CompositeEntityModel<BatEntity> {
 	private final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart rightWing;
@@ -19,7 +17,6 @@ public class BatEntityModel extends class_4595<BatEntity> {
 	private final ModelPart leftWingTip;
 
 	public BatEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 0, 0);

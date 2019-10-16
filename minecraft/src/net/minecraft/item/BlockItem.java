@@ -68,7 +68,7 @@ public class BlockItem extends Item {
 						this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
 						block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
 						if (playerEntity instanceof ServerPlayerEntity) {
-							Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+							Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
 						}
 					}
 

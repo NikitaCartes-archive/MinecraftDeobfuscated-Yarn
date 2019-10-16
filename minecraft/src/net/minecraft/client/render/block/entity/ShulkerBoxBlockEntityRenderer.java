@@ -12,11 +12,11 @@ import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBoxBlockEntity> {
@@ -61,13 +61,13 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		matrixStack.translate(0.0, 1.0, 0.0);
 		float h = 0.9995F;
 		matrixStack.scale(0.9995F, 0.9995F, 0.9995F);
-		matrixStack.multiply(direction.method_23224());
+		matrixStack.multiply(direction.getRotationQuaternion());
 		matrixStack.translate(0.0, -1.0, 0.0);
 		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		this.model.method_2831().render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.model.getBottomShell().render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		matrixStack.translate(0.0, (double)(-shulkerBoxBlockEntity.getAnimationProgress(g) * 0.5F), 0.0);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F * shulkerBoxBlockEntity.getAnimationProgress(g)));
-		this.model.method_2829().render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
+		this.model.getTopShell().render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		matrixStack.pop();
 	}
 }

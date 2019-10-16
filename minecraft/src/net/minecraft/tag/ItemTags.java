@@ -49,6 +49,7 @@ public class ItemTags {
 	public static final Tag<Item> MUSIC_DISCS = register("music_discs");
 	public static final Tag<Item> COALS = register("coals");
 	public static final Tag<Item> ARROWS = register("arrows");
+	public static final Tag<Item> LECTERN_BOOKS = register("lectern_books");
 
 	public static void setContainer(TagContainer<Item> tagContainer) {
 		container = tagContainer;

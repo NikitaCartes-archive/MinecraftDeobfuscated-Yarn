@@ -68,7 +68,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 						FeatureConfig featureConfig2 = featureConfig != null
 							? featureConfig
 							: (FeatureConfig)FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature);
-						flatChunkGeneratorBiome.addStructureFeature(structureFeature.method_23397(featureConfig2));
+						flatChunkGeneratorBiome.addStructureFeature(structureFeature.configure(featureConfig2));
 					}
 				}
 			}
@@ -97,7 +97,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 				this.config.removeLayerBlock(i);
 				flatChunkGeneratorBiome.addFeature(
 					GenerationStep.Feature.TOP_LAYER_MODIFICATION,
-					Feature.FILL_LAYER.method_23397(new FillLayerFeatureConfig(i, blockState)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT))
+					Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(i, blockState)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
 				);
 			}
 		}

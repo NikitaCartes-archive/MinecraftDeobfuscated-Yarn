@@ -70,7 +70,7 @@ public class MooshroomEntity extends CowEntity {
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.BOWL && this.getBreedingAge() >= 0 && !playerEntity.abilities.creativeMode) {
+		if (itemStack.getItem() == Items.BOWL && !this.isBaby() && !playerEntity.abilities.creativeMode) {
 			itemStack.decrement(1);
 			boolean bl = false;
 			ItemStack itemStack2;
@@ -99,7 +99,7 @@ public class MooshroomEntity extends CowEntity {
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return true;
-		} else if (itemStack.getItem() == Items.SHEARS && this.getBreedingAge() >= 0) {
+		} else if (itemStack.getItem() == Items.SHEARS && !this.isBaby()) {
 			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.method_23323(0.5), this.getZ(), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.remove();

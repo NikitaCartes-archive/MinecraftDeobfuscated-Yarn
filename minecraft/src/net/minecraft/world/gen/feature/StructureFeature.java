@@ -33,7 +33,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	}
 
 	@Override
-	public ConfiguredFeature<C, ? extends StructureFeature<C>> method_23397(C featureConfig) {
+	public ConfiguredFeature<C, ? extends StructureFeature<C>> configure(C featureConfig) {
 		return new ConfiguredFeature<>(this, featureConfig);
 	}
 

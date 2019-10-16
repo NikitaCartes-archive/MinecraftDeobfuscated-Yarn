@@ -20,10 +20,10 @@ public final class Matrix4f {
 
 	public Matrix4f(Quaternion quaternion) {
 		this();
-		float f = quaternion.getX();
-		float g = quaternion.getY();
-		float h = quaternion.getZ();
-		float i = quaternion.getW();
+		float f = quaternion.getB();
+		float g = quaternion.getC();
+		float h = quaternion.getD();
+		float i = quaternion.getA();
 		float j = 2.0F * f * f;
 		float k = 2.0F * g * g;
 		float l = 2.0F * h * h;

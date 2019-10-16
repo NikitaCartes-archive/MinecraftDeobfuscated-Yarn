@@ -83,14 +83,18 @@ public class ShovelItem extends MiningToolItem {
 				blockState3 = blockState.with(CampfireBlock.LIT, Boolean.valueOf(false));
 			}
 
-			if (!world.isClient && blockState3 != null) {
-				world.setBlockState(blockPos, blockState3, 11);
-				if (playerEntity != null) {
-					itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+			if (blockState3 != null) {
+				if (!world.isClient) {
+					world.setBlockState(blockPos, blockState3, 11);
+					if (playerEntity != null) {
+						itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+					}
 				}
-			}
 
-			return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS;
+			} else {
+				return ActionResult.PASS;
+			}
 		}
 	}
 }

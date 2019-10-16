@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.StrayEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttackMob, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
@@ -32,6 +32,6 @@ public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttackMob, 
 		float l,
 		float m
 	) {
-		method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h, 1.0F, 1.0F, 1.0F);
+		render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h, 1.0F, 1.0F, 1.0F);
 	}
 }

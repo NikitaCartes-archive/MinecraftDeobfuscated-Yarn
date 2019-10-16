@@ -343,7 +343,7 @@ public class HorseEntity extends HorseBaseEntity {
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
-	public static class class_1499 extends PassiveEntity$1 {
+	public static class class_1499 extends PassiveEntity.class_4697 {
 		public final int field_6994;
 
 		public class_1499(int i) {

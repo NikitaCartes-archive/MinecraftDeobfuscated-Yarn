@@ -23,6 +23,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.AbstractState;
@@ -30,6 +31,7 @@ import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -46,7 +48,6 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.loot.context.LootContext;
 
 public class BlockState extends AbstractState<Block, BlockState> implements State<BlockState> {
 	@Nullable
@@ -259,7 +260,7 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().getDroppedStacks(this, builder);
 	}
 
-	public boolean onUse(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(World world, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		return this.getBlock().onUse(this, world, blockHitResult.getBlockPos(), playerEntity, hand, blockHitResult);
 	}
 

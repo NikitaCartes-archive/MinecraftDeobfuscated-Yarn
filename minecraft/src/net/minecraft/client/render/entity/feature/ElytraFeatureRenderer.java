@@ -10,12 +10,12 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.ElytraEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
@@ -61,10 +61,10 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			matrixStack.translate(0.0, 0.0, 0.125);
 			this.getModel().copyStateTo(this.elytra);
 			this.elytra.method_17079(livingEntity, f, g, j, k, l, m);
-			VertexConsumer vertexConsumer = ItemRenderer.method_23181(
-				layeredVertexConsumerStorage, this.elytra.method_23500(identifier), false, itemStack.hasEnchantmentGlint()
+			VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
+				layeredVertexConsumerStorage, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint()
 			);
-			this.elytra.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
+			this.elytra.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
 		}
 	}

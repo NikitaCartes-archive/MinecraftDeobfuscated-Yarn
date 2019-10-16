@@ -25,7 +25,7 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		return new BredAnimalsCriterion.Conditions(entityPredicate, entityPredicate2, entityPredicate3);
 	}
 
-	public void handle(
+	public void trigger(
 		ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity
 	) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity));
