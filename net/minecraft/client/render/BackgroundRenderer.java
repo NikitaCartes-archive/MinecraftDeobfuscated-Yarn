@@ -164,7 +164,7 @@ public class BackgroundRenderer {
         }
     }
 
-    public static void applyFog(Camera camera, class_4596 arg, float f, boolean bl) {
+    public static void applyFog(Camera camera, FogType fogType, float f, boolean bl) {
         BackgroundRenderer.setFogBlack(false);
         RenderSystem.normal3f(0.0f, -1.0f, 0.0f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -176,7 +176,7 @@ public class BackgroundRenderer {
                 g = MathHelper.lerp(1.0f - (float)i / 20.0f, 5.0f, f);
             }
             RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
-            if (arg == class_4596.FOG_SKY) {
+            if (fogType == FogType.FOG_SKY) {
                 RenderSystem.fogStart(0.0f);
                 RenderSystem.fogEnd(g * 0.8f);
             } else {
@@ -206,7 +206,7 @@ public class BackgroundRenderer {
             RenderSystem.fogDensity(2.0f);
         } else {
             RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
-            if (arg == class_4596.FOG_SKY) {
+            if (fogType == FogType.FOG_SKY) {
                 RenderSystem.fogStart(0.0f);
                 RenderSystem.fogEnd(f);
             } else {
@@ -228,7 +228,7 @@ public class BackgroundRenderer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_4596 {
+    public static enum FogType {
         FOG_SKY,
         FOG_TERRAIN;
 

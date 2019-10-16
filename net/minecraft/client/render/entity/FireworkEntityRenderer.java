@@ -12,10 +12,10 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class FireworkEntityRenderer
@@ -37,7 +37,7 @@ extends EntityRenderer<FireworkEntity> {
         } else {
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         }
-        this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, fireworkEntity.getLightmapCoordinates(), OverlayTexture.field_21444, matrixStack, layeredVertexConsumerStorage);
+        this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, fireworkEntity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, matrixStack, layeredVertexConsumerStorage);
         matrixStack.pop();
         super.render(fireworkEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

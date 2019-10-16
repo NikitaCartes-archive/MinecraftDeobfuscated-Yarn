@@ -51,6 +51,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -136,8 +137,8 @@ implements Flutterer {
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
         this.setVariant(this.random.nextInt(5));
         if (entityData == null) {
-            entityData = new PassiveEntity._1();
-            ((PassiveEntity._1)entityData).method_22434(false);
+            entityData = new PassiveEntity.class_4697();
+            ((PassiveEntity.class_4697)entityData).method_22434(false);
         }
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
@@ -234,6 +235,9 @@ implements Flutterer {
     @Override
     public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
+        if (itemStack.getItem() instanceof SpawnEggItem) {
+            return super.interactMob(playerEntity, hand);
+        }
         if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
             if (!playerEntity.abilities.creativeMode) {
                 itemStack.decrement(1);
@@ -244,10 +248,8 @@ implements Flutterer {
             if (!this.world.isClient) {
                 if (this.random.nextInt(10) == 0) {
                     this.setOwner(playerEntity);
-                    this.showEmoteParticle(true);
                     this.world.sendEntityStatus(this, (byte)7);
                 } else {
-                    this.showEmoteParticle(false);
                     this.world.sendEntityStatus(this, (byte)6);
                 }
             }
@@ -265,6 +267,7 @@ implements Flutterer {
         }
         if (!this.world.isClient && !this.isInAir() && this.isTamed() && this.isOwner(playerEntity)) {
             this.sitGoal.setEnabledWithOwner(!this.isSitting());
+            return true;
         }
         return super.interactMob(playerEntity, hand);
     }

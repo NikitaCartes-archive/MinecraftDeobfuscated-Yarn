@@ -59,20 +59,20 @@ public class Session {
         LEGACY("legacy"),
         MOJANG("mojang");
 
-        private static final Map<String, AccountType> field_1989;
-        private final String field_1986;
+        private static final Map<String, AccountType> BY_NAME;
+        private final String name;
 
         private AccountType(String string2) {
-            this.field_1986 = string2;
+            this.name = string2;
         }
 
         @Nullable
         public static AccountType byName(String string) {
-            return field_1989.get(string.toLowerCase(Locale.ROOT));
+            return BY_NAME.get(string.toLowerCase(Locale.ROOT));
         }
 
         static {
-            field_1989 = Arrays.stream(AccountType.values()).collect(Collectors.toMap(accountType -> accountType.field_1986, Function.identity()));
+            BY_NAME = Arrays.stream(AccountType.values()).collect(Collectors.toMap(accountType -> accountType.name, Function.identity()));
         }
     }
 }

@@ -27,7 +27,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(floatRange);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
         double d = serverPlayerEntity.getX() - (double)blockPos.getX();
         double e = serverPlayerEntity.getZ() - (double)blockPos.getZ();
         double f = d * d + e * e;

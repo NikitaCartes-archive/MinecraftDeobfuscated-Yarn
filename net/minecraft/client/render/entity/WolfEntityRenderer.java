@@ -10,9 +10,9 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WolfEntityRenderer
@@ -33,11 +33,11 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
     public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         if (wolfEntity.isWet()) {
             float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
-            ((WolfEntityModel)this.model).method_22955(i, i, i);
+            ((WolfEntityModel)this.model).setColorMultiplier(i, i, i);
         }
         super.method_4072(wolfEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
         if (wolfEntity.isWet()) {
-            ((WolfEntityModel)this.model).method_22955(1.0f, 1.0f, 1.0f);
+            ((WolfEntityModel)this.model).setColorMultiplier(1.0f, 1.0f, 1.0f);
         }
     }
 

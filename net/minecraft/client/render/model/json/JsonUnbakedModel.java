@@ -201,7 +201,7 @@ implements UnbakedModel {
                     builder.addQuad(JsonUnbakedModel.createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings, identifier));
                     continue;
                 }
-                builder.addQuad(Direction.method_23225(modelBakeSettings.getRotation().method_22936(), modelElementFace.cullFace), JsonUnbakedModel.createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings, identifier));
+                builder.addQuad(Direction.transform(modelBakeSettings.getRotation().getMatrix(), modelElementFace.cullFace), JsonUnbakedModel.createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings, identifier));
             }
         }
         return builder.build();

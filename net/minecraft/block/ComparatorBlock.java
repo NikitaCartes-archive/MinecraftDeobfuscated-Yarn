@@ -20,6 +20,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.hit.BlockHitResult;
@@ -103,15 +104,15 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (!playerEntity.abilities.allowModifyWorld) {
-            return false;
+            return ActionResult.PASS;
         }
         float f = (blockState = (BlockState)blockState.cycle(MODE)).get(MODE) == ComparatorMode.SUBTRACT ? 0.55f : 0.5f;
         world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3f, f);
         world.setBlockState(blockPos, blockState, 2);
         this.update(world, blockPos, blockState);
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     @Override

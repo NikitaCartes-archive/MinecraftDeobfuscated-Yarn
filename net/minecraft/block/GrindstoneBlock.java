@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -154,9 +155,12 @@ extends WallMountedBlock {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        if (world.isClient) {
+            return ActionResult.SUCCESS;
+        }
         playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     @Override

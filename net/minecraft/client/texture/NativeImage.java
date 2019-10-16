@@ -167,7 +167,7 @@ implements AutoCloseable {
         return this.format;
     }
 
-    public int getPixelRGBA(int i, int j) {
+    public int getPixelRgba(int i, int j) {
         if (this.format != Format.RGBA) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
@@ -178,7 +178,7 @@ implements AutoCloseable {
         return MemoryUtil.memIntBuffer(this.pointer, this.sizeBytes).get(i + j * this.width);
     }
 
-    public void setPixelRGBA(int i, int j, int k) {
+    public void setPixelRgba(int i, int j, int k) {
         if (this.format != Format.RGBA) {
             throw new IllegalArgumentException(String.format("getPixelRGBA only works on RGBA images; have %s", new Object[]{this.format}));
         }
@@ -203,7 +203,7 @@ implements AutoCloseable {
         if (this.format != Format.RGBA) {
             throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
         }
-        int l = this.getPixelRGBA(i, j);
+        int l = this.getPixelRgba(i, j);
         float f = (float)(k >> 24 & 0xFF) / 255.0f;
         float g = (float)(k >> 16 & 0xFF) / 255.0f;
         float h = (float)(k >> 8 & 0xFF) / 255.0f;
@@ -234,7 +234,7 @@ implements AutoCloseable {
         int y = (int)(u * 255.0f);
         int z = (int)(v * 255.0f);
         int aa = (int)(w * 255.0f);
-        this.setPixelRGBA(i, j, x << 24 | y << 16 | z << 8 | aa << 0);
+        this.setPixelRgba(i, j, x << 24 | y << 16 | z << 8 | aa << 0);
     }
 
     @Deprecated
@@ -247,7 +247,7 @@ implements AutoCloseable {
         for (int i = 0; i < this.getHeight(); ++i) {
             for (int j = 0; j < this.getWidth(); ++j) {
                 int p;
-                int k = this.getPixelRGBA(j, i);
+                int k = this.getPixelRgba(j, i);
                 int l = k >> 24 & 0xFF;
                 int m = k >> 16 & 0xFF;
                 int n = k >> 8 & 0xFF;
@@ -301,7 +301,7 @@ implements AutoCloseable {
         if (bl && this.format.hasAlphaChannel()) {
             for (int j = 0; j < this.getHeight(); ++j) {
                 for (int k = 0; k < this.getWidth(); ++k) {
-                    this.setPixelRGBA(k, j, this.getPixelRGBA(k, j) | 255 << this.format.getAlphaChannelOffset());
+                    this.setPixelRgba(k, j, this.getPixelRgba(k, j) | 255 << this.format.getAlphaChannelOffset());
                 }
             }
         }
@@ -365,7 +365,7 @@ implements AutoCloseable {
     public void fillRect(int i, int j, int k, int l, int m) {
         for (int n = j; n < j + l; ++n) {
             for (int o = i; o < i + k; ++o) {
-                this.setPixelRGBA(o, n, m);
+                this.setPixelRgba(o, n, m);
             }
         }
     }
@@ -375,8 +375,8 @@ implements AutoCloseable {
             for (int p = 0; p < m; ++p) {
                 int q = bl ? m - 1 - p : p;
                 int r = bl2 ? n - 1 - o : o;
-                int s = this.getPixelRGBA(i + p, j + o);
-                this.setPixelRGBA(i + k + q, j + l + r, s);
+                int s = this.getPixelRgba(i + p, j + o);
+                this.setPixelRgba(i + k + q, j + l + r, s);
             }
         }
     }

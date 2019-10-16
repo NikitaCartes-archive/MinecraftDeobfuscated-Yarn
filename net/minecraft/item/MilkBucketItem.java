@@ -26,7 +26,7 @@ extends Item {
     public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
         if (livingEntity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
-            Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
+            Criterions.CONSUME_ITEM.trigger(serverPlayerEntity, itemStack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
         if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {

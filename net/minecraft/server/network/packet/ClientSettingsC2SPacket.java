@@ -17,7 +17,7 @@ implements Packet<ServerPlayPacketListener> {
     private String language;
     private int viewDistance;
     private ChatVisibility chatVisibility;
-    private boolean field_12779;
+    private boolean chatColors;
     private int playerModelBitMask;
     private Arm mainArm;
 
@@ -29,7 +29,7 @@ implements Packet<ServerPlayPacketListener> {
         this.language = string;
         this.viewDistance = i;
         this.chatVisibility = chatVisibility;
-        this.field_12779 = bl;
+        this.chatColors = bl;
         this.playerModelBitMask = j;
         this.mainArm = arm;
     }
@@ -39,7 +39,7 @@ implements Packet<ServerPlayPacketListener> {
         this.language = packetByteBuf.readString(16);
         this.viewDistance = packetByteBuf.readByte();
         this.chatVisibility = packetByteBuf.readEnumConstant(ChatVisibility.class);
-        this.field_12779 = packetByteBuf.readBoolean();
+        this.chatColors = packetByteBuf.readBoolean();
         this.playerModelBitMask = packetByteBuf.readUnsignedByte();
         this.mainArm = packetByteBuf.readEnumConstant(Arm.class);
     }
@@ -49,7 +49,7 @@ implements Packet<ServerPlayPacketListener> {
         packetByteBuf.writeString(this.language);
         packetByteBuf.writeByte(this.viewDistance);
         packetByteBuf.writeEnumConstant(this.chatVisibility);
-        packetByteBuf.writeBoolean(this.field_12779);
+        packetByteBuf.writeBoolean(this.chatColors);
         packetByteBuf.writeByte(this.playerModelBitMask);
         packetByteBuf.writeEnumConstant(this.mainArm);
     }
@@ -66,8 +66,8 @@ implements Packet<ServerPlayPacketListener> {
         return this.chatVisibility;
     }
 
-    public boolean method_12135() {
-        return this.field_12779;
+    public boolean hasChatColors() {
+        return this.chatColors;
     }
 
     public int getPlayerModelBitMask() {

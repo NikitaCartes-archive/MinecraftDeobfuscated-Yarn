@@ -17,6 +17,7 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -60,21 +61,23 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        boolean bl;
+        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        boolean bl2 = bl = itemStack.getItem() instanceof DyeItem && playerEntity.abilities.allowModifyWorld;
         if (world.isClient) {
-            return true;
+            return bl ? ActionResult.SUCCESS : ActionResult.CONSUME;
         }
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof SignBlockEntity) {
-            boolean bl;
+            boolean bl22;
             SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-            ItemStack itemStack = playerEntity.getStackInHand(hand);
-            if (itemStack.getItem() instanceof DyeItem && playerEntity.abilities.allowModifyWorld && (bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor())) && !playerEntity.isCreative()) {
+            if (bl && (bl22 = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor())) && !playerEntity.isCreative()) {
                 itemStack.decrement(1);
             }
-            return signBlockEntity.onActivate(playerEntity);
+            return signBlockEntity.onActivate(playerEntity) ? ActionResult.SUCCESS : ActionResult.PASS;
         }
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override

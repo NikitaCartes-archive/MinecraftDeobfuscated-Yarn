@@ -124,9 +124,10 @@ extends PassiveEntity {
     public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (this.isBreedingItem(itemStack)) {
-            if (this.getBreedingAge() == 0 && this.canEat()) {
+            if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
                 this.eat(playerEntity, itemStack);
                 this.lovePlayer(playerEntity);
+                playerEntity.method_23667(hand, true);
                 return true;
             }
             if (this.isBaby()) {

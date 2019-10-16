@@ -17,8 +17,8 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.shape.VoxelShape;
 
 @Environment(value=EnvType.CLIENT)
@@ -48,13 +48,13 @@ implements DebugRenderer.Renderer {
         RenderSystem.lineWidth(2.0f);
         RenderSystem.disableTexture();
         RenderSystem.depthMask(false);
-        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.getLines());
+        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
+        VertexConsumer vertexConsumer = drawer.getBuffer(RenderLayer.getLines());
         MatrixStack matrixStack = new MatrixStack();
         for (VoxelShape voxelShape : this.field_4542) {
             WorldRenderer.method_22983(matrixStack, vertexConsumer, voxelShape, -e, -f, -g, 1.0f, 1.0f, 1.0f, 1.0f);
         }
-        lv.method_22993();
+        drawer.draw();
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

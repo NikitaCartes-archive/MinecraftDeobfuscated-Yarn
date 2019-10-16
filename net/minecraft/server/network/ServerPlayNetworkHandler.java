@@ -43,7 +43,6 @@ import net.minecraft.container.Container;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
@@ -53,7 +52,6 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WritableBookItem;
@@ -116,6 +114,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
@@ -837,8 +836,9 @@ implements ServerPlayPacketListener {
         Direction direction = blockHitResult.getSide();
         this.player.updateLastActionTime();
         if (blockPos.getY() < this.server.getWorldHeight() - 1 || direction != Direction.UP && blockPos.getY() < this.server.getWorldHeight()) {
-            if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
-                this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
+            ActionResult actionResult;
+            if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos) && (actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult)).method_23666()) {
+                this.player.method_23667(hand, true);
             }
         } else {
             Text text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
@@ -1021,13 +1021,8 @@ implements ServerPlayPacketListener {
                 break;
             }
             case START_FALL_FLYING: {
-                if (!this.player.onGround && this.player.getVelocity().y < 0.0 && !this.player.isFallFlying() && !this.player.isInsideWater()) {
-                    ItemStack itemStack = this.player.getEquippedStack(EquipmentSlot.CHEST);
-                    if (itemStack.getItem() != Items.ELYTRA || !ElytraItem.isUsable(itemStack)) break;
-                    this.player.method_14243();
-                    break;
-                }
-                this.player.method_14229();
+                if (this.player.method_23668()) break;
+                this.player.method_23670();
                 break;
             }
             default: {
@@ -1077,7 +1072,7 @@ implements ServerPlayPacketListener {
                 if (this.player.notInAnyWorld) {
                     this.player.notInAnyWorld = false;
                     this.player = this.server.getPlayerManager().respawnPlayer(this.player, DimensionType.OVERWORLD, true);
-                    Criterions.CHANGED_DIMENSION.handle(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
+                    Criterions.CHANGED_DIMENSION.trigger(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
                     break;
                 }
                 if (this.player.getHealth() > 0.0f) {

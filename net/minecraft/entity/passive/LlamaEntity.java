@@ -480,7 +480,7 @@ implements RangedAttackMob {
     }
 
     static class class_1503
-    extends PassiveEntity._1 {
+    extends PassiveEntity.class_4697 {
         public final int field_7001;
 
         private class_1503(int i) {

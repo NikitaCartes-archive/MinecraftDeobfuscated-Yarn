@@ -14,6 +14,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -111,7 +112,7 @@ extends HorizontalFacingBlock {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (blockState.get(OPEN).booleanValue()) {
             blockState = (BlockState)blockState.with(OPEN, false);
             world.setBlockState(blockPos, blockState, 10);
@@ -124,7 +125,7 @@ extends HorizontalFacingBlock {
             world.setBlockState(blockPos, blockState, 10);
         }
         world.playLevelEvent(playerEntity, blockState.get(OPEN) != false ? 1008 : 1014, blockPos, 0);
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     @Override

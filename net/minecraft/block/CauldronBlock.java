@@ -27,6 +27,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -69,11 +70,11 @@ extends Block {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         DyeableItem dyeableItem;
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (itemStack.isEmpty()) {
-            return true;
+            return ActionResult.PASS;
         }
         int i = blockState.get(LEVEL);
         Item item = itemStack.getItem();
@@ -86,7 +87,7 @@ extends Block {
                 this.setLevel(world, blockPos, blockState, 3);
                 world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (item == Items.BUCKET) {
             if (i == 3 && !world.isClient) {
@@ -102,7 +103,7 @@ extends Block {
                 this.setLevel(world, blockPos, blockState, 0);
                 world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (item == Items.GLASS_BOTTLE) {
             if (i > 0 && !world.isClient) {
@@ -121,7 +122,7 @@ extends Block {
                 world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 this.setLevel(world, blockPos, blockState, i - 1);
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (item == Items.POTION && PotionUtil.getPotion(itemStack) == Potions.WATER) {
             if (i < 3 && !world.isClient) {
@@ -136,13 +137,13 @@ extends Block {
                 world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 this.setLevel(world, blockPos, blockState, i + 1);
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (i > 0 && item instanceof DyeableItem && (dyeableItem = (DyeableItem)((Object)item)).hasColor(itemStack) && !world.isClient) {
             dyeableItem.removeColor(itemStack);
             this.setLevel(world, blockPos, blockState, i - 1);
             playerEntity.incrementStat(Stats.CLEAN_ARMOR);
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (i > 0 && item instanceof BannerItem) {
             if (BannerBlockEntity.getPatternCount(itemStack) > 0 && !world.isClient) {
@@ -162,7 +163,7 @@ extends Block {
                     ((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
                 }
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (i > 0 && item instanceof BlockItem) {
             Block block = ((BlockItem)item).getBlock();
@@ -174,10 +175,11 @@ extends Block {
                 playerEntity.setStackInHand(hand, itemStack3);
                 this.setLevel(world, blockPos, blockState, i - 1);
                 playerEntity.incrementStat(Stats.CLEAN_SHULKER_BOX);
+                return ActionResult.SUCCESS;
             }
-            return true;
+            return ActionResult.CONSUME;
         }
-        return false;
+        return ActionResult.PASS;
     }
 
     public void setLevel(World world, BlockPos blockPos, BlockState blockState, int i) {

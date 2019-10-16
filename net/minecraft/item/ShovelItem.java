@@ -55,13 +55,16 @@ extends MiningToolItem {
                 world.playLevelEvent(null, 1009, blockPos, 0);
                 blockState3 = (BlockState)blockState.with(CampfireBlock.LIT, false);
             }
-            if (!world.isClient && blockState3 != null) {
-                world.setBlockState(blockPos, blockState3, 11);
-                if (playerEntity2 != null) {
-                    itemUsageContext.getStack().damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
+            if (blockState3 != null) {
+                if (!world.isClient) {
+                    world.setBlockState(blockPos, blockState3, 11);
+                    if (playerEntity2 != null) {
+                        itemUsageContext.getStack().damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
+                    }
                 }
+                return ActionResult.SUCCESS;
             }
-            return ActionResult.SUCCESS;
+            return ActionResult.PASS;
         }
         return ActionResult.PASS;
     }

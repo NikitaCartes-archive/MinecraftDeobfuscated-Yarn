@@ -8,7 +8,6 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.HorseBaseEntityRenderer;
 import net.minecraft.client.render.entity.feature.HorseArmorFeatureRenderer;
@@ -23,7 +22,7 @@ extends HorseBaseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
     private static final Map<String, Identifier> SKINS = Maps.newHashMap();
 
     public HorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new HorseEntityModel(RenderLayer::getEntitySolid, 0.0f), 1.1f);
+        super(entityRenderDispatcher, new HorseEntityModel(0.0f), 1.1f);
         this.addFeature(new HorseArmorFeatureRenderer(this));
     }
 

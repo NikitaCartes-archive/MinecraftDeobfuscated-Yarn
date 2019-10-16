@@ -6,13 +6,13 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.passive.IronGolemEntity;
 
 @Environment(value=EnvType.CLIENT)
 public class IronGolemEntityModel<T extends IronGolemEntity>
-extends class_4595<T> {
+extends CompositeEntityModel<T> {
     private final ModelPart head;
     private final ModelPart body;
     public final ModelPart leftArm;

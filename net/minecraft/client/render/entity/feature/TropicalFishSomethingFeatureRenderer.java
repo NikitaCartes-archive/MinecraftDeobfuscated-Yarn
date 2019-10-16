@@ -5,15 +5,15 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4594;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.TintableCompositeModel;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelA;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelB;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.TropicalFishEntity;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class TropicalFishSomethingFeatureRenderer
@@ -26,9 +26,9 @@ extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
     }
 
     public void method_4205(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, TropicalFishEntity tropicalFishEntity, float f, float g, float h, float j, float k, float l, float m) {
-        class_4594 entityModel = tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB;
+        TintableCompositeModel entityModel = tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB;
         float[] fs = tropicalFishEntity.getPatternColorComponents();
-        TropicalFishSomethingFeatureRenderer.method_23196(this.getModel(), entityModel, tropicalFishEntity.getVarietyId(), matrixStack, layeredVertexConsumerStorage, i, tropicalFishEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
+        TropicalFishSomethingFeatureRenderer.render(this.getModel(), entityModel, tropicalFishEntity.getVarietyId(), matrixStack, layeredVertexConsumerStorage, i, tropicalFishEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
     }
 }
 

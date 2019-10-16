@@ -62,11 +62,9 @@ extends Block {
         if (blockState2.getBlock() == blockState.getBlock()) {
             return;
         }
-        if (!world.isClient) {
-            blockState = this.updateBlockState(world, blockPos, blockState, true);
-            if (this.allowCurves) {
-                blockState.neighborUpdate(world, blockPos, this, blockPos, bl);
-            }
+        blockState = this.updateBlockState(world, blockPos, blockState, true);
+        if (this.allowCurves) {
+            blockState.neighborUpdate(world, blockPos, this, blockPos, bl);
         }
     }
 

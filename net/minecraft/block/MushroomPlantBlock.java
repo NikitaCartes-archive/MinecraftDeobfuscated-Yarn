@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
-import net.minecraft.class_4635;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +19,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 
 public class MushroomPlantBlock
 extends PlantBlock
@@ -74,12 +74,12 @@ implements Fertilizable {
     }
 
     public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos blockPos, BlockState blockState, Random random) {
-        ConfiguredFeature<class_4635, ?> configuredFeature;
+        ConfiguredFeature<HugeMushroomFeatureConfig, ?> configuredFeature;
         serverWorld.removeBlock(blockPos, false);
         if (this == Blocks.BROWN_MUSHROOM) {
-            configuredFeature = Feature.HUGE_BROWN_MUSHROOM.method_23397(DefaultBiomeFeatures.field_21143);
+            configuredFeature = Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143);
         } else if (this == Blocks.RED_MUSHROOM) {
-            configuredFeature = Feature.HUGE_RED_MUSHROOM.method_23397(DefaultBiomeFeatures.field_21142);
+            configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142);
         } else {
             serverWorld.setBlockState(blockPos, blockState, 3);
             return false;

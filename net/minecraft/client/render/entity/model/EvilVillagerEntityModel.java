@@ -6,21 +6,20 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class EvilVillagerEntityModel<T extends IllagerEntity>
-extends class_4595<T>
+extends CompositeEntityModel<T>
 implements ModelWithArms,
 ModelWithHead {
     private final ModelPart field_3422;
@@ -34,7 +33,6 @@ ModelWithHead {
     private float field_3424;
 
     public EvilVillagerEntityModel(float f, float g, int i, int j) {
-        super(RenderLayer::getEntityCutoutNoCull);
         this.field_3422 = new ModelPart(this).setTextureSize(i, j);
         this.field_3422.setPivot(0.0f, 0.0f + g, 0.0f);
         this.field_3422.setTextureOffset(0, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, f);

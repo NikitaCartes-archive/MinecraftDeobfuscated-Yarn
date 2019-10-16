@@ -37,7 +37,7 @@ extends Item {
         return ActionResult.PASS;
     }
 
-    public static boolean attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
+    public static ActionResult attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
         LeadKnotEntity leadKnotEntity = null;
         boolean bl = false;
         double d = 7.0;
@@ -53,7 +53,7 @@ extends Item {
             mobEntity.attachLeash(leadKnotEntity, true);
             bl = true;
         }
-        return bl;
+        return bl ? ActionResult.SUCCESS : ActionResult.PASS;
     }
 }
 

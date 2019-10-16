@@ -55,10 +55,10 @@ public class EnchantmentHelper {
 
     public static Map<Enchantment, Integer> getEnchantments(ItemStack itemStack) {
         ListTag listTag = itemStack.getItem() == Items.ENCHANTED_BOOK ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantments();
-        return EnchantmentHelper.method_22445(listTag);
+        return EnchantmentHelper.getEnchantments(listTag);
     }
 
-    public static Map<Enchantment, Integer> method_22445(ListTag listTag) {
+    public static Map<Enchantment, Integer> getEnchantments(ListTag listTag) {
         LinkedHashMap<Enchantment, Integer> map = Maps.newLinkedHashMap();
         for (int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompound(i);

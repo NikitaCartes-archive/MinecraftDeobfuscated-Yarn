@@ -28,7 +28,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(damagePredicate);
     }
 
-    public void method_22467(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, damageSource, f, g, bl));
     }
 

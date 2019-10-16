@@ -18,6 +18,7 @@ import net.minecraft.item.LeadItem;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -55,10 +56,13 @@ extends HorizontalConnectedBlock {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (world.isClient) {
             ItemStack itemStack = playerEntity.getStackInHand(hand);
-            return itemStack.getItem() == Items.LEAD || itemStack.isEmpty();
+            if (itemStack.getItem() == Items.LEAD) {
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.PASS;
         }
         return LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
     }

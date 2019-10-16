@@ -20,6 +20,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -86,9 +87,9 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (this.material == Material.METAL) {
-            return false;
+            return ActionResult.PASS;
         }
         blockState = (BlockState)blockState.cycle(OPEN);
         world.setBlockState(blockPos, blockState, 2);
@@ -96,7 +97,7 @@ implements Waterloggable {
             world.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         this.playToggleSound(playerEntity, world, blockPos, blockState.get(OPEN));
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     protected void playToggleSound(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, boolean bl) {

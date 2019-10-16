@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +30,7 @@ extends GourdBlock {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity2, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity2, Hand hand, BlockHitResult blockHitResult) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
         if (itemStack.getItem() == Items.SHEARS) {
             if (!world.isClient) {
@@ -42,7 +43,7 @@ extends GourdBlock {
                 world.spawnEntity(itemEntity);
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         return super.onUse(blockState, world, blockPos, playerEntity2, hand, blockHitResult);
     }

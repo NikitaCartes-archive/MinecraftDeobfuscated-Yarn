@@ -181,7 +181,7 @@ Tickable {
                 if (!bl && bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
                     for (ServerPlayerEntity serverPlayerEntity : this.world.getNonSpectatingEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
-                        Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
+                        Criterions.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
                     }
                 } else if (bl && !bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);

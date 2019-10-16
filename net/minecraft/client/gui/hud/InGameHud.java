@@ -337,7 +337,7 @@ extends DrawableHelper {
             RenderSystem.renderCrosshair(10);
             RenderSystem.popMatrix();
         } else {
-            RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ONE_MINUS_DST_COLOR, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             int i = 15;
             this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
             if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
@@ -867,7 +867,7 @@ extends DrawableHelper {
         f = (double)f < e ? 1.0f - (float)((double)f / e) : 0.0f;
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         if (f > 0.0f) {
             RenderSystem.color4f(0.0f, f, f, 1.0f);
         } else {

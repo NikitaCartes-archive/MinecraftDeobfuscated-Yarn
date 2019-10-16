@@ -13,11 +13,11 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.CowEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity>
@@ -39,13 +39,13 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         int n = LivingEntityRenderer.method_23622(mooshroomEntity, 0.0f);
         matrixStack.push();
         matrixStack.translate(-0.5, -0.5, 0.5);
-        blockRenderManager.renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+        blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(-0.1f, 0.0, -0.6f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-42.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        blockRenderManager.renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+        blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
         matrixStack.pop();
         matrixStack.pop();
         matrixStack.push();
@@ -54,7 +54,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         matrixStack.translate(0.0, 0.7f, -0.2f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-12.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        blockRenderManager.renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+        blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
         matrixStack.pop();
     }
 }

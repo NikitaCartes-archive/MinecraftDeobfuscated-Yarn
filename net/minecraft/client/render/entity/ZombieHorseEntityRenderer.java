@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.HorseBaseEntityRenderer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
@@ -22,7 +21,7 @@ extends HorseBaseEntityRenderer<HorseBaseEntity, HorseEntityModel<HorseBaseEntit
     private static final Map<EntityType<?>, Identifier> TEXTURES = Maps.newHashMap(ImmutableMap.of(EntityType.ZOMBIE_HORSE, new Identifier("textures/entity/horse/horse_zombie.png"), EntityType.SKELETON_HORSE, new Identifier("textures/entity/horse/horse_skeleton.png")));
 
     public ZombieHorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new HorseEntityModel(RenderLayer::getEntityCutoutNoCull, 0.0f), 1.0f);
+        super(entityRenderDispatcher, new HorseEntityModel(0.0f), 1.0f);
     }
 
     public Identifier method_4145(HorseBaseEntity horseBaseEntity) {

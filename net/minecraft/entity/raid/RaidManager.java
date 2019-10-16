@@ -122,7 +122,7 @@ extends PersistentState {
             serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, 43));
             if (!raid.hasSpawned()) {
                 serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);
-                Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
+                Criterions.VOLUNTARY_EXILE.trigger(serverPlayerEntity);
             }
         }
         this.markDirty();

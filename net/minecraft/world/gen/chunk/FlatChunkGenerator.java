@@ -68,7 +68,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
                 StructureFeature structureFeature = (StructureFeature)configuredFeature2.feature;
                 Object featureConfig = biome.getStructureFeatureConfig(structureFeature);
                 Object featureConfig2 = featureConfig != null ? featureConfig : FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature);
-                flatChunkGeneratorBiome.addStructureFeature(structureFeature.method_23397(featureConfig2));
+                flatChunkGeneratorBiome.addStructureFeature(structureFeature.configure(featureConfig2));
             }
         }
         boolean bl2 = bl = (!((FlatChunkGeneratorConfig)this.config).hasNoTerrain() || biome == Biomes.THE_VOID) && map.containsKey("decoration");
@@ -89,7 +89,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
             BlockState blockState = blockStates[var6_11];
             if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
                 ((FlatChunkGeneratorConfig)this.config).removeLayerBlock((int)var6_11);
-                flatChunkGeneratorBiome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.method_23397(new FillLayerFeatureConfig((int)var6_11, blockState)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT)));
+                flatChunkGeneratorBiome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig((int)var6_11, blockState)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
             }
             ++var6_11;
         }

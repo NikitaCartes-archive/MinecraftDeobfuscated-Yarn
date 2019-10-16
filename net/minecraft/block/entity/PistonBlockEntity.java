@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.entity;
 
+import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,7 +31,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import org.jetbrains.annotations.Nullable;
 
 public class PistonBlockEntity
 extends BlockEntity
@@ -115,16 +115,17 @@ implements Tickable {
         }
         List<Box> list = voxelShape.getBoundingBoxes();
         Box box = this.offsetHeadBox(this.getApproximateHeadBox(list));
-        Box box2 = class_4623.method_23362(box, direction, d).union(box);
-        List<Entity> list2 = this.world.getEntities(null, box2);
+        List<Entity> list2 = this.world.getEntities(null, class_4623.method_23362(box, direction, d).union(box));
         if (list2.isEmpty()) {
             return;
         }
-        boolean bl = this.method_23366();
-        boolean bl2 = this.pushedBlock.getBlock() == Blocks.SLIME_BLOCK;
+        boolean bl = this.pushedBlock.getBlock() == Blocks.SLIME_BLOCK;
         for (Entity entity : list2) {
+            Box box4;
+            Box box2;
+            Box box3;
             if (entity.getPistonBehavior() == PistonBehavior.IGNORE) continue;
-            if (bl2) {
+            if (bl) {
                 Vec3d vec3d = entity.getVelocity();
                 double e = vec3d.x;
                 double g = vec3d.y;
@@ -145,49 +146,46 @@ implements Tickable {
                 entity.setVelocity(e, g, h);
             }
             double i = 0.0;
-            for (Box box3 : list) {
-                List<Box> list3;
-                Box box4 = entity.getBoundingBox();
-                Box box5 = this.method_23365(box4, list3 = class_4623.method_23363(bl, this.offsetHeadBox(box3), direction, d));
-                if (box5 == null || !((i = Math.max(i, this.getIntersectionSize(box5, direction, box4))) >= d)) continue;
-                break;
+            Iterator<Box> iterator = list.iterator();
+            while (!(!iterator.hasNext() || (box3 = class_4623.method_23362(this.offsetHeadBox(box2 = iterator.next()), direction, d)).intersects(box4 = entity.getBoundingBox()) && (i = Math.max(i, PistonBlockEntity.getIntersectionSize(box3, direction, box4))) >= d)) {
             }
             if (i <= 0.0) continue;
             i = Math.min(i, d) + 0.01;
-            field_12205.set(direction);
-            entity.move(MovementType.PISTON, new Vec3d(i * (double)direction.getOffsetX(), i * (double)direction.getOffsetY(), i * (double)direction.getOffsetZ()));
-            field_12205.set(null);
+            PistonBlockEntity.method_23672(direction, entity, i, direction);
             if (this.extending || !this.source) continue;
             this.push(entity, direction, d);
         }
     }
 
-    @Nullable
-    private Box method_23365(Box box, List<Box> list) {
-        for (Box box2 : list) {
-            if (!box.intersects(box2)) continue;
-            return box2;
-        }
-        return null;
+    private static void method_23672(Direction direction, Entity entity, double d, Direction direction2) {
+        field_12205.set(direction);
+        entity.move(MovementType.PISTON, new Vec3d(d * (double)direction2.getOffsetX(), d * (double)direction2.getOffsetY(), d * (double)direction2.getOffsetZ()));
+        field_12205.set(null);
     }
 
-    private boolean method_23366() {
-        if (PistonBlockEntity.method_23364(this.pushedBlock.getBlock())) {
-            return true;
+    private void method_23674(float f) {
+        if (!this.method_23364()) {
+            return;
         }
-        BlockEntity blockEntity = this.world.getBlockEntity(this.getPos().method_10074());
-        if (blockEntity instanceof PistonBlockEntity) {
-            BlockState blockState = ((PistonBlockEntity)blockEntity).getPushedBlock();
-            double d = this.pushedBlock.getCollisionShape(this.world, this.getPos()).getMaximum(Direction.Axis.Y);
-            if (d <= 0.5 && PistonBlockEntity.method_23364(blockState.getBlock())) {
-                return true;
-            }
+        Direction direction = this.getMovementDirection();
+        if (!direction.getAxis().isHorizontal()) {
+            return;
         }
-        return false;
+        double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMaximum(Direction.Axis.Y);
+        Box box = this.offsetHeadBox(new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0));
+        double e = f - this.progress;
+        List<Entity> list = this.world.getEntities((Entity)null, box, entity -> PistonBlockEntity.method_23671(box, entity));
+        for (Entity entity2 : list) {
+            PistonBlockEntity.method_23672(direction, entity2, e, direction);
+        }
     }
 
-    private static boolean method_23364(Block block) {
-        return block == Blocks.HONEY_BLOCK;
+    private static boolean method_23671(Box box, Entity entity) {
+        return entity.getPistonBehavior() == PistonBehavior.NORMAL && entity.onGround && entity.getX() >= box.minX && entity.getX() <= box.maxX && entity.getZ() >= box.minZ && entity.getZ() <= box.maxZ;
+    }
+
+    private boolean method_23364() {
+        return this.pushedBlock.getBlock() == Blocks.HONEY_BLOCK;
     }
 
     public Direction getMovementDirection() {
@@ -212,17 +210,26 @@ implements Tickable {
         return new Box(d, e, f, g, h, i);
     }
 
-    private double getIntersectionSize(Box box, Direction direction, Box box2) {
-        switch (direction.getAxis()) {
-            case X: {
-                return PistonBlockEntity.getXIntersectionSize(box, direction, box2);
+    private static double getIntersectionSize(Box box, Direction direction, Box box2) {
+        switch (direction) {
+            case EAST: {
+                return box.maxX - box2.minX;
+            }
+            case WEST: {
+                return box2.maxX - box.minX;
             }
             default: {
-                return PistonBlockEntity.getYIntersectionSize(box, direction, box2);
+                return box.maxY - box2.minY;
             }
-            case Z: 
+            case DOWN: {
+                return box2.maxY - box.minY;
+            }
+            case SOUTH: {
+                return box.maxZ - box2.minZ;
+            }
+            case NORTH: 
         }
-        return PistonBlockEntity.getZIntersectionSize(box, direction, box2);
+        return box2.maxZ - box.minZ;
     }
 
     private Box offsetHeadBox(Box box) {
@@ -236,33 +243,10 @@ implements Tickable {
         double e;
         Box box2;
         Box box = entity.getBoundingBox();
-        if (box.intersects(box2 = VoxelShapes.fullCube().getBoundingBox().offset(this.pos)) && Math.abs((e = this.getIntersectionSize(box2, direction2 = direction.getOpposite(), box) + 0.01) - (f = this.getIntersectionSize(box2, direction2, box.intersection(box2)) + 0.01)) < 0.01) {
+        if (box.intersects(box2 = VoxelShapes.fullCube().getBoundingBox().offset(this.pos)) && Math.abs((e = PistonBlockEntity.getIntersectionSize(box2, direction2 = direction.getOpposite(), box) + 0.01) - (f = PistonBlockEntity.getIntersectionSize(box2, direction2, box.intersection(box2)) + 0.01)) < 0.01) {
             e = Math.min(e, d) + 0.01;
-            field_12205.set(direction);
-            entity.move(MovementType.PISTON, new Vec3d(e * (double)direction2.getOffsetX(), e * (double)direction2.getOffsetY(), e * (double)direction2.getOffsetZ()));
-            field_12205.set(null);
+            PistonBlockEntity.method_23672(direction, entity, e, direction2);
         }
-    }
-
-    private static double getXIntersectionSize(Box box, Direction direction, Box box2) {
-        if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-            return box.maxX - box2.minX;
-        }
-        return box2.maxX - box.minX;
-    }
-
-    private static double getYIntersectionSize(Box box, Direction direction, Box box2) {
-        if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-            return box.maxY - box2.minY;
-        }
-        return box2.maxY - box.minY;
-    }
-
-    private static double getZIntersectionSize(Box box, Direction direction, Box box2) {
-        if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-            return box.maxZ - box2.minZ;
-        }
-        return box2.maxZ - box.minZ;
     }
 
     public BlockState getPushedBlock() {
@@ -306,6 +290,7 @@ implements Tickable {
         }
         float f = this.progress + 0.5f;
         this.pushEntities(f);
+        this.method_23674(f);
         this.progress = f;
         if (this.progress >= 1.0f) {
             this.progress = 1.0f;

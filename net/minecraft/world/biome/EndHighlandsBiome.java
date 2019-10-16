@@ -22,10 +22,10 @@ public class EndHighlandsBiome
 extends Biome {
     public EndHighlandsBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.THEEND).depth(0.1f).scale(0.2f).temperature(0.5f).downfall(0.5f).waterColor(4159204).waterFogColor(329011).parent(null));
-        this.addStructureFeature(Feature.END_CITY.method_23397(FeatureConfig.DEFAULT));
-        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.END_GATEWAY.method_23397(EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true)).method_23388(Decorator.END_GATEWAY.method_23475(DecoratorConfig.DEFAULT)));
+        this.addStructureFeature(Feature.END_CITY.configure(FeatureConfig.DEFAULT));
+        this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.END_GATEWAY.configure(EndGatewayFeatureConfig.createConfig(TheEndDimension.SPAWN_POINT, true)).createDecoratedFeature(Decorator.END_GATEWAY.configure(DecoratorConfig.DEFAULT)));
         DefaultBiomeFeatures.method_20826(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.CHORUS_PLANT.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.CHORUS_PLANT.method_23475(DecoratorConfig.DEFAULT)));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.CHORUS_PLANT.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.CHORUS_PLANT.configure(DecoratorConfig.DEFAULT)));
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
     }
 

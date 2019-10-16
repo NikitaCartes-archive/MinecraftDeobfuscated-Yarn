@@ -42,7 +42,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(intRange, intRange2, intRange3, itemPredicates);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
     }
 
@@ -73,7 +73,7 @@ extends AbstractCriterion<Conditions> {
         public static Conditions items(ItemConvertible ... itemConvertibles) {
             ItemPredicate[] itemPredicates = new ItemPredicate[itemConvertibles.length];
             for (int i = 0; i < itemConvertibles.length; ++i) {
-                itemPredicates[i] = new ItemPredicate(null, itemConvertibles[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.field_20687, EnchantmentPredicate.field_20687, null, NbtPredicate.ANY);
+                itemPredicates[i] = new ItemPredicate(null, itemConvertibles[i].asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY);
             }
             return Conditions.items(itemPredicates);
         }

@@ -16,6 +16,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -65,15 +66,15 @@ extends Block {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (world.isClient) {
-            return true;
+            return ActionResult.SUCCESS;
         }
         blockState = (BlockState)blockState.cycle(NOTE);
         world.setBlockState(blockPos, blockState, 3);
         this.playNote(world, blockPos);
         playerEntity.incrementStat(Stats.TUNE_NOTEBLOCK);
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     @Override

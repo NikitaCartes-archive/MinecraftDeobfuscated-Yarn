@@ -12,11 +12,11 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
@@ -39,20 +39,17 @@ extends FeatureRenderer<T, M> {
             matrixStack.translate(0.0, 0.75, 0.0);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
         }
-        this.method_4192((LivingEntity)livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, layeredVertexConsumerStorage);
-        this.method_4192((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, layeredVertexConsumerStorage);
+        this.renderItem((LivingEntity)livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, layeredVertexConsumerStorage);
+        this.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, layeredVertexConsumerStorage);
         matrixStack.pop();
     }
 
-    private void method_4192(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, Arm arm, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    private void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, Arm arm, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
         if (itemStack.isEmpty()) {
             return;
         }
         matrixStack.push();
         ((ModelWithArms)this.getModel()).setArmAngle(0.0625f, arm, matrixStack);
-        if (livingEntity.isInSneakingPose()) {
-            matrixStack.translate(0.0, 0.2f, 0.0);
-        }
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;

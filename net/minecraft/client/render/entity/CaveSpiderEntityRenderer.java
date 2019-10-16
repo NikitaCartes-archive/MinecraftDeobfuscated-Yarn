@@ -7,9 +7,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.SpiderEntityRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.CaveSpiderEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class CaveSpiderEntityRenderer

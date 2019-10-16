@@ -18,6 +18,10 @@ extends Model {
     public boolean isRiding;
     public boolean isChild = true;
 
+    protected EntityModel() {
+        this(RenderLayer::getEntityCutoutNoCull);
+    }
+
     protected EntityModel(Function<Identifier, RenderLayer> function) {
         super(function);
     }

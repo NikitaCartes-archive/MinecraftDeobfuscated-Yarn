@@ -5,7 +5,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
@@ -19,8 +18,8 @@ extends BipedEntityRenderer<ZombiePigmanEntity, ZombieEntityModel<ZombiePigmanEn
     private static final Identifier SKIN = new Identifier("textures/entity/zombie_pigman.png");
 
     public ZombiePigmanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-        super(entityRenderDispatcher, new ZombieEntityModel(RenderLayer::getEntityCutoutNoCull, 0.0f, false), 0.5f);
-        this.addFeature(new ArmorBipedFeatureRenderer(this, new ZombieEntityModel(RenderLayer::getEntityCutoutNoCull, 0.5f, true), new ZombieEntityModel(RenderLayer::getEntityCutoutNoCull, 1.0f, true)));
+        super(entityRenderDispatcher, new ZombieEntityModel(0.0f, false), 0.5f);
+        this.addFeature(new ArmorBipedFeatureRenderer(this, new ZombieEntityModel(0.5f, true), new ZombieEntityModel(1.0f, true)));
     }
 
     public Identifier method_4093(ZombiePigmanEntity zombiePigmanEntity) {

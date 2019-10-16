@@ -12,10 +12,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.class_4603;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
+import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.FirstPersonRenderer;
@@ -29,6 +29,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -56,7 +57,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.apache.logging.log4j.LogManager;
@@ -74,7 +74,7 @@ SynchronousResourceReloadListener {
     private float viewDistance;
     public final FirstPersonRenderer firstPersonRenderer;
     private final MapRenderer mapRenderer;
-    private final LayeredBufferBuilderStorage field_20948;
+    private final LayeredBufferBuilderStorage layeredBufferBuilderStorage;
     private int ticks;
     private float movementFovMultiplier;
     private float lastMovementFovMultiplier;
@@ -85,8 +85,8 @@ SynchronousResourceReloadListener {
     private long lastWorldIconUpdate;
     private long lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
     private final LightmapTextureManager lightmapTextureManager;
-    private final OverlayTexture field_20949 = new OverlayTexture();
-    private boolean field_4001;
+    private final OverlayTexture overlayTexture = new OverlayTexture();
+    private boolean renderingPanorama;
     private float field_4005 = 1.0f;
     private float field_3988;
     private float field_4004;
@@ -109,7 +109,7 @@ SynchronousResourceReloadListener {
         this.firstPersonRenderer = minecraftClient.getFirstPersonRenderer();
         this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
         this.lightmapTextureManager = new LightmapTextureManager(this, minecraftClient);
-        this.field_20948 = layeredBufferBuilderStorage;
+        this.layeredBufferBuilderStorage = layeredBufferBuilderStorage;
         this.shader = null;
     }
 
@@ -117,7 +117,7 @@ SynchronousResourceReloadListener {
     public void close() {
         this.lightmapTextureManager.close();
         this.mapRenderer.close();
-        this.field_20949.close();
+        this.overlayTexture.close();
         this.disableShader();
     }
 
@@ -285,7 +285,7 @@ SynchronousResourceReloadListener {
 
     private double getFov(Camera camera, float f, boolean bl) {
         FluidState fluidState;
-        if (this.field_4001) {
+        if (this.renderingPanorama) {
             return 90.0;
         }
         double d = 70.0;
@@ -339,7 +339,7 @@ SynchronousResourceReloadListener {
 
     private void renderHand(MatrixStack matrixStack, Camera camera, float f) {
         boolean bl;
-        if (this.field_4001) {
+        if (this.renderingPanorama) {
             return;
         }
         this.method_22709(camera, f, false, false, 2.0f);
@@ -352,12 +352,12 @@ SynchronousResourceReloadListener {
         boolean bl2 = bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
         if (this.client.options.perspective == 0 && !bl && !this.client.options.hudHidden && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
             this.lightmapTextureManager.enable();
-            this.firstPersonRenderer.method_22976(f, matrixStack, this.field_20948.method_23000());
+            this.firstPersonRenderer.method_22976(f, matrixStack, this.layeredBufferBuilderStorage.getGeneralDrawer());
             this.lightmapTextureManager.disable();
         }
         matrixStack.pop();
         if (this.client.options.perspective == 0 && !bl) {
-            class_4603.method_23067(this.client, matrixStack);
+            InGameOverlayRenderer.renderOverlays(this.client, matrixStack);
             this.bobViewWhenHurt(matrixStack, f);
         }
         if (this.client.options.bobView) {
@@ -551,7 +551,7 @@ SynchronousResourceReloadListener {
             }
             float h = 5.0f / (g * g + 5.0f) - g * 0.04f;
             h *= h;
-            Vector3f vector3f = new Vector3f(0.0f, 1.0f, 1.0f);
+            Vector3f vector3f = new Vector3f(0.0f, MathHelper.SQUARE_ROOT_OF_TWO / 2.0f, MathHelper.SQUARE_ROOT_OF_TWO / 2.0f);
             matrixStack.multiply(vector3f.getRotationQuaternion(((float)this.ticks + f) * (float)i));
             matrixStack.scale(1.0f / h, 1.0f, 1.0f);
             float j = -((float)this.ticks + f) * (float)i;
@@ -611,10 +611,10 @@ SynchronousResourceReloadListener {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0f * MathHelper.abs(MathHelper.sin(n))));
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
-        LayeredVertexConsumerStorage.class_4598 lv = this.field_20948.method_23000();
-        this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.field_21444, matrixStack, lv);
+        LayeredVertexConsumerStorage.Drawer drawer = this.layeredBufferBuilderStorage.getGeneralDrawer();
+        this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, drawer);
         matrixStack.pop();
-        lv.method_22993();
+        drawer.draw();
         RenderSystem.popAttributes();
         RenderSystem.popMatrix();
         RenderSystem.enableCull();
@@ -638,7 +638,7 @@ SynchronousResourceReloadListener {
     }
 
     public OverlayTexture method_22975() {
-        return this.field_20949;
+        return this.overlayTexture;
     }
 }
 

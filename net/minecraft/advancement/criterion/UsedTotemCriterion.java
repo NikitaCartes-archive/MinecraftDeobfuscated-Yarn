@@ -29,7 +29,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(itemPredicate);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
     }
 

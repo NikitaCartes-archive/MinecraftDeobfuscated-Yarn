@@ -224,7 +224,7 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int method_22861() {
+    public int getTeamColorValue() {
         AbstractTeam abstractTeam = this.getScoreboardTeam();
         if (abstractTeam != null && abstractTeam.getColor().getColorValue() != null) {
             return abstractTeam.getColor().getColorValue();
@@ -331,13 +331,13 @@ CommandOutput {
 
     public void setPosition(double d, double e, double f) {
         this.setPos(d, e, f);
-        this.method_23311();
+        float g = this.dimensions.width / 2.0f;
+        float h = this.dimensions.height;
+        this.setBoundingBox(new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
     }
 
     protected void method_23311() {
-        float f = this.dimensions.width / 2.0f;
-        float g = this.dimensions.height;
-        this.setBoundingBox(new Box(this.x - (double)f, this.y, this.z - (double)f, this.x + (double)f, this.y + (double)g, this.z + (double)f));
+        this.setPosition(this.x, this.y, this.z);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -582,7 +582,7 @@ CommandOutput {
     }
 
     protected BlockPos method_23314() {
-        return new BlockPos(this.x, this.getBoundingBox().minY - 0.5 - 1.0E-7, this.z);
+        return new BlockPos(this.x, this.getBoundingBox().minY - 0.5000001, this.z);
     }
 
     protected Vec3d adjustMovementForSneaking(Vec3d vec3d, MovementType movementType) {
@@ -1199,7 +1199,7 @@ CommandOutput {
 
     public void updateKilledAdvancementCriterion(Entity entity, int i, DamageSource damageSource) {
         if (entity instanceof ServerPlayerEntity) {
-            Criterions.ENTITY_KILLED_PLAYER.handle((ServerPlayerEntity)entity, this, damageSource);
+            Criterions.ENTITY_KILLED_PLAYER.trigger((ServerPlayerEntity)entity, this, damageSource);
         }
     }
 
@@ -1351,7 +1351,7 @@ CommandOutput {
             }
             this.readCustomDataFromTag(compoundTag);
             if (this.shouldSetPositionOnLoad()) {
-                this.setPosition(this.getX(), this.getY(), this.getZ());
+                this.method_23311();
             }
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Loading entity NBT");

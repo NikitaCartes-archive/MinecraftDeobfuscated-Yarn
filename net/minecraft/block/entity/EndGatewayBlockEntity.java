@@ -185,7 +185,7 @@ implements Tickable {
         if (this.exitPortalPos == null) {
             this.exitPortalPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
             LOGGER.debug("Failed to find suitable block, settling on {}", (Object)this.exitPortalPos);
-            Feature.END_ISLAND.method_23397(FeatureConfig.DEFAULT).generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), new Random(this.exitPortalPos.asLong()), this.exitPortalPos);
+            Feature.END_ISLAND.configure(FeatureConfig.DEFAULT).generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), new Random(this.exitPortalPos.asLong()), this.exitPortalPos);
         } else {
             LOGGER.debug("Found block at {}", (Object)this.exitPortalPos);
         }
@@ -239,7 +239,7 @@ implements Tickable {
     }
 
     private void createPortal(ServerWorld serverWorld, BlockPos blockPos) {
-        Feature.END_GATEWAY.method_23397(EndGatewayFeatureConfig.createConfig(this.getPos(), false)).generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), new Random(), blockPos);
+        Feature.END_GATEWAY.configure(EndGatewayFeatureConfig.createConfig(this.getPos(), false)).generate(serverWorld, serverWorld.method_14178().getChunkGenerator(), new Random(), blockPos);
     }
 
     @Override

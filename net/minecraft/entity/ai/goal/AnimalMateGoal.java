@@ -93,7 +93,7 @@ extends Goal {
         }
         if (serverPlayerEntity != null) {
             serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-            Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.animal, this.mate, passiveEntity);
+            Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, passiveEntity);
         }
         this.animal.setBreedingAge(6000);
         this.mate.setBreedingAge(6000);

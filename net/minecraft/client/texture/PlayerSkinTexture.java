@@ -177,14 +177,14 @@ extends ResourceTexture {
         int m;
         for (m = i; m < k; ++m) {
             for (n = j; n < l; ++n) {
-                int o = nativeImage.getPixelRGBA(m, n);
+                int o = nativeImage.getPixelRgba(m, n);
                 if ((o >> 24 & 0xFF) >= 128) continue;
                 return;
             }
         }
         for (m = i; m < k; ++m) {
             for (n = j; n < l; ++n) {
-                nativeImage.setPixelRGBA(m, n, nativeImage.getPixelRGBA(m, n) & 0xFFFFFF);
+                nativeImage.setPixelRgba(m, n, nativeImage.getPixelRgba(m, n) & 0xFFFFFF);
             }
         }
     }
@@ -192,7 +192,7 @@ extends ResourceTexture {
     private static void method_22796(NativeImage nativeImage, int i, int j, int k, int l) {
         for (int m = i; m < k; ++m) {
             for (int n = j; n < l; ++n) {
-                nativeImage.setPixelRGBA(m, n, nativeImage.getPixelRGBA(m, n) | 0xFF000000);
+                nativeImage.setPixelRgba(m, n, nativeImage.getPixelRgba(m, n) | 0xFF000000);
             }
         }
     }

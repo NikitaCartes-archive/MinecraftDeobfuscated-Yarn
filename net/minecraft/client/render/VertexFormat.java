@@ -62,25 +62,25 @@ public class VertexFormat {
         return this.elements.hashCode();
     }
 
-    public void method_22649(long l) {
+    public void startDrawing(long l) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> this.method_22649(l));
+            RenderSystem.recordRenderCall(() -> this.startDrawing(l));
             return;
         }
         int i = this.getVertexSize();
         ImmutableList<VertexFormatElement> list = this.getElements();
         for (int j = 0; j < list.size(); ++j) {
-            ((VertexFormatElement)list.get(j)).method_22652(l + (long)this.offsets.getInt(j), i);
+            ((VertexFormatElement)list.get(j)).startDrawing(l + (long)this.offsets.getInt(j), i);
         }
     }
 
-    public void method_22651() {
+    public void endDrawing() {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(this::method_22651);
+            RenderSystem.recordRenderCall(this::endDrawing);
             return;
         }
         for (VertexFormatElement vertexFormatElement : this.getElements()) {
-            vertexFormatElement.method_22653();
+            vertexFormatElement.endDrawing();
         }
     }
 }

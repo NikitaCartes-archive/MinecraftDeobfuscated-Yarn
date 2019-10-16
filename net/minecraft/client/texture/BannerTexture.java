@@ -48,10 +48,10 @@ extends AbstractTexture {
                     if (nativeImage3.getWidth() != nativeImage2.getWidth() || nativeImage3.getHeight() != nativeImage2.getHeight()) continue;
                     for (int k = 0; k < nativeImage3.getHeight(); ++k) {
                         for (int l = 0; l < nativeImage3.getWidth(); ++l) {
-                            int m = nativeImage3.getPixelRGBA(l, k);
+                            int m = nativeImage3.getPixelRgba(l, k);
                             if ((m & 0xFF000000) == 0) continue;
                             int n = (m & 0xFF) << 24 & 0xFF000000;
-                            int o = nativeImage.getPixelRGBA(l, k);
+                            int o = nativeImage.getPixelRgba(l, k);
                             int p = MathHelper.multiplyColors(o, j) & 0xFFFFFF;
                             nativeImage2.blendPixel(l, k, n | p);
                         }

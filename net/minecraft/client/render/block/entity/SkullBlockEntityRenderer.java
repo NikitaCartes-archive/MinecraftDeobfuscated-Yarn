@@ -25,11 +25,11 @@ import net.minecraft.client.render.entity.model.DragonHeadEntityModel;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.render.entity.model.SkullOverlayEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -95,21 +95,21 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(SkullBlockEntityRenderer.method_3578(skullType, gameProfile));
         skullEntityModel.render(g, f, 0.0f);
-        skullEntityModel.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
+        skullEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
 
     private static RenderLayer method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
         Identifier identifier = TEXTURES.get(skullType);
         if (skullType != SkullBlock.Type.PLAYER || gameProfile == null) {
-            return RenderLayer.getEntitySolid(identifier);
+            return RenderLayer.getEntityCutout(identifier);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
         if (map.containsKey((Object)MinecraftProfileTexture.Type.SKIN)) {
             return RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));
         }
-        return RenderLayer.getEntitySolid(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
+        return RenderLayer.getEntityCutout(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
     }
 }
 

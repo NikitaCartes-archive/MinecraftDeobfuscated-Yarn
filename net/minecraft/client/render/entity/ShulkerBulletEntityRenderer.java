@@ -12,11 +12,11 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.ShulkerBulletEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class ShulkerBulletEntityRenderer
@@ -41,11 +41,11 @@ extends EntityRenderer<ShulkerBulletEntity> {
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         int m = shulkerBulletEntity.getLightmapCoordinates();
         this.model.setAngles(shulkerBulletEntity, 0.0f, 0.0f, 0.0f, i, j, 0.03125f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(SKIN));
-        this.model.renderItem(matrixStack, vertexConsumer, m, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(SKIN));
+        this.model.render(matrixStack, vertexConsumer, m, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.scale(1.5f, 1.5f, 1.5f);
         VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityForceTranslucent(SKIN));
-        this.model.renderItem(matrixStack, vertexConsumer2, m, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
+        this.model.render(matrixStack, vertexConsumer2, m, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
         super.render(shulkerBulletEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

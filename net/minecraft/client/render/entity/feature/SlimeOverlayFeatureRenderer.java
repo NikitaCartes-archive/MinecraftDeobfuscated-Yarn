@@ -13,9 +13,9 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.SlimeEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class SlimeOverlayFeatureRenderer<T extends LivingEntity>
@@ -33,8 +33,8 @@ extends FeatureRenderer<T, SlimeEntityModel<T>> {
         ((SlimeEntityModel)this.getModel()).copyStateTo(this.model);
         this.model.animateModel(livingEntity, f, g, h);
         this.model.setAngles(livingEntity, f, g, j, k, l, m);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityTranslucent(this.method_23194(livingEntity)));
-        this.model.renderItem(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0f), 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(livingEntity)));
+        this.model.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0f), 1.0f, 1.0f, 1.0f);
     }
 }
 

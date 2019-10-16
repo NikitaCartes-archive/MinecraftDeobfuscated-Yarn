@@ -10,9 +10,9 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.WitchHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.WitchEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WitchEntityRenderer
@@ -25,7 +25,7 @@ extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
     }
 
     public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        ((WitchEntityModel)this.model).method_2840(!witchEntity.getMainHandStack().isEmpty());
+        ((WitchEntityModel)this.model).setLiftingNose(!witchEntity.getMainHandStack().isEmpty());
         super.method_4072(witchEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }
 

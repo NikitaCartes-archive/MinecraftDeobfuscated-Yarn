@@ -352,12 +352,8 @@ extends PathNodeMaker {
                                 pathNodeType = PathNodeType.DANGER_FIRE;
                                 continue;
                             }
-                            if (block == Blocks.SWEET_BERRY_BUSH) {
-                                pathNodeType = PathNodeType.DANGER_OTHER;
-                                continue;
-                            }
-                            if (block != Blocks.HONEY_BLOCK) continue;
-                            pathNodeType = PathNodeType.STICKY_HONEY;
+                            if (block != Blocks.SWEET_BERRY_BUSH) continue;
+                            pathNodeType = PathNodeType.DANGER_OTHER;
                         }
                     }
                 }

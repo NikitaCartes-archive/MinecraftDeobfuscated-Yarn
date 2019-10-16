@@ -28,7 +28,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(intRange);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(beaconBlockEntity));
     }
 

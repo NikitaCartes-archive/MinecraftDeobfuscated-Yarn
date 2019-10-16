@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -45,11 +46,12 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        if (!world.isClient) {
-            this.openContainer(world, blockPos, playerEntity);
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        if (world.isClient) {
+            return ActionResult.SUCCESS;
         }
-        return true;
+        this.openContainer(world, blockPos, playerEntity);
+        return ActionResult.SUCCESS;
     }
 
     protected abstract void openContainer(World var1, BlockPos var2, PlayerEntity var3);

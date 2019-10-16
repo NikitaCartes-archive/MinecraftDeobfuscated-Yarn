@@ -11,10 +11,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>> {
@@ -24,25 +24,25 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
         this.context = featureRendererContext;
     }
 
-    protected static <T extends LivingEntity> void method_23196(EntityModel<T> entityModel, EntityModel<T> entityModel2, Identifier identifier, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m, float n, float o, float p) {
+    protected static <T extends LivingEntity> void render(EntityModel<T> entityModel, EntityModel<T> entityModel2, Identifier identifier, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m, float n, float o, float p) {
         if (!livingEntity.isInvisible()) {
             entityModel.copyStateTo(entityModel2);
             entityModel2.animateModel(livingEntity, f, g, m);
             entityModel2.setAngles(livingEntity, f, g, h, j, k, l);
-            FeatureRenderer.method_23199(entityModel2, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity, n, o, p);
+            FeatureRenderer.renderModel(entityModel2, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity, n, o, p);
         }
     }
 
-    protected static <T extends LivingEntity> void method_23199(EntityModel<T> entityModel, Identifier identifier, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h) {
+    protected static <T extends LivingEntity> void renderModel(EntityModel<T> entityModel, Identifier identifier, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h) {
         VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
-        entityModel.renderItem(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0f), f, g, h);
+        entityModel.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0f), f, g, h);
     }
 
     public M getModel() {
         return this.context.getModel();
     }
 
-    protected Identifier method_23194(T entity) {
+    protected Identifier getTexture(T entity) {
         return this.context.getTexture(entity);
     }
 

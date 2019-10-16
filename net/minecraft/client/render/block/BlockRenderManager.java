@@ -11,13 +11,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.block.FluidRenderer;
-import net.minecraft.client.render.item.ItemDynamicRenderer;
+import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -27,7 +28,6 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(value=EnvType.CLIENT)
@@ -56,7 +56,7 @@ implements SynchronousResourceReloadListener {
         }
         BakedModel bakedModel = this.models.getModel(blockState);
         long l = blockState.getRenderingSeed(blockPos);
-        this.renderer.tesselate(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, true, this.random, l, OverlayTexture.field_21444);
+        this.renderer.tesselate(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
     }
 
     public boolean tesselateBlock(BlockState blockState, BlockPos blockPos, BlockRenderView blockRenderView, MatrixStack matrixStack, VertexConsumer vertexConsumer, boolean bl, Random random) {
@@ -65,7 +65,7 @@ implements SynchronousResourceReloadListener {
             if (blockRenderType != BlockRenderType.MODEL) {
                 return false;
             }
-            return this.renderer.tesselate(blockRenderView, this.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, random, blockState.getRenderingSeed(blockPos), OverlayTexture.field_21444);
+            return this.renderer.tesselate(blockRenderView, this.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, random, blockState.getRenderingSeed(blockPos), OverlayTexture.DEFAULT_UV);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating block in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
@@ -93,7 +93,7 @@ implements SynchronousResourceReloadListener {
         return this.models.getModel(blockState);
     }
 
-    public void renderDynamic(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void renderOnEntity(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
         BlockRenderType blockRenderType = blockState.getRenderType();
         if (blockRenderType == BlockRenderType.INVISIBLE) {
             return;
@@ -107,14 +107,14 @@ implements SynchronousResourceReloadListener {
                 float f = (float)(k >> 16 & 0xFF) / 255.0f;
                 float g = (float)(k >> 8 & 0xFF) / 255.0f;
                 float h = (float)(k & 0xFF) / 255.0f;
-                this.renderer.render(matrixStack.peek(), matrixStack.method_23478(), layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23575(blockState)), blockState, bakedModel, f, g, h, i, j);
+                this.renderer.render(matrixStack.peek(), matrixStack.peekNormal(), layeredVertexConsumerStorage.getBuffer(RenderLayers.getEntityBlockLayer(blockState)), blockState, bakedModel, f, g, h, i, j);
                 matrixStack.pop();
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {
                 matrixStack.push();
                 matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f));
-                ItemDynamicRenderer.INSTANCE.render(new ItemStack(blockState.getBlock()), matrixStack, layeredVertexConsumerStorage, i, j);
+                BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(blockState.getBlock()), matrixStack, layeredVertexConsumerStorage, i, j);
                 matrixStack.pop();
             }
         }

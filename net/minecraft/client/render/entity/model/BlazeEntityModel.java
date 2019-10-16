@@ -7,17 +7,17 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class BlazeEntityModel<T extends Entity>
-extends class_4595<T> {
+extends CompositeEntityModel<T> {
     private final ModelPart[] rods;
     private final ModelPart head = new ModelPart(this, 0, 0);
-    private final ImmutableList<ModelPart> field_20921;
+    private final ImmutableList<ModelPart> parts;
 
     public BlazeEntityModel() {
         this.head.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
@@ -29,12 +29,12 @@ extends class_4595<T> {
         ImmutableList.Builder builder = ImmutableList.builder();
         builder.add(this.head);
         builder.addAll(Arrays.asList(this.rods));
-        this.field_20921 = builder.build();
+        this.parts = builder.build();
     }
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return this.field_20921;
+        return this.parts;
     }
 
     @Override

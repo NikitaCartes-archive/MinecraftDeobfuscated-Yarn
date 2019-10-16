@@ -32,7 +32,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(locationPredicate, locationPredicate2, distancePredicate);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ()));
     }
 
@@ -43,14 +43,14 @@ extends AbstractCriterion<Conditions> {
 
     public static class Conditions
     extends AbstractCriterionConditions {
-        private final LocationPredicate entered;
-        private final LocationPredicate exited;
+        private final LocationPredicate enteredPos;
+        private final LocationPredicate exitedPos;
         private final DistancePredicate distance;
 
         public Conditions(LocationPredicate locationPredicate, LocationPredicate locationPredicate2, DistancePredicate distancePredicate) {
             super(ID);
-            this.entered = locationPredicate;
-            this.exited = locationPredicate2;
+            this.enteredPos = locationPredicate;
+            this.exitedPos = locationPredicate2;
             this.distance = distancePredicate;
         }
 
@@ -59,10 +59,10 @@ extends AbstractCriterion<Conditions> {
         }
 
         public boolean matches(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
-            if (!this.entered.test(serverWorld, vec3d.x, vec3d.y, vec3d.z)) {
+            if (!this.enteredPos.test(serverWorld, vec3d.x, vec3d.y, vec3d.z)) {
                 return false;
             }
-            if (!this.exited.test(serverWorld, d, e, f)) {
+            if (!this.exitedPos.test(serverWorld, d, e, f)) {
                 return false;
             }
             return this.distance.test(vec3d.x, vec3d.y, vec3d.z, d, e, f);
@@ -71,8 +71,8 @@ extends AbstractCriterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("entered", this.entered.toJson());
-            jsonObject.add("exited", this.exited.toJson());
+            jsonObject.add("entered", this.enteredPos.toJson());
+            jsonObject.add("exited", this.exitedPos.toJson());
             jsonObject.add("distance", this.distance.serialize());
             return jsonObject;
         }

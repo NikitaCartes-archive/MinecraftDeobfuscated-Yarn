@@ -86,6 +86,7 @@ extends AnimalEntity {
         return !this.isLeashed();
     }
 
+    @Environment(value=EnvType.CLIENT)
     protected void showEmoteParticle(boolean bl) {
         DefaultParticleType particleEffect = ParticleTypes.HEART;
         if (!bl) {
@@ -154,7 +155,7 @@ extends AnimalEntity {
         this.setTamed(true);
         this.setOwnerUuid(playerEntity.getUuid());
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
+            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
         }
     }
 

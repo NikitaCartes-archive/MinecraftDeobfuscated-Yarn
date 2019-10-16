@@ -11,9 +11,9 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class IronGolemCrackFeatureRenderer
@@ -30,7 +30,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
             return;
         }
         Identifier identifier = field_21443.get((Object)lv);
-        IronGolemCrackFeatureRenderer.method_23199(this.getModel(), identifier, matrixStack, layeredVertexConsumerStorage, i, ironGolemEntity, 1.0f, 1.0f, 1.0f);
+        IronGolemCrackFeatureRenderer.renderModel(this.getModel(), identifier, matrixStack, layeredVertexConsumerStorage, i, ironGolemEntity, 1.0f, 1.0f, 1.0f);
     }
 }
 

@@ -121,9 +121,6 @@ extends RangedWeaponItem {
             playerEntity.setCurrentHand(hand);
             return TypedActionResult.successWithoutSwing(itemStack);
         }
-        if (bl) {
-            return TypedActionResult.pass(itemStack);
-        }
         return TypedActionResult.fail(itemStack);
     }
 

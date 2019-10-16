@@ -56,7 +56,7 @@ extends DoorInteractGoal {
     @Override
     public void stop() {
         super.stop();
-        this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, -1);
+        this.mob.world.setBlockBreakingInfo(this.mob.getEntityId(), this.doorPos, -1);
     }
 
     @Override
@@ -71,7 +71,7 @@ extends DoorInteractGoal {
         ++this.breakProgress;
         int i = (int)((float)this.breakProgress / (float)this.method_16462() * 10.0f);
         if (i != this.prevBreakProgress) {
-            this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, i);
+            this.mob.world.setBlockBreakingInfo(this.mob.getEntityId(), this.doorPos, i);
             this.prevBreakProgress = i;
         }
         if (this.breakProgress == this.method_16462() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {

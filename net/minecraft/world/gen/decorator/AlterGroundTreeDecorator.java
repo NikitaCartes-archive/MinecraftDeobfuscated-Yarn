@@ -9,7 +9,6 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import net.minecraft.class_4651;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -19,18 +18,19 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.stateprovider.StateProvider;
 
 public class AlterGroundTreeDecorator
 extends TreeDecorator {
-    private final class_4651 field_21316;
+    private final StateProvider field_21316;
 
-    public AlterGroundTreeDecorator(class_4651 arg) {
+    public AlterGroundTreeDecorator(StateProvider stateProvider) {
         super(TreeDecoratorType.ALTER_GROUND);
-        this.field_21316 = arg;
+        this.field_21316 = stateProvider;
     }
 
     public <T> AlterGroundTreeDecorator(Dynamic<T> dynamic) {
-        this((class_4651)Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic.get("provider").get("type").asString().orElseThrow(RuntimeException::new))).method_23456(dynamic.get("provider").orElseEmptyMap()));
+        this((StateProvider)Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic.get("provider").get("type").asString().orElseThrow(RuntimeException::new))).deserialize(dynamic.get("provider").orElseEmptyMap()));
     }
 
     @Override
@@ -64,7 +64,7 @@ extends TreeDecorator {
         for (int i = 2; i >= -3; --i) {
             BlockPos blockPos2 = blockPos.up(i);
             if (AbstractTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2)) {
-                modifiableTestableWorld.setBlockState(blockPos2, this.field_21316.method_23455(random, blockPos), 19);
+                modifiableTestableWorld.setBlockState(blockPos2, this.field_21316.getBlockState(random, blockPos), 19);
                 break;
             }
             if (!AbstractTreeFeature.isAir(modifiableTestableWorld, blockPos2) && i < 0) break;

@@ -40,7 +40,7 @@ extends Feature<C> {
     }
 
     @Override
-    public ConfiguredFeature<C, ? extends StructureFeature<C>> method_23397(C featureConfig) {
+    public ConfiguredFeature<C, ? extends StructureFeature<C>> configure(C featureConfig) {
         return new ConfiguredFeature<C, StructureFeature>(this, featureConfig);
     }
 

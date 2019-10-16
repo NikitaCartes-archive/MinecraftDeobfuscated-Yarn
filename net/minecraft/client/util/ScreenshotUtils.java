@@ -29,18 +29,18 @@ public class ScreenshotUtils {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
     public static void saveScreenshot(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
-        ScreenshotUtils.method_22690(file, null, i, j, glFramebuffer, consumer);
+        ScreenshotUtils.saveScreenshot(file, null, i, j, glFramebuffer, consumer);
     }
 
-    public static void method_22690(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+    public static void saveScreenshot(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> ScreenshotUtils.saveScreenshot(file, string, i, j, glFramebuffer, consumer));
+            RenderSystem.recordRenderCall(() -> ScreenshotUtils.saveScreenshotInner(file, string, i, j, glFramebuffer, consumer));
         } else {
-            ScreenshotUtils.saveScreenshot(file, string, i, j, glFramebuffer, consumer);
+            ScreenshotUtils.saveScreenshotInner(file, string, i, j, glFramebuffer, consumer);
         }
     }
 
-    private static void saveScreenshot(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+    private static void saveScreenshotInner(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
         NativeImage nativeImage = ScreenshotUtils.takeScreenshot(i, j, glFramebuffer);
         File file2 = new File(file, "screenshots");
         file2.mkdir();

@@ -151,7 +151,7 @@ public class ClientPlayerInteractionManager {
                 this.selectedStack = this.client.player.getMainHandStack();
                 this.currentBreakingProgress = 0.0f;
                 this.blockBreakingSoundCooldown = 0.0f;
-                this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
+                this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
             }
         }
         return true;
@@ -164,7 +164,7 @@ public class ClientPlayerInteractionManager {
             this.sendPlayerAction(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN);
             this.breakingBlock = false;
             this.currentBreakingProgress = 0.0f;
-            this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, -1);
+            this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, -1);
             this.client.player.resetLastAttackedTicks();
         }
     }
@@ -207,7 +207,7 @@ public class ClientPlayerInteractionManager {
         } else {
             return this.attackBlock(blockPos, direction);
         }
-        this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
+        this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
         return true;
     }
 
@@ -250,7 +250,6 @@ public class ClientPlayerInteractionManager {
         boolean bl2;
         this.syncSelectedSlot();
         BlockPos blockPos = blockHitResult.getBlockPos();
-        Vec3d vec3d = blockHitResult.getPos();
         if (!this.client.world.getWorldBorder().contains(blockPos)) {
             return ActionResult.FAIL;
         }
@@ -261,9 +260,9 @@ public class ClientPlayerInteractionManager {
         }
         boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = clientPlayerEntity.shouldCancelInteraction() && bl;
-        if (!bl2 && clientWorld.getBlockState(blockPos).onUse(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
+        if (!bl2 && (actionResult = clientWorld.getBlockState(blockPos).onUse(clientWorld, clientPlayerEntity, hand, blockHitResult)).method_23665()) {
             this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
-            return ActionResult.SUCCESS;
+            return actionResult;
         }
         this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
         if (itemStack.isEmpty() || clientPlayerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
@@ -280,15 +279,15 @@ public class ClientPlayerInteractionManager {
         return actionResult;
     }
 
-    public TypedActionResult<ItemStack> interactItem(PlayerEntity playerEntity, World world, Hand hand) {
+    public ActionResult interactItem(PlayerEntity playerEntity, World world, Hand hand) {
         if (this.gameMode == GameMode.SPECTATOR) {
-            return TypedActionResult.pass(null);
+            return ActionResult.PASS;
         }
         this.syncSelectedSlot();
         this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-            return TypedActionResult.pass(itemStack);
+            return ActionResult.PASS;
         }
         int i = itemStack.getCount();
         TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
@@ -296,7 +295,7 @@ public class ClientPlayerInteractionManager {
         if (itemStack2 != itemStack || itemStack2.getCount() != i) {
             playerEntity.setStackInHand(hand, itemStack2);
         }
-        return typedActionResult;
+        return typedActionResult.getResult();
     }
 
     public ClientPlayerEntity createPlayer(ClientWorld clientWorld, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {

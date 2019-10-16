@@ -64,7 +64,7 @@ ResourceReloadListener {
             abstractTexture = new ResourceTexture(identifier);
             this.registerTexture(identifier, abstractTexture);
         }
-        abstractTexture.method_23207();
+        abstractTexture.bindTexture();
     }
 
     public boolean registerTexture(Identifier identifier, AbstractTexture abstractTexture) {

@@ -30,6 +30,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -67,9 +68,9 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (world.isClient) {
-            return true;
+            return ActionResult.SUCCESS;
         }
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof DispenserBlockEntity) {
@@ -80,7 +81,7 @@ extends BlockWithEntity {
                 playerEntity.incrementStat(Stats.INSPECT_DISPENSER);
             }
         }
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     protected void dispense(World world, BlockPos blockPos) {

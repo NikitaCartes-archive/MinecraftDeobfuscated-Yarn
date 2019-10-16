@@ -132,11 +132,14 @@ implements RangedAttackMob {
     @Override
     protected boolean interactMob(PlayerEntity playerEntity2, Hand hand) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
-        if (itemStack.getItem() == Items.SHEARS && this.hasPumpkin() && !this.world.isClient) {
-            this.setHasPumpkin(false);
-            itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+        if (itemStack.getItem() == Items.SHEARS && this.hasPumpkin()) {
+            if (!this.world.isClient) {
+                this.setHasPumpkin(false);
+                itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+            }
+            return true;
         }
-        return super.interactMob(playerEntity2, hand);
+        return false;
     }
 
     public boolean hasPumpkin() {

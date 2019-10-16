@@ -20,6 +20,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.container.EnchantingTableContainer;
 import net.minecraft.enchantment.Enchantment;
@@ -29,7 +30,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantingScreen
@@ -123,10 +123,10 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         }
         RenderSystem.enableRescaleNormal();
         bookModel.setPageAngles(0.0f, o, p, h);
-        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = lv.getBuffer(bookModel.method_23500(BOOK_TEXURE));
-        bookModel.renderItem(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
-        lv.method_22993();
+        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
+        VertexConsumer vertexConsumer = drawer.getBuffer(bookModel.getLayer(BOOK_TEXURE));
+        bookModel.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        drawer.draw();
         matrixStack.pop();
         RenderSystem.matrixMode(5889);
         RenderSystem.viewport(0, 0, this.minecraft.getWindow().getFramebufferWidth(), this.minecraft.getWindow().getFramebufferHeight());

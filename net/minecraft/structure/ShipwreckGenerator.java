@@ -6,6 +6,7 @@ package net.minecraft.structure;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
@@ -24,7 +25,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
-import net.minecraft.world.loot.LootTables;
 
 public class ShipwreckGenerator {
     private static final BlockPos field_14536 = new BlockPos(4, 0, 15);

@@ -7,14 +7,14 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class WitherEntityModel<T extends WitherEntity>
-extends class_4595<T> {
+extends CompositeEntityModel<T> {
     private final ModelPart[] field_3613;
     private final ModelPart[] field_3612;
     private final ImmutableList<ModelPart> field_20943;

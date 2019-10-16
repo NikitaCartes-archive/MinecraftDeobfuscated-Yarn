@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.container.LoomContainer;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
@@ -25,7 +26,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -88,9 +88,9 @@ extends AbstractContainerScreen<LoomContainer> {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(k + 139, l + 52, 0.0f);
             RenderSystem.scalef(24.0f, -24.0f, 1.0f);
-            this.preview.method_22534(true);
+            this.preview.setPreview(true);
             BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.preview, new MatrixStack());
-            this.preview.method_22534(false);
+            this.preview.setPreview(false);
             RenderSystem.popMatrix();
         } else if (this.hasTooManyPatterns) {
             this.blit(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
@@ -124,22 +124,22 @@ extends AbstractContainerScreen<LoomContainer> {
     }
 
     private void method_22692(int i, int j, int k) {
-        this.minecraft.getSpriteAtlas().method_23207();
+        this.minecraft.getSpriteAtlas().bindTexture();
         RenderSystem.texParameter(3553, 10241, 9728);
         BannerBlockEntity bannerBlockEntity = new BannerBlockEntity();
-        bannerBlockEntity.method_22534(true);
+        bannerBlockEntity.setPreview(true);
         ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-        ListTag listTag = new BannerPattern.Builder().with(BannerPattern.BASE, DyeColor.GRAY).with(BannerPattern.values()[i], DyeColor.WHITE).build();
+        ListTag listTag = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toTag();
         compoundTag.put("Patterns", listTag);
-        bannerBlockEntity.deserialize(itemStack, DyeColor.GRAY);
+        bannerBlockEntity.readFrom(itemStack, DyeColor.GRAY);
         RenderSystem.pushMatrix();
         RenderSystem.translatef((float)j + 0.5f, k + 16, 0.0f);
         RenderSystem.scalef(6.0f, -6.0f, 1.0f);
         RenderSystem.translatef(0.5f, 0.5f, 0.0f);
         BlockEntityRenderDispatcher.INSTANCE.renderEntity(bannerBlockEntity, new MatrixStack());
         RenderSystem.popMatrix();
-        this.minecraft.getSpriteAtlas().method_23207();
+        this.minecraft.getSpriteAtlas().bindTexture();
     }
 
     @Override
@@ -207,7 +207,7 @@ extends AbstractContainerScreen<LoomContainer> {
             this.preview = null;
         } else {
             this.preview = new BannerBlockEntity();
-            this.preview.deserialize(itemStack, ((BannerItem)itemStack.getItem()).getColor());
+            this.preview.readFrom(itemStack, ((BannerItem)itemStack.getItem()).getColor());
         }
         ItemStack itemStack2 = ((LoomContainer)this.container).getBannerSlot().getStack();
         ItemStack itemStack3 = ((LoomContainer)this.container).getDyeSlot().getStack();

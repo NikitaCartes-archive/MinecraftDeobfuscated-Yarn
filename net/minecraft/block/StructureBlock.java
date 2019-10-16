@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -38,12 +39,12 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof StructureBlockBlockEntity) {
-            return ((StructureBlockBlockEntity)blockEntity).openScreen(playerEntity);
+            return ((StructureBlockBlockEntity)blockEntity).openScreen(playerEntity) ? ActionResult.SUCCESS : ActionResult.PASS;
         }
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override

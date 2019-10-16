@@ -6,15 +6,14 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class SmallPufferfishEntityModel<T extends Entity>
-extends class_4595<T> {
+extends CompositeEntityModel<T> {
     private final ModelPart field_3505;
     private final ModelPart field_3507;
     private final ModelPart field_3506;
@@ -23,7 +22,6 @@ extends class_4595<T> {
     private final ModelPart field_3508;
 
     public SmallPufferfishEntityModel() {
-        super(RenderLayer::getEntityCutoutNoCull);
         this.textureWidth = 32;
         this.textureHeight = 32;
         int i = 23;

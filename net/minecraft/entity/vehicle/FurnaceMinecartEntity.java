@@ -70,7 +70,7 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected double method_7504() {
+    protected double getMaxOffRailSpeed() {
         return 0.2;
     }
 
@@ -83,8 +83,8 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void method_7513(BlockPos blockPos, BlockState blockState) {
-        super.method_7513(blockPos, blockState);
+    protected void moveOnRail(BlockPos blockPos, BlockState blockState) {
+        super.moveOnRail(blockPos, blockState);
         double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
         Vec3d vec3d = this.getVelocity();
         if (d > 1.0E-4 && FurnaceMinecartEntity.squaredHorizontalLength(vec3d) > 0.001) {
@@ -95,7 +95,7 @@ extends AbstractMinecartEntity {
                 this.pushX = 0.0;
                 this.pushZ = 0.0;
             } else {
-                double e = d / this.method_7504();
+                double e = d / this.getMaxOffRailSpeed();
                 this.pushX *= e;
                 this.pushZ *= e;
             }
@@ -103,7 +103,7 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void method_7525() {
+    protected void applySlowdown() {
         double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
         if (d > 1.0E-7) {
             d = MathHelper.sqrt(d);
@@ -113,7 +113,7 @@ extends AbstractMinecartEntity {
         } else {
             this.setVelocity(this.getVelocity().multiply(0.98, 0.0, 0.98));
         }
-        super.method_7525();
+        super.applySlowdown();
     }
 
     @Override

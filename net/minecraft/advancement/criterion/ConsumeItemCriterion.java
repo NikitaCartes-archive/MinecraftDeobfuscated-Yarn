@@ -31,7 +31,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(ItemPredicate.deserialize(jsonObject.get("item")));
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack));
     }
 
@@ -54,7 +54,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions item(ItemConvertible itemConvertible) {
-            return new Conditions(new ItemPredicate(null, itemConvertible.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.field_20687, EnchantmentPredicate.field_20687, null, NbtPredicate.ANY));
+            return new Conditions(new ItemPredicate(null, itemConvertible.asItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, EnchantmentPredicate.ARRAY_OF_ANY, EnchantmentPredicate.ARRAY_OF_ANY, null, NbtPredicate.ANY));
         }
 
         public boolean matches(ItemStack itemStack) {

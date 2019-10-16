@@ -26,6 +26,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -227,14 +229,18 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (blockState.get(HAS_BOOK).booleanValue()) {
             if (!world.isClient) {
                 this.openContainer(world, blockPos, playerEntity);
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
-        return false;
+        ItemStack itemStack = playerEntity.getStackInHand(hand);
+        if (itemStack.isEmpty() || itemStack.getItem().isIn(ItemTags.LECTERN_BOOKS)) {
+            return ActionResult.PASS;
+        }
+        return ActionResult.CONSUME;
     }
 
     @Override

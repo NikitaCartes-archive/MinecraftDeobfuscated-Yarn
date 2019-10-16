@@ -29,6 +29,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.Projectile;
@@ -191,6 +192,20 @@ public interface DispenserBehavior {
         for (SpawnEggItem spawnEggItem : SpawnEggItem.getAll()) {
             DispenserBlock.registerBehavior(spawnEggItem, itemDispenserBehavior);
         }
+        DispenserBlock.registerBehavior(Items.ARMOR_STAND, new ItemDispenserBehavior(){
+
+            @Override
+            public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
+                Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
+                BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
+                World world = blockPointer.getWorld();
+                ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
+                EntityType.loadFromEntityTag(world, null, armorStandEntity, itemStack.getTag());
+                world.spawnEntity(armorStandEntity);
+                itemStack.decrement(1);
+                return itemStack;
+            }
+        });
         DispenserBlock.registerBehavior(Items.FIREWORK_ROCKET, new ItemDispenserBehavior(){
 
             @Override
@@ -376,10 +391,13 @@ public interface DispenserBehavior {
                         WitherSkullBlock.onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
                     }
                     itemStack.decrement(1);
-                } else if (ArmorItem.dispenseArmor(blockPointer, itemStack).isEmpty()) {
-                    this.success = false;
+                } else {
+                    ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
+                    if (itemStack.getCount() < itemStack2.getCount()) {
+                        this.success = false;
+                    }
                 }
-                return itemStack;
+                return super.dispenseSilently(blockPointer, itemStack);
             }
         });
         DispenserBlock.registerBehavior(Blocks.CARVED_PUMPKIN, new FallibleItemDispenserBehavior(){
@@ -397,18 +415,18 @@ public interface DispenserBehavior {
                     itemStack.decrement(1);
                 } else {
                     ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
-                    if (itemStack2.isEmpty()) {
+                    if (itemStack.getCount() < itemStack2.getCount()) {
                         this.success = false;
                     }
                 }
-                return itemStack;
+                return super.dispenseSilently(blockPointer, itemStack);
             }
         });
         DispenserBlock.registerBehavior(Blocks.SHULKER_BOX.asItem(), new BlockPlacementDispenserBehavior());
         for (DyeColor dyeColor : DyeColor.values()) {
             DispenserBlock.registerBehavior(ShulkerBoxBlock.get(dyeColor).asItem(), new BlockPlacementDispenserBehavior());
         }
-        DispenserBlock.registerBehavior(Items.GLASS_BOTTLE.asItem(), new ItemDispenserBehavior(){
+        DispenserBlock.registerBehavior(Items.GLASS_BOTTLE.asItem(), new FallibleItemDispenserBehavior(){
             private final ItemDispenserBehavior field_20533 = new ItemDispenserBehavior();
 
             private ItemStack method_22141(BlockPointer blockPointer, ItemStack itemStack, ItemStack itemStack2) {
@@ -425,17 +443,20 @@ public interface DispenserBehavior {
             @Override
             public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
                 BlockPos blockPos;
+                this.success = false;
                 World iWorld = blockPointer.getWorld();
                 BlockState blockState = iWorld.getBlockState(blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING)));
                 Block block = blockState.getBlock();
                 if (block.matches(BlockTags.BEEHIVES) && blockState.get(BeeHiveBlock.HONEY_LEVEL) >= 5) {
                     ((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
+                    this.success = true;
                     return this.method_22141(blockPointer, itemStack, new ItemStack(Items.HONEY_BOTTLE));
                 }
                 if (iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+                    this.success = true;
                     return this.method_22141(blockPointer, itemStack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
                 }
-                return itemStack;
+                return super.dispenseSilently(blockPointer, itemStack);
             }
         });
         DispenserBlock.registerBehavior(Items.SHEARS.asItem(), new FallibleItemDispenserBehavior(){

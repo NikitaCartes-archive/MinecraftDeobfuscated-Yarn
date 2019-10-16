@@ -10,9 +10,9 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.StrayEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class StrayOverlayFeatureRenderer<T extends MobEntity, M extends EntityModel<T>>
@@ -25,7 +25,7 @@ extends FeatureRenderer<T, M> {
     }
 
     public void method_23204(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T mobEntity, float f, float g, float h, float j, float k, float l, float m) {
-        StrayOverlayFeatureRenderer.method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
+        StrayOverlayFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
     }
 }
 

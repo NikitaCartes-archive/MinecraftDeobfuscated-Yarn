@@ -48,6 +48,12 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
@@ -67,11 +73,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.loot.LootTable;
-import net.minecraft.world.loot.LootTables;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextParameters;
-import net.minecraft.world.loot.context.LootContextTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class CatEntity
@@ -373,11 +374,24 @@ extends TameableEntity {
         return entityData;
     }
 
+    /*
+     * Enabled aggressive block sorting
+     */
     @Override
     public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
         boolean bl;
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         Item item = itemStack.getItem();
+        if (itemStack.getItem() instanceof SpawnEggItem) {
+            return super.interactMob(playerEntity, hand);
+        }
+        if (this.world.isClient) {
+            if (this.isTamed()) {
+                if (this.isOwner(playerEntity)) return true;
+            }
+            if (this.isBreedingItem(itemStack)) return true;
+            return false;
+        }
         if (this.isTamed()) {
             if (this.isOwner(playerEntity)) {
                 if (item instanceof DyeItem) {
@@ -390,35 +404,34 @@ extends TameableEntity {
                         this.setPersistent();
                         return true;
                     }
-                } else if (this.isBreedingItem(itemStack)) {
-                    if (this.getHealth() < this.getMaximumHealth() && item.isFood()) {
+                } else {
+                    if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
                         this.eat(playerEntity, itemStack);
                         this.heal(item.getFoodComponent().getHunger());
                         return true;
                     }
-                } else if (!this.world.isClient) {
+                    boolean bl2 = super.interactMob(playerEntity, hand);
+                    if (bl2) {
+                        if (!this.isBaby()) return bl2;
+                    }
                     this.sitGoal.setEnabledWithOwner(!this.isSitting());
+                    return bl2;
                 }
             }
         } else if (this.isBreedingItem(itemStack)) {
             this.eat(playerEntity, itemStack);
-            if (!this.world.isClient) {
-                if (this.random.nextInt(3) == 0) {
-                    this.setOwner(playerEntity);
-                    this.showEmoteParticle(true);
-                    this.sitGoal.setEnabledWithOwner(true);
-                    this.world.sendEntityStatus(this, (byte)7);
-                } else {
-                    this.showEmoteParticle(false);
-                    this.world.sendEntityStatus(this, (byte)6);
-                }
+            if (this.random.nextInt(3) == 0) {
+                this.setOwner(playerEntity);
+                this.sitGoal.setEnabledWithOwner(true);
+                this.world.sendEntityStatus(this, (byte)7);
+            } else {
+                this.world.sendEntityStatus(this, (byte)6);
             }
             this.setPersistent();
             return true;
         }
-        if (bl = super.interactMob(playerEntity, hand)) {
-            this.setPersistent();
-        }
+        if (!(bl = super.interactMob(playerEntity, hand))) return bl;
+        this.setPersistent();
         return bl;
     }
 

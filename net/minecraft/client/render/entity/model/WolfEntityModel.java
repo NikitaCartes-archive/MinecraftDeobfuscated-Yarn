@@ -6,15 +6,15 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4593;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.model.TintableAnimalModel;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class WolfEntityModel<T extends WolfEntity>
-extends class_4593<T> {
+extends TintableAnimalModel<T> {
     private final ModelPart head;
     private final ModelPart field_20788;
     private final ModelPart field_3623;
@@ -63,12 +63,12 @@ extends class_4593<T> {
     }
 
     @Override
-    protected Iterable<ModelPart> method_22946() {
+    protected Iterable<ModelPart> getHeadParts() {
         return ImmutableList.of(this.head);
     }
 
     @Override
-    protected Iterable<ModelPart> method_22948() {
+    protected Iterable<ModelPart> getBodyParts() {
         return ImmutableList.of(this.field_3623, this.field_3622, this.field_3620, this.field_3618, this.field_3624, this.field_3617, this.field_3619);
     }
 

@@ -6,8 +6,8 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
@@ -15,7 +15,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class StrayEntityModel<T extends MobEntity>
@@ -25,7 +24,7 @@ extends BipedEntityModel<T> {
     }
 
     public StrayEntityModel(float f, boolean bl) {
-        super(RenderLayer::getEntityCutoutNoCull, f, 0.0f, 64, 32);
+        super(f);
         if (!bl) {
             this.rightArm = new ModelPart(this, 40, 16);
             this.rightArm.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);

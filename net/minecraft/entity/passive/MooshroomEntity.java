@@ -79,7 +79,7 @@ extends CowEntity {
     @Override
     public boolean interactMob(PlayerEntity playerEntity2, Hand hand) {
         ItemStack itemStack = playerEntity2.getStackInHand(hand);
-        if (itemStack.getItem() == Items.BOWL && this.getBreedingAge() >= 0 && !playerEntity2.abilities.creativeMode) {
+        if (itemStack.getItem() == Items.BOWL && !this.isBaby() && !playerEntity2.abilities.creativeMode) {
             ItemStack itemStack2;
             itemStack.decrement(1);
             boolean bl = false;
@@ -101,7 +101,7 @@ extends CowEntity {
             this.playSound(soundEvent, 1.0f, 1.0f);
             return true;
         }
-        if (itemStack.getItem() == Items.SHEARS && this.getBreedingAge() >= 0) {
+        if (itemStack.getItem() == Items.SHEARS && !this.isBaby()) {
             this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.method_23323(0.5), this.getZ(), 0.0, 0.0, 0.0);
             if (!this.world.isClient) {
                 this.remove();

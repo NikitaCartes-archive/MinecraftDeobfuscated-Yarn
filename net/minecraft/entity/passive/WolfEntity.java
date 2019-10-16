@@ -51,6 +51,7 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -330,26 +331,37 @@ extends TameableEntity {
     public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         Item item = itemStack.getItem();
+        if (itemStack.getItem() instanceof SpawnEggItem) {
+            return super.interactMob(playerEntity, hand);
+        }
+        if (this.world.isClient) {
+            return this.isOwner(playerEntity) || item == Items.BONE && !this.isAngry();
+        }
         if (this.isTamed()) {
-            if (!itemStack.isEmpty()) {
-                DyeColor dyeColor;
-                if (item.isFood()) {
-                    if (item.getFoodComponent().isMeat() && this.dataTracker.get(WOLF_HEALTH).floatValue() < 20.0f) {
-                        if (!playerEntity.abilities.creativeMode) {
-                            itemStack.decrement(1);
-                        }
-                        this.heal(item.getFoodComponent().getHunger());
-                        return true;
-                    }
-                } else if (item instanceof DyeItem && (dyeColor = ((DyeItem)item).getColor()) != this.getCollarColor()) {
+            if (item.isFood() && item.getFoodComponent().isMeat() && this.getHealth() < 20.0f) {
+                if (!playerEntity.abilities.creativeMode) {
+                    itemStack.decrement(1);
+                }
+                this.heal(item.getFoodComponent().getHunger());
+                return true;
+            }
+            if (item instanceof DyeItem) {
+                DyeColor dyeColor = ((DyeItem)item).getColor();
+                if (dyeColor != this.getCollarColor()) {
                     this.setCollarColor(dyeColor);
                     if (!playerEntity.abilities.creativeMode) {
                         itemStack.decrement(1);
                     }
                     return true;
                 }
+            } else {
+                boolean bl = super.interactMob(playerEntity, hand);
+                if (!bl || this.isBaby()) {
+                    this.sitGoal.setEnabledWithOwner(!this.isSitting());
+                }
+                return bl;
             }
-            if (this.isOwner(playerEntity) && !this.world.isClient && !this.isBreedingItem(itemStack)) {
+            if (this.isOwner(playerEntity) && !this.isBreedingItem(itemStack)) {
                 this.sitGoal.setEnabledWithOwner(!this.isSitting());
                 this.jumping = false;
                 this.navigation.stop();
@@ -359,19 +371,15 @@ extends TameableEntity {
             if (!playerEntity.abilities.creativeMode) {
                 itemStack.decrement(1);
             }
-            if (!this.world.isClient) {
-                if (this.random.nextInt(3) == 0) {
-                    this.setOwner(playerEntity);
-                    this.navigation.stop();
-                    this.setTarget(null);
-                    this.sitGoal.setEnabledWithOwner(true);
-                    this.setHealth(20.0f);
-                    this.showEmoteParticle(true);
-                    this.world.sendEntityStatus(this, (byte)7);
-                } else {
-                    this.showEmoteParticle(false);
-                    this.world.sendEntityStatus(this, (byte)6);
-                }
+            if (this.random.nextInt(3) == 0) {
+                this.setOwner(playerEntity);
+                this.navigation.stop();
+                this.setTarget(null);
+                this.sitGoal.setEnabledWithOwner(true);
+                this.setHealth(20.0f);
+                this.world.sendEntityStatus(this, (byte)7);
+            } else {
+                this.world.sendEntityStatus(this, (byte)6);
             }
             return true;
         }

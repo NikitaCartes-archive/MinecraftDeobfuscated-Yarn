@@ -33,6 +33,7 @@ extends AbstractFireballEntity {
 
     @Override
     protected void onCollision(HitResult hitResult) {
+        super.onCollision(hitResult);
         if (!this.world.isClient) {
             BlockHitResult blockHitResult;
             BlockPos blockPos;

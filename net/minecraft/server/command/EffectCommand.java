@@ -45,9 +45,9 @@ public class EffectCommand {
             throw GIVE_FAILED_EXCEPTION.create();
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.single", statusEffect.method_5560(), collection.iterator().next().getDisplayName(), k / 20), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.single", statusEffect.getName(), collection.iterator().next().getDisplayName(), k / 20), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", statusEffect.method_5560(), collection.size(), k / 20), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", statusEffect.getName(), collection.size(), k / 20), true);
         }
         return j;
     }
@@ -79,9 +79,9 @@ public class EffectCommand {
             throw CLEAR_SPECIFIC_FAILED_EXCEPTION.create();
         }
         if (collection.size() == 1) {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.single", statusEffect.method_5560(), collection.iterator().next().getDisplayName()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.single", statusEffect.getName(), collection.iterator().next().getDisplayName()), true);
         } else {
-            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.multiple", statusEffect.method_5560(), collection.size()), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.multiple", statusEffect.getName(), collection.size()), true);
         }
         return i;
     }

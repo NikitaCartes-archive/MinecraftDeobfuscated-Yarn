@@ -18,6 +18,7 @@ import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
@@ -26,7 +27,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(value=EnvType.CLIENT)
@@ -58,7 +58,7 @@ extends EntityRenderer<ItemFrameEntity> {
         matrixStack.push();
         matrixStack.translate(-0.5, -0.5, -0.5);
         int j = itemFrameEntity.getLightmapCoordinates();
-        blockRenderManager.getModelRenderer().render(matrixStack.peek(), matrixStack.method_23478(), layeredVertexConsumerStorage.getBuffer(RenderLayer.getSolid()), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, j, OverlayTexture.field_21444);
+        blockRenderManager.getModelRenderer().render(matrixStack.peek(), matrixStack.peekNormal(), layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, j, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
         ItemStack itemStack = itemFrameEntity.getHeldItemStack();
         if (!itemStack.isEmpty()) {
@@ -79,7 +79,7 @@ extends EntityRenderer<ItemFrameEntity> {
                 }
             } else {
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.field_21444, matrixStack, layeredVertexConsumerStorage);
+                this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.DEFAULT_UV, matrixStack, layeredVertexConsumerStorage);
             }
         }
         matrixStack.pop();
@@ -97,7 +97,7 @@ extends EntityRenderer<ItemFrameEntity> {
         if (!MinecraftClient.isHudEnabled() || itemFrameEntity.getHeldItemStack().isEmpty() || !itemFrameEntity.getHeldItemStack().hasCustomName() || this.renderManager.targetedEntity != itemFrameEntity) {
             return false;
         }
-        double d = this.renderManager.method_23168(itemFrameEntity);
+        double d = this.renderManager.getSquaredDistanceToCamera(itemFrameEntity);
         float f = itemFrameEntity.method_21751() ? 32.0f : 64.0f;
         return d < (double)(f * f);
     }

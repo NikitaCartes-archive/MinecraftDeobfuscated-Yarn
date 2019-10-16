@@ -40,7 +40,7 @@ extends Item {
             iWorld.setBlockState(blockPos2, blockState, 11);
             ItemStack itemStack = itemUsageContext.getStack();
             if (playerEntity2 instanceof ServerPlayerEntity) {
-                Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity2, blockPos2, itemStack);
+                Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity2, blockPos2, itemStack);
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(itemUsageContext.getHand()));
             }
             return ActionResult.SUCCESS;

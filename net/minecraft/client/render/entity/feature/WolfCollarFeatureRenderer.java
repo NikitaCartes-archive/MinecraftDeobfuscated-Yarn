@@ -9,9 +9,9 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class WolfCollarFeatureRenderer
@@ -27,7 +27,7 @@ extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
             return;
         }
         float[] fs = wolfEntity.getCollarColor().getColorComponents();
-        WolfCollarFeatureRenderer.method_23199(this.getModel(), SKIN, matrixStack, layeredVertexConsumerStorage, i, wolfEntity, fs[0], fs[1], fs[2]);
+        WolfCollarFeatureRenderer.renderModel(this.getModel(), SKIN, matrixStack, layeredVertexConsumerStorage, i, wolfEntity, fs[0], fs[1], fs[2]);
     }
 }
 

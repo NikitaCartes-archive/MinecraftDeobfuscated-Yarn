@@ -22,6 +22,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -37,6 +38,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -65,7 +67,7 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         ItemStack itemStack;
         CampfireBlockEntity campfireBlockEntity;
         Optional<CampfireCookingRecipe> optional;
@@ -73,10 +75,11 @@ implements Waterloggable {
         if (blockState.get(LIT).booleanValue() && (blockEntity = world.getBlockEntity(blockPos)) instanceof CampfireBlockEntity && (optional = (campfireBlockEntity = (CampfireBlockEntity)blockEntity).getRecipeFor(itemStack = playerEntity.getStackInHand(hand))).isPresent()) {
             if (!world.isClient && campfireBlockEntity.addItem(playerEntity.abilities.creativeMode ? itemStack.copy() : itemStack, optional.get().getCookTime())) {
                 playerEntity.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
+                return ActionResult.SUCCESS;
             }
-            return true;
+            return ActionResult.CONSUME;
         }
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override
@@ -180,10 +183,13 @@ implements Waterloggable {
 
     @Override
     public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
-        ProjectileEntity projectileEntity;
-        if (!world.isClient && entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).isOnFire() && !blockState.get(LIT).booleanValue() && !blockState.get(WATERLOGGED).booleanValue()) {
-            BlockPos blockPos = blockHitResult.getBlockPos();
-            world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
+        if (!world.isClient) {
+            boolean bl;
+            boolean bl2 = bl = entity instanceof AbstractFireballEntity || entity instanceof ProjectileEntity && entity.isOnFire();
+            if (bl && !blockState.get(LIT).booleanValue() && !blockState.get(WATERLOGGED).booleanValue()) {
+                BlockPos blockPos = blockHitResult.getBlockPos();
+                world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true), 11);
+            }
         }
     }
 

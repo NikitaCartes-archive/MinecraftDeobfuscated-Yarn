@@ -19,8 +19,8 @@ extends ArmorFeatureRenderer<T, M, A> {
     }
 
     @Override
-    protected void method_4170(A bipedEntityModel, EquipmentSlot equipmentSlot) {
-        this.method_4190(bipedEntityModel);
+    protected void setVisible(A bipedEntityModel, EquipmentSlot equipmentSlot) {
+        this.setInvisible(bipedEntityModel);
         switch (equipmentSlot) {
             case HEAD: {
                 ((BipedEntityModel)bipedEntityModel).head.visible = true;
@@ -47,7 +47,7 @@ extends ArmorFeatureRenderer<T, M, A> {
     }
 
     @Override
-    protected void method_4190(A bipedEntityModel) {
+    protected void setInvisible(A bipedEntityModel) {
         ((BipedEntityModel)bipedEntityModel).setVisible(false);
     }
 }

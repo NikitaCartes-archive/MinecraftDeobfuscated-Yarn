@@ -45,7 +45,7 @@ public enum Direction implements StringIdentifiable
     private final Vec3i vector;
     private static final Direction[] ALL;
     private static final Map<String, Direction> NAME_MAP;
-    private static final Direction[] ID_TO_DIRECTION;
+    private static final Direction[] VALUES;
     private static final Direction[] HORIZONTAL;
     private static final Long2ObjectMap<Direction> VECTOR_TO_DIRECTION;
 
@@ -101,7 +101,7 @@ public enum Direction implements StringIdentifiable
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static Direction method_23225(Matrix4f matrix4f, Direction direction) {
+    public static Direction transform(Matrix4f matrix4f, Direction direction) {
         Vec3i vec3i = direction.getVector();
         Vector4f vector4f = new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f);
         vector4f.multiply(matrix4f);
@@ -109,7 +109,7 @@ public enum Direction implements StringIdentifiable
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Quaternion method_23224() {
+    public Quaternion getRotationQuaternion() {
         Quaternion quaternion = Vector3f.POSITIVE_X.getRotationQuaternion(90.0f);
         switch (this) {
             case DOWN: {
@@ -119,18 +119,18 @@ public enum Direction implements StringIdentifiable
                 return Vector3f.POSITIVE_Y.getRotationQuaternion(0.0f);
             }
             case NORTH: {
-                quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
+                quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
                 return quaternion;
             }
             case SOUTH: {
                 return quaternion;
             }
             case WEST: {
-                quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f));
+                quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f));
                 return quaternion;
             }
         }
-        quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
+        quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
         return quaternion;
     }
 
@@ -216,7 +216,7 @@ public enum Direction implements StringIdentifiable
     }
 
     public static Direction byId(int i) {
-        return ID_TO_DIRECTION[MathHelper.abs(i % ID_TO_DIRECTION.length)];
+        return VALUES[MathHelper.abs(i % VALUES.length)];
     }
 
     public static Direction fromHorizontal(int i) {
@@ -292,7 +292,7 @@ public enum Direction implements StringIdentifiable
     static {
         ALL = Direction.values();
         NAME_MAP = Arrays.stream(ALL).collect(Collectors.toMap(Direction::getName, direction -> direction));
-        ID_TO_DIRECTION = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
+        VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
         HORIZONTAL = (Direction[])Arrays.stream(ALL).filter(direction -> direction.getAxis().isHorizontal()).sorted(Comparator.comparingInt(direction -> direction.idHorizontal)).toArray(Direction[]::new);
         VECTOR_TO_DIRECTION = Arrays.stream(ALL).collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction, direction2) -> {
             throw new IllegalArgumentException("Duplicate keys");
@@ -439,7 +439,7 @@ public enum Direction implements StringIdentifiable
             return this.name;
         }
 
-        public static Axis method_16699(Random random) {
+        public static Axis pickRandomAxis(Random random) {
             return Axis.values()[random.nextInt(Axis.values().length)];
         }
 

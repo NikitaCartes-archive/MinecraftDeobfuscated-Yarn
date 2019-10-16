@@ -33,7 +33,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(this.id, locationPredicate);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ()));
     }
 

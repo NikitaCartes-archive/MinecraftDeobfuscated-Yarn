@@ -7,14 +7,14 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class MagmaCubeEntityModel<T extends SlimeEntity>
-extends class_4595<T> {
+extends CompositeEntityModel<T> {
     private final ModelPart[] field_3427 = new ModelPart[8];
     private final ModelPart field_3428;
     private final ImmutableList<ModelPart> field_20934;

@@ -22,20 +22,23 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity>
 extends BlockEntityRenderer<T> {
-    public static final Identifier TRAPPED_DOUBLE_TEX = new Identifier("entity/chest/trapped_double");
-    public static final Identifier CHRISTMAS_DOUBLE_TEX = new Identifier("entity/chest/christmas_double");
-    public static final Identifier NORMAL_DOUBLE_TEX = new Identifier("entity/chest/normal_double");
     public static final Identifier TRAPPED_TEX = new Identifier("entity/chest/trapped");
+    public static final Identifier field_21473 = new Identifier("entity/chest/trapped_left");
+    public static final Identifier field_21474 = new Identifier("entity/chest/trapped_right");
     public static final Identifier CHRISTMAS_TEX = new Identifier("entity/chest/christmas");
+    public static final Identifier field_21475 = new Identifier("entity/chest/christmas_left");
+    public static final Identifier field_21476 = new Identifier("entity/chest/christmas_right");
     public static final Identifier NORMAL_TEX = new Identifier("entity/chest/normal");
+    public static final Identifier field_21477 = new Identifier("entity/chest/normal_left");
+    public static final Identifier field_21478 = new Identifier("entity/chest/normal_right");
     public static final Identifier ENDER_TEX = new Identifier("entity/chest/ender");
     private final ModelPart field_20817;
     private final ModelPart field_20818;
@@ -43,6 +46,9 @@ extends BlockEntityRenderer<T> {
     private final ModelPart field_20820;
     private final ModelPart field_20821;
     private final ModelPart field_20822;
+    private final ModelPart field_21479;
+    private final ModelPart field_21480;
+    private final ModelPart field_21481;
     private boolean isChristmas;
 
     public ChestBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
@@ -58,26 +64,35 @@ extends BlockEntityRenderer<T> {
         this.field_20817.pivotY = 9.0f;
         this.field_20817.pivotZ = 1.0f;
         this.field_20819 = new ModelPart(64, 64, 0, 0);
-        this.field_20819.addCuboid(7.0f, -2.0f, 15.0f, 2.0f, 4.0f, 1.0f, 0.0f);
-        this.field_20819.pivotY = 9.0f;
-        this.field_20821 = new ModelPart(128, 64, 0, 19);
-        this.field_20821.addCuboid(1.0f, 0.0f, 1.0f, 30.0f, 10.0f, 14.0f, 0.0f);
-        this.field_20820 = new ModelPart(128, 64, 0, 0);
-        this.field_20820.addCuboid(1.0f, 0.0f, 0.0f, 30.0f, 5.0f, 14.0f, 0.0f);
+        this.field_20819.addCuboid(7.0f, -1.0f, 15.0f, 2.0f, 4.0f, 1.0f, 0.0f);
+        this.field_20819.pivotY = 8.0f;
+        this.field_20821 = new ModelPart(64, 64, 0, 19);
+        this.field_20821.addCuboid(1.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f, 0.0f);
+        this.field_20820 = new ModelPart(64, 64, 0, 0);
+        this.field_20820.addCuboid(1.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f, 0.0f);
         this.field_20820.pivotY = 9.0f;
         this.field_20820.pivotZ = 1.0f;
-        this.field_20822 = new ModelPart(128, 64, 0, 0);
-        this.field_20822.addCuboid(15.0f, -2.0f, 15.0f, 2.0f, 4.0f, 1.0f, 0.0f);
-        this.field_20822.pivotY = 9.0f;
+        this.field_20822 = new ModelPart(64, 64, 0, 0);
+        this.field_20822.addCuboid(15.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f, 0.0f);
+        this.field_20822.pivotY = 8.0f;
+        this.field_21480 = new ModelPart(64, 64, 0, 19);
+        this.field_21480.addCuboid(0.0f, 0.0f, 1.0f, 15.0f, 10.0f, 14.0f, 0.0f);
+        this.field_21479 = new ModelPart(64, 64, 0, 0);
+        this.field_21479.addCuboid(0.0f, 0.0f, 0.0f, 15.0f, 5.0f, 14.0f, 0.0f);
+        this.field_21479.pivotY = 9.0f;
+        this.field_21479.pivotZ = 1.0f;
+        this.field_21481 = new ModelPart(64, 64, 0, 0);
+        this.field_21481.addCuboid(0.0f, -1.0f, 15.0f, 1.0f, 4.0f, 1.0f, 0.0f);
+        this.field_21481.pivotY = 8.0f;
     }
 
     @Override
-    public void render(T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_3569(T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
         boolean bl;
         BlockState blockState = ((BlockEntity)blockEntity).hasWorld() ? ((BlockEntity)blockEntity).getCachedState() : (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         boolean bl2 = bl = chestType != ChestType.SINGLE;
-        Identifier identifier = this.isChristmas ? (bl ? CHRISTMAS_DOUBLE_TEX : CHRISTMAS_TEX) : (blockEntity instanceof TrappedChestBlockEntity ? (bl ? TRAPPED_DOUBLE_TEX : TRAPPED_TEX) : (blockEntity instanceof EnderChestBlockEntity ? ENDER_TEX : (bl ? NORMAL_DOUBLE_TEX : NORMAL_TEX)));
+        Identifier identifier = this.isChristmas ? this.method_23690(chestType, CHRISTMAS_TEX, field_21475, field_21476) : (blockEntity instanceof TrappedChestBlockEntity ? this.method_23690(chestType, TRAPPED_TEX, field_21473, field_21474) : (blockEntity instanceof EnderChestBlockEntity ? ENDER_TEX : this.method_23690(chestType, NORMAL_TEX, field_21477, field_21478)));
         matrixStack.push();
         float h = blockState.get(ChestBlock.FACING).asRotation();
         matrixStack.translate(0.5, 0.5, 0.5);
@@ -86,17 +101,31 @@ extends BlockEntityRenderer<T> {
         float k = ((ChestAnimationProgress)blockEntity).getAnimationProgress(g);
         k = 1.0f - k;
         k = 1.0f - k * k * k;
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
         Sprite sprite = this.getSprite(identifier);
         if (bl) {
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
             if (chestType == ChestType.LEFT) {
-                matrixStack.translate(-1.0, 0.0, 0.0);
+                this.method_22749(matrixStack, vertexConsumer, this.field_21479, this.field_21481, this.field_21480, k, i, j, sprite);
+            } else {
+                this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, k, i, j, sprite);
             }
-            this.method_22749(matrixStack, vertexConsumer, this.field_20820, this.field_20822, this.field_20821, k, i, j, sprite);
         } else {
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
             this.method_22749(matrixStack, vertexConsumer, this.field_20817, this.field_20819, this.field_20818, k, i, j, sprite);
         }
         matrixStack.pop();
+    }
+
+    private Identifier method_23690(ChestType chestType, Identifier identifier, Identifier identifier2, Identifier identifier3) {
+        switch (chestType) {
+            case LEFT: {
+                return identifier3;
+            }
+            case RIGHT: {
+                return identifier2;
+            }
+        }
+        return identifier;
     }
 
     private void method_22749(MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j, Sprite sprite) {

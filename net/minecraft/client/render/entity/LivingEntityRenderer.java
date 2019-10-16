@@ -20,6 +20,7 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -30,7 +31,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +38,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends EntityRenderer<T>
 implements FeatureRendererContext<T, M> {
-    private static final Logger field_21011 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     protected M model;
     protected final List<FeatureRenderer<T, M>> features = Lists.newArrayList();
 
@@ -114,8 +114,8 @@ implements FeatureRendererContext<T, M> {
         ((EntityModel)this.model).setAngles(livingEntity, p, o, l, k, m, 0.0625f);
         if (bl || bl2) {
             Identifier identifier = this.getTexture(livingEntity);
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : ((Model)this.model).method_23500(identifier));
-            ((Model)this.model).renderItem(matrixStack, vertexConsumer, q, LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0f, 1.0f, 1.0f);
+            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : ((Model)this.model).getLayer(identifier));
+            ((Model)this.model).render(matrixStack, vertexConsumer, q, LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0f, 1.0f, 1.0f);
         }
         if (!((Entity)livingEntity).isSpectator()) {
             for (FeatureRenderer<T, M> featureRenderer : this.features) {
@@ -127,14 +127,14 @@ implements FeatureRendererContext<T, M> {
     }
 
     public static int method_23622(LivingEntity livingEntity, float f) {
-        return OverlayTexture.method_23625(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
+        return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
     }
 
     protected boolean method_4056(T livingEntity, boolean bl) {
         return !((Entity)livingEntity).isInvisible() || bl;
     }
 
-    private static float method_18656(Direction direction) {
+    private static float getYaw(Direction direction) {
         switch (direction) {
             case SOUTH: {
                 return 90.0f;
@@ -169,7 +169,7 @@ implements FeatureRendererContext<T, M> {
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)((LivingEntity)livingEntity).age + h) * -75.0f));
         } else if (entityPose == EntityPose.SLEEPING) {
             Direction direction = ((LivingEntity)livingEntity).getSleepingDirection();
-            float j = direction != null ? LivingEntityRenderer.method_18656(direction) : g;
+            float j = direction != null ? LivingEntityRenderer.getYaw(direction) : g;
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
             matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(livingEntity)));
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0f));
@@ -201,7 +201,7 @@ implements FeatureRendererContext<T, M> {
     protected boolean method_4055(T livingEntity) {
         boolean bl;
         float f;
-        double d = this.renderManager.method_23168((Entity)livingEntity);
+        double d = this.renderManager.getSquaredDistanceToCamera((Entity)livingEntity);
         float f2 = f = ((Entity)livingEntity).method_21751() ? 32.0f : 64.0f;
         if (d >= (double)(f * f)) {
             return false;

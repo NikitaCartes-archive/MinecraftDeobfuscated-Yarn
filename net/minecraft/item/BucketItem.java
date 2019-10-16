@@ -66,7 +66,7 @@ extends Item {
                     playerEntity.playSound(fluid.matches(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0f, 1.0f);
                     ItemStack itemStack2 = this.getFilledStack(itemStack, playerEntity, fluid.getBucketItem());
                     if (!world.isClient) {
-                        Criterions.FILLED_BUCKET.handle((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
+                        Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)playerEntity, new ItemStack(fluid.getBucketItem()));
                     }
                     return TypedActionResult.successWithSwing(itemStack2);
                 }
@@ -77,7 +77,7 @@ extends Item {
             if (this.placeFluid(playerEntity, world, blockPos3, blockHitResult)) {
                 this.onEmptied(world, itemStack, blockPos3);
                 if (playerEntity instanceof ServerPlayerEntity) {
-                    Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos3, itemStack);
+                    Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos3, itemStack);
                 }
                 playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
                 return TypedActionResult.successWithSwing(this.getEmptiedStack(itemStack, playerEntity));

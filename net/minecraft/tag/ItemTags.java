@@ -54,6 +54,7 @@ public class ItemTags {
     public static final Tag<Item> MUSIC_DISCS;
     public static final Tag<Item> COALS;
     public static final Tag<Item> ARROWS;
+    public static final Tag<Item> LECTERN_BOOKS;
 
     public static void setContainer(TagContainer<Item> tagContainer) {
         container = tagContainer;
@@ -110,6 +111,7 @@ public class ItemTags {
         MUSIC_DISCS = ItemTags.register("music_discs");
         COALS = ItemTags.register("coals");
         ARROWS = ItemTags.register("arrows");
+        LECTERN_BOOKS = ItemTags.register("lectern_books");
     }
 
     public static class CachingTag

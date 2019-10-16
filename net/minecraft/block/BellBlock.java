@@ -28,6 +28,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -84,20 +85,23 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-        return this.ring(world, blockState, blockHitResult, playerEntity, true);
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+        return this.ring(world, blockState, blockHitResult, playerEntity, true) ? ActionResult.SUCCESS : ActionResult.PASS;
     }
 
     public boolean ring(World world, BlockState blockState, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl) {
-        boolean bl3;
         boolean bl2;
         Direction direction = blockHitResult.getSide();
         BlockPos blockPos = blockHitResult.getBlockPos();
-        boolean bl4 = bl2 = !bl || this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockPos.getY());
-        if (bl2 && (bl3 = this.ring(world, blockPos, direction)) && playerEntity != null) {
-            playerEntity.incrementStat(Stats.BELL_RING);
+        boolean bl3 = bl2 = !bl || this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockPos.getY());
+        if (bl2) {
+            boolean bl32 = this.ring(world, blockPos, direction);
+            if (bl32 && playerEntity != null) {
+                playerEntity.incrementStat(Stats.BELL_RING);
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     private boolean isPointOnBell(BlockState blockState, Direction direction, double d) {

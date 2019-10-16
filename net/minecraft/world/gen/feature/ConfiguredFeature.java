@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
-import net.minecraft.class_4624;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -18,6 +17,7 @@ import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.FlowerFeature;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> {
@@ -33,9 +33,9 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
         this(feature, ((Feature)feature).deserializeConfig(dynamic));
     }
 
-    public ConfiguredFeature<?, ?> method_23388(ConfiguredDecorator<?> configuredDecorator) {
-        Feature<DecoratedFeatureConfig> feature = this.feature instanceof class_4624 ? Feature.DECORATED_FLOWER : Feature.DECORATED;
-        return feature.method_23397(new DecoratedFeatureConfig(this, configuredDecorator));
+    public ConfiguredFeature<?, ?> createDecoratedFeature(ConfiguredDecorator<?> configuredDecorator) {
+        Feature<DecoratedFeatureConfig> feature = this.feature instanceof FlowerFeature ? Feature.DECORATED_FLOWER : Feature.DECORATED;
+        return feature.configure(new DecoratedFeatureConfig(this, configuredDecorator));
     }
 
     public RandomFeatureEntry<FC> method_23387(float f) {

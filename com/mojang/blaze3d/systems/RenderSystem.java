@@ -201,9 +201,9 @@ public class RenderSystem {
         GlStateManager.disableBlend();
     }
 
-    public static void blendFunc(GlStateManager.class_4535 arg, GlStateManager.class_4534 arg2) {
+    public static void blendFunc(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFunc(arg.value, arg2.value);
+        GlStateManager.blendFunc(sourceFactor.value, destFactor.value);
     }
 
     public static void blendFunc(int i, int j) {
@@ -211,9 +211,9 @@ public class RenderSystem {
         GlStateManager.blendFunc(i, j);
     }
 
-    public static void blendFuncSeparate(GlStateManager.class_4535 arg, GlStateManager.class_4534 arg2, GlStateManager.class_4535 arg3, GlStateManager.class_4534 arg4) {
+    public static void blendFuncSeparate(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor, GlStateManager.SourceFactor sourceFactor2, GlStateManager.DestFactor destFactor2) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFuncSeparate(arg.value, arg2.value, arg3.value, arg4.value);
+        GlStateManager.blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
     }
 
     public static void blendFuncSeparate(int i, int j, int k, int l) {
@@ -741,7 +741,7 @@ public class RenderSystem {
     }
 
     public static void defaultBlendFunc() {
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
     }
 
     public static void defaultAlphaFunc() {
@@ -997,16 +997,16 @@ public class RenderSystem {
         GlStateManager.blendFuncSeparate(i, j, k, l);
     }
 
-    private static /* synthetic */ void lambda$blendFuncSeparate$7(GlStateManager.class_4535 arg, GlStateManager.class_4534 arg2, GlStateManager.class_4535 arg3, GlStateManager.class_4534 arg4) {
-        GlStateManager.blendFuncSeparate(arg.value, arg2.value, arg3.value, arg4.value);
+    private static /* synthetic */ void lambda$blendFuncSeparate$7(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor, GlStateManager.SourceFactor sourceFactor2, GlStateManager.DestFactor destFactor2) {
+        GlStateManager.blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
     }
 
     private static /* synthetic */ void lambda$blendFunc$6(int i, int j) {
         GlStateManager.blendFunc(i, j);
     }
 
-    private static /* synthetic */ void lambda$blendFunc$5(GlStateManager.class_4535 arg, GlStateManager.class_4534 arg2) {
-        GlStateManager.blendFunc(arg.value, arg2.value);
+    private static /* synthetic */ void lambda$blendFunc$5(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor) {
+        GlStateManager.blendFunc(sourceFactor.value, destFactor.value);
     }
 
     private static /* synthetic */ void lambda$depthMask$4(boolean bl) {

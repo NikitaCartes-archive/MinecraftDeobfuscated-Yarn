@@ -18,26 +18,26 @@ public class BufferRenderer {
     public static void draw(BufferBuilder bufferBuilder) {
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> {
-                Pair<BufferBuilder.class_4574, ByteBuffer> pair = bufferBuilder.method_22632();
-                BufferBuilder.class_4574 lv = pair.getFirst();
-                BufferRenderer.method_22639(pair.getSecond(), lv.method_22636(), lv.method_22634(), lv.method_22635());
+                Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
+                BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
+                BufferRenderer.draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount());
             });
         } else {
-            Pair<BufferBuilder.class_4574, ByteBuffer> pair = bufferBuilder.method_22632();
-            BufferBuilder.class_4574 lv = pair.getFirst();
-            BufferRenderer.method_22639(pair.getSecond(), lv.method_22636(), lv.method_22634(), lv.method_22635());
+            Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
+            BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
+            BufferRenderer.draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount());
         }
     }
 
-    private static void method_22639(ByteBuffer byteBuffer, int i, VertexFormat vertexFormat, int j) {
+    private static void draw(ByteBuffer byteBuffer, int i, VertexFormat vertexFormat, int j) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         byteBuffer.clear();
         if (j <= 0) {
             return;
         }
-        vertexFormat.method_22649(MemoryUtil.memAddress(byteBuffer));
+        vertexFormat.startDrawing(MemoryUtil.memAddress(byteBuffer));
         GlStateManager.drawArrays(i, 0, j);
-        vertexFormat.method_22651();
+        vertexFormat.endDrawing();
     }
 }
 

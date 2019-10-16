@@ -115,6 +115,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -131,7 +132,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -160,7 +160,7 @@ public class EntityRenderDispatcher {
         this.renderers.put(entityType, entityRenderer);
     }
 
-    private void method_23167(ItemRenderer itemRenderer, ReloadableResourceManager reloadableResourceManager) {
+    private void registerRenderers(ItemRenderer itemRenderer, ReloadableResourceManager reloadableResourceManager) {
         this.register(EntityType.AREA_EFFECT_CLOUD, new AreaEffectCloudEntityRenderer(this));
         this.register(EntityType.ARMOR_STAND, new ArmorStandEntityRenderer(this));
         this.register(EntityType.ARROW, new ArrowEntityRenderer(this));
@@ -269,7 +269,7 @@ public class EntityRenderDispatcher {
         this.textureManager = textureManager;
         this.textRenderer = textRenderer;
         this.gameOptions = gameOptions;
-        this.method_23167(itemRenderer, reloadableResourceManager);
+        this.registerRenderers(itemRenderer, reloadableResourceManager);
         this.playerRenderer = new PlayerEntityRenderer(this);
         this.modelRenderers.put("default", this.playerRenderer);
         this.modelRenderers.put("slim", new PlayerEntityRenderer(this, true));
@@ -307,7 +307,7 @@ public class EntityRenderDispatcher {
         }
     }
 
-    public void method_3945(float f) {
+    public void setCameraYaw(float f) {
         this.cameraYaw = f;
     }
 
@@ -329,9 +329,9 @@ public class EntityRenderDispatcher {
     }
 
     public void render(Entity entity, float f) {
-        LayeredVertexConsumerStorage.class_4598 lv = MinecraftClient.getInstance().method_22940().method_23000();
-        this.render(entity, 0.0, 0.0, 0.0, 0.0f, f, new MatrixStack(), lv);
-        lv.method_22993();
+        LayeredVertexConsumerStorage.Drawer drawer = MinecraftClient.getInstance().getBufferBuilderStorage().getGeneralDrawer();
+        this.render(entity, 0.0, 0.0, 0.0, 0.0f, f, new MatrixStack(), drawer);
+        drawer.draw();
     }
 
     public <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
@@ -346,11 +346,12 @@ public class EntityRenderDispatcher {
             matrixStack.push();
             matrixStack.translate(i, j, k);
             entityRenderer.render(entity, i, j, k, g, h, matrixStack, layeredVertexConsumerStorage);
-            if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.field_4673 > 0.0f && !entity.isInvisible() && (m = (float)((1.0 - (l = this.squaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ())) / 256.0) * (double)entityRenderer.field_4672)) > 0.0f) {
-                EntityRenderDispatcher.method_23166(matrixStack, layeredVertexConsumerStorage, entity, m, h, this.world, entityRenderer.field_4673);
-            }
             if (entity.doesRenderOnFire()) {
                 this.renderFire(matrixStack, layeredVertexConsumerStorage, entity);
+            }
+            matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
+            if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.field_4673 > 0.0f && !entity.isInvisible() && (m = (float)((1.0 - (l = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ())) / 256.0) * (double)entityRenderer.field_4672)) > 0.0f) {
+                EntityRenderDispatcher.method_23166(matrixStack, layeredVertexConsumerStorage, entity, m, h, this.world, entityRenderer.field_4673);
             }
             if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
                 this.renderHitbox(matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines()), entity, h);
@@ -509,7 +510,7 @@ public class EntityRenderDispatcher {
     }
 
     private static void method_23162(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k) {
-        vertexConsumer.vertex(matrix4f, g, h, i).color(1.0f, 1.0f, 1.0f, f).texture(j, k).defaultOverlay(OverlayTexture.field_21444).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, g, h, i).color(1.0f, 1.0f, 1.0f, f).texture(j, k).defaultOverlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
     }
 
     public void setWorld(@Nullable World world) {
@@ -519,11 +520,11 @@ public class EntityRenderDispatcher {
         }
     }
 
-    public double method_23168(Entity entity) {
+    public double getSquaredDistanceToCamera(Entity entity) {
         return this.camera.getPos().squaredDistanceTo(entity.getPos());
     }
 
-    public double squaredDistanceToCamera(double d, double e, double f) {
+    public double getSquaredDistanceToCamera(double d, double e, double f) {
         return this.camera.getPos().squaredDistanceTo(d, e, f);
     }
 

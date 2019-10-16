@@ -24,6 +24,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -86,19 +87,19 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         boolean bl;
         int i = blockState.get(AGE);
         boolean bl2 = bl = i == 3;
         if (!bl && playerEntity.getStackInHand(hand).getItem() == Items.BONE_MEAL) {
-            return false;
+            return ActionResult.PASS;
         }
         if (i > 1) {
             int j = 1 + world.random.nextInt(2);
             SweetBerryBushBlock.dropStack(world, blockPos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
             world.playSound(null, blockPos, SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, SoundCategory.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
             world.setBlockState(blockPos, (BlockState)blockState.with(AGE, 1), 2);
-            return true;
+            return ActionResult.SUCCESS;
         }
         return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
     }

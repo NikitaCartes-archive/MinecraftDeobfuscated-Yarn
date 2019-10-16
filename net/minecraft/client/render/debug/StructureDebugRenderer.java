@@ -48,8 +48,8 @@ implements DebugRenderer.Renderer {
         RenderSystem.disableTexture();
         RenderSystem.disableDepthTest();
         BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
-        LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = lv.getBuffer(RenderLayer.getLines());
+        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
+        VertexConsumer vertexConsumer = drawer.getBuffer(RenderLayer.getLines());
         if (this.field_4626.containsKey(dimensionType)) {
             for (BlockBox blockBox : this.field_4626.get(dimensionType).values()) {
                 if (!blockPos.isWithinDistance(blockBox.method_22874(), 500.0)) continue;
@@ -69,7 +69,7 @@ implements DebugRenderer.Renderer {
                 WorldRenderer.drawBoxOutline(vertexConsumer, (double)blockBox2.minX - d, (double)blockBox2.minY - e, (double)blockBox2.minZ - f, (double)(blockBox2.maxX + 1) - d, (double)(blockBox2.maxY + 1) - e, (double)(blockBox2.maxZ + 1) - f, 0.0f, 0.0f, 1.0f, 1.0f);
             }
         }
-        lv.method_22993();
+        drawer.draw();
         RenderSystem.enableDepthTest();
         RenderSystem.enableTexture();
         RenderSystem.popMatrix();

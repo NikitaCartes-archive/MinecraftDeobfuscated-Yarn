@@ -12,11 +12,11 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
@@ -50,10 +50,10 @@ extends EntityRenderer<BoatEntity> {
         int l = boatEntity.getLightmapCoordinates();
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f));
         this.model.method_22952(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(this.method_3891(boatEntity)));
-        this.model.renderItem(matrixStack, vertexConsumer, l, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(this.method_3891(boatEntity)));
+        this.model.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getWaterMask());
-        this.model.method_22954().render(matrixStack, vertexConsumer2, 0.0625f, l, OverlayTexture.field_21444, null);
+        this.model.getBottom().render(matrixStack, vertexConsumer2, 0.0625f, l, OverlayTexture.DEFAULT_UV, null);
         matrixStack.pop();
         super.render(boatEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

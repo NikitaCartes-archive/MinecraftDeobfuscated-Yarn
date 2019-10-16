@@ -84,7 +84,7 @@ extends Entity {
                     entity.onStruckByLightning(this);
                 }
                 if (this.channeller != null) {
-                    Criterions.CHANNELED_LIGHTNING.handle(this.channeller, list);
+                    Criterions.CHANNELED_LIGHTNING.trigger(this.channeller, list);
                 }
             }
         }

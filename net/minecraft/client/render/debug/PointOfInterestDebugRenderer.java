@@ -23,7 +23,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.render.debug.PathfindingDebugRenderer;
-import net.minecraft.client.renderer.debug.VillagerNamer;
+import net.minecraft.client.render.debug.VillagerNamer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;

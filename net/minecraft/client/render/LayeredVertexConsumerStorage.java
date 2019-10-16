@@ -17,74 +17,74 @@ import net.minecraft.client.render.VertexConsumer;
 
 @Environment(value=EnvType.CLIENT)
 public interface LayeredVertexConsumerStorage {
-    public static class_4598 method_22991(BufferBuilder bufferBuilder) {
-        return LayeredVertexConsumerStorage.method_22992(ImmutableMap.of(), bufferBuilder);
+    public static Drawer makeDrawer(BufferBuilder bufferBuilder) {
+        return LayeredVertexConsumerStorage.makeDrawer(ImmutableMap.of(), bufferBuilder);
     }
 
-    public static class_4598 method_22992(Map<RenderLayer, BufferBuilder> map, BufferBuilder bufferBuilder) {
-        return new class_4598(bufferBuilder, map);
+    public static Drawer makeDrawer(Map<RenderLayer, BufferBuilder> map, BufferBuilder bufferBuilder) {
+        return new Drawer(bufferBuilder, map);
     }
 
     public VertexConsumer getBuffer(RenderLayer var1);
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_4598
+    public static class Drawer
     implements LayeredVertexConsumerStorage {
-        protected final BufferBuilder field_20952;
-        protected final Map<RenderLayer, BufferBuilder> field_20953;
-        protected Optional<RenderLayer> field_20954 = Optional.empty();
-        protected final Set<BufferBuilder> field_20955 = Sets.newHashSet();
+        protected final BufferBuilder sharedConsumer;
+        protected final Map<RenderLayer, BufferBuilder> layerSpecificConsumers;
+        protected Optional<RenderLayer> currentLayer = Optional.empty();
+        protected final Set<BufferBuilder> activeConsumers = Sets.newHashSet();
 
-        protected class_4598(BufferBuilder bufferBuilder, Map<RenderLayer, BufferBuilder> map) {
-            this.field_20952 = bufferBuilder;
-            this.field_20953 = map;
+        protected Drawer(BufferBuilder bufferBuilder, Map<RenderLayer, BufferBuilder> map) {
+            this.sharedConsumer = bufferBuilder;
+            this.layerSpecificConsumers = map;
         }
 
         @Override
         public VertexConsumer getBuffer(RenderLayer renderLayer) {
             Optional<RenderLayer> optional = Optional.of(renderLayer);
-            BufferBuilder bufferBuilder = this.method_22995(renderLayer);
-            if (!Objects.equals(this.field_20954, optional)) {
+            BufferBuilder bufferBuilder = this.getConsumer(renderLayer);
+            if (!Objects.equals(this.currentLayer, optional)) {
                 RenderLayer renderLayer2;
-                if (this.field_20954.isPresent() && !this.field_20953.containsKey(renderLayer2 = this.field_20954.get())) {
-                    this.method_22994(renderLayer2);
+                if (this.currentLayer.isPresent() && !this.layerSpecificConsumers.containsKey(renderLayer2 = this.currentLayer.get())) {
+                    this.draw(renderLayer2);
                 }
-                if (this.field_20955.add(bufferBuilder)) {
+                if (this.activeConsumers.add(bufferBuilder)) {
                     bufferBuilder.begin(renderLayer.getDrawMode(), renderLayer.getVertexFormat());
                 }
-                this.field_20954 = optional;
+                this.currentLayer = optional;
             }
             return bufferBuilder;
         }
 
-        private BufferBuilder method_22995(RenderLayer renderLayer) {
-            return this.field_20953.getOrDefault(renderLayer, this.field_20952);
+        private BufferBuilder getConsumer(RenderLayer renderLayer) {
+            return this.layerSpecificConsumers.getOrDefault(renderLayer, this.sharedConsumer);
         }
 
-        public void method_22993() {
-            this.field_20954.ifPresent(renderLayer -> {
+        public void draw() {
+            this.currentLayer.ifPresent(renderLayer -> {
                 VertexConsumer vertexConsumer = this.getBuffer((RenderLayer)renderLayer);
-                if (vertexConsumer == this.field_20952) {
-                    this.method_22994((RenderLayer)renderLayer);
+                if (vertexConsumer == this.sharedConsumer) {
+                    this.draw((RenderLayer)renderLayer);
                 }
             });
-            for (RenderLayer renderLayer2 : this.field_20953.keySet()) {
-                this.method_22994(renderLayer2);
+            for (RenderLayer renderLayer2 : this.layerSpecificConsumers.keySet()) {
+                this.draw(renderLayer2);
             }
         }
 
-        public void method_22994(RenderLayer renderLayer) {
-            BufferBuilder bufferBuilder = this.method_22995(renderLayer);
-            boolean bl = Objects.equals(this.field_20954, Optional.of(renderLayer));
-            if (!bl && bufferBuilder == this.field_20952) {
+        public void draw(RenderLayer renderLayer) {
+            BufferBuilder bufferBuilder = this.getConsumer(renderLayer);
+            boolean bl = Objects.equals(this.currentLayer, Optional.of(renderLayer));
+            if (!bl && bufferBuilder == this.sharedConsumer) {
                 return;
             }
-            if (!this.field_20955.remove(bufferBuilder)) {
+            if (!this.activeConsumers.remove(bufferBuilder)) {
                 return;
             }
-            renderLayer.method_23012(bufferBuilder);
+            renderLayer.draw(bufferBuilder);
             if (bl) {
-                this.field_20954 = Optional.empty();
+                this.currentLayer = Optional.empty();
             }
         }
     }

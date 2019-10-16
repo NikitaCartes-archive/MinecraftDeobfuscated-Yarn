@@ -79,7 +79,7 @@ extends Item {
             enderEyeEntity.moveTowards(blockPos);
             world.spawnEntity(enderEyeEntity);
             if (playerEntity instanceof ServerPlayerEntity) {
-                Criterions.USED_ENDER_EYE.handle((ServerPlayerEntity)playerEntity, blockPos);
+                Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)playerEntity, blockPos);
             }
             world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
             world.playLevelEvent(null, 1003, new BlockPos(playerEntity), 0);

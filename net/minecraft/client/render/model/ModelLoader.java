@@ -42,7 +42,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.class_4590;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -63,6 +62,7 @@ import net.minecraft.client.render.model.json.WeightedUnbakedModel;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.state.StateManager;
@@ -95,7 +95,7 @@ public class ModelLoader {
     public static final Identifier field_21018 = new Identifier("entity/signs/jungle");
     public static final Identifier field_21019 = new Identifier("entity/signs/dark_oak");
     public static final List<Identifier> field_20848 = IntStream.range(0, 10).mapToObj(i -> new Identifier("block/destroy_stage_" + i)).collect(Collectors.toList());
-    public static final List<Identifier> field_21020 = field_20848.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).collect(Collectors.toList());
+    public static final List<Identifier> BLOCK_BREAKING_STAGES = field_20848.stream().map(identifier -> new Identifier("textures/" + identifier.getPath() + ".png")).collect(Collectors.toList());
     private static final Set<Identifier> DEFAULT_TEXTURES = SystemUtil.consume(Sets.newHashSet(), hashSet -> {
         hashSet.add(WATER_FLOW);
         hashSet.add(LAVA_FLOW);
@@ -104,12 +104,15 @@ public class ModelLoader {
         hashSet.add(FIRE_1);
         hashSet.add(BellBlockEntityRenderer.BELL_BODY_TEXTURE);
         hashSet.addAll(Arrays.asList(BedBlockEntityRenderer.TEXTURES));
-        hashSet.add(ChestBlockEntityRenderer.TRAPPED_DOUBLE_TEX);
-        hashSet.add(ChestBlockEntityRenderer.CHRISTMAS_DOUBLE_TEX);
-        hashSet.add(ChestBlockEntityRenderer.NORMAL_DOUBLE_TEX);
         hashSet.add(ChestBlockEntityRenderer.TRAPPED_TEX);
+        hashSet.add(ChestBlockEntityRenderer.field_21473);
+        hashSet.add(ChestBlockEntityRenderer.field_21474);
         hashSet.add(ChestBlockEntityRenderer.CHRISTMAS_TEX);
+        hashSet.add(ChestBlockEntityRenderer.field_21475);
+        hashSet.add(ChestBlockEntityRenderer.field_21476);
         hashSet.add(ChestBlockEntityRenderer.NORMAL_TEX);
+        hashSet.add(ChestBlockEntityRenderer.field_21477);
+        hashSet.add(ChestBlockEntityRenderer.field_21478);
         hashSet.add(ChestBlockEntityRenderer.ENDER_TEX);
         hashSet.add(ConduitBlockEntityRenderer.BASE_TEX);
         hashSet.add(ConduitBlockEntityRenderer.CAGE_TEX);
@@ -122,7 +125,7 @@ public class ModelLoader {
         hashSet.addAll(field_20846);
         hashSet.add(field_20847);
         for (BannerPattern bannerPattern : BannerPattern.values()) {
-            hashSet.add(bannerPattern.method_22536());
+            hashSet.add(bannerPattern.getSpriteId());
         }
         hashSet.add(field_21014);
         hashSet.add(field_21015);
@@ -159,7 +162,7 @@ public class ModelLoader {
     private final Set<Identifier> modelsToLoad = Sets.newHashSet();
     private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
     private final Map<Identifier, UnbakedModel> unbakedModels = Maps.newHashMap();
-    private final Map<Triple<Identifier, class_4590, Boolean>, BakedModel> bakedModelCache = Maps.newHashMap();
+    private final Map<Triple<Identifier, Rotation3, Boolean>, BakedModel> bakedModelCache = Maps.newHashMap();
     private final Map<Identifier, UnbakedModel> modelsToBake = Maps.newHashMap();
     private final Map<Identifier, BakedModel> bakedModels = Maps.newHashMap();
     private final SpriteAtlasTexture.Data spriteAtlasData;
@@ -431,7 +434,7 @@ public class ModelLoader {
     @Nullable
     public BakedModel bake(Identifier identifier, ModelBakeSettings modelBakeSettings) {
         JsonUnbakedModel jsonUnbakedModel;
-        Triple<Identifier, class_4590, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
+        Triple<Identifier, Rotation3, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }

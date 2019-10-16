@@ -10,10 +10,10 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.SheepEntityModel;
 import net.minecraft.client.render.entity.model.SheepWoolEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class SheepWoolFeatureRenderer
@@ -50,7 +50,7 @@ extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
             u = hs[1];
             v = hs[2];
         }
-        SheepWoolFeatureRenderer.method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
+        SheepWoolFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
     }
 }
 

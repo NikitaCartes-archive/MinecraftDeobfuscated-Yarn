@@ -14,12 +14,12 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EnderDragonEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
@@ -29,7 +29,7 @@ extends EntityRenderer<EnderCrystalEntity> {
     public static final float field_21002 = (float)Math.sin(0.7853981633974483);
     private final ModelPart field_21003;
     private final ModelPart field_21004;
-    private final ModelPart field_21005;
+    private final ModelPart bottom;
 
     public EnderCrystalEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -38,8 +38,8 @@ extends EntityRenderer<EnderCrystalEntity> {
         this.field_21004.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
         this.field_21003 = new ModelPart(64, 32, 32, 0);
         this.field_21003.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
-        this.field_21005 = new ModelPart(64, 32, 0, 16);
-        this.field_21005.addCuboid(-6.0f, 0.0f, -6.0f, 12.0f, 4.0f, 12.0f);
+        this.bottom = new ModelPart(64, 32, 0, 16);
+        this.bottom.addCuboid(-6.0f, 0.0f, -6.0f, 12.0f, 4.0f, 12.0f);
     }
 
     public void method_3908(EnderCrystalEntity enderCrystalEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
@@ -52,9 +52,9 @@ extends EntityRenderer<EnderCrystalEntity> {
         matrixStack.push();
         matrixStack.scale(2.0f, 2.0f, 2.0f);
         matrixStack.translate(0.0, -0.5, 0.0);
-        int m = OverlayTexture.field_21444;
+        int m = OverlayTexture.DEFAULT_UV;
         if (enderCrystalEntity.getShowBottom()) {
-            this.field_21005.render(matrixStack, vertexConsumer, 0.0625f, l, m, null);
+            this.bottom.render(matrixStack, vertexConsumer, 0.0625f, l, m, null);
         }
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
         matrixStack.translate(0.0, 1.5f + i / 2.0f, 0.0);

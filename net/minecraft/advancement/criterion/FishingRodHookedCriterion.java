@@ -34,7 +34,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(itemPredicate, entityPredicate, itemPredicate2);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection));
     }
 
@@ -46,14 +46,14 @@ extends AbstractCriterion<Conditions> {
     public static class Conditions
     extends AbstractCriterionConditions {
         private final ItemPredicate rod;
-        private final EntityPredicate bobber;
-        private final ItemPredicate item;
+        private final EntityPredicate hookedEntity;
+        private final ItemPredicate caughtItem;
 
         public Conditions(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
             super(ID);
             this.rod = itemPredicate;
-            this.bobber = entityPredicate;
-            this.item = itemPredicate2;
+            this.hookedEntity = entityPredicate;
+            this.caughtItem = itemPredicate2;
         }
 
         public static Conditions create(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
@@ -64,17 +64,17 @@ extends AbstractCriterion<Conditions> {
             if (!this.rod.test(itemStack)) {
                 return false;
             }
-            if (!this.bobber.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
+            if (!this.hookedEntity.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
                 return false;
             }
-            if (this.item != ItemPredicate.ANY) {
+            if (this.caughtItem != ItemPredicate.ANY) {
                 ItemEntity itemEntity;
                 boolean bl = false;
-                if (fishingBobberEntity.hookedEntity instanceof ItemEntity && this.item.test((itemEntity = (ItemEntity)fishingBobberEntity.hookedEntity).getStack())) {
+                if (fishingBobberEntity.hookedEntity instanceof ItemEntity && this.caughtItem.test((itemEntity = (ItemEntity)fishingBobberEntity.hookedEntity).getStack())) {
                     bl = true;
                 }
                 for (ItemStack itemStack2 : collection) {
-                    if (!this.item.test(itemStack2)) continue;
+                    if (!this.caughtItem.test(itemStack2)) continue;
                     bl = true;
                     break;
                 }
@@ -89,8 +89,8 @@ extends AbstractCriterion<Conditions> {
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("rod", this.rod.serialize());
-            jsonObject.add("entity", this.bobber.serialize());
-            jsonObject.add("item", this.item.serialize());
+            jsonObject.add("entity", this.hookedEntity.serialize());
+            jsonObject.add("item", this.caughtItem.serialize());
             return jsonObject;
         }
     }

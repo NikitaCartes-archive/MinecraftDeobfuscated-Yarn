@@ -7,12 +7,11 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class RabbitEntityModel<T extends RabbitEntity>
@@ -32,7 +31,6 @@ extends EntityModel<T> {
     private float field_3531;
 
     public RabbitEntityModel() {
-        super(RenderLayer::getEntitySolid);
         this.field_3525.addCuboid(-1.0f, 5.5f, -3.7f, 2.0f, 1.0f, 7.0f);
         this.field_3525.setPivot(3.0f, 17.5f, 3.7f);
         this.field_3525.mirror = true;
@@ -101,7 +99,7 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
         if (this.isChild) {
             float k = 1.5f;
             matrixStack.push();

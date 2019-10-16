@@ -12,9 +12,9 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class IronGolemFlowerFeatureRenderer
@@ -36,7 +36,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.POPPY.getDefaultState(), matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.field_21444);
+        MinecraftClient.getInstance().getBlockRenderManager().renderOnEntity(Blocks.POPPY.getDefaultState(), matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }
 }

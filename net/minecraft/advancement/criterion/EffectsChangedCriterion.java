@@ -27,7 +27,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(entityEffectPredicate);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity));
     }
 

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4667;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.screen.resourcepack.AvailableResourcePackListWidget;
 import net.minecraft.client.gui.screen.resourcepack.ResourcePackListWidget;
 import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidget;
@@ -23,7 +23,7 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(value=EnvType.CLIENT)
 public class ResourcePackOptionsScreen
-extends class_4667 {
+extends GameOptionsScreen {
     private AvailableResourcePackListWidget availablePacks;
     private SelectedResourcePackListWidget enabledPacks;
     private boolean dirty;

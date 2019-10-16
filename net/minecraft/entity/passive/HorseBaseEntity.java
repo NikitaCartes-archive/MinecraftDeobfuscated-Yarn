@@ -620,7 +620,7 @@ JumpingMount {
         this.setOwnerUuid(playerEntity.getUuid());
         this.setTame(true);
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
+            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
         }
         this.world.sendEntityStatus(this, (byte)7);
         return true;
@@ -654,7 +654,7 @@ JumpingMount {
             g = 0.0f;
         }
         if (this.jumpStrength > 0.0f && !this.isInAir() && this.onGround) {
-            d = this.getJumpStrength() * (double)this.jumpStrength;
+            d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.method_23313();
             e = this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1f) : d;
             Vec3d vec3d2 = this.getVelocity();
             this.setVelocity(vec3d2.x, e, vec3d2.z);
@@ -917,8 +917,8 @@ JumpingMount {
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
         if (entityData == null) {
-            entityData = new PassiveEntity._1();
-            ((PassiveEntity._1)entityData).method_22433(0.2f);
+            entityData = new PassiveEntity.class_4697();
+            ((PassiveEntity.class_4697)entityData).method_22433(0.2f);
         }
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }

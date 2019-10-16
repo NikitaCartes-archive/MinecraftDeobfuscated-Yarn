@@ -20,8 +20,8 @@ public final class ModifiedWoodedBadlandsPlateauBiome
 extends Biome {
     public ModifiedWoodedBadlandsPlateauBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.WOODED_BADLANDS, SurfaceBuilder.BADLANDS_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.MESA).depth(0.45f).scale(0.3f).temperature(2.0f).downfall(0.0f).waterColor(4159204).waterFogColor(329011).parent("wooded_badlands_plateau"));
-        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA)));
-        this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
+        this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA)));
+        this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);

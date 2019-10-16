@@ -7,13 +7,12 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class LlamaEntityModel<T extends AbstractDonkeyEntity>
@@ -28,7 +27,6 @@ extends EntityModel<T> {
     private final ModelPart field_3429;
 
     public LlamaEntityModel(float f) {
-        super(RenderLayer::getEntitySolid);
         this.textureWidth = 128;
         this.textureHeight = 64;
         this.field_20935 = new ModelPart(this, 0, 0);
@@ -86,7 +84,7 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+    public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
         if (this.isChild) {
             float k = 2.0f;
             matrixStack.push();

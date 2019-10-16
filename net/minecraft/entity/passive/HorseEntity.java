@@ -302,7 +302,7 @@ extends HorseBaseEntity {
     }
 
     public static class class_1499
-    extends PassiveEntity._1 {
+    extends PassiveEntity.class_4697 {
         public final int field_6994;
 
         public class_1499(int i) {

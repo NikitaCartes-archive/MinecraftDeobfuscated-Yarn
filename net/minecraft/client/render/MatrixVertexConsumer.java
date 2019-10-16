@@ -5,17 +5,17 @@ package net.minecraft.client.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.AbstractVertexConsumer;
+import net.minecraft.client.render.FixedColorVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix3f;
 
 @Environment(value=EnvType.CLIENT)
 public class MatrixVertexConsumer
-extends AbstractVertexConsumer {
+extends FixedColorVertexConsumer {
     private final VertexConsumer vertexConsumer;
     private final Matrix4f textureMatrix;
     private final Matrix3f normalMatrix;
@@ -39,17 +39,17 @@ extends AbstractVertexConsumer {
         this.textureMatrix.invert();
         this.normalMatrix = new Matrix3f(matrix4f);
         this.normalMatrix.transpose();
-        this.method_22891();
+        this.init();
     }
 
-    private void method_22891() {
+    private void init() {
         this.x = 0.0f;
         this.y = 0.0f;
         this.z = 0.0f;
-        this.red = this.field_20890;
-        this.green = this.field_20891;
-        this.blue = this.field_20892;
-        this.alpha = this.field_20893;
+        this.red = this.fixedRed;
+        this.green = this.fixedGreen;
+        this.blue = this.fixedBlue;
+        this.alpha = this.fixedAlpha;
         this.u1 = 0;
         this.v1 = 10;
         this.light = 0xF000F0;
@@ -83,8 +83,8 @@ extends AbstractVertexConsumer {
                 g = vector4f.getY();
             }
         }
-        this.vertexConsumer.vertex(this.x, this.y, this.z).color(this.red, this.green, this.blue, this.alpha).texture(f, g).overlay(this.u1, this.v1).light(this.light).normal(this.normalX, this.normalY, this.normalZ).next();
-        this.method_22891();
+        this.vertexConsumer.vertex(this.x, this.y, this.z).color(this.red, this.green, this.blue, this.alpha).texture(f, -g).overlay(this.u1, this.v1).light(this.light).normal(this.normalX, this.normalY, this.normalZ).next();
+        this.init();
     }
 
     @Override
@@ -97,7 +97,7 @@ extends AbstractVertexConsumer {
 
     @Override
     public VertexConsumer color(int i, int j, int k, int l) {
-        if (this.field_20889) {
+        if (this.colorFixed) {
             throw new IllegalStateException();
         }
         this.red = i;

@@ -60,7 +60,7 @@ public enum BannerPattern {
     MOJANG("mojang", "moj", new ItemStack(Items.ENCHANTED_GOLDEN_APPLE));
 
     public static final int COUNT;
-    public static final int field_18283;
+    public static final int LOOM_APPLICABLE_COUNT;
     private final String name;
     private final String id;
     private final String[] recipePattern = new String[3];
@@ -84,7 +84,7 @@ public enum BannerPattern {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Identifier method_22536() {
+    public Identifier getSpriteId() {
         return new Identifier("entity/banner/" + this.getName());
     }
 
@@ -109,20 +109,20 @@ public enum BannerPattern {
 
     static {
         COUNT = BannerPattern.values().length;
-        field_18283 = COUNT - 5 - 1;
+        LOOM_APPLICABLE_COUNT = COUNT - 5 - 1;
     }
 
-    public static class Builder {
-        private final List<Pair<BannerPattern, DyeColor>> patterns = Lists.newArrayList();
+    public static class Patterns {
+        private final List<Pair<BannerPattern, DyeColor>> entries = Lists.newArrayList();
 
-        public Builder with(BannerPattern bannerPattern, DyeColor dyeColor) {
-            this.patterns.add(Pair.of(bannerPattern, dyeColor));
+        public Patterns add(BannerPattern bannerPattern, DyeColor dyeColor) {
+            this.entries.add(Pair.of(bannerPattern, dyeColor));
             return this;
         }
 
-        public ListTag build() {
+        public ListTag toTag() {
             ListTag listTag = new ListTag();
-            for (Pair<BannerPattern, DyeColor> pair : this.patterns) {
+            for (Pair<BannerPattern, DyeColor> pair : this.entries) {
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.putString("Pattern", pair.getLeft().id);
                 compoundTag.putInt("Color", pair.getRight().getId());

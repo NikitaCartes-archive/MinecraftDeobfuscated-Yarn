@@ -6,15 +6,14 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class ChickenEntityModel<T extends Entity>
-extends class_4592<T> {
+extends AnimalModel<T> {
     private final ModelPart head;
     private final ModelPart body;
     private final ModelPart leftLeg;
@@ -25,7 +24,6 @@ extends class_4592<T> {
     private final ModelPart wattle;
 
     public ChickenEntityModel() {
-        super(RenderLayer::getEntityCutoutNoCull, false, 5.0f, 2.0f, 2.0f, 2.0f, 24.0f);
         int i = 16;
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-2.0f, -6.0f, -2.0f, 4.0f, 6.0f, 3.0f, 0.0f);
@@ -54,12 +52,12 @@ extends class_4592<T> {
     }
 
     @Override
-    protected Iterable<ModelPart> method_22946() {
+    protected Iterable<ModelPart> getHeadParts() {
         return ImmutableList.of(this.head, this.beak, this.wattle);
     }
 
     @Override
-    protected Iterable<ModelPart> method_22948() {
+    protected Iterable<ModelPart> getBodyParts() {
         return ImmutableList.of(this.body, this.leftLeg, this.rightLeg, this.leftWing, this.rightWing);
     }
 

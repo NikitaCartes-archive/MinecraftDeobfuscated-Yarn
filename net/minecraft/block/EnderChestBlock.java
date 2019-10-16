@@ -30,6 +30,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -71,24 +72,24 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity2, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity2, Hand hand, BlockHitResult blockHitResult) {
         EnderChestInventory enderChestInventory = playerEntity2.getEnderChestInventory();
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (enderChestInventory == null || !(blockEntity instanceof EnderChestBlockEntity)) {
-            return true;
+            return ActionResult.SUCCESS;
         }
         BlockPos blockPos2 = blockPos.up();
         if (world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (world.isClient) {
-            return true;
+            return ActionResult.SUCCESS;
         }
         EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
         enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
         playerEntity2.openContainer(new ClientDummyContainerProvider((i, playerInventory, playerEntity) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME));
         playerEntity2.incrementStat(Stats.OPEN_ENDERCHEST);
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     @Override

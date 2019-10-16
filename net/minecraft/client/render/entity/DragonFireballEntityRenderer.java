@@ -12,10 +12,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class DragonFireballEntityRenderer
@@ -38,10 +38,10 @@ extends EntityRenderer<DragonFireballEntity> {
         Matrix4f matrix4f = matrixStack.peek();
         VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
         int m = dragonFireballEntity.getLightmapCoordinates();
-        vertexConsumer.vertex(matrix4f, -0.5f, -0.25f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, -0.25f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, 0.75f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, -0.5f, 0.75f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).defaultOverlay(OverlayTexture.field_21444).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, -0.5f, -0.25f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, 0.5f, -0.25f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, 0.5f, 0.75f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, -0.5f, 0.75f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
         matrixStack.pop();
         super.render(dragonFireballEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

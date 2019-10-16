@@ -42,6 +42,7 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
@@ -56,7 +57,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.LootTables;
 import org.jetbrains.annotations.Nullable;
 
 public class SheepEntity
@@ -243,6 +243,7 @@ extends AnimalEntity {
             if (!this.world.isClient) {
                 itemStack.damage(1, playerEntity2, playerEntity -> playerEntity.sendToolBreakStatus(hand));
             }
+            return true;
         }
         return super.interactMob(playerEntity2, hand);
     }

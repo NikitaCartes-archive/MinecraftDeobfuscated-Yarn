@@ -24,7 +24,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions();
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity) {
         this.grant(serverPlayerEntity.getAdvancementManager());
     }
 

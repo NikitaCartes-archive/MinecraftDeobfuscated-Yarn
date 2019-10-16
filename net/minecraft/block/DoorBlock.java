@@ -25,6 +25,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -189,14 +190,14 @@ extends Block {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (this.material == Material.METAL) {
-            return false;
+            return ActionResult.PASS;
         }
         blockState = (BlockState)blockState.cycle(OPEN);
         world.setBlockState(blockPos, blockState, 10);
         world.playLevelEvent(playerEntity, blockState.get(OPEN) != false ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     public void setOpen(World world, BlockPos blockPos, boolean bl) {

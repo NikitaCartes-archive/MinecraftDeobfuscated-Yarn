@@ -610,7 +610,7 @@ extends World {
     }
 
     protected void placeBonusChest() {
-        ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = Feature.BONUS_CHEST.method_23397(FeatureConfig.DEFAULT);
+        ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
         for (int i = 0; i < 10; ++i) {
             int j = this.properties.getSpawnX() + this.random.nextInt(6) - this.random.nextInt(6);
             int k = this.properties.getSpawnZ() + this.random.nextInt(6) - this.random.nextInt(6);
@@ -856,7 +856,7 @@ extends World {
     }
 
     @Override
-    public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
+    public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
         for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
             double f;
             double e;

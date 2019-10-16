@@ -76,7 +76,7 @@ extends SkullBlock {
         witherEntity.bodyYaw = result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f;
         witherEntity.method_6885();
         for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-            Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
+            Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
         }
         world.spawnEntity(witherEntity);
         for (int k = 0; k < blockPattern.getWidth(); ++k) {

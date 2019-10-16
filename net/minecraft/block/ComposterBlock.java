@@ -27,6 +27,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SystemUtil;
@@ -178,7 +179,7 @@ implements InventoryProvider {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         int i = blockState.get(LEVEL);
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
@@ -189,7 +190,7 @@ implements InventoryProvider {
                     itemStack.decrement(1);
                 }
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (i == 8) {
             if (!world.isClient) {
@@ -203,9 +204,9 @@ implements InventoryProvider {
             }
             ComposterBlock.emptyComposter(blockState, world, blockPos);
             world.playSound(null, blockPos, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            return true;
+            return ActionResult.SUCCESS;
         }
-        return false;
+        return ActionResult.PASS;
     }
 
     private static void emptyComposter(BlockState blockState, IWorld iWorld, BlockPos blockPos) {

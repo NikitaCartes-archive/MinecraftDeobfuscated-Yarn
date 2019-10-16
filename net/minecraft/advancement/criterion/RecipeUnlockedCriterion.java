@@ -28,7 +28,7 @@ extends AbstractCriterion<Conditions> {
         return new Conditions(identifier);
     }
 
-    public void handle(ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
+    public void trigger(ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
         this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(recipe));
     }
 

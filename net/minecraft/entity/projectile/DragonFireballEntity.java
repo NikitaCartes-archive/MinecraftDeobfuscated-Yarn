@@ -37,6 +37,7 @@ extends ExplosiveProjectileEntity {
 
     @Override
     protected void onCollision(HitResult hitResult) {
+        super.onCollision(hitResult);
         if (hitResult.getType() == HitResult.Type.ENTITY && ((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
             return;
         }

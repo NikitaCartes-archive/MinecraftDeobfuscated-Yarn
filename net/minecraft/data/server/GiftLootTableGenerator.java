@@ -6,19 +6,19 @@ package net.minecraft.data.server;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.item.Items;
+import net.minecraft.loot.ConstantLootTableRange;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.UniformLootTableRange;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.entry.LeafEntry;
+import net.minecraft.loot.entry.LootEntry;
+import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.world.loot.ConstantLootTableRange;
-import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootTable;
-import net.minecraft.world.loot.LootTables;
-import net.minecraft.world.loot.UniformLootTableRange;
-import net.minecraft.world.loot.entry.ItemEntry;
-import net.minecraft.world.loot.entry.LeafEntry;
-import net.minecraft.world.loot.entry.LootEntry;
-import net.minecraft.world.loot.function.SetCountLootFunction;
-import net.minecraft.world.loot.function.SetNbtLootFunction;
 
 public class GiftLootTableGenerator
 implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {

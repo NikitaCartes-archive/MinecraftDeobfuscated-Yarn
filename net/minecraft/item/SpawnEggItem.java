@@ -82,12 +82,12 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (world.isClient) {
-            return TypedActionResult.pass(itemStack);
-        }
         HitResult hitResult = SpawnEggItem.rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
         if (hitResult.getType() != HitResult.Type.BLOCK) {
             return TypedActionResult.pass(itemStack);
+        }
+        if (world.isClient) {
+            return TypedActionResult.successWithSwing(itemStack);
         }
         BlockHitResult blockHitResult = (BlockHitResult)hitResult;
         BlockPos blockPos = blockHitResult.getBlockPos();

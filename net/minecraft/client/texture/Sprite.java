@@ -97,7 +97,7 @@ public class Sprite {
             boolean bl = false;
             block0: for (j = 0; j < this.images[0].getWidth(); ++j) {
                 for (int k = 0; k < this.images[0].getHeight(); ++k) {
-                    if (this.images[0].getPixelRGBA(j, k) >> 24 != 0) continue;
+                    if (this.images[0].getPixelRgba(j, k) >> 24 != 0) continue;
                     bl = true;
                     break block0;
                 }
@@ -113,7 +113,7 @@ public class Sprite {
                 int m = nativeImage2.getHeight();
                 for (int n = 0; n < l; ++n) {
                     for (int o = 0; o < m; ++o) {
-                        nativeImage2.setPixelRGBA(n, o, Sprite.blendPixels(nativeImage.getPixelRGBA(n * 2 + 0, o * 2 + 0), nativeImage.getPixelRGBA(n * 2 + 1, o * 2 + 0), nativeImage.getPixelRGBA(n * 2 + 0, o * 2 + 1), nativeImage.getPixelRGBA(n * 2 + 1, o * 2 + 1), bl));
+                        nativeImage2.setPixelRgba(n, o, Sprite.blendPixels(nativeImage.getPixelRgba(n * 2 + 0, o * 2 + 0), nativeImage.getPixelRgba(n * 2 + 1, o * 2 + 0), nativeImage.getPixelRgba(n * 2 + 0, o * 2 + 1), nativeImage.getPixelRgba(n * 2 + 1, o * 2 + 1), bl));
                     }
                 }
                 nativeImages[j] = nativeImage2;
@@ -296,7 +296,7 @@ public class Sprite {
                         int s = this.lerp(d, q >> 16 & 0xFF, r >> 16 & 0xFF);
                         int t = this.lerp(d, q >> 8 & 0xFF, r >> 8 & 0xFF);
                         int u = this.lerp(d, q & 0xFF, r & 0xFF);
-                        this.interpolatedImages[l].setPixelRGBA(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
+                        this.interpolatedImages[l].setPixelRgba(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
                     }
                 }
             }
@@ -405,11 +405,11 @@ public class Sprite {
     }
 
     private int getFramePixel(int i, int j, int k, int l) {
-        return this.images[j].getPixelRGBA(k + (this.frameXs[i] * this.width >> j), l + (this.frameYs[i] * this.height >> j));
+        return this.images[j].getPixelRgba(k + (this.frameXs[i] * this.width >> j), l + (this.frameYs[i] * this.height >> j));
     }
 
     public boolean isPixelTransparent(int i, int j, int k) {
-        return (this.images[0].getPixelRGBA(j + this.frameXs[i] * this.width, k + this.frameYs[i] * this.height) >> 24 & 0xFF) == 0;
+        return (this.images[0].getPixelRgba(j + this.frameXs[i] * this.width, k + this.frameYs[i] * this.height) >> 24 & 0xFF) == 0;
     }
 
     public void upload() {

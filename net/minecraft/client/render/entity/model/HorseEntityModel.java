@@ -4,21 +4,18 @@
 package net.minecraft.client.render.entity.model;
 
 import com.google.common.collect.ImmutableList;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class HorseEntityModel<T extends HorseBaseEntity>
-extends class_4592<T> {
+extends AnimalModel<T> {
     protected final ModelPart field_3305;
     protected final ModelPart field_3307;
     private final ModelPart field_3306;
@@ -33,8 +30,8 @@ extends class_4592<T> {
     private final ModelPart[] field_3304;
     private final ModelPart[] field_3301;
 
-    public HorseEntityModel(Function<Identifier, RenderLayer> function, float f) {
-        super(function, true, 16.2f, 1.36f, 2.7272f, 2.0f, 20.0f);
+    public HorseEntityModel(float f) {
+        super(true, 16.2f, 1.36f, 2.7272f, 2.0f, 20.0f);
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.field_3305 = new ModelPart(this, 0, 32);
@@ -136,12 +133,12 @@ extends class_4592<T> {
     }
 
     @Override
-    public Iterable<ModelPart> method_22946() {
+    public Iterable<ModelPart> getHeadParts() {
         return ImmutableList.of(this.field_3307);
     }
 
     @Override
-    protected Iterable<ModelPart> method_22948() {
+    protected Iterable<ModelPart> getBodyParts() {
         return ImmutableList.of(this.field_3305, this.field_3306, this.field_3303, this.field_3302, this.field_3308, this.field_20930, this.field_20931, this.field_20932, this.field_20933);
     }
 

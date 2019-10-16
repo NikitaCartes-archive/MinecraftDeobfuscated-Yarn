@@ -383,7 +383,7 @@ extends Entity {
             this.waterLevel = this.getBoundingBox().maxY;
             return location;
         }
-        if (this.checKBoatInWater()) {
+        if (this.checkBoatInWater()) {
             return Location.IN_WATER;
         }
         float f = this.method_7548();
@@ -455,7 +455,7 @@ extends Entity {
         return f / (float)o;
     }
 
-    private boolean checKBoatInWater() {
+    private boolean checkBoatInWater() {
         Box box = this.getBoundingBox();
         int i = MathHelper.floor(box.minX);
         int j = MathHelper.ceil(box.maxX);
@@ -636,9 +636,9 @@ extends Entity {
             return false;
         }
         if (!this.world.isClient && this.ticksUnderwater < 60.0f) {
-            playerEntity.startRiding(this);
+            return playerEntity.startRiding(this);
         }
-        return true;
+        return false;
     }
 
     @Override

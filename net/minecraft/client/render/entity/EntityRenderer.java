@@ -11,11 +11,11 @@ import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(value=EnvType.CLIENT)
@@ -39,7 +39,7 @@ public abstract class EntityRenderer<T extends Entity> {
         if (box.isValid() || box.getAverageSideLength() == 0.0) {
             box = new Box(((Entity)entity).getX() - 2.0, ((Entity)entity).getY() - 2.0, ((Entity)entity).getZ() - 2.0, ((Entity)entity).getX() + 2.0, ((Entity)entity).getY() + 2.0, ((Entity)entity).getZ() + 2.0);
         }
-        return frustum.method_23093(box);
+        return frustum.isVisible(box);
     }
 
     public Vec3d getPositionOffset(T entity, double d, double e, double f, float g) {
@@ -64,7 +64,7 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        double d = this.renderManager.method_23168((Entity)entity);
+        double d = this.renderManager.getSquaredDistanceToCamera((Entity)entity);
         if (d > 4096.0) {
             return;
         }

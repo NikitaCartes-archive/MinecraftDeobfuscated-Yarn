@@ -12,11 +12,11 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class FlyingItemEntityRenderer<T extends Entity>
@@ -42,7 +42,7 @@ extends EntityRenderer<T> {
         float i = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
-        this.item.method_23178(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, ((Entity)entity).getLightmapCoordinates(), OverlayTexture.field_21444, matrixStack, layeredVertexConsumerStorage);
+        this.item.method_23178(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, ((Entity)entity).getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, matrixStack, layeredVertexConsumerStorage);
         matrixStack.pop();
         super.render(entity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

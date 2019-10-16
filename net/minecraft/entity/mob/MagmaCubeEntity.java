@@ -12,6 +12,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.loot.LootTables;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -25,7 +26,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.loot.LootTables;
 
 public class MagmaCubeEntity
 extends SlimeEntity {
@@ -93,7 +93,7 @@ extends SlimeEntity {
     @Override
     protected void jump() {
         Vec3d vec3d = this.getVelocity();
-        this.setVelocity(vec3d.x, 0.42f + (float)this.getSize() * 0.1f, vec3d.z);
+        this.setVelocity(vec3d.x, this.getJumpVelocity() + (float)this.getSize() * 0.1f, vec3d.z);
         this.velocityDirty = true;
     }
 

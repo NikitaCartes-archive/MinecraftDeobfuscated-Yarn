@@ -46,7 +46,7 @@ implements Closeable {
         }
         Slot slot = this.rootSlot.findSlotFor(renderableGlyph);
         if (slot != null) {
-            this.method_23207();
+            this.bindTexture();
             renderableGlyph.upload(slot.x, slot.y);
             float f = 256.0f;
             float g = 256.0f;

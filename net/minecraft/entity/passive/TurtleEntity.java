@@ -543,7 +543,7 @@ extends AnimalEntity {
             }
             if (serverPlayerEntity != null) {
                 serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-                Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.animal, this.mate, null);
+                Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, null);
             }
             this.turtle.setHasEgg(true);
             this.animal.resetLoveTicks();

@@ -14,10 +14,10 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity>
@@ -79,12 +79,12 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    protected Iterable<ModelPart> method_22948() {
-        return Iterables.concat(super.method_22948(), ImmutableList.of(this.leftLegOverlay, this.rightLegOverlay, this.leftArmOverlay, this.rightArmOverlay, this.bodyOverlay));
+    protected Iterable<ModelPart> getBodyParts() {
+        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.leftLegOverlay, this.rightLegOverlay, this.leftArmOverlay, this.rightArmOverlay, this.bodyOverlay));
     }
 
     public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, int i, int j) {
-        this.ears.copyRotation(this.head);
+        this.ears.copyPositionAndRotation(this.head);
         this.ears.pivotX = 0.0f;
         this.ears.pivotY = 0.0f;
         this.ears.render(matrixStack, vertexConsumer, f, i, j, null);
@@ -97,11 +97,11 @@ extends BipedEntityModel<T> {
     @Override
     public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
         super.method_17087(livingEntity, f, g, h, i, j, k);
-        this.leftLegOverlay.copyRotation(this.leftLeg);
-        this.rightLegOverlay.copyRotation(this.rightLeg);
-        this.leftArmOverlay.copyRotation(this.leftArm);
-        this.rightArmOverlay.copyRotation(this.rightArm);
-        this.bodyOverlay.copyRotation(this.body);
+        this.leftLegOverlay.copyPositionAndRotation(this.leftLeg);
+        this.rightLegOverlay.copyPositionAndRotation(this.rightLeg);
+        this.leftArmOverlay.copyPositionAndRotation(this.leftArm);
+        this.rightArmOverlay.copyPositionAndRotation(this.rightArm);
+        this.bodyOverlay.copyPositionAndRotation(this.body);
         this.cape.pivotY = ((Entity)livingEntity).isInSneakingPose() ? 2.0f : 0.0f;
     }
 
@@ -143,7 +143,7 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public /* synthetic */ void accept(Object object) {
+    public /* synthetic */ void onPartAdded(Object object) {
         this.method_22696((ModelPart)object);
     }
 }

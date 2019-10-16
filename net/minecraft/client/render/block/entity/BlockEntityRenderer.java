@@ -10,8 +10,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class BlockEntityRenderer<T extends BlockEntity> {
@@ -21,7 +21,7 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
         this.field_20989 = blockEntityRenderDispatcher;
     }
 
-    public abstract void render(T var1, double var2, double var4, double var6, float var8, MatrixStack var9, LayeredVertexConsumerStorage var10, int var11, int var12);
+    public abstract void method_3569(T var1, double var2, double var4, double var6, float var8, MatrixStack var9, LayeredVertexConsumerStorage var10, int var11, int var12);
 
     protected Sprite getSprite(Identifier identifier) {
         return MinecraftClient.getInstance().getSpriteAtlas().getSprite(identifier);

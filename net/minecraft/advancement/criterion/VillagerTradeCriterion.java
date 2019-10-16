@@ -42,13 +42,13 @@ extends AbstractCriterion<Conditions> {
 
     public static class Conditions
     extends AbstractCriterionConditions {
-        private final EntityPredicate item;
-        private final ItemPredicate villager;
+        private final EntityPredicate villager;
+        private final ItemPredicate item;
 
         public Conditions(EntityPredicate entityPredicate, ItemPredicate itemPredicate) {
             super(ID);
-            this.item = entityPredicate;
-            this.villager = itemPredicate;
+            this.villager = entityPredicate;
+            this.item = itemPredicate;
         }
 
         public static Conditions any() {
@@ -56,17 +56,17 @@ extends AbstractCriterion<Conditions> {
         }
 
         public boolean matches(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-            if (!this.item.test(serverPlayerEntity, abstractTraderEntity)) {
+            if (!this.villager.test(serverPlayerEntity, abstractTraderEntity)) {
                 return false;
             }
-            return this.villager.test(itemStack);
+            return this.item.test(itemStack);
         }
 
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("item", this.villager.serialize());
-            jsonObject.add("villager", this.item.serialize());
+            jsonObject.add("item", this.item.serialize());
+            jsonObject.add("villager", this.villager.serialize());
             return jsonObject;
         }
     }

@@ -12,7 +12,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 @Environment(value=EnvType.CLIENT)
 public class OverlayTexture
 implements AutoCloseable {
-    public static final int field_21444 = OverlayTexture.method_23625(0, 10);
+    public static final int DEFAULT_UV = OverlayTexture.packUv(0, 10);
     private final NativeImageBackedTexture texture = new NativeImageBackedTexture(16, 16, false);
 
     public OverlayTexture() {
@@ -20,21 +20,21 @@ implements AutoCloseable {
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 if (i < 8) {
-                    nativeImage.setPixelRGBA(j, i, -1308622593);
+                    nativeImage.setPixelRgba(j, i, -1308622593);
                     continue;
                 }
                 int k = (int)((1.0f - (float)j / 15.0f * 0.2f) * 255.0f);
-                nativeImage.setPixelRGBA(j, i, k << 24 | 0xFFFFFF);
+                nativeImage.setPixelRgba(j, i, k << 24 | 0xFFFFFF);
             }
         }
         RenderSystem.activeTexture(33985);
-        this.texture.method_23207();
+        this.texture.bindTexture();
         RenderSystem.matrixMode(5890);
         RenderSystem.loadIdentity();
         float f = 0.06666667f;
         RenderSystem.scalef(0.06666667f, 0.06666667f, 0.06666667f);
         RenderSystem.matrixMode(5888);
-        this.texture.method_23207();
+        this.texture.bindTexture();
         nativeImage.method_22619(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
         RenderSystem.activeTexture(33984);
     }
@@ -56,12 +56,12 @@ implements AutoCloseable {
         return bl ? 3 : 10;
     }
 
-    public static int method_23625(int i, int j) {
+    public static int packUv(int i, int j) {
         return i | j << 16;
     }
 
-    public static int method_23624(float f, boolean bl) {
-        return OverlayTexture.method_23625(OverlayTexture.getU(f), OverlayTexture.getV(bl));
+    public static int packUv(float f, boolean bl) {
+        return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(bl));
     }
 
     public void teardownOverlayColor() {

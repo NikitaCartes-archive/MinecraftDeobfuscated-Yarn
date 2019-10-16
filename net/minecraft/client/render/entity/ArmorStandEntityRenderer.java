@@ -13,12 +13,12 @@ import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.client.render.entity.model.ArmorStandEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandEntityRenderer
@@ -47,7 +47,7 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
 
     protected boolean method_3878(ArmorStandEntity armorStandEntity) {
         float f;
-        double d = this.renderManager.method_23168(armorStandEntity);
+        double d = this.renderManager.getSquaredDistanceToCamera(armorStandEntity);
         float f2 = f = armorStandEntity.isInSneakingPose() ? 32.0f : 64.0f;
         if (d >= (double)(f * f)) {
             return false;

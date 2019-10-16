@@ -16,20 +16,20 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class EnderDragonEntityRenderer
 extends EntityRenderer<EnderDragonEntity> {
-    public static final Identifier CRYSTAL_BEAM = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
+    public static final Identifier CRYSTAL_BEAM_TEX = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
     private static final Identifier EXPLOSION_TEX = new Identifier("textures/entity/enderdragon/dragon_exploding.png");
     private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon.png");
-    private static final Identifier field_21006 = new Identifier("textures/entity/enderdragon/dragon_eyes.png");
+    private static final Identifier EYES_TEX = new Identifier("textures/entity/enderdragon/dragon_eyes.png");
     private static final float field_21007 = (float)(Math.sqrt(3.0) / 2.0);
     private final DragonEntityModel field_21008 = new DragonEntityModel(0.0f);
 
@@ -54,15 +54,15 @@ extends EntityRenderer<EnderDragonEntity> {
         if (enderDragonEntity.field_7031 > 0) {
             float m = (float)enderDragonEntity.field_7031 / 200.0f;
             VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEX, m));
-            this.field_21008.renderItem(matrixStack, vertexConsumer, l, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
+            this.field_21008.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
             VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityDecal(SKIN));
-            this.field_21008.renderItem(matrixStack, vertexConsumer2, l, OverlayTexture.method_23624(0.0f, bl), 1.0f, 1.0f, 1.0f);
+            this.field_21008.render(matrixStack, vertexConsumer2, l, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f);
         } else {
-            VertexConsumer vertexConsumer3 = layeredVertexConsumerStorage.getBuffer(this.field_21008.method_23500(SKIN));
-            this.field_21008.renderItem(matrixStack, vertexConsumer3, l, OverlayTexture.method_23624(0.0f, bl), 1.0f, 1.0f, 1.0f);
+            VertexConsumer vertexConsumer3 = layeredVertexConsumerStorage.getBuffer(this.field_21008.getLayer(SKIN));
+            this.field_21008.render(matrixStack, vertexConsumer3, l, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f);
         }
-        VertexConsumer vertexConsumer3 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEyes(field_21006));
-        this.field_21008.renderItem(matrixStack, vertexConsumer3, l, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer3 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEyes(EYES_TEX));
+        this.field_21008.render(matrixStack, vertexConsumer3, l, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         if (enderDragonEntity.field_7031 > 0) {
             float n = ((float)enderDragonEntity.field_7031 + h) / 200.0f;
             float o = 0.0f;
@@ -134,7 +134,7 @@ extends EntityRenderer<EnderDragonEntity> {
         matrixStack.translate(0.0, 2.0, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626((float)(-Math.atan2(h, f)) - 1.5707964f));
         matrixStack.multiply(Vector3f.POSITIVE_X.method_23626((float)(-Math.atan2(l, g)) - 1.5707964f));
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM));
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM_TEX));
         float n = 0.0f - ((float)j + i) * 0.01f;
         float o = MathHelper.sqrt(f * f + g * g + h * h) / 32.0f - ((float)j + i) * 0.01f;
         int p = 8;
@@ -146,10 +146,10 @@ extends EntityRenderer<EnderDragonEntity> {
             float u = MathHelper.sin((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;
             float v = MathHelper.cos((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;
             float w = (float)(t % 8) / 8.0f;
-            vertexConsumer.vertex(matrix4f, q * 0.2f, r * 0.2f, 0.0f).color(0, 0, 0, 255).texture(s, n).defaultOverlay(OverlayTexture.field_21444).light(k).normal(0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, q, r, m).color(255, 255, 255, 255).texture(s, o).defaultOverlay(OverlayTexture.field_21444).light(k).normal(0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, u, v, m).color(255, 255, 255, 255).texture(w, o).defaultOverlay(OverlayTexture.field_21444).light(k).normal(0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, u * 0.2f, v * 0.2f, 0.0f).color(0, 0, 0, 255).texture(w, n).defaultOverlay(OverlayTexture.field_21444).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, q * 0.2f, r * 0.2f, 0.0f).color(0, 0, 0, 255).texture(s, n).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, q, r, m).color(255, 255, 255, 255).texture(s, o).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, u, v, m).color(255, 255, 255, 255).texture(w, o).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, u * 0.2f, v * 0.2f, 0.0f).color(0, 0, 0, 255).texture(w, n).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
             q = u;
             r = v;
             s = w;
@@ -177,11 +177,10 @@ extends EntityRenderer<EnderDragonEntity> {
         private final ModelPart wing;
         private final ModelPart wingTip;
         @Nullable
-        private EnderDragonEntity field_21441;
+        private EnderDragonEntity dragon;
         private float field_21442;
 
         public DragonEntityModel(float f) {
-            super(RenderLayer::getEntityCutoutNoCull);
             this.textureWidth = 256;
             this.textureHeight = 256;
             float g = -16.0f;
@@ -241,7 +240,7 @@ extends EntityRenderer<EnderDragonEntity> {
         }
 
         public void method_23620(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
-            this.field_21441 = enderDragonEntity;
+            this.dragon = enderDragonEntity;
             this.field_21442 = h;
         }
 
@@ -249,11 +248,11 @@ extends EntityRenderer<EnderDragonEntity> {
         }
 
         @Override
-        public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+        public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
             float v;
             float k = 0.0625f;
             matrixStack.push();
-            float l = MathHelper.lerp(this.field_21442, this.field_21441.field_7019, this.field_21441.field_7030);
+            float l = MathHelper.lerp(this.field_21442, this.dragon.field_7019, this.dragon.field_7030);
             this.jaw.pitch = (float)(Math.sin(l * ((float)Math.PI * 2)) + 1.0) * 0.2f;
             float m = (float)(Math.sin(l * ((float)Math.PI * 2) - 1.0f) + 1.0);
             m = (m * m + m * 2.0f) * 0.05f;
@@ -263,15 +262,15 @@ extends EntityRenderer<EnderDragonEntity> {
             float o = 20.0f;
             float p = -12.0f;
             float q = 1.5f;
-            double[] ds = this.field_21441.method_6817(6, this.field_21442);
-            float r = MathHelper.method_22860(this.field_21441.method_6817(5, this.field_21442)[0] - this.field_21441.method_6817(10, this.field_21442)[0]);
-            float s = MathHelper.method_22860(this.field_21441.method_6817(5, this.field_21442)[0] + (double)(r / 2.0f));
+            double[] ds = this.dragon.method_6817(6, this.field_21442);
+            float r = MathHelper.method_22860(this.dragon.method_6817(5, this.field_21442)[0] - this.dragon.method_6817(10, this.field_21442)[0]);
+            float s = MathHelper.method_22860(this.dragon.method_6817(5, this.field_21442)[0] + (double)(r / 2.0f));
             float t = l * ((float)Math.PI * 2);
             for (int u = 0; u < 5; ++u) {
-                double[] es = this.field_21441.method_6817(5 - u, this.field_21442);
+                double[] es = this.dragon.method_6817(5 - u, this.field_21442);
                 v = (float)Math.cos((float)u * 0.45f + t) * 0.15f;
                 this.neck.yaw = MathHelper.method_22860(es[0] - ds[0]) * ((float)Math.PI / 180) * 1.5f;
-                this.neck.pitch = v + this.field_21441.method_6823(u, ds, es) * ((float)Math.PI / 180) * 1.5f * 5.0f;
+                this.neck.pitch = v + this.dragon.method_6823(u, ds, es) * ((float)Math.PI / 180) * 1.5f * 5.0f;
                 this.neck.roll = -MathHelper.method_22860(es[0] - (double)s) * ((float)Math.PI / 180) * 1.5f;
                 this.neck.pivotY = o;
                 this.neck.pivotZ = p;
@@ -284,9 +283,9 @@ extends EntityRenderer<EnderDragonEntity> {
             this.head.pivotY = o;
             this.head.pivotZ = p;
             this.head.pivotX = n;
-            double[] fs = this.field_21441.method_6817(0, this.field_21442);
+            double[] fs = this.dragon.method_6817(0, this.field_21442);
             this.head.yaw = MathHelper.method_22860(fs[0] - ds[0]) * ((float)Math.PI / 180);
-            this.head.pitch = MathHelper.method_22860(this.field_21441.method_6823(6, ds, fs)) * ((float)Math.PI / 180) * 1.5f * 5.0f;
+            this.head.pitch = MathHelper.method_22860(this.dragon.method_6823(6, ds, fs)) * ((float)Math.PI / 180) * 1.5f * 5.0f;
             this.head.roll = -MathHelper.method_22860(fs[0] - (double)s) * ((float)Math.PI / 180);
             this.head.render(matrixStack, vertexConsumer, 0.0625f, i, j, null);
             matrixStack.push();
@@ -318,9 +317,9 @@ extends EntityRenderer<EnderDragonEntity> {
             o = 10.0f;
             p = 60.0f;
             n = 0.0f;
-            ds = this.field_21441.method_6817(11, this.field_21442);
+            ds = this.dragon.method_6817(11, this.field_21442);
             for (int y = 0; y < 12; ++y) {
-                fs = this.field_21441.method_6817(12 + y, this.field_21442);
+                fs = this.dragon.method_6817(12 + y, this.field_21442);
                 x = (float)((double)x + Math.sin((float)y * 0.45f + t) * (double)0.05f);
                 this.neck.yaw = (MathHelper.method_22860(fs[0] - ds[0]) * 1.5f + 180.0f) * ((float)Math.PI / 180);
                 this.neck.pitch = x + (float)(fs[1] - ds[1]) * ((float)Math.PI / 180) * 1.5f * 5.0f;

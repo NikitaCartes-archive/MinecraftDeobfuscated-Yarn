@@ -520,7 +520,7 @@ extends LivingEntity {
     @Override
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
-        this.setPosition(this.getX(), this.getY(), this.getZ());
+        this.method_23311();
         if (!this.isSpectator()) {
             this.drop(damageSource);
         }
@@ -1406,6 +1406,24 @@ extends LivingEntity {
         return super.handleFallDamage(f, g);
     }
 
+    public boolean method_23668() {
+        ItemStack itemStack;
+        if (!this.onGround && !this.isFallFlying() && !this.isInsideWater() && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
+            this.method_23669();
+            return true;
+        }
+        return false;
+    }
+
+    public void method_23669() {
+        this.setFlag(7, true);
+    }
+
+    public void method_23670() {
+        this.setFlag(7, true);
+        this.setFlag(7, false);
+    }
+
     @Override
     protected void onSwimmingStart() {
         if (!this.isSpectator()) {
@@ -1859,7 +1877,7 @@ extends LivingEntity {
         this.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5f, world.random.nextFloat() * 0.1f + 0.9f);
         if (this instanceof ServerPlayerEntity) {
-            Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)this, itemStack);
+            Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)this, itemStack);
         }
         return super.eatFood(world, itemStack);
     }

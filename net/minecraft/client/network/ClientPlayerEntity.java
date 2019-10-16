@@ -113,14 +113,14 @@ extends AbstractClientPlayerEntity {
     private float field_3922;
     public float nextNauseaStrength;
     public float lastNauseaStrength;
-    private boolean field_3915;
+    private boolean usingItem;
     private Hand activeHand;
     private boolean riding;
     private boolean lastAutoJump = true;
     private int field_3934;
     private boolean field_3939;
     private int field_3917;
-    private boolean field_20663 = true;
+    private boolean showsDeathScreen = true;
 
     public ClientPlayerEntity(MinecraftClient minecraftClient, ClientWorld clientWorld, ClientPlayNetworkHandler clientPlayNetworkHandler, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
         super(clientWorld, clientPlayNetworkHandler.getProfile());
@@ -435,7 +435,7 @@ extends AbstractClientPlayerEntity {
         this.field_3921 = 0;
     }
 
-    public void method_3145(float f, int i, int j) {
+    public void setExperience(float f, int i, int j) {
         this.experienceProgress = f;
         this.totalExperience = i;
         this.experienceLevel = j;
@@ -455,12 +455,12 @@ extends AbstractClientPlayerEntity {
         }
     }
 
-    public void method_22420(boolean bl) {
-        this.field_20663 = bl;
+    public void setShowsDeathScreen(boolean bl) {
+        this.showsDeathScreen = bl;
     }
 
-    public boolean method_22419() {
-        return this.field_20663;
+    public boolean showsDeathScreen() {
+        return this.showsDeathScreen;
     }
 
     @Override
@@ -485,19 +485,19 @@ extends AbstractClientPlayerEntity {
             return;
         }
         super.setCurrentHand(hand);
-        this.field_3915 = true;
+        this.usingItem = true;
         this.activeHand = hand;
     }
 
     @Override
     public boolean isUsingItem() {
-        return this.field_3915;
+        return this.usingItem;
     }
 
     @Override
     public void clearActiveItem() {
         super.clearActiveItem();
-        this.field_3915 = false;
+        this.usingItem = false;
     }
 
     @Override
@@ -512,9 +512,9 @@ extends AbstractClientPlayerEntity {
             Hand hand;
             boolean bl = ((Byte)this.dataTracker.get(LIVING_FLAGS) & 1) > 0;
             Hand hand2 = hand = ((Byte)this.dataTracker.get(LIVING_FLAGS) & 2) > 0 ? Hand.OFF_HAND : Hand.MAIN_HAND;
-            if (bl && !this.field_3915) {
+            if (bl && !this.usingItem) {
                 this.setCurrentHand(hand);
-            } else if (!bl && this.field_3915) {
+            } else if (!bl && this.usingItem) {
                 this.clearActiveItem();
             }
         }
@@ -681,7 +681,7 @@ extends AbstractClientPlayerEntity {
                 }
             }
         }
-        if (this.input.jumping && !bl && !this.onGround && this.getVelocity().y < 0.0 && !this.isFallFlying() && !this.abilities.flying && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
+        if (this.input.jumping && !bl && !this.abilities.flying && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
             this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
         this.field_3939 = this.isFallFlying();

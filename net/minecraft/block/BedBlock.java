@@ -34,6 +34,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -90,12 +91,12 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+    public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
         if (world.isClient) {
-            return true;
+            return ActionResult.CONSUME;
         }
         if (blockState.get(PART) != BedPart.HEAD && (blockState = world.getBlockState(blockPos = blockPos.offset(blockState.get(FACING)))).getBlock() != this) {
-            return true;
+            return ActionResult.CONSUME;
         }
         if (!world.dimension.canPlayersSleep() || world.getBiome(blockPos) == Biomes.NETHER) {
             world.removeBlock(blockPos, false);
@@ -104,20 +105,20 @@ implements BlockEntityProvider {
                 world.removeBlock(blockPos2, false);
             }
             world.createExplosion(null, DamageSource.netherBed(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
-            return true;
+            return ActionResult.SUCCESS;
         }
         if (blockState.get(OCCUPIED).booleanValue()) {
             if (!this.method_22357(world, blockPos)) {
                 playerEntity.addChatMessage(new TranslatableText("block.minecraft.bed.occupied", new Object[0]), true);
             }
-            return true;
+            return ActionResult.SUCCESS;
         }
         playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
             if (sleepFailureReason != null) {
                 playerEntity.addChatMessage(sleepFailureReason.toText(), true);
             }
         });
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     private boolean method_22357(World world, BlockPos blockPos) {

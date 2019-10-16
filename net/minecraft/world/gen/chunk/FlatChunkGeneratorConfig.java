@@ -53,22 +53,22 @@ import org.jetbrains.annotations.Nullable;
 public class FlatChunkGeneratorConfig
 extends ChunkGeneratorConfig {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ConfiguredFeature<?, ?> MINESHAFT = Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> VILLAGE = Feature.VILLAGE.method_23397(new VillageFeatureConfig("village/plains/town_centers", 6)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> STRONGHOLD = Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> SWAMP_HUT = Feature.SWAMP_HUT.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> DESERT_PYRAMID = Feature.DESERT_PYRAMID.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> JUNGLE_TEMPLE = Feature.JUNGLE_TEMPLE.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> IGLOO = Feature.IGLOO.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> SHIPWRECK = Feature.SHIPWRECK.method_23397(new ShipwreckFeatureConfig(false)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> OCEAN_MONUMENT = Feature.OCEAN_MONUMENT.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> WATER_LAKE = Feature.LAKE.method_23397(new BushFeatureConfig(Blocks.WATER.getDefaultState())).method_23388(Decorator.WATER_LAKE.method_23475(new LakeDecoratorConfig(4)));
-    private static final ConfiguredFeature<?, ?> LAVA_LAKE = Feature.LAKE.method_23397(new BushFeatureConfig(Blocks.LAVA.getDefaultState())).method_23388(Decorator.LAVA_LAKE.method_23475(new LakeDecoratorConfig(80)));
-    private static final ConfiguredFeature<?, ?> END_CITY = Feature.END_CITY.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> WOODLAND_MANSION = Feature.WOODLAND_MANSION.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> NETHER_BRIDGE = Feature.NETHER_BRIDGE.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> OCEAN_RUIN = Feature.OCEAN_RUIN.method_23397(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.1f)).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
-    private static final ConfiguredFeature<?, ?> PILLAGER_OUTPOST = Feature.PILLAGER_OUTPOST.method_23397(FeatureConfig.DEFAULT).method_23388(Decorator.NOPE.method_23475(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> MINESHAFT = Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> VILLAGE = Feature.VILLAGE.configure(new VillageFeatureConfig("village/plains/town_centers", 6)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> STRONGHOLD = Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> SWAMP_HUT = Feature.SWAMP_HUT.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> DESERT_PYRAMID = Feature.DESERT_PYRAMID.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> JUNGLE_TEMPLE = Feature.JUNGLE_TEMPLE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> IGLOO = Feature.IGLOO.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> SHIPWRECK = Feature.SHIPWRECK.configure(new ShipwreckFeatureConfig(false)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> OCEAN_MONUMENT = Feature.OCEAN_MONUMENT.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> WATER_LAKE = Feature.LAKE.configure(new BushFeatureConfig(Blocks.WATER.getDefaultState())).createDecoratedFeature(Decorator.WATER_LAKE.configure(new LakeDecoratorConfig(4)));
+    private static final ConfiguredFeature<?, ?> LAVA_LAKE = Feature.LAKE.configure(new BushFeatureConfig(Blocks.LAVA.getDefaultState())).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new LakeDecoratorConfig(80)));
+    private static final ConfiguredFeature<?, ?> END_CITY = Feature.END_CITY.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> WOODLAND_MANSION = Feature.WOODLAND_MANSION.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> NETHER_BRIDGE = Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> OCEAN_RUIN = Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.1f)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+    private static final ConfiguredFeature<?, ?> PILLAGER_OUTPOST = Feature.PILLAGER_OUTPOST.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
     public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
         hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);

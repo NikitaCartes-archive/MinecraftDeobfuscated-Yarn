@@ -11,9 +11,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.LeashEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.LeadKnotEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public class LeashKnotEntityRenderer
@@ -31,8 +31,8 @@ extends EntityRenderer<LeadKnotEntity> {
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         int j = leadKnotEntity.getLightmapCoordinates();
         this.model.setAngles(leadKnotEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(SKIN));
-        this.model.renderItem(matrixStack, vertexConsumer, j, OverlayTexture.field_21444, 1.0f, 1.0f, 1.0f);
+        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(SKIN));
+        this.model.render(matrixStack, vertexConsumer, j, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
         super.render(leadKnotEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
     }

@@ -37,7 +37,7 @@ implements DebugRenderer.Renderer {
     private void method_23111(BlockPos blockPos, Marker marker) {
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO);
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.color4f(0.0f, 1.0f, 0.0f, 0.75f);
         RenderSystem.disableTexture();
         DebugRenderer.method_23103(blockPos, 0.02f, marker.method_23112(), marker.method_23113(), marker.method_23114(), marker.method_23115());

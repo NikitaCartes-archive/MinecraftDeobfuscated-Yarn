@@ -24,18 +24,18 @@ public final class FlowerForestBiome
 extends Biome {
     public FlowerForestBiome() {
         super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.FOREST).depth(0.1f).scale(0.4f).temperature(0.7f).downfall(0.8f).waterColor(4159204).waterFogColor(329011).parent("forest"));
-        this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-        this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
+        this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+        this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.RANDOM_RANDOM_SELECTOR.method_23397(new RandomRandomFeatureConfig(ImmutableList.of(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21098), Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21099), Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21100), Feature.field_21219.method_23397(DefaultBiomeFeatures.field_21204)), 2)).method_23388(Decorator.COUNT_HEIGHTMAP_32.method_23475(new CountDecoratorConfig(5))));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.RANDOM_RANDOM_SELECTOR.configure(new RandomRandomFeatureConfig(ImmutableList.of(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21098), Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21099), Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21100), Feature.FLOWER.configure(DefaultBiomeFeatures.field_21204)), 2)).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(5))));
         DefaultBiomeFeatures.addMineables(this);
         DefaultBiomeFeatures.addDefaultOres(this);
         DefaultBiomeFeatures.addDefaultDisks(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.RANDOM_SELECTOR.method_23397(new RandomFeatureConfig(ImmutableList.of(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21195).method_23387(0.2f), Feature.FANCY_TREE.method_23397(DefaultBiomeFeatures.field_21194).method_23387(0.1f)), Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21193))).method_23388(Decorator.COUNT_EXTRA_HEIGHTMAP.method_23475(new CountExtraChanceDecoratorConfig(6, 0.1f, 1))));
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.field_21219.method_23397(DefaultBiomeFeatures.field_21089).method_23388(Decorator.COUNT_HEIGHTMAP_32.method_23475(new CountDecoratorConfig(100))));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.RANDOM_SELECTOR.configure(new RandomFeatureConfig(ImmutableList.of(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21195).method_23387(0.2f), Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21194).method_23387(0.1f)), Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21193))).createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(6, 0.1f, 1))));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.FLOWER.configure(DefaultBiomeFeatures.field_21089).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(100))));
         DefaultBiomeFeatures.addDefaultGrass(this);
         DefaultBiomeFeatures.addDefaultMushrooms(this);
         DefaultBiomeFeatures.addDefaultVegetation(this);

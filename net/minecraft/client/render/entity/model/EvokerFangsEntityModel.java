@@ -6,21 +6,19 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class EvokerFangsEntityModel<T extends Entity>
-extends class_4595<T> {
+extends CompositeEntityModel<T> {
     private final ModelPart field_3374 = new ModelPart(this, 0, 0);
     private final ModelPart field_3376;
     private final ModelPart field_3375;
 
     public EvokerFangsEntityModel() {
-        super(RenderLayer::getEntityCutoutNoCull);
         this.field_3374.setPivot(-5.0f, 22.0f, -5.0f);
         this.field_3374.addCuboid(0.0f, 0.0f, 0.0f, 10.0f, 12.0f, 10.0f);
         this.field_3376 = new ModelPart(this, 40, 0);

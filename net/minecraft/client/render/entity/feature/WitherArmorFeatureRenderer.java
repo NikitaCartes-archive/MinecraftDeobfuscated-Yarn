@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.EnergySwirlOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.feature.SkinOverlayFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.entity.boss.WitherEntity;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class WitherArmorFeatureRenderer
-extends SkinOverlayFeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
+extends EnergySwirlOverlayFeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
     private final WitherEntityModel<WitherEntity> model = new WitherEntityModel(0.5f);
 
@@ -24,17 +24,17 @@ extends SkinOverlayFeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>
     }
 
     @Override
-    protected float method_23202(float f) {
+    protected float getEnergySwirlX(float f) {
         return MathHelper.cos(f * 0.02f) * 3.0f;
     }
 
     @Override
-    protected Identifier method_23201() {
+    protected Identifier getEnergySwirlTexture() {
         return SKIN;
     }
 
     @Override
-    protected EntityModel<WitherEntity> method_23203() {
+    protected EntityModel<WitherEntity> getEnergySwirlModel() {
         return this.model;
     }
 }

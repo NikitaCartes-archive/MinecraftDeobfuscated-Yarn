@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class WitchEntityModel<T extends Entity>
 extends VillagerResemblingModel<T> {
-    private boolean field_3614;
+    private boolean liftingNose;
     private final ModelPart mole = new ModelPart(this).setTextureSize(64, 128);
 
     public WitchEntityModel(float f) {
@@ -57,18 +57,18 @@ extends VillagerResemblingModel<T> {
         this.nose.pitch = MathHelper.sin((float)((Entity)entity).age * l) * 4.5f * ((float)Math.PI / 180);
         this.nose.yaw = 0.0f;
         this.nose.roll = MathHelper.cos((float)((Entity)entity).age * l) * 2.5f * ((float)Math.PI / 180);
-        if (this.field_3614) {
+        if (this.liftingNose) {
             this.nose.setPivot(0.0f, 1.0f, -1.5f);
             this.nose.pitch = -0.9f;
         }
     }
 
-    public ModelPart method_2839() {
+    public ModelPart getNose() {
         return this.nose;
     }
 
-    public void method_2840(boolean bl) {
-        this.field_3614 = bl;
+    public void setLiftingNose(boolean bl) {
+        this.liftingNose = bl;
     }
 }
 

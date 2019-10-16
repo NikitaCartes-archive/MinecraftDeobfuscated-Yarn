@@ -122,7 +122,7 @@ implements RecipeBookProvider {
         livingEntity.prevHeadYaw = livingEntity.yaw;
         RenderSystem.translatef(0.0f, 0.0f, 0.0f);
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
-        entityRenderDispatcher.method_3945(180.0f);
+        entityRenderDispatcher.setCameraYaw(180.0f);
         entityRenderDispatcher.setRenderShadows(false);
         entityRenderDispatcher.render(livingEntity, 1.0f);
         entityRenderDispatcher.setRenderShadows(true);

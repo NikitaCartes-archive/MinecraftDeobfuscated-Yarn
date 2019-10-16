@@ -127,6 +127,7 @@ implements VillagerDataContainer {
             }
             if (!this.world.isClient) {
                 this.setConverting(playerEntity.getUuid(), this.random.nextInt(2401) + 3600);
+                playerEntity.method_23667(hand, true);
             }
             return true;
         }
@@ -196,7 +197,7 @@ implements VillagerDataContainer {
         villagerEntity.setInvulnerable(this.isInvulnerable());
         serverWorld.spawnEntity(villagerEntity);
         if (this.converter != null && (playerEntity = serverWorld.getPlayerByUuid(this.converter)) instanceof ServerPlayerEntity) {
-            Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
+            Criterions.CURED_ZOMBIE_VILLAGER.trigger((ServerPlayerEntity)playerEntity, this, villagerEntity);
             serverWorld.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
         }
         villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));

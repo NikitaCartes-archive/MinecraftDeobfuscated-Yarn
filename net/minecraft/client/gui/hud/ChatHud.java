@@ -42,7 +42,7 @@ extends DrawableHelper {
         int p;
         int o;
         int n;
-        if (this.client.options.chatVisibility == ChatVisibility.HIDDEN) {
+        if (!this.method_23677()) {
             return;
         }
         int j = this.getVisibleLineCount();
@@ -94,6 +94,10 @@ extends DrawableHelper {
             }
         }
         RenderSystem.popMatrix();
+    }
+
+    private boolean method_23677() {
+        return this.client.options.chatVisibility != ChatVisibility.HIDDEN;
     }
 
     private static double getMessageOpacityMultiplier(int i) {
@@ -185,7 +189,7 @@ extends DrawableHelper {
 
     @Nullable
     public Text getText(double d, double e) {
-        if (!this.isChatFocused()) {
+        if (!this.isChatFocused() || this.client.options.hudHidden || !this.method_23677()) {
             return null;
         }
         double f = this.getChatScale();

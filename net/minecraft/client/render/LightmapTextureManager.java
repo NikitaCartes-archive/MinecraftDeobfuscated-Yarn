@@ -37,7 +37,7 @@ implements AutoCloseable {
         this.image = this.texture.getImage();
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
-                this.image.setPixelRGBA(j, i, -1);
+                this.image.setPixelRgba(j, i, -1);
             }
         }
         this.texture.upload();
@@ -152,7 +152,7 @@ implements AutoCloseable {
                 int ac = (int)(u * 255.0f);
                 int ad = (int)(v * 255.0f);
                 int ae = (int)(w * 255.0f);
-                this.image.setPixelRGBA(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
+                this.image.setPixelRgba(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
             }
         }
         this.texture.upload();
@@ -162,6 +162,18 @@ implements AutoCloseable {
 
     private float method_23284(World world, int i) {
         return world.dimension.getLightLevelToBrightness()[i];
+    }
+
+    public static int method_23687(int i, int j) {
+        return i | j << 16;
+    }
+
+    public static int method_23686(int i) {
+        return i & 0xFFFF;
+    }
+
+    public static int method_23688(int i) {
+        return i >> 16 & 0xFFFF;
     }
 }
 

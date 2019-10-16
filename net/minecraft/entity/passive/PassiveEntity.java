@@ -35,11 +35,11 @@ extends MobEntityWithAi {
 
     @Override
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        _1 lv;
+        class_4697 lv;
         if (entityData == null) {
-            entityData = new _1();
+            entityData = new class_4697();
         }
-        if ((lv = (_1)entityData).method_22436() && lv.method_22432() > 0 && this.random.nextFloat() <= lv.method_22437()) {
+        if ((lv = (class_4697)entityData).method_22436() && lv.method_22432() > 0 && this.random.nextFloat() <= lv.method_22437()) {
             this.setBreedingAge(-24000);
         }
         lv.method_22435();
@@ -170,7 +170,7 @@ extends MobEntityWithAi {
         return this.getBreedingAge() < 0;
     }
 
-    public static class _1
+    public static class class_4697
     implements EntityData {
         private int field_20684;
         private boolean field_20685 = true;

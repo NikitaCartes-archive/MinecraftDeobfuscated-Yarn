@@ -46,7 +46,7 @@ extends Item {
         PlayerEntity playerEntity;
         PlayerEntity playerEntity2 = playerEntity = livingEntity instanceof PlayerEntity ? (PlayerEntity)livingEntity : null;
         if (playerEntity instanceof ServerPlayerEntity) {
-            Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
+            Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, itemStack);
         }
         if (!world.isClient) {
             List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);

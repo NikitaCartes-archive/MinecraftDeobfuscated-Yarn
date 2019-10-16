@@ -117,8 +117,7 @@ implements ClientAdvancementManager.Listener {
             return;
         }
         RenderSystem.pushMatrix();
-        RenderSystem.translatef(k + 9, l + 18, -400.0f);
-        RenderSystem.enableDepthTest();
+        RenderSystem.translatef(k + 9, l + 18, 0.0f);
         advancementTab.render();
         RenderSystem.popMatrix();
         RenderSystem.depthFunc(515);

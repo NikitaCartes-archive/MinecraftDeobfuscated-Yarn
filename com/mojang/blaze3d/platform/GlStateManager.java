@@ -1211,7 +1211,7 @@ public class GlStateManager {
         GL11.glColorPointer(i, j, k, l);
     }
 
-    public static void method_22609(int i, int j, int k, boolean bl, int l, long m) {
+    public static void vertexAttribPointer(int i, int j, int k, boolean bl, int l, long m) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GL20.glVertexAttribPointer(i, j, k, bl, l, m);
     }
@@ -1228,7 +1228,7 @@ public class GlStateManager {
         GL11.glDisableClientState(i);
     }
 
-    public static void method_22606(int i) {
+    public static void enableVertexAttribArray(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GL20.glEnableVertexAttribArray(i);
     }
@@ -1287,7 +1287,7 @@ public class GlStateManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_4534 {
+    public static enum DestFactor {
         CONSTANT_ALPHA(32771),
         CONSTANT_COLOR(32769),
         DST_ALPHA(772),
@@ -1305,13 +1305,13 @@ public class GlStateManager {
 
         public final int value;
 
-        private class_4534(int j) {
+        private DestFactor(int j) {
             this.value = j;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static enum class_4535 {
+    public static enum SourceFactor {
         CONSTANT_ALPHA(32771),
         CONSTANT_COLOR(32769),
         DST_ALPHA(772),
@@ -1330,7 +1330,7 @@ public class GlStateManager {
 
         public final int value;
 
-        private class_4535(int j) {
+        private SourceFactor(int j) {
             this.value = j;
         }
     }

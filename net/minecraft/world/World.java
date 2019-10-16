@@ -1107,7 +1107,7 @@ AutoCloseable {
         return crashReportSection;
     }
 
-    public abstract void setBlockBreakingProgress(int var1, BlockPos var2, int var3);
+    public abstract void setBlockBreakingInfo(int var1, BlockPos var2, int var3);
 
     @Environment(value=EnvType.CLIENT)
     public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {

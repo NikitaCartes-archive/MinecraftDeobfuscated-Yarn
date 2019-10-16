@@ -7,18 +7,19 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>>
@@ -37,7 +38,7 @@ extends LivingEntityRenderer<T, M> {
         }
         Entity entity = ((MobEntity)mobEntity).getHoldingEntity();
         if (entity != null) {
-            return frustum.method_23093(entity.getVisibilityBoundingBox());
+            return frustum.isVisible(entity.getVisibilityBoundingBox());
         }
         return false;
     }
@@ -83,38 +84,48 @@ extends LivingEntityRenderer<T, M> {
         float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025f / 2.0f;
         float w = t * v;
         float x = r * v;
-        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, 0.025f, 0.025f, w, x);
-        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, 0.025f, 0.0f, w, x);
+        int y = mobEntity.getLightmapCoordinates();
+        int z = entity.getLightmapCoordinates();
+        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, y, z, r, s, t, 0.025f, 0.025f, w, x);
+        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, y, z, r, s, t, 0.025f, 0.0f, w, x);
         matrixStack.pop();
     }
 
-    public static void method_23186(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, float i, float j, float k, float l) {
-        int m = 24;
-        for (int n = 0; n < 24; ++n) {
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, f, g, h, i, j, 24, n, false, k, l);
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, f, g, h, i, j, 24, n + 1, true, k, l);
+    public static void method_23186(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, int j, float f, float g, float h, float k, float l, float m, float n) {
+        int o = 24;
+        int p = LightmapTextureManager.method_23686(i);
+        int q = LightmapTextureManager.method_23686(j);
+        int r = LightmapTextureManager.method_23688(i);
+        int s = LightmapTextureManager.method_23688(j);
+        for (int t = 0; t < 24; ++t) {
+            float u = (float)t / 23.0f;
+            int v = (int)MathHelper.lerp(u, p, q);
+            int w = (int)MathHelper.lerp(u, r, s);
+            int x = LightmapTextureManager.method_23687(v, w);
+            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, x, f, g, h, k, l, 24, t, false, m, n);
+            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, x, f, g, h, k, l, 24, t + 1, true, m, n);
         }
     }
 
-    public static void method_23187(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, float i, float j, int k, int l, boolean bl, float m, float n) {
-        float o = 0.5f;
-        float p = 0.4f;
-        float q = 0.3f;
-        if (l % 2 == 0) {
-            o *= 0.7f;
+    public static void method_23187(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, float f, float g, float h, float j, float k, int l, int m, boolean bl, float n, float o) {
+        float p = 0.5f;
+        float q = 0.4f;
+        float r = 0.3f;
+        if (m % 2 == 0) {
             p *= 0.7f;
             q *= 0.7f;
+            r *= 0.7f;
         }
-        float r = (float)l / (float)k;
-        float s = f * r;
-        float t = g * (r * r + r) * 0.5f + ((float)k - (float)l) / ((float)k * 0.75f) + 0.125f;
-        float u = h * r;
+        float s = (float)m / (float)l;
+        float t = f * s;
+        float u = g * (s * s + s) * 0.5f + ((float)l - (float)m) / ((float)l * 0.75f) + 0.125f;
+        float v = h * s;
         if (!bl) {
-            vertexConsumer.vertex(matrix4f, s + m, t + i - j, u - n).color(o, p, q, 1.0f).next();
+            vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0f).light(i).next();
         }
-        vertexConsumer.vertex(matrix4f, s - m, t + j, u + n).color(o, p, q, 1.0f).next();
+        vertexConsumer.vertex(matrix4f, t - n, u + k, v + o).color(p, q, r, 1.0f).light(i).next();
         if (bl) {
-            vertexConsumer.vertex(matrix4f, s + m, t + i - j, u - n).color(o, p, q, 1.0f).next();
+            vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0f).light(i).next();
         }
     }
 

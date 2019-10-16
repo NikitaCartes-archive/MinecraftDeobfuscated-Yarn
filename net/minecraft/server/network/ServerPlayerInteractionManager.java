@@ -91,7 +91,7 @@ public class ServerPlayerInteractionManager {
         } else if (this.mining) {
             BlockState blockState = this.world.getBlockState(this.miningPos);
             if (blockState.isAir()) {
-                this.world.setBlockBreakingProgress(this.player.getEntityId(), this.miningPos, -1);
+                this.world.setBlockBreakingInfo(this.player.getEntityId(), this.miningPos, -1);
                 this.blockBreakingProgress = -1;
                 this.mining = false;
             } else {
@@ -105,7 +105,7 @@ public class ServerPlayerInteractionManager {
         float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(i + 1);
         int j = (int)(f * 10.0f);
         if (j != this.blockBreakingProgress) {
-            this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
+            this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
             this.blockBreakingProgress = j;
         }
         return f;
@@ -158,7 +158,7 @@ public class ServerPlayerInteractionManager {
                 this.mining = true;
                 this.miningPos = blockPos.toImmutable();
                 int j = (int)(h * 10.0f);
-                this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
+                this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
                 this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "actual start of destroying"));
                 this.blockBreakingProgress = j;
             }
@@ -170,7 +170,7 @@ public class ServerPlayerInteractionManager {
                     float l = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(k + 1);
                     if (l >= 0.7f) {
                         this.mining = false;
-                        this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
+                        this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, -1);
                         this.finishMining(blockPos, action, "destroyed");
                         return;
                     }
@@ -187,10 +187,10 @@ public class ServerPlayerInteractionManager {
             this.mining = false;
             if (!Objects.equals(this.miningPos, blockPos)) {
                 LOGGER.warn("Mismatch in destroy block pos: " + this.miningPos + " " + blockPos);
-                this.world.setBlockBreakingProgress(this.player.getEntityId(), this.miningPos, -1);
+                this.world.setBlockBreakingInfo(this.player.getEntityId(), this.miningPos, -1);
                 this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(this.miningPos, this.world.getBlockState(this.miningPos), action, true, "aborted mismatched destroying"));
             }
-            this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
+            this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, -1);
             this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "aborted destroying"));
         }
     }
@@ -269,6 +269,7 @@ public class ServerPlayerInteractionManager {
     }
 
     public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
+        ActionResult actionResult;
         boolean bl2;
         BlockPos blockPos = blockHitResult.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
@@ -282,8 +283,8 @@ public class ServerPlayerInteractionManager {
         }
         boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = playerEntity.shouldCancelInteraction() && bl;
-        if (!bl2 && blockState.onUse(world, playerEntity, hand, blockHitResult)) {
-            return ActionResult.SUCCESS;
+        if (!bl2 && (actionResult = blockState.onUse(world, playerEntity, hand, blockHitResult)).method_23665()) {
+            return actionResult;
         }
         if (itemStack.isEmpty() || playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
             return ActionResult.PASS;
@@ -291,9 +292,9 @@ public class ServerPlayerInteractionManager {
         ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, hand, blockHitResult);
         if (this.isCreative()) {
             int i = itemStack.getCount();
-            ActionResult actionResult = itemStack.useOnBlock(itemUsageContext);
+            ActionResult actionResult2 = itemStack.useOnBlock(itemUsageContext);
             itemStack.setCount(i);
-            return actionResult;
+            return actionResult2;
         }
         return itemStack.useOnBlock(itemUsageContext);
     }

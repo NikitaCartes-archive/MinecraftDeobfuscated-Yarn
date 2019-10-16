@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.container.CartographyTableContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.FilledMapItem;
@@ -18,7 +19,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -111,9 +111,9 @@ extends AbstractContainerScreen<CartographyTableContainer> {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(i, j, 1.0f);
             RenderSystem.scalef(f, f, 1.0f);
-            LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-            this.minecraft.gameRenderer.getMapRenderer().draw(new MatrixStack(), lv, mapState, true, 0xF000F0);
-            lv.method_22993();
+            LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
+            this.minecraft.gameRenderer.getMapRenderer().draw(new MatrixStack(), drawer, mapState, true, 0xF000F0);
+            drawer.draw();
             RenderSystem.popMatrix();
         }
     }
