@@ -132,12 +132,16 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	@Override
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.SHEARS && this.hasPumpkin() && !this.world.isClient) {
-			this.setHasPumpkin(false);
-			itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
-		}
+		if (itemStack.getItem() == Items.SHEARS && this.hasPumpkin()) {
+			if (!this.world.isClient) {
+				this.setHasPumpkin(false);
+				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+			}
 
-		return super.interactMob(playerEntity, hand);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean hasPumpkin() {

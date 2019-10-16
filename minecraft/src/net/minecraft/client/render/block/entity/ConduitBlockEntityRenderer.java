@@ -10,10 +10,10 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
@@ -24,7 +24,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 	public static final Identifier WIND_VERTICAL_TEX = new Identifier("entity/conduit/wind_vertical");
 	public static final Identifier OPEN_EYE_TEX = new Identifier("entity/conduit/open_eye");
 	public static final Identifier CLOSED_EYE_TEX = new Identifier("entity/conduit/closed_eye");
-	private final ModelPart field_20823 = new ModelPart(8, 8, 0, 0);
+	private final ModelPart field_20823 = new ModelPart(16, 16, 0, 0);
 	private final ModelPart field_20824;
 	private final ModelPart field_20825;
 	private final ModelPart field_20826;

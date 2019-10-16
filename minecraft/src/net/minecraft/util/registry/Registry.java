@@ -12,9 +12,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4630;
-import net.minecraft.class_4648;
-import net.minecraft.class_4652;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -65,6 +62,9 @@ import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.foliage.FoliagePlacerType;
+import net.minecraft.world.gen.placer.BlockPlacerType;
+import net.minecraft.world.gen.stateprovider.StateProviderType;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -87,9 +87,11 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<Feature<?>> FEATURE = create("feature", () -> Feature.ORE);
 	public static final Registry<Decorator<?>> DECORATOR = create("decorator", () -> Decorator.NOPE);
 	public static final Registry<Biome> BIOME = create("biome", () -> Biomes.DEFAULT);
-	public static final Registry<class_4652<?>> BLOCK_STATE_PROVIDER_TYPE = create("block_state_provider_type", () -> class_4652.SIMPLE_STATE_PROVIDER);
-	public static final Registry<class_4630<?>> BLOCK_PLACER_TYPE = create("block_placer_type", () -> class_4630.SIMPLE_BLOCK_PLACER);
-	public static final Registry<class_4648<?>> FOLIAGE_PLACER_TYPE = create("foliage_placer_type", () -> class_4648.BLOB_FOLIAGE_PLACER);
+	public static final Registry<StateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = create(
+		"block_state_provider_type", () -> StateProviderType.SIMPLE_STATE_PROVIDER
+	);
+	public static final Registry<BlockPlacerType<?>> BLOCK_PLACER_TYPE = create("block_placer_type", () -> BlockPlacerType.SIMPLE_BLOCK_PLACER);
+	public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = create("foliage_placer_type", () -> FoliagePlacerType.BLOB_FOLIAGE_PLACER);
 	public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = create("tree_decorator_type", () -> TreeDecoratorType.LEAVE_VINE);
 	public static final Registry<ParticleType<? extends ParticleEffect>> PARTICLE_TYPE = create("particle_type", () -> ParticleTypes.BLOCK);
 	public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = create("biome_source_type", () -> BiomeSourceType.VANILLA_LAYERED);

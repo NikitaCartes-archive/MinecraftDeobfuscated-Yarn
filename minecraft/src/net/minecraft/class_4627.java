@@ -9,19 +9,30 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.gen.feature.NormalTreeFeatureConfig;
 
-public class class_4627 extends class_4626<class_4640> {
-	public class_4627(Function<Dynamic<?>, ? extends class_4640> function) {
+public class class_4627 extends class_4626<NormalTreeFeatureConfig> {
+	public class_4627(Function<Dynamic<?>, ? extends NormalTreeFeatureConfig> function) {
 		super(function);
 	}
 
 	public boolean method_23386(
-		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, class_4640 arg
+		ModifiableTestableWorld modifiableTestableWorld,
+		Random random,
+		BlockPos blockPos,
+		Set<BlockPos> set,
+		Set<BlockPos> set2,
+		BlockBox blockBox,
+		NormalTreeFeatureConfig normalTreeFeatureConfig
 	) {
-		int i = arg.field_21291 + random.nextInt(arg.field_21260 + 1) + random.nextInt(arg.field_21261 + 1);
-		int j = arg.field_21262 >= 0 ? arg.field_21262 + random.nextInt(arg.field_21263 + 1) : i - (arg.field_21266 + random.nextInt(arg.field_21267 + 1));
-		int k = arg.field_21259.method_23452(random, j, i, arg);
-		Optional<BlockPos> optional = this.method_23378(modifiableTestableWorld, i, j, k, blockPos, arg);
+		int i = normalTreeFeatureConfig.baseHeight
+			+ random.nextInt(normalTreeFeatureConfig.heightRandA + 1)
+			+ random.nextInt(normalTreeFeatureConfig.heightRandB + 1);
+		int j = normalTreeFeatureConfig.trunkHeight >= 0
+			? normalTreeFeatureConfig.trunkHeight + random.nextInt(normalTreeFeatureConfig.trunkHeightRandom + 1)
+			: i - (normalTreeFeatureConfig.field_21266 + random.nextInt(normalTreeFeatureConfig.field_21267 + 1));
+		int k = normalTreeFeatureConfig.foliagePlacer.method_23452(random, j, i, normalTreeFeatureConfig);
+		Optional<BlockPos> optional = this.method_23378(modifiableTestableWorld, i, j, k, blockPos, normalTreeFeatureConfig);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
@@ -43,13 +54,13 @@ public class class_4627 extends class_4626<class_4640> {
 					m--;
 				}
 
-				if (this.method_23382(modifiableTestableWorld, random, mutable.set(n, r, o), set, blockBox, arg)) {
+				if (this.method_23382(modifiableTestableWorld, random, mutable.set(n, r, o), set, blockBox, normalTreeFeatureConfig)) {
 					p = r;
 				}
 			}
 
 			BlockPos blockPos3 = new BlockPos(n, p, o);
-			arg.field_21259.method_23448(modifiableTestableWorld, random, arg, i, j, k + 1, blockPos3, set2);
+			normalTreeFeatureConfig.foliagePlacer.method_23448(modifiableTestableWorld, random, normalTreeFeatureConfig, i, j, k + 1, blockPos3, set2);
 			n = blockPos2.getX();
 			o = blockPos2.getZ();
 			Direction direction2 = Direction.Type.HORIZONTAL.random(random);
@@ -63,7 +74,7 @@ public class class_4627 extends class_4626<class_4640> {
 						int u = blockPos2.getY() + t;
 						n += direction2.getOffsetX();
 						o += direction2.getOffsetZ();
-						if (this.method_23382(modifiableTestableWorld, random, mutable.set(n, u, o), set, blockBox, arg)) {
+						if (this.method_23382(modifiableTestableWorld, random, mutable.set(n, u, o), set, blockBox, normalTreeFeatureConfig)) {
 							p = u;
 						}
 					}
@@ -73,7 +84,7 @@ public class class_4627 extends class_4626<class_4640> {
 
 				if (p > 0) {
 					BlockPos blockPos4 = new BlockPos(n, p, o);
-					arg.field_21259.method_23448(modifiableTestableWorld, random, arg, i, j, k, blockPos4, set2);
+					normalTreeFeatureConfig.foliagePlacer.method_23448(modifiableTestableWorld, random, normalTreeFeatureConfig, i, j, k, blockPos4, set2);
 				}
 			}
 

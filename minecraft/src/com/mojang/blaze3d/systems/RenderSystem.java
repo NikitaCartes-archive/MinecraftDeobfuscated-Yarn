@@ -201,9 +201,9 @@ public class RenderSystem {
 		GlStateManager.disableBlend();
 	}
 
-	public static void blendFunc(GlStateManager.class_4535 arg, GlStateManager.class_4534 arg2) {
+	public static void blendFunc(GlStateManager.SourceFactor sourceFactor, GlStateManager.DestFactor destFactor) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFunc(arg.value, arg2.value);
+		GlStateManager.blendFunc(sourceFactor.value, destFactor.value);
 	}
 
 	public static void blendFunc(int i, int j) {
@@ -212,10 +212,13 @@ public class RenderSystem {
 	}
 
 	public static void blendFuncSeparate(
-		GlStateManager.class_4535 arg, GlStateManager.class_4534 arg2, GlStateManager.class_4535 arg3, GlStateManager.class_4534 arg4
+		GlStateManager.SourceFactor sourceFactor,
+		GlStateManager.DestFactor destFactor,
+		GlStateManager.SourceFactor sourceFactor2,
+		GlStateManager.DestFactor destFactor2
 	) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFuncSeparate(arg.value, arg2.value, arg3.value, arg4.value);
+		GlStateManager.blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
 	}
 
 	public static void blendFuncSeparate(int i, int j, int k, int l) {
@@ -748,7 +751,7 @@ public class RenderSystem {
 
 	public static void defaultBlendFunc() {
 		blendFuncSeparate(
-			GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 	}
 

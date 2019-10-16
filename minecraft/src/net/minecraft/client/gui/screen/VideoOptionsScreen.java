@@ -2,7 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4667;
+import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.FullScreenOption;
@@ -13,7 +13,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class VideoOptionsScreen extends class_4667 {
+public class VideoOptionsScreen extends GameOptionsScreen {
 	private ButtonListWidget list;
 	private static final Option[] OPTIONS = new Option[]{
 		Option.GRAPHICS,

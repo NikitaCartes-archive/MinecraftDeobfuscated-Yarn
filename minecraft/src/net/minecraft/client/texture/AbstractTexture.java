@@ -58,7 +58,7 @@ public abstract class AbstractTexture {
 
 	public abstract void load(ResourceManager resourceManager) throws IOException;
 
-	public void method_23207() {
+	public void bindTexture() {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
 			RenderSystem.recordRenderCall(() -> GlStateManager.bindTexture(this.getGlId()));
 		} else {

@@ -3,15 +3,13 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelUtil;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class BeeEntityModel<T extends BeeEntity> extends class_4592<T> {
+public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 	private final ModelPart body;
 	private final ModelPart mainBody;
 	private final ModelPart leftWing;
@@ -25,7 +23,7 @@ public class BeeEntityModel<T extends BeeEntity> extends class_4592<T> {
 	private float bodyPitch;
 
 	public BeeEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull, false, 24.0F, 0.0F, 2.0F, 2.0F, 24.0F);
+		super(false, 24.0F, 0.0F);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.body = new ModelPart(this);
@@ -132,12 +130,12 @@ public class BeeEntityModel<T extends BeeEntity> extends class_4592<T> {
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22946() {
+	protected Iterable<ModelPart> getHeadParts() {
 		return ImmutableList.<ModelPart>of();
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
+	protected Iterable<ModelPart> getBodyParts() {
 		return ImmutableList.<ModelPart>of(this.body);
 	}
 }

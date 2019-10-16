@@ -3,17 +3,14 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
-public class LeashEntityModel<T extends Entity> extends class_4595<T> {
+public class LeashEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart field_3431;
 
 	public LeashEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 32;
 		this.textureHeight = 32;
 		this.field_3431 = new ModelPart(this, 0, 0);

@@ -18,6 +18,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -75,8 +76,8 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.ring(world, blockState, blockHitResult, playerEntity, true);
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		return this.ring(world, blockState, blockHitResult, playerEntity, true) ? ActionResult.SUCCESS : ActionResult.PASS;
 	}
 
 	public boolean ring(World world, BlockState blockState, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl) {
@@ -88,9 +89,11 @@ public class BellBlock extends BlockWithEntity {
 			if (bl3 && playerEntity != null) {
 				playerEntity.incrementStat(Stats.BELL_RING);
 			}
-		}
 
-		return true;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private boolean isPointOnBell(BlockState blockState, Direction direction, double d) {

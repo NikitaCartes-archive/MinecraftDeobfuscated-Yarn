@@ -14,19 +14,19 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class BlockEntityRenderDispatcher {
 	private final Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = Maps.<BlockEntityType<?>, BlockEntityRenderer<?>>newHashMap();
 	public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
-	private final BufferBuilder field_20988 = new BufferBuilder(256);
+	private final BufferBuilder bufferBuilder = new BufferBuilder(256);
 	private TextRenderer fontRenderer;
 	public TextureManager textureManager;
 	public World world;
@@ -34,28 +34,28 @@ public class BlockEntityRenderDispatcher {
 	public HitResult hitResult;
 
 	private BlockEntityRenderDispatcher() {
-		this.method_23078(BlockEntityType.SIGN, new SignBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.MOB_SPAWNER, new MobSpawnerBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.PISTON, new PistonBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.CHEST, new ChestBlockEntityRenderer<>(this));
-		this.method_23078(BlockEntityType.ENDER_CHEST, new ChestBlockEntityRenderer<>(this));
-		this.method_23078(BlockEntityType.TRAPPED_CHEST, new ChestBlockEntityRenderer<>(this));
-		this.method_23078(BlockEntityType.ENCHANTING_TABLE, new EnchantingTableBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.LECTERN, new LecternBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.END_PORTAL, new EndPortalBlockEntityRenderer<>(this));
-		this.method_23078(BlockEntityType.END_GATEWAY, new EndGatewayBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.BEACON, new BeaconBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.SKULL, new SkullBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.BANNER, new BannerBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.STRUCTURE_BLOCK, new StructureBlockBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.SHULKER_BOX, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel(), this));
-		this.method_23078(BlockEntityType.BED, new BedBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.CONDUIT, new ConduitBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.BELL, new BellBlockEntityRenderer(this));
-		this.method_23078(BlockEntityType.CAMPFIRE, new CampfireBlockEntityRenderer(this));
+		this.register(BlockEntityType.SIGN, new SignBlockEntityRenderer(this));
+		this.register(BlockEntityType.MOB_SPAWNER, new MobSpawnerBlockEntityRenderer(this));
+		this.register(BlockEntityType.PISTON, new PistonBlockEntityRenderer(this));
+		this.register(BlockEntityType.CHEST, new ChestBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.ENDER_CHEST, new ChestBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.TRAPPED_CHEST, new ChestBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.ENCHANTING_TABLE, new EnchantingTableBlockEntityRenderer(this));
+		this.register(BlockEntityType.LECTERN, new LecternBlockEntityRenderer(this));
+		this.register(BlockEntityType.END_PORTAL, new EndPortalBlockEntityRenderer<>(this));
+		this.register(BlockEntityType.END_GATEWAY, new EndGatewayBlockEntityRenderer(this));
+		this.register(BlockEntityType.BEACON, new BeaconBlockEntityRenderer(this));
+		this.register(BlockEntityType.SKULL, new SkullBlockEntityRenderer(this));
+		this.register(BlockEntityType.BANNER, new BannerBlockEntityRenderer(this));
+		this.register(BlockEntityType.STRUCTURE_BLOCK, new StructureBlockBlockEntityRenderer(this));
+		this.register(BlockEntityType.SHULKER_BOX, new ShulkerBoxBlockEntityRenderer(new ShulkerEntityModel(), this));
+		this.register(BlockEntityType.BED, new BedBlockEntityRenderer(this));
+		this.register(BlockEntityType.CONDUIT, new ConduitBlockEntityRenderer(this));
+		this.register(BlockEntityType.BELL, new BellBlockEntityRenderer(this));
+		this.register(BlockEntityType.CAMPFIRE, new CampfireBlockEntityRenderer(this));
 	}
 
-	private <E extends BlockEntity> void method_23078(BlockEntityType<E> blockEntityType, BlockEntityRenderer<E> blockEntityRenderer) {
+	private <E extends BlockEntity> void register(BlockEntityType<E> blockEntityType, BlockEntityRenderer<E> blockEntityRenderer) {
 		this.renderers.put(blockEntityType, blockEntityRenderer);
 	}
 
@@ -84,7 +84,7 @@ public class BlockEntityRenderDispatcher {
 			if (blockEntityRenderer != null) {
 				if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
 					BlockPos blockPos = blockEntity.getPos();
-					renderEntity(
+					runReported(
 						blockEntity,
 						() -> render(
 								blockEntityRenderer,
@@ -120,29 +120,29 @@ public class BlockEntityRenderDispatcher {
 			i = 15728880;
 		}
 
-		blockEntityRenderer.render(blockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.field_21444);
+		blockEntityRenderer.method_3569(blockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
 	}
 
 	@Deprecated
 	public <E extends BlockEntity> void renderEntity(E blockEntity, MatrixStack matrixStack) {
-		LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(this.field_20988);
-		this.method_23077(blockEntity, matrixStack, lv, 15728880, OverlayTexture.field_21444);
-		lv.method_22993();
+		LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(this.bufferBuilder);
+		this.renderEntity(blockEntity, matrixStack, drawer, 15728880, OverlayTexture.DEFAULT_UV);
+		drawer.draw();
 	}
 
-	public <E extends BlockEntity> boolean method_23077(
+	public <E extends BlockEntity> boolean renderEntity(
 		E blockEntity, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j
 	) {
 		BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
 		if (blockEntityRenderer == null) {
 			return true;
 		} else {
-			renderEntity(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0F, matrixStack, layeredVertexConsumerStorage, i, j));
+			runReported(blockEntity, () -> blockEntityRenderer.method_3569(blockEntity, 0.0, 0.0, 0.0, 0.0F, matrixStack, layeredVertexConsumerStorage, i, j));
 			return false;
 		}
 	}
 
-	private static void renderEntity(BlockEntity blockEntity, Runnable runnable) {
+	private static void runReported(BlockEntity blockEntity, Runnable runnable) {
 		try {
 			runnable.run();
 		} catch (Throwable var5) {

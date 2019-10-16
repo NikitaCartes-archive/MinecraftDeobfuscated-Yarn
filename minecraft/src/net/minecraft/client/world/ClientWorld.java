@@ -537,8 +537,8 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
-		this.worldRenderer.setBlockBreakingProgress(i, blockPos, j);
+	public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
+		this.worldRenderer.setBlockBreakingInfo(i, blockPos, j);
 	}
 
 	@Override

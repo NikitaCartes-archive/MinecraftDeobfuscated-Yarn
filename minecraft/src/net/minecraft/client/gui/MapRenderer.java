@@ -14,12 +14,12 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class MapRenderer implements AutoCloseable {
@@ -90,9 +90,9 @@ public class MapRenderer implements AutoCloseable {
 					int k = j + i * 128;
 					int l = this.mapState.colors[k] & 255;
 					if (l / 4 == 0) {
-						this.texture.getImage().setPixelRGBA(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
+						this.texture.getImage().setPixelRgba(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
 					} else {
-						this.texture.getImage().setPixelRGBA(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
+						this.texture.getImage().setPixelRgba(j, i, MaterialColor.COLORS[l / 4].getRenderColor(l & 3));
 					}
 				}
 			}

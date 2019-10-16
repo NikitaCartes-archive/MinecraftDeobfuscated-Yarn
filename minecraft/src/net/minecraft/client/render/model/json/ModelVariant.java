@@ -9,21 +9,21 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4590;
 import net.minecraft.client.render.model.ModelBakeSettings;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
 public class ModelVariant implements ModelBakeSettings {
 	private final Identifier location;
-	private final class_4590 rotation;
+	private final Rotation3 rotation;
 	private final boolean uvLock;
 	private final int weight;
 
-	public ModelVariant(Identifier identifier, class_4590 arg, boolean bl, int i) {
+	public ModelVariant(Identifier identifier, Rotation3 rotation3, boolean bl, int i) {
 		this.location = identifier;
-		this.rotation = arg;
+		this.rotation = rotation3;
 		this.uvLock = bl;
 		this.weight = i;
 	}
@@ -33,7 +33,7 @@ public class ModelVariant implements ModelBakeSettings {
 	}
 
 	@Override
-	public class_4590 getRotation() {
+	public Rotation3 getRotation() {
 		return this.rotation;
 	}
 

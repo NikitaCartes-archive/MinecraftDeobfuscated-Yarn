@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 
 @Environment(EnvType.CLIENT)
@@ -12,7 +11,7 @@ public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEnti
 	private final ModelPart field_3348;
 
 	public DonkeyEntityModel(float f) {
-		super(RenderLayer::getEntitySolid, f);
+		super(f);
 		this.field_3349.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 8.0F, 3.0F);
 		this.field_3348 = new ModelPart(this, 26, 21);
 		this.field_3348.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 8.0F, 3.0F);

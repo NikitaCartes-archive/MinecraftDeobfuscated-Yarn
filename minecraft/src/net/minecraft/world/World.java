@@ -1187,7 +1187,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		return crashReportSection;
 	}
 
-	public abstract void setBlockBreakingProgress(int i, BlockPos blockPos, int j);
+	public abstract void setBlockBreakingInfo(int i, BlockPos blockPos, int j);
 
 	@Environment(EnvType.CLIENT)
 	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {

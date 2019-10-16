@@ -14,7 +14,7 @@ public class VertexFormatElement {
 	private final VertexFormatElement.Type type;
 	private final int index;
 	private final int count;
-	private final int field_21329;
+	private final int size;
 
 	public VertexFormatElement(int i, VertexFormatElement.Format format, VertexFormatElement.Type type, int j) {
 		if (this.isValidType(i, type)) {
@@ -27,7 +27,7 @@ public class VertexFormatElement {
 		this.format = format;
 		this.index = i;
 		this.count = j;
-		this.field_21329 = format.getSize() * this.count;
+		this.size = format.getSize() * this.count;
 	}
 
 	private boolean isValidType(int i, VertexFormatElement.Type type) {
@@ -55,7 +55,7 @@ public class VertexFormatElement {
 	}
 
 	public final int getSize() {
-		return this.field_21329;
+		return this.size;
 	}
 
 	public final boolean isPosition() {
@@ -86,12 +86,12 @@ public class VertexFormatElement {
 		return 31 * i + this.count;
 	}
 
-	public void method_22652(long l, int i) {
-		this.type.method_22655(this.count, this.format.getGlId(), i, l, this.index);
+	public void startDrawing(long l, int i) {
+		this.type.startDrawing(this.count, this.format.getGlId(), i, l, this.index);
 	}
 
-	public void method_22653() {
-		this.type.method_22654(this.index);
+	public void endDrawing() {
+		this.type.endDrawing(this.index);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -158,26 +158,26 @@ public class VertexFormatElement {
 		}, i -> {
 		}),
 		GENERIC("Generic", (i, j, k, l, m) -> {
-			GlStateManager.method_22606(m);
-			GlStateManager.method_22609(m, i, j, false, k, l);
+			GlStateManager.enableVertexAttribArray(m);
+			GlStateManager.vertexAttribPointer(m, i, j, false, k, l);
 		}, GlStateManager::method_22607);
 
 		private final String name;
-		private final VertexFormatElement.Type.class_4575 field_20783;
-		private final IntConsumer field_20784;
+		private final VertexFormatElement.Type.Starter stater;
+		private final IntConsumer finisher;
 
-		private Type(String string2, VertexFormatElement.Type.class_4575 arg, IntConsumer intConsumer) {
+		private Type(String string2, VertexFormatElement.Type.Starter starter, IntConsumer intConsumer) {
 			this.name = string2;
-			this.field_20783 = arg;
-			this.field_20784 = intConsumer;
+			this.stater = starter;
+			this.finisher = intConsumer;
 		}
 
-		private void method_22655(int i, int j, int k, long l, int m) {
-			this.field_20783.setupBufferState(i, j, k, l, m);
+		private void startDrawing(int i, int j, int k, long l, int m) {
+			this.stater.setupBufferState(i, j, k, l, m);
 		}
 
-		public void method_22654(int i) {
-			this.field_20784.accept(i);
+		public void endDrawing(int i) {
+			this.finisher.accept(i);
 		}
 
 		public String getName() {
@@ -185,7 +185,7 @@ public class VertexFormatElement {
 		}
 
 		@Environment(EnvType.CLIENT)
-		interface class_4575 {
+		interface Starter {
 			void setupBufferState(int i, int j, int k, long l, int m);
 		}
 	}

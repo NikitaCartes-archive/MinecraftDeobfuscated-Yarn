@@ -965,7 +965,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 	}
 
-	public static class FoxData extends PassiveEntity$1 {
+	public static class FoxData extends PassiveEntity.class_4697 {
 		public final FoxEntity.Type type;
 
 		public FoxData(FoxEntity.Type type) {
@@ -1192,7 +1192,7 @@ public class FoxEntity extends AnimalEntity {
 
 				if (serverPlayerEntity3 != null) {
 					serverPlayerEntity3.incrementStat(Stats.ANIMALS_BRED);
-					Criterions.BRED_ANIMALS.handle(serverPlayerEntity3, this.animal, this.mate, foxEntity);
+					Criterions.BRED_ANIMALS.trigger(serverPlayerEntity3, this.animal, this.mate, foxEntity);
 				}
 
 				int i = 6000;

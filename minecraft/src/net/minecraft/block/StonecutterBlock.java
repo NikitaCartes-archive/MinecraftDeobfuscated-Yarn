@@ -12,6 +12,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -38,10 +39,14 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-		playerEntity.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
-		return true;
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if (world.isClient) {
+			return ActionResult.SUCCESS;
+		} else {
+			playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+			playerEntity.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
+			return ActionResult.SUCCESS;
+		}
 	}
 
 	@Nullable

@@ -186,7 +186,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			this.exitPortalPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
 			Feature.END_ISLAND
-				.method_23397(FeatureConfig.DEFAULT)
+				.configure(FeatureConfig.DEFAULT)
 				.generate(
 					serverWorld,
 					(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.method_14178().getChunkGenerator(),
@@ -258,7 +258,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 	private void createPortal(ServerWorld serverWorld, BlockPos blockPos) {
 		Feature.END_GATEWAY
-			.method_23397(EndGatewayFeatureConfig.createConfig(this.getPos(), false))
+			.configure(EndGatewayFeatureConfig.createConfig(this.getPos(), false))
 			.generate(serverWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.method_14178().getChunkGenerator(), new Random(), blockPos);
 	}
 

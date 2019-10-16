@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 
 @Environment(EnvType.CLIENT)
@@ -12,7 +11,7 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 	}
 
 	protected ArmorStandArmorEntityModel(float f, int i, int j) {
-		super(RenderLayer::getEntitySolid, f, 0.0F, i, j);
+		super(f, 0.0F, i, j);
 	}
 
 	public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j, float k) {
@@ -37,6 +36,6 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 		this.rightLeg.yaw = (float) (Math.PI / 180.0) * armorStandEntity.getRightLegRotation().getYaw();
 		this.rightLeg.roll = (float) (Math.PI / 180.0) * armorStandEntity.getRightLegRotation().getRoll();
 		this.rightLeg.setPivot(-1.9F, 11.0F, 0.0F);
-		this.headwear.copyRotation(this.head);
+		this.headwear.copyPositionAndRotation(this.head);
 	}
 }

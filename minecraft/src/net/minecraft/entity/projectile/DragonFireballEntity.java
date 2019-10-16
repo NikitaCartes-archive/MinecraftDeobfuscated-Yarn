@@ -32,6 +32,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
+		super.onCollision(hitResult);
 		if (hitResult.getType() != HitResult.Type.ENTITY || !((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
 			if (!this.world.isClient) {
 				List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));

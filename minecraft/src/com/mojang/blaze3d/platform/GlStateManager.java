@@ -1181,7 +1181,7 @@ public class GlStateManager {
 		GL11.glColorPointer(i, j, k, l);
 	}
 
-	public static void method_22609(int i, int j, int k, boolean bl, int l, long m) {
+	public static void vertexAttribPointer(int i, int j, int k, boolean bl, int l, long m) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GL20.glVertexAttribPointer(i, j, k, bl, l, m);
 	}
@@ -1198,7 +1198,7 @@ public class GlStateManager {
 		GL11.glDisableClientState(i);
 	}
 
-	public static void method_22606(int i) {
+	public static void enableVertexAttribArray(int i) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GL20.glEnableVertexAttribArray(i);
 	}
@@ -1373,6 +1373,30 @@ public class GlStateManager {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static enum DestFactor {
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_COLOR(768),
+		ZERO(0);
+
+		public final int value;
+
+		private DestFactor(int j) {
+			this.value = j;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static enum FBOMode {
 		BASE,
 		ARB,
@@ -1453,6 +1477,31 @@ public class GlStateManager {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static enum SourceFactor {
+		CONSTANT_ALPHA(32771),
+		CONSTANT_COLOR(32769),
+		DST_ALPHA(772),
+		DST_COLOR(774),
+		ONE(1),
+		ONE_MINUS_CONSTANT_ALPHA(32772),
+		ONE_MINUS_CONSTANT_COLOR(32770),
+		ONE_MINUS_DST_ALPHA(773),
+		ONE_MINUS_DST_COLOR(775),
+		ONE_MINUS_SRC_ALPHA(771),
+		ONE_MINUS_SRC_COLOR(769),
+		SRC_ALPHA(770),
+		SRC_ALPHA_SATURATE(776),
+		SRC_COLOR(768),
+		ZERO(0);
+
+		public final int value;
+
+		private SourceFactor(int j) {
+			this.value = j;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	static class StencilState {
 		public final GlStateManager.StencilSubState subState = new GlStateManager.StencilSubState();
 		public int field_5153 = -1;
@@ -1525,54 +1574,5 @@ public class GlStateManager {
 		protected int y;
 		protected int width;
 		protected int height;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum class_4534 {
-		CONSTANT_ALPHA(32771),
-		CONSTANT_COLOR(32769),
-		DST_ALPHA(772),
-		DST_COLOR(774),
-		ONE(1),
-		ONE_MINUS_CONSTANT_ALPHA(32772),
-		ONE_MINUS_CONSTANT_COLOR(32770),
-		ONE_MINUS_DST_ALPHA(773),
-		ONE_MINUS_DST_COLOR(775),
-		ONE_MINUS_SRC_ALPHA(771),
-		ONE_MINUS_SRC_COLOR(769),
-		SRC_ALPHA(770),
-		SRC_COLOR(768),
-		ZERO(0);
-
-		public final int value;
-
-		private class_4534(int j) {
-			this.value = j;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum class_4535 {
-		CONSTANT_ALPHA(32771),
-		CONSTANT_COLOR(32769),
-		DST_ALPHA(772),
-		DST_COLOR(774),
-		ONE(1),
-		ONE_MINUS_CONSTANT_ALPHA(32772),
-		ONE_MINUS_CONSTANT_COLOR(32770),
-		ONE_MINUS_DST_ALPHA(773),
-		ONE_MINUS_DST_COLOR(775),
-		ONE_MINUS_SRC_ALPHA(771),
-		ONE_MINUS_SRC_COLOR(769),
-		SRC_ALPHA(770),
-		SRC_ALPHA_SATURATE(776),
-		SRC_COLOR(768),
-		ZERO(0);
-
-		public final int value;
-
-		private class_4535(int j) {
-			this.value = j;
-		}
 	}
 }

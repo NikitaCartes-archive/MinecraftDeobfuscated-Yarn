@@ -13,24 +13,24 @@ public class BufferRenderer {
 	public static void draw(BufferBuilder bufferBuilder) {
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> {
-				Pair<BufferBuilder.class_4574, ByteBuffer> pairx = bufferBuilder.method_22632();
-				BufferBuilder.class_4574 lvx = pairx.getFirst();
-				method_22639(pairx.getSecond(), lvx.method_22636(), lvx.method_22634(), lvx.method_22635());
+				Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pairx = bufferBuilder.popData();
+				BufferBuilder.DrawArrayParameters drawArrayParametersx = pairx.getFirst();
+				draw(pairx.getSecond(), drawArrayParametersx.getMode(), drawArrayParametersx.getVertexFormat(), drawArrayParametersx.getCount());
 			});
 		} else {
-			Pair<BufferBuilder.class_4574, ByteBuffer> pair = bufferBuilder.method_22632();
-			BufferBuilder.class_4574 lv = pair.getFirst();
-			method_22639(pair.getSecond(), lv.method_22636(), lv.method_22634(), lv.method_22635());
+			Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
+			BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
+			draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount());
 		}
 	}
 
-	private static void method_22639(ByteBuffer byteBuffer, int i, VertexFormat vertexFormat, int j) {
+	private static void draw(ByteBuffer byteBuffer, int i, VertexFormat vertexFormat, int j) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		byteBuffer.clear();
 		if (j > 0) {
-			vertexFormat.method_22649(MemoryUtil.memAddress(byteBuffer));
+			vertexFormat.startDrawing(MemoryUtil.memAddress(byteBuffer));
 			GlStateManager.drawArrays(i, 0, j);
-			vertexFormat.method_22651();
+			vertexFormat.endDrawing();
 		}
 	}
 }

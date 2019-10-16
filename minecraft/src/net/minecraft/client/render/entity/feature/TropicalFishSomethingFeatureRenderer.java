@@ -6,8 +6,8 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelA;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelB;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.TropicalFishEntity;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
@@ -33,7 +33,7 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 	) {
 		EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB);
 		float[] fs = tropicalFishEntity.getPatternColorComponents();
-		method_23196(
+		render(
 			this.getModel(),
 			entityModel,
 			tropicalFishEntity.getVarietyId(),

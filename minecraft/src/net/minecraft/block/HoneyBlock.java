@@ -55,7 +55,7 @@ public class HoneyBlock extends TransparentBlock {
 			return false;
 		} else if (entity.getY() > (double)blockPos.getY() + 0.9375 - 1.0E-7) {
 			return false;
-		} else if (entity.getVelocity().y >= 0.0) {
+		} else if (entity.getVelocity().y >= -0.04) {
 			return false;
 		} else {
 			double d = Math.abs((double)blockPos.getX() + 0.5 - entity.getX());

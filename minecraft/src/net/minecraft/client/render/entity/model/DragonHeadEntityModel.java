@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.util.math.MatrixStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class DragonHeadEntityModel extends SkullEntityModel {
@@ -38,7 +38,7 @@ public class DragonHeadEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
 		matrixStack.push();
 		matrixStack.translate(0.0, -0.374375F, 0.0);
 		matrixStack.scale(0.75F, 0.75F, 0.75F);

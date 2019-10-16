@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHat;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.Resource;
@@ -18,7 +19,6 @@ import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
@@ -74,14 +74,14 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 					|| hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL
 			);
 			Identifier identifier = this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType));
-			method_23199(entityModel, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity, 1.0F, 1.0F, 1.0F);
+			renderModel(entityModel, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity, 1.0F, 1.0F, 1.0F);
 			entityModel.setHatVisible(true);
 			if (villagerProfession != VillagerProfession.NONE && !livingEntity.isBaby()) {
 				Identifier identifier2 = this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession));
-				method_23199(entityModel, identifier2, matrixStack, layeredVertexConsumerStorage, i, livingEntity, 1.0F, 1.0F, 1.0F);
+				renderModel(entityModel, identifier2, matrixStack, layeredVertexConsumerStorage, i, livingEntity, 1.0F, 1.0F, 1.0F);
 				if (villagerProfession != VillagerProfession.NITWIT) {
 					Identifier identifier3 = this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));
-					method_23199(entityModel, identifier3, matrixStack, layeredVertexConsumerStorage, i, livingEntity, 1.0F, 1.0F, 1.0F);
+					renderModel(entityModel, identifier3, matrixStack, layeredVertexConsumerStorage, i, livingEntity, 1.0F, 1.0F, 1.0F);
 				}
 			}
 		}

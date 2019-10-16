@@ -8,12 +8,12 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
@@ -22,7 +22,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 	public static final float field_21002 = (float)Math.sin(Math.PI / 4);
 	private final ModelPart field_21003;
 	private final ModelPart field_21004;
-	private final ModelPart field_21005;
+	private final ModelPart bottom;
 
 	public EnderCrystalEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -31,8 +31,8 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		this.field_21004.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
 		this.field_21003 = new ModelPart(64, 32, 32, 0);
 		this.field_21003.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
-		this.field_21005 = new ModelPart(64, 32, 0, 16);
-		this.field_21005.addCuboid(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F);
+		this.bottom = new ModelPart(64, 32, 0, 16);
+		this.bottom.addCuboid(-6.0F, 0.0F, -6.0F, 12.0F, 4.0F, 12.0F);
 	}
 
 	public void method_3908(
@@ -54,9 +54,9 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.translate(0.0, -0.5, 0.0);
-		int m = OverlayTexture.field_21444;
+		int m = OverlayTexture.DEFAULT_UV;
 		if (enderCrystalEntity.getShowBottom()) {
-			this.field_21005.render(matrixStack, vertexConsumer, 0.0625F, l, m, null);
+			this.bottom.render(matrixStack, vertexConsumer, 0.0625F, l, m, null);
 		}
 
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));

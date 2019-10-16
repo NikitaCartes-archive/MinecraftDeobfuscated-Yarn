@@ -68,7 +68,7 @@ public class WitherSkullBlock extends SkullBlock {
 					witherEntity.method_6885();
 
 					for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
+						Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
 					}
 
 					world.spawnEntity(witherEntity);

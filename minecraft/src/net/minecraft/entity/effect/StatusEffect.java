@@ -104,7 +104,7 @@ public class StatusEffect {
 		return false;
 	}
 
-	protected String method_5559() {
+	protected String loadTranslationKey() {
 		if (this.translationKey == null) {
 			this.translationKey = SystemUtil.createTranslationKey("effect", Registry.MOB_EFFECT.getId(this));
 		}
@@ -113,10 +113,10 @@ public class StatusEffect {
 	}
 
 	public String getTranslationKey() {
-		return this.method_5559();
+		return this.loadTranslationKey();
 	}
 
-	public Text method_5560() {
+	public Text getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
 

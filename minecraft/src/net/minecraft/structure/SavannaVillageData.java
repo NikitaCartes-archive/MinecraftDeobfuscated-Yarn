@@ -267,7 +267,7 @@ public class SavannaVillageData {
 				new StructurePool(
 					new Identifier("village/savanna/trees"),
 					new Identifier("empty"),
-					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.method_23397(DefaultBiomeFeatures.field_21186)), 1)),
+					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.configure(DefaultBiomeFeatures.field_21186)), 1)),
 					StructurePool.Projection.RIGID
 				)
 			);
@@ -278,9 +278,9 @@ public class SavannaVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/savanna/savanna_lamp_post_01"), 4),
-						new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.method_23397(DefaultBiomeFeatures.field_21186)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21108)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.configure(DefaultBiomeFeatures.field_21186)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21106)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21108)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID
@@ -293,9 +293,9 @@ public class SavannaVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/savanna/savanna_lamp_post_01", immutableList), 4),
-						new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.method_23397(DefaultBiomeFeatures.field_21186)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21108)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.ACACIA_TREE.configure(DefaultBiomeFeatures.field_21186)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21106)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21108)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID

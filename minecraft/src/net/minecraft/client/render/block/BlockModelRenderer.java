@@ -15,7 +15,9 @@ import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -23,8 +25,6 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
 
@@ -51,27 +51,19 @@ public class BlockModelRenderer {
 	) {
 		boolean bl2 = MinecraftClient.isAmbientOcclusionEnabled() && blockState.getLuminance() == 0 && bakedModel.useAmbientOcclusion();
 		Vec3d vec3d = blockState.getOffsetPos(blockRenderView, blockPos);
-		matrixStack.push();
-		matrixStack.translate((double)(blockPos.getX() & 15) + vec3d.x, (double)(blockPos.getY() & 15) + vec3d.y, (double)(blockPos.getZ() & 15) + vec3d.z);
+		matrixStack.translate(vec3d.x, vec3d.y, vec3d.z);
 
-		boolean throwable;
 		try {
-			if (!bl2) {
-				return this.tesselateFlat(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, bl, random, l, i);
-			}
-
-			throwable = this.tesselateSmooth(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, bl, random, l, i);
-		} catch (Throwable var20) {
-			CrashReport crashReport = CrashReport.create(var20, "Tesselating block model");
+			return bl2
+				? this.tesselateSmooth(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, bl, random, l, i)
+				: this.tesselateFlat(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, bl, random, l, i);
+		} catch (Throwable var17) {
+			CrashReport crashReport = CrashReport.create(var17, "Tesselating block model");
 			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
 			CrashReportSection.addBlockInfo(crashReportSection, blockPos, blockState);
 			crashReportSection.add("Using AO", bl2);
 			throw new CrashException(crashReport);
-		} finally {
-			matrixStack.pop();
 		}
-
-		return throwable;
 	}
 
 	public boolean tesselateSmooth(
@@ -166,7 +158,7 @@ public class BlockModelRenderer {
 				blockPos,
 				vertexConsumer,
 				matrixStack.peek(),
-				matrixStack.method_23478(),
+				matrixStack.peekNormal(),
 				bakedQuad,
 				ambientOcclusionCalculator.colorMultiplier[0],
 				ambientOcclusionCalculator.colorMultiplier[1],
@@ -303,7 +295,7 @@ public class BlockModelRenderer {
 			}
 
 			this.method_23073(
-				blockRenderView, blockState, blockPos, vertexConsumer, matrixStack.peek(), matrixStack.method_23478(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, i, i, i, i, j
+				blockRenderView, blockState, blockPos, vertexConsumer, matrixStack.peek(), matrixStack.peekNormal(), bakedQuad, 1.0F, 1.0F, 1.0F, 1.0F, i, i, i, i, j
 			);
 		}
 	}

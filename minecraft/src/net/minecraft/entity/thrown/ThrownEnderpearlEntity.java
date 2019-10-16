@@ -65,7 +65,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 				EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
 				if (livingEntity != null) {
 					if (livingEntity instanceof ServerPlayerEntity) {
-						Criterions.ENTER_BLOCK.handle((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
+						Criterions.ENTER_BLOCK.trigger((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
 					}
 
 					endGatewayBlockEntity.tryTeleportingEntity(livingEntity);

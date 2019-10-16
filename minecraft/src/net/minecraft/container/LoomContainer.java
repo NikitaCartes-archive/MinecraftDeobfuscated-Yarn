@@ -122,7 +122,7 @@ public class LoomContainer extends Container {
 
 	@Override
 	public boolean onButtonClick(PlayerEntity playerEntity, int i) {
-		if (i > 0 && i <= BannerPattern.field_18283) {
+		if (i > 0 && i <= BannerPattern.LOOM_APPLICABLE_COUNT) {
 			this.selectedPattern.set(i);
 			this.updateOutputSlot();
 			return true;

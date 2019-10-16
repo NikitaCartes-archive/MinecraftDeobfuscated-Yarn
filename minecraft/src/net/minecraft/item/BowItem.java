@@ -123,11 +123,11 @@ public class BowItem extends RangedWeaponItem {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		boolean bl = !playerEntity.getArrowType(itemStack).isEmpty();
-		if (playerEntity.abilities.creativeMode || bl) {
+		if (!playerEntity.abilities.creativeMode && !bl) {
+			return TypedActionResult.fail(itemStack);
+		} else {
 			playerEntity.setCurrentHand(hand);
 			return TypedActionResult.successWithoutSwing(itemStack);
-		} else {
-			return bl ? TypedActionResult.pass(itemStack) : TypedActionResult.fail(itemStack);
 		}
 	}
 

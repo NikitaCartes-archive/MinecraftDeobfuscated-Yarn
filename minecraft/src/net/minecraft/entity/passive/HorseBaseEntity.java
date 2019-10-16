@@ -658,7 +658,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		this.setOwnerUuid(playerEntity.getUuid());
 		this.setTame(true);
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
+			Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
 		}
 
 		this.world.sendEntityStatus(this, (byte)7);
@@ -689,7 +689,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				}
 
 				if (this.jumpStrength > 0.0F && !this.isInAir() && this.onGround) {
-					double d = this.getJumpStrength() * (double)this.jumpStrength;
+					double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.method_23313();
 					double e;
 					if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
 						e = d + (double)((float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
@@ -991,8 +991,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity$1();
-			((PassiveEntity$1)entityData).method_22433(0.2F);
+			entityData = new PassiveEntity.class_4697();
+			((PassiveEntity.class_4697)entityData).method_22433(0.2F);
 		}
 
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);

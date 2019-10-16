@@ -184,7 +184,7 @@ public abstract class PlayerManager {
 		this.server.getBossBarManager().onPlayerConnect(serverPlayerEntity);
 		this.sendWorldInfo(serverPlayerEntity, serverWorld);
 		if (!this.server.getResourcePackUrl().isEmpty()) {
-			serverPlayerEntity.method_14255(this.server.getResourcePackUrl(), this.server.getResourcePackHash());
+			serverPlayerEntity.sendResourcePackUrl(this.server.getResourcePackUrl(), this.server.getResourcePackHash());
 		}
 
 		for (StatusEffectInstance statusEffectInstance : serverPlayerEntity.getStatusEffects()) {

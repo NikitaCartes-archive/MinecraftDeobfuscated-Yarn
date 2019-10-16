@@ -3,17 +3,15 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class GuardianEntityModel extends class_4595<GuardianEntity> {
+public class GuardianEntityModel extends CompositeEntityModel<GuardianEntity> {
 	private static final float[] field_17131 = new float[]{1.75F, 0.25F, 0.0F, 0.0F, 0.5F, 0.5F, 0.5F, 0.5F, 1.25F, 0.75F, 0.0F, 0.0F};
 	private static final float[] field_17132 = new float[]{0.0F, 0.0F, 0.0F, 0.0F, 0.25F, 1.75F, 1.25F, 0.75F, 0.0F, 0.0F, 0.0F, 0.0F};
 	private static final float[] field_17133 = new float[]{0.0F, 0.0F, 0.25F, 1.75F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.75F, 1.25F};
@@ -26,7 +24,6 @@ public class GuardianEntityModel extends class_4595<GuardianEntity> {
 	private final ModelPart[] field_3378;
 
 	public GuardianEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.field_3380 = new ModelPart[12];

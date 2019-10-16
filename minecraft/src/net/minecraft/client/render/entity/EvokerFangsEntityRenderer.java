@@ -6,10 +6,10 @@ import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity> {
@@ -44,8 +44,8 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			matrixStack.translate(0.0, -0.626F, 0.0);
 			int l = evokerFangsEntity.getLightmapCoordinates();
 			this.model.setAngles(evokerFangsEntity, i, 0.0F, 0.0F, evokerFangsEntity.yaw, evokerFangsEntity.pitch, 0.03125F);
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.method_23500(SKIN));
-			this.model.renderItem(matrixStack, vertexConsumer, l, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
+			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(SKIN));
+			this.model.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
 			super.render(evokerFangsEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 		}

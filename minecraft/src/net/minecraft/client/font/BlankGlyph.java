@@ -13,7 +13,7 @@ public enum BlankGlyph implements RenderableGlyph {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 5; j++) {
 				boolean bl = j == 0 || j + 1 == 5 || i == 0 || i + 1 == 8;
-				nativeImage.setPixelRGBA(j, i, bl ? -1 : 0);
+				nativeImage.setPixelRgba(j, i, bl ? -1 : 0);
 			}
 		}
 

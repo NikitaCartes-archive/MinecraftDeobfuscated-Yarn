@@ -1,25 +1,9 @@
 package net.minecraft;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 
 public class class_4623 {
-	public static List<Box> method_23363(boolean bl, Box box, Direction direction, double d) {
-		ArrayList<Box> arrayList = Lists.newArrayList(method_23362(box, direction, d));
-		if (bl && direction.getAxis().isHorizontal()) {
-			arrayList.add(method_23361(box));
-		}
-
-		return arrayList;
-	}
-
-	public static Box method_23361(Box box) {
-		return new Box(box.minX, box.maxY, box.minZ, box.maxX, box.maxY + 1.0E-7, box.maxZ);
-	}
-
 	public static Box method_23362(Box box, Direction direction, double d) {
 		double e = d * (double)direction.getDirection().offset();
 		double f = Math.min(e, 0.0);

@@ -27,20 +27,20 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		return new FishingRodHookedCriterion.Conditions(itemPredicate, entityPredicate, itemPredicate2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, itemStack, fishingBobberEntity, collection));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate rod;
-		private final EntityPredicate bobber;
-		private final ItemPredicate item;
+		private final EntityPredicate hookedEntity;
+		private final ItemPredicate caughtItem;
 
 		public Conditions(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
 			super(FishingRodHookedCriterion.ID);
 			this.rod = itemPredicate;
-			this.bobber = entityPredicate;
-			this.item = itemPredicate2;
+			this.hookedEntity = entityPredicate;
+			this.caughtItem = itemPredicate2;
 		}
 
 		public static FishingRodHookedCriterion.Conditions create(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
@@ -50,20 +50,20 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> collection) {
 			if (!this.rod.test(itemStack)) {
 				return false;
-			} else if (!this.bobber.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
+			} else if (!this.hookedEntity.test(serverPlayerEntity, fishingBobberEntity.hookedEntity)) {
 				return false;
 			} else {
-				if (this.item != ItemPredicate.ANY) {
+				if (this.caughtItem != ItemPredicate.ANY) {
 					boolean bl = false;
 					if (fishingBobberEntity.hookedEntity instanceof ItemEntity) {
 						ItemEntity itemEntity = (ItemEntity)fishingBobberEntity.hookedEntity;
-						if (this.item.test(itemEntity.getStack())) {
+						if (this.caughtItem.test(itemEntity.getStack())) {
 							bl = true;
 						}
 					}
 
 					for (ItemStack itemStack2 : collection) {
-						if (this.item.test(itemStack2)) {
+						if (this.caughtItem.test(itemStack2)) {
 							bl = true;
 							break;
 						}
@@ -82,8 +82,8 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("rod", this.rod.serialize());
-			jsonObject.add("entity", this.bobber.serialize());
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("entity", this.hookedEntity.serialize());
+			jsonObject.add("item", this.caughtItem.serialize());
 			return jsonObject;
 		}
 	}

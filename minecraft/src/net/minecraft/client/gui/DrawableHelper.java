@@ -3,7 +3,6 @@ package net.minecraft.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4590;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -11,6 +10,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -41,7 +41,7 @@ public abstract class DrawableHelper {
 	}
 
 	public static void fill(int i, int j, int k, int l, int m) {
-		fill(class_4590.method_22931().method_22936(), i, j, k, l, m);
+		fill(Rotation3.identity().getMatrix(), i, j, k, l, m);
 	}
 
 	public static void fill(Matrix4f matrix4f, int i, int j, int k, int l, int m) {

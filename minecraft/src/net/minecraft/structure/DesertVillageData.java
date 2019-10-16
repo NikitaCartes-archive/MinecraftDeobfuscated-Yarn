@@ -218,8 +218,8 @@ public class DesertVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/desert/desert_lamp_1"), 10),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21104)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21104)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21106)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 10)
 					),
 					StructurePool.Projection.RIGID
@@ -232,8 +232,8 @@ public class DesertVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/desert/desert_lamp_1", immutableList), 10),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21104)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21106)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21104)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21106)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 10)
 					),
 					StructurePool.Projection.RIGID

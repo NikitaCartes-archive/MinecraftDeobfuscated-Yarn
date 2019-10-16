@@ -4,21 +4,22 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.class_4625;
-import net.minecraft.class_4635;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public class HugeRedMushroomFeature extends class_4625 {
-	public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends class_4635> function) {
+	public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
 		super(function);
 	}
 
 	@Override
-	protected void method_23375(IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, class_4635 arg) {
+	protected void method_23375(
+		IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig
+	) {
 		for (int j = i - 3; j <= i; j++) {
-			int k = j < i ? arg.field_21232 : arg.field_21232 - 1;
-			int l = arg.field_21232 - 2;
+			int k = j < i ? hugeMushroomFeatureConfig.field_21232 : hugeMushroomFeatureConfig.field_21232 - 1;
+			int l = hugeMushroomFeatureConfig.field_21232 - 2;
 
 			for (int m = -k; m <= k; m++) {
 				for (int n = -k; n <= k; n++) {
@@ -34,8 +35,8 @@ public class HugeRedMushroomFeature extends class_4625 {
 							this.setBlockState(
 								iWorld,
 								mutable,
-								arg.field_21230
-									.method_23455(random, blockPos)
+								hugeMushroomFeatureConfig.capProvider
+									.getBlockState(random, blockPos)
 									.with(MushroomBlock.UP, Boolean.valueOf(j >= i - 1))
 									.with(MushroomBlock.WEST, Boolean.valueOf(m < -l))
 									.with(MushroomBlock.EAST, Boolean.valueOf(m > l))

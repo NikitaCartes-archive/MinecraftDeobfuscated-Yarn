@@ -344,7 +344,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.chunkLoadDistance = gameJoinS2CPacket.getChunkLoadDistance();
 		this.world = new ClientWorld(
 			this,
-			new LevelInfo(gameJoinS2CPacket.method_22423(), gameJoinS2CPacket.getGameMode(), false, gameJoinS2CPacket.isHardcore(), gameJoinS2CPacket.getGeneratorType()),
+			new LevelInfo(gameJoinS2CPacket.getSeed(), gameJoinS2CPacket.getGameMode(), false, gameJoinS2CPacket.isHardcore(), gameJoinS2CPacket.getGeneratorType()),
 			gameJoinS2CPacket.getDimension(),
 			this.chunkLoadDistance,
 			this.client.getProfiler(),
@@ -370,7 +370,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.openScreen(new DownloadingTerrainScreen());
 		this.client.player.setEntityId(i);
 		this.client.player.setReducedDebugInfo(gameJoinS2CPacket.hasReducedDebugInfo());
-		this.client.player.method_22420(gameJoinS2CPacket.method_22424());
+		this.client.player.setShowsDeathScreen(gameJoinS2CPacket.showsDeathScreen());
 		this.client.interactionManager.setGameMode(gameJoinS2CPacket.getGameMode());
 		this.client.options.onPlayerModelPartChange();
 		this.connection
@@ -858,7 +858,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 			this.client
 				.particleManager
-				.addParticle(new ItemPickupParticle(this.client.getEntityRenderManager(), this.client.method_22940(), this.world, entity, livingEntity));
+				.addParticle(new ItemPickupParticle(this.client.getEntityRenderManager(), this.client.getBufferBuilderStorage(), this.world, entity, livingEntity));
 			this.world.removeEntity(itemPickupAnimationS2CPacket.getEntityId());
 		}
 	}
@@ -1028,7 +1028,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(experienceBarUpdateS2CPacket, this, this.client);
 		this.client
 			.player
-			.method_3145(experienceBarUpdateS2CPacket.getBarProgress(), experienceBarUpdateS2CPacket.getExperienceLevel(), experienceBarUpdateS2CPacket.getExperience());
+			.setExperience(
+				experienceBarUpdateS2CPacket.getBarProgress(), experienceBarUpdateS2CPacket.getExperienceLevel(), experienceBarUpdateS2CPacket.getExperience()
+			);
 	}
 
 	@Override
@@ -1079,7 +1081,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		clientPlayerEntity2.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
 		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.getReducedDebugInfo());
-		clientPlayerEntity2.method_22420(clientPlayerEntity.method_22419());
+		clientPlayerEntity2.setShowsDeathScreen(clientPlayerEntity.showsDeathScreen());
 		if (this.client.currentScreen instanceof DeathScreen) {
 			this.client.openScreen(null);
 		}
@@ -1270,9 +1272,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(blockBreakingProgressS2CPacket, this, this.client);
 		this.client
 			.world
-			.setBlockBreakingProgress(
-				blockBreakingProgressS2CPacket.getEntityId(), blockBreakingProgressS2CPacket.getPos(), blockBreakingProgressS2CPacket.getProgress()
-			);
+			.setBlockBreakingInfo(blockBreakingProgressS2CPacket.getEntityId(), blockBreakingProgressS2CPacket.getPos(), blockBreakingProgressS2CPacket.getProgress());
 	}
 
 	@Override
@@ -1356,7 +1356,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F
 				);
 		} else if (i == 11) {
-			this.client.player.method_22420(f == 0.0F);
+			this.client.player.setShowsDeathScreen(f == 0.0F);
 		}
 	}
 
@@ -1553,7 +1553,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (combatEventS2CPacket.type == CombatEventS2CPacket.Type.ENTITY_DIED) {
 			Entity entity = this.world.getEntityById(combatEventS2CPacket.entityId);
 			if (entity == this.client.player) {
-				if (this.client.player.method_22419()) {
+				if (this.client.player.showsDeathScreen()) {
 					this.client.openScreen(new DeathScreen(combatEventS2CPacket.deathMessage, this.world.getLevelProperties().isHardcore()));
 				} else {
 					this.client.player.requestRespawn();

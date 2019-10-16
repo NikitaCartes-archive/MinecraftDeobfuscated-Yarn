@@ -22,11 +22,11 @@ import net.minecraft.client.render.entity.model.DragonHeadEntityModel;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.render.entity.model.SkullOverlayEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEntity> {
@@ -109,7 +109,7 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(method_3578(skullType, gameProfile));
 		skullEntityModel.render(g, f, 0.0F);
-		skullEntityModel.renderItem(matrixStack, vertexConsumer, i, OverlayTexture.field_21444, 1.0F, 1.0F, 1.0F);
+		skullEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 	}
 
@@ -120,9 +120,9 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
 			return map.containsKey(Type.SKIN)
 				? RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN))
-				: RenderLayer.getEntitySolid(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
+				: RenderLayer.getEntityCutout(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
 		} else {
-			return RenderLayer.getEntitySolid(identifier);
+			return RenderLayer.getEntityCutout(identifier);
 		}
 	}
 }

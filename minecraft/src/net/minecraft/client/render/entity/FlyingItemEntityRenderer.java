@@ -7,11 +7,11 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> extends EntityRenderer<T> {
@@ -40,7 +40,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 		this.item
 			.method_23178(
-				entity.getStack(), ModelTransformation.Type.GROUND, entity.getLightmapCoordinates(), OverlayTexture.field_21444, matrixStack, layeredVertexConsumerStorage
+				entity.getStack(), ModelTransformation.Type.GROUND, entity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, matrixStack, layeredVertexConsumerStorage
 			);
 		matrixStack.pop();
 		super.render(entity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);

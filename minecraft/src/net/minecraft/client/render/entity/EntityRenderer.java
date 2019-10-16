@@ -7,11 +7,11 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -35,7 +35,7 @@ public abstract class EntityRenderer<T extends Entity> {
 				box = new Box(entity.getX() - 2.0, entity.getY() - 2.0, entity.getZ() - 2.0, entity.getX() + 2.0, entity.getY() + 2.0, entity.getZ() + 2.0);
 			}
 
-			return frustum.method_23093(box);
+			return frustum.isVisible(box);
 		}
 	}
 
@@ -62,7 +62,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-		double d = this.renderManager.method_23168(entity);
+		double d = this.renderManager.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
 			int i = entity.getLightmapCoordinates();
 			if (entity.isOnFire()) {

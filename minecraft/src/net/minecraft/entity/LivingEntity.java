@@ -65,6 +65,10 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
@@ -75,6 +79,7 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -97,10 +102,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.LootTable;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextParameters;
-import net.minecraft.world.loot.context.LootContextTypes;
 import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class LivingEntity extends Entity {
@@ -957,14 +958,14 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			if (this instanceof ServerPlayerEntity) {
-				Criterions.ENTITY_HURT_PLAYER.method_22467((ServerPlayerEntity)this, damageSource, g, f, bl);
+				Criterions.ENTITY_HURT_PLAYER.trigger((ServerPlayerEntity)this, damageSource, g, f, bl);
 				if (h > 0.0F && h < 3.4028235E37F) {
 					((ServerPlayerEntity)this).increaseStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(h * 10.0F));
 				}
 			}
 
 			if (entity2 instanceof ServerPlayerEntity) {
-				Criterions.PLAYER_HURT_ENTITY.handle((ServerPlayerEntity)entity2, this, damageSource, g, f, bl);
+				Criterions.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, damageSource, g, f, bl);
 			}
 
 			return bl3;
@@ -998,7 +999,7 @@ public abstract class LivingEntity extends Entity {
 				if (this instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this;
 					serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(Items.TOTEM_OF_UNDYING));
-					Criterions.USED_TOTEM.handle(serverPlayerEntity, itemStack);
+					Criterions.USED_TOTEM.trigger(serverPlayerEntity, itemStack);
 				}
 
 				this.setHealth(1.0F);
@@ -1381,12 +1382,22 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void swingHand(Hand hand) {
+		this.method_23667(hand, false);
+	}
+
+	public void method_23667(Hand hand, boolean bl) {
 		if (!this.isHandSwinging || this.handSwingTicks >= this.getHandSwingDuration() / 2 || this.handSwingTicks < 0) {
 			this.handSwingTicks = -1;
 			this.isHandSwinging = true;
 			this.preferredHand = hand;
 			if (this.world instanceof ServerWorld) {
-				((ServerWorld)this.world).method_14178().sendToOtherNearbyPlayers(this, new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? 0 : 3));
+				EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? 0 : 3);
+				ServerChunkManager serverChunkManager = ((ServerWorld)this.world).method_14178();
+				if (bl) {
+					serverChunkManager.sendToNearbyPlayers(this, entityAnimationS2CPacket);
+				} else {
+					serverChunkManager.sendToOtherNearbyPlayers(this, entityAnimationS2CPacket);
+				}
 			}
 		}
 	}
@@ -1740,18 +1751,15 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected float getJumpVelocity() {
-		return 0.42F;
+		return 0.42F * this.method_23313();
 	}
 
 	protected void jump() {
-		float f;
+		float f = this.getJumpVelocity();
 		if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
-			f = this.getJumpVelocity() + 0.1F * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1);
-		} else {
-			f = this.getJumpVelocity();
+			f += 0.1F * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1);
 		}
 
-		f *= this.method_23313();
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x, (double)f, vec3d.z);
 		if (this.isSprinting()) {
@@ -2451,7 +2459,7 @@ public abstract class LivingEntity extends Entity {
 	public void endCombat() {
 	}
 
-	protected void method_6008() {
+	protected void markEffectsDirty() {
 		this.effectsChanged = true;
 	}
 

@@ -139,11 +139,10 @@ public class EffectCommand {
 		} else {
 			if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.effect.give.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).getDisplayName(), k / 20),
-					true
+					new TranslatableText("commands.effect.give.success.single", statusEffect.getName(), ((Entity)collection.iterator().next()).getDisplayName(), k / 20), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", statusEffect.method_5560(), collection.size(), k / 20), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", statusEffect.getName(), collection.size(), k / 20), true);
 			}
 
 			return j;
@@ -188,13 +187,11 @@ public class EffectCommand {
 		} else {
 			if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.effect.clear.specific.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).getDisplayName()),
+					new TranslatableText("commands.effect.clear.specific.success.single", statusEffect.getName(), ((Entity)collection.iterator().next()).getDisplayName()),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.effect.clear.specific.success.multiple", statusEffect.method_5560(), collection.size()), true
-				);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.multiple", statusEffect.getName(), collection.size()), true);
 			}
 
 			return i;

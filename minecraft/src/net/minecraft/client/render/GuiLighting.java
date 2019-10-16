@@ -7,7 +7,7 @@ import net.minecraft.client.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class GuiLighting {
-	public static void method_22890() {
+	public static void enable() {
 		RenderSystem.enableLighting();
 		RenderSystem.enableColorMaterial();
 	}

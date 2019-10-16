@@ -9,10 +9,10 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEntity> {
@@ -178,7 +178,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 		vertexConsumer.vertex(matrix4f, k, (float)j, l)
 			.color(f, g, h, i)
 			.texture(m, n)
-			.defaultOverlay(OverlayTexture.field_21444)
+			.defaultOverlay(OverlayTexture.DEFAULT_UV)
 			.light(15728880)
 			.normal(0.0F, 1.0F, 0.0F)
 			.next();

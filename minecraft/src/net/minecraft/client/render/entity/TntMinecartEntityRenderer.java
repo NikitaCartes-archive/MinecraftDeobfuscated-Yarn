@@ -6,9 +6,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecartEntity> {
@@ -40,11 +40,11 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 	public static void method_23190(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, boolean bl) {
 		int j;
 		if (bl) {
-			j = OverlayTexture.method_23625(OverlayTexture.getU(1.0F), 10);
+			j = OverlayTexture.packUv(OverlayTexture.getU(1.0F), 10);
 		} else {
-			j = OverlayTexture.field_21444;
+			j = OverlayTexture.DEFAULT_UV;
 		}
 
-		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, matrixStack, layeredVertexConsumerStorage, i, j);
+		MinecraftClient.getInstance().getBlockRenderManager().renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, j);
 	}
 }

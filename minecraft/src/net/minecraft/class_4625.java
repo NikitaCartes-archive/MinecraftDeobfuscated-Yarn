@@ -12,17 +12,20 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 
-public abstract class class_4625 extends Feature<class_4635> {
-	public class_4625(Function<Dynamic<?>, ? extends class_4635> function) {
+public abstract class class_4625 extends Feature<HugeMushroomFeatureConfig> {
+	public class_4625(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
 		super(function);
 	}
 
-	protected void method_23376(IWorld iWorld, Random random, BlockPos blockPos, class_4635 arg, int i, BlockPos.Mutable mutable) {
+	protected void method_23376(
+		IWorld iWorld, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig, int i, BlockPos.Mutable mutable
+	) {
 		for (int j = 0; j < i; j++) {
 			mutable.set(blockPos).setOffset(Direction.UP, j);
 			if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
-				this.setBlockState(iWorld, mutable, arg.field_21231.method_23455(random, blockPos));
+				this.setBlockState(iWorld, mutable, hugeMushroomFeatureConfig.stemProvider.getBlockState(random, blockPos));
 			}
 		}
 	}
@@ -36,7 +39,7 @@ public abstract class class_4625 extends Feature<class_4635> {
 		return i;
 	}
 
-	protected boolean method_23374(IWorld iWorld, BlockPos blockPos, int i, BlockPos.Mutable mutable, class_4635 arg) {
+	protected boolean method_23374(IWorld iWorld, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
 		int j = blockPos.getY();
 		if (j >= 1 && j + i + 1 < 256) {
 			Block block = iWorld.getBlockState(blockPos.method_10074()).getBlock();
@@ -44,7 +47,7 @@ public abstract class class_4625 extends Feature<class_4635> {
 				return false;
 			} else {
 				for (int k = 0; k <= i; k++) {
-					int l = this.method_23372(-1, -1, arg.field_21232, k);
+					int l = this.method_23372(-1, -1, hugeMushroomFeatureConfig.field_21232, k);
 
 					for (int m = -l; m <= l; m++) {
 						for (int n = -l; n <= l; n++) {
@@ -63,19 +66,27 @@ public abstract class class_4625 extends Feature<class_4635> {
 		}
 	}
 
-	public boolean method_23373(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, class_4635 arg) {
+	public boolean method_23373(
+		IWorld iWorld,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		HugeMushroomFeatureConfig hugeMushroomFeatureConfig
+	) {
 		int i = this.method_23377(random);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		if (!this.method_23374(iWorld, blockPos, i, mutable, arg)) {
+		if (!this.method_23374(iWorld, blockPos, i, mutable, hugeMushroomFeatureConfig)) {
 			return false;
 		} else {
-			this.method_23375(iWorld, random, blockPos, i, mutable, arg);
-			this.method_23376(iWorld, random, blockPos, arg, i, mutable);
+			this.method_23375(iWorld, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
+			this.method_23376(iWorld, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
 			return true;
 		}
 	}
 
 	protected abstract int method_23372(int i, int j, int k, int l);
 
-	protected abstract void method_23375(IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, class_4635 arg);
+	protected abstract void method_23375(
+		IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig
+	);
 }

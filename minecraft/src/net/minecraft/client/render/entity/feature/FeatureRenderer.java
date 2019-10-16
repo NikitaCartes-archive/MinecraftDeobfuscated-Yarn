@@ -7,10 +7,10 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>> {
@@ -20,7 +20,7 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		this.context = featureRendererContext;
 	}
 
-	protected static <T extends LivingEntity> void method_23196(
+	protected static <T extends LivingEntity> void render(
 		EntityModel<T> entityModel,
 		EntityModel<T> entityModel2,
 		Identifier identifier,
@@ -43,11 +43,11 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 			entityModel.copyStateTo(entityModel2);
 			entityModel2.animateModel(livingEntity, f, g, m);
 			entityModel2.setAngles(livingEntity, f, g, h, j, k, l);
-			method_23199(entityModel2, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity, n, o, p);
+			renderModel(entityModel2, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity, n, o, p);
 		}
 	}
 
-	protected static <T extends LivingEntity> void method_23199(
+	protected static <T extends LivingEntity> void renderModel(
 		EntityModel<T> entityModel,
 		Identifier identifier,
 		MatrixStack matrixStack,
@@ -59,14 +59,14 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		float h
 	) {
 		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
-		entityModel.renderItem(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0F), f, g, h);
+		entityModel.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0F), f, g, h);
 	}
 
 	public M getModel() {
 		return this.context.getModel();
 	}
 
-	protected Identifier method_23194(T entity) {
+	protected Identifier getTexture(T entity) {
 		return this.context.getTexture(entity);
 	}
 

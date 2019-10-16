@@ -34,10 +34,10 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity$1();
+			entityData = new PassiveEntity.class_4697();
 		}
 
-		PassiveEntity$1 lv = (PassiveEntity$1)entityData;
+		PassiveEntity.class_4697 lv = (PassiveEntity.class_4697)entityData;
 		if (lv.method_22436() && lv.method_22432() > 0 && this.random.nextFloat() <= lv.method_22437()) {
 			this.setBreedingAge(-24000);
 		}
@@ -178,5 +178,35 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	public boolean isBaby() {
 		return this.getBreedingAge() < 0;
+	}
+
+	public static class class_4697 implements EntityData {
+		private int field_20684;
+		private boolean field_20685 = true;
+		private float field_20686 = 0.05F;
+
+		public int method_22432() {
+			return this.field_20684;
+		}
+
+		public void method_22435() {
+			this.field_20684++;
+		}
+
+		public boolean method_22436() {
+			return this.field_20685;
+		}
+
+		public void method_22434(boolean bl) {
+			this.field_20685 = bl;
+		}
+
+		public float method_22437() {
+			return this.field_20686;
+		}
+
+		public void method_22433(float f) {
+			this.field_20686 = f;
+		}
 	}
 }

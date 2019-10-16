@@ -245,7 +245,7 @@ public final class ItemStack {
 			}
 
 			if (serverPlayerEntity != null && i != 0) {
-				Criterions.ITEM_DURABILITY_CHANGED.handle(serverPlayerEntity, this, this.getDamage() + i);
+				Criterions.ITEM_DURABILITY_CHANGED.trigger(serverPlayerEntity, this, this.getDamage() + i);
 			}
 
 			int j = this.getDamage() + i;

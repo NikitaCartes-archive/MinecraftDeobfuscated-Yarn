@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4667;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.ClientResourcePackProfile;
@@ -16,7 +16,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
-public class ResourcePackOptionsScreen extends class_4667 {
+public class ResourcePackOptionsScreen extends GameOptionsScreen {
 	private AvailableResourcePackListWidget availablePacks;
 	private SelectedResourcePackListWidget enabledPacks;
 	private boolean dirty;

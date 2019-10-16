@@ -38,9 +38,7 @@ public enum Direction implements StringIdentifiable {
 	private static final Direction[] ALL = values();
 	private static final Map<String, Direction> NAME_MAP = (Map<String, Direction>)Arrays.stream(ALL)
 		.collect(Collectors.toMap(Direction::getName, direction -> direction));
-	private static final Direction[] ID_TO_DIRECTION = (Direction[])Arrays.stream(ALL)
-		.sorted(Comparator.comparingInt(direction -> direction.id))
-		.toArray(Direction[]::new);
+	private static final Direction[] VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
 	private static final Direction[] HORIZONTAL = (Direction[])Arrays.stream(ALL)
 		.filter(direction -> direction.getAxis().isHorizontal())
 		.sorted(Comparator.comparingInt(direction -> direction.idHorizontal))
@@ -96,7 +94,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Direction method_23225(Matrix4f matrix4f, Direction direction) {
+	public static Direction transform(Matrix4f matrix4f, Direction direction) {
 		Vec3i vec3i = direction.getVector();
 		Vector4f vector4f = new Vector4f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), 0.0F);
 		vector4f.multiply(matrix4f);
@@ -104,7 +102,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Quaternion method_23224() {
+	public Quaternion getRotationQuaternion() {
 		Quaternion quaternion = Vector3f.POSITIVE_X.getRotationQuaternion(90.0F);
 		switch (this) {
 			case DOWN:
@@ -112,16 +110,16 @@ public enum Direction implements StringIdentifiable {
 			case UP:
 				return Vector3f.POSITIVE_Y.getRotationQuaternion(0.0F);
 			case NORTH:
-				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
 				return quaternion;
 			case SOUTH:
 				return quaternion;
 			case WEST:
-				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0F));
 				return quaternion;
 			case EAST:
 			default:
-				quaternion.copyFrom(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
+				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0F));
 				return quaternion;
 		}
 	}
@@ -199,7 +197,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public static Direction byId(int i) {
-		return ID_TO_DIRECTION[MathHelper.abs(i % ID_TO_DIRECTION.length)];
+		return VALUES[MathHelper.abs(i % VALUES.length)];
 	}
 
 	public static Direction fromHorizontal(int i) {
@@ -342,7 +340,7 @@ public enum Direction implements StringIdentifiable {
 			return this.name;
 		}
 
-		public static Direction.Axis method_16699(Random random) {
+		public static Direction.Axis pickRandomAxis(Random random) {
 			return values()[random.nextInt(values().length)];
 		}
 

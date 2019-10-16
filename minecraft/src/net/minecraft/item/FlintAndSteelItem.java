@@ -32,7 +32,7 @@ public class FlintAndSteelItem extends Item {
 			iWorld.setBlockState(blockPos2, blockState, 11);
 			ItemStack itemStack = itemUsageContext.getStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
-				Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+				Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 			}
 

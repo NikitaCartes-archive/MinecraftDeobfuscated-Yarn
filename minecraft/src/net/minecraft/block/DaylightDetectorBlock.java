@@ -8,6 +8,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -64,15 +65,15 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (playerEntity.canModifyWorld()) {
 			if (world.isClient) {
-				return true;
+				return ActionResult.SUCCESS;
 			} else {
 				BlockState blockState2 = blockState.cycle(INVERTED);
 				world.setBlockState(blockPos, blockState2, 4);
 				updateState(blockState2, world, blockPos);
-				return true;
+				return ActionResult.SUCCESS;
 			}
 		} else {
 			return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);

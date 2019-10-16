@@ -27,8 +27,8 @@ public final class SunflowerPlainsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("plains")
 		);
-		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-		this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -36,7 +36,9 @@ public final class SunflowerPlainsBiome extends Biome {
 		DefaultBiomeFeatures.addPlainsTallGrass(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21101).method_23388(Decorator.COUNT_HEIGHTMAP_32.method_23475(new CountDecoratorConfig(10)))
+			Feature.RANDOM_PATCH
+				.configure(DefaultBiomeFeatures.field_21101)
+				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_32.configure(new CountDecoratorConfig(10)))
 		);
 		DefaultBiomeFeatures.addMineables(this);
 		DefaultBiomeFeatures.addDefaultOres(this);
@@ -45,15 +47,15 @@ public final class SunflowerPlainsBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_PATCH
-				.method_23397(DefaultBiomeFeatures.field_21105)
-				.method_23388(Decorator.COUNT_HEIGHTMAP_DOUBLE.method_23475(new CountDecoratorConfig(10)))
+				.configure(DefaultBiomeFeatures.field_21105)
+				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP_DOUBLE.configure(new CountDecoratorConfig(10)))
 		);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_PATCH
-				.method_23397(DefaultBiomeFeatures.field_21092)
-				.method_23388(Decorator.CHANCE_HEIGHTMAP_DOUBLE.method_23475(new LakeDecoratorConfig(32)))
+				.configure(DefaultBiomeFeatures.field_21092)
+				.createDecoratedFeature(Decorator.CHANCE_HEIGHTMAP_DOUBLE.configure(new LakeDecoratorConfig(32)))
 		);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);

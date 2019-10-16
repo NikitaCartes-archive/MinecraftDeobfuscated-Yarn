@@ -34,9 +34,9 @@ public class OceanWarmBiome extends Biome {
 				.waterFogColor(270131)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.OCEAN_RUIN.method_23397(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3F, 0.9F)));
-		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-		this.addStructureFeature(Feature.SHIPWRECK.method_23397(new ShipwreckFeatureConfig(false)));
+		this.addStructureFeature(Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3F, 0.9F)));
+		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.SHIPWRECK.configure(new ShipwreckFeatureConfig(false)));
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -53,23 +53,25 @@ public class OceanWarmBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.SIMPLE_RANDOM_SELECTOR
-				.method_23397(
+				.configure(
 					new SimpleRandomFeatureConfig(
 						ImmutableList.of(
-							Feature.CORAL_TREE.method_23397(FeatureConfig.DEFAULT),
-							Feature.CORAL_CLAW.method_23397(FeatureConfig.DEFAULT),
-							Feature.CORAL_MUSHROOM.method_23397(FeatureConfig.DEFAULT)
+							Feature.CORAL_TREE.configure(FeatureConfig.DEFAULT),
+							Feature.CORAL_CLAW.configure(FeatureConfig.DEFAULT),
+							Feature.CORAL_MUSHROOM.configure(FeatureConfig.DEFAULT)
 						)
 					)
 				)
-				.method_23388(
-					Decorator.TOP_SOLID_HEIGHTMAP_NOISE_BIASED.method_23475(new TopSolidHeightmapNoiseBiasedDecoratorConfig(20, 400.0, 0.0, Heightmap.Type.OCEAN_FLOOR_WG))
+				.createDecoratedFeature(
+					Decorator.TOP_SOLID_HEIGHTMAP_NOISE_BIASED.configure(new TopSolidHeightmapNoiseBiasedDecoratorConfig(20, 400.0, 0.0, Heightmap.Type.OCEAN_FLOOR_WG))
 				)
 		);
 		DefaultBiomeFeatures.addSeagrass(this);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.SEA_PICKLE.method_23397(new SeaPickleFeatureConfig(20)).method_23388(Decorator.CHANCE_TOP_SOLID_HEIGHTMAP.method_23475(new LakeDecoratorConfig(16)))
+			Feature.SEA_PICKLE
+				.configure(new SeaPickleFeatureConfig(20))
+				.createDecoratedFeature(Decorator.CHANCE_TOP_SOLID_HEIGHTMAP.configure(new LakeDecoratorConfig(16)))
 		);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
 		this.addSpawn(EntityCategory.WATER_CREATURE, new Biome.SpawnEntry(EntityType.SQUID, 10, 4, 4));

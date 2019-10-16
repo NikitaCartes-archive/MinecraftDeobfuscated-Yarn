@@ -3,15 +3,13 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class VillagerResemblingModel<T extends Entity> extends class_4595<T> implements ModelWithHead, ModelWithHat {
+public class VillagerResemblingModel<T extends Entity> extends CompositeEntityModel<T> implements ModelWithHead, ModelWithHat {
 	protected ModelPart head;
 	protected ModelPart headOverlay;
 	protected final ModelPart hat;
@@ -27,7 +25,6 @@ public class VillagerResemblingModel<T extends Entity> extends class_4595<T> imp
 	}
 
 	public VillagerResemblingModel(float f, int i, int j) {
-		super(RenderLayer::getEntityCutoutNoCull);
 		float g = 0.5F;
 		this.head = new ModelPart(this).setTextureSize(i, j);
 		this.head.setPivot(0.0F, 0.0F, 0.0F);

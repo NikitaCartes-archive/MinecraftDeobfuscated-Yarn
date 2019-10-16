@@ -37,7 +37,7 @@ public class ServerRecipeBook extends RecipeBook {
 				this.add(identifier);
 				this.display(identifier);
 				list.add(identifier);
-				Criterions.RECIPE_UNLOCKED.handle(serverPlayerEntity, recipe);
+				Criterions.RECIPE_UNLOCKED.trigger(serverPlayerEntity, recipe);
 				i++;
 			}
 		}

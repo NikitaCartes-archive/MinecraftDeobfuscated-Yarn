@@ -7,11 +7,11 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
@@ -68,7 +68,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 		vertexConsumer.vertex(matrix4f, f, g, 0.0F)
 			.color(i, j, k, 128)
 			.texture(h, l)
-			.defaultOverlay(OverlayTexture.field_21444)
+			.defaultOverlay(OverlayTexture.DEFAULT_UV)
 			.light(m)
 			.normal(0.0F, 1.0F, 0.0F)
 			.next();

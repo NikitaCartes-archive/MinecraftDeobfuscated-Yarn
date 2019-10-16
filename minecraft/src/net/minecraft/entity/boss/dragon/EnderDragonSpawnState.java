@@ -73,7 +73,7 @@ public enum EnderDragonSpawnState {
 						);
 						EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
 						Feature.END_SPIKE
-							.method_23397(endSpikeFeatureConfig)
+							.configure(endSpikeFeatureConfig)
 							.generate(
 								serverWorld,
 								(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.method_14178().getChunkGenerator(),

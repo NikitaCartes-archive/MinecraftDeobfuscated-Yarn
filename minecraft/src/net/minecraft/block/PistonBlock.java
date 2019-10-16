@@ -1,9 +1,10 @@
 package net.minecraft.block;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
@@ -272,66 +273,78 @@ public class PistonBlock extends FacingBlock {
 		if (!pistonHandler.calculatePush()) {
 			return false;
 		} else {
+			Map<BlockPos, BlockState> map = Maps.<BlockPos, BlockState>newHashMap();
 			List<BlockPos> list = pistonHandler.getMovedBlocks();
 			List<BlockState> list2 = Lists.<BlockState>newArrayList();
 
 			for (int i = 0; i < list.size(); i++) {
 				BlockPos blockPos3 = (BlockPos)list.get(i);
-				list2.add(world.getBlockState(blockPos3));
+				BlockState blockState = world.getBlockState(blockPos3);
+				list2.add(blockState);
+				map.put(blockPos3, blockState);
 			}
 
 			List<BlockPos> list3 = pistonHandler.getBrokenBlocks();
 			int j = list.size() + list3.size();
 			BlockState[] blockStates = new BlockState[j];
 			Direction direction2 = bl ? direction : direction.getOpposite();
-			Set<BlockPos> set = Sets.<BlockPos>newHashSet(list);
 
 			for (int k = list3.size() - 1; k >= 0; k--) {
 				BlockPos blockPos4 = (BlockPos)list3.get(k);
-				BlockState blockState = world.getBlockState(blockPos4);
-				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos4) : null;
-				dropStacks(blockState, world, blockPos4, blockEntity);
+				BlockState blockState2 = world.getBlockState(blockPos4);
+				BlockEntity blockEntity = blockState2.getBlock().hasBlockEntity() ? world.getBlockEntity(blockPos4) : null;
+				dropStacks(blockState2, world, blockPos4, blockEntity);
 				world.setBlockState(blockPos4, Blocks.AIR.getDefaultState(), 18);
 				j--;
-				blockStates[j] = blockState;
+				blockStates[j] = blockState2;
 			}
 
 			for (int k = list.size() - 1; k >= 0; k--) {
 				BlockPos blockPos4 = (BlockPos)list.get(k);
-				BlockState blockState = world.getBlockState(blockPos4);
+				BlockState blockState2 = world.getBlockState(blockPos4);
 				blockPos4 = blockPos4.offset(direction2);
-				set.remove(blockPos4);
+				map.remove(blockPos4);
 				world.setBlockState(blockPos4, Blocks.MOVING_PISTON.getDefaultState().with(FACING, direction), 68);
 				world.setBlockEntity(blockPos4, PistonExtensionBlock.createBlockEntityPiston((BlockState)list2.get(k), direction, bl, false));
 				j--;
-				blockStates[j] = blockState;
+				blockStates[j] = blockState2;
 			}
 
 			if (bl) {
 				PistonType pistonType = this.isSticky ? PistonType.STICKY : PistonType.DEFAULT;
-				BlockState blockState2 = Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, direction).with(PistonHeadBlock.TYPE, pistonType);
-				BlockState blockState = Blocks.MOVING_PISTON
+				BlockState blockState3 = Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, direction).with(PistonHeadBlock.TYPE, pistonType);
+				BlockState blockState2 = Blocks.MOVING_PISTON
 					.getDefaultState()
 					.with(PistonExtensionBlock.FACING, direction)
 					.with(PistonExtensionBlock.TYPE, this.isSticky ? PistonType.STICKY : PistonType.DEFAULT);
-				set.remove(blockPos2);
-				world.setBlockState(blockPos2, blockState, 68);
-				world.setBlockEntity(blockPos2, PistonExtensionBlock.createBlockEntityPiston(blockState2, direction, true, true));
+				map.remove(blockPos2);
+				world.setBlockState(blockPos2, blockState2, 68);
+				world.setBlockEntity(blockPos2, PistonExtensionBlock.createBlockEntityPiston(blockState3, direction, true, true));
 			}
 
-			for (BlockPos blockPos4 : set) {
-				world.setBlockState(blockPos4, Blocks.AIR.getDefaultState(), 66);
+			BlockState blockState4 = Blocks.AIR.getDefaultState();
+
+			for (BlockPos blockPos5 : map.keySet()) {
+				world.setBlockState(blockPos5, blockState4, 82);
 			}
 
-			for (int k = list3.size() - 1; k >= 0; k--) {
+			for (Entry<BlockPos, BlockState> entry : map.entrySet()) {
+				BlockPos blockPos6 = (BlockPos)entry.getKey();
+				BlockState blockState5 = (BlockState)entry.getValue();
+				blockState5.method_11637(world, blockPos6, 2);
+				blockState4.updateNeighborStates(world, blockPos6, 2);
+				blockState4.method_11637(world, blockPos6, 2);
+			}
+
+			for (int l = list3.size() - 1; l >= 0; l--) {
 				BlockState blockState2 = blockStates[j++];
-				BlockPos blockPos5 = (BlockPos)list3.get(k);
-				blockState2.method_11637(world, blockPos5, 2);
-				world.updateNeighborsAlways(blockPos5, blockState2.getBlock());
+				BlockPos blockPos6 = (BlockPos)list3.get(l);
+				blockState2.method_11637(world, blockPos6, 2);
+				world.updateNeighborsAlways(blockPos6, blockState2.getBlock());
 			}
 
-			for (int k = list.size() - 1; k >= 0; k--) {
-				world.updateNeighborsAlways((BlockPos)list.get(k), blockStates[j++].getBlock());
+			for (int l = list.size() - 1; l >= 0; l--) {
+				world.updateNeighborsAlways((BlockPos)list.get(l), blockStates[j++].getBlock());
 			}
 
 			if (bl) {

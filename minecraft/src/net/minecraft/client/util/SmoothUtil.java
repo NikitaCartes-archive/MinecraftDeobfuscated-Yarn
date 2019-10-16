@@ -6,27 +6,27 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SmoothUtil {
-	private double field_15760;
-	private double field_15759;
-	private double field_15758;
+	private double actualSum;
+	private double smoothedSum;
+	private double movementLatency;
 
 	public double smooth(double d, double e) {
-		this.field_15760 += d;
-		double f = this.field_15760 - this.field_15759;
-		double g = MathHelper.lerp(0.5, this.field_15758, f);
+		this.actualSum += d;
+		double f = this.actualSum - this.smoothedSum;
+		double g = MathHelper.lerp(0.5, this.movementLatency, f);
 		double h = Math.signum(f);
-		if (h * f > h * this.field_15758) {
+		if (h * f > h * this.movementLatency) {
 			f = g;
 		}
 
-		this.field_15758 = g;
-		this.field_15759 += f * e;
+		this.movementLatency = g;
+		this.smoothedSum += f * e;
 		return f * e;
 	}
 
 	public void clear() {
-		this.field_15760 = 0.0;
-		this.field_15759 = 0.0;
-		this.field_15758 = 0.0;
+		this.actualSum = 0.0;
+		this.smoothedSum = 0.0;
+		this.movementLatency = 0.0;
 	}
 }

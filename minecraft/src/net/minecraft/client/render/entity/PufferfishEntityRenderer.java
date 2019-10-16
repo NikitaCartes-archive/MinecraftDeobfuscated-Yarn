@@ -7,22 +7,22 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.LargePufferfishEntityModel;
 import net.minecraft.client.render.entity.model.MediumPufferfishEntityModel;
 import net.minecraft.client.render.entity.model.SmallPufferfishEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.PufferfishEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/fish/pufferfish.png");
-	private int field_4765;
+	private int modelSize;
 	private final SmallPufferfishEntityModel<PufferfishEntity> smallModel = new SmallPufferfishEntityModel<>();
 	private final MediumPufferfishEntityModel<PufferfishEntity> mediumModel = new MediumPufferfishEntityModel<>();
 	private final LargePufferfishEntityModel<PufferfishEntity> largeModel = new LargePufferfishEntityModel<>();
 
 	public PufferfishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new LargePufferfishEntityModel<>(), 0.2F);
-		this.field_4765 = 3;
+		this.modelSize = 3;
 	}
 
 	public Identifier method_4096(PufferfishEntity pufferfishEntity) {
@@ -40,7 +40,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage
 	) {
 		int i = pufferfishEntity.getPuffState();
-		if (i != this.field_4765) {
+		if (i != this.modelSize) {
 			if (i == 0) {
 				this.model = this.smallModel;
 			} else if (i == 1) {
@@ -50,7 +50,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 			}
 		}
 
-		this.field_4765 = i;
+		this.modelSize = i;
 		this.field_4673 = 0.1F + 0.1F * (float)i;
 		super.method_4072(pufferfishEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
 	}

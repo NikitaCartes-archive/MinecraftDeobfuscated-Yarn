@@ -12,6 +12,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -75,19 +76,19 @@ public class LeverBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			BlockState blockState2 = blockState.cycle(POWERED);
 			if ((Boolean)blockState2.get(POWERED)) {
 				spawnParticles(blockState2, world, blockPos, 1.0F);
 			}
 
-			return true;
+			return ActionResult.SUCCESS;
 		} else {
 			BlockState blockState2 = this.method_21846(blockState, world, blockPos);
 			float f = blockState2.get(POWERED) ? 0.6F : 0.5F;
 			world.playSound(null, blockPos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

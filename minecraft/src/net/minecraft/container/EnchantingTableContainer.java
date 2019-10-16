@@ -201,7 +201,7 @@ public class EnchantingTableContainer extends Container {
 
 					playerEntity.incrementStat(Stats.ENCHANT_ITEM);
 					if (playerEntity instanceof ServerPlayerEntity) {
-						Criterions.ENCHANTED_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack3, j);
+						Criterions.ENCHANTED_ITEM.trigger((ServerPlayerEntity)playerEntity, itemStack3, j);
 					}
 
 					this.inventory.markDirty();

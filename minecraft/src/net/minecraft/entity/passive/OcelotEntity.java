@@ -269,8 +269,8 @@ public class OcelotEntity extends AnimalEntity {
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity$1();
-			((PassiveEntity$1)entityData).method_22433(0.14285715F);
+			entityData = new PassiveEntity.class_4697();
+			((PassiveEntity.class_4697)entityData).method_22433(0.14285715F);
 		}
 
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);

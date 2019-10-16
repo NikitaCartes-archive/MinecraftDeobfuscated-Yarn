@@ -3,13 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class QuadrupedEntityModel<T extends Entity> extends class_4592<T> {
+public class QuadrupedEntityModel<T extends Entity> extends AnimalModel<T> {
 	protected ModelPart head = new ModelPart(this, 0, 0);
 	protected ModelPart body;
 	protected ModelPart leg1;
@@ -39,12 +38,12 @@ public class QuadrupedEntityModel<T extends Entity> extends class_4592<T> {
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22946() {
+	protected Iterable<ModelPart> getHeadParts() {
 		return ImmutableList.<ModelPart>of(this.head);
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
+	protected Iterable<ModelPart> getBodyParts() {
 		return ImmutableList.<ModelPart>of(this.body, this.leg1, this.leg2, this.leg3, this.leg4);
 	}
 

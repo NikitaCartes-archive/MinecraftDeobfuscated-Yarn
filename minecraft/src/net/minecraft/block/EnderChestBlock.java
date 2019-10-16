@@ -20,6 +20,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -61,15 +62,15 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		EnderChestInventory enderChestInventory = playerEntity.getEnderChestInventory();
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
 			BlockPos blockPos2 = blockPos.up();
 			if (world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
-				return true;
+				return ActionResult.SUCCESS;
 			} else if (world.isClient) {
-				return true;
+				return ActionResult.SUCCESS;
 			} else {
 				EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
 				enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
@@ -79,10 +80,10 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 					)
 				);
 				playerEntity.incrementStat(Stats.OPEN_ENDERCHEST);
-				return true;
+				return ActionResult.SUCCESS;
 			}
 		} else {
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -23,7 +22,7 @@ public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseBase
 	);
 
 	public ZombieHorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new HorseEntityModel<>(RenderLayer::getEntityCutoutNoCull, 0.0F), 1.0F);
+		super(entityRenderDispatcher, new HorseEntityModel<>(0.0F), 1.0F);
 	}
 
 	public Identifier method_4145(HorseBaseEntity horseBaseEntity) {

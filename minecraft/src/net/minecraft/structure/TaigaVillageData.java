@@ -249,11 +249,11 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_4"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_5"), 2),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_6"), 1),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21185)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21184)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21109)), 2),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21202)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21093)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21185)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21184)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21109)), 2),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21202)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21093)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID
@@ -269,11 +269,11 @@ public class TaigaVillageData {
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_2"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_3"), 1),
 						new Pair<>(new SinglePoolElement("village/taiga/taiga_decoration_4"), 1),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21185)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21184)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.method_23397(DefaultBiomeFeatures.field_21109)), 2),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21202)), 4),
-						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.method_23397(DefaultBiomeFeatures.field_21093)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21185)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21184)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.field_21109)), 2),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21202)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.field_21093)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
 					),
 					StructurePool.Projection.RIGID

@@ -192,7 +192,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			this.renderHoleBackground(this.bottom, this.height, 255, 255);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
 			);
 			RenderSystem.disableAlphaTest();
 			RenderSystem.shadeModel(7425);

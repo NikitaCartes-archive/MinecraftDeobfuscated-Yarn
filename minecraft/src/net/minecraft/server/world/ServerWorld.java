@@ -699,7 +699,7 @@ public class ServerWorld extends World {
 	}
 
 	protected void placeBonusChest() {
-		ConfiguredFeature<?, ?> configuredFeature = Feature.BONUS_CHEST.method_23397(FeatureConfig.DEFAULT);
+		ConfiguredFeature<?, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
 
 		for (int i = 0; i < 10; i++) {
 			int j = this.properties.getSpawnX() + this.random.nextInt(6) - this.random.nextInt(6);
@@ -990,7 +990,7 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
+	public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
 		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
 			if (serverPlayerEntity != null && serverPlayerEntity.world == this && serverPlayerEntity.getEntityId() != i) {
 				double d = (double)blockPos.getX() - serverPlayerEntity.getX();

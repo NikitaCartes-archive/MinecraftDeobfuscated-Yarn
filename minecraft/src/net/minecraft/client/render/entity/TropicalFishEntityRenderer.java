@@ -2,17 +2,17 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4594;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.feature.TropicalFishSomethingFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.TintableCompositeModel;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelA;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelB;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
@@ -38,12 +38,14 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		MatrixStack matrixStack,
 		LayeredVertexConsumerStorage layeredVertexConsumerStorage
 	) {
-		class_4594<TropicalFishEntity> lv = (class_4594<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.field_4800 : this.field_4799);
-		this.model = lv;
+		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = (TintableCompositeModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0
+			? this.field_4800
+			: this.field_4799);
+		this.model = tintableCompositeModel;
 		float[] fs = tropicalFishEntity.getBaseColorComponents();
-		lv.method_22956(fs[0], fs[1], fs[2]);
+		tintableCompositeModel.setColorMultiplier(fs[0], fs[1], fs[2]);
 		super.method_4072(tropicalFishEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
-		lv.method_22956(1.0F, 1.0F, 1.0F);
+		tintableCompositeModel.setColorMultiplier(1.0F, 1.0F, 1.0F);
 	}
 
 	protected void method_4142(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h) {

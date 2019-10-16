@@ -54,7 +54,7 @@ public class BreakDoorGoal extends DoorInteractGoal {
 	@Override
 	public void stop() {
 		super.stop();
-		this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, -1);
+		this.mob.world.setBlockBreakingInfo(this.mob.getEntityId(), this.doorPos, -1);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class BreakDoorGoal extends DoorInteractGoal {
 		this.breakProgress++;
 		int i = (int)((float)this.breakProgress / (float)this.method_16462() * 10.0F);
 		if (i != this.prevBreakProgress) {
-			this.mob.world.setBlockBreakingProgress(this.mob.getEntityId(), this.doorPos, i);
+			this.mob.world.setBlockBreakingInfo(this.mob.getEntityId(), this.doorPos, i);
 			this.prevBreakProgress = i;
 		}
 

@@ -115,7 +115,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 		return (DC)this.configDeserializer.apply(dynamic);
 	}
 
-	public ConfiguredDecorator<DC> method_23475(DC decoratorConfig) {
+	public ConfiguredDecorator<DC> configure(DC decoratorConfig) {
 		return new ConfiguredDecorator<>(this, decoratorConfig);
 	}
 

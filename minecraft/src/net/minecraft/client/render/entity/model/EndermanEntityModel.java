@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.LivingEntity;
 
 @Environment(EnvType.CLIENT)
@@ -12,7 +11,7 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 	public boolean angry;
 
 	public EndermanEntityModel(float f) {
-		super(RenderLayer::getEntityCutoutNoCull, 0.0F, -14.0F, 64, 32);
+		super(0.0F, -14.0F, 64, 32);
 		float g = -14.0F;
 		this.headwear = new ModelPart(this, 0, 16);
 		this.headwear.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f - 0.5F);

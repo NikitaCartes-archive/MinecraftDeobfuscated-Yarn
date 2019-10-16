@@ -6,9 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityModel<T> {
@@ -44,8 +44,8 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
-		return Iterables.concat(super.method_22948(), ImmutableList.of(this.field_3594));
+	protected Iterable<ModelPart> getBodyParts() {
+		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3594));
 	}
 
 	public void method_17125(T turtleEntity, float f, float g, float h, float i, float j, float k) {
@@ -79,14 +79,14 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	}
 
 	@Override
-	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
 		boolean bl = this.field_3594.visible;
 		if (bl) {
 			matrixStack.push();
 			matrixStack.translate(0.0, -0.08F, 0.0);
 		}
 
-		super.renderItem(matrixStack, vertexConsumer, i, j, f, g, h);
+		super.render(matrixStack, vertexConsumer, i, j, f, g, h);
 		if (bl) {
 			matrixStack.pop();
 		}

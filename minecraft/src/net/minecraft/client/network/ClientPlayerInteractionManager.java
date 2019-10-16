@@ -151,7 +151,7 @@ public class ClientPlayerInteractionManager {
 					this.selectedStack = this.client.player.getMainHandStack();
 					this.currentBreakingProgress = 0.0F;
 					this.blockBreakingSoundCooldown = 0.0F;
-					this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+					this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
 				}
 			}
 
@@ -166,7 +166,7 @@ public class ClientPlayerInteractionManager {
 			this.sendPlayerAction(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN);
 			this.breakingBlock = false;
 			this.currentBreakingProgress = 0.0F;
-			this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, -1);
+			this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, -1);
 			this.client.player.resetLastAttackedTicks();
 		}
 	}
@@ -212,7 +212,7 @@ public class ClientPlayerInteractionManager {
 					this.blockBreakingCooldown = 5;
 				}
 
-				this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+				this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
 				return true;
 			}
 		} else {
@@ -256,7 +256,6 @@ public class ClientPlayerInteractionManager {
 	public ActionResult interactBlock(ClientPlayerEntity clientPlayerEntity, ClientWorld clientWorld, Hand hand, BlockHitResult blockHitResult) {
 		this.syncSelectedSlot();
 		BlockPos blockPos = blockHitResult.getBlockPos();
-		Vec3d vec3d = blockHitResult.getPos();
 		if (!this.client.world.getWorldBorder().contains(blockPos)) {
 			return ActionResult.FAIL;
 		} else {
@@ -267,40 +266,43 @@ public class ClientPlayerInteractionManager {
 			} else {
 				boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
 				boolean bl2 = clientPlayerEntity.shouldCancelInteraction() && bl;
-				if (!bl2 && clientWorld.getBlockState(blockPos).onUse(clientWorld, clientPlayerEntity, hand, blockHitResult)) {
-					this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
-					return ActionResult.SUCCESS;
-				} else {
-					this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
-					if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-						ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, hand, blockHitResult);
-						ActionResult actionResult;
-						if (this.gameMode.isCreative()) {
-							int i = itemStack.getCount();
-							actionResult = itemStack.useOnBlock(itemUsageContext);
-							itemStack.setCount(i);
-						} else {
-							actionResult = itemStack.useOnBlock(itemUsageContext);
-						}
-
+				if (!bl2) {
+					ActionResult actionResult = clientWorld.getBlockState(blockPos).onUse(clientWorld, clientPlayerEntity, hand, blockHitResult);
+					if (actionResult.method_23665()) {
+						this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
 						return actionResult;
-					} else {
-						return ActionResult.PASS;
 					}
+				}
+
+				this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
+				if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+					ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, hand, blockHitResult);
+					ActionResult actionResult;
+					if (this.gameMode.isCreative()) {
+						int i = itemStack.getCount();
+						actionResult = itemStack.useOnBlock(itemUsageContext);
+						itemStack.setCount(i);
+					} else {
+						actionResult = itemStack.useOnBlock(itemUsageContext);
+					}
+
+					return actionResult;
+				} else {
+					return ActionResult.PASS;
 				}
 			}
 		}
 	}
 
-	public TypedActionResult<ItemStack> interactItem(PlayerEntity playerEntity, World world, Hand hand) {
+	public ActionResult interactItem(PlayerEntity playerEntity, World world, Hand hand) {
 		if (this.gameMode == GameMode.SPECTATOR) {
-			return TypedActionResult.pass(null);
+			return ActionResult.PASS;
 		} else {
 			this.syncSelectedSlot();
 			this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-				return TypedActionResult.pass(itemStack);
+				return ActionResult.PASS;
 			} else {
 				int i = itemStack.getCount();
 				TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
@@ -309,7 +311,7 @@ public class ClientPlayerInteractionManager {
 					playerEntity.setStackInHand(hand, itemStack2);
 				}
 
-				return typedActionResult;
+				return typedActionResult.getResult();
 			}
 		}
 	}

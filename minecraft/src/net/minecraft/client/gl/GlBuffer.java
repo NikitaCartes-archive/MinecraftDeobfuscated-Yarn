@@ -43,7 +43,7 @@ public class GlBuffer {
 	}
 
 	private void method_22644(BufferBuilder bufferBuilder) {
-		Pair<BufferBuilder.class_4574, ByteBuffer> pair = bufferBuilder.method_22632();
+		Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
 		ByteBuffer byteBuffer = pair.getSecond();
 		this.vertexCount = byteBuffer.remaining() / this.format.getVertexSize();
 		this.bind();

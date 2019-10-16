@@ -32,7 +32,7 @@ public class LeadItem extends Item {
 		}
 	}
 
-	public static boolean attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
+	public static ActionResult attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
 		LeadKnotEntity leadKnotEntity = null;
 		boolean bl = false;
 		double d = 7.0;
@@ -53,6 +53,6 @@ public class LeadItem extends Item {
 			}
 		}
 
-		return bl;
+		return bl ? ActionResult.SUCCESS : ActionResult.PASS;
 	}
 }

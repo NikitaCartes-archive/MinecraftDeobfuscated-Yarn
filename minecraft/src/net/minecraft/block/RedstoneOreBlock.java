@@ -12,6 +12,7 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -44,9 +45,13 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		light(blockState, world, blockPos);
-		return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if (world.isClient) {
+			return ActionResult.SUCCESS;
+		} else {
+			light(blockState, world, blockPos);
+			return ActionResult.PASS;
+		}
 	}
 
 	private static void light(BlockState blockState, World world, BlockPos blockPos) {

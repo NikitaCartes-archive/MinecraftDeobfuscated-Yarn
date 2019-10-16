@@ -19,6 +19,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -69,10 +70,10 @@ public class CauldronBlock extends Block {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.isEmpty()) {
-			return true;
+			return ActionResult.PASS;
 		} else {
 			int i = (Integer)blockState.get(LEVEL);
 			Item item = itemStack.getItem();
@@ -87,7 +88,7 @@ public class CauldronBlock extends Block {
 					world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
-				return true;
+				return ActionResult.SUCCESS;
 			} else if (item == Items.BUCKET) {
 				if (i == 3 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
@@ -104,7 +105,7 @@ public class CauldronBlock extends Block {
 					world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
-				return true;
+				return ActionResult.SUCCESS;
 			} else if (item == Items.GLASS_BOTTLE) {
 				if (i > 0 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
@@ -124,7 +125,7 @@ public class CauldronBlock extends Block {
 					this.setLevel(world, blockPos, blockState, i - 1);
 				}
 
-				return true;
+				return ActionResult.SUCCESS;
 			} else if (item == Items.POTION && PotionUtil.getPotion(itemStack) == Potions.WATER) {
 				if (i < 3 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
@@ -140,7 +141,7 @@ public class CauldronBlock extends Block {
 					this.setLevel(world, blockPos, blockState, i + 1);
 				}
 
-				return true;
+				return ActionResult.SUCCESS;
 			} else {
 				if (i > 0 && item instanceof DyeableItem) {
 					DyeableItem dyeableItem = (DyeableItem)item;
@@ -148,7 +149,7 @@ public class CauldronBlock extends Block {
 						dyeableItem.removeColor(itemStack);
 						this.setLevel(world, blockPos, blockState, i - 1);
 						playerEntity.incrementStat(Stats.CLEAN_ARMOR);
-						return true;
+						return ActionResult.SUCCESS;
 					}
 				}
 
@@ -172,7 +173,7 @@ public class CauldronBlock extends Block {
 						}
 					}
 
-					return true;
+					return ActionResult.SUCCESS;
 				} else if (i > 0 && item instanceof BlockItem) {
 					Block block = ((BlockItem)item).getBlock();
 					if (block instanceof ShulkerBoxBlock && !world.isClient()) {
@@ -184,11 +185,12 @@ public class CauldronBlock extends Block {
 						playerEntity.setStackInHand(hand, itemStack3);
 						this.setLevel(world, blockPos, blockState, i - 1);
 						playerEntity.incrementStat(Stats.CLEAN_SHULKER_BOX);
+						return ActionResult.SUCCESS;
+					} else {
+						return ActionResult.CONSUME;
 					}
-
-					return true;
 				} else {
-					return false;
+					return ActionResult.PASS;
 				}
 			}
 		}

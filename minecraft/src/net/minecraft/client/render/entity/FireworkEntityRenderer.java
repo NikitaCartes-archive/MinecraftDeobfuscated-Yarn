@@ -7,10 +7,10 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
@@ -46,7 +46,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 				fireworkEntity.getStack(),
 				ModelTransformation.Type.GROUND,
 				fireworkEntity.getLightmapCoordinates(),
-				OverlayTexture.field_21444,
+				OverlayTexture.DEFAULT_UV,
 				matrixStack,
 				layeredVertexConsumerStorage
 			);

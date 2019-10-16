@@ -24,6 +24,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -74,15 +75,15 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
-			return true;
+			return ActionResult.CONSUME;
 		} else {
 			if (blockState.get(PART) != BedPart.HEAD) {
 				blockPos = blockPos.offset(blockState.get(FACING));
 				blockState = world.getBlockState(blockPos);
 				if (blockState.getBlock() != this) {
-					return true;
+					return ActionResult.CONSUME;
 				}
 			}
 
@@ -103,20 +104,20 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 					true,
 					Explosion.DestructionType.DESTROY
 				);
-				return true;
+				return ActionResult.SUCCESS;
 			} else if ((Boolean)blockState.get(OCCUPIED)) {
 				if (!this.method_22357(world, blockPos)) {
 					playerEntity.addChatMessage(new TranslatableText("block.minecraft.bed.occupied"), true);
 				}
 
-				return true;
+				return ActionResult.SUCCESS;
 			} else {
 				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
 					if (sleepFailureReason != null) {
 						playerEntity.addChatMessage(sleepFailureReason.toText(), true);
 					}
 				});
-				return true;
+				return ActionResult.SUCCESS;
 			}
 		}
 	}

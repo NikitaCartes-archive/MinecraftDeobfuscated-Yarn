@@ -142,8 +142,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private boolean inTeleportationState;
 	private boolean seenCredits;
 	private final ServerRecipeBook recipeBook;
-	private Vec3d field_13992;
-	private int field_13973;
+	private Vec3d levitationStartPos;
+	private int levitationStartTick;
 	private boolean field_13964;
 	@Nullable
 	private Vec3d enteredNetherPos;
@@ -306,7 +306,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	protected void onBlockCollision(BlockState blockState) {
-		Criterions.ENTER_BLOCK.handle(this, blockState);
+		Criterions.ENTER_BLOCK.trigger(this, blockState);
 	}
 
 	@Override
@@ -355,9 +355,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 		}
 
-		Criterions.TICK.handle(this);
-		if (this.field_13992 != null) {
-			Criterions.LEVITATION.handle(this, this.field_13992, this.age - this.field_13973);
+		Criterions.TICK.trigger(this);
+		if (this.levitationStartPos != null) {
+			Criterions.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
 		}
 
 		this.advancementManager.sendUpdate(this);
@@ -424,7 +424,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 
 			if (this.age % 20 == 0) {
-				Criterions.LOCATION.handle(this);
+				Criterions.LOCATION.trigger(this);
 			}
 		} catch (Throwable var4) {
 			CrashReport crashReport = CrashReport.create(var4, "Ticking player");
@@ -520,13 +520,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				this.incrementStat(Stats.MOB_KILLS);
 			}
 
-			this.method_14227(string, string2, ScoreboardCriterion.TEAM_KILLS);
-			this.method_14227(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
-			Criterions.PLAYER_KILLED_ENTITY.handle(this, entity, damageSource);
+			this.updateScoreboardScore(string, string2, ScoreboardCriterion.TEAM_KILLS);
+			this.updateScoreboardScore(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
+			Criterions.PLAYER_KILLED_ENTITY.trigger(this, entity, damageSource);
 		}
 	}
 
-	private void method_14227(String string, String string2, ScoreboardCriterion[] scoreboardCriterions) {
+	private void updateScoreboardScore(String string, String string2, ScoreboardCriterion[] scoreboardCriterions) {
 		Team team = this.getScoreboard().getPlayerTeam(string2);
 		if (team != null) {
 			int i = team.getColor().getColorIndex();
@@ -541,7 +541,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			boolean bl = this.server.isDedicated() && this.method_14230() && "fall".equals(damageSource.name);
+			boolean bl = this.server.isDedicated() && this.isPvpEnabled() && "fall".equals(damageSource.name);
 			if (!bl && this.field_13998 > 0 && damageSource != DamageSource.OUT_OF_WORLD) {
 				return false;
 			} else {
@@ -567,10 +567,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public boolean shouldDamagePlayer(PlayerEntity playerEntity) {
-		return !this.method_14230() ? false : super.shouldDamagePlayer(playerEntity);
+		return !this.isPvpEnabled() ? false : super.shouldDamagePlayer(playerEntity);
 	}
 
-	private boolean method_14230() {
+	private boolean isPvpEnabled() {
 		return this.server.isPvpEnabled();
 	}
 
@@ -690,9 +690,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private void dimensionChanged(ServerWorld serverWorld) {
 		DimensionType dimensionType = serverWorld.dimension.getType();
 		DimensionType dimensionType2 = this.world.dimension.getType();
-		Criterions.CHANGED_DIMENSION.handle(this, dimensionType, dimensionType2);
+		Criterions.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
 		if (dimensionType == DimensionType.THE_NETHER && dimensionType2 == DimensionType.OVERWORLD && this.enteredNetherPos != null) {
-			Criterions.NETHER_TRAVEL.handle(this, this.enteredNetherPos);
+			Criterions.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
 		}
 
 		if (dimensionType2 != DimensionType.THE_NETHER) {
@@ -728,7 +728,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos blockPos) {
 		return super.trySleep(blockPos).ifRight(unit -> {
 			this.incrementStat(Stats.SLEEP_IN_BED);
-			Criterions.SLEPT_IN_BED.handle(this);
+			Criterions.SLEPT_IN_BED.trigger(this);
 		});
 	}
 
@@ -868,7 +868,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
 		if (!(container.getSlot(i) instanceof CraftingResultSlot)) {
 			if (container == this.playerContainer) {
-				Criterions.INVENTORY_CHANGED.handle(this, this.inventory);
+				Criterions.INVENTORY_CHANGED.trigger(this, this.inventory);
 			}
 
 			if (!this.field_13991) {
@@ -1043,18 +1043,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		super.onStatusEffectApplied(statusEffectInstance);
 		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
 		if (statusEffectInstance.getEffectType() == StatusEffects.LEVITATION) {
-			this.field_13973 = this.age;
-			this.field_13992 = this.getPos();
+			this.levitationStartTick = this.age;
+			this.levitationStartPos = this.getPos();
 		}
 
-		Criterions.EFFECTS_CHANGED.handle(this);
+		Criterions.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
 	protected void onStatusEffectUpgraded(StatusEffectInstance statusEffectInstance, boolean bl) {
 		super.onStatusEffectUpgraded(statusEffectInstance, bl);
 		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
-		Criterions.EFFECTS_CHANGED.handle(this);
+		Criterions.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
@@ -1062,10 +1062,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		super.onStatusEffectRemoved(statusEffectInstance);
 		this.networkHandler.sendPacket(new RemoveEntityEffectS2CPacket(this.getEntityId(), statusEffectInstance.getEffectType()));
 		if (statusEffectInstance.getEffectType() == StatusEffects.LEVITATION) {
-			this.field_13992 = null;
+			this.levitationStartPos = null;
 		}
 
-		Criterions.EFFECTS_CHANGED.handle(this);
+		Criterions.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
@@ -1107,7 +1107,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		this.sendAbilitiesUpdate();
-		this.method_6008();
+		this.markEffectsDirty();
 	}
 
 	@Override
@@ -1150,7 +1150,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
 		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
-		this.field_13971 = clientSettingsC2SPacket.method_12135();
+		this.field_13971 = clientSettingsC2SPacket.hasChatColors();
 		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
 		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
@@ -1159,7 +1159,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		return this.clientChatVisibility;
 	}
 
-	public void method_14255(String string, String string2) {
+	public void sendResourcePackUrl(String string, String string2) {
 		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(string, string2));
 	}
 
@@ -1252,15 +1252,6 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	public void onTeleportationDone() {
 		this.inTeleportationState = false;
-	}
-
-	public void method_14243() {
-		this.setFlag(7, true);
-	}
-
-	public void method_14229() {
-		this.setFlag(7, true);
-		this.setFlag(7, false);
 	}
 
 	public PlayerAdvancementTracker getAdvancementManager() {

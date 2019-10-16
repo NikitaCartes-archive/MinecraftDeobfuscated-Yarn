@@ -4,19 +4,18 @@ import com.google.common.collect.ImmutableList;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
-public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> implements ModelWithArms, ModelWithHead {
+public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> implements ModelWithArms, ModelWithHead {
 	public ModelPart head;
 	public ModelPart headwear;
 	public ModelPart body;
@@ -31,7 +30,11 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 	private float itemUsedTime;
 
 	public BipedEntityModel(float f) {
-		this(RenderLayer::getEntitySolid, f, 0.0F, 64, 32);
+		this(RenderLayer::getEntityCutoutNoCull, f, 0.0F, 64, 32);
+	}
+
+	protected BipedEntityModel(float f, float g, int i, int j) {
+		this(RenderLayer::getEntityCutoutNoCull, f, g, i, j);
 	}
 
 	public BipedEntityModel(Function<Identifier, RenderLayer> function, float f, float g, int i, int j) {
@@ -64,12 +67,12 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22946() {
+	protected Iterable<ModelPart> getHeadParts() {
 		return ImmutableList.<ModelPart>of(this.head);
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
+	protected Iterable<ModelPart> getBodyParts() {
 		return ImmutableList.<ModelPart>of(this.body, this.rightArm, this.leftArm, this.rightLeg, this.leftLeg, this.headwear);
 	}
 
@@ -87,9 +90,9 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 			this.head.pitch = (float) (-Math.PI / 4);
 		} else if (this.field_3396 > 0.0F) {
 			if (bl2) {
-				this.head.pitch = this.method_2804(this.head.pitch, (float) (-Math.PI / 4), this.field_3396);
+				this.head.pitch = this.lerpAngle(this.head.pitch, (float) (-Math.PI / 4), this.field_3396);
 			} else {
-				this.head.pitch = this.method_2804(this.head.pitch, j * (float) (Math.PI / 180.0), this.field_3396);
+				this.head.pitch = this.lerpAngle(this.head.pitch, j * (float) (Math.PI / 180.0), this.field_3396);
 			}
 		} else {
 			this.head.pitch = j * (float) (Math.PI / 180.0);
@@ -274,27 +277,27 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 			float q = f % 26.0F;
 			float m = this.handSwingProgress > 0.0F ? 0.0F : this.field_3396;
 			if (q < 14.0F) {
-				this.leftArm.pitch = this.method_2804(this.leftArm.pitch, 0.0F, this.field_3396);
+				this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, 0.0F, this.field_3396);
 				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0F);
-				this.leftArm.yaw = this.method_2804(this.leftArm.yaw, (float) Math.PI, this.field_3396);
+				this.leftArm.yaw = this.lerpAngle(this.leftArm.yaw, (float) Math.PI, this.field_3396);
 				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
-				this.leftArm.roll = this.method_2804(this.leftArm.roll, (float) Math.PI + 1.8707964F * this.method_2807(q) / this.method_2807(14.0F), this.field_3396);
+				this.leftArm.roll = this.lerpAngle(this.leftArm.roll, (float) Math.PI + 1.8707964F * this.method_2807(q) / this.method_2807(14.0F), this.field_3396);
 				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI - 1.8707964F * this.method_2807(q) / this.method_2807(14.0F));
 			} else if (q >= 14.0F && q < 22.0F) {
 				float n = (q - 14.0F) / 8.0F;
-				this.leftArm.pitch = this.method_2804(this.leftArm.pitch, (float) (Math.PI / 2) * n, this.field_3396);
+				this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, (float) (Math.PI / 2) * n, this.field_3396);
 				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) * n);
-				this.leftArm.yaw = this.method_2804(this.leftArm.yaw, (float) Math.PI, this.field_3396);
+				this.leftArm.yaw = this.lerpAngle(this.leftArm.yaw, (float) Math.PI, this.field_3396);
 				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
-				this.leftArm.roll = this.method_2804(this.leftArm.roll, 5.012389F - 1.8707964F * n, this.field_3396);
+				this.leftArm.roll = this.lerpAngle(this.leftArm.roll, 5.012389F - 1.8707964F * n, this.field_3396);
 				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, 1.2707963F + 1.8707964F * n);
 			} else if (q >= 22.0F && q < 26.0F) {
 				float n = (q - 22.0F) / 4.0F;
-				this.leftArm.pitch = this.method_2804(this.leftArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * n, this.field_3396);
+				this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * n, this.field_3396);
 				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * n);
-				this.leftArm.yaw = this.method_2804(this.leftArm.yaw, (float) Math.PI, this.field_3396);
+				this.leftArm.yaw = this.lerpAngle(this.leftArm.yaw, (float) Math.PI, this.field_3396);
 				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
-				this.leftArm.roll = this.method_2804(this.leftArm.roll, (float) Math.PI, this.field_3396);
+				this.leftArm.roll = this.lerpAngle(this.leftArm.roll, (float) Math.PI, this.field_3396);
 				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI);
 			}
 
@@ -304,10 +307,10 @@ public class BipedEntityModel<T extends LivingEntity> extends class_4592<T> impl
 			this.rightLeg.pitch = MathHelper.lerp(this.field_3396, this.rightLeg.pitch, 0.3F * MathHelper.cos(f * 0.33333334F));
 		}
 
-		this.headwear.copyRotation(this.head);
+		this.headwear.copyPositionAndRotation(this.head);
 	}
 
-	protected float method_2804(float f, float g, float h) {
+	protected float lerpAngle(float f, float g, float h) {
 		float i = (g - f) % (float) (Math.PI * 2);
 		if (i < (float) -Math.PI) {
 			i += (float) (Math.PI * 2);

@@ -324,7 +324,7 @@ public class Raid {
 								if (livingEntity instanceof ServerPlayerEntity) {
 									ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 									serverPlayerEntity.incrementStat(Stats.RAID_WIN);
-									Criterions.HERO_OF_THE_VILLAGE.handle(serverPlayerEntity);
+									Criterions.HERO_OF_THE_VILLAGE.trigger(serverPlayerEntity);
 								}
 							}
 						}
@@ -554,16 +554,16 @@ public class Raid {
 	public static ItemStack getOminousBanner() {
 		ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
 		CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-		ListTag listTag = new BannerPattern.Builder()
-			.with(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN)
-			.with(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
-			.with(BannerPattern.STRIPE_CENTER, DyeColor.GRAY)
-			.with(BannerPattern.BORDER, DyeColor.LIGHT_GRAY)
-			.with(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK)
-			.with(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
-			.with(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY)
-			.with(BannerPattern.BORDER, DyeColor.BLACK)
-			.build();
+		ListTag listTag = new BannerPattern.Patterns()
+			.add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN)
+			.add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
+			.add(BannerPattern.STRIPE_CENTER, DyeColor.GRAY)
+			.add(BannerPattern.BORDER, DyeColor.LIGHT_GRAY)
+			.add(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK)
+			.add(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
+			.add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY)
+			.add(BannerPattern.BORDER, DyeColor.BLACK)
+			.toTag();
 		compoundTag.put("Patterns", listTag);
 		itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
 		return itemStack;

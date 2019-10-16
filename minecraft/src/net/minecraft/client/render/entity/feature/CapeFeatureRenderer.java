@@ -9,12 +9,12 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
@@ -72,7 +72,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t / 2.0F));
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - t / 2.0F));
 				VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
-				this.getModel().renderCape(matrixStack, vertexConsumer, 0.0625F, i, OverlayTexture.field_21444);
+				this.getModel().renderCape(matrixStack, vertexConsumer, 0.0625F, i, OverlayTexture.DEFAULT_UV);
 				matrixStack.pop();
 			}
 		}

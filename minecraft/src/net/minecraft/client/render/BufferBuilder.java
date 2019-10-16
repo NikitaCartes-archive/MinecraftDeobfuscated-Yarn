@@ -17,14 +17,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class BufferBuilder extends AbstractVertexConsumer implements BufferVertexConsumer {
+public class BufferBuilder extends FixedColorVertexConsumer implements BufferVertexConsumer {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private ByteBuffer buffer;
-	private final List<BufferBuilder.class_4574> field_20774 = Lists.<BufferBuilder.class_4574>newArrayList();
-	private int field_20775 = 0;
-	private int field_20776 = 0;
-	private int field_20884 = 0;
-	private int field_20777 = 0;
+	private final List<BufferBuilder.DrawArrayParameters> parameters = Lists.<BufferBuilder.DrawArrayParameters>newArrayList();
+	private int lastParameterIndex = 0;
+	private int buildStart = 0;
+	private int elementOffset = 0;
+	private int nextDrawStart = 0;
 	private int vertexCount;
 	@Nullable
 	private VertexFormatElement currentElement;
@@ -37,12 +37,12 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 		this.buffer = GlAllocationUtils.allocateByteBuffer(i * 4);
 	}
 
-	protected void method_22892() {
+	protected void grow() {
 		this.grow(this.format.getVertexSize());
 	}
 
 	private void grow(int i) {
-		if (this.field_20884 + i > this.buffer.capacity()) {
+		if (this.elementOffset + i > this.buffer.capacity()) {
 			int j = this.buffer.capacity();
 			int k = j + roundBufferSize(i);
 			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", j, k);
@@ -75,7 +75,7 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 		float[] fs = new float[i];
 
 		for (int j = 0; j < i; j++) {
-			fs[j] = getDistanceSq(floatBuffer, f, g, h, this.format.getVertexSizeInteger(), this.field_20776 / 4 + j * this.format.getVertexSize());
+			fs[j] = getDistanceSq(floatBuffer, f, g, h, this.format.getVertexSizeInteger(), this.buildStart / 4 + j * this.format.getVertexSize());
 		}
 
 		int[] is = new int[i];
@@ -117,13 +117,13 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 
 	private void method_22628(FloatBuffer floatBuffer, int i) {
 		int j = this.format.getVertexSizeInteger() * 4;
-		floatBuffer.limit(this.field_20776 / 4 + (i + 1) * j);
-		floatBuffer.position(this.field_20776 / 4 + i * j);
+		floatBuffer.limit(this.buildStart / 4 + (i + 1) * j);
+		floatBuffer.position(this.buildStart / 4 + i * j);
 	}
 
 	public BufferBuilder.State toBufferState() {
-		this.buffer.limit(this.field_20884);
-		this.buffer.position(this.field_20776);
+		this.buffer.limit(this.elementOffset);
+		this.buffer.position(this.buildStart);
 		ByteBuffer byteBuffer = ByteBuffer.allocate(this.vertexCount * this.format.getVertexSize());
 		byteBuffer.put(this.buffer);
 		this.buffer.clear();
@@ -150,16 +150,16 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 	}
 
 	public void restoreState(BufferBuilder.State state) {
-		state.field_20885.clear();
-		int i = state.field_20885.capacity();
+		state.buffer.clear();
+		int i = state.buffer.capacity();
 		this.grow(i);
 		this.buffer.limit(this.buffer.capacity());
-		this.buffer.position(this.field_20776);
-		this.buffer.put(state.field_20885);
+		this.buffer.position(this.buildStart);
+		this.buffer.put(state.buffer);
 		this.buffer.clear();
 		this.format = state.format;
 		this.vertexCount = i / this.format.getVertexSize();
-		this.field_20884 = this.field_20776 + this.vertexCount * this.format.getVertexSize();
+		this.elementOffset = this.buildStart + this.vertexCount * this.format.getVertexSize();
 	}
 
 	public void begin(int i, VertexFormat vertexFormat) {
@@ -180,8 +180,8 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 			throw new IllegalStateException("Not building!");
 		} else {
 			this.building = false;
-			this.field_20774.add(new BufferBuilder.class_4574(this.format, this.vertexCount, this.drawMode));
-			this.field_20776 = this.field_20776 + this.vertexCount * this.format.getVertexSize();
+			this.parameters.add(new BufferBuilder.DrawArrayParameters(this.format, this.vertexCount, this.drawMode));
+			this.buildStart = this.buildStart + this.vertexCount * this.format.getVertexSize();
 			this.vertexCount = 0;
 			this.currentElement = null;
 			this.currentElementId = 0;
@@ -190,17 +190,17 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 
 	@Override
 	public void putByte(int i, byte b) {
-		this.buffer.put(this.field_20884 + i, b);
+		this.buffer.put(this.elementOffset + i, b);
 	}
 
 	@Override
 	public void putShort(int i, short s) {
-		this.buffer.putShort(this.field_20884 + i, s);
+		this.buffer.putShort(this.elementOffset + i, s);
 	}
 
 	@Override
 	public void putFloat(int i, float f) {
-		this.buffer.putFloat(this.field_20884 + i, f);
+		this.buffer.putFloat(this.elementOffset + i, f);
 	}
 
 	@Override
@@ -209,7 +209,7 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 			throw new IllegalStateException("Not filled all elements of the vertex");
 		} else {
 			this.vertexCount++;
-			this.method_22892();
+			this.grow();
 		}
 	}
 
@@ -217,55 +217,55 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 	public void nextElement() {
 		ImmutableList<VertexFormatElement> immutableList = this.format.getElements();
 		this.currentElementId = (this.currentElementId + 1) % immutableList.size();
-		this.field_20884 = this.field_20884 + this.currentElement.getSize();
+		this.elementOffset = this.elementOffset + this.currentElement.getSize();
 		VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(this.currentElementId);
 		this.currentElement = vertexFormatElement;
 		if (vertexFormatElement.getType() == VertexFormatElement.Type.PADDING) {
 			this.nextElement();
 		}
 
-		if (this.field_20889 && this.currentElement.getType() == VertexFormatElement.Type.COLOR) {
-			BufferVertexConsumer.super.color(this.field_20890, this.field_20891, this.field_20892, this.field_20893);
+		if (this.colorFixed && this.currentElement.getType() == VertexFormatElement.Type.COLOR) {
+			BufferVertexConsumer.super.color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha);
 		}
 	}
 
 	@Override
 	public VertexConsumer color(int i, int j, int k, int l) {
-		if (this.field_20889) {
+		if (this.colorFixed) {
 			throw new IllegalStateException();
 		} else {
 			return BufferVertexConsumer.super.color(i, j, k, l);
 		}
 	}
 
-	public Pair<BufferBuilder.class_4574, ByteBuffer> method_22632() {
-		BufferBuilder.class_4574 lv = (BufferBuilder.class_4574)this.field_20774.get(this.field_20775++);
-		this.buffer.position(this.field_20777);
-		this.field_20777 = this.field_20777 + lv.method_22635() * lv.method_22634().getVertexSize();
-		this.buffer.limit(this.field_20777);
-		if (this.field_20775 == this.field_20774.size() && this.vertexCount == 0) {
+	public Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> popData() {
+		BufferBuilder.DrawArrayParameters drawArrayParameters = (BufferBuilder.DrawArrayParameters)this.parameters.get(this.lastParameterIndex++);
+		this.buffer.position(this.nextDrawStart);
+		this.nextDrawStart = this.nextDrawStart + drawArrayParameters.getCount() * drawArrayParameters.getVertexFormat().getVertexSize();
+		this.buffer.limit(this.nextDrawStart);
+		if (this.lastParameterIndex == this.parameters.size() && this.vertexCount == 0) {
 			this.clear();
 		}
 
 		ByteBuffer byteBuffer = this.buffer.slice();
 		this.buffer.clear();
-		return Pair.of(lv, byteBuffer);
+		return Pair.of(drawArrayParameters, byteBuffer);
 	}
 
 	public void clear() {
-		if (this.field_20776 != this.field_20777) {
-			LOGGER.warn("Bytes mismatch " + this.field_20776 + " " + this.field_20777);
+		if (this.buildStart != this.nextDrawStart) {
+			LOGGER.warn("Bytes mismatch " + this.buildStart + " " + this.nextDrawStart);
 		}
 
-		this.method_23477();
+		this.reset();
 	}
 
-	public void method_23477() {
-		this.field_20776 = 0;
-		this.field_20777 = 0;
-		this.field_20884 = 0;
-		this.field_20774.clear();
-		this.field_20775 = 0;
+	public void reset() {
+		this.buildStart = 0;
+		this.nextDrawStart = 0;
+		this.elementOffset = 0;
+		this.parameters.clear();
+		this.lastParameterIndex = 0;
 	}
 
 	@Override
@@ -277,43 +277,43 @@ public class BufferBuilder extends AbstractVertexConsumer implements BufferVerte
 		}
 	}
 
-	public boolean method_22893() {
+	public boolean isBuilding() {
 		return this.building;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class State {
-		private final ByteBuffer field_20885;
-		private final VertexFormat format;
+	public static final class DrawArrayParameters {
+		private final VertexFormat vertexFormat;
+		private final int count;
+		private final int mode;
 
-		private State(ByteBuffer byteBuffer, VertexFormat vertexFormat) {
-			this.field_20885 = byteBuffer;
-			this.format = vertexFormat;
+		private DrawArrayParameters(VertexFormat vertexFormat, int i, int j) {
+			this.vertexFormat = vertexFormat;
+			this.count = i;
+			this.mode = j;
+		}
+
+		public VertexFormat getVertexFormat() {
+			return this.vertexFormat;
+		}
+
+		public int getCount() {
+			return this.count;
+		}
+
+		public int getMode() {
+			return this.mode;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static final class class_4574 {
-		private final VertexFormat field_20779;
-		private final int field_20780;
-		private final int field_20781;
+	public static class State {
+		private final ByteBuffer buffer;
+		private final VertexFormat format;
 
-		private class_4574(VertexFormat vertexFormat, int i, int j) {
-			this.field_20779 = vertexFormat;
-			this.field_20780 = i;
-			this.field_20781 = j;
-		}
-
-		public VertexFormat method_22634() {
-			return this.field_20779;
-		}
-
-		public int method_22635() {
-			return this.field_20780;
-		}
-
-		public int method_22636() {
-			return this.field_20781;
+		private State(ByteBuffer byteBuffer, VertexFormat vertexFormat) {
+			this.buffer = byteBuffer;
+			this.format = vertexFormat;
 		}
 	}
 }

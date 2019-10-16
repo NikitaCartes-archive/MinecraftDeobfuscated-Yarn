@@ -18,7 +18,7 @@ public enum WhiteRectangleGlyph implements RenderableGlyph {
 					boolean var10000 = true;
 				}
 
-				nativeImage.setPixelRGBA(j, i, -1);
+				nativeImage.setPixelRgba(j, i, -1);
 			}
 		}
 

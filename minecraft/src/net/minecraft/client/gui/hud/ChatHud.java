@@ -33,7 +33,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public void render(int i) {
-		if (this.client.options.chatVisibility != ChatVisibility.HIDDEN) {
+		if (this.method_23677()) {
 			int j = this.getVisibleLineCount();
 			int k = this.visibleMessages.size();
 			if (k > 0) {
@@ -92,6 +92,10 @@ public class ChatHud extends DrawableHelper {
 				RenderSystem.popMatrix();
 			}
 		}
+	}
+
+	private boolean method_23677() {
+		return this.client.options.chatVisibility != ChatVisibility.HIDDEN;
 	}
 
 	private static double getMessageOpacityMultiplier(int i) {
@@ -190,9 +194,7 @@ public class ChatHud extends DrawableHelper {
 
 	@Nullable
 	public Text getText(double d, double e) {
-		if (!this.isChatFocused()) {
-			return null;
-		} else {
+		if (this.isChatFocused() && !this.client.options.hudHidden && this.method_23677()) {
 			double f = this.getChatScale();
 			double g = d - 2.0;
 			double h = (double)this.client.getWindow().getScaledHeight() - e - 40.0;
@@ -223,6 +225,8 @@ public class ChatHud extends DrawableHelper {
 			} else {
 				return null;
 			}
+		} else {
+			return null;
 		}
 	}
 

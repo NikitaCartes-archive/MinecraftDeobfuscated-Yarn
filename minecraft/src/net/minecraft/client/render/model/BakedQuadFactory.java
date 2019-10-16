@@ -3,18 +3,18 @@ package net.minecraft.client.render.model;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4590;
-import net.minecraft.class_4609;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.Rotation3Helper;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3i;
 
@@ -60,8 +60,8 @@ public class BakedQuadFactory {
 		return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
 	}
 
-	public static ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, class_4590 arg, Identifier identifier) {
-		Matrix4f matrix4f = class_4609.method_23221(arg, direction, () -> "Unable to resolve UVLock for model: " + identifier).method_22936();
+	public static ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, Rotation3 rotation3, Identifier identifier) {
+		Matrix4f matrix4f = Rotation3Helper.uvLock(rotation3, direction, () -> "Unable to resolve UVLock for model: " + identifier).getMatrix();
 		float f = modelElementTexture.getU(modelElementTexture.method_3414(0));
 		float g = modelElementTexture.getV(modelElementTexture.method_3414(0));
 		Vector4f vector4f = new Vector4f(f / 16.0F, g / 16.0F, 0.0F, 1.0F);
@@ -107,14 +107,14 @@ public class BakedQuadFactory {
 		Sprite sprite,
 		Direction direction,
 		float[] fs,
-		class_4590 arg,
+		Rotation3 rotation3,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
 		boolean bl
 	) {
 		int[] is = new int[32];
 
 		for (int i = 0; i < 4; i++) {
-			this.method_3461(is, i, direction, modelElementTexture, fs, sprite, arg, modelRotation, bl);
+			this.method_3461(is, i, direction, modelElementTexture, fs, sprite, rotation3, modelRotation, bl);
 		}
 
 		return is;
@@ -161,16 +161,16 @@ public class BakedQuadFactory {
 		ModelElementTexture modelElementTexture,
 		float[] fs,
 		Sprite sprite,
-		class_4590 arg,
+		Rotation3 rotation3,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
 		boolean bl
 	) {
-		Direction direction2 = Direction.method_23225(arg.method_22936(), direction);
+		Direction direction2 = Direction.transform(rotation3.getMatrix(), direction);
 		int j = bl ? this.method_3457(direction2) : -1;
 		CubeFace.Corner corner = CubeFace.method_3163(direction).getCorner(i);
 		Vector3f vector3f = new Vector3f(fs[corner.xSide], fs[corner.ySide], fs[corner.zSide]);
 		this.method_3463(vector3f, modelRotation);
-		this.method_3455(vector3f, arg);
+		this.method_3455(vector3f, rotation3);
 		this.method_3460(is, i, vector3f, j, sprite, modelElementTexture);
 	}
 
@@ -222,16 +222,16 @@ public class BakedQuadFactory {
 		}
 	}
 
-	public void method_3455(Vector3f vector3f, class_4590 arg) {
-		if (arg != class_4590.method_22931()) {
-			this.method_3464(vector3f, new Vector3f(0.5F, 0.5F, 0.5F), arg.method_22936(), new Vector3f(1.0F, 1.0F, 1.0F));
+	public void method_3455(Vector3f vector3f, Rotation3 rotation3) {
+		if (rotation3 != Rotation3.identity()) {
+			this.method_3464(vector3f, new Vector3f(0.5F, 0.5F, 0.5F), rotation3.getMatrix(), new Vector3f(1.0F, 1.0F, 1.0F));
 		}
 	}
 
 	private void method_3464(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f, Vector3f vector3f3) {
 		Vector4f vector4f = new Vector4f(vector3f.getX() - vector3f2.getX(), vector3f.getY() - vector3f2.getY(), vector3f.getZ() - vector3f2.getZ(), 1.0F);
 		vector4f.multiply(matrix4f);
-		vector4f.multiply(vector3f3);
+		vector4f.multiplyXyz(vector3f3);
 		vector3f.set(vector4f.getX() + vector3f2.getX(), vector4f.getY() + vector3f2.getY(), vector4f.getZ() + vector3f2.getZ());
 	}
 

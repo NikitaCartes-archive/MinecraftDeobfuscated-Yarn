@@ -4,15 +4,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
@@ -29,7 +30,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 			return true;
 		} else {
 			Entity entity = mobEntity.getHoldingEntity();
-			return entity != null ? frustum.method_23093(entity.getVisibilityBoundingBox()) : false;
+			return entity != null ? frustum.isVisible(entity.getVisibilityBoundingBox()) : false;
 		}
 	}
 
@@ -78,43 +79,53 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025F / 2.0F;
 		float w = t * v;
 		float x = r * v;
-		method_23186(vertexConsumer, matrix4f, r, s, t, 0.025F, 0.025F, w, x);
-		method_23186(vertexConsumer, matrix4f, r, s, t, 0.025F, 0.0F, w, x);
+		int y = mobEntity.getLightmapCoordinates();
+		int z = entity.getLightmapCoordinates();
+		method_23186(vertexConsumer, matrix4f, y, z, r, s, t, 0.025F, 0.025F, w, x);
+		method_23186(vertexConsumer, matrix4f, y, z, r, s, t, 0.025F, 0.0F, w, x);
 		matrixStack.pop();
 	}
 
-	public static void method_23186(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, float i, float j, float k, float l) {
-		int m = 24;
+	public static void method_23186(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, int j, float f, float g, float h, float k, float l, float m, float n) {
+		int o = 24;
+		int p = LightmapTextureManager.method_23686(i);
+		int q = LightmapTextureManager.method_23686(j);
+		int r = LightmapTextureManager.method_23688(i);
+		int s = LightmapTextureManager.method_23688(j);
 
-		for (int n = 0; n < 24; n++) {
-			method_23187(vertexConsumer, matrix4f, f, g, h, i, j, 24, n, false, k, l);
-			method_23187(vertexConsumer, matrix4f, f, g, h, i, j, 24, n + 1, true, k, l);
+		for (int t = 0; t < 24; t++) {
+			float u = (float)t / 23.0F;
+			int v = (int)MathHelper.lerp(u, (float)p, (float)q);
+			int w = (int)MathHelper.lerp(u, (float)r, (float)s);
+			int x = LightmapTextureManager.method_23687(v, w);
+			method_23187(vertexConsumer, matrix4f, x, f, g, h, k, l, 24, t, false, m, n);
+			method_23187(vertexConsumer, matrix4f, x, f, g, h, k, l, 24, t + 1, true, m, n);
 		}
 	}
 
 	public static void method_23187(
-		VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, float i, float j, int k, int l, boolean bl, float m, float n
+		VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, float f, float g, float h, float j, float k, int l, int m, boolean bl, float n, float o
 	) {
-		float o = 0.5F;
-		float p = 0.4F;
-		float q = 0.3F;
-		if (l % 2 == 0) {
-			o *= 0.7F;
+		float p = 0.5F;
+		float q = 0.4F;
+		float r = 0.3F;
+		if (m % 2 == 0) {
 			p *= 0.7F;
 			q *= 0.7F;
+			r *= 0.7F;
 		}
 
-		float r = (float)l / (float)k;
-		float s = f * r;
-		float t = g * (r * r + r) * 0.5F + ((float)k - (float)l) / ((float)k * 0.75F) + 0.125F;
-		float u = h * r;
+		float s = (float)m / (float)l;
+		float t = f * s;
+		float u = g * (s * s + s) * 0.5F + ((float)l - (float)m) / ((float)l * 0.75F) + 0.125F;
+		float v = h * s;
 		if (!bl) {
-			vertexConsumer.vertex(matrix4f, s + m, t + i - j, u - n).color(o, p, q, 1.0F).next();
+			vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0F).light(i).next();
 		}
 
-		vertexConsumer.vertex(matrix4f, s - m, t + j, u + n).color(o, p, q, 1.0F).next();
+		vertexConsumer.vertex(matrix4f, t - n, u + k, v + o).color(p, q, r, 1.0F).light(i).next();
 		if (bl) {
-			vertexConsumer.vertex(matrix4f, s + m, t + i - j, u - n).color(o, p, q, 1.0F).next();
+			vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0F).light(i).next();
 		}
 	}
 }

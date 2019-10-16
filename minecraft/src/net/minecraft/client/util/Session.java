@@ -56,17 +56,17 @@ public class Session {
 		LEGACY("legacy"),
 		MOJANG("mojang");
 
-		private static final Map<String, Session.AccountType> field_1989 = (Map<String, Session.AccountType>)Arrays.stream(values())
-			.collect(Collectors.toMap(accountType -> accountType.field_1986, Function.identity()));
-		private final String field_1986;
+		private static final Map<String, Session.AccountType> BY_NAME = (Map<String, Session.AccountType>)Arrays.stream(values())
+			.collect(Collectors.toMap(accountType -> accountType.name, Function.identity()));
+		private final String name;
 
 		private AccountType(String string2) {
-			this.field_1986 = string2;
+			this.name = string2;
 		}
 
 		@Nullable
 		public static Session.AccountType byName(String string) {
-			return (Session.AccountType)field_1989.get(string.toLowerCase(Locale.ROOT));
+			return (Session.AccountType)BY_NAME.get(string.toLowerCase(Locale.ROOT));
 		}
 	}
 }

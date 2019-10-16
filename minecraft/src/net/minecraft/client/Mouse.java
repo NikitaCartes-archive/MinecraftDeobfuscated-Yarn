@@ -28,7 +28,7 @@ public class Mouse {
 	private double cursorDeltaX;
 	private double cursorDeltaY;
 	private double eventDeltaWheel;
-	private double field_1785 = Double.MIN_VALUE;
+	private double lastMouseUpdateTime = Double.MIN_VALUE;
 	private boolean isCursorLocked;
 
 	public Mouse(MinecraftClient minecraftClient) {
@@ -187,8 +187,8 @@ public class Mouse {
 
 	public void updateMouse() {
 		double d = GlfwUtil.getTime();
-		double e = d - this.field_1785;
-		this.field_1785 = d;
+		double e = d - this.lastMouseUpdateTime;
+		this.lastMouseUpdateTime = d;
 		if (this.isCursorLocked() && this.client.isWindowFocused()) {
 			double f = this.client.options.mouseSensitivity * 0.6F + 0.2F;
 			double g = f * f * f * 8.0;

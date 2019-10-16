@@ -11,75 +11,75 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface LayeredVertexConsumerStorage {
-	static LayeredVertexConsumerStorage.class_4598 method_22991(BufferBuilder bufferBuilder) {
-		return method_22992(ImmutableMap.of(), bufferBuilder);
+	static LayeredVertexConsumerStorage.Drawer makeDrawer(BufferBuilder bufferBuilder) {
+		return makeDrawer(ImmutableMap.of(), bufferBuilder);
 	}
 
-	static LayeredVertexConsumerStorage.class_4598 method_22992(Map<RenderLayer, BufferBuilder> map, BufferBuilder bufferBuilder) {
-		return new LayeredVertexConsumerStorage.class_4598(bufferBuilder, map);
+	static LayeredVertexConsumerStorage.Drawer makeDrawer(Map<RenderLayer, BufferBuilder> map, BufferBuilder bufferBuilder) {
+		return new LayeredVertexConsumerStorage.Drawer(bufferBuilder, map);
 	}
 
 	VertexConsumer getBuffer(RenderLayer renderLayer);
 
 	@Environment(EnvType.CLIENT)
-	public static class class_4598 implements LayeredVertexConsumerStorage {
-		protected final BufferBuilder field_20952;
-		protected final Map<RenderLayer, BufferBuilder> field_20953;
-		protected Optional<RenderLayer> field_20954 = Optional.empty();
-		protected final Set<BufferBuilder> field_20955 = Sets.<BufferBuilder>newHashSet();
+	public static class Drawer implements LayeredVertexConsumerStorage {
+		protected final BufferBuilder sharedConsumer;
+		protected final Map<RenderLayer, BufferBuilder> layerSpecificConsumers;
+		protected Optional<RenderLayer> currentLayer = Optional.empty();
+		protected final Set<BufferBuilder> activeConsumers = Sets.<BufferBuilder>newHashSet();
 
-		protected class_4598(BufferBuilder bufferBuilder, Map<RenderLayer, BufferBuilder> map) {
-			this.field_20952 = bufferBuilder;
-			this.field_20953 = map;
+		protected Drawer(BufferBuilder bufferBuilder, Map<RenderLayer, BufferBuilder> map) {
+			this.sharedConsumer = bufferBuilder;
+			this.layerSpecificConsumers = map;
 		}
 
 		@Override
 		public VertexConsumer getBuffer(RenderLayer renderLayer) {
 			Optional<RenderLayer> optional = Optional.of(renderLayer);
-			BufferBuilder bufferBuilder = this.method_22995(renderLayer);
-			if (!Objects.equals(this.field_20954, optional)) {
-				if (this.field_20954.isPresent()) {
-					RenderLayer renderLayer2 = (RenderLayer)this.field_20954.get();
-					if (!this.field_20953.containsKey(renderLayer2)) {
-						this.method_22994(renderLayer2);
+			BufferBuilder bufferBuilder = this.getConsumer(renderLayer);
+			if (!Objects.equals(this.currentLayer, optional)) {
+				if (this.currentLayer.isPresent()) {
+					RenderLayer renderLayer2 = (RenderLayer)this.currentLayer.get();
+					if (!this.layerSpecificConsumers.containsKey(renderLayer2)) {
+						this.draw(renderLayer2);
 					}
 				}
 
-				if (this.field_20955.add(bufferBuilder)) {
+				if (this.activeConsumers.add(bufferBuilder)) {
 					bufferBuilder.begin(renderLayer.getDrawMode(), renderLayer.getVertexFormat());
 				}
 
-				this.field_20954 = optional;
+				this.currentLayer = optional;
 			}
 
 			return bufferBuilder;
 		}
 
-		private BufferBuilder method_22995(RenderLayer renderLayer) {
-			return (BufferBuilder)this.field_20953.getOrDefault(renderLayer, this.field_20952);
+		private BufferBuilder getConsumer(RenderLayer renderLayer) {
+			return (BufferBuilder)this.layerSpecificConsumers.getOrDefault(renderLayer, this.sharedConsumer);
 		}
 
-		public void method_22993() {
-			this.field_20954.ifPresent(renderLayerx -> {
+		public void draw() {
+			this.currentLayer.ifPresent(renderLayerx -> {
 				VertexConsumer vertexConsumer = this.getBuffer(renderLayerx);
-				if (vertexConsumer == this.field_20952) {
-					this.method_22994(renderLayerx);
+				if (vertexConsumer == this.sharedConsumer) {
+					this.draw(renderLayerx);
 				}
 			});
 
-			for (RenderLayer renderLayer : this.field_20953.keySet()) {
-				this.method_22994(renderLayer);
+			for (RenderLayer renderLayer : this.layerSpecificConsumers.keySet()) {
+				this.draw(renderLayer);
 			}
 		}
 
-		public void method_22994(RenderLayer renderLayer) {
-			BufferBuilder bufferBuilder = this.method_22995(renderLayer);
-			boolean bl = Objects.equals(this.field_20954, Optional.of(renderLayer));
-			if (bl || bufferBuilder != this.field_20952) {
-				if (this.field_20955.remove(bufferBuilder)) {
-					renderLayer.method_23012(bufferBuilder);
+		public void draw(RenderLayer renderLayer) {
+			BufferBuilder bufferBuilder = this.getConsumer(renderLayer);
+			boolean bl = Objects.equals(this.currentLayer, Optional.of(renderLayer));
+			if (bl || bufferBuilder != this.sharedConsumer) {
+				if (this.activeConsumers.remove(bufferBuilder)) {
+					renderLayer.draw(bufferBuilder);
 					if (bl) {
-						this.field_20954 = Optional.empty();
+						this.currentLayer = Optional.empty();
 					}
 				}
 			}

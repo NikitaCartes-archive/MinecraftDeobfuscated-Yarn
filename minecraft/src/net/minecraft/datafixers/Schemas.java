@@ -526,5 +526,7 @@ public class Schemas {
 				schema98, "Rename bee_hive block to beehive", string -> ImmutableMap.of("minecraft:bee_hive", "minecraft:beehive").getOrDefault(string, string)
 			)
 		);
+		Schema schema99 = dataFixerBuilder.addSchema(2211, EMPTY_IDENTIFIER_NORMALIZE);
+		dataFixerBuilder.addFixer(new StructureReferenceFixer(schema99, false));
 	}
 }

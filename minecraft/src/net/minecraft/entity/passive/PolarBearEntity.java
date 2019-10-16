@@ -191,8 +191,8 @@ public class PolarBearEntity extends AnimalEntity {
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity$1();
-			((PassiveEntity$1)entityData).method_22433(1.0F);
+			entityData = new PassiveEntity.class_4697();
+			((PassiveEntity.class_4697)entityData).method_22433(1.0F);
 		}
 
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);

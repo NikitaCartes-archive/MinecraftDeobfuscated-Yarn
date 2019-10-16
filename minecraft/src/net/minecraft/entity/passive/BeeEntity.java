@@ -848,7 +848,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	}
 
 	class PollinateGoal extends BeeEntity.NotAngryGoal {
-		private final Predicate<BlockState> field_20617 = blockState -> {
+		private final Predicate<BlockState> flowerPredicate = blockState -> {
 			if (blockState.matches(BlockTags.TALL_FLOWERS)) {
 				return blockState.getBlock() == Blocks.SUNFLOWER ? blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
 			} else {
@@ -936,10 +936,10 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		}
 
 		private Optional<BlockPos> getFlower() {
-			return this.method_22326(this.field_20617, 2.0);
+			return this.findFlower(this.flowerPredicate, 2.0);
 		}
 
-		private Optional<BlockPos> method_22326(Predicate<BlockState> predicate, double d) {
+		private Optional<BlockPos> findFlower(Predicate<BlockState> predicate, double d) {
 			BlockPos blockPos = BeeEntity.this.getBlockPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 

@@ -9,16 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_4624;
 import net.minecraft.class_4627;
 import net.minecraft.class_4628;
-import net.minecraft.class_4634;
-import net.minecraft.class_4635;
-import net.minecraft.class_4636;
-import net.minecraft.class_4638;
-import net.minecraft.class_4640;
-import net.minecraft.class_4642;
-import net.minecraft.class_4643;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -62,17 +54,23 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"buried_treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig::deserialize)
 	);
 	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
-	public static final Feature<class_4640> NORMAL_TREE = register("normal_tree", new OakTreeFeature(class_4640::method_23426));
-	public static final Feature<class_4640> ACACIA_TREE = register("acacia_tree", new class_4627(class_4640::method_23426));
-	public static final Feature<class_4640> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(class_4640::method_23426));
-	public static final Feature<class_4643> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new JungleGroundBushFeature(class_4643::method_23444));
-	public static final Feature<class_4636> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(class_4636::method_23408));
-	public static final Feature<class_4636> MEGA_JUNGLE_TREE = register("mega_jungle_tree", new MegaJungleTreeFeature(class_4636::method_23408));
-	public static final Feature<class_4636> MEGA_SPRUCE_TREE = register("mega_spruce_tree", new MegaPineTreeFeature(class_4636::method_23408));
-	public static final class_4624<class_4638> field_21219 = register("flower", new DefaultFlowerFeature(class_4638::method_23413));
-	public static final Feature<class_4638> RANDOM_PATCH = register("random_patch", new class_4628(class_4638::method_23413));
-	public static final Feature<class_4634> BLOCK_PILE = register("block_pile", new AbstractPileFeature(class_4634::method_23406));
-	public static final Feature<class_4642> SPRING_FEATURE = register("spring_feature", new SpringFeature(class_4642::method_23440));
+	public static final Feature<NormalTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(NormalTreeFeatureConfig::method_23426));
+	public static final Feature<NormalTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new class_4627(NormalTreeFeatureConfig::method_23426));
+	public static final Feature<NormalTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(NormalTreeFeatureConfig::method_23426));
+	public static final Feature<AbstractTreeFeatureConfig> JUNGLE_GROUND_BUSH = register(
+		"jungle_ground_bush", new JungleGroundBushFeature(AbstractTreeFeatureConfig::deserialize)
+	);
+	public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(MegaTreeFeatureConfig::method_23408));
+	public static final Feature<MegaTreeFeatureConfig> MEGA_JUNGLE_TREE = register(
+		"mega_jungle_tree", new MegaJungleTreeFeature(MegaTreeFeatureConfig::method_23408)
+	);
+	public static final Feature<MegaTreeFeatureConfig> MEGA_SPRUCE_TREE = register(
+		"mega_spruce_tree", new MegaPineTreeFeature(MegaTreeFeatureConfig::method_23408)
+	);
+	public static final FlowerFeature<FlowerFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(FlowerFeatureConfig::method_23413));
+	public static final Feature<FlowerFeatureConfig> RANDOM_PATCH = register("random_patch", new class_4628(FlowerFeatureConfig::method_23413));
+	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig::method_23406));
+	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig::method_23440));
 	public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> VOID_START_PLATFORM = register(
@@ -80,8 +78,12 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final Feature<DefaultFeatureConfig> DESERT_WELL = register("desert_well", new DesertWellFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> FOSSIL = register("fossil", new FossilFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<class_4635> HUGE_RED_MUSHROOM = register("huge_red_mushroom", new HugeRedMushroomFeature(class_4635::method_23407));
-	public static final Feature<class_4635> HUGE_BROWN_MUSHROOM = register("huge_brown_mushroom", new HugeBrownMushroomFeature(class_4635::method_23407));
+	public static final Feature<HugeMushroomFeatureConfig> HUGE_RED_MUSHROOM = register(
+		"huge_red_mushroom", new HugeRedMushroomFeature(HugeMushroomFeatureConfig::method_23407)
+	);
+	public static final Feature<HugeMushroomFeatureConfig> HUGE_BROWN_MUSHROOM = register(
+		"huge_brown_mushroom", new HugeBrownMushroomFeature(HugeMushroomFeatureConfig::method_23407)
+	);
 	public static final Feature<DefaultFeatureConfig> ICE_SPIKE = register("ice_spike", new IceSpikeFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig::deserialize));
@@ -149,7 +151,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		this.configDeserializer = function;
 	}
 
-	public ConfiguredFeature<FC, ?> method_23397(FC featureConfig) {
+	public ConfiguredFeature<FC, ?> configure(FC featureConfig) {
 		return new ConfiguredFeature<>(this, featureConfig);
 	}
 

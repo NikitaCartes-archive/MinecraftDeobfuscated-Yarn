@@ -8,6 +8,7 @@ import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -21,10 +22,14 @@ public class CartographyTableBlock extends Block {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-		playerEntity.incrementStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
-		return true;
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if (world.isClient) {
+			return ActionResult.SUCCESS;
+		} else {
+			playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+			playerEntity.incrementStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
+			return ActionResult.SUCCESS;
+		}
 	}
 
 	@Nullable

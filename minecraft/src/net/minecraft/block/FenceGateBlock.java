@@ -7,6 +7,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -118,7 +119,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(OPEN)) {
 			blockState = blockState.with(OPEN, Boolean.valueOf(false));
 			world.setBlockState(blockPos, blockState, 10);
@@ -133,7 +134,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		}
 
 		world.playLevelEvent(playerEntity, blockState.get(OPEN) ? 1008 : 1014, blockPos, 0);
-		return true;
+		return ActionResult.SUCCESS;
 	}
 
 	@Override

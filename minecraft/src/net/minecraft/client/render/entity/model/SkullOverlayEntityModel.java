@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.util.math.MatrixStack;
+import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SkullOverlayEntityModel extends SkullEntityModel {
@@ -24,8 +24,8 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void renderItem(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-		super.renderItem(matrixStack, vertexConsumer, i, j, f, g, h);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+		super.render(matrixStack, vertexConsumer, i, j, f, g, h);
 		this.field_3377.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
 	}
 }

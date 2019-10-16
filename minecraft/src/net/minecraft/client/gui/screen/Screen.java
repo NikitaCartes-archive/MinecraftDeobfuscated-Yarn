@@ -29,6 +29,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
@@ -42,7 +43,6 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.math.MatrixStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,7 +59,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public int height;
 	protected final List<AbstractButtonWidget> buttons = Lists.<AbstractButtonWidget>newArrayList();
 	public boolean passEvents;
-	protected TextRenderer font;
+	public TextRenderer font;
 	private URI clickedLink;
 
 	protected Screen(Text text) {
@@ -176,14 +176,14 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			this.fillGradient(m - 3, n - 3, m + k + 3, n - 3 + 1, 1347420415, 1347420415);
 			this.fillGradient(m - 3, n + o + 2, m + k + 3, n + o + 3, 1344798847, 1344798847);
 			MatrixStack matrixStack = new MatrixStack();
-			LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
+			LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
 			matrixStack.translate(0.0, 0.0, (double)this.itemRenderer.zOffset);
 			Matrix4f matrix4f = matrixStack.peek();
 
 			for (int s = 0; s < list.size(); s++) {
 				String string2 = (String)list.get(s);
 				if (string2 != null) {
-					this.font.method_22942(string2, (float)m, (float)n, -1, true, matrix4f, lv, false, 0, 15728880);
+					this.font.method_22942(string2, (float)m, (float)n, -1, true, matrix4f, drawer, false, 0, 15728880);
 				}
 
 				if (s == 0) {
@@ -193,7 +193,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				n += 10;
 			}
 
-			lv.method_22993();
+			drawer.draw();
 			this.setBlitOffset(0);
 			this.itemRenderer.zOffset = 0.0F;
 			RenderSystem.enableDepthTest();

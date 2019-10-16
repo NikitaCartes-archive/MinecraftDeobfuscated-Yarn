@@ -26,7 +26,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4618;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -50,6 +49,7 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
@@ -86,7 +86,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -116,7 +115,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private final MinecraftClient client;
 	private final TextureManager textureManager;
 	private final EntityRenderDispatcher entityRenderDispatcher;
-	private final LayeredBufferBuilderStorage field_20951;
+	private final LayeredBufferBuilderStorage layeredBufferBuilderStorage;
 	private final BackgroundRenderer chunkRendererList;
 	private ClientWorld world;
 	private Set<ChunkBatcher.ChunkRenderer> chunkRenderers = Sets.<ChunkBatcher.ChunkRenderer>newLinkedHashSet();
@@ -130,8 +129,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private boolean cloudsDirty = true;
 	private GlBuffer cloudsBuffer;
 	private int ticks;
-	private final Int2ObjectMap<PartiallyBrokenBlockEntry> partiallyBrokenBlocks = new Int2ObjectOpenHashMap<>();
-	private final Long2ObjectMap<SortedSet<PartiallyBrokenBlockEntry>> field_20950 = new Long2ObjectOpenHashMap<>();
+	private final Int2ObjectMap<BlockBreakingInfo> blockBreakingInfos = new Int2ObjectOpenHashMap<>();
+	private final Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions = new Long2ObjectOpenHashMap<>();
 	private final Map<BlockPos, SoundInstance> playingSongs = Maps.<BlockPos, SoundInstance>newHashMap();
 	private GlFramebuffer entityOutlinesFramebuffer;
 	private ShaderEffect entityOutlineShader;
@@ -173,7 +172,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public WorldRenderer(MinecraftClient minecraftClient, LayeredBufferBuilderStorage layeredBufferBuilderStorage) {
 		this.client = minecraftClient;
 		this.entityRenderDispatcher = minecraftClient.getEntityRenderManager();
-		this.field_20951 = layeredBufferBuilderStorage;
+		this.layeredBufferBuilderStorage = layeredBufferBuilderStorage;
 		this.chunkRendererList = new BackgroundRenderer();
 		this.textureManager = minecraftClient.getTextureManager();
 
@@ -473,7 +472,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		if (this.canDrawEntityOutlines()) {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE_MINUS_SRC_ALPHA, GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE
 			);
 			this.entityOutlinesFramebuffer.method_22594(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), false);
 			RenderSystem.disableBlend();
@@ -622,7 +621,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		if (this.world != null) {
 			if (this.chunkBatcher == null) {
 				this.chunkBatcher = new ChunkBatcher(
-					this.world, this, SystemUtil.getServerWorkerExecutor(), this.client.is64Bit(), this.field_20951.getBlockBufferBuilders()
+					this.world, this, SystemUtil.getServerWorkerExecutor(), this.client.is64Bit(), this.layeredBufferBuilderStorage.getBlockBufferBuilders()
 				);
 			} else {
 				this.chunkBatcher.method_22752(this.world);
@@ -630,7 +629,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			this.terrainUpdateNecessary = true;
 			this.cloudsDirty = true;
-			RenderLayer.method_22719(this.client.options.fancyGraphics);
+			RenderLayers.setFancyGraphics(this.client.options.fancyGraphics);
 			this.renderDistance = this.client.options.viewDistance;
 			if (this.chunkRenderDispatcher != null) {
 				this.chunkRenderDispatcher.delete();
@@ -772,7 +771,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				for (int k = -this.renderDistance; k <= this.renderDistance; k++) {
 					for (int l = -this.renderDistance; l <= this.renderDistance; l++) {
 						ChunkBatcher.ChunkRenderer chunkRenderer2 = this.chunkRenderDispatcher.getChunkRenderer(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
-						if (chunkRenderer2 != null && frustum.method_23093(chunkRenderer2.boundingBox)) {
+						if (chunkRenderer2 != null && frustum.isVisible(chunkRenderer2.boundingBox)) {
 							chunkRenderer2.method_3671(i);
 							queue.add(new WorldRenderer.ChunkInfo(chunkRenderer2, null, 0));
 						}
@@ -795,7 +794,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 						&& chunkRenderer4 != null
 						&& chunkRenderer4.shouldBuild()
 						&& chunkRenderer4.method_3671(i)
-						&& frustum.method_23093(chunkRenderer4.boundingBox)) {
+						&& frustum.isVisible(chunkRenderer4.boundingBox)) {
 						WorldRenderer.ChunkInfo chunkInfo3 = new WorldRenderer.ChunkInfo(chunkRenderer4, direction3, chunkInfo2.field_4122 + 1);
 						chunkInfo3.method_3299(chunkInfo2.field_4126, direction3);
 						queue.add(chunkInfo3);
@@ -876,7 +875,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		for (int i = 0; i < 8; i++) {
 			this.field_4065[i].multiply(matrix4f3);
-			this.field_4065[i].method_23219();
+			this.field_4065[i].normalizeProjectiveCoordinates();
 		}
 	}
 
@@ -899,10 +898,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		Frustum frustum;
 		if (bl2) {
 			frustum = this.forcedFrustum;
-			frustum.method_23088(this.forcedFrustumPosition.x, this.forcedFrustumPosition.y, this.forcedFrustumPosition.z);
+			frustum.setPosition(this.forcedFrustumPosition.x, this.forcedFrustumPosition.y, this.forcedFrustumPosition.z);
 		} else {
 			frustum = new Frustum(matrix4f, matrix4f2);
-			frustum.method_23088(d, e, g);
+			frustum.setPosition(d, e, g);
 		}
 
 		this.client.getProfiler().swap("captureFrustum");
@@ -918,7 +917,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		boolean bl3 = this.client.world.dimension.shouldRenderFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		if (this.client.options.viewDistance >= 4) {
-			BackgroundRenderer.applyFog(camera, BackgroundRenderer.class_4596.FOG_SKY, h, bl3);
+			BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, h, bl3);
 			profiler.swap("sky");
 			gameRenderer.method_22709(camera, f, true, false, 2.0F);
 			this.renderSky(matrixStack, f);
@@ -926,7 +925,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		profiler.swap("fog");
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.class_4596.FOG_TERRAIN, h, bl3);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, h, bl3);
 		profiler.swap("terrain_setup");
 		this.setUpTerrain(camera, frustum, bl2, this.field_20792++, this.client.player.isSpectator());
 		profiler.swap("updatechunks");
@@ -950,7 +949,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		boolean bl4 = false;
-		LayeredVertexConsumerStorage.class_4598 lv = this.field_20951.method_23000();
+		LayeredVertexConsumerStorage.Drawer drawer = this.layeredBufferBuilderStorage.getGeneralDrawer();
 
 		for (Entity entity : this.world.getEntities()) {
 			if ((this.entityRenderDispatcher.shouldRender(entity, frustum, d, e, g) || entity.hasPassengerDeep(this.client.player))
@@ -972,16 +971,16 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				LayeredVertexConsumerStorage layeredVertexConsumerStorage;
 				if (bl5) {
 					bl4 = true;
-					class_4618 lv2 = this.field_20951.method_23003();
-					layeredVertexConsumerStorage = lv2;
-					int i = entity.method_22861();
+					FixedColorLayeredDrawer fixedColorLayeredDrawer = this.layeredBufferBuilderStorage.getTeamColorAwareOutlineDrawer();
+					layeredVertexConsumerStorage = fixedColorLayeredDrawer;
+					int i = entity.getTeamColorValue();
 					int j = 255;
 					int k = i >> 16 & 0xFF;
 					int m = i >> 8 & 0xFF;
 					int n = i & 0xFF;
-					lv2.method_23286(k, m, n, 255);
+					fixedColorLayeredDrawer.setColor(k, m, n, 255);
 				} else {
-					layeredVertexConsumerStorage = lv;
+					layeredVertexConsumerStorage = drawer;
 				}
 
 				this.renderEntity(entity, d, e, g, f, matrixStack, layeredVertexConsumerStorage);
@@ -996,16 +995,18 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			if (!list.isEmpty()) {
 				for (BlockEntity blockEntity : list) {
 					BlockPos blockPos = blockEntity.getPos();
-					LayeredVertexConsumerStorage layeredVertexConsumerStorage2 = lv;
+					LayeredVertexConsumerStorage layeredVertexConsumerStorage2 = drawer;
 					matrixStack.push();
 					matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - g);
-					SortedSet<PartiallyBrokenBlockEntry> sortedSet = this.field_20950.get(blockPos.asLong());
+					SortedSet<BlockBreakingInfo> sortedSet = this.blockBreakingProgressions.get(blockPos.asLong());
 					if (sortedSet != null && !sortedSet.isEmpty()) {
-						int m = ((PartiallyBrokenBlockEntry)sortedSet.last()).getStage();
+						int m = ((BlockBreakingInfo)sortedSet.last()).getStage();
 						if (m >= 0) {
-							VertexConsumer vertexConsumer = new MatrixVertexConsumer(this.field_20951.method_23001().getBuffer(RenderLayer.getCrumbling(m)), matrixStack.peek());
+							VertexConsumer vertexConsumer = new MatrixVertexConsumer(
+								this.layeredBufferBuilderStorage.getBlockBreakingProgressDrawer().getBuffer(RenderLayer.getBlockBreaking(m)), matrixStack.peek()
+							);
 							layeredVertexConsumerStorage2 = renderLayer -> {
-								VertexConsumer vertexConsumer2x = lv.getBuffer(renderLayer);
+								VertexConsumer vertexConsumer2x = drawer.getBuffer(renderLayer);
 								return (VertexConsumer)(renderLayer.method_23037()
 									? new DelegatingVertexConsumer(ImmutableList.of(vertexConsumer, vertexConsumer2x))
 									: vertexConsumer2x);
@@ -1024,16 +1025,16 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				BlockPos blockPos2 = blockEntity2.getPos();
 				matrixStack.push();
 				matrixStack.translate((double)blockPos2.getX() - d, (double)blockPos2.getY() - e, (double)blockPos2.getZ() - g);
-				BlockEntityRenderDispatcher.INSTANCE.render(blockEntity2, f, matrixStack, lv, d, e, g);
+				BlockEntityRenderDispatcher.INSTANCE.render(blockEntity2, f, matrixStack, drawer, d, e, g);
 				matrixStack.pop();
 			}
 		}
 
 		this.checkEmpty(matrixStack);
-		lv.method_22994(RenderLayer.getSolid());
-		lv.method_22994(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		lv.method_22994(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-		this.field_20951.method_23003().method_23285();
+		drawer.draw(RenderLayer.getSolid());
+		drawer.draw(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		drawer.draw(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		this.layeredBufferBuilderStorage.getTeamColorAwareOutlineDrawer().draw();
 		if (bl4) {
 			this.entityOutlineShader.render(f);
 			this.client.getFramebuffer().beginWrite(false);
@@ -1041,18 +1042,20 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		profiler.swap("destroyProgress");
 
-		for (Entry<SortedSet<PartiallyBrokenBlockEntry>> entry : this.field_20950.long2ObjectEntrySet()) {
+		for (Entry<SortedSet<BlockBreakingInfo>> entry : this.blockBreakingProgressions.long2ObjectEntrySet()) {
 			BlockPos blockPos3 = BlockPos.fromLong(entry.getLongKey());
 			double o = (double)blockPos3.getX() - d;
 			double p = (double)blockPos3.getY() - e;
 			double q = (double)blockPos3.getZ() - g;
 			if (!(o * o + p * p + q * q > 1024.0)) {
-				matrixStack.push();
-				matrixStack.translate((double)(blockPos3.getX() & -16) - d, (double)(blockPos3.getY() & -16) - e, (double)(blockPos3.getZ() & -16) - g);
-				SortedSet<PartiallyBrokenBlockEntry> sortedSet2 = (SortedSet<PartiallyBrokenBlockEntry>)entry.getValue();
+				SortedSet<BlockBreakingInfo> sortedSet2 = (SortedSet<BlockBreakingInfo>)entry.getValue();
 				if (sortedSet2 != null && !sortedSet2.isEmpty()) {
-					int r = ((PartiallyBrokenBlockEntry)sortedSet2.last()).getStage();
-					VertexConsumer vertexConsumer2 = new MatrixVertexConsumer(this.field_20951.method_23001().getBuffer(RenderLayer.getCrumbling(r)), matrixStack.peek());
+					int r = ((BlockBreakingInfo)sortedSet2.last()).getStage();
+					matrixStack.push();
+					matrixStack.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - g);
+					VertexConsumer vertexConsumer2 = new MatrixVertexConsumer(
+						this.layeredBufferBuilderStorage.getBlockBreakingProgressDrawer().getBuffer(RenderLayer.getBlockBreaking(r)), matrixStack.peek()
+					);
 					this.client.getBlockRenderManager().tesselateDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrixStack, vertexConsumer2);
 					matrixStack.pop();
 				}
@@ -1067,23 +1070,25 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			BlockPos blockPos4 = ((BlockHitResult)hitResult).getBlockPos();
 			BlockState blockState = this.world.getBlockState(blockPos4);
 			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos4)) {
-				VertexConsumer vertexConsumer3 = lv.getBuffer(RenderLayer.getLines());
+				VertexConsumer vertexConsumer3 = drawer.getBuffer(RenderLayer.getLines());
 				this.drawBlockOutline(matrixStack, vertexConsumer3, camera.getFocusedEntity(), d, e, g, blockPos4, blockState);
 			}
 		}
 
-		lv.method_22993();
-		this.field_20951.method_23001().method_22993();
+		drawer.draw(RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		drawer.draw(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		drawer.draw();
+		this.layeredBufferBuilderStorage.getBlockBreakingProgressDrawer().draw();
 		RenderSystem.pushMatrix();
 		RenderSystem.multMatrix(matrixStack.peek());
 		this.client.debugRenderer.method_23099(l);
 		this.renderWorldBorder(camera, f);
 		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.class_4596.FOG_TERRAIN, h, bl3);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, h, bl3);
 		profiler.swap("translucent");
 		this.renderLayer(RenderLayer.getTranslucent(), matrixStack, d, e, g);
 		lightmapTextureManager.enable();
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.class_4596.FOG_TERRAIN, h, bl3);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, h, bl3);
 		profiler.swap("particles");
 		RenderSystem.enableAlphaTest();
 		RenderSystem.defaultAlphaFunc();
@@ -1094,7 +1099,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
 			profiler.swap("clouds");
 			gameRenderer.method_22709(camera, f, true, false, 4.0F);
-			BackgroundRenderer.applyFog(camera, BackgroundRenderer.class_4596.FOG_TERRAIN, gameRenderer.getViewDistance(), bl3);
+			BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, gameRenderer.getViewDistance(), bl3);
 			RenderSystem.disableCull();
 			RenderSystem.enableBlend();
 			RenderSystem.enableAlphaTest();
@@ -1139,7 +1144,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void renderLayer(RenderLayer renderLayer, MatrixStack matrixStack, double d, double e, double f) {
-		renderLayer.method_23516();
+		renderLayer.startDrawing();
 		if (renderLayer == RenderLayer.getTranslucent()) {
 			this.client.getProfiler().push("translucent_sort");
 			double g = d - this.lastTranslucentSortX;
@@ -1179,16 +1184,16 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			BlockPos blockPos = chunkRenderer2.getOrigin();
 			matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
 			glBuffer.bind();
-			this.field_20791.method_22649(0L);
+			this.field_20791.startDrawing(0L);
 			glBuffer.draw(matrixStack.peek(), 7);
 			matrixStack.pop();
 		}
 
 		GlBuffer.unbind();
 		RenderSystem.clearCurrentColor();
-		this.field_20791.method_22651();
+		this.field_20791.endDrawing();
 		this.client.getProfiler().pop();
-		renderLayer.method_23518();
+		renderLayer.endDrawing();
 	}
 
 	private void method_22989(Camera camera) {
@@ -1374,25 +1379,25 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public void tick() {
 		this.ticks++;
 		if (this.ticks % 20 == 0) {
-			Iterator<PartiallyBrokenBlockEntry> iterator = this.partiallyBrokenBlocks.values().iterator();
+			Iterator<BlockBreakingInfo> iterator = this.blockBreakingInfos.values().iterator();
 
 			while (iterator.hasNext()) {
-				PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = (PartiallyBrokenBlockEntry)iterator.next();
-				int i = partiallyBrokenBlockEntry.getLastUpdateTicks();
+				BlockBreakingInfo blockBreakingInfo = (BlockBreakingInfo)iterator.next();
+				int i = blockBreakingInfo.getLastUpdateTick();
 				if (this.ticks - i > 400) {
 					iterator.remove();
-					this.method_22987(partiallyBrokenBlockEntry);
+					this.removeBlockBreakingInfo(blockBreakingInfo);
 				}
 			}
 		}
 	}
 
-	private void method_22987(PartiallyBrokenBlockEntry partiallyBrokenBlockEntry) {
-		long l = partiallyBrokenBlockEntry.getPos().asLong();
-		Set<PartiallyBrokenBlockEntry> set = (Set<PartiallyBrokenBlockEntry>)this.field_20950.get(l);
-		set.remove(partiallyBrokenBlockEntry);
+	private void removeBlockBreakingInfo(BlockBreakingInfo blockBreakingInfo) {
+		long l = blockBreakingInfo.getPos().asLong();
+		Set<BlockBreakingInfo> set = (Set<BlockBreakingInfo>)this.blockBreakingProgressions.get(l);
+		set.remove(blockBreakingInfo);
 		if (set.isEmpty()) {
-			this.field_20950.remove(l);
+			this.blockBreakingProgressions.remove(l);
 		}
 	}
 
@@ -1459,10 +1464,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			RenderSystem.enableFog();
 			RenderSystem.color3f(g, h, i);
 			this.field_4087.bind();
-			this.field_4100.method_22649(0L);
+			this.field_4100.startDrawing(0L);
 			this.field_4087.draw(matrixStack.peek(), 7);
 			GlBuffer.unbind();
-			this.field_4100.method_22651();
+			this.field_4100.endDrawing();
 			RenderSystem.disableFog();
 			RenderSystem.disableAlphaTest();
 			RenderSystem.enableBlend();
@@ -1499,7 +1504,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			RenderSystem.enableTexture();
 			RenderSystem.blendFuncSeparate(
-				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			matrixStack.push();
 			float j = 1.0F - this.world.getRainGradient(f);
@@ -1537,10 +1542,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			if (v > 0.0F) {
 				RenderSystem.color4f(v, v, v, v);
 				this.starsBuffer.bind();
-				this.field_4100.method_22649(0L);
+				this.field_4100.startDrawing(0L);
 				this.starsBuffer.draw(matrixStack.peek(), 7);
 				GlBuffer.unbind();
-				this.field_4100.method_22651();
+				this.field_4100.endDrawing();
 			}
 
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -1555,10 +1560,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				matrixStack.push();
 				matrixStack.translate(0.0, 12.0, 0.0);
 				this.field_4102.bind();
-				this.field_4100.method_22649(0L);
+				this.field_4100.startDrawing(0L);
 				this.field_4102.draw(matrixStack.peek(), 7);
 				GlBuffer.unbind();
-				this.field_4100.method_22651();
+				this.field_4100.endDrawing();
 				matrixStack.pop();
 			}
 
@@ -1623,7 +1628,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			matrixStack.translate((double)(-o), (double)p, (double)(-q));
 			if (this.cloudsBuffer != null) {
 				this.cloudsBuffer.bind();
-				VertexFormats.POSITION_UV_COLOR_NORMAL.method_22649(0L);
+				VertexFormats.POSITION_UV_COLOR_NORMAL.startDrawing(0L);
 				int u = this.field_4080 == CloudRenderMode.FANCY ? 0 : 1;
 
 				for (int v = u; v < 2; v++) {
@@ -1637,7 +1642,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				}
 
 				GlBuffer.unbind();
-				VertexFormats.POSITION_UV_COLOR_NORMAL.method_22651();
+				VertexFormats.POSITION_UV_COLOR_NORMAL.endDrawing();
 			}
 
 			matrixStack.pop();
@@ -1888,7 +1893,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			double i = camera.getPos().z;
 			RenderSystem.enableBlend();
 			RenderSystem.blendFuncSeparate(
-				GlStateManager.class_4535.SRC_ALPHA, GlStateManager.class_4534.ONE, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			this.textureManager.bindTexture(FORCEFIELD_TEX);
 			RenderSystem.depthMask(false);
@@ -2658,28 +2663,28 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
+	public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
 		if (j >= 0 && j < 10) {
-			PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = this.partiallyBrokenBlocks.get(i);
-			if (partiallyBrokenBlockEntry != null) {
-				this.method_22987(partiallyBrokenBlockEntry);
+			BlockBreakingInfo blockBreakingInfo = this.blockBreakingInfos.get(i);
+			if (blockBreakingInfo != null) {
+				this.removeBlockBreakingInfo(blockBreakingInfo);
 			}
 
-			if (partiallyBrokenBlockEntry == null
-				|| partiallyBrokenBlockEntry.getPos().getX() != blockPos.getX()
-				|| partiallyBrokenBlockEntry.getPos().getY() != blockPos.getY()
-				|| partiallyBrokenBlockEntry.getPos().getZ() != blockPos.getZ()) {
-				partiallyBrokenBlockEntry = new PartiallyBrokenBlockEntry(i, blockPos);
-				this.partiallyBrokenBlocks.put(i, partiallyBrokenBlockEntry);
+			if (blockBreakingInfo == null
+				|| blockBreakingInfo.getPos().getX() != blockPos.getX()
+				|| blockBreakingInfo.getPos().getY() != blockPos.getY()
+				|| blockBreakingInfo.getPos().getZ() != blockPos.getZ()) {
+				blockBreakingInfo = new BlockBreakingInfo(i, blockPos);
+				this.blockBreakingInfos.put(i, blockBreakingInfo);
 			}
 
-			partiallyBrokenBlockEntry.setStage(j);
-			partiallyBrokenBlockEntry.setLastUpdateTicks(this.ticks);
-			this.field_20950.computeIfAbsent(partiallyBrokenBlockEntry.getPos().asLong(), l -> Sets.newTreeSet()).add(partiallyBrokenBlockEntry);
+			blockBreakingInfo.setStage(j);
+			blockBreakingInfo.setLastUpdateTick(this.ticks);
+			this.blockBreakingProgressions.computeIfAbsent(blockBreakingInfo.getPos().asLong(), l -> Sets.newTreeSet()).add(blockBreakingInfo);
 		} else {
-			PartiallyBrokenBlockEntry partiallyBrokenBlockEntryx = this.partiallyBrokenBlocks.remove(i);
-			if (partiallyBrokenBlockEntryx != null) {
-				this.method_22987(partiallyBrokenBlockEntryx);
+			BlockBreakingInfo blockBreakingInfox = this.blockBreakingInfos.remove(i);
+			if (blockBreakingInfox != null) {
+				this.removeBlockBreakingInfo(blockBreakingInfox);
 			}
 		}
 	}

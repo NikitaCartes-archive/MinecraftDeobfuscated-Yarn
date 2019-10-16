@@ -6,9 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
@@ -41,7 +41,7 @@ public class IronGolemCrackFeatureRenderer extends FeatureRenderer<IronGolemEnti
 		IronGolemEntity.class_4621 lv = ironGolemEntity.method_23347();
 		if (lv != IronGolemEntity.class_4621.NONE) {
 			Identifier identifier = (Identifier)field_21443.get(lv);
-			method_23199(this.getModel(), identifier, matrixStack, layeredVertexConsumerStorage, i, ironGolemEntity, 1.0F, 1.0F, 1.0F);
+			renderModel(this.getModel(), identifier, matrixStack, layeredVertexConsumerStorage, i, ironGolemEntity, 1.0F, 1.0F, 1.0F);
 		}
 	}
 }

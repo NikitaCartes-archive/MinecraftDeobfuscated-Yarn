@@ -20,9 +20,9 @@ public final class MissingSprite extends Sprite {
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
 				if (k < 8 ^ l < 8) {
-					nativeImage.setPixelRGBA(l, k, -524040);
+					nativeImage.setPixelRgba(l, k, -524040);
 				} else {
-					nativeImage.setPixelRGBA(l, k, -16777216);
+					nativeImage.setPixelRgba(l, k, -16777216);
 				}
 			}
 		}

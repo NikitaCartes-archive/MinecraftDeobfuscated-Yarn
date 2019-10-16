@@ -88,7 +88,7 @@ public class ServerPlayerInteractionManager {
 		} else if (this.mining) {
 			BlockState blockState = this.world.getBlockState(this.miningPos);
 			if (blockState.isAir()) {
-				this.world.setBlockBreakingProgress(this.player.getEntityId(), this.miningPos, -1);
+				this.world.setBlockBreakingInfo(this.player.getEntityId(), this.miningPos, -1);
 				this.blockBreakingProgress = -1;
 				this.mining = false;
 			} else {
@@ -102,7 +102,7 @@ public class ServerPlayerInteractionManager {
 		float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(i + 1);
 		int j = (int)(f * 10.0F);
 		if (j != this.blockBreakingProgress) {
-			this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
+			this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
 			this.blockBreakingProgress = j;
 		}
 
@@ -171,7 +171,7 @@ public class ServerPlayerInteractionManager {
 					this.mining = true;
 					this.miningPos = blockPos.toImmutable();
 					int j = (int)(h * 10.0F);
-					this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, j);
+					this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
 					this.player
 						.networkHandler
 						.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "actual start of destroying"));
@@ -185,7 +185,7 @@ public class ServerPlayerInteractionManager {
 						float l = blockStatex.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(k + 1);
 						if (l >= 0.7F) {
 							this.mining = false;
-							this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
+							this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, -1);
 							this.finishMining(blockPos, action, "destroyed");
 							return;
 						}
@@ -204,13 +204,13 @@ public class ServerPlayerInteractionManager {
 				this.mining = false;
 				if (!Objects.equals(this.miningPos, blockPos)) {
 					LOGGER.warn("Mismatch in destroy block pos: " + this.miningPos + " " + blockPos);
-					this.world.setBlockBreakingProgress(this.player.getEntityId(), this.miningPos, -1);
+					this.world.setBlockBreakingInfo(this.player.getEntityId(), this.miningPos, -1);
 					this.player
 						.networkHandler
 						.sendPacket(new PlayerActionResponseS2CPacket(this.miningPos, this.world.getBlockState(this.miningPos), action, true, "aborted mismatched destroying"));
 				}
 
-				this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
+				this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, -1);
 				this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(blockPos, this.world.getBlockState(blockPos), action, true, "aborted destroying"));
 			}
 		}
@@ -310,15 +310,20 @@ public class ServerPlayerInteractionManager {
 		} else {
 			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.shouldCancelInteraction() && bl;
-			if (!bl2 && blockState.onUse(world, playerEntity, hand, blockHitResult)) {
-				return ActionResult.SUCCESS;
-			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+			if (!bl2) {
+				ActionResult actionResult = blockState.onUse(world, playerEntity, hand, blockHitResult);
+				if (actionResult.method_23665()) {
+					return actionResult;
+				}
+			}
+
+			if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, hand, blockHitResult);
 				if (this.isCreative()) {
 					int i = itemStack.getCount();
-					ActionResult actionResult = itemStack.useOnBlock(itemUsageContext);
+					ActionResult actionResult2 = itemStack.useOnBlock(itemUsageContext);
 					itemStack.setCount(i);
-					return actionResult;
+					return actionResult2;
 				} else {
 					return itemStack.useOnBlock(itemUsageContext);
 				}

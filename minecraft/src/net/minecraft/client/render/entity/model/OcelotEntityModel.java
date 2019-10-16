@@ -3,13 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class OcelotEntityModel<T extends Entity> extends class_4592<T> {
+public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 	protected final ModelPart frontLegLeft;
 	protected final ModelPart frontLegRight;
 	protected final ModelPart backLegLeft;
@@ -53,12 +52,12 @@ public class OcelotEntityModel<T extends Entity> extends class_4592<T> {
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22946() {
+	protected Iterable<ModelPart> getHeadParts() {
 		return ImmutableList.<ModelPart>of(this.head);
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
+	protected Iterable<ModelPart> getBodyParts() {
 		return ImmutableList.<ModelPart>of(this.body, this.frontLegLeft, this.frontLegRight, this.backLegLeft, this.backLegRight, this.tail1, this.tail2);
 	}
 

@@ -168,7 +168,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.SystemUtil;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
@@ -216,7 +215,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 	private final Window window;
 	private final RenderTickCounter renderTickCounter = new RenderTickCounter(20.0F, 0L);
 	private final Snooper snooper = new Snooper("client", this, SystemUtil.getMeasuringTimeMs());
-	private final LayeredBufferBuilderStorage field_20909;
+	private final LayeredBufferBuilderStorage bufferBuilderStorage;
 	public final WorldRenderer worldRenderer;
 	private final EntityRenderDispatcher entityRenderManager;
 	private final ItemRenderer itemRenderer;
@@ -447,12 +446,12 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
 			this.firstPersonRenderer = new FirstPersonRenderer(this);
 			this.resourceManager.registerListener(this.itemRenderer);
-			this.field_20909 = new LayeredBufferBuilderStorage();
-			this.gameRenderer = new GameRenderer(this, this.resourceManager, this.field_20909);
+			this.bufferBuilderStorage = new LayeredBufferBuilderStorage();
+			this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilderStorage);
 			this.resourceManager.registerListener(this.gameRenderer);
 			this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockStateMaps(), this.blockColorMap);
 			this.resourceManager.registerListener(this.blockRenderManager);
-			this.worldRenderer = new WorldRenderer(this, this.field_20909);
+			this.worldRenderer = new WorldRenderer(this, this.bufferBuilderStorage);
 			this.resourceManager.registerListener(this.worldRenderer);
 			this.initializeSearchableContainers();
 			this.resourceManager.registerListener(this.searchManager);
@@ -723,7 +722,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		if (screen == null && this.world == null) {
 			screen = new TitleScreen();
 		} else if (screen == null && this.player.getHealth() <= 0.0F) {
-			if (this.player.method_22419()) {
+			if (this.player.showsDeathScreen()) {
 				screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
 			} else {
 				this.player.requestRespawn();
@@ -1166,35 +1165,44 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 							case ENTITY:
 								EntityHitResult entityHitResult = (EntityHitResult)this.hitResult;
 								Entity entity = entityHitResult.getEntity();
-								if (this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand) == ActionResult.SUCCESS
-									|| this.interactionManager.interactEntity(this.player, entity, hand) == ActionResult.SUCCESS) {
-									this.player.swingHand(hand);
+								ActionResult actionResult = this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand);
+								if (!actionResult.method_23665()) {
+									actionResult = this.interactionManager.interactEntity(this.player, entity, hand);
 								}
 
-								return;
+								if (actionResult.method_23665()) {
+									if (actionResult.method_23666()) {
+										this.player.swingHand(hand);
+									}
+
+									return;
+								}
+								break;
 							case BLOCK:
 								BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
 								int i = itemStack.getCount();
-								ActionResult actionResult = this.interactionManager.interactBlock(this.player, this.world, hand, blockHitResult);
-								if (actionResult == ActionResult.SUCCESS) {
-									this.player.swingHand(hand);
-									if (!itemStack.isEmpty() && (itemStack.getCount() != i || this.interactionManager.hasCreativeInventory())) {
-										this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
+								ActionResult actionResult2 = this.interactionManager.interactBlock(this.player, this.world, hand, blockHitResult);
+								if (actionResult2.method_23665()) {
+									if (actionResult2.method_23666()) {
+										this.player.swingHand(hand);
+										if (!itemStack.isEmpty() && (itemStack.getCount() != i || this.interactionManager.hasCreativeInventory())) {
+											this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
+										}
 									}
 
 									return;
 								}
 
-								if (actionResult == ActionResult.FAIL) {
+								if (actionResult2 == ActionResult.FAIL) {
 									return;
 								}
 						}
 					}
 
 					if (!itemStack.isEmpty()) {
-						TypedActionResult<ItemStack> typedActionResult = this.interactionManager.interactItem(this.player, this.world, hand);
-						if (typedActionResult.getResult() == ActionResult.SUCCESS) {
-							if (typedActionResult.shouldSwingArm()) {
+						ActionResult actionResult3 = this.interactionManager.interactItem(this.player, this.world, hand);
+						if (actionResult3.method_23665()) {
+							if (actionResult3.method_23666()) {
 								this.player.swingHand(hand);
 							}
 
@@ -2082,7 +2090,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		return this.window;
 	}
 
-	public LayeredBufferBuilderStorage method_22940() {
-		return this.field_20909;
+	public LayeredBufferBuilderStorage getBufferBuilderStorage() {
+		return this.bufferBuilderStorage;
 	}
 }

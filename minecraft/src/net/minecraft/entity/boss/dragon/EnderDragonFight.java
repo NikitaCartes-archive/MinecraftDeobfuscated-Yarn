@@ -239,7 +239,7 @@ public class EnderDragonFight {
 				EnderDragonEntity enderDragonEntity = this.createDragon();
 
 				for (ServerPlayerEntity serverPlayerEntity : this.bossBar.getPlayers()) {
-					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, enderDragonEntity);
+					Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, enderDragonEntity);
 				}
 			} else {
 				this.dragonSpawnState = enderDragonSpawnState;
@@ -374,7 +374,7 @@ public class EnderDragonFight {
 	private void generateEndGateway(BlockPos blockPos) {
 		this.world.playLevelEvent(3000, blockPos, 0);
 		Feature.END_GATEWAY
-			.method_23397(EndGatewayFeatureConfig.createConfig())
+			.configure(EndGatewayFeatureConfig.createConfig())
 			.generate(this.world, (ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.method_14178().getChunkGenerator(), new Random(), blockPos);
 	}
 
@@ -388,7 +388,7 @@ public class EnderDragonFight {
 			}
 		}
 
-		endPortalFeature.method_23397(FeatureConfig.DEFAULT)
+		endPortalFeature.configure(FeatureConfig.DEFAULT)
 			.generate(this.world, (ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.method_14178().getChunkGenerator(), new Random(), this.exitPortalLocation);
 	}
 

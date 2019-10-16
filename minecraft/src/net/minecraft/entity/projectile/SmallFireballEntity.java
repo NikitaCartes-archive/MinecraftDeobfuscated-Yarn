@@ -28,6 +28,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 
 	@Override
 	protected void onCollision(HitResult hitResult) {
+		super.onCollision(hitResult);
 		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();

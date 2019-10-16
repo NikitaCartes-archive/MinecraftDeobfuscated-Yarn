@@ -4,19 +4,20 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.class_4625;
-import net.minecraft.class_4635;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public class HugeBrownMushroomFeature extends class_4625 {
-	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends class_4635> function) {
+	public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
 		super(function);
 	}
 
 	@Override
-	protected void method_23375(IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, class_4635 arg) {
-		int j = arg.field_21232;
+	protected void method_23375(
+		IWorld iWorld, Random random, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig
+	) {
+		int j = hugeMushroomFeatureConfig.field_21232;
 
 		for (int k = -j; k <= j; k++) {
 			for (int l = -j; l <= j; l++) {
@@ -36,8 +37,8 @@ public class HugeBrownMushroomFeature extends class_4625 {
 						this.setBlockState(
 							iWorld,
 							mutable,
-							arg.field_21230
-								.method_23455(random, blockPos)
+							hugeMushroomFeatureConfig.capProvider
+								.getBlockState(random, blockPos)
 								.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
 								.with(MushroomBlock.EAST, Boolean.valueOf(bl8))
 								.with(MushroomBlock.NORTH, Boolean.valueOf(bl9))

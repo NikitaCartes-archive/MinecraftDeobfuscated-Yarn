@@ -261,7 +261,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	}
 
 	public void tickAnimatedSprites() {
-		this.method_23207();
+		this.bindTexture();
 
 		for (Sprite sprite : this.animatedSprites) {
 			sprite.tickAnimation();

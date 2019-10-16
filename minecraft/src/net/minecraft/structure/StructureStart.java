@@ -153,6 +153,10 @@ public abstract class StructureStart {
 		this.references++;
 	}
 
+	public int method_23676() {
+		return this.references;
+	}
+
 	protected int getReferenceCountToBeInExistingChunk() {
 		return 1;
 	}

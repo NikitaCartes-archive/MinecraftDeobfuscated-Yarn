@@ -36,7 +36,7 @@ public class ItemPredicate {
 	private final NumberRange.IntRange count;
 	private final NumberRange.IntRange durability;
 	private final EnchantmentPredicate[] enchantments;
-	private final EnchantmentPredicate[] field_20689;
+	private final EnchantmentPredicate[] storedEnchantments;
 	@Nullable
 	private final Potion potion;
 	private final NbtPredicate nbt;
@@ -47,8 +47,8 @@ public class ItemPredicate {
 		this.potion = null;
 		this.count = NumberRange.IntRange.ANY;
 		this.durability = NumberRange.IntRange.ANY;
-		this.enchantments = EnchantmentPredicate.field_20687;
-		this.field_20689 = EnchantmentPredicate.field_20687;
+		this.enchantments = EnchantmentPredicate.ARRAY_OF_ANY;
+		this.storedEnchantments = EnchantmentPredicate.ARRAY_OF_ANY;
 		this.nbt = NbtPredicate.ANY;
 	}
 
@@ -67,7 +67,7 @@ public class ItemPredicate {
 		this.count = intRange;
 		this.durability = intRange2;
 		this.enchantments = enchantmentPredicates;
-		this.field_20689 = enchantmentPredicates2;
+		this.storedEnchantments = enchantmentPredicates2;
 		this.potion = potion;
 		this.nbt = nbtPredicate;
 	}
@@ -89,7 +89,7 @@ public class ItemPredicate {
 			return false;
 		} else {
 			if (this.enchantments.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.method_22445(itemStack.getEnchantments());
+				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack.getEnchantments());
 
 				for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
 					if (!enchantmentPredicate.test(map)) {
@@ -98,10 +98,10 @@ public class ItemPredicate {
 				}
 			}
 
-			if (this.field_20689.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.method_22445(EnchantedBookItem.getEnchantmentTag(itemStack));
+			if (this.storedEnchantments.length > 0) {
+				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(EnchantedBookItem.getEnchantmentTag(itemStack));
 
-				for (EnchantmentPredicate enchantmentPredicatex : this.field_20689) {
+				for (EnchantmentPredicate enchantmentPredicatex : this.storedEnchantments) {
 					if (!enchantmentPredicatex.test(map)) {
 						return false;
 					}
@@ -178,10 +178,10 @@ public class ItemPredicate {
 				jsonObject.add("enchantments", jsonArray);
 			}
 
-			if (this.field_20689.length > 0) {
+			if (this.storedEnchantments.length > 0) {
 				JsonArray jsonArray = new JsonArray();
 
-				for (EnchantmentPredicate enchantmentPredicate : this.field_20689) {
+				for (EnchantmentPredicate enchantmentPredicate : this.storedEnchantments) {
 					jsonArray.add(enchantmentPredicate.serialize());
 				}
 
@@ -213,7 +213,7 @@ public class ItemPredicate {
 
 	public static class Builder {
 		private final List<EnchantmentPredicate> enchantments = Lists.<EnchantmentPredicate>newArrayList();
-		private final List<EnchantmentPredicate> field_20690 = Lists.<EnchantmentPredicate>newArrayList();
+		private final List<EnchantmentPredicate> storedEnchantments = Lists.<EnchantmentPredicate>newArrayList();
 		@Nullable
 		private Item item;
 		@Nullable
@@ -262,8 +262,8 @@ public class ItemPredicate {
 				this.item,
 				this.count,
 				this.durability,
-				(EnchantmentPredicate[])this.enchantments.toArray(EnchantmentPredicate.field_20687),
-				(EnchantmentPredicate[])this.field_20690.toArray(EnchantmentPredicate.field_20687),
+				(EnchantmentPredicate[])this.enchantments.toArray(EnchantmentPredicate.ARRAY_OF_ANY),
+				(EnchantmentPredicate[])this.storedEnchantments.toArray(EnchantmentPredicate.ARRAY_OF_ANY),
 				this.potion,
 				this.nbt
 			);

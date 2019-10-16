@@ -2,7 +2,6 @@ package net.minecraft.block.sapling;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4636;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -12,6 +11,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
@@ -28,10 +28,10 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	}
 
 	@Nullable
-	protected abstract ConfiguredFeature<class_4636, ?> createLargeTreeFeature(Random random);
+	protected abstract ConfiguredFeature<MegaTreeFeatureConfig, ?> createLargeTreeFeature(Random random);
 
 	public boolean generateLargeTree(IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
-		ConfiguredFeature<class_4636, ?> configuredFeature = this.createLargeTreeFeature(random);
+		ConfiguredFeature<MegaTreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
 		if (configuredFeature == null) {
 			return false;
 		} else {

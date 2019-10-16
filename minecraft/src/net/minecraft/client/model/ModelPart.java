@@ -8,11 +8,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -47,7 +47,7 @@ public class ModelPart {
 		this.setTextureOffset(k, l);
 	}
 
-	public void copyRotation(ModelPart modelPart) {
+	public void copyPositionAndRotation(ModelPart modelPart) {
 		this.pitch = modelPart.pitch;
 		this.yaw = modelPart.yaw;
 		this.roll = modelPart.roll;

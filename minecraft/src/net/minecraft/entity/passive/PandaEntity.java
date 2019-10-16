@@ -528,8 +528,8 @@ public class PandaEntity extends AnimalEntity {
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
 		this.resetAttributes();
 		if (entityData == null) {
-			entityData = new PassiveEntity$1();
-			((PassiveEntity$1)entityData).method_22433(0.2F);
+			entityData = new PassiveEntity.class_4697();
+			((PassiveEntity.class_4697)entityData).method_22433(0.2F);
 		}
 
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
@@ -620,6 +620,7 @@ public class PandaEntity extends AnimalEntity {
 				this.eat(playerEntity, itemStack);
 			}
 
+			playerEntity.method_23667(hand, true);
 			return true;
 		} else {
 			return false;

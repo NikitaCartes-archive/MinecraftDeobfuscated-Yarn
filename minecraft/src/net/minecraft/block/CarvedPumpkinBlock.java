@@ -66,7 +66,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 			world.spawnEntity(snowGolemEntity);
 
 			for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
-				Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, snowGolemEntity);
+				Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
 			}
 
 			for (int j = 0; j < this.getSnowGolemPattern().getHeight(); j++) {
@@ -91,7 +91,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				world.spawnEntity(ironGolemEntity);
 
 				for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
-					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, ironGolemEntity);
+					Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
 				}
 
 				for (int j = 0; j < this.getIronGolemPattern().getWidth(); j++) {

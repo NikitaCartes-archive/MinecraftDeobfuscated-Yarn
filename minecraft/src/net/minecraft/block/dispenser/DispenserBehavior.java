@@ -20,6 +20,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.Projectile;
@@ -204,6 +205,19 @@ public interface DispenserBehavior {
 			DispenserBlock.registerBehavior(spawnEggItem, itemDispenserBehavior);
 		}
 
+		DispenserBlock.registerBehavior(Items.ARMOR_STAND, new ItemDispenserBehavior() {
+			@Override
+			public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
+				Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
+				BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
+				World world = blockPointer.getWorld();
+				ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
+				EntityType.loadFromEntityTag(world, null, armorStandEntity, itemStack.getTag());
+				world.spawnEntity(armorStandEntity);
+				itemStack.decrement(1);
+				return itemStack;
+			}
+		});
 		DispenserBlock.registerBehavior(Items.FIREWORK_ROCKET, new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
@@ -395,11 +409,14 @@ public interface DispenserBehavior {
 						}
 
 						itemStack.decrement(1);
-					} else if (ArmorItem.dispenseArmor(blockPointer, itemStack).isEmpty()) {
-						this.success = false;
+					} else {
+						ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
+						if (itemStack.getCount() < itemStack2.getCount()) {
+							this.success = false;
+						}
 					}
 
-					return itemStack;
+					return super.dispenseSilently(blockPointer, itemStack);
 				}
 			}
 		);
@@ -418,12 +435,12 @@ public interface DispenserBehavior {
 					itemStack.decrement(1);
 				} else {
 					ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
-					if (itemStack2.isEmpty()) {
+					if (itemStack.getCount() < itemStack2.getCount()) {
 						this.success = false;
 					}
 				}
 
-				return itemStack;
+				return super.dispenseSilently(blockPointer, itemStack);
 			}
 		});
 		DispenserBlock.registerBehavior(Blocks.SHULKER_BOX.asItem(), new BlockPlacementDispenserBehavior());
@@ -432,41 +449,41 @@ public interface DispenserBehavior {
 			DispenserBlock.registerBehavior(ShulkerBoxBlock.get(dyeColor).asItem(), new BlockPlacementDispenserBehavior());
 		}
 
-		DispenserBlock.registerBehavior(
-			Items.GLASS_BOTTLE.asItem(),
-			new ItemDispenserBehavior() {
-				private final ItemDispenserBehavior field_20533 = new ItemDispenserBehavior();
+		DispenserBlock.registerBehavior(Items.GLASS_BOTTLE.asItem(), new FallibleItemDispenserBehavior() {
+			private final ItemDispenserBehavior field_20533 = new ItemDispenserBehavior();
 
-				private ItemStack method_22141(BlockPointer blockPointer, ItemStack itemStack, ItemStack itemStack2) {
-					itemStack.decrement(1);
-					if (itemStack.isEmpty()) {
-						return itemStack2.copy();
-					} else {
-						if (blockPointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(itemStack2.copy()) < 0) {
-							this.field_20533.dispense(blockPointer, itemStack2.copy());
-						}
-
-						return itemStack;
+			private ItemStack method_22141(BlockPointer blockPointer, ItemStack itemStack, ItemStack itemStack2) {
+				itemStack.decrement(1);
+				if (itemStack.isEmpty()) {
+					return itemStack2.copy();
+				} else {
+					if (blockPointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(itemStack2.copy()) < 0) {
+						this.field_20533.dispense(blockPointer, itemStack2.copy());
 					}
-				}
 
-				@Override
-				public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
-					IWorld iWorld = blockPointer.getWorld();
-					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-					BlockState blockState = iWorld.getBlockState(blockPos);
-					Block block = blockState.getBlock();
-					if (block.matches(BlockTags.BEEHIVES) && (Integer)blockState.get(BeeHiveBlock.HONEY_LEVEL) >= 5) {
-						((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
-						return this.method_22141(blockPointer, itemStack, new ItemStack(Items.HONEY_BOTTLE));
-					} else {
-						return iWorld.getFluidState(blockPos).matches(FluidTags.WATER)
-							? this.method_22141(blockPointer, itemStack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER))
-							: itemStack;
-					}
+					return itemStack;
 				}
 			}
-		);
+
+			@Override
+			public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
+				this.success = false;
+				IWorld iWorld = blockPointer.getWorld();
+				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
+				BlockState blockState = iWorld.getBlockState(blockPos);
+				Block block = blockState.getBlock();
+				if (block.matches(BlockTags.BEEHIVES) && (Integer)blockState.get(BeeHiveBlock.HONEY_LEVEL) >= 5) {
+					((BeeHiveBlock)blockState.getBlock()).emptyHoney(iWorld.getWorld(), blockState, blockPos, null, BeeHiveBlockEntity.BeeState.BEE_RELEASED);
+					this.success = true;
+					return this.method_22141(blockPointer, itemStack, new ItemStack(Items.HONEY_BOTTLE));
+				} else if (iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+					this.success = true;
+					return this.method_22141(blockPointer, itemStack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
+				} else {
+					return super.dispenseSilently(blockPointer, itemStack);
+				}
+			}
+		});
 		DispenserBlock.registerBehavior(Items.SHEARS.asItem(), new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {

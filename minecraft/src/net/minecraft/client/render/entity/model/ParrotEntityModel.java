@@ -3,16 +3,14 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4595;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
-public class ParrotEntityModel extends class_4595<ParrotEntity> {
+public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 	private final ModelPart field_3458;
 	private final ModelPart field_3460;
 	private final ModelPart field_3459;
@@ -26,7 +24,6 @@ public class ParrotEntityModel extends class_4595<ParrotEntity> {
 	private final ModelPart field_3457;
 
 	public ParrotEntityModel() {
-		super(RenderLayer::getEntityCutoutNoCull);
 		this.textureWidth = 32;
 		this.textureHeight = 32;
 		this.field_3458 = new ModelPart(this, 2, 8);
@@ -74,11 +71,11 @@ public class ParrotEntityModel extends class_4595<ParrotEntity> {
 	}
 
 	public void method_17112(ParrotEntity parrotEntity, float f, float g, float h, float i, float j, float k) {
-		this.method_17111(method_17107(parrotEntity), parrotEntity.age, f, g, h, i, j);
+		this.method_17111(getPose(parrotEntity), parrotEntity.age, f, g, h, i, j);
 	}
 
 	public void method_17108(ParrotEntity parrotEntity, float f, float g, float h) {
-		this.method_17110(method_17107(parrotEntity));
+		this.method_17110(getPose(parrotEntity));
 	}
 
 	public void method_17106(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k, float l, int m) {
@@ -180,7 +177,7 @@ public class ParrotEntityModel extends class_4595<ParrotEntity> {
 		}
 	}
 
-	private static ParrotEntityModel.Pose method_17107(ParrotEntity parrotEntity) {
+	private static ParrotEntityModel.Pose getPose(ParrotEntity parrotEntity) {
 		if (parrotEntity.getSongPlaying()) {
 			return ParrotEntityModel.Pose.PARTY;
 		} else if (parrotEntity.isSitting()) {

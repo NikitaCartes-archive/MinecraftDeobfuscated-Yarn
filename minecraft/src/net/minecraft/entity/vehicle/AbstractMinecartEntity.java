@@ -68,18 +68,18 @@ public abstract class AbstractMinecartEntity extends Entity {
 		enumMap.put(RailShape.NORTH_WEST, Pair.of(vec3i3, vec3i));
 		enumMap.put(RailShape.NORTH_EAST, Pair.of(vec3i3, vec3i2));
 	});
-	private int field_7669;
-	private double field_7665;
-	private double field_7666;
-	private double field_7662;
-	private double field_7659;
-	private double field_7657;
+	private int clientInterpolationSteps;
+	private double clientX;
+	private double clientY;
+	private double clientZ;
+	private double clientYaw;
+	private double clientPitch;
 	@Environment(EnvType.CLIENT)
-	private double field_7658;
+	private double clientXVelocity;
 	@Environment(EnvType.CLIENT)
-	private double field_7655;
+	private double clientYVelocity;
 	@Environment(EnvType.CLIENT)
-	private double field_7656;
+	private double clientZVelocity;
 
 	protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -219,14 +219,14 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 		this.tickPortal();
 		if (this.world.isClient) {
-			if (this.field_7669 > 0) {
-				double d = this.getX() + (this.field_7665 - this.getX()) / (double)this.field_7669;
-				double e = this.getY() + (this.field_7666 - this.getY()) / (double)this.field_7669;
-				double f = this.getZ() + (this.field_7662 - this.getZ()) / (double)this.field_7669;
-				double g = MathHelper.wrapDegrees(this.field_7659 - (double)this.yaw);
-				this.yaw = (float)((double)this.yaw + g / (double)this.field_7669);
-				this.pitch = (float)((double)this.pitch + (this.field_7657 - (double)this.pitch) / (double)this.field_7669);
-				this.field_7669--;
+			if (this.clientInterpolationSteps > 0) {
+				double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;
+				double e = this.getY() + (this.clientY - this.getY()) / (double)this.clientInterpolationSteps;
+				double f = this.getZ() + (this.clientZ - this.getZ()) / (double)this.clientInterpolationSteps;
+				double g = MathHelper.wrapDegrees(this.clientYaw - (double)this.yaw);
+				this.yaw = (float)((double)this.yaw + g / (double)this.clientInterpolationSteps);
+				this.pitch = (float)((double)this.pitch + (this.clientPitch - (double)this.pitch) / (double)this.clientInterpolationSteps);
+				this.clientInterpolationSteps--;
 				this.setPosition(d, e, f);
 				this.setRotation(this.yaw, this.pitch);
 			} else {
@@ -248,12 +248,12 @@ public abstract class AbstractMinecartEntity extends Entity {
 			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.matches(BlockTags.RAILS)) {
-				this.method_7513(blockPos, blockState);
+				this.moveOnRail(blockPos, blockState);
 				if (blockState.getBlock() == Blocks.ACTIVATOR_RAIL) {
 					this.onActivatorRail(i, j, k, (Boolean)blockState.get(PoweredRailBlock.POWERED));
 				}
 			} else {
-				this.method_7512();
+				this.moveOffRail();
 			}
 
 			this.checkBlockCollision();
@@ -302,15 +302,15 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
-	protected double method_7504() {
+	protected double getMaxOffRailSpeed() {
 		return 0.4;
 	}
 
 	public void onActivatorRail(int i, int j, int k, boolean bl) {
 	}
 
-	protected void method_7512() {
-		double d = this.method_7504();
+	protected void moveOffRail() {
+		double d = this.getMaxOffRailSpeed();
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(MathHelper.clamp(vec3d.x, -d, d), vec3d.y, MathHelper.clamp(vec3d.z, -d, d));
 		if (this.onGround) {
@@ -323,7 +323,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
-	protected void method_7513(BlockPos blockPos, BlockState blockState) {
+	protected void moveOnRail(BlockPos blockPos, BlockState blockState) {
 		this.fallDistance = 0.0F;
 		double d = this.getX();
 		double e = this.getY();
@@ -416,7 +416,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		f = p + i * s;
 		this.setPosition(d, e, f);
 		double t = this.hasPassengers() ? 0.75 : 1.0;
-		double u = this.method_7504();
+		double u = this.getMaxOffRailSpeed();
 		vec3d2 = this.getVelocity();
 		this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
 		if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - blockPos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - blockPos.getZ() == vec3i.getZ()) {
@@ -427,7 +427,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			this.setPosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
 		}
 
-		this.method_7525();
+		this.applySlowdown();
 		Vec3d vec3d4 = this.method_7508(this.getX(), this.getY(), this.getZ());
 		if (vec3d4 != null && vec3d != null) {
 			double v = (vec3d.y - vec3d4.y) * 0.05;
@@ -459,9 +459,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 				double aa = vec3d6.x;
 				double ab = vec3d6.z;
 				if (railShape == RailShape.EAST_WEST) {
-					if (this.method_18803(blockPos.west())) {
+					if (this.willHitBlockAt(blockPos.west())) {
 						aa = 0.02;
-					} else if (this.method_18803(blockPos.east())) {
+					} else if (this.willHitBlockAt(blockPos.east())) {
 						aa = -0.02;
 					}
 				} else {
@@ -469,9 +469,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 						return;
 					}
 
-					if (this.method_18803(blockPos.north())) {
+					if (this.willHitBlockAt(blockPos.north())) {
 						ab = 0.02;
-					} else if (this.method_18803(blockPos.south())) {
+					} else if (this.willHitBlockAt(blockPos.south())) {
 						ab = -0.02;
 					}
 				}
@@ -481,11 +481,11 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
-	private boolean method_18803(BlockPos blockPos) {
+	private boolean willHitBlockAt(BlockPos blockPos) {
 		return this.world.getBlockState(blockPos).isSimpleFullBlock(this.world, blockPos);
 	}
 
-	protected void method_7525() {
+	protected void applySlowdown() {
 		double d = this.hasPassengers() ? 0.997 : 0.96;
 		this.setVelocity(this.getVelocity().multiply(d, 0.0, d));
 	}
@@ -673,22 +673,22 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-		this.field_7665 = d;
-		this.field_7666 = e;
-		this.field_7662 = f;
-		this.field_7659 = (double)g;
-		this.field_7657 = (double)h;
-		this.field_7669 = i + 2;
-		this.setVelocity(this.field_7658, this.field_7655, this.field_7656);
+		this.clientX = d;
+		this.clientY = e;
+		this.clientZ = f;
+		this.clientYaw = (double)g;
+		this.clientPitch = (double)h;
+		this.clientInterpolationSteps = i + 2;
+		this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setVelocityClient(double d, double e, double f) {
-		this.field_7658 = d;
-		this.field_7655 = e;
-		this.field_7656 = f;
-		this.setVelocity(this.field_7658, this.field_7655, this.field_7656);
+		this.clientXVelocity = d;
+		this.clientYVelocity = e;
+		this.clientZVelocity = f;
+		this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
 	}
 
 	public void setDamageWobbleStrength(float f) {

@@ -26,7 +26,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private List<BannerPattern> patterns;
 	private List<DyeColor> patternColors;
 	private String patternCacheKey;
-	private boolean field_20743 = false;
+	private boolean preview = false;
 
 	public BannerBlockEntity() {
 		super(BlockEntityType.BANNER);
@@ -38,7 +38,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void deserialize(ItemStack itemStack, DyeColor dyeColor) {
+	public void readFrom(ItemStack itemStack, DyeColor dyeColor) {
 		this.patternListTag = null;
 		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
 		if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
@@ -204,12 +204,12 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_22534(boolean bl) {
-		this.field_20743 = bl;
+	public void setPreview(boolean bl) {
+		this.preview = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_22535() {
-		return this.field_20743;
+	public boolean isPreview() {
+		return this.preview;
 	}
 }

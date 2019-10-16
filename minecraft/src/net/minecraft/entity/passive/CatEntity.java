@@ -39,6 +39,12 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
@@ -58,11 +64,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.loot.LootTable;
-import net.minecraft.world.loot.LootTables;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextParameters;
-import net.minecraft.world.loot.context.LootContextTypes;
 
 public class CatEntity extends TameableEntity {
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
@@ -379,9 +380,28 @@ public class CatEntity extends TameableEntity {
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (this.isTamed()) {
-			if (this.isOwner(playerEntity)) {
-				if (item instanceof DyeItem) {
+		if (itemStack.getItem() instanceof SpawnEggItem) {
+			return super.interactMob(playerEntity, hand);
+		} else if (this.world.isClient) {
+			return this.isTamed() && this.isOwner(playerEntity) || this.isBreedingItem(itemStack);
+		} else {
+			if (this.isTamed()) {
+				if (this.isOwner(playerEntity)) {
+					if (!(item instanceof DyeItem)) {
+						if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaximumHealth()) {
+							this.eat(playerEntity, itemStack);
+							this.heal((float)item.getFoodComponent().getHunger());
+							return true;
+						}
+
+						boolean bl = super.interactMob(playerEntity, hand);
+						if (!bl || this.isBaby()) {
+							this.sitGoal.setEnabledWithOwner(!this.isSitting());
+						}
+
+						return bl;
+					}
+
 					DyeColor dyeColor = ((DyeItem)item).getColor();
 					if (dyeColor != this.getCollarColor()) {
 						this.setCollarColor(dyeColor);
@@ -392,40 +412,28 @@ public class CatEntity extends TameableEntity {
 						this.setPersistent();
 						return true;
 					}
-				} else if (this.isBreedingItem(itemStack)) {
-					if (this.getHealth() < this.getMaximumHealth() && item.isFood()) {
-						this.eat(playerEntity, itemStack);
-						this.heal((float)item.getFoodComponent().getHunger());
-						return true;
-					}
-				} else if (!this.world.isClient) {
-					this.sitGoal.setEnabledWithOwner(!this.isSitting());
 				}
-			}
-		} else if (this.isBreedingItem(itemStack)) {
-			this.eat(playerEntity, itemStack);
-			if (!this.world.isClient) {
+			} else if (this.isBreedingItem(itemStack)) {
+				this.eat(playerEntity, itemStack);
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(playerEntity);
-					this.showEmoteParticle(true);
 					this.sitGoal.setEnabledWithOwner(true);
 					this.world.sendEntityStatus(this, (byte)7);
 				} else {
-					this.showEmoteParticle(false);
 					this.world.sendEntityStatus(this, (byte)6);
 				}
+
+				this.setPersistent();
+				return true;
 			}
 
-			this.setPersistent();
-			return true;
-		}
+			boolean bl = super.interactMob(playerEntity, hand);
+			if (bl) {
+				this.setPersistent();
+			}
 
-		boolean bl = super.interactMob(playerEntity, hand);
-		if (bl) {
-			this.setPersistent();
+			return bl;
 		}
-
-		return bl;
 	}
 
 	@Override

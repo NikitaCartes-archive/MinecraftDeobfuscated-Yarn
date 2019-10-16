@@ -12,6 +12,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -80,9 +81,9 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (this.material == Material.METAL) {
-			return false;
+			return ActionResult.PASS;
 		} else {
 			blockState = blockState.cycle(OPEN);
 			world.setBlockState(blockPos, blockState, 2);
@@ -91,7 +92,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			}
 
 			this.playToggleSound(playerEntity, world, blockPos, (Boolean)blockState.get(OPEN));
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

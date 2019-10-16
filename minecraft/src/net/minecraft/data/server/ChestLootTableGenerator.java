@@ -6,19 +6,19 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
+import net.minecraft.loot.ConstantLootTableRange;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.UniformLootTableRange;
+import net.minecraft.loot.entry.EmptyEntry;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.EnchantRandomlyLootFunction;
+import net.minecraft.loot.function.EnchantWithLevelsLootFunction;
+import net.minecraft.loot.function.ExplorationMapLootFunction;
+import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.loot.ConstantLootTableRange;
-import net.minecraft.world.loot.LootPool;
-import net.minecraft.world.loot.LootTable;
-import net.minecraft.world.loot.LootTables;
-import net.minecraft.world.loot.UniformLootTableRange;
-import net.minecraft.world.loot.entry.EmptyEntry;
-import net.minecraft.world.loot.entry.ItemEntry;
-import net.minecraft.world.loot.function.EnchantRandomlyLootFunction;
-import net.minecraft.world.loot.function.EnchantWithLevelsLootFunction;
-import net.minecraft.world.loot.function.ExplorationMapLootFunction;
-import net.minecraft.world.loot.function.SetCountLootFunction;
-import net.minecraft.world.loot.function.SetStewEffectLootFunction;
 
 public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	public void method_10399(BiConsumer<Identifier, LootTable.Builder> biConsumer) {

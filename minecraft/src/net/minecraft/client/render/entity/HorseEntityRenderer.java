@@ -5,7 +5,6 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.feature.HorseArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.texture.LayeredTexture;
@@ -17,7 +16,7 @@ public final class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEnti
 	private static final Map<String, Identifier> SKINS = Maps.<String, Identifier>newHashMap();
 
 	public HorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new HorseEntityModel<>(RenderLayer::getEntitySolid, 0.0F), 1.1F);
+		super(entityRenderDispatcher, new HorseEntityModel<>(0.0F), 1.1F);
 		this.addFeature(new HorseArmorFeatureRenderer(this));
 	}
 

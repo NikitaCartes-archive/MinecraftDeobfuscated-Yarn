@@ -9,13 +9,13 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
@@ -93,7 +93,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 					matrixStack,
 					layeredVertexConsumerStorage,
 					itemEntity.getLightmapCoordinates(),
-					OverlayTexture.field_21444,
+					OverlayTexture.DEFAULT_UV,
 					bakedModel
 				);
 			matrixStack.pop();

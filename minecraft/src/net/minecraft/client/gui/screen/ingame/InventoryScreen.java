@@ -115,7 +115,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 		livingEntity.prevHeadYaw = livingEntity.yaw;
 		RenderSystem.translatef(0.0F, 0.0F, 0.0F);
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
-		entityRenderDispatcher.method_3945(180.0F);
+		entityRenderDispatcher.setCameraYaw(180.0F);
 		entityRenderDispatcher.setRenderShadows(false);
 		entityRenderDispatcher.render(livingEntity, 1.0F);
 		entityRenderDispatcher.setRenderShadows(true);

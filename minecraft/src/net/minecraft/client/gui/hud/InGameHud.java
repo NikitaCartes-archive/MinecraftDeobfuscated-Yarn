@@ -351,10 +351,10 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.popMatrix();
 				} else {
 					RenderSystem.blendFuncSeparate(
-						GlStateManager.class_4535.ONE_MINUS_DST_COLOR,
-						GlStateManager.class_4534.ONE_MINUS_SRC_COLOR,
-						GlStateManager.class_4535.ONE,
-						GlStateManager.class_4534.ZERO
+						GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+						GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR,
+						GlStateManager.SourceFactor.ONE,
+						GlStateManager.DestFactor.ZERO
 					);
 					int i = 15;
 					this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
@@ -953,7 +953,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.blendFuncSeparate(
-			GlStateManager.class_4535.ZERO, GlStateManager.class_4534.ONE_MINUS_SRC_COLOR, GlStateManager.class_4535.ONE, GlStateManager.class_4534.ZERO
+			GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		if (f > 0.0F) {
 			RenderSystem.color4f(0.0F, f, f, 1.0F);

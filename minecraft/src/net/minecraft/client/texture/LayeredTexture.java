@@ -46,7 +46,7 @@ public class LayeredTexture extends AbstractTexture {
 						try (NativeImage nativeImage2 = NativeImage.read(resource2.getInputStream())) {
 							for (int i = 0; i < nativeImage2.getHeight(); i++) {
 								for (int j = 0; j < nativeImage2.getWidth(); j++) {
-									nativeImage.blendPixel(j, i, nativeImage2.getPixelRGBA(j, i));
+									nativeImage.blendPixel(j, i, nativeImage2.getPixelRgba(j, i));
 								}
 							}
 						} catch (Throwable var61) {

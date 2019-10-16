@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4590;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -44,12 +44,12 @@ public class TextRenderer implements AutoCloseable {
 
 	public int drawWithShadow(String string, float f, float g, int i) {
 		RenderSystem.enableAlphaTest();
-		return this.method_22941(string, f, g, i, class_4590.method_22931().method_22936(), true);
+		return this.method_22941(string, f, g, i, Rotation3.identity().getMatrix(), true);
 	}
 
 	public int draw(String string, float f, float g, int i) {
 		RenderSystem.enableAlphaTest();
-		return this.method_22941(string, f, g, i, class_4590.method_22931().method_22936(), false);
+		return this.method_22941(string, f, g, i, Rotation3.identity().getMatrix(), false);
 	}
 
 	public String mirror(String string) {
@@ -66,9 +66,9 @@ public class TextRenderer implements AutoCloseable {
 		if (string == null) {
 			return 0;
 		} else {
-			LayeredVertexConsumerStorage.class_4598 lv = LayeredVertexConsumerStorage.method_22991(Tessellator.getInstance().getBufferBuilder());
-			int j = this.method_22942(string, f, g, i, bl, matrix4f, lv, false, 0, 15728880);
-			lv.method_22993();
+			LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
+			int j = this.method_22942(string, f, g, i, bl, matrix4f, drawer, false, 0, 15728880);
+			drawer.draw();
 			return j;
 		}
 	}
@@ -310,7 +310,7 @@ public class TextRenderer implements AutoCloseable {
 
 	private void renderStringBounded(String string, int i, int j, int k, int l) {
 		List<String> list = this.wrapStringToWidthAsList(string, k);
-		Matrix4f matrix4f = class_4590.method_22931().method_22936();
+		Matrix4f matrix4f = Rotation3.identity().getMatrix();
 
 		for (String string2 : list) {
 			float f = (float)i;

@@ -85,6 +85,7 @@ public abstract class TameableEntity extends AnimalEntity {
 		return !this.isLeashed();
 	}
 
+	@Environment(EnvType.CLIENT)
 	protected void showEmoteParticle(boolean bl) {
 		ParticleEffect particleEffect = ParticleTypes.HEART;
 		if (!bl) {
@@ -155,7 +156,7 @@ public abstract class TameableEntity extends AnimalEntity {
 		this.setTamed(true);
 		this.setOwnerUuid(playerEntity.getUuid());
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
+			Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
 		}
 	}
 

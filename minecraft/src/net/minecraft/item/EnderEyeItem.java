@@ -76,7 +76,7 @@ public class EnderEyeItem extends Item {
 					enderEyeEntity.moveTowards(blockPos);
 					world.spawnEntity(enderEyeEntity);
 					if (playerEntity instanceof ServerPlayerEntity) {
-						Criterions.USED_ENDER_EYE.handle((ServerPlayerEntity)playerEntity, blockPos);
+						Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)playerEntity, blockPos);
 					}
 
 					world.playSound(

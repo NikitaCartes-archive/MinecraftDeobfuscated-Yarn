@@ -129,7 +129,7 @@ public class RaidManager extends PersistentState {
 					serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
 					if (!raid.hasSpawned()) {
 						serverPlayerEntity.incrementStat(Stats.RAID_TRIGGER);
-						Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
+						Criterions.VOLUNTARY_EXILE.trigger(serverPlayerEntity);
 					}
 				}
 

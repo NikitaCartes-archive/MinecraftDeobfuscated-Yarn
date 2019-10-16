@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.entity.model.SheepEntityModel;
 import net.minecraft.client.render.entity.model.SheepWoolEntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, SheepEntityModel<SheepEntity>> {
@@ -55,7 +55,7 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 				v = hs[2];
 			}
 
-			method_23196(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
+			render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
 		}
 	}
 }

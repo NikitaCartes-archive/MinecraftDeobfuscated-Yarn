@@ -14,6 +14,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.hit.BlockHitResult;
@@ -102,16 +103,16 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!playerEntity.abilities.allowModifyWorld) {
-			return false;
+			return ActionResult.PASS;
 		} else {
 			blockState = blockState.cycle(MODE);
 			float f = blockState.get(MODE) == ComparatorMode.SUBTRACT ? 0.55F : 0.5F;
 			world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.BLOCKS, 0.3F, f);
 			world.setBlockState(blockPos, blockState, 2);
 			this.update(world, blockPos, blockState);
-			return true;
+			return ActionResult.SUCCESS;
 		}
 	}
 

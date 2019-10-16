@@ -8,10 +8,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.item.ItemDynamicRenderer;
+import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,6 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MatrixStack;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
@@ -47,7 +47,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			BakedModel bakedModel = this.models.getModel(blockState);
 			long l = blockState.getRenderingSeed(blockPos);
-			this.renderer.tesselate(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, true, this.random, l, OverlayTexture.field_21444);
+			this.renderer.tesselate(blockRenderView, bakedModel, blockState, blockPos, matrixStack, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 						bl,
 						random,
 						blockState.getRenderingSeed(blockPos),
-						OverlayTexture.field_21444
+						OverlayTexture.DEFAULT_UV
 					);
 		} catch (Throwable var11) {
 			CrashReport crashReport = CrashReport.create(var11, "Tesselating block in world");
@@ -98,7 +98,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 		return this.models.getModel(blockState);
 	}
 
-	public void renderDynamic(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+	public void renderOnEntity(BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
 		BlockRenderType blockRenderType = blockState.getRenderType();
 		if (blockRenderType != BlockRenderType.INVISIBLE) {
 			switch (blockRenderType) {
@@ -113,8 +113,8 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 					this.renderer
 						.render(
 							matrixStack.peek(),
-							matrixStack.method_23478(),
-							layeredVertexConsumerStorage.getBuffer(RenderLayer.method_23575(blockState)),
+							matrixStack.peekNormal(),
+							layeredVertexConsumerStorage.getBuffer(RenderLayers.getEntityBlockLayer(blockState)),
 							blockState,
 							bakedModel,
 							f,
@@ -128,7 +128,7 @@ public class BlockRenderManager implements SynchronousResourceReloadListener {
 				case ENTITYBLOCK_ANIMATED:
 					matrixStack.push();
 					matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F));
-					ItemDynamicRenderer.INSTANCE.render(new ItemStack(blockState.getBlock()), matrixStack, layeredVertexConsumerStorage, i, j);
+					BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(blockState.getBlock()), matrixStack, layeredVertexConsumerStorage, i, j);
 					matrixStack.pop();
 			}
 		}

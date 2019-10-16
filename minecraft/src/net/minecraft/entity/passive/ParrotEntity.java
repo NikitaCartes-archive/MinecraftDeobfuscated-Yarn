@@ -45,6 +45,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -123,8 +124,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	) {
 		this.setVariant(this.random.nextInt(5));
 		if (entityData == null) {
-			entityData = new PassiveEntity$1();
-			((PassiveEntity$1)entityData).method_22434(false);
+			entityData = new PassiveEntity.class_4697();
+			((PassiveEntity.class_4697)entityData).method_22434(false);
 		}
 
 		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
@@ -231,7 +232,9 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
+		if (itemStack.getItem() instanceof SpawnEggItem) {
+			return super.interactMob(playerEntity, hand);
+		} else if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
@@ -253,10 +256,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 			if (!this.world.isClient) {
 				if (this.random.nextInt(10) == 0) {
 					this.setOwner(playerEntity);
-					this.showEmoteParticle(true);
 					this.world.sendEntityStatus(this, (byte)7);
 				} else {
-					this.showEmoteParticle(false);
 					this.world.sendEntityStatus(this, (byte)6);
 				}
 			}
@@ -273,11 +274,10 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 			}
 
 			return true;
+		} else if (!this.world.isClient && !this.isInAir() && this.isTamed() && this.isOwner(playerEntity)) {
+			this.sitGoal.setEnabledWithOwner(!this.isSitting());
+			return true;
 		} else {
-			if (!this.world.isClient && !this.isInAir() && this.isTamed() && this.isOwner(playerEntity)) {
-				this.sitGoal.setEnabledWithOwner(!this.isSitting());
-			}
-
 			return super.interactMob(playerEntity, hand);
 		}
 	}

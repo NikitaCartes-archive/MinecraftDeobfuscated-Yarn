@@ -173,7 +173,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 						.getNonSpectatingEntities(
 							ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0)
 						)) {
-						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
+						Criterions.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
 					}
 				} else if (bl && !bl2) {
 					this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);

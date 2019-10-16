@@ -31,9 +31,9 @@ public final class DarkForestBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.WOODLAND_MANSION.method_23397(FeatureConfig.DEFAULT));
-		this.addStructureFeature(Feature.MINESHAFT.method_23397(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
-		this.addStructureFeature(Feature.STRONGHOLD.method_23397(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.WOODLAND_MANSION.configure(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -41,18 +41,18 @@ public final class DarkForestBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
 			Feature.RANDOM_SELECTOR
-				.method_23397(
+				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.HUGE_BROWN_MUSHROOM.method_23397(DefaultBiomeFeatures.field_21143).method_23387(0.025F),
-							Feature.HUGE_RED_MUSHROOM.method_23397(DefaultBiomeFeatures.field_21142).method_23387(0.05F),
-							Feature.DARK_OAK_TREE.method_23397(DefaultBiomeFeatures.field_21197).method_23387(0.6666667F),
-							Feature.FANCY_TREE.method_23397(DefaultBiomeFeatures.field_21190).method_23387(0.1F)
+							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).method_23387(0.025F),
+							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).method_23387(0.05F),
+							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).method_23387(0.6666667F),
+							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21190).method_23387(0.1F)
 						),
-						Feature.NORMAL_TREE.method_23397(DefaultBiomeFeatures.field_21126)
+						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21126)
 					)
 				)
-				.method_23388(Decorator.DARK_OAK_TREE.method_23475(DecoratorConfig.DEFAULT))
+				.createDecoratedFeature(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT))
 		);
 		DefaultBiomeFeatures.addForestFlowers(this);
 		DefaultBiomeFeatures.addMineables(this);

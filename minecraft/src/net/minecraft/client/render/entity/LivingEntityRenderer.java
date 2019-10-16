@@ -13,6 +13,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -22,13 +23,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.MatrixStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
-	private static final Logger field_21011 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	protected M model;
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
 
@@ -115,9 +115,9 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		if (bl || bl2) {
 			Identifier identifier = this.getTexture(livingEntity);
 			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(
-				bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : this.model.method_23500(identifier)
+				bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : this.model.getLayer(identifier)
 			);
-			this.model.renderItem(matrixStack, vertexConsumer, q, method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0F, 1.0F, 1.0F);
+			this.model.render(matrixStack, vertexConsumer, q, method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0F, 1.0F, 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {
@@ -131,14 +131,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	public static int method_23622(LivingEntity livingEntity, float f) {
-		return OverlayTexture.method_23625(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
+		return OverlayTexture.packUv(OverlayTexture.getU(f), OverlayTexture.getV(livingEntity.hurtTime > 0 || livingEntity.deathTime > 0));
 	}
 
 	protected boolean method_4056(T livingEntity, boolean bl) {
 		return !livingEntity.isInvisible() || bl;
 	}
 
-	private static float method_18656(Direction direction) {
+	private static float getYaw(Direction direction) {
 		switch (direction) {
 			case SOUTH:
 				return 90.0F;
@@ -172,7 +172,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)livingEntity.age + h) * -75.0F));
 		} else if (entityPose == EntityPose.SLEEPING) {
 			Direction direction = livingEntity.getSleepingDirection();
-			float j = direction != null ? method_18656(direction) : g;
+			float j = direction != null ? getYaw(direction) : g;
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(livingEntity)));
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F));
@@ -206,7 +206,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected boolean method_4055(T livingEntity) {
-		double d = this.renderManager.method_23168(livingEntity);
+		double d = this.renderManager.getSquaredDistanceToCamera(livingEntity);
 		float f = livingEntity.method_21751() ? 32.0F : 64.0F;
 		if (d >= (double)(f * f)) {
 			return false;

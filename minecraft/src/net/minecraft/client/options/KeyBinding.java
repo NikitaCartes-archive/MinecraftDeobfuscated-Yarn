@@ -44,14 +44,14 @@ public class KeyBinding implements Comparable<KeyBinding> {
 	public static void setKeyPressed(InputUtil.KeyCode keyCode, boolean bl) {
 		KeyBinding keyBinding = (KeyBinding)keysByCode.get(keyCode);
 		if (keyBinding != null) {
-			keyBinding.method_23481(bl);
+			keyBinding.setPressed(bl);
 		}
 	}
 
 	public static void updatePressedStates() {
 		for (KeyBinding keyBinding : keysById.values()) {
 			if (keyBinding.keyCode.getCategory() == InputUtil.Type.KEYSYM && keyBinding.keyCode.getKeyCode() != InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
-				keyBinding.method_23481(InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), keyBinding.keyCode.getKeyCode()));
+				keyBinding.setPressed(InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), keyBinding.keyCode.getKeyCode()));
 			}
 		}
 	}
@@ -103,7 +103,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	private void reset() {
 		this.timesPressed = 0;
-		this.method_23481(false);
+		this.setPressed(false);
 	}
 
 	public String getId() {
@@ -174,7 +174,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 		return this.keyCode.getName();
 	}
 
-	public void method_23481(boolean bl) {
+	public void setPressed(boolean bl) {
 		this.pressed = bl;
 	}
 }

@@ -10,6 +10,7 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -54,24 +55,25 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		boolean bl = itemStack.getItem() instanceof DyeItem && playerEntity.abilities.allowModifyWorld;
 		if (world.isClient) {
-			return true;
+			return bl ? ActionResult.SUCCESS : ActionResult.CONSUME;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof SignBlockEntity) {
 				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-				ItemStack itemStack = playerEntity.getStackInHand(hand);
-				if (itemStack.getItem() instanceof DyeItem && playerEntity.abilities.allowModifyWorld) {
-					boolean bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
-					if (bl && !playerEntity.isCreative()) {
+				if (bl) {
+					boolean bl2 = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
+					if (bl2 && !playerEntity.isCreative()) {
 						itemStack.decrement(1);
 					}
 				}
 
-				return signBlockEntity.onActivate(playerEntity);
+				return signBlockEntity.onActivate(playerEntity) ? ActionResult.SUCCESS : ActionResult.PASS;
 			} else {
-				return false;
+				return ActionResult.PASS;
 			}
 		}
 	}

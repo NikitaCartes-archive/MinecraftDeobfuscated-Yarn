@@ -42,8 +42,11 @@ public class VertexFormats {
 	public static final VertexFormat POSITION_COLOR = new VertexFormat(
 		ImmutableList.<VertexFormatElement>builder().add(POSITION_ELEMENT).add(COLOR_ELEMENT).build()
 	);
+	public static final VertexFormat field_21468 = new VertexFormat(
+		ImmutableList.<VertexFormatElement>builder().add(POSITION_ELEMENT).add(COLOR_ELEMENT).add(field_20886).build()
+	);
 	public static final VertexFormat POSITION_UV = new VertexFormat(ImmutableList.<VertexFormatElement>builder().add(POSITION_ELEMENT).add(UV_ELEMENT).build());
-	public static final VertexFormat field_20887 = new VertexFormat(
+	public static final VertexFormat POSITION_COLOR_UV = new VertexFormat(
 		ImmutableList.<VertexFormatElement>builder().add(POSITION_ELEMENT).add(COLOR_ELEMENT).add(UV_ELEMENT).build()
 	);
 	@Deprecated

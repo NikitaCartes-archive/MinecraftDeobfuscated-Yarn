@@ -15,7 +15,7 @@ import net.minecraft.util.registry.Registry;
 
 public class EnchantmentPredicate {
 	public static final EnchantmentPredicate ANY = new EnchantmentPredicate();
-	public static final EnchantmentPredicate[] field_20687 = new EnchantmentPredicate[0];
+	public static final EnchantmentPredicate[] ARRAY_OF_ANY = new EnchantmentPredicate[0];
 	private final Enchantment enchantment;
 	private final NumberRange.IntRange levels;
 
@@ -95,7 +95,7 @@ public class EnchantmentPredicate {
 
 			return enchantmentPredicates;
 		} else {
-			return field_20687;
+			return ARRAY_OF_ANY;
 		}
 	}
 }

@@ -3,13 +3,12 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4592;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class FoxEntityModel<T extends FoxEntity> extends class_4592<T> {
+public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 	public final ModelPart head;
 	private final ModelPart leftEar;
 	private final ModelPart rightEar;
@@ -123,12 +122,12 @@ public class FoxEntityModel<T extends FoxEntity> extends class_4592<T> {
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22946() {
+	protected Iterable<ModelPart> getHeadParts() {
 		return ImmutableList.<ModelPart>of(this.head);
 	}
 
 	@Override
-	protected Iterable<ModelPart> method_22948() {
+	protected Iterable<ModelPart> getBodyParts() {
 		return ImmutableList.<ModelPart>of(this.body, this.frontLeftLeg, this.frontRightLeg, this.rearLeftLeg, this.rearRightLeg);
 	}
 

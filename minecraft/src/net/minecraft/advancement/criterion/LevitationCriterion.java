@@ -23,7 +23,7 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		return new LevitationCriterion.Conditions(distancePredicate, intRange);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+	public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
 		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, vec3d, i));
 	}
 

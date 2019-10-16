@@ -151,18 +151,20 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 	public void setStructureStarts(BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator<?> chunkGenerator, StructureManager structureManager) {
 		for (StructureFeature<?> structureFeature : Feature.STRUCTURES.values()) {
 			if (chunkGenerator.getBiomeSource().hasStructureFeature(structureFeature)) {
+				StructureStart structureStart = chunk.getStructureStart(structureFeature.getName());
+				int i = structureStart != null ? structureStart.method_23676() : 0;
 				ChunkRandom chunkRandom = new ChunkRandom();
 				ChunkPos chunkPos = chunk.getPos();
-				StructureStart structureStart = StructureStart.DEFAULT;
+				StructureStart structureStart2 = StructureStart.DEFAULT;
 				Biome biome = biomeAccess.getBiome(new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
 				if (structureFeature.shouldStartAt(biomeAccess, chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z, biome)) {
-					StructureStart structureStart2 = structureFeature.getStructureStartFactory()
-						.create(structureFeature, chunkPos.x, chunkPos.z, BlockBox.empty(), 0, chunkGenerator.getSeed());
-					structureStart2.initialize(this, structureManager, chunkPos.x, chunkPos.z, biome);
-					structureStart = structureStart2.hasChildren() ? structureStart2 : StructureStart.DEFAULT;
+					StructureStart structureStart3 = structureFeature.getStructureStartFactory()
+						.create(structureFeature, chunkPos.x, chunkPos.z, BlockBox.empty(), i, chunkGenerator.getSeed());
+					structureStart3.initialize(this, structureManager, chunkPos.x, chunkPos.z, biome);
+					structureStart2 = structureStart3.hasChildren() ? structureStart3 : StructureStart.DEFAULT;
 				}
 
-				chunk.setStructureStart(structureFeature.getName(), structureStart);
+				chunk.setStructureStart(structureFeature.getName(), structureStart2);
 			}
 		}
 	}

@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -28,6 +29,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -60,7 +62,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if ((Boolean)blockState.get(LIT)) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CampfireBlockEntity) {
@@ -73,14 +75,15 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 						)
 					 {
 						playerEntity.incrementStat(Stats.INTERACT_WITH_CAMPFIRE);
+						return ActionResult.SUCCESS;
 					}
 
-					return true;
+					return ActionResult.CONSUME;
 				}
 			}
 		}
 
-		return false;
+		return ActionResult.PASS;
 	}
 
 	@Override
@@ -211,9 +214,9 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
-		if (!world.isClient && entity instanceof ProjectileEntity) {
-			ProjectileEntity projectileEntity = (ProjectileEntity)entity;
-			if (projectileEntity.isOnFire() && !(Boolean)blockState.get(LIT) && !(Boolean)blockState.get(WATERLOGGED)) {
+		if (!world.isClient) {
+			boolean bl = entity instanceof AbstractFireballEntity || entity instanceof ProjectileEntity && entity.isOnFire();
+			if (bl && !(Boolean)blockState.get(LIT) && !(Boolean)blockState.get(WATERLOGGED)) {
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
 			}
