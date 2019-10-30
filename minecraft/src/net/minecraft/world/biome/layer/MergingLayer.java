@@ -1,16 +1,16 @@
 package net.minecraft.world.biome.layer;
 
 public interface MergingLayer extends CoordinateTransformer {
-	default <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> layerSampleContext, LayerFactory<R> layerFactory, LayerFactory<R> layerFactory2) {
+	default <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> context, LayerFactory<R> layer1, LayerFactory<R> layer2) {
 		return () -> {
-			R layerSampler = layerFactory.make();
-			R layerSampler2 = layerFactory2.make();
-			return layerSampleContext.createSampler((i, j) -> {
-				layerSampleContext.initSeed((long)i, (long)j);
-				return this.sample(layerSampleContext, layerSampler, layerSampler2, i, j);
+			R layerSampler = layer1.make();
+			R layerSampler2 = layer2.make();
+			return context.createSampler((i, j) -> {
+				context.initSeed((long)i, (long)j);
+				return this.sample(context, layerSampler, layerSampler2, i, j);
 			}, layerSampler, layerSampler2);
 		};
 	}
 
-	int sample(LayerRandomnessSource layerRandomnessSource, LayerSampler layerSampler, LayerSampler layerSampler2, int i, int j);
+	int sample(LayerRandomnessSource context, LayerSampler sampler1, LayerSampler sampler2, int x, int z);
 }

@@ -15,10 +15,10 @@ public abstract class CombinedEntry extends LootEntry {
 	protected final LootEntry[] children;
 	private final EntryCombiner predicate;
 
-	protected CombinedEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
-		super(lootConditions);
-		this.children = lootEntrys;
-		this.predicate = this.combine(lootEntrys);
+	protected CombinedEntry(LootEntry[] children, LootCondition[] conditions) {
+		super(conditions);
+		this.children = children;
+		this.predicate = this.combine(children);
 	}
 
 	@Override
@@ -33,25 +33,25 @@ public abstract class CombinedEntry extends LootEntry {
 		}
 	}
 
-	protected abstract EntryCombiner combine(EntryCombiner[] entryCombiners);
+	protected abstract EntryCombiner combine(EntryCombiner[] children);
 
 	@Override
 	public final boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
 		return !this.test(lootContext) ? false : this.predicate.expand(lootContext, consumer);
 	}
 
-	public static <T extends CombinedEntry> CombinedEntry.Serializer<T> createSerializer(Identifier identifier, Class<T> class_, CombinedEntry.Factory<T> factory) {
-		return new CombinedEntry.Serializer<T>(identifier, class_) {
+	public static <T extends CombinedEntry> CombinedEntry.Serializer<T> createSerializer(Identifier id, Class<T> type, CombinedEntry.Factory<T> entry) {
+		return new CombinedEntry.Serializer<T>(id, type) {
 			@Override
-			protected T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootEntry[] lootEntrys, LootCondition[] lootConditions) {
-				return factory.create(lootEntrys, lootConditions);
+			protected T fromJson(JsonObject json, JsonDeserializationContext context, LootEntry[] children, LootCondition[] conditions) {
+				return entry.create(children, conditions);
 			}
 		};
 	}
 
 	@FunctionalInterface
 	public interface Factory<T extends CombinedEntry> {
-		T create(LootEntry[] lootEntrys, LootCondition[] lootConditions);
+		T create(LootEntry[] children, LootCondition[] conditions);
 	}
 
 	public abstract static class Serializer<T extends CombinedEntry> extends LootEntry.Serializer<T> {
@@ -68,8 +68,6 @@ public abstract class CombinedEntry extends LootEntry {
 			return this.fromJson(jsonObject, jsonDeserializationContext, lootEntrys, lootConditions);
 		}
 
-		protected abstract T fromJson(
-			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootEntry[] lootEntrys, LootCondition[] lootConditions
-		);
+		protected abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootEntry[] children, LootCondition[] conditions);
 	}
 }

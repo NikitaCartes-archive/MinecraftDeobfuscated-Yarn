@@ -25,10 +25,8 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		return new BredAnimalsCriterion.Conditions(entityPredicate, entityPredicate2, entityPredicate3);
 	}
 
-	public void trigger(
-		ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity
-	) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity));
+	public void trigger(ServerPlayerEntity player, AnimalEntity parent, @Nullable AnimalEntity partner, @Nullable PassiveEntity child) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, parent, partner, child));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -36,11 +34,11 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		private final EntityPredicate partner;
 		private final EntityPredicate child;
 
-		public Conditions(EntityPredicate entityPredicate, EntityPredicate entityPredicate2, EntityPredicate entityPredicate3) {
+		public Conditions(EntityPredicate parent, EntityPredicate partner, EntityPredicate child) {
 			super(BredAnimalsCriterion.ID);
-			this.parent = entityPredicate;
-			this.partner = entityPredicate2;
-			this.child = entityPredicate3;
+			this.parent = parent;
+			this.partner = partner;
+			this.child = child;
 		}
 
 		public static BredAnimalsCriterion.Conditions any() {
@@ -51,14 +49,11 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 			return new BredAnimalsCriterion.Conditions(builder.build(), EntityPredicate.ANY, EntityPredicate.ANY);
 		}
 
-		public boolean matches(
-			ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity
-		) {
-			if (!this.child.test(serverPlayerEntity, passiveEntity)) {
+		public boolean matches(ServerPlayerEntity player, AnimalEntity parent, @Nullable AnimalEntity partner, @Nullable PassiveEntity child) {
+			if (!this.child.test(player, child)) {
 				return false;
 			} else {
-				return this.parent.test(serverPlayerEntity, animalEntity) && this.partner.test(serverPlayerEntity, animalEntity2)
-					|| this.parent.test(serverPlayerEntity, animalEntity2) && this.partner.test(serverPlayerEntity, animalEntity);
+				return this.parent.test(player, parent) && this.partner.test(player, partner) || this.parent.test(player, partner) && this.partner.test(player, parent);
 			}
 		}
 

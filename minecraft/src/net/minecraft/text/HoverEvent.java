@@ -8,9 +8,9 @@ public class HoverEvent {
 	private final HoverEvent.Action action;
 	private final Text value;
 
-	public HoverEvent(HoverEvent.Action action, Text text) {
+	public HoverEvent(HoverEvent.Action action, Text value) {
 		this.action = action;
-		this.value = text;
+		this.value = value;
 	}
 
 	public HoverEvent.Action getAction() {
@@ -21,11 +21,11 @@ public class HoverEvent {
 		return this.value;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			HoverEvent hoverEvent = (HoverEvent)object;
+		} else if (obj != null && this.getClass() == obj.getClass()) {
+			HoverEvent hoverEvent = (HoverEvent)obj;
 			if (this.action != hoverEvent.action) {
 				return false;
 			} else {
@@ -51,13 +51,13 @@ public class HoverEvent {
 		SHOW_ENTITY("show_entity", true);
 
 		private static final Map<String, HoverEvent.Action> BY_NAME = (Map<String, HoverEvent.Action>)Arrays.stream(values())
-			.collect(Collectors.toMap(HoverEvent.Action::getName, action -> action));
+			.collect(Collectors.toMap(HoverEvent.Action::getName, a -> a));
 		private final boolean userDefinable;
 		private final String name;
 
-		private Action(String string2, boolean bl) {
-			this.name = string2;
-			this.userDefinable = bl;
+		private Action(String name, boolean userDefinable) {
+			this.name = name;
+			this.userDefinable = userDefinable;
 		}
 
 		public boolean isUserDefinable() {
@@ -68,8 +68,8 @@ public class HoverEvent {
 			return this.name;
 		}
 
-		public static HoverEvent.Action byName(String string) {
-			return (HoverEvent.Action)BY_NAME.get(string);
+		public static HoverEvent.Action byName(String name) {
+			return (HoverEvent.Action)BY_NAME.get(name);
 		}
 	}
 }

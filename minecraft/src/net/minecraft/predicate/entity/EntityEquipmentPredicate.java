@@ -32,19 +32,14 @@ public class EntityEquipmentPredicate {
 	private final ItemPredicate offhand;
 
 	public EntityEquipmentPredicate(
-		ItemPredicate itemPredicate,
-		ItemPredicate itemPredicate2,
-		ItemPredicate itemPredicate3,
-		ItemPredicate itemPredicate4,
-		ItemPredicate itemPredicate5,
-		ItemPredicate itemPredicate6
+		ItemPredicate head, ItemPredicate chest, ItemPredicate legs, ItemPredicate feet, ItemPredicate mainhand, ItemPredicate itemPredicate
 	) {
-		this.head = itemPredicate;
-		this.chest = itemPredicate2;
-		this.legs = itemPredicate3;
-		this.feet = itemPredicate4;
-		this.mainhand = itemPredicate5;
-		this.offhand = itemPredicate6;
+		this.head = head;
+		this.chest = chest;
+		this.legs = legs;
+		this.feet = feet;
+		this.mainhand = mainhand;
+		this.offhand = itemPredicate;
 	}
 
 	public boolean test(@Nullable Entity entity) {

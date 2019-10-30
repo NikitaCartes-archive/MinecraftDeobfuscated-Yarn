@@ -24,10 +24,10 @@ public class WanderingTraderManager {
 	private int spawnDelay;
 	private int spawnChance;
 
-	public WanderingTraderManager(ServerWorld serverWorld) {
-		this.world = serverWorld;
+	public WanderingTraderManager(ServerWorld world) {
+		this.world = world;
 		this.field_17728 = 1200;
-		LevelProperties levelProperties = serverWorld.getLevelProperties();
+		LevelProperties levelProperties = world.getLevelProperties();
 		this.spawnDelay = levelProperties.getWanderingTraderSpawnDelay();
 		this.spawnChance = levelProperties.getWanderingTraderSpawnChance();
 		if (this.spawnDelay == 0 && this.spawnChance == 0) {

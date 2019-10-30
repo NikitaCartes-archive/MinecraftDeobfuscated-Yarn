@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ChunkToProtoChunkFix extends DataFix {
-	public ChunkToProtoChunkFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ChunkToProtoChunkFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

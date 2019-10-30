@@ -13,19 +13,19 @@ import net.minecraft.util.Identifier;
 public class SetCountLootFunction extends ConditionalLootFunction {
 	private final LootTableRange countRange;
 
-	private SetCountLootFunction(LootCondition[] lootConditions, LootTableRange lootTableRange) {
-		super(lootConditions);
-		this.countRange = lootTableRange;
+	private SetCountLootFunction(LootCondition[] conditions, LootTableRange countRange) {
+		super(conditions);
+		this.countRange = countRange;
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		itemStack.setCount(this.countRange.next(lootContext.getRandom()));
-		return itemStack;
+	public ItemStack process(ItemStack stack, LootContext context) {
+		stack.setCount(this.countRange.next(context.getRandom()));
+		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(LootTableRange lootTableRange) {
-		return builder(lootConditions -> new SetCountLootFunction(lootConditions, lootTableRange));
+	public static ConditionalLootFunction.Builder<?> builder(LootTableRange countRange) {
+		return builder(conditions -> new SetCountLootFunction(conditions, countRange));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetCountLootFunction> {

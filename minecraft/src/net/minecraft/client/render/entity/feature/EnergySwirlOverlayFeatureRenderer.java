@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -20,31 +20,31 @@ public abstract class EnergySwirlOverlayFeatureRenderer<T extends Entity & SkinO
 	@Override
 	public void render(
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		T entity,
 		float f,
 		float g,
+		float tickDelta,
 		float h,
 		float j,
 		float k,
-		float l,
-		float m
+		float l
 	) {
 		if (entity.shouldRenderOverlay()) {
-			float n = (float)entity.age + h;
+			float m = (float)entity.age + tickDelta;
 			EntityModel<T> entityModel = this.getEnergySwirlModel();
-			entityModel.animateModel(entity, f, g, h);
+			entityModel.animateModel(entity, f, g, tickDelta);
 			this.getModel().copyStateTo(entityModel);
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(
-				RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(n), n * 0.01F)
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(
+				RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(m), m * 0.01F)
 			);
-			entityModel.setAngles(entity, f, g, j, k, l, m);
+			entityModel.setAngles(entity, f, g, h, j, k, l);
 			entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F);
 		}
 	}
 
-	protected abstract float getEnergySwirlX(float f);
+	protected abstract float getEnergySwirlX(float partialAge);
 
 	protected abstract Identifier getEnergySwirlTexture();
 

@@ -4,21 +4,20 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
-import net.minecraft.class_4629;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 
-public class ColumnPlacer extends class_4629 {
+public class ColumnPlacer extends BlockPlacer {
 	private final int minSize;
 	private final int extraSize;
 
-	public ColumnPlacer(int i, int j) {
+	public ColumnPlacer(int minSize, int extraSize) {
 		super(BlockPlacerType.COLUMN_PLACER);
-		this.minSize = i;
-		this.extraSize = j;
+		this.minSize = minSize;
+		this.extraSize = extraSize;
 	}
 
 	public <T> ColumnPlacer(Dynamic<T> dynamic) {
@@ -37,17 +36,17 @@ public class ColumnPlacer extends class_4629 {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-				dynamicOps,
-				dynamicOps.createMap(
+				ops,
+				ops.createMap(
 					ImmutableMap.of(
-						dynamicOps.createString("type"),
-						dynamicOps.createString(Registry.BLOCK_PLACER_TYPE.getId(this.field_21222).toString()),
-						dynamicOps.createString("min_size"),
-						dynamicOps.createInt(this.minSize),
-						dynamicOps.createString("extra_size"),
-						dynamicOps.createInt(this.extraSize)
+						ops.createString("type"),
+						ops.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString()),
+						ops.createString("min_size"),
+						ops.createInt(this.minSize),
+						ops.createString("extra_size"),
+						ops.createInt(this.extraSize)
 					)
 				)
 			)

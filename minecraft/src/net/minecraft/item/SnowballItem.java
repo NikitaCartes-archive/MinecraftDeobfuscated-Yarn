@@ -15,30 +15,23 @@ public class SnowballItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
 		world.playSound(
-			null,
-			playerEntity.getX(),
-			playerEntity.getY(),
-			playerEntity.getZ(),
-			SoundEvents.ENTITY_SNOWBALL_THROW,
-			SoundCategory.NEUTRAL,
-			0.5F,
-			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
-			SnowballEntity snowballEntity = new SnowballEntity(world, playerEntity);
+			SnowballEntity snowballEntity = new SnowballEntity(world, user);
 			snowballEntity.setItem(itemStack);
-			snowballEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			snowballEntity.setProperties(user, user.pitch, user.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(snowballEntity);
 		}
 
-		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (!playerEntity.abilities.creativeMode) {
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
+		if (!user.abilities.creativeMode) {
 			itemStack.decrement(1);
 		}
 
-		return TypedActionResult.successWithSwing(itemStack);
+		return TypedActionResult.success(itemStack);
 	}
 }

@@ -20,10 +20,10 @@ public class BannerTexture extends AbstractTexture {
 	private final List<String> patternNames;
 	private final List<DyeColor> dyes;
 
-	public BannerTexture(Identifier identifier, List<String> list, List<DyeColor> list2) {
-		this.filename = identifier;
-		this.patternNames = list;
-		this.dyes = list2;
+	public BannerTexture(Identifier filename, List<String> patternNames, List<DyeColor> dyes) {
+		this.filename = filename;
+		this.patternNames = patternNames;
+		this.dyes = dyes;
 	}
 
 	@Override

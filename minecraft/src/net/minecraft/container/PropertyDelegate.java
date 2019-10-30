@@ -1,9 +1,9 @@
 package net.minecraft.container;
 
 public interface PropertyDelegate {
-	int get(int i);
+	int get(int key);
 
-	void set(int i, int j);
+	void set(int key, int value);
 
 	int size();
 }

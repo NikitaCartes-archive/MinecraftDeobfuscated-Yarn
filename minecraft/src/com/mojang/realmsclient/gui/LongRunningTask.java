@@ -8,16 +8,16 @@ import net.fabricmc.api.Environment;
 public abstract class LongRunningTask implements Runnable {
 	protected RealmsLongRunningMcoTaskScreen longRunningMcoTaskScreen;
 
-	public void setScreen(RealmsLongRunningMcoTaskScreen realmsLongRunningMcoTaskScreen) {
-		this.longRunningMcoTaskScreen = realmsLongRunningMcoTaskScreen;
+	public void setScreen(RealmsLongRunningMcoTaskScreen longRunningMcoTaskScreen) {
+		this.longRunningMcoTaskScreen = longRunningMcoTaskScreen;
 	}
 
-	public void error(String string) {
-		this.longRunningMcoTaskScreen.method_21290(string);
+	public void error(String errorMessage) {
+		this.longRunningMcoTaskScreen.method_21290(errorMessage);
 	}
 
-	public void setTitle(String string) {
-		this.longRunningMcoTaskScreen.setTitle(string);
+	public void setTitle(String title) {
+		this.longRunningMcoTaskScreen.setTitle(title);
 	}
 
 	public boolean aborted() {

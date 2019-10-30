@@ -27,14 +27,14 @@ public abstract class StructurePoolElement {
 	}
 
 	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random
 	);
 
-	public abstract BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation);
+	public abstract BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation);
 
 	public abstract boolean generate(
 		StructureManager structureManager,
-		IWorld iWorld,
+		IWorld world,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
 		BlockRotation blockRotation,

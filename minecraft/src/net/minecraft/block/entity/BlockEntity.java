@@ -28,8 +28,8 @@ public abstract class BlockEntity {
 	private BlockState cachedState;
 	private boolean invalid;
 
-	public BlockEntity(BlockEntityType<?> blockEntityType) {
-		this.type = blockEntityType;
+	public BlockEntity(BlockEntityType<?> type) {
+		this.type = type;
 	}
 
 	@Nullable
@@ -102,11 +102,11 @@ public abstract class BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double getSquaredDistance(double d, double e, double f) {
-		double g = (double)this.pos.getX() + 0.5 - d;
-		double h = (double)this.pos.getY() + 0.5 - e;
-		double i = (double)this.pos.getZ() + 0.5 - f;
-		return g * g + h * h + i * i;
+	public double getSquaredDistance(double x, double y, double z) {
+		double d = (double)this.pos.getX() + 0.5 - x;
+		double e = (double)this.pos.getY() + 0.5 - y;
+		double f = (double)this.pos.getZ() + 0.5 - z;
+		return d * d + e * e + f * f;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -7,15 +7,15 @@ import net.fabricmc.api.Environment;
 public class I18n {
 	private static TranslationStorage storage;
 
-	static void setLanguage(TranslationStorage translationStorage) {
-		storage = translationStorage;
+	static void setLanguage(TranslationStorage storage) {
+		I18n.storage = storage;
 	}
 
-	public static String translate(String string, Object... objects) {
-		return storage.translate(string, objects);
+	public static String translate(String key, Object... args) {
+		return storage.translate(key, args);
 	}
 
-	public static boolean hasTranslation(String string) {
-		return storage.containsKey(string);
+	public static boolean hasTranslation(String key) {
+		return storage.containsKey(key);
 	}
 }

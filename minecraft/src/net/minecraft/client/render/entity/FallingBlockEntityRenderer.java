@@ -6,9 +6,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
@@ -32,31 +32,31 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		float g,
 		float h,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		VertexConsumerProvider vertexConsumerProvider
 	) {
 		BlockState blockState = fallingBlockEntity.getBlockState();
 		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			World world = fallingBlockEntity.getWorldClient();
 			if (blockState != world.getBlockState(new BlockPos(fallingBlockEntity)) && blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				matrixStack.push();
-				BlockPos blockPos = new BlockPos(fallingBlockEntity.getX(), fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.getZ());
+				BlockPos blockPos = new BlockPos(fallingBlockEntity.getX(), fallingBlockEntity.getBoundingBox().y2, fallingBlockEntity.getZ());
 				matrixStack.translate(-0.5, 0.0, -0.5);
 				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 				blockRenderManager.getModelRenderer()
-					.tesselate(
+					.render(
 						world,
 						blockRenderManager.getModel(blockState),
 						blockState,
 						blockPos,
 						matrixStack,
-						layeredVertexConsumerStorage.getBuffer(RenderLayers.getBlockLayer(blockState)),
+						vertexConsumerProvider.getBuffer(RenderLayers.getBlockLayer(blockState)),
 						false,
 						new Random(),
 						blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()),
 						OverlayTexture.DEFAULT_UV
 					);
 				matrixStack.pop();
-				super.render(fallingBlockEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+				super.render(fallingBlockEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 			}
 		}
 	}

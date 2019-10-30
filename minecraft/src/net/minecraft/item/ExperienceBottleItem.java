@@ -18,35 +18,35 @@ public class ExperienceBottleItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return true;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
 		world.playSound(
 			null,
-			playerEntity.getX(),
-			playerEntity.getY(),
-			playerEntity.getZ(),
+			user.getX(),
+			user.getY(),
+			user.getZ(),
 			SoundEvents.ENTITY_EXPERIENCE_BOTTLE_THROW,
 			SoundCategory.NEUTRAL,
 			0.5F,
 			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
-			ThrownExperienceBottleEntity thrownExperienceBottleEntity = new ThrownExperienceBottleEntity(world, playerEntity);
+			ThrownExperienceBottleEntity thrownExperienceBottleEntity = new ThrownExperienceBottleEntity(world, user);
 			thrownExperienceBottleEntity.setItem(itemStack);
-			thrownExperienceBottleEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.7F, 1.0F);
+			thrownExperienceBottleEntity.setProperties(user, user.pitch, user.yaw, -20.0F, 0.7F, 1.0F);
 			world.spawnEntity(thrownExperienceBottleEntity);
 		}
 
-		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (!playerEntity.abilities.creativeMode) {
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
+		if (!user.abilities.creativeMode) {
 			itemStack.decrement(1);
 		}
 
-		return TypedActionResult.successWithSwing(itemStack);
+		return TypedActionResult.success(itemStack);
 	}
 }

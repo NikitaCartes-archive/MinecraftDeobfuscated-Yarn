@@ -8,8 +8,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class OminousBannerBlockEntityRenameFix extends ChoiceFix {
-	public OminousBannerBlockEntityRenameFix(Schema schema, boolean bl) {
-		super(schema, bl, "OminousBannerBlockEntityRenameFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
+	public OminousBannerBlockEntityRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "OminousBannerBlockEntityRenameFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
 	}
 
 	@Override

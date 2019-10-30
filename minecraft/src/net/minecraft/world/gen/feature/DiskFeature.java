@@ -11,8 +11,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DiskFeature extends Feature<DiskFeatureConfig> {
-	public DiskFeature(Function<Dynamic<?>, ? extends DiskFeatureConfig> function) {
-		super(function);
+	public DiskFeature(Function<Dynamic<?>, ? extends DiskFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	public boolean method_13005(

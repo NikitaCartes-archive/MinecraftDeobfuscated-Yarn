@@ -7,9 +7,9 @@ public class PackResourceMetadata {
 	private final Text description;
 	private final int packFormat;
 
-	public PackResourceMetadata(Text text, int i) {
-		this.description = text;
-		this.packFormat = i;
+	public PackResourceMetadata(Text description, int format) {
+		this.description = description;
+		this.packFormat = format;
 	}
 
 	public Text getDescription() {

@@ -7,9 +7,9 @@ public class ParticleType<T extends ParticleEffect> {
 	private final boolean shouldAlwaysSpawn;
 	private final ParticleEffect.Factory<T> parametersFactory;
 
-	protected ParticleType(boolean bl, ParticleEffect.Factory<T> factory) {
-		this.shouldAlwaysSpawn = bl;
-		this.parametersFactory = factory;
+	protected ParticleType(boolean shouldAlwaysShow, ParticleEffect.Factory<T> parametersFactory) {
+		this.shouldAlwaysSpawn = shouldAlwaysShow;
+		this.parametersFactory = parametersFactory;
 	}
 
 	@Environment(EnvType.CLIENT)

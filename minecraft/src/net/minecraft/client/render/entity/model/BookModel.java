@@ -37,8 +37,8 @@ public class BookModel extends Model {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-		this.render(matrixStack, vertexConsumer, i, j, f, g, h, null);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
+		this.render(matrixStack, vertexConsumer, i, j, r, g, b, null);
 	}
 
 	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, @Nullable Sprite sprite) {

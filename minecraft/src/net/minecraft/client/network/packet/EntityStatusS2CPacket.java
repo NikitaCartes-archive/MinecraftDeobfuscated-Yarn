@@ -16,21 +16,21 @@ public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
 	public EntityStatusS2CPacket() {
 	}
 
-	public EntityStatusS2CPacket(Entity entity, byte b) {
+	public EntityStatusS2CPacket(Entity entity, byte status) {
 		this.id = entity.getEntityId();
-		this.status = b;
+		this.status = status;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readInt();
-		this.status = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readInt();
+		this.status = buf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeInt(this.id);
-		packetByteBuf.writeByte(this.status);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeInt(this.id);
+		buf.writeByte(this.status);
 	}
 
 	public void method_11471(ClientPlayPacketListener clientPlayPacketListener) {

@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.LargePufferfishEntityModel;
 import net.minecraft.client.render.entity.model.MediumPufferfishEntityModel;
@@ -30,14 +30,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 	}
 
 	public void method_4094(
-		PufferfishEntity pufferfishEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		int i = pufferfishEntity.getPuffState();
 		if (i != this.modelSize) {
@@ -52,7 +45,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 
 		this.modelSize = i;
 		this.field_4673 = 0.1F + 0.1F * (float)i;
-		super.method_4072(pufferfishEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.method_4072(pufferfishEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	protected void method_4095(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {

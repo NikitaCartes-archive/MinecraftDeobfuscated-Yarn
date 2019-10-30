@@ -8,10 +8,10 @@ public class StayAboveWaterTask extends Task<MobEntity> {
 	private final float minWaterHeight;
 	private final float chance;
 
-	public StayAboveWaterTask(float f, float g) {
+	public StayAboveWaterTask(float minWaterHeight, float chance) {
 		super(ImmutableMap.of());
-		this.minWaterHeight = f;
-		this.chance = g;
+		this.minWaterHeight = minWaterHeight;
+		this.chance = chance;
 	}
 
 	protected boolean method_19010(ServerWorld serverWorld, MobEntity mobEntity) {

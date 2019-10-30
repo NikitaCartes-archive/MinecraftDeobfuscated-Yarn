@@ -15,21 +15,21 @@ public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener
 	public EntityAnimationS2CPacket() {
 	}
 
-	public EntityAnimationS2CPacket(Entity entity, int i) {
+	public EntityAnimationS2CPacket(Entity entity, int animationId) {
 		this.id = entity.getEntityId();
-		this.animationId = i;
+		this.animationId = animationId;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.animationId = packetByteBuf.readUnsignedByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.animationId = buf.readUnsignedByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		packetByteBuf.writeByte(this.animationId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		buf.writeByte(this.animationId);
 	}
 
 	public void method_11268(ClientPlayPacketListener clientPlayPacketListener) {

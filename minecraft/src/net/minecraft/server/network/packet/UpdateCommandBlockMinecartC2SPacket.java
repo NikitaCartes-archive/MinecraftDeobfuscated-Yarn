@@ -28,17 +28,17 @@ public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPac
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.entityId = packetByteBuf.readVarInt();
-		this.command = packetByteBuf.readString(32767);
-		this.trackOutput = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.entityId = buf.readVarInt();
+		this.command = buf.readString(32767);
+		this.trackOutput = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.entityId);
-		packetByteBuf.writeString(this.command);
-		packetByteBuf.writeBoolean(this.trackOutput);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.entityId);
+		buf.writeString(this.command);
+		buf.writeBoolean(this.trackOutput);
 	}
 
 	public void method_12477(ServerPlayPacketListener serverPlayPacketListener) {

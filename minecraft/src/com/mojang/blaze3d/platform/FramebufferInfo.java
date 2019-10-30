@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class FramebufferInfo {
-	public static int field_20457;
-	public static int field_20458;
+	public static int target;
+	public static int renderBufferTarget;
 	public static int field_20459;
-	public static int field_20460;
+	public static int attachment;
 	public static int field_20461;
 	public static int field_20462;
 	public static int field_20463;

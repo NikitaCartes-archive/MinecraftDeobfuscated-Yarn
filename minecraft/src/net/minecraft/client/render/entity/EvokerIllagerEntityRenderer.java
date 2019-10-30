@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EvilVillagerEntityModel;
@@ -20,7 +20,7 @@ public class EvokerIllagerEntityRenderer<T extends SpellcastingIllagerEntity> ex
 			new HeldItemFeatureRenderer<T, EvilVillagerEntityModel<T>>(this) {
 				public void method_23170(
 					MatrixStack matrixStack,
-					LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+					VertexConsumerProvider vertexConsumerProvider,
 					int i,
 					T spellcastingIllagerEntity,
 					float f,
@@ -32,7 +32,7 @@ public class EvokerIllagerEntityRenderer<T extends SpellcastingIllagerEntity> ex
 					float m
 				) {
 					if (spellcastingIllagerEntity.isSpellcasting()) {
-						super.method_17162(matrixStack, layeredVertexConsumerStorage, i, spellcastingIllagerEntity, f, g, h, j, k, l, m);
+						super.method_17162(matrixStack, vertexConsumerProvider, i, spellcastingIllagerEntity, f, g, h, j, k, l, m);
 					}
 				}
 			}

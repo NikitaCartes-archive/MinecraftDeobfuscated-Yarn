@@ -21,12 +21,12 @@ public class LogarithmicOption extends DoubleOption {
 	}
 
 	@Override
-	public double getRatio(double d) {
-		return Math.log(d / this.min) / Math.log(this.max / this.min);
+	public double getRatio(double value) {
+		return Math.log(value / this.min) / Math.log(this.max / this.min);
 	}
 
 	@Override
-	public double getValue(double d) {
-		return this.min * Math.pow(Math.E, Math.log(this.max / this.min) * d);
+	public double getValue(double ratio) {
+		return this.min * Math.pow(Math.E, Math.log(this.max / this.min) * ratio);
 	}
 }

@@ -16,10 +16,10 @@ public class GuiActionConfirmC2SPacket implements Packet<ServerPlayPacketListene
 	}
 
 	@Environment(EnvType.CLIENT)
-	public GuiActionConfirmC2SPacket(int i, short s, boolean bl) {
-		this.windowId = i;
-		this.actionId = s;
-		this.accepted = bl;
+	public GuiActionConfirmC2SPacket(int windowId, short actionId, boolean accepted) {
+		this.windowId = windowId;
+		this.actionId = actionId;
+		this.accepted = accepted;
 	}
 
 	public void method_12177(ServerPlayPacketListener serverPlayPacketListener) {
@@ -27,17 +27,17 @@ public class GuiActionConfirmC2SPacket implements Packet<ServerPlayPacketListene
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.windowId = packetByteBuf.readByte();
-		this.actionId = packetByteBuf.readShort();
-		this.accepted = packetByteBuf.readByte() != 0;
+	public void read(PacketByteBuf buf) throws IOException {
+		this.windowId = buf.readByte();
+		this.actionId = buf.readShort();
+		this.accepted = buf.readByte() != 0;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.windowId);
-		packetByteBuf.writeShort(this.actionId);
-		packetByteBuf.writeByte(this.accepted ? 1 : 0);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.windowId);
+		buf.writeShort(this.actionId);
+		buf.writeByte(this.accepted ? 1 : 0);
 	}
 
 	public int getWindowId() {

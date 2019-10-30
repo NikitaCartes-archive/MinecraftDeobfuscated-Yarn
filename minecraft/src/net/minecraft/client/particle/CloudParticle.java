@@ -11,23 +11,23 @@ import net.minecraft.world.World;
 public class CloudParticle extends SpriteBillboardParticle {
 	private final SpriteProvider field_17862;
 
-	private CloudParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	private CloudParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
+		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.field_17862 = spriteProvider;
-		float j = 2.5F;
+		float g = 2.5F;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
-		this.velocityX += g;
-		this.velocityY += h;
-		this.velocityZ += i;
-		float k = 1.0F - (float)(Math.random() * 0.3F);
-		this.colorRed = k;
-		this.colorGreen = k;
-		this.colorBlue = k;
+		this.velocityX += d;
+		this.velocityY += e;
+		this.velocityZ += f;
+		float h = 1.0F - (float)(Math.random() * 0.3F);
+		this.colorRed = h;
+		this.colorGreen = h;
+		this.colorBlue = h;
 		this.scale *= 1.875F;
-		int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
-		this.maxAge = (int)Math.max((float)l * 2.5F, 1.0F);
+		int i = (int)(8.0 / (Math.random() * 0.8 + 0.3));
+		this.maxAge = (int)Math.max((float)i * 2.5F, 1.0F);
 		this.collidesWithWorld = false;
 		this.setSpriteForAge(spriteProvider);
 	}
@@ -38,8 +38,8 @@ public class CloudParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float f) {
-		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float tickDelta) {
+		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override

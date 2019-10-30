@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -132,11 +132,11 @@ public abstract class Option {
 		}
 	);
 	public static final BooleanOption RAW_MOUSE_INPUT = new BooleanOption(
-		"options.rawMouseInput", gameOptions -> gameOptions.field_20308, (gameOptions, boolean_) -> {
-			gameOptions.field_20308 = boolean_;
+		"options.rawMouseInput", gameOptions -> gameOptions.rawMouseInput, (gameOptions, boolean_) -> {
+			gameOptions.rawMouseInput = boolean_;
 			Window window = MinecraftClient.getInstance().getWindow();
 			if (window != null) {
-				window.method_21668(boolean_);
+				window.setRawMouseMotion(boolean_);
 			}
 		}
 	);
@@ -272,7 +272,7 @@ public abstract class Option {
 			gameOptions.forceUnicodeFont = boolean_;
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			if (minecraftClient.getFontManager() != null) {
-				minecraftClient.getFontManager().setForceUnicodeFont(gameOptions.forceUnicodeFont, SystemUtil.getServerWorkerExecutor(), minecraftClient);
+				minecraftClient.getFontManager().setForceUnicodeFont(gameOptions.forceUnicodeFont, Util.getServerWorkerExecutor(), minecraftClient);
 			}
 		}
 	);
@@ -294,15 +294,15 @@ public abstract class Option {
 
 		return false;
 	}, (gameOptions, boolean_) -> gameOptions.snooperEnabled = boolean_);
-	public static final CyclingOption field_21330 = new CyclingOption(
+	public static final CyclingOption SNEAK_TOGGLED = new CyclingOption(
 		"key.sneak",
-		(gameOptions, integer) -> gameOptions.field_21332 = !gameOptions.field_21332,
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.field_21332 ? "options.key.toggle" : "options.key.hold")
+		(gameOptions, integer) -> gameOptions.sneakToggled = !gameOptions.sneakToggled,
+		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.sneakToggled ? "options.key.toggle" : "options.key.hold")
 	);
-	public static final CyclingOption field_21331 = new CyclingOption(
+	public static final CyclingOption SPRINT_TOGGLED = new CyclingOption(
 		"key.sprint",
-		(gameOptions, integer) -> gameOptions.field_21333 = !gameOptions.field_21333,
-		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.field_21333 ? "options.key.toggle" : "options.key.hold")
+		(gameOptions, integer) -> gameOptions.sprintToggled = !gameOptions.sprintToggled,
+		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.sprintToggled ? "options.key.toggle" : "options.key.hold")
 	);
 	public static final BooleanOption TOUCHSCREEN = new BooleanOption(
 		"options.touchscreen", gameOptions -> gameOptions.touchscreen, (gameOptions, boolean_) -> gameOptions.touchscreen = boolean_
@@ -320,11 +320,11 @@ public abstract class Option {
 	);
 	private final String key;
 
-	public Option(String string) {
-		this.key = string;
+	public Option(String key) {
+		this.key = key;
 	}
 
-	public abstract AbstractButtonWidget createButton(GameOptions gameOptions, int i, int j, int k);
+	public abstract AbstractButtonWidget createButton(GameOptions options, int x, int y, int width);
 
 	public String getDisplayPrefix() {
 		return I18n.translate(this.key) + ": ";

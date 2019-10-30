@@ -66,14 +66,14 @@ public class PhantomEntityModel<T extends Entity> extends CompositeEntityModel<T
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		float l = ((float)(entity.getEntityId() * 3) + h) * 0.13F;
-		float m = 16.0F;
-		this.field_3477.roll = MathHelper.cos(l) * 16.0F * (float) (Math.PI / 180.0);
-		this.field_3476.roll = MathHelper.cos(l) * 16.0F * (float) (Math.PI / 180.0);
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		float f = ((float)(entity.getEntityId() * 3) + age) * 0.13F;
+		float g = 16.0F;
+		this.field_3477.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
+		this.field_3476.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
 		this.field_3474.roll = -this.field_3477.roll;
 		this.field_3472.roll = -this.field_3476.roll;
-		this.field_3471.pitch = -(5.0F + MathHelper.cos(l * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
-		this.field_3473.pitch = -(5.0F + MathHelper.cos(l * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
+		this.field_3471.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
+		this.field_3473.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
 	}
 }

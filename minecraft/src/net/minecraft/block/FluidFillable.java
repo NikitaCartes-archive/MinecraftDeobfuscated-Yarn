@@ -7,7 +7,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public interface FluidFillable {
-	boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid);
+	boolean canFillWithFluid(BlockView view, BlockPos pos, BlockState state, Fluid fluid);
 
-	boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState);
+	boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState);
 }

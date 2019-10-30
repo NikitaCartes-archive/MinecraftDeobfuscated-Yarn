@@ -21,12 +21,12 @@ public class HugeMushroomFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("cap_provider"), this.capProvider.serialize(dynamicOps))
-			.put(dynamicOps.createString("stem_provider"), this.stemProvider.serialize(dynamicOps))
-			.put(dynamicOps.createString("foliage_radius"), dynamicOps.createInt(this.field_21232));
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build()));
+		builder.put(ops.createString("cap_provider"), this.capProvider.serialize(ops))
+			.put(ops.createString("stem_provider"), this.stemProvider.serialize(ops))
+			.put(ops.createString("foliage_radius"), ops.createInt(this.field_21232));
+		return new Dynamic<>(ops, ops.createMap(builder.build()));
 	}
 
 	public static <T> HugeMushroomFeatureConfig method_23407(Dynamic<T> dynamic) {

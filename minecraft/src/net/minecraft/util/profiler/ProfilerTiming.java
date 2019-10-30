@@ -9,8 +9,8 @@ public final class ProfilerTiming implements Comparable<ProfilerTiming> {
 	public final long field_19384;
 	public final String name;
 
-	public ProfilerTiming(String string, double d, double e, long l) {
-		this.name = string;
+	public ProfilerTiming(String name, double d, double e, long l) {
+		this.name = name;
 		this.parentSectionUsagePercentage = d;
 		this.totalUsagePercentage = e;
 		this.field_19384 = l;

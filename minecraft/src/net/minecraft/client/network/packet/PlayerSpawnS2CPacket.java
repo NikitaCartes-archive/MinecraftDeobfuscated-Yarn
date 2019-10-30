@@ -21,36 +21,36 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public PlayerSpawnS2CPacket() {
 	}
 
-	public PlayerSpawnS2CPacket(PlayerEntity playerEntity) {
-		this.id = playerEntity.getEntityId();
-		this.uuid = playerEntity.getGameProfile().getId();
-		this.x = playerEntity.getX();
-		this.y = playerEntity.getY();
-		this.z = playerEntity.getZ();
-		this.yaw = (byte)((int)(playerEntity.yaw * 256.0F / 360.0F));
-		this.pitch = (byte)((int)(playerEntity.pitch * 256.0F / 360.0F));
+	public PlayerSpawnS2CPacket(PlayerEntity player) {
+		this.id = player.getEntityId();
+		this.uuid = player.getGameProfile().getId();
+		this.x = player.getX();
+		this.y = player.getY();
+		this.z = player.getZ();
+		this.yaw = (byte)((int)(player.yaw * 256.0F / 360.0F));
+		this.pitch = (byte)((int)(player.pitch * 256.0F / 360.0F));
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.uuid = packetByteBuf.readUuid();
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readByte();
-		this.pitch = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.uuid = buf.readUuid();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readByte();
+		this.pitch = buf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		packetByteBuf.writeUuid(this.uuid);
-		packetByteBuf.writeDouble(this.x);
-		packetByteBuf.writeDouble(this.y);
-		packetByteBuf.writeDouble(this.z);
-		packetByteBuf.writeByte(this.yaw);
-		packetByteBuf.writeByte(this.pitch);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		buf.writeUuid(this.uuid);
+		buf.writeDouble(this.x);
+		buf.writeDouble(this.y);
+		buf.writeDouble(this.z);
+		buf.writeByte(this.yaw);
+		buf.writeByte(this.pitch);
 	}
 
 	public void method_11235(ClientPlayPacketListener clientPlayPacketListener) {

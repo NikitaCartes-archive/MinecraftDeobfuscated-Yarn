@@ -16,8 +16,8 @@ public class CheckerboardBiomeSourceConfig implements BiomeSourceConfig {
 		return this;
 	}
 
-	public CheckerboardBiomeSourceConfig setSize(int i) {
-		this.size = i;
+	public CheckerboardBiomeSourceConfig setSize(int size) {
+		this.size = size;
 		return this;
 	}
 

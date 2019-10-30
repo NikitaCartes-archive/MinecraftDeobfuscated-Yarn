@@ -21,24 +21,24 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 		return new EntityHurtPlayerCriterion.Conditions(damagePredicate);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, damageSource, f, g, bl));
+	public void trigger(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, source, dealt, taken, blocked));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final DamagePredicate damage;
 
-		public Conditions(DamagePredicate damagePredicate) {
+		public Conditions(DamagePredicate damage) {
 			super(EntityHurtPlayerCriterion.ID);
-			this.damage = damagePredicate;
+			this.damage = damage;
 		}
 
 		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate.Builder builder) {
 			return new EntityHurtPlayerCriterion.Conditions(builder.build());
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
-			return this.damage.test(serverPlayerEntity, damageSource, f, g, bl);
+		public boolean matches(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
+			return this.damage.test(player, source, dealt, taken, blocked);
 		}
 
 		@Override

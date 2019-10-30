@@ -3,23 +3,22 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Set;
 import java.util.stream.Collectors;
-import net.minecraft.class_4629;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.placer.BlockPlacer;
 import net.minecraft.world.gen.placer.BlockPlacerType;
 import net.minecraft.world.gen.stateprovider.StateProvider;
 import net.minecraft.world.gen.stateprovider.StateProviderType;
 
 public class FlowerFeatureConfig implements FeatureConfig {
 	public final StateProvider field_21237;
-	public final class_4629 field_21238;
+	public final BlockPlacer field_21238;
 	public final Set<Block> field_21239;
 	public final Set<BlockState> field_21240;
 	public final int field_21241;
@@ -31,10 +30,10 @@ public class FlowerFeatureConfig implements FeatureConfig {
 	public final boolean field_21247;
 
 	private FlowerFeatureConfig(
-		StateProvider stateProvider, class_4629 arg, Set<Block> set, Set<BlockState> set2, int i, int j, int k, int l, boolean bl, boolean bl2, boolean bl3
+		StateProvider stateProvider, BlockPlacer blockPlacer, Set<Block> set, Set<BlockState> set2, int i, int j, int k, int l, boolean bl, boolean bl2, boolean bl3
 	) {
 		this.field_21237 = stateProvider;
-		this.field_21238 = arg;
+		this.field_21238 = blockPlacer;
 		this.field_21239 = set;
 		this.field_21240 = set2;
 		this.field_21241 = i;
@@ -47,26 +46,20 @@ public class FlowerFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("state_provider"), this.field_21237.serialize(dynamicOps))
-			.put(dynamicOps.createString("block_placer"), this.field_21238.serialize(dynamicOps))
-			.put(
-				dynamicOps.createString("whitelist"),
-				dynamicOps.createList(this.field_21239.stream().map(block -> BlockState.serialize(dynamicOps, block.getDefaultState()).getValue()))
-			)
-			.put(
-				dynamicOps.createString("blacklist"),
-				dynamicOps.createList(this.field_21240.stream().map(blockState -> BlockState.serialize(dynamicOps, blockState).getValue()))
-			)
-			.put(dynamicOps.createString("tries"), dynamicOps.createInt(this.field_21241))
-			.put(dynamicOps.createString("xspread"), dynamicOps.createInt(this.field_21242))
-			.put(dynamicOps.createString("yspread"), dynamicOps.createInt(this.field_21243))
-			.put(dynamicOps.createString("zspread"), dynamicOps.createInt(this.field_21244))
-			.put(dynamicOps.createString("can_replace"), dynamicOps.createBoolean(this.field_21245))
-			.put(dynamicOps.createString("project"), dynamicOps.createBoolean(this.field_21246))
-			.put(dynamicOps.createString("need_water"), dynamicOps.createBoolean(this.field_21247));
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build()));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
+		builder.put(ops.createString("state_provider"), this.field_21237.serialize(ops))
+			.put(ops.createString("block_placer"), this.field_21238.serialize(ops))
+			.put(ops.createString("whitelist"), ops.createList(this.field_21239.stream().map(block -> BlockState.serialize(ops, block.getDefaultState()).getValue())))
+			.put(ops.createString("blacklist"), ops.createList(this.field_21240.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue())))
+			.put(ops.createString("tries"), ops.createInt(this.field_21241))
+			.put(ops.createString("xspread"), ops.createInt(this.field_21242))
+			.put(ops.createString("yspread"), ops.createInt(this.field_21243))
+			.put(ops.createString("zspread"), ops.createInt(this.field_21244))
+			.put(ops.createString("can_replace"), ops.createBoolean(this.field_21245))
+			.put(ops.createString("project"), ops.createBoolean(this.field_21246))
+			.put(ops.createString("need_water"), ops.createBoolean(this.field_21247));
+		return new Dynamic<>(ops, ops.createMap(builder.build()));
 	}
 
 	public static <T> FlowerFeatureConfig method_23413(Dynamic<T> dynamic) {
@@ -89,9 +82,9 @@ public class FlowerFeatureConfig implements FeatureConfig {
 		);
 	}
 
-	public static class class_4639 {
+	public static class Builder {
 		private final StateProvider field_21248;
-		private final class_4629 field_21249;
+		private final BlockPlacer field_21249;
 		private Set<Block> field_21250 = ImmutableSet.of();
 		private Set<BlockState> field_21251 = ImmutableSet.of();
 		private int field_21252 = 64;
@@ -102,52 +95,52 @@ public class FlowerFeatureConfig implements FeatureConfig {
 		private boolean field_21257 = true;
 		private boolean field_21258 = false;
 
-		public class_4639(StateProvider stateProvider, class_4629 arg) {
+		public Builder(StateProvider stateProvider, BlockPlacer blockPlacer) {
 			this.field_21248 = stateProvider;
-			this.field_21249 = arg;
+			this.field_21249 = blockPlacer;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23418(Set<Block> set) {
+		public FlowerFeatureConfig.Builder method_23418(Set<Block> set) {
 			this.field_21250 = set;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23421(Set<BlockState> set) {
+		public FlowerFeatureConfig.Builder method_23421(Set<BlockState> set) {
 			this.field_21251 = set;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23417(int i) {
+		public FlowerFeatureConfig.Builder method_23417(int i) {
 			this.field_21252 = i;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23420(int i) {
+		public FlowerFeatureConfig.Builder method_23420(int i) {
 			this.field_21253 = i;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23423(int i) {
+		public FlowerFeatureConfig.Builder method_23423(int i) {
 			this.field_21254 = i;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23425(int i) {
+		public FlowerFeatureConfig.Builder method_23425(int i) {
 			this.field_21255 = i;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23416() {
+		public FlowerFeatureConfig.Builder method_23416() {
 			this.field_21256 = true;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23419() {
+		public FlowerFeatureConfig.Builder method_23419() {
 			this.field_21257 = false;
 			return this;
 		}
 
-		public FlowerFeatureConfig.class_4639 method_23422() {
+		public FlowerFeatureConfig.Builder method_23422() {
 			this.field_21258 = true;
 			return this;
 		}

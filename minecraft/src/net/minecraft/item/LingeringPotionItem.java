@@ -21,22 +21,22 @@ public class LingeringPotionItem extends ThrowablePotionItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		PotionUtil.buildTooltip(itemStack, list, 0.25F);
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		PotionUtil.buildTooltip(stack, tooltip, 0.25F);
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		world.playSound(
 			null,
-			playerEntity.getX(),
-			playerEntity.getY(),
-			playerEntity.getZ(),
+			user.getX(),
+			user.getY(),
+			user.getZ(),
 			SoundEvents.ENTITY_LINGERING_POTION_THROW,
 			SoundCategory.NEUTRAL,
 			0.5F,
 			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
-		return super.use(world, playerEntity, hand);
+		return super.use(world, user, hand);
 	}
 }

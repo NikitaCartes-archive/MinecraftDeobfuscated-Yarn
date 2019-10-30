@@ -24,12 +24,12 @@ public class BufferRenderer {
 		}
 	}
 
-	private static void draw(ByteBuffer byteBuffer, int i, VertexFormat vertexFormat, int j) {
+	private static void draw(ByteBuffer buffer, int mode, VertexFormat vertexFormat, int count) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		byteBuffer.clear();
-		if (j > 0) {
-			vertexFormat.startDrawing(MemoryUtil.memAddress(byteBuffer));
-			GlStateManager.drawArrays(i, 0, j);
+		buffer.clear();
+		if (count > 0) {
+			vertexFormat.startDrawing(MemoryUtil.memAddress(buffer));
+			GlStateManager.drawArrays(mode, 0, count);
 			vertexFormat.endDrawing();
 		}
 	}

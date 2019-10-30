@@ -4,15 +4,15 @@ public enum AddColdClimatesLayer implements SouthEastSamplingLayer {
 	INSTANCE;
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
-		if (BiomeLayers.isShallowOcean(i)) {
-			return i;
+	public int sample(LayerRandomnessSource context, int se) {
+		if (BiomeLayers.isShallowOcean(se)) {
+			return se;
 		} else {
-			int j = layerRandomnessSource.nextInt(6);
-			if (j == 0) {
+			int i = context.nextInt(6);
+			if (i == 0) {
 				return 4;
 			} else {
-				return j == 1 ? 3 : 1;
+				return i == 1 ? 3 : 1;
 			}
 		}
 	}

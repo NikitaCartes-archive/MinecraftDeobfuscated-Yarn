@@ -11,8 +11,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class CaveCarver extends Carver<ProbabilityConfig> {
-	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function, int i) {
-		super(function, i);
+	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer, int heightLimit) {
+		super(configDeserializer, heightLimit);
 	}
 
 	public boolean method_12676(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
@@ -138,7 +138,7 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 	}
 
 	@Override
-	protected boolean isPositionExcluded(double d, double e, double f, int i) {
-		return e <= -0.7 || d * d + e * e + f * f >= 1.0;
+	protected boolean isPositionExcluded(double scaledRelativeX, double scaledRelativeY, double scaledRelativeZ, int y) {
+		return scaledRelativeY <= -0.7 || scaledRelativeX * scaledRelativeX + scaledRelativeY * scaledRelativeY + scaledRelativeZ * scaledRelativeZ >= 1.0;
 	}
 }

@@ -11,8 +11,8 @@ import net.minecraft.loot.context.LootContextAware;
 import net.minecraft.util.Identifier;
 
 public interface LootFunction extends LootContextAware, BiFunction<ItemStack, LootContext, ItemStack> {
-	static Consumer<ItemStack> apply(BiFunction<ItemStack, LootContext, ItemStack> biFunction, Consumer<ItemStack> consumer, LootContext lootContext) {
-		return itemStack -> consumer.accept(biFunction.apply(itemStack, lootContext));
+	static Consumer<ItemStack> apply(BiFunction<ItemStack, LootContext, ItemStack> itemApplier, Consumer<ItemStack> itemDropper, LootContext context) {
+		return stack -> itemDropper.accept(itemApplier.apply(stack, context));
 	}
 
 	public interface Builder {
@@ -23,9 +23,9 @@ public interface LootFunction extends LootContextAware, BiFunction<ItemStack, Lo
 		private final Identifier id;
 		private final Class<T> functionClass;
 
-		protected Factory(Identifier identifier, Class<T> class_) {
-			this.id = identifier;
-			this.functionClass = class_;
+		protected Factory(Identifier id, Class<T> clazz) {
+			this.id = id;
+			this.functionClass = clazz;
 		}
 
 		public Identifier getId() {
@@ -36,8 +36,8 @@ public interface LootFunction extends LootContextAware, BiFunction<ItemStack, Lo
 			return this.functionClass;
 		}
 
-		public abstract void toJson(JsonObject jsonObject, T lootFunction, JsonSerializationContext jsonSerializationContext);
+		public abstract void toJson(JsonObject json, T function, JsonSerializationContext context);
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
+		public abstract T fromJson(JsonObject json, JsonDeserializationContext context);
 	}
 }

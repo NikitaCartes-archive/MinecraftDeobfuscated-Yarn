@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
 
 public class SavedDataVillageCropFix extends DataFix {
-	public SavedDataVillageCropFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public SavedDataVillageCropFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -22,16 +22,16 @@ public class SavedDataVillageCropFix extends DataFix {
 		);
 	}
 
-	private <T> Dynamic<T> method_5152(Dynamic<T> dynamic) {
-		return dynamic.update("Children", SavedDataVillageCropFix::method_5157);
+	private <T> Dynamic<T> method_5152(Dynamic<T> tag) {
+		return tag.update("Children", SavedDataVillageCropFix::method_5157);
 	}
 
-	private static <T> Dynamic<T> method_5157(Dynamic<T> dynamic) {
-		return (Dynamic<T>)dynamic.asStreamOpt().map(SavedDataVillageCropFix::fixVillageChildren).map(dynamic::createList).orElse(dynamic);
+	private static <T> Dynamic<T> method_5157(Dynamic<T> tag) {
+		return (Dynamic<T>)tag.asStreamOpt().map(SavedDataVillageCropFix::fixVillageChildren).map(tag::createList).orElse(tag);
 	}
 
-	private static Stream<? extends Dynamic<?>> fixVillageChildren(Stream<? extends Dynamic<?>> stream) {
-		return stream.map(dynamic -> {
+	private static Stream<? extends Dynamic<?>> fixVillageChildren(Stream<? extends Dynamic<?>> villageChildren) {
+		return villageChildren.map(dynamic -> {
 			String string = dynamic.get("id").asString("");
 			if ("ViF".equals(string)) {
 				return fixSmallPlotCropIds(dynamic);
@@ -41,19 +41,19 @@ public class SavedDataVillageCropFix extends DataFix {
 		});
 	}
 
-	private static <T> Dynamic<T> fixSmallPlotCropIds(Dynamic<T> dynamic) {
-		dynamic = fixCropId(dynamic, "CA");
-		return fixCropId(dynamic, "CB");
+	private static <T> Dynamic<T> fixSmallPlotCropIds(Dynamic<T> tag) {
+		tag = fixCropId(tag, "CA");
+		return fixCropId(tag, "CB");
 	}
 
-	private static <T> Dynamic<T> fixLargePlotCropIds(Dynamic<T> dynamic) {
-		dynamic = fixCropId(dynamic, "CA");
-		dynamic = fixCropId(dynamic, "CB");
-		dynamic = fixCropId(dynamic, "CC");
-		return fixCropId(dynamic, "CD");
+	private static <T> Dynamic<T> fixLargePlotCropIds(Dynamic<T> tag) {
+		tag = fixCropId(tag, "CA");
+		tag = fixCropId(tag, "CB");
+		tag = fixCropId(tag, "CC");
+		return fixCropId(tag, "CD");
 	}
 
-	private static <T> Dynamic<T> fixCropId(Dynamic<T> dynamic, String string) {
-		return dynamic.get(string).asNumber().isPresent() ? dynamic.set(string, BlockStateFlattening.lookupState(dynamic.get(string).asInt(0) << 4)) : dynamic;
+	private static <T> Dynamic<T> fixCropId(Dynamic<T> tag, String cropId) {
+		return tag.get(cropId).asNumber().isPresent() ? tag.set(cropId, BlockStateFlattening.lookupState(tag.get(cropId).asInt(0) << 4)) : tag;
 	}
 }

@@ -18,9 +18,9 @@ public class PlayerSkullBlock extends SkullBlock {
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+		super.onPlaced(world, pos, state, placer, itemStack);
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof SkullBlockEntity) {
 			SkullBlockEntity skullBlockEntity = (SkullBlockEntity)blockEntity;
 			GameProfile gameProfile = null;

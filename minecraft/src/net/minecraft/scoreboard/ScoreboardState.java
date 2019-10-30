@@ -26,18 +26,18 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag tag) {
 		if (this.scoreboard == null) {
-			this.tag = compoundTag;
+			this.tag = tag;
 		} else {
-			this.deserializeObjectives(compoundTag.getList("Objectives", 10));
-			this.scoreboard.fromTag(compoundTag.getList("PlayerScores", 10));
-			if (compoundTag.contains("DisplaySlots", 10)) {
-				this.deserializeDisplaySlots(compoundTag.getCompound("DisplaySlots"));
+			this.deserializeObjectives(tag.getList("Objectives", 10));
+			this.scoreboard.fromTag(tag.getList("PlayerScores", 10));
+			if (tag.contains("DisplaySlots", 10)) {
+				this.deserializeDisplaySlots(tag.getCompound("DisplaySlots"));
 			}
 
-			if (compoundTag.contains("Teams", 9)) {
-				this.deserializeTeams(compoundTag.getList("Teams", 10));
+			if (tag.contains("Teams", 9)) {
+				this.deserializeTeams(tag.getList("Teams", 10));
 			}
 		}
 	}
@@ -140,16 +140,16 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag tag) {
 		if (this.scoreboard == null) {
 			LOGGER.warn("Tried to save scoreboard without having a scoreboard...");
-			return compoundTag;
+			return tag;
 		} else {
-			compoundTag.put("Objectives", this.serializeObjectives());
-			compoundTag.put("PlayerScores", this.scoreboard.toTag());
-			compoundTag.put("Teams", this.serializeTeams());
-			this.serializeSlots(compoundTag);
-			return compoundTag;
+			tag.put("Objectives", this.serializeObjectives());
+			tag.put("PlayerScores", this.scoreboard.toTag());
+			tag.put("Teams", this.serializeTeams());
+			this.serializeSlots(tag);
+			return tag;
 		}
 	}
 

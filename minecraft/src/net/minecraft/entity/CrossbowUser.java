@@ -5,9 +5,9 @@ import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.item.ItemStack;
 
 public interface CrossbowUser {
-	void setCharging(boolean bl);
+	void setCharging(boolean charging);
 
-	void shoot(LivingEntity livingEntity, ItemStack itemStack, Projectile projectile, float f);
+	void shoot(LivingEntity target, ItemStack crossbow, Projectile projectile, float multiShotSpray);
 
 	@Nullable
 	LivingEntity getTarget();

@@ -16,9 +16,9 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	private final int chance;
 	private boolean field_6473;
 
-	public DolphinJumpGoal(DolphinEntity dolphinEntity, int i) {
-		this.dolphin = dolphinEntity;
-		this.chance = i;
+	public DolphinJumpGoal(DolphinEntity dolphin, int chance) {
+		this.dolphin = dolphin;
+		this.chance = chance;
 	}
 
 	@Override
@@ -41,13 +41,13 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 		}
 	}
 
-	private boolean isWater(BlockPos blockPos, int i, int j, int k) {
-		BlockPos blockPos2 = blockPos.add(i * k, 0, j * k);
-		return this.dolphin.world.getFluidState(blockPos2).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos2).getMaterial().blocksMovement();
+	private boolean isWater(BlockPos pos, int i, int j, int k) {
+		BlockPos blockPos = pos.add(i * k, 0, j * k);
+		return this.dolphin.world.getFluidState(blockPos).matches(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).getMaterial().blocksMovement();
 	}
 
-	private boolean isAir(BlockPos blockPos, int i, int j, int k) {
-		return this.dolphin.world.getBlockState(blockPos.add(i * k, 1, j * k)).isAir() && this.dolphin.world.getBlockState(blockPos.add(i * k, 2, j * k)).isAir();
+	private boolean isAir(BlockPos pos, int i, int j, int k) {
+		return this.dolphin.world.getBlockState(pos.add(i * k, 1, j * k)).isAir() && this.dolphin.world.getBlockState(pos.add(i * k, 2, j * k)).isAir();
 	}
 
 	@Override

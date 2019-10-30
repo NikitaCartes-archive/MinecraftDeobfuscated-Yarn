@@ -15,8 +15,8 @@ import net.minecraft.util.JsonHelper;
 public final class ConstantLootTableRange implements LootTableRange {
 	private final int value;
 
-	public ConstantLootTableRange(int i) {
-		this.value = i;
+	public ConstantLootTableRange(int value) {
+		this.value = value;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public final class ConstantLootTableRange implements LootTableRange {
 		return CONSTANT;
 	}
 
-	public static ConstantLootTableRange create(int i) {
-		return new ConstantLootTableRange(i);
+	public static ConstantLootTableRange create(int value) {
+		return new ConstantLootTableRange(value);
 	}
 
 	public static class Serializer implements JsonDeserializer<ConstantLootTableRange>, JsonSerializer<ConstantLootTableRange> {

@@ -35,8 +35,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.successCount;
 	}
 
-	public void setSuccessCount(int i) {
-		this.successCount = i;
+	public void setSuccessCount(int successCount) {
+		this.successCount = successCount;
 	}
 
 	public Text getLastOutput() {
@@ -143,14 +143,14 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.customName;
 	}
 
-	public void setCustomName(Text text) {
-		this.customName = text;
+	public void setCustomName(Text customName) {
+		this.customName = customName;
 	}
 
 	@Override
-	public void sendMessage(Text text) {
+	public void sendMessage(Text message) {
 		if (this.trackOutput) {
-			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(text);
+			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
 			this.markDirty();
 		}
 	}
@@ -159,12 +159,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 
 	public abstract void markDirty();
 
-	public void setLastOutput(@Nullable Text text) {
-		this.lastOutput = text;
+	public void setLastOutput(@Nullable Text lastOutput) {
+		this.lastOutput = lastOutput;
 	}
 
-	public void shouldTrackOutput(boolean bl) {
-		this.trackOutput = bl;
+	public void shouldTrackOutput(boolean trackOutput) {
+		this.trackOutput = trackOutput;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -172,12 +172,12 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		return this.trackOutput;
 	}
 
-	public boolean interact(PlayerEntity playerEntity) {
-		if (!playerEntity.isCreativeLevelTwoOp()) {
+	public boolean interact(PlayerEntity player) {
+		if (!player.isCreativeLevelTwoOp()) {
 			return false;
 		} else {
-			if (playerEntity.getEntityWorld().isClient) {
-				playerEntity.openCommandBlockMinecartScreen(this);
+			if (player.getEntityWorld().isClient) {
+				player.openCommandBlockMinecartScreen(this);
 			}
 
 			return true;

@@ -30,17 +30,17 @@ public class IntTag extends AbstractNumberTag {
 	};
 	private final int value;
 
-	private IntTag(int i) {
-		this.value = i;
+	private IntTag(int value) {
+		this.value = value;
 	}
 
-	public static IntTag of(int i) {
-		return i >= -128 && i <= 1024 ? IntTag.Cache.VALUES[i + 128] : new IntTag(i);
+	public static IntTag of(int value) {
+		return value >= -128 && value <= 1024 ? IntTag.Cache.VALUES[value + 128] : new IntTag(value);
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeInt(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeInt(this.value);
 	}
 
 	@Override
@@ -62,11 +62,11 @@ public class IntTag extends AbstractNumberTag {
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			return object instanceof IntTag && this.value == ((IntTag)object).value;
+			return o instanceof IntTag && this.value == ((IntTag)o).value;
 		}
 	}
 
@@ -75,7 +75,7 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		return new LiteralText(String.valueOf(this.value)).formatted(GOLD);
 	}
 

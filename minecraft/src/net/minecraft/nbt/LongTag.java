@@ -30,17 +30,17 @@ public class LongTag extends AbstractNumberTag {
 	};
 	private final long value;
 
-	private LongTag(long l) {
-		this.value = l;
+	private LongTag(long value) {
+		this.value = value;
 	}
 
-	public static LongTag of(long l) {
-		return l >= -128L && l <= 1024L ? LongTag.Cache.VALUES[(int)l + 128] : new LongTag(l);
+	public static LongTag of(long value) {
+		return value >= -128L && value <= 1024L ? LongTag.Cache.VALUES[(int)value + 128] : new LongTag(value);
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeLong(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeLong(this.value);
 	}
 
 	@Override
@@ -62,11 +62,11 @@ public class LongTag extends AbstractNumberTag {
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			return object instanceof LongTag && this.value == ((LongTag)object).value;
+			return o instanceof LongTag && this.value == ((LongTag)o).value;
 		}
 	}
 
@@ -75,7 +75,7 @@ public class LongTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("L").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

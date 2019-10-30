@@ -16,29 +16,27 @@ import org.apache.logging.log4j.Logger;
 public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private FurnaceSmeltLootFunction(LootCondition[] lootConditions) {
-		super(lootConditions);
+	private FurnaceSmeltLootFunction(LootCondition[] conditions) {
+		super(conditions);
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.isEmpty()) {
-			return itemStack;
+	public ItemStack process(ItemStack stack, LootContext context) {
+		if (stack.isEmpty()) {
+			return stack;
 		} else {
-			Optional<SmeltingRecipe> optional = lootContext.getWorld()
-				.getRecipeManager()
-				.getFirstMatch(RecipeType.SMELTING, new BasicInventory(itemStack), lootContext.getWorld());
+			Optional<SmeltingRecipe> optional = context.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new BasicInventory(stack), context.getWorld());
 			if (optional.isPresent()) {
-				ItemStack itemStack2 = ((SmeltingRecipe)optional.get()).getOutput();
-				if (!itemStack2.isEmpty()) {
-					ItemStack itemStack3 = itemStack2.copy();
-					itemStack3.setCount(itemStack.getCount());
-					return itemStack3;
+				ItemStack itemStack = ((SmeltingRecipe)optional.get()).getOutput();
+				if (!itemStack.isEmpty()) {
+					ItemStack itemStack2 = itemStack.copy();
+					itemStack2.setCount(stack.getCount());
+					return itemStack2;
 				}
 			}
 
-			LOGGER.warn("Couldn't smelt {} because there is no smelting recipe", itemStack);
-			return itemStack;
+			LOGGER.warn("Couldn't smelt {} because there is no smelting recipe", stack);
+			return stack;
 		}
 	}
 

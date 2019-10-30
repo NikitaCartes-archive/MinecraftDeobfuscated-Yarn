@@ -8,9 +8,9 @@ public class DisjointDoubleListPair extends AbstractDoubleList implements Double
 	private final DoubleList second;
 	private final boolean field_1380;
 
-	public DisjointDoubleListPair(DoubleList doubleList, DoubleList doubleList2, boolean bl) {
-		this.first = doubleList;
-		this.second = doubleList2;
+	public DisjointDoubleListPair(DoubleList first, DoubleList second, boolean bl) {
+		this.first = first;
+		this.second = second;
 		this.field_1380 = bl;
 	}
 
@@ -19,8 +19,8 @@ public class DisjointDoubleListPair extends AbstractDoubleList implements Double
 	}
 
 	@Override
-	public boolean forAllOverlappingSections(DoubleListPair.SectionPairPredicate sectionPairPredicate) {
-		return this.field_1380 ? this.method_1067((i, j, k) -> sectionPairPredicate.merge(j, i, k)) : this.method_1067(sectionPairPredicate);
+	public boolean forAllOverlappingSections(DoubleListPair.SectionPairPredicate predicate) {
+		return this.field_1380 ? this.method_1067((i, j, k) -> predicate.merge(j, i, k)) : this.method_1067(predicate);
 	}
 
 	private boolean method_1067(DoubleListPair.SectionPairPredicate sectionPairPredicate) {
@@ -46,8 +46,8 @@ public class DisjointDoubleListPair extends AbstractDoubleList implements Double
 	}
 
 	@Override
-	public double getDouble(int i) {
-		return i < this.first.size() ? this.first.getDouble(i) : this.second.getDouble(i - this.first.size());
+	public double getDouble(int position) {
+		return position < this.first.size() ? this.first.getDouble(position) : this.second.getDouble(position - this.first.size());
 	}
 
 	@Override

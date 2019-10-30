@@ -18,21 +18,21 @@ public class RemoveEntityEffectS2CPacket implements Packet<ClientPlayPacketListe
 	public RemoveEntityEffectS2CPacket() {
 	}
 
-	public RemoveEntityEffectS2CPacket(int i, StatusEffect statusEffect) {
-		this.entityId = i;
-		this.effectType = statusEffect;
+	public RemoveEntityEffectS2CPacket(int entityId, StatusEffect effectType) {
+		this.entityId = entityId;
+		this.effectType = effectType;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.entityId = packetByteBuf.readVarInt();
-		this.effectType = StatusEffect.byRawId(packetByteBuf.readUnsignedByte());
+	public void read(PacketByteBuf buf) throws IOException {
+		this.entityId = buf.readVarInt();
+		this.effectType = StatusEffect.byRawId(buf.readUnsignedByte());
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.entityId);
-		packetByteBuf.writeByte(StatusEffect.getRawId(this.effectType));
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.entityId);
+		buf.writeByte(StatusEffect.getRawId(this.effectType));
 	}
 
 	public void method_11769(ClientPlayPacketListener clientPlayPacketListener) {

@@ -24,29 +24,29 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, abstractTraderEntity, itemStack));
+	public void handle(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, trader, stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate villager;
 		private final ItemPredicate item;
 
-		public Conditions(EntityPredicate entityPredicate, ItemPredicate itemPredicate) {
+		public Conditions(EntityPredicate entity, ItemPredicate item) {
 			super(VillagerTradeCriterion.ID);
-			this.villager = entityPredicate;
-			this.item = itemPredicate;
+			this.villager = entity;
+			this.item = item;
 		}
 
 		public static VillagerTradeCriterion.Conditions any() {
 			return new VillagerTradeCriterion.Conditions(EntityPredicate.ANY, ItemPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-			if (!this.villager.test(serverPlayerEntity, abstractTraderEntity)) {
+		public boolean matches(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
+			if (!this.villager.test(player, trader)) {
 				return false;
 			} else {
-				return this.item.test(itemStack);
+				return this.item.test(stack);
 			}
 		}
 

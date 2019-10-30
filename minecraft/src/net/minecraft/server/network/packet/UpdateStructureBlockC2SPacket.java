@@ -34,79 +34,73 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 
 	@Environment(EnvType.CLIENT)
 	public UpdateStructureBlockC2SPacket(
-		BlockPos blockPos,
+		BlockPos pos,
 		StructureBlockBlockEntity.Action action,
-		StructureBlockMode structureBlockMode,
-		String string,
-		BlockPos blockPos2,
-		BlockPos blockPos3,
-		BlockMirror blockMirror,
-		BlockRotation blockRotation,
-		String string2,
-		boolean bl,
-		boolean bl2,
-		boolean bl3,
-		float f,
-		long l
+		StructureBlockMode mode,
+		String structureName,
+		BlockPos offset,
+		BlockPos size,
+		BlockMirror mirror,
+		BlockRotation rotation,
+		String metadata,
+		boolean ignoreEntities,
+		boolean showAir,
+		boolean showBoundingBox,
+		float integrity,
+		long seed
 	) {
-		this.pos = blockPos;
+		this.pos = pos;
 		this.action = action;
-		this.mode = structureBlockMode;
-		this.structureName = string;
-		this.offset = blockPos2;
-		this.size = blockPos3;
-		this.mirror = blockMirror;
-		this.rotation = blockRotation;
-		this.metadata = string2;
-		this.ignoreEntities = bl;
-		this.showAir = bl2;
-		this.showBoundingBox = bl3;
-		this.integrity = f;
-		this.seed = l;
+		this.mode = mode;
+		this.structureName = structureName;
+		this.offset = offset;
+		this.size = size;
+		this.mirror = mirror;
+		this.rotation = rotation;
+		this.metadata = metadata;
+		this.ignoreEntities = ignoreEntities;
+		this.showAir = showAir;
+		this.showBoundingBox = showBoundingBox;
+		this.integrity = integrity;
+		this.seed = seed;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.pos = packetByteBuf.readBlockPos();
-		this.action = packetByteBuf.readEnumConstant(StructureBlockBlockEntity.Action.class);
-		this.mode = packetByteBuf.readEnumConstant(StructureBlockMode.class);
-		this.structureName = packetByteBuf.readString(32767);
-		this.offset = new BlockPos(
-			MathHelper.clamp(packetByteBuf.readByte(), -32, 32),
-			MathHelper.clamp(packetByteBuf.readByte(), -32, 32),
-			MathHelper.clamp(packetByteBuf.readByte(), -32, 32)
-		);
-		this.size = new BlockPos(
-			MathHelper.clamp(packetByteBuf.readByte(), 0, 32), MathHelper.clamp(packetByteBuf.readByte(), 0, 32), MathHelper.clamp(packetByteBuf.readByte(), 0, 32)
-		);
-		this.mirror = packetByteBuf.readEnumConstant(BlockMirror.class);
-		this.rotation = packetByteBuf.readEnumConstant(BlockRotation.class);
-		this.metadata = packetByteBuf.readString(12);
-		this.integrity = MathHelper.clamp(packetByteBuf.readFloat(), 0.0F, 1.0F);
-		this.seed = packetByteBuf.readVarLong();
-		int i = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.pos = buf.readBlockPos();
+		this.action = buf.readEnumConstant(StructureBlockBlockEntity.Action.class);
+		this.mode = buf.readEnumConstant(StructureBlockMode.class);
+		this.structureName = buf.readString(32767);
+		this.offset = new BlockPos(MathHelper.clamp(buf.readByte(), -32, 32), MathHelper.clamp(buf.readByte(), -32, 32), MathHelper.clamp(buf.readByte(), -32, 32));
+		this.size = new BlockPos(MathHelper.clamp(buf.readByte(), 0, 32), MathHelper.clamp(buf.readByte(), 0, 32), MathHelper.clamp(buf.readByte(), 0, 32));
+		this.mirror = buf.readEnumConstant(BlockMirror.class);
+		this.rotation = buf.readEnumConstant(BlockRotation.class);
+		this.metadata = buf.readString(12);
+		this.integrity = MathHelper.clamp(buf.readFloat(), 0.0F, 1.0F);
+		this.seed = buf.readVarLong();
+		int i = buf.readByte();
 		this.ignoreEntities = (i & 1) != 0;
 		this.showAir = (i & 2) != 0;
 		this.showBoundingBox = (i & 4) != 0;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeEnumConstant(this.action);
-		packetByteBuf.writeEnumConstant(this.mode);
-		packetByteBuf.writeString(this.structureName);
-		packetByteBuf.writeByte(this.offset.getX());
-		packetByteBuf.writeByte(this.offset.getY());
-		packetByteBuf.writeByte(this.offset.getZ());
-		packetByteBuf.writeByte(this.size.getX());
-		packetByteBuf.writeByte(this.size.getY());
-		packetByteBuf.writeByte(this.size.getZ());
-		packetByteBuf.writeEnumConstant(this.mirror);
-		packetByteBuf.writeEnumConstant(this.rotation);
-		packetByteBuf.writeString(this.metadata);
-		packetByteBuf.writeFloat(this.integrity);
-		packetByteBuf.writeVarLong(this.seed);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeBlockPos(this.pos);
+		buf.writeEnumConstant(this.action);
+		buf.writeEnumConstant(this.mode);
+		buf.writeString(this.structureName);
+		buf.writeByte(this.offset.getX());
+		buf.writeByte(this.offset.getY());
+		buf.writeByte(this.offset.getZ());
+		buf.writeByte(this.size.getX());
+		buf.writeByte(this.size.getY());
+		buf.writeByte(this.size.getZ());
+		buf.writeEnumConstant(this.mirror);
+		buf.writeEnumConstant(this.rotation);
+		buf.writeString(this.metadata);
+		buf.writeFloat(this.integrity);
+		buf.writeVarLong(this.seed);
 		int i = 0;
 		if (this.ignoreEntities) {
 			i |= 1;
@@ -120,7 +114,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 			i |= 4;
 		}
 
-		packetByteBuf.writeByte(i);
+		buf.writeByte(i);
 	}
 
 	public void method_12495(ServerPlayPacketListener serverPlayPacketListener) {

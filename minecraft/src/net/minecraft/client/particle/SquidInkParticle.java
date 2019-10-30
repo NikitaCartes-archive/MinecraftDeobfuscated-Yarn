@@ -8,17 +8,17 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SquidInkParticle extends AnimatedParticle {
-	private SquidInkParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-		super(world, d, e, f, spriteProvider, 0.0F);
+	private SquidInkParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+		super(world, x, y, z, spriteProvider, 0.0F);
 		this.scale = 0.5F;
 		this.setColorAlpha(1.0F);
 		this.setColor(0.0F, 0.0F, 0.0F);
 		this.maxAge = (int)((double)(this.scale * 12.0F) / (Math.random() * 0.8F + 0.2F));
 		this.setSpriteForAge(spriteProvider);
 		this.collidesWithWorld = false;
-		this.velocityX = g;
-		this.velocityY = h;
-		this.velocityZ = i;
+		this.velocityX = velocityX;
+		this.velocityY = velocityY;
+		this.velocityZ = velocityZ;
 		this.setResistance(0.0F);
 	}
 

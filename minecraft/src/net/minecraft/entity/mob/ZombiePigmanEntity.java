@@ -47,10 +47,10 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public void setAttacker(@Nullable LivingEntity livingEntity) {
-		super.setAttacker(livingEntity);
-		if (livingEntity != null) {
-			this.angerTarget = livingEntity.getUuid();
+	public void setAttacker(@Nullable LivingEntity attacker) {
+		super.setAttacker(attacker);
+		if (attacker != null) {
+			this.angerTarget = attacker.getUuid();
 		}
 	}
 
@@ -114,8 +114,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		super.mobTick();
 	}
 
-	public static boolean canSpawn(EntityType<ZombiePigmanEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
+	public static boolean canSpawn(EntityType<ZombiePigmanEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		return world.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	@Override
@@ -124,21 +124,21 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putShort("Anger", (short)this.anger);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putShort("Anger", (short)this.anger);
 		if (this.angerTarget != null) {
-			compoundTag.putString("HurtBy", this.angerTarget.toString());
+			tag.putString("HurtBy", this.angerTarget.toString());
 		} else {
-			compoundTag.putString("HurtBy", "");
+			tag.putString("HurtBy", "");
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.anger = compoundTag.getShort("Anger");
-		String string = compoundTag.getString("HurtBy");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.anger = tag.getShort("Anger");
+		String string = tag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.angerTarget = UUID.fromString(string);
 			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
@@ -151,16 +151,16 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		if (this.isInvulnerableTo(damageSource)) {
+	public boolean damage(DamageSource source, float amount) {
+		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			Entity entity = damageSource.getAttacker();
+			Entity entity = source.getAttacker();
 			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity)) {
 				this.method_20804(entity);
 			}
 
-			return super.damage(damageSource, f);
+			return super.damage(source, amount);
 		}
 	}
 
@@ -188,7 +188,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_ZOMBIE_PIGMAN_HURT;
 	}
 
@@ -198,12 +198,12 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+	public boolean interactMob(PlayerEntity player, Hand hand) {
 		return false;
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty localDifficulty) {
+	protected void initEquipment(LocalDifficulty difficulty) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
 	}
 
@@ -213,27 +213,27 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean isAngryAt(PlayerEntity playerEntity) {
+	public boolean isAngryAt(PlayerEntity player) {
 		return this.isAngry();
 	}
 
 	static class AvoidZombiesGoal extends RevengeGoal {
-		public AvoidZombiesGoal(ZombiePigmanEntity zombiePigmanEntity) {
-			super(zombiePigmanEntity);
+		public AvoidZombiesGoal(ZombiePigmanEntity pigman) {
+			super(pigman);
 			this.setGroupRevenge(new Class[]{ZombieEntity.class});
 		}
 
 		@Override
-		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-			if (mobEntity instanceof ZombiePigmanEntity && this.mob.canSee(livingEntity) && ((ZombiePigmanEntity)mobEntity).method_20804(livingEntity)) {
-				mobEntity.setTarget(livingEntity);
+		protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
+			if (mob instanceof ZombiePigmanEntity && this.mob.canSee(target) && ((ZombiePigmanEntity)mob).method_20804(target)) {
+				mob.setTarget(target);
 			}
 		}
 	}
 
 	static class FollowPlayerIfAngryGoal extends FollowTargetGoal<PlayerEntity> {
-		public FollowPlayerIfAngryGoal(ZombiePigmanEntity zombiePigmanEntity) {
-			super(zombiePigmanEntity, PlayerEntity.class, true);
+		public FollowPlayerIfAngryGoal(ZombiePigmanEntity pigman) {
+			super(pigman, PlayerEntity.class, true);
 		}
 
 		@Override

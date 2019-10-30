@@ -17,8 +17,8 @@ import net.minecraft.util.math.Vec3d;
 public class DamageSourcePropertiesLootCondition implements LootCondition {
 	private final DamageSourcePredicate predicate;
 
-	private DamageSourcePropertiesLootCondition(DamageSourcePredicate damageSourcePredicate) {
-		this.predicate = damageSourcePredicate;
+	private DamageSourcePropertiesLootCondition(DamageSourcePredicate predicate) {
+		this.predicate = predicate;
 	}
 
 	@Override

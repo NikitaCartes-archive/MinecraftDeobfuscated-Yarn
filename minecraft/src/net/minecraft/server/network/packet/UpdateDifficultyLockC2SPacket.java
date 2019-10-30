@@ -23,13 +23,13 @@ public class UpdateDifficultyLockC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.difficultyLocked = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.difficultyLocked = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeBoolean(this.difficultyLocked);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeBoolean(this.difficultyLocked);
 	}
 
 	public boolean isDifficultyLocked() {

@@ -17,9 +17,9 @@ public abstract class LootEntry implements EntryCombiner {
 	protected final LootCondition[] conditions;
 	private final Predicate<LootContext> conditionPredicate;
 
-	protected LootEntry(LootCondition[] lootConditions) {
-		this.conditions = lootConditions;
-		this.conditionPredicate = LootConditions.joinAnd(lootConditions);
+	protected LootEntry(LootCondition[] conditions) {
+		this.conditions = conditions;
+		this.conditionPredicate = LootConditions.joinAnd(conditions);
 	}
 
 	public void check(LootTableReporter lootTableReporter) {
@@ -28,8 +28,8 @@ public abstract class LootEntry implements EntryCombiner {
 		}
 	}
 
-	protected final boolean test(LootContext lootContext) {
-		return this.conditionPredicate.test(lootContext);
+	protected final boolean test(LootContext context) {
+		return this.conditionPredicate.test(context);
 	}
 
 	public abstract static class Builder<T extends LootEntry.Builder<T>> implements LootConditionConsumingBuilder<T> {
@@ -61,9 +61,9 @@ public abstract class LootEntry implements EntryCombiner {
 		private final Identifier id;
 		private final Class<T> type;
 
-		protected Serializer(Identifier identifier, Class<T> class_) {
-			this.id = identifier;
-			this.type = class_;
+		protected Serializer(Identifier id, Class<T> type) {
+			this.id = id;
+			this.type = type;
 		}
 
 		public Identifier getIdentifier() {
@@ -74,8 +74,8 @@ public abstract class LootEntry implements EntryCombiner {
 			return this.type;
 		}
 
-		public abstract void toJson(JsonObject jsonObject, T lootEntry, JsonSerializationContext jsonSerializationContext);
+		public abstract void toJson(JsonObject json, T entry, JsonSerializationContext context);
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
+		public abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions);
 	}
 }

@@ -11,17 +11,17 @@ public class Potion {
 	private final String name;
 	private final ImmutableList<StatusEffectInstance> effectList;
 
-	public static Potion byId(String string) {
-		return Registry.POTION.get(Identifier.tryParse(string));
+	public static Potion byId(String id) {
+		return Registry.POTION.get(Identifier.tryParse(id));
 	}
 
-	public Potion(StatusEffectInstance... statusEffectInstances) {
-		this(null, statusEffectInstances);
+	public Potion(StatusEffectInstance... effects) {
+		this(null, effects);
 	}
 
-	public Potion(@Nullable String string, StatusEffectInstance... statusEffectInstances) {
-		this.name = string;
-		this.effectList = ImmutableList.copyOf(statusEffectInstances);
+	public Potion(@Nullable String name, StatusEffectInstance... effects) {
+		this.name = name;
+		this.effectList = ImmutableList.copyOf(effects);
 	}
 
 	public String getName(String string) {

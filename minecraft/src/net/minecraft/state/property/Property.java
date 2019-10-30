@@ -10,7 +10,7 @@ public interface Property<T extends Comparable<T>> {
 
 	Class<T> getType();
 
-	Optional<T> parse(String string);
+	Optional<T> parse(String name);
 
-	String name(T comparable);
+	String name(T value);
 }

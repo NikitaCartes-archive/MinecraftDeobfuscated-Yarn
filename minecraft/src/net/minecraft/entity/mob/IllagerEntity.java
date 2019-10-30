@@ -8,8 +8,8 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.world.World;
 
 public abstract class IllagerEntity extends RaiderEntity {
-	protected IllagerEntity(EntityType<? extends IllagerEntity> entityType, World world) {
-		super(entityType, world);
+	protected IllagerEntity(EntityType<? extends IllagerEntity> type, World world) {
+		super(type, world);
 	}
 
 	@Override

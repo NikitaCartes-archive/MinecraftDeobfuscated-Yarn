@@ -8,6 +8,8 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -16,15 +18,13 @@ import net.minecraft.util.Identifier;
 
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
-	public static final DynamicCommandExceptionType UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("argument.id.unknown", object)
-	);
-	public static final DynamicCommandExceptionType UNKNOWN_ADVANCEMENT_EXCEPTION = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType UNKNOWN_ADVANCEMENT_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("advancement.advancementNotFound", object)
 	);
-	public static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableText("recipe.notFound", object)
 	);
+	private static final DynamicCommandExceptionType field_21506 = new DynamicCommandExceptionType(object -> new TranslatableText("predicate.unknown", object));
 
 	public static IdentifierArgumentType identifier() {
 		return new IdentifierArgumentType();
@@ -46,8 +46,19 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		return (Recipe<?>)recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
 	}
 
-	public static Identifier getIdentifier(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, Identifier.class);
+	public static LootCondition method_23727(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		Identifier identifier = commandContext.getArgument(string, Identifier.class);
+		LootConditionManager lootConditionManager = commandContext.getSource().getMinecraftServer().getPredicateManager();
+		LootCondition lootCondition = lootConditionManager.get(identifier);
+		if (lootCondition == null) {
+			throw field_21506.create(identifier);
+		} else {
+			return lootCondition;
+		}
+	}
+
+	public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, Identifier.class);
 	}
 
 	public Identifier method_9446(StringReader stringReader) throws CommandSyntaxException {

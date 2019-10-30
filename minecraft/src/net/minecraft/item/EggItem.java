@@ -15,30 +15,23 @@ public class EggItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
 		world.playSound(
-			null,
-			playerEntity.getX(),
-			playerEntity.getY(),
-			playerEntity.getZ(),
-			SoundEvents.ENTITY_EGG_THROW,
-			SoundCategory.PLAYERS,
-			0.5F,
-			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
+			null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
-			ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, playerEntity);
+			ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, user);
 			thrownEggEntity.setItem(itemStack);
-			thrownEggEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			thrownEggEntity.setProperties(user, user.pitch, user.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(thrownEggEntity);
 		}
 
-		playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-		if (!playerEntity.abilities.creativeMode) {
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
+		if (!user.abilities.creativeMode) {
 			itemStack.decrement(1);
 		}
 
-		return TypedActionResult.successWithSwing(itemStack);
+		return TypedActionResult.success(itemStack);
 	}
 }

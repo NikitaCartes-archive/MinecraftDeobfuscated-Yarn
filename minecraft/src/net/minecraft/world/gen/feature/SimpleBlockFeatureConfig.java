@@ -14,34 +14,34 @@ public class SimpleBlockFeatureConfig implements FeatureConfig {
 	public final List<BlockState> placeIn;
 	public final List<BlockState> placeUnder;
 
-	public SimpleBlockFeatureConfig(BlockState blockState, List<BlockState> list, List<BlockState> list2, List<BlockState> list3) {
-		this.toPlace = blockState;
-		this.placeOn = list;
-		this.placeIn = list2;
-		this.placeUnder = list3;
+	public SimpleBlockFeatureConfig(BlockState toPlace, List<BlockState> placeOn, List<BlockState> placeIn, List<BlockState> placeUnder) {
+		this.toPlace = toPlace;
+		this.placeOn = placeOn;
+		this.placeIn = placeIn;
+		this.placeUnder = placeUnder;
 	}
 
-	public SimpleBlockFeatureConfig(BlockState blockState, BlockState[] blockStates, BlockState[] blockStates2, BlockState[] blockStates3) {
-		this(blockState, Lists.<BlockState>newArrayList(blockStates), Lists.<BlockState>newArrayList(blockStates2), Lists.<BlockState>newArrayList(blockStates3));
+	public SimpleBlockFeatureConfig(BlockState toPlace, BlockState[] placeOn, BlockState[] placeIn, BlockState[] placeUnder) {
+		this(toPlace, Lists.<BlockState>newArrayList(placeOn), Lists.<BlockState>newArrayList(placeIn), Lists.<BlockState>newArrayList(placeUnder));
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		T object = BlockState.serialize(dynamicOps, this.toPlace).getValue();
-		T object2 = dynamicOps.createList(this.placeOn.stream().map(blockState -> BlockState.serialize(dynamicOps, blockState).getValue()));
-		T object3 = dynamicOps.createList(this.placeIn.stream().map(blockState -> BlockState.serialize(dynamicOps, blockState).getValue()));
-		T object4 = dynamicOps.createList(this.placeUnder.stream().map(blockState -> BlockState.serialize(dynamicOps, blockState).getValue()));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		T object = BlockState.serialize(ops, this.toPlace).getValue();
+		T object2 = ops.createList(this.placeOn.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
+		T object3 = ops.createList(this.placeIn.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
+		T object4 = ops.createList(this.placeUnder.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("to_place"),
+					ops.createString("to_place"),
 					object,
-					dynamicOps.createString("place_on"),
+					ops.createString("place_on"),
 					object2,
-					dynamicOps.createString("place_in"),
+					ops.createString("place_in"),
 					object3,
-					dynamicOps.createString("place_under"),
+					ops.createString("place_under"),
 					object4
 				)
 			)

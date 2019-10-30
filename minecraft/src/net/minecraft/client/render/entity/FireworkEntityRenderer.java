@@ -2,8 +2,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -22,14 +22,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 	}
 
 	public void method_3968(
-		FireworkEntity fireworkEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		FireworkEntity fireworkEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
@@ -48,10 +41,10 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 				fireworkEntity.getLightmapCoordinates(),
 				OverlayTexture.DEFAULT_UV,
 				matrixStack,
-				layeredVertexConsumerStorage
+				vertexConsumerProvider
 			);
 		matrixStack.pop();
-		super.render(fireworkEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.render(fireworkEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public Identifier method_3969(FireworkEntity fireworkEntity) {

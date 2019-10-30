@@ -267,21 +267,21 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		return this.eyeOpen;
 	}
 
-	private void setActive(boolean bl) {
-		if (bl != this.active) {
-			this.playSound(bl ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE);
+	private void setActive(boolean active) {
+		if (active != this.active) {
+			this.playSound(active ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE);
 		}
 
-		this.active = bl;
+		this.active = active;
 	}
 
-	private void setEyeOpen(boolean bl) {
-		this.eyeOpen = bl;
+	private void setEyeOpen(boolean eyeOpen) {
+		this.eyeOpen = eyeOpen;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getRotation(float f) {
-		return (this.ticksActive + f) * -0.0375F;
+	public float getRotation(float tickDelta) {
+		return (this.ticksActive + tickDelta) * -0.0375F;
 	}
 
 	public void playSound(SoundEvent soundEvent) {

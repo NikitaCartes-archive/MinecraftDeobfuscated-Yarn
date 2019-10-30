@@ -28,14 +28,14 @@ public class LilyPadItem extends BlockItem {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+	public ActionResult useOnBlock(ItemUsageContext context) {
 		return ActionResult.PASS;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		HitResult hitResult = rayTrace(world, playerEntity, RayTraceContext.FluidHandling.SOURCE_ONLY);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
+		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.SOURCE_ONLY);
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			return TypedActionResult.pass(itemStack);
 		} else {
@@ -43,7 +43,7 @@ public class LilyPadItem extends BlockItem {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				Direction direction = blockHitResult.getSide();
-				if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos.offset(direction), direction, itemStack)) {
+				if (!world.canPlayerModifyAt(user, blockPos) || !user.canPlaceOn(blockPos.offset(direction), direction, itemStack)) {
 					return TypedActionResult.fail(itemStack);
 				}
 
@@ -53,17 +53,17 @@ public class LilyPadItem extends BlockItem {
 				FluidState fluidState = world.getFluidState(blockPos);
 				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
 					world.setBlockState(blockPos2, Blocks.LILY_PAD.getDefaultState(), 11);
-					if (playerEntity instanceof ServerPlayerEntity) {
-						Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+					if (user instanceof ServerPlayerEntity) {
+						Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos2, itemStack);
 					}
 
-					if (!playerEntity.abilities.creativeMode) {
+					if (!user.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
 
-					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-					world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_LILY_PAD_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					return TypedActionResult.successWithSwing(itemStack);
+					user.incrementStat(Stats.USED.getOrCreateStat(this));
+					world.playSound(user, blockPos, SoundEvents.BLOCK_LILY_PAD_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					return TypedActionResult.success(itemStack);
 				}
 			}
 

@@ -17,13 +17,13 @@ public class LoginHelloC2SPacket implements Packet<ServerLoginPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.profile = new GameProfile(null, packetByteBuf.readString(16));
+	public void read(PacketByteBuf buf) throws IOException {
+		this.profile = new GameProfile(null, buf.readString(16));
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeString(this.profile.getName());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeString(this.profile.getName());
 	}
 
 	public void method_12649(ServerLoginPacketListener serverLoginPacketListener) {

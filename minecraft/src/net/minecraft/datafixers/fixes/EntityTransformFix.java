@@ -13,9 +13,9 @@ import net.minecraft.datafixers.TypeReferences;
 public abstract class EntityTransformFix extends DataFix {
 	protected final String name;
 
-	public EntityTransformFix(String string, Schema schema, boolean bl) {
-		super(schema, bl);
-		this.name = string;
+	public EntityTransformFix(String name, Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
+		this.name = name;
 	}
 
 	@Override
@@ -39,5 +39,5 @@ public abstract class EntityTransformFix extends DataFix {
 		return new Typed<>(type, dynamicOps, (A)object);
 	}
 
-	protected abstract Pair<String, Typed<?>> transform(String string, Typed<?> typed);
+	protected abstract Pair<String, Typed<?>> transform(String choice, Typed<?> typed);
 }

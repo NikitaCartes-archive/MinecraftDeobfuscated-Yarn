@@ -172,8 +172,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.needsUpdatePacket;
 	}
 
-	public void setNeedsUpdatePacket(boolean bl) {
-		this.needsUpdatePacket = bl;
+	public void setNeedsUpdatePacket(boolean needsUpdatePacket) {
+		this.needsUpdatePacket = needsUpdatePacket;
 	}
 
 	public CommandBlockBlockEntity.Type getCommandBlockType() {

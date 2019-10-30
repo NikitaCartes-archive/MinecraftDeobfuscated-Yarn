@@ -22,12 +22,12 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public DragonFireballEntity(World world, double d, double e, double f, double g, double h, double i) {
-		super(EntityType.DRAGON_FIREBALL, d, e, f, g, h, i, world);
+	public DragonFireballEntity(World world, double x, double y, double z, double directionX, double directionY, double directionZ) {
+		super(EntityType.DRAGON_FIREBALL, x, y, z, directionX, directionY, directionZ, world);
 	}
 
-	public DragonFireballEntity(World world, LivingEntity livingEntity, double d, double e, double f) {
-		super(EntityType.DRAGON_FIREBALL, livingEntity, d, e, f, world);
+	public DragonFireballEntity(World world, LivingEntity owner, double directionX, double directionY, double directionZ) {
+		super(EntityType.DRAGON_FIREBALL, owner, directionX, directionY, directionZ, world);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
+	public boolean damage(DamageSource source, float amount) {
 		return false;
 	}
 

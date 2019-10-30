@@ -10,9 +10,9 @@ public class RandomBlockStateMatchRuleTest extends AbstractRuleTest {
 	private final BlockState blockState;
 	private final float probability;
 
-	public RandomBlockStateMatchRuleTest(BlockState blockState, float f) {
+	public RandomBlockStateMatchRuleTest(BlockState blockState, float probability) {
 		this.blockState = blockState;
-		this.probability = f;
+		this.probability = probability;
 	}
 
 	public <T> RandomBlockStateMatchRuleTest(Dynamic<T> dynamic) {

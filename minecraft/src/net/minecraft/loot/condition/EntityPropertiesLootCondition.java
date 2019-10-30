@@ -19,9 +19,9 @@ public class EntityPropertiesLootCondition implements LootCondition {
 	private final EntityPredicate predicate;
 	private final LootContext.EntityTarget entity;
 
-	private EntityPropertiesLootCondition(EntityPredicate entityPredicate, LootContext.EntityTarget entityTarget) {
-		this.predicate = entityPredicate;
-		this.entity = entityTarget;
+	private EntityPropertiesLootCondition(EntityPredicate predicate, LootContext.EntityTarget entity) {
+		this.predicate = predicate;
+		this.entity = entity;
 	}
 
 	@Override
@@ -35,12 +35,12 @@ public class EntityPropertiesLootCondition implements LootCondition {
 		return this.predicate.test(lootContext.getWorld(), blockPos != null ? new Vec3d(blockPos) : null, entity);
 	}
 
-	public static LootCondition.Builder create(LootContext.EntityTarget entityTarget) {
-		return builder(entityTarget, EntityPredicate.Builder.create());
+	public static LootCondition.Builder create(LootContext.EntityTarget entity) {
+		return builder(entity, EntityPredicate.Builder.create());
 	}
 
-	public static LootCondition.Builder builder(LootContext.EntityTarget entityTarget, EntityPredicate.Builder builder) {
-		return () -> new EntityPropertiesLootCondition(builder.build(), entityTarget);
+	public static LootCondition.Builder builder(LootContext.EntityTarget entity, EntityPredicate.Builder predicateBuilder) {
+		return () -> new EntityPropertiesLootCondition(predicateBuilder.build(), entity);
 	}
 
 	public static class Factory extends LootCondition.Factory<EntityPropertiesLootCondition> {

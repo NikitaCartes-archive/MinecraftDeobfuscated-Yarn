@@ -16,25 +16,25 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	public ChatMessageS2CPacket() {
 	}
 
-	public ChatMessageS2CPacket(Text text) {
-		this(text, MessageType.SYSTEM);
+	public ChatMessageS2CPacket(Text message) {
+		this(message, MessageType.SYSTEM);
 	}
 
-	public ChatMessageS2CPacket(Text text, MessageType messageType) {
-		this.message = text;
-		this.location = messageType;
-	}
-
-	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.message = packetByteBuf.readText();
-		this.location = MessageType.byId(packetByteBuf.readByte());
+	public ChatMessageS2CPacket(Text message, MessageType location) {
+		this.message = message;
+		this.location = location;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeText(this.message);
-		packetByteBuf.writeByte(this.location.getId());
+	public void read(PacketByteBuf buf) throws IOException {
+		this.message = buf.readText();
+		this.location = MessageType.byId(buf.readByte());
+	}
+
+	@Override
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeText(this.message);
+		buf.writeByte(this.location.getId());
 	}
 
 	public void method_11386(ClientPlayPacketListener clientPlayPacketListener) {

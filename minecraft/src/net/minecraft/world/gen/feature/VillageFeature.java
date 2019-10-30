@@ -15,8 +15,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
-	public VillageFeature(Function<Dynamic<?>, ? extends VillageFeatureConfig> function) {
-		super(function);
+	public VillageFeature(Function<Dynamic<?>, ? extends VillageFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
@@ -38,9 +38,9 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-		return i == chunkPos.x && j == chunkPos.z ? chunkGenerator.hasStructure(biome, this) : false;
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
+		return chunkZ == chunkPos.x && i == chunkPos.z ? chunkGenerator.hasStructure(biome, this) : false;
 	}
 
 	@Override
@@ -59,14 +59,14 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 	}
 
 	public static class Start extends VillageStructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			VillageFeatureConfig villageFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.VILLAGE);
-			BlockPos blockPos = new BlockPos(i * 16, 0, j * 16);
+			BlockPos blockPos = new BlockPos(x * 16, 0, z * 16);
 			VillageGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random, villageFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}

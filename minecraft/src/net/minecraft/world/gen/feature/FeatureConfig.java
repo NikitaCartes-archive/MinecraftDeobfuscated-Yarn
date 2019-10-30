@@ -6,5 +6,5 @@ import com.mojang.datafixers.types.DynamicOps;
 public interface FeatureConfig {
 	DefaultFeatureConfig DEFAULT = new DefaultFeatureConfig();
 
-	<T> Dynamic<T> serialize(DynamicOps<T> dynamicOps);
+	<T> Dynamic<T> serialize(DynamicOps<T> ops);
 }

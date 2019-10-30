@@ -18,7 +18,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override
@@ -36,7 +36,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override
@@ -56,7 +56,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			RenderSystem.alphaFunc(516, 0.003921569F);
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override
@@ -74,7 +74,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
 			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
 		@Override

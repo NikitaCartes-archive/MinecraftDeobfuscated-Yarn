@@ -11,25 +11,25 @@ public final class CroppedVoxelSet extends VoxelSet {
 	private final int yMax;
 	private final int zMax;
 
-	protected CroppedVoxelSet(VoxelSet voxelSet, int i, int j, int k, int l, int m, int n) {
-		super(l - i, m - j, n - k);
-		this.parent = voxelSet;
-		this.xMin = i;
-		this.yMin = j;
-		this.zMin = k;
-		this.xMax = l;
-		this.yMax = m;
-		this.zMax = n;
+	protected CroppedVoxelSet(VoxelSet parent, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+		super(xMax - xMin, yMax - yMin, zMax - zMin);
+		this.parent = parent;
+		this.xMin = xMin;
+		this.yMin = yMin;
+		this.zMin = zMin;
+		this.xMax = xMax;
+		this.yMax = yMax;
+		this.zMax = zMax;
 	}
 
 	@Override
-	public boolean contains(int i, int j, int k) {
-		return this.parent.contains(this.xMin + i, this.yMin + j, this.zMin + k);
+	public boolean contains(int x, int y, int z) {
+		return this.parent.contains(this.xMin + x, this.yMin + y, this.zMin + z);
 	}
 
 	@Override
-	public void set(int i, int j, int k, boolean bl, boolean bl2) {
-		this.parent.set(this.xMin + i, this.yMin + j, this.zMin + k, bl, bl2);
+	public void set(int x, int y, int z, boolean resize, boolean included) {
+		this.parent.set(this.xMin + x, this.yMin + y, this.zMin + z, resize, included);
 	}
 
 	@Override

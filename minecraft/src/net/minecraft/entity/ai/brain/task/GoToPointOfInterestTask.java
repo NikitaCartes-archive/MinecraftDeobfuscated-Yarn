@@ -16,10 +16,10 @@ public class GoToPointOfInterestTask extends Task<VillagerEntity> {
 	private final float speed;
 	private final int completionRange;
 
-	public GoToPointOfInterestTask(float f, int i) {
+	public GoToPointOfInterestTask(float speed, int completionRange) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
-		this.speed = f;
-		this.completionRange = i;
+		this.speed = speed;
+		this.completionRange = completionRange;
 	}
 
 	protected boolean method_21636(ServerWorld serverWorld, VillagerEntity villagerEntity) {

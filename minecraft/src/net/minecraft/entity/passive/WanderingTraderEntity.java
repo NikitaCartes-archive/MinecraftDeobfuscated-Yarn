@@ -93,7 +93,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(PassiveEntity mate) {
 		return null;
 	}
 
@@ -103,29 +103,29 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		boolean bl = itemStack.getItem() == Items.NAME_TAG;
 		if (bl) {
-			itemStack.useOnEntity(playerEntity, this, hand);
+			itemStack.useOnEntity(player, this, hand);
 			return true;
 		} else if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
 			if (hand == Hand.MAIN_HAND) {
-				playerEntity.incrementStat(Stats.TALKED_TO_VILLAGER);
+				player.incrementStat(Stats.TALKED_TO_VILLAGER);
 			}
 
 			if (this.getOffers().isEmpty()) {
-				return super.interactMob(playerEntity, hand);
+				return super.interactMob(player, hand);
 			} else {
 				if (!this.world.isClient) {
-					this.setCurrentCustomer(playerEntity);
-					this.sendOffers(playerEntity, this.getDisplayName(), 1);
+					this.setCurrentCustomer(player);
+					this.sendOffers(player, this.getDisplayName(), 1);
 				}
 
 				return true;
 			}
 		} else {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		}
 	}
 
@@ -146,36 +146,36 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("DespawnDelay", this.despawnDelay);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("DespawnDelay", this.despawnDelay);
 		if (this.wanderTarget != null) {
-			compoundTag.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
+			tag.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.contains("DespawnDelay", 99)) {
-			this.despawnDelay = compoundTag.getInt("DespawnDelay");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("DespawnDelay", 99)) {
+			this.despawnDelay = tag.getInt("DespawnDelay");
 		}
 
-		if (compoundTag.contains("WanderTarget")) {
-			this.wanderTarget = NbtHelper.toBlockPos(compoundTag.getCompound("WanderTarget"));
+		if (tag.contains("WanderTarget")) {
+			this.wanderTarget = NbtHelper.toBlockPos(tag.getCompound("WanderTarget"));
 		}
 
 		this.setBreedingAge(Math.max(0, this.getBreedingAge()));
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double d) {
+	public boolean canImmediatelyDespawn(double distanceSquared) {
 		return false;
 	}
 
 	@Override
-	protected void afterUsing(TradeOffer tradeOffer) {
-		if (tradeOffer.shouldRewardPlayerExperience()) {
+	protected void afterUsing(TradeOffer offer) {
+		if (offer.shouldRewardPlayerExperience()) {
 			int i = 3 + this.random.nextInt(4);
 			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5, this.getZ(), i));
 		}
@@ -187,7 +187,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_WANDERING_TRADER_HURT;
 	}
 
@@ -197,14 +197,14 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	protected SoundEvent getDrinkSound(ItemStack itemStack) {
-		Item item = itemStack.getItem();
+	protected SoundEvent getDrinkSound(ItemStack stack) {
+		Item item = stack.getItem();
 		return item == Items.MILK_BUCKET ? SoundEvents.ENTITY_WANDERING_TRADER_DRINK_MILK : SoundEvents.ENTITY_WANDERING_TRADER_DRINK_POTION;
 	}
 
 	@Override
-	protected SoundEvent getTradingSound(boolean bl) {
-		return bl ? SoundEvents.ENTITY_WANDERING_TRADER_YES : SoundEvents.ENTITY_WANDERING_TRADER_NO;
+	protected SoundEvent getTradingSound(boolean sold) {
+		return sold ? SoundEvents.ENTITY_WANDERING_TRADER_YES : SoundEvents.ENTITY_WANDERING_TRADER_NO;
 	}
 
 	@Override
@@ -212,8 +212,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		return SoundEvents.ENTITY_WANDERING_TRADER_YES;
 	}
 
-	public void setDespawnDelay(int i) {
-		this.despawnDelay = i;
+	public void setDespawnDelay(int delay) {
+		this.despawnDelay = delay;
 	}
 
 	public int getDespawnDelay() {
@@ -234,8 +234,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		}
 	}
 
-	public void setWanderTarget(@Nullable BlockPos blockPos) {
-		this.wanderTarget = blockPos;
+	public void setWanderTarget(@Nullable BlockPos pos) {
+		this.wanderTarget = pos;
 	}
 
 	@Nullable
@@ -248,10 +248,10 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		final double proximityDistance;
 		final double speed;
 
-		WanderToTargetGoal(WanderingTraderEntity wanderingTraderEntity2, double d, double e) {
-			this.trader = wanderingTraderEntity2;
-			this.proximityDistance = d;
-			this.speed = e;
+		WanderToTargetGoal(WanderingTraderEntity trader, double proximityDistance, double speed) {
+			this.trader = trader;
+			this.proximityDistance = proximityDistance;
+			this.speed = speed;
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 
@@ -284,8 +284,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			}
 		}
 
-		private boolean isTooFarFrom(BlockPos blockPos, double d) {
-			return !blockPos.isWithinDistance(this.trader.getPos(), d);
+		private boolean isTooFarFrom(BlockPos pos, double proximityDistance) {
+			return !pos.isWithinDistance(this.trader.getPos(), proximityDistance);
 		}
 	}
 }

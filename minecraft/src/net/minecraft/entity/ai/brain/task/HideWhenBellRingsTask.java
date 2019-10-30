@@ -16,9 +16,9 @@ public class HideWhenBellRingsTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		Brain<?> brain = livingEntity.getBrain();
-		Raid raid = serverWorld.getRaidAt(new BlockPos(livingEntity));
+	protected void run(ServerWorld world, LivingEntity entity, long time) {
+		Brain<?> brain = entity.getBrain();
+		Raid raid = world.getRaidAt(new BlockPos(entity));
 		if (raid == null) {
 			brain.resetPossibleActivities(Activity.HIDE);
 		}

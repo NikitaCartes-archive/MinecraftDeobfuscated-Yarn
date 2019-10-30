@@ -70,12 +70,9 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-				dynamicOps,
-				dynamicOps.createMap(
-					ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()))
-				)
+				ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString())))
 			)
 			.getValue();
 	}

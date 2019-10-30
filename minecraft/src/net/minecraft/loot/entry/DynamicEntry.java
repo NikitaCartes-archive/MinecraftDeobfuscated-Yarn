@@ -15,18 +15,18 @@ public class DynamicEntry extends LeafEntry {
 	public static final Identifier instance = new Identifier("dynamic");
 	private final Identifier name;
 
-	private DynamicEntry(Identifier identifier, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
-		this.name = identifier;
+	private DynamicEntry(Identifier name, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+		super(weight, quality, conditions, functions);
+		this.name = name;
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		lootContext.drop(this.name, consumer);
+	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+		context.drop(this.name, itemDropper);
 	}
 
-	public static LeafEntry.Builder<?> builder(Identifier identifier) {
-		return builder((i, j, lootConditions, lootFunctions) -> new DynamicEntry(identifier, i, j, lootConditions, lootFunctions));
+	public static LeafEntry.Builder<?> builder(Identifier name) {
+		return builder((weight, quality, conditions, functions) -> new DynamicEntry(name, weight, quality, conditions, functions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<DynamicEntry> {

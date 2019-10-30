@@ -7,9 +7,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +28,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		double f,
 		float g,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		int j
 	) {
@@ -90,9 +90,9 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					float t = 1.0F;
 					float u = 0.9F;
 					float v = 0.5F;
-					VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines());
+					VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {
-						WorldRenderer.method_22981(matrixStack, vertexConsumer, p, l, q, r, m, s, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
+						WorldRenderer.drawBox(matrixStack, vertexConsumer, p, l, q, r, m, s, 0.9F, 0.9F, 0.9F, 1.0F, 0.5F, 0.5F, 0.5F);
 					}
 
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE && structureBlockBlockEntity.shouldShowAir()) {
@@ -124,11 +124,11 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 				double i = (double)((float)(blockPos4.getY() - blockPos2.getY()) + 0.55F + f);
 				double j = (double)((float)(blockPos4.getZ() - blockPos2.getZ()) + 0.55F + f);
 				if (bl) {
-					WorldRenderer.method_22981(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F);
+					WorldRenderer.drawBox(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F);
 				} else if (bl2) {
-					WorldRenderer.method_22981(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
+					WorldRenderer.drawBox(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.5F, 0.5F, 1.0F, 1.0F, 0.5F, 0.5F, 1.0F);
 				} else {
-					WorldRenderer.method_22981(matrixStack, vertexConsumer, d, e, g, h, i, j, 1.0F, 0.25F, 0.25F, 1.0F, 1.0F, 0.25F, 0.25F);
+					WorldRenderer.drawBox(matrixStack, vertexConsumer, d, e, g, h, i, j, 1.0F, 0.25F, 0.25F, 1.0F, 1.0F, 0.25F, 0.25F);
 				}
 			}
 		}

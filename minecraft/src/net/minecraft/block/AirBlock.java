@@ -12,17 +12,17 @@ public class AirBlock extends Block {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.INVISIBLE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public boolean isAir(BlockState blockState) {
+	public boolean isAir(BlockState state) {
 		return true;
 	}
 }

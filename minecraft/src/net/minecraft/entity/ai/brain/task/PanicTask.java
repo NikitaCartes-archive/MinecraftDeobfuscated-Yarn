@@ -38,11 +38,11 @@ public class PanicTask extends Task<VillagerEntity> {
 		}
 	}
 
-	public static boolean isHostileNearby(LivingEntity livingEntity) {
-		return livingEntity.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_HOSTILE);
+	public static boolean isHostileNearby(LivingEntity entity) {
+		return entity.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_HOSTILE);
 	}
 
-	public static boolean wasHurt(LivingEntity livingEntity) {
-		return livingEntity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY);
+	public static boolean wasHurt(LivingEntity entity) {
+		return entity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY);
 	}
 }

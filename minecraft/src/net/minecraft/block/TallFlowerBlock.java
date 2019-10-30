@@ -14,22 +14,22 @@ public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
 		return false;
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
 		return true;
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
-		dropStack(serverWorld, blockPos, new ItemStack(this));
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+		dropStack(world, pos, new ItemStack(this));
 	}
 }

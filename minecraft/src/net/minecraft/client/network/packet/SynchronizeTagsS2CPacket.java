@@ -14,18 +14,18 @@ public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener
 	public SynchronizeTagsS2CPacket() {
 	}
 
-	public SynchronizeTagsS2CPacket(RegistryTagManager registryTagManager) {
-		this.tagManager = registryTagManager;
+	public SynchronizeTagsS2CPacket(RegistryTagManager tagManager) {
+		this.tagManager = tagManager;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.tagManager = RegistryTagManager.fromPacket(packetByteBuf);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.tagManager = RegistryTagManager.fromPacket(buf);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		this.tagManager.toPacket(packetByteBuf);
+	public void write(PacketByteBuf buf) throws IOException {
+		this.tagManager.toPacket(buf);
 	}
 
 	public void method_12001(ClientPlayPacketListener clientPlayPacketListener) {

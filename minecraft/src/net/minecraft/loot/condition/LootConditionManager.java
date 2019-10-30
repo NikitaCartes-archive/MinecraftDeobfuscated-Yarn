@@ -38,12 +38,8 @@ public class LootConditionManager extends JsonDataLoader {
 	}
 
 	@Nullable
-	public LootCondition get(Identifier identifier) {
-		return (LootCondition)this.conditions.get(identifier);
-	}
-
-	public LootCondition get(Identifier identifier, LootCondition lootCondition) {
-		return (LootCondition)this.conditions.getOrDefault(identifier, lootCondition);
+	public LootCondition get(Identifier id) {
+		return (LootCondition)this.conditions.get(id);
 	}
 
 	protected void method_22563(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {

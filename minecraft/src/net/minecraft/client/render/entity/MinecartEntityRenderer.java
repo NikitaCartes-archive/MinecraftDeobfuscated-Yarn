@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -28,9 +28,9 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	}
 
 	public void method_4063(
-		T abstractMinecartEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		T abstractMinecartEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
-		super.render(abstractMinecartEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.render(abstractMinecartEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 		matrixStack.push();
 		long l = (long)abstractMinecartEntity.getEntityId() * 493286711L;
 		l = l * l * 4392167121L + l * 98761L;
@@ -85,13 +85,13 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			float v = 0.75F;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
 			matrixStack.translate(-0.5, (double)((float)(t - 8) / 16.0F), 0.5);
-			this.renderBlock(abstractMinecartEntity, h, blockState, matrixStack, layeredVertexConsumerStorage, u);
+			this.renderBlock(abstractMinecartEntity, h, blockState, matrixStack, vertexConsumerProvider, u);
 			matrixStack.pop();
 		}
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.model.setAngles(abstractMinecartEntity, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(this.method_4065(abstractMinecartEntity)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_4065(abstractMinecartEntity)));
 		this.model.render(matrixStack, vertexConsumer, u, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 	}
@@ -101,8 +101,8 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	}
 
 	protected void renderBlock(
-		T abstractMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i
+		T abstractMinecartEntity, float delta, BlockState state, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
-		MinecraftClient.getInstance().getBlockRenderManager().renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
+		MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(state, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 	}
 }

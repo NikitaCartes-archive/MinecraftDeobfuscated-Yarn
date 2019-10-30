@@ -5,9 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
@@ -47,21 +47,21 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 		double f,
 		float g,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		int j
 	) {
 		float h = (float)conduitBlockEntity.ticks + g;
 		if (!conduitBlockEntity.isActive()) {
 			float k = conduitBlockEntity.getRotation(0.0F);
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
 			this.field_20825.render(matrixStack, vertexConsumer, 0.0625F, i, j, this.getSprite(BASE_TEX));
 			matrixStack.pop();
 		} else {
-			VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 			float l = conduitBlockEntity.getRotation(g) * (180.0F / (float)Math.PI);
 			float m = MathHelper.sin(h * 0.1F) / 2.0F + 0.5F;
 			m = m * m + m;
@@ -91,7 +91,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
 			this.field_20824.render(matrixStack, vertexConsumer2, 0.0625F, i, j, sprite);
 			matrixStack.pop();
-			Camera camera = this.field_20989.cameraEntity;
+			Camera camera = this.blockEntityRenderDispatcher.camera;
 			matrixStack.push();
 			matrixStack.translate(0.5, (double)(0.3F + m * 0.2F), 0.5);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);

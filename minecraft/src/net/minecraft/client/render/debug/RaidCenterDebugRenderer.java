@@ -14,16 +14,16 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 	private Collection<BlockPos> raidCenters = Lists.<BlockPos>newArrayList();
 
-	public RaidCenterDebugRenderer(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public RaidCenterDebugRenderer(MinecraftClient client) {
+		this.client = client;
 	}
 
-	public void setRaidCenters(Collection<BlockPos> collection) {
-		this.raidCenters = collection;
+	public void setRaidCenters(Collection<BlockPos> centers) {
+		this.raidCenters = centers;
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
@@ -45,7 +45,7 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private static void method_23122(BlockPos blockPos) {
-		DebugRenderer.method_23104(blockPos.add(-0.5, -0.5, -0.5), blockPos.add(1.5, 1.5, 1.5), 1.0F, 0.0F, 0.0F, 0.15F);
+		DebugRenderer.drawBox(blockPos.add(-0.5, -0.5, -0.5), blockPos.add(1.5, 1.5, 1.5), 1.0F, 0.0F, 0.0F, 0.15F);
 		int i = -65536;
 		method_23123("Raid center", blockPos, -65536);
 	}
@@ -54,7 +54,7 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 1.3;
 		double f = (double)blockPos.getZ() + 0.5;
-		DebugRenderer.method_23107(string, d, e, f, i, 0.04F, true, 0.0F, true);
+		DebugRenderer.drawString(string, d, e, f, i, 0.04F, true, 0.0F, true);
 	}
 
 	private Camera method_23125() {

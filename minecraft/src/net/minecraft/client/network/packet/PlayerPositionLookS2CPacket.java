@@ -21,36 +21,36 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	public PlayerPositionLookS2CPacket() {
 	}
 
-	public PlayerPositionLookS2CPacket(double d, double e, double f, float g, float h, Set<PlayerPositionLookS2CPacket.Flag> set, int i) {
-		this.x = d;
-		this.y = e;
-		this.z = f;
-		this.yaw = g;
-		this.pitch = h;
-		this.flags = set;
-		this.teleportId = i;
+	public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> flags, int teleportId) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.yaw = yaw;
+		this.pitch = pitch;
+		this.flags = flags;
+		this.teleportId = teleportId;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readFloat();
-		this.pitch = packetByteBuf.readFloat();
-		this.flags = PlayerPositionLookS2CPacket.Flag.getFlags(packetByteBuf.readUnsignedByte());
-		this.teleportId = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readFloat();
+		this.pitch = buf.readFloat();
+		this.flags = PlayerPositionLookS2CPacket.Flag.getFlags(buf.readUnsignedByte());
+		this.teleportId = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeDouble(this.x);
-		packetByteBuf.writeDouble(this.y);
-		packetByteBuf.writeDouble(this.z);
-		packetByteBuf.writeFloat(this.yaw);
-		packetByteBuf.writeFloat(this.pitch);
-		packetByteBuf.writeByte(PlayerPositionLookS2CPacket.Flag.getBitfield(this.flags));
-		packetByteBuf.writeVarInt(this.teleportId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeDouble(this.x);
+		buf.writeDouble(this.y);
+		buf.writeDouble(this.z);
+		buf.writeFloat(this.yaw);
+		buf.writeFloat(this.pitch);
+		buf.writeByte(PlayerPositionLookS2CPacket.Flag.getBitfield(this.flags));
+		buf.writeVarInt(this.teleportId);
 	}
 
 	public void method_11740(ClientPlayPacketListener clientPlayPacketListener) {
@@ -101,8 +101,8 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 
 		private final int shift;
 
-		private Flag(int j) {
-			this.shift = j;
+		private Flag(int shift) {
+			this.shift = shift;
 		}
 
 		private int getMask() {

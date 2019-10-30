@@ -32,17 +32,17 @@ public class DoubleTag extends AbstractNumberTag {
 	};
 	private final double value;
 
-	private DoubleTag(double d) {
-		this.value = d;
+	private DoubleTag(double value) {
+		this.value = value;
 	}
 
-	public static DoubleTag of(double d) {
-		return d == 0.0 ? ZERO : new DoubleTag(d);
+	public static DoubleTag of(double value) {
+		return value == 0.0 ? ZERO : new DoubleTag(value);
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeDouble(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeDouble(this.value);
 	}
 
 	@Override
@@ -64,11 +64,11 @@ public class DoubleTag extends AbstractNumberTag {
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			return object instanceof DoubleTag && this.value == ((DoubleTag)object).value;
+			return o instanceof DoubleTag && this.value == ((DoubleTag)o).value;
 		}
 	}
 
@@ -78,7 +78,7 @@ public class DoubleTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("d").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

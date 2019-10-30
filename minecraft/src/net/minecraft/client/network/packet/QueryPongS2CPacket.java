@@ -11,18 +11,18 @@ public class QueryPongS2CPacket implements Packet<ClientQueryPacketListener> {
 	public QueryPongS2CPacket() {
 	}
 
-	public QueryPongS2CPacket(long l) {
-		this.startTime = l;
+	public QueryPongS2CPacket(long startTime) {
+		this.startTime = startTime;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.startTime = packetByteBuf.readLong();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.startTime = buf.readLong();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeLong(this.startTime);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeLong(this.startTime);
 	}
 
 	public void method_12670(ClientQueryPacketListener clientQueryPacketListener) {

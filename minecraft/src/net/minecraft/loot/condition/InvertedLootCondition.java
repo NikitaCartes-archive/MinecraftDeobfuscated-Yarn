@@ -13,8 +13,8 @@ import net.minecraft.util.JsonHelper;
 public class InvertedLootCondition implements LootCondition {
 	private final LootCondition term;
 
-	private InvertedLootCondition(LootCondition lootCondition) {
-		this.term = lootCondition;
+	private InvertedLootCondition(LootCondition term) {
+		this.term = term;
 	}
 
 	public final boolean method_888(LootContext lootContext) {
@@ -27,13 +27,13 @@ public class InvertedLootCondition implements LootCondition {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		LootCondition.super.check(lootTableReporter);
-		this.term.check(lootTableReporter);
+	public void check(LootTableReporter reporter) {
+		LootCondition.super.check(reporter);
+		this.term.check(reporter);
 	}
 
-	public static LootCondition.Builder builder(LootCondition.Builder builder) {
-		InvertedLootCondition invertedLootCondition = new InvertedLootCondition(builder.build());
+	public static LootCondition.Builder builder(LootCondition.Builder term) {
+		InvertedLootCondition invertedLootCondition = new InvertedLootCondition(term.build());
 		return () -> invertedLootCondition;
 	}
 

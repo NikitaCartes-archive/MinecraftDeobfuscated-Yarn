@@ -21,14 +21,14 @@ public class LiteralText extends BaseText {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof LiteralText)) {
+		} else if (!(o instanceof LiteralText)) {
 			return false;
 		} else {
-			LiteralText literalText = (LiteralText)object;
-			return this.string.equals(literalText.getRawString()) && super.equals(object);
+			LiteralText literalText = (LiteralText)o;
+			return this.string.equals(literalText.getRawString()) && super.equals(o);
 		}
 	}
 

@@ -32,12 +32,12 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	};
 	private byte[] value;
 
-	public ByteArrayTag(byte[] bs) {
-		this.value = bs;
+	public ByteArrayTag(byte[] value) {
+		this.value = value;
 	}
 
-	public ByteArrayTag(List<Byte> list) {
-		this(toArray(list));
+	public ByteArrayTag(List<Byte> value) {
+		this(toArray(value));
 	}
 
 	private static byte[] toArray(List<Byte> list) {
@@ -52,9 +52,9 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeInt(this.value.length);
-		dataOutput.write(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeInt(this.value.length);
+		output.write(this.value);
 	}
 
 	@Override
@@ -89,11 +89,11 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		return new ByteArrayTag(bs);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			return object instanceof ByteArrayTag && Arrays.equals(this.value, ((ByteArrayTag)object).value);
+			return o instanceof ByteArrayTag && Arrays.equals(this.value, ((ByteArrayTag)o).value);
 		}
 	}
 
@@ -102,14 +102,14 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("B").formatted(RED);
 		Text text2 = new LiteralText("[").append(text).append(";");
 
-		for(int j = 0; j < this.value.length; ++j) {
-			Text text3 = new LiteralText(String.valueOf(this.value[j])).formatted(GOLD);
+		for(int i = 0; i < this.value.length; ++i) {
+			Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
 			text2.append(" ").append(text3).append(text);
-			if (j != this.value.length - 1) {
+			if (i != this.value.length - 1) {
 				text2.append(",");
 			}
 		}
@@ -141,9 +141,9 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	}
 
 	@Override
-	public boolean setTag(int i, Tag tag) {
+	public boolean setTag(int index, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
-			this.value[i] = ((AbstractNumberTag)tag).getByte();
+			this.value[index] = ((AbstractNumberTag)tag).getByte();
 			return true;
 		} else {
 			return false;
@@ -151,9 +151,9 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	}
 
 	@Override
-	public boolean addTag(int i, Tag tag) {
+	public boolean addTag(int index, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
-			this.value = ArrayUtils.add(this.value, i, ((AbstractNumberTag)tag).getByte());
+			this.value = ArrayUtils.add(this.value, index, ((AbstractNumberTag)tag).getByte());
 			return true;
 		} else {
 			return false;

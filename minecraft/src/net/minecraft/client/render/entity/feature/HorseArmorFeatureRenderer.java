@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.HorseEntity;
@@ -23,7 +23,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 
 	public void method_18658(
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		HorseEntity horseEntity,
 		float f,
@@ -54,7 +54,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 				q = 1.0F;
 			}
 
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
 			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, o, p, q);
 		}
 	}

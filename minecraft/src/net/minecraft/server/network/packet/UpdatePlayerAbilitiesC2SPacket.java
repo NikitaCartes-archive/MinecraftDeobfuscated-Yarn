@@ -17,28 +17,28 @@ public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketLi
 	public UpdatePlayerAbilitiesC2SPacket() {
 	}
 
-	public UpdatePlayerAbilitiesC2SPacket(PlayerAbilities playerAbilities) {
-		this.setInvulnerable(playerAbilities.invulnerable);
-		this.setFlying(playerAbilities.flying);
-		this.setAllowFlying(playerAbilities.allowFlying);
-		this.setCreativeMode(playerAbilities.creativeMode);
-		this.setFlySpeed(playerAbilities.getFlySpeed());
-		this.setWalkSpeed(playerAbilities.getWalkSpeed());
+	public UpdatePlayerAbilitiesC2SPacket(PlayerAbilities abilities) {
+		this.setInvulnerable(abilities.invulnerable);
+		this.setFlying(abilities.flying);
+		this.setAllowFlying(abilities.allowFlying);
+		this.setCreativeMode(abilities.creativeMode);
+		this.setFlySpeed(abilities.getFlySpeed());
+		this.setWalkSpeed(abilities.getWalkSpeed());
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		byte b = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		byte b = buf.readByte();
 		this.setInvulnerable((b & 1) > 0);
 		this.setFlying((b & 2) > 0);
 		this.setAllowFlying((b & 4) > 0);
 		this.setCreativeMode((b & 8) > 0);
-		this.setFlySpeed(packetByteBuf.readFloat());
-		this.setWalkSpeed(packetByteBuf.readFloat());
+		this.setFlySpeed(buf.readFloat());
+		this.setWalkSpeed(buf.readFloat());
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
+	public void write(PacketByteBuf buf) throws IOException {
 		byte b = 0;
 		if (this.isInvulnerable()) {
 			b = (byte)(b | 1);
@@ -56,9 +56,9 @@ public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketLi
 			b = (byte)(b | 8);
 		}
 
-		packetByteBuf.writeByte(b);
-		packetByteBuf.writeFloat(this.flySpeed);
-		packetByteBuf.writeFloat(this.walkSpeed);
+		buf.writeByte(b);
+		buf.writeFloat(this.flySpeed);
+		buf.writeFloat(this.walkSpeed);
 	}
 
 	public void method_12339(ServerPlayPacketListener serverPlayPacketListener) {

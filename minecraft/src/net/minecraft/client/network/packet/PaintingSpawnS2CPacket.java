@@ -23,30 +23,30 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	public PaintingSpawnS2CPacket() {
 	}
 
-	public PaintingSpawnS2CPacket(PaintingEntity paintingEntity) {
-		this.id = paintingEntity.getEntityId();
-		this.uuid = paintingEntity.getUuid();
-		this.pos = paintingEntity.getDecorationBlockPos();
-		this.facing = paintingEntity.getHorizontalFacing();
-		this.motive = Registry.MOTIVE.getRawId(paintingEntity.motive);
+	public PaintingSpawnS2CPacket(PaintingEntity entity) {
+		this.id = entity.getEntityId();
+		this.uuid = entity.getUuid();
+		this.pos = entity.getDecorationBlockPos();
+		this.facing = entity.getHorizontalFacing();
+		this.motive = Registry.MOTIVE.getRawId(entity.motive);
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.uuid = packetByteBuf.readUuid();
-		this.motive = packetByteBuf.readVarInt();
-		this.pos = packetByteBuf.readBlockPos();
-		this.facing = Direction.fromHorizontal(packetByteBuf.readUnsignedByte());
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.uuid = buf.readUuid();
+		this.motive = buf.readVarInt();
+		this.pos = buf.readBlockPos();
+		this.facing = Direction.fromHorizontal(buf.readUnsignedByte());
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		packetByteBuf.writeUuid(this.uuid);
-		packetByteBuf.writeVarInt(this.motive);
-		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeByte(this.facing.getHorizontal());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		buf.writeUuid(this.uuid);
+		buf.writeVarInt(this.motive);
+		buf.writeBlockPos(this.pos);
+		buf.writeByte(this.facing.getHorizontal());
 	}
 
 	public void method_11224(ClientPlayPacketListener clientPlayPacketListener) {

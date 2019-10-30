@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -24,7 +24,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		this.renderManager = entityRenderDispatcher;
 	}
 
-	public boolean isVisible(T entity, Frustum frustum, double d, double e, double f) {
+	public boolean isVisible(T entity, Frustum visibleRegion, double d, double e, double f) {
 		if (!entity.shouldRenderFrom(d, e, f)) {
 			return false;
 		} else if (entity.ignoreCameraFrustum) {
@@ -35,19 +35,17 @@ public abstract class EntityRenderer<T extends Entity> {
 				box = new Box(entity.getX() - 2.0, entity.getY() - 2.0, entity.getZ() - 2.0, entity.getX() + 2.0, entity.getY() + 2.0, entity.getZ() + 2.0);
 			}
 
-			return frustum.isVisible(box);
+			return visibleRegion.isVisible(box);
 		}
 	}
 
-	public Vec3d getPositionOffset(T entity, double d, double e, double f, float g) {
+	public Vec3d getPositionOffset(T entity, double x, double y, double z, float tickDelta) {
 		return Vec3d.ZERO;
 	}
 
-	public void render(
-		T entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
-	) {
+	public void render(T entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumers) {
 		if (this.hasLabel(entity)) {
-			this.renderLabelIfPresent(entity, entity.getDisplayName().asFormattedString(), matrixStack, layeredVertexConsumerStorage);
+			this.renderLabelIfPresent(entity, entity.getDisplayName().asFormattedString(), matrix, vertexConsumers);
 		}
 	}
 
@@ -61,7 +59,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		return this.renderManager.getTextRenderer();
 	}
 
-	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+	protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
 		double d = this.renderManager.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
 			int i = entity.getLightmapCoordinates();
@@ -77,14 +75,14 @@ public abstract class EntityRenderer<T extends Entity> {
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch));
 			matrixStack.scale(-0.025F, -0.025F, 0.025F);
-			Matrix4f matrix4f = matrixStack.peek();
+			Matrix4f matrix4f = matrixStack.peekModel();
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 			int k = (int)(g * 255.0F) << 24;
 			TextRenderer textRenderer = this.getFontRenderer();
 			float h = (float)(-textRenderer.getStringWidth(string) / 2);
-			textRenderer.method_22942(string, h, (float)j, 553648127, false, matrix4f, layeredVertexConsumerStorage, bl, k, i);
+			textRenderer.draw(string, h, (float)j, 553648127, false, matrix4f, vertexConsumerProvider, bl, k, i);
 			if (bl) {
-				textRenderer.method_22942(string, h, (float)j, -1, false, matrix4f, layeredVertexConsumerStorage, false, 0, i);
+				textRenderer.draw(string, h, (float)j, -1, false, matrix4f, vertexConsumerProvider, false, 0, i);
 			}
 
 			matrixStack.pop();

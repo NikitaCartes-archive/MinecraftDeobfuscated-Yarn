@@ -29,10 +29,10 @@ public class RuleStructureProcessor extends StructureProcessor {
 	@Override
 	public Structure.StructureBlockInfo process(
 		WorldView worldView,
-		BlockPos blockPos,
+		BlockPos pos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData placementData
 	) {
 		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
 		BlockState blockState = worldView.getBlockState(structureBlockInfo2.pos);

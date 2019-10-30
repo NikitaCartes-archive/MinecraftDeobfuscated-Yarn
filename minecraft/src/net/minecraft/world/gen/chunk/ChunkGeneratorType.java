@@ -33,15 +33,15 @@ public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkG
 		return Registry.register(Registry.CHUNK_GENERATOR_TYPE, string, new ChunkGeneratorType<>(chunkGeneratorFactory, bl, supplier));
 	}
 
-	public ChunkGeneratorType(ChunkGeneratorFactory<C, T> chunkGeneratorFactory, boolean bl, Supplier<C> supplier) {
-		this.factory = chunkGeneratorFactory;
-		this.buffetScreenOption = bl;
-		this.settingsSupplier = supplier;
+	public ChunkGeneratorType(ChunkGeneratorFactory<C, T> factory, boolean buffetScreenOption, Supplier<C> settingsSupplier) {
+		this.factory = factory;
+		this.buffetScreenOption = buffetScreenOption;
+		this.settingsSupplier = settingsSupplier;
 	}
 
 	@Override
-	public T create(World world, BiomeSource biomeSource, C chunkGeneratorConfig) {
-		return this.factory.create(world, biomeSource, chunkGeneratorConfig);
+	public T create(World world, BiomeSource biomeSource, C config) {
+		return this.factory.create(world, biomeSource, config);
 	}
 
 	public C createSettings() {

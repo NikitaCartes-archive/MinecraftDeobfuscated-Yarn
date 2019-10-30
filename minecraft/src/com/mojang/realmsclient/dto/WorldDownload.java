@@ -15,9 +15,9 @@ public class WorldDownload extends ValueObject {
 	public String resourcePackUrl;
 	public String resourcePackHash;
 
-	public static WorldDownload parse(String string) {
+	public static WorldDownload parse(String json) {
 		JsonParser jsonParser = new JsonParser();
-		JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
+		JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
 		WorldDownload worldDownload = new WorldDownload();
 
 		try {

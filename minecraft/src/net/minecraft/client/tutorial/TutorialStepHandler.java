@@ -20,18 +20,18 @@ public interface TutorialStepHandler {
 	default void onMovement(Input input) {
 	}
 
-	default void onMouseUpdate(double d, double e) {
+	default void onMouseUpdate(double deltaX, double deltaY) {
 	}
 
-	default void onTarget(ClientWorld clientWorld, HitResult hitResult) {
+	default void onTarget(ClientWorld world, HitResult hitResult) {
 	}
 
-	default void onBlockAttacked(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, float f) {
+	default void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
 	}
 
 	default void onInventoryOpened() {
 	}
 
-	default void onSlotUpdate(ItemStack itemStack) {
+	default void onSlotUpdate(ItemStack stack) {
 	}
 }

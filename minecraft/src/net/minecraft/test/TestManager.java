@@ -7,8 +7,8 @@ public class TestManager {
 	public static final TestManager INSTANCE = new TestManager();
 	private final Collection<GameTest> tests = Lists.<GameTest>newCopyOnWriteArrayList();
 
-	public void start(GameTest gameTest) {
-		this.tests.add(gameTest);
+	public void start(GameTest test) {
+		this.tests.add(test);
 	}
 
 	public void clear() {

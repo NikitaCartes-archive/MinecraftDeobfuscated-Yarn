@@ -19,13 +19,13 @@ public class UpdateSelectedSlotC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.selectedSlot = packetByteBuf.readShort();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.selectedSlot = buf.readShort();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeShort(this.selectedSlot);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeShort(this.selectedSlot);
 	}
 
 	public void method_12441(ServerPlayPacketListener serverPlayPacketListener) {

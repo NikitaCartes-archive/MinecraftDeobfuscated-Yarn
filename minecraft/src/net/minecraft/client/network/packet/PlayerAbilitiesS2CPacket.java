@@ -29,18 +29,18 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		byte b = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		byte b = buf.readByte();
 		this.setInvulnerable((b & 1) > 0);
 		this.setFlying((b & 2) > 0);
 		this.setAllowFlying((b & 4) > 0);
 		this.setCreativeMode((b & 8) > 0);
-		this.setFlySpeed(packetByteBuf.readFloat());
-		this.setFovModifier(packetByteBuf.readFloat());
+		this.setFlySpeed(buf.readFloat());
+		this.setFovModifier(buf.readFloat());
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
+	public void write(PacketByteBuf buf) throws IOException {
 		byte b = 0;
 		if (this.isInvulnerable()) {
 			b = (byte)(b | 1);
@@ -58,9 +58,9 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 			b = (byte)(b | 8);
 		}
 
-		packetByteBuf.writeByte(b);
-		packetByteBuf.writeFloat(this.flySpeed);
-		packetByteBuf.writeFloat(this.fovModifier);
+		buf.writeByte(b);
+		buf.writeFloat(this.flySpeed);
+		buf.writeFloat(this.fovModifier);
 	}
 
 	public void method_11697(ClientPlayPacketListener clientPlayPacketListener) {

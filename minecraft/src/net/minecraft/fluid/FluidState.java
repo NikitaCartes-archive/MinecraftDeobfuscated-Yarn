@@ -81,8 +81,8 @@ public interface FluidState extends State<FluidState> {
 		this.getFluid().onRandomTick(world, blockPos, this, random);
 	}
 
-	default Vec3d getVelocity(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().getVelocity(blockView, blockPos, this);
+	default Vec3d getVelocity(BlockView world, BlockPos pos) {
+		return this.getFluid().getVelocity(world, pos, this);
 	}
 
 	default BlockState getBlockState() {
@@ -107,26 +107,24 @@ public interface FluidState extends State<FluidState> {
 		return this.getFluid().method_15777(this, blockView, blockPos, fluid, direction);
 	}
 
-	static <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps, FluidState fluidState) {
-		ImmutableMap<Property<?>, Comparable<?>> immutableMap = fluidState.getEntries();
+	static <T> Dynamic<T> serialize(DynamicOps<T> ops, FluidState state) {
+		ImmutableMap<Property<?>, Comparable<?>> immutableMap = state.getEntries();
 		T object;
 		if (immutableMap.isEmpty()) {
-			object = dynamicOps.createMap(
-				ImmutableMap.of(dynamicOps.createString("Name"), dynamicOps.createString(Registry.FLUID.getId(fluidState.getFluid()).toString()))
-			);
+			object = ops.createMap(ImmutableMap.of(ops.createString("Name"), ops.createString(Registry.FLUID.getId(state.getFluid()).toString())));
 		} else {
-			object = dynamicOps.createMap(
+			object = ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("Name"),
-					dynamicOps.createString(Registry.FLUID.getId(fluidState.getFluid()).toString()),
-					dynamicOps.createString("Properties"),
-					dynamicOps.createMap(
+					ops.createString("Name"),
+					ops.createString(Registry.FLUID.getId(state.getFluid()).toString()),
+					ops.createString("Properties"),
+					ops.createMap(
 						(Map<T, T>)immutableMap.entrySet()
 							.stream()
 							.map(
 								entry -> Pair.of(
-										dynamicOps.createString(((Property)entry.getKey()).getName()),
-										dynamicOps.createString(State.nameValue((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
+										ops.createString(((Property)entry.getKey()).getName()),
+										ops.createString(State.nameValue((Property<T>)entry.getKey(), (Comparable<?>)entry.getValue()))
 									)
 							)
 							.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
@@ -135,7 +133,7 @@ public interface FluidState extends State<FluidState> {
 			);
 		}
 
-		return new Dynamic<>(dynamicOps, object);
+		return new Dynamic<>(ops, object);
 	}
 
 	static <T> FluidState deserialize(Dynamic<T> dynamic) {

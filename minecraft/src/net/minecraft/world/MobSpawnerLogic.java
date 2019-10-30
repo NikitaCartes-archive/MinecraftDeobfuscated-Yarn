@@ -280,11 +280,11 @@ public abstract class MobSpawnerLogic {
 		}
 	}
 
-	public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
-		this.spawnEntry = mobSpawnerEntry;
+	public void setSpawnEntry(MobSpawnerEntry spawnEntry) {
+		this.spawnEntry = spawnEntry;
 	}
 
-	public abstract void sendStatus(int i);
+	public abstract void sendStatus(int status);
 
 	public abstract World getWorld();
 

@@ -79,14 +79,14 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
 		boolean bl = this.field_3594.visible;
 		if (bl) {
 			matrixStack.push();
 			matrixStack.translate(0.0, -0.08F, 0.0);
 		}
 
-		super.render(matrixStack, vertexConsumer, i, j, f, g, h);
+		super.render(matrixStack, vertexConsumer, i, j, r, g, b);
 		if (bl) {
 			matrixStack.pop();
 		}

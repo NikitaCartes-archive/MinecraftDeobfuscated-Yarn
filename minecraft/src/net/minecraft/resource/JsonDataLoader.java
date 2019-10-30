@@ -23,9 +23,9 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloadList
 	private final Gson gson;
 	private final String dataType;
 
-	public JsonDataLoader(Gson gson, String string) {
+	public JsonDataLoader(Gson gson, String dataType) {
 		this.gson = gson;
-		this.dataType = string;
+		this.dataType = dataType;
 	}
 
 	protected Map<Identifier, JsonObject> method_20731(ResourceManager resourceManager, Profiler profiler) {

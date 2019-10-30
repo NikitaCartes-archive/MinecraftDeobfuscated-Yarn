@@ -2,9 +2,9 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,8 +16,8 @@ import net.minecraft.util.Identifier;
 public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>> {
 	private final FeatureRendererContext<T, M> context;
 
-	public FeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
-		this.context = featureRendererContext;
+	public FeatureRenderer(FeatureRendererContext<T, M> context) {
+		this.context = context;
 	}
 
 	protected static <T extends LivingEntity> void render(
@@ -25,7 +25,7 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		EntityModel<T> entityModel2,
 		Identifier identifier,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		T livingEntity,
 		float f,
@@ -43,7 +43,7 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 			entityModel.copyStateTo(entityModel2);
 			entityModel2.animateModel(livingEntity, f, g, m);
 			entityModel2.setAngles(livingEntity, f, g, h, j, k, l);
-			renderModel(entityModel2, identifier, matrixStack, layeredVertexConsumerStorage, i, livingEntity, n, o, p);
+			renderModel(entityModel2, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, n, o, p);
 		}
 	}
 
@@ -51,14 +51,14 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		EntityModel<T> entityModel,
 		Identifier identifier,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		T livingEntity,
 		float f,
 		float g,
 		float h
 	) {
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(identifier));
 		entityModel.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, 0.0F), f, g, h);
 	}
 
@@ -72,15 +72,15 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 
 	public abstract void render(
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		T entity,
 		float f,
 		float g,
+		float tickDelta,
 		float h,
 		float j,
 		float k,
-		float l,
-		float m
+		float l
 	);
 }

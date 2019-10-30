@@ -94,20 +94,20 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
 		if (this.isChild) {
-			float k = 1.5F;
+			float f = 1.5F;
 			matrixStack.push();
 			matrixStack.scale(0.56666666F, 0.56666666F, 0.56666666F);
 			matrixStack.translate(0.0, 1.375, 0.125);
 			ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.scale(0.4F, 0.4F, 0.4F);
 			matrixStack.translate(0.0, 2.25, 0.0);
 			ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
 			matrixStack.pop();
 		} else {
 			matrixStack.push();
@@ -127,7 +127,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.field_3524,
 					this.field_3530
 				)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
 			matrixStack.pop();
 		}
 	}

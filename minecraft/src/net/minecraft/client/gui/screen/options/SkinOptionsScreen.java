@@ -13,8 +13,8 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SkinOptionsScreen extends GameOptionsScreen {
-	public SkinOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(screen, gameOptions, new TranslatableText("options.skinCustomisation.title"));
+	public SkinOptionsScreen(Screen parent, GameOptions gameOptions) {
+		super(parent, gameOptions, new TranslatableText("options.skinCustomisation.title"));
 	}
 
 	@Override
@@ -61,20 +61,20 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
-	private String getPlayerModelPartDisplayString(PlayerModelPart playerModelPart) {
+	private String getPlayerModelPartDisplayString(PlayerModelPart part) {
 		String string;
-		if (this.field_21336.getEnabledPlayerModelParts().contains(playerModelPart)) {
+		if (this.field_21336.getEnabledPlayerModelParts().contains(part)) {
 			string = I18n.translate("options.on");
 		} else {
 			string = I18n.translate("options.off");
 		}
 
-		return playerModelPart.getOptionName().asFormattedString() + ": " + string;
+		return part.getOptionName().asFormattedString() + ": " + string;
 	}
 }

@@ -3,30 +3,30 @@ package net.minecraft.container;
 public abstract class Property {
 	private int oldValue;
 
-	public static Property create(PropertyDelegate propertyDelegate, int i) {
+	public static Property create(PropertyDelegate propertyDelegate, int key) {
 		return new Property() {
 			@Override
 			public int get() {
-				return propertyDelegate.get(i);
+				return propertyDelegate.get(key);
 			}
 
 			@Override
-			public void set(int i) {
-				propertyDelegate.set(i, i);
+			public void set(int value) {
+				propertyDelegate.set(key, value);
 			}
 		};
 	}
 
-	public static Property create(int[] is, int i) {
+	public static Property create(int[] is, int key) {
 		return new Property() {
 			@Override
 			public int get() {
-				return is[i];
+				return is[key];
 			}
 
 			@Override
-			public void set(int i) {
-				is[i] = i;
+			public void set(int value) {
+				is[key] = value;
 			}
 		};
 	}
@@ -41,15 +41,15 @@ public abstract class Property {
 			}
 
 			@Override
-			public void set(int i) {
-				this.value = i;
+			public void set(int value) {
+				this.value = value;
 			}
 		};
 	}
 
 	public abstract int get();
 
-	public abstract void set(int i);
+	public abstract void set(int value);
 
 	public boolean detectChanges() {
 		int i = this.get();

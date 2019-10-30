@@ -10,29 +10,29 @@ import net.minecraft.datafixers.TypeReferences;
 public class EntityZombieVillagerTypeFix extends ChoiceFix {
 	private static final Random RANDOM = new Random();
 
-	public EntityZombieVillagerTypeFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
+	public EntityZombieVillagerTypeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
 	}
 
-	public Dynamic<?> fixZombieType(Dynamic<?> dynamic) {
-		if (dynamic.get("IsVillager").asBoolean(false)) {
-			if (!dynamic.get("ZombieType").get().isPresent()) {
-				int i = this.clampType(dynamic.get("VillagerProfession").asInt(-1));
+	public Dynamic<?> fixZombieType(Dynamic<?> tag) {
+		if (tag.get("IsVillager").asBoolean(false)) {
+			if (!tag.get("ZombieType").get().isPresent()) {
+				int i = this.clampType(tag.get("VillagerProfession").asInt(-1));
 				if (i == -1) {
 					i = this.clampType(RANDOM.nextInt(6));
 				}
 
-				dynamic = dynamic.set("ZombieType", dynamic.createInt(i));
+				tag = tag.set("ZombieType", tag.createInt(i));
 			}
 
-			dynamic = dynamic.remove("IsVillager");
+			tag = tag.remove("IsVillager");
 		}
 
-		return dynamic;
+		return tag;
 	}
 
-	private int clampType(int i) {
-		return i >= 0 && i < 6 ? i : -1;
+	private int clampType(int type) {
+		return type >= 0 && type < 6 ? type : -1;
 	}
 
 	@Override

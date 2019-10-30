@@ -33,8 +33,8 @@ public class TestClassArgumentType implements ArgumentType<String> {
 		return new TestClassArgumentType();
 	}
 
-	public static String getTestClass(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, String.class);
+	public static String getTestClass(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, String.class);
 	}
 
 	@Override

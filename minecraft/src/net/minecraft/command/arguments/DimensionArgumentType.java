@@ -33,8 +33,8 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(Streams.stream(DimensionType.getAll()).map(DimensionType::getId), suggestionsBuilder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		return CommandSource.suggestIdentifiers(Streams.stream(DimensionType.getAll()).map(DimensionType::getId), builder);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class DimensionArgumentType implements ArgumentType<DimensionType> {
 		return new DimensionArgumentType();
 	}
 
-	public static DimensionType getDimensionArgument(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, DimensionType.class);
+	public static DimensionType getDimensionArgument(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, DimensionType.class);
 	}
 }

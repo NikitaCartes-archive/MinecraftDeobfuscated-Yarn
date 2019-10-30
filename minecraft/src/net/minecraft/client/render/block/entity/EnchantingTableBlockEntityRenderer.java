@@ -3,9 +3,9 @@ package net.minecraft.client.render.block.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
@@ -29,7 +29,7 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 		double f,
 		float g,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		int j
 	) {
@@ -55,7 +55,7 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 		float o = MathHelper.method_22450(m + 0.75F) * 1.6F - 0.3F;
 		float p = MathHelper.lerp(g, enchantingTableBlockEntity.pageTurningSpeed, enchantingTableBlockEntity.nextPageTurningSpeed);
 		this.book.setPageAngles(h, MathHelper.clamp(n, 0.0F, 1.0F), MathHelper.clamp(o, 0.0F, 1.0F), p);
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		this.book.render(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, this.getSprite(BOOK_TEX));
 		matrixStack.pop();
 	}

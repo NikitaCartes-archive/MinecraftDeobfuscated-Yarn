@@ -20,8 +20,8 @@ public class StrayEntity extends AbstractSkeletonEntity {
 		super(entityType, world);
 	}
 
-	public static boolean canSpawn(EntityType<StrayEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return canSpawnInDark(entityType, iWorld, spawnType, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.isSkyVisible(blockPos));
+	public static boolean canSpawn(EntityType<StrayEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		return canSpawnInDark(type, world, spawnType, pos, random) && (spawnType == SpawnType.SPAWNER || world.isSkyVisible(pos));
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_STRAY_HURT;
 	}
 
@@ -45,8 +45,8 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
-		ProjectileEntity projectileEntity = super.createArrowProjectile(itemStack, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
+		ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, f);
 		if (projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
 		}

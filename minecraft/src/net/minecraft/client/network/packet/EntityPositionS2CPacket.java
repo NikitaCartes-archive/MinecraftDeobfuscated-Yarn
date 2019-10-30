@@ -31,25 +31,25 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readByte();
-		this.pitch = packetByteBuf.readByte();
-		this.onGround = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readByte();
+		this.pitch = buf.readByte();
+		this.onGround = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		packetByteBuf.writeDouble(this.x);
-		packetByteBuf.writeDouble(this.y);
-		packetByteBuf.writeDouble(this.z);
-		packetByteBuf.writeByte(this.yaw);
-		packetByteBuf.writeByte(this.pitch);
-		packetByteBuf.writeBoolean(this.onGround);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		buf.writeDouble(this.x);
+		buf.writeDouble(this.y);
+		buf.writeDouble(this.z);
+		buf.writeByte(this.yaw);
+		buf.writeByte(this.pitch);
+		buf.writeBoolean(this.onGround);
 	}
 
 	public void method_11922(ClientPlayPacketListener clientPlayPacketListener) {

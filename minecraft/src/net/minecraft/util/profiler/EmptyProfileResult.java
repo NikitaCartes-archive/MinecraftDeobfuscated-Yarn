@@ -14,7 +14,7 @@ public class EmptyProfileResult implements ProfileResult {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public List<ProfilerTiming> getTimings(String string) {
+	public List<ProfilerTiming> getTimings(String parentTiming) {
 		return Collections.emptyList();
 	}
 

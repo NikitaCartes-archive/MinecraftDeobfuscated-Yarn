@@ -19,13 +19,13 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 	}
 
 	public Identifier method_4153(WitherEntity witherEntity) {
-		int i = witherEntity.getInvulTimer();
+		int i = witherEntity.getInvulnerableTimer();
 		return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVINCIBLE_SKIN : SKIN;
 	}
 
 	protected void method_4152(WitherEntity witherEntity, MatrixStack matrixStack, float f) {
 		float g = 2.0F;
-		int i = witherEntity.getInvulTimer();
+		int i = witherEntity.getInvulnerableTimer();
 		if (i > 0) {
 			g -= ((float)i - f) / 220.0F * 0.5F;
 		}

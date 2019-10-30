@@ -27,8 +27,8 @@ public class ChunkTicketType<T> {
 		return new ChunkTicketType<>(string, comparator, (long)i);
 	}
 
-	protected ChunkTicketType(String string, Comparator<T> comparator, long l) {
-		this.name = string;
+	protected ChunkTicketType(String name, Comparator<T> comparator, long l) {
+		this.name = name;
 		this.argumentComparator = comparator;
 		this.field_19348 = l;
 	}

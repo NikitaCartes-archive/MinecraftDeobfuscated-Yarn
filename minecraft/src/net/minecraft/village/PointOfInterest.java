@@ -15,36 +15,36 @@ public class PointOfInterest implements DynamicSerializable {
 	private int freeTickets;
 	private final Runnable updateListener;
 
-	private PointOfInterest(BlockPos blockPos, PointOfInterestType pointOfInterestType, int i, Runnable runnable) {
-		this.pos = blockPos.toImmutable();
-		this.type = pointOfInterestType;
-		this.freeTickets = i;
-		this.updateListener = runnable;
+	private PointOfInterest(BlockPos pos, PointOfInterestType type, int freeTickets, Runnable updateListener) {
+		this.pos = pos.toImmutable();
+		this.type = type;
+		this.freeTickets = freeTickets;
+		this.updateListener = updateListener;
 	}
 
-	public PointOfInterest(BlockPos blockPos, PointOfInterestType pointOfInterestType, Runnable runnable) {
-		this(blockPos, pointOfInterestType, pointOfInterestType.getTicketCount(), runnable);
+	public PointOfInterest(BlockPos pos, PointOfInterestType type, Runnable updateListener) {
+		this(pos, type, type.getTicketCount(), updateListener);
 	}
 
-	public <T> PointOfInterest(Dynamic<T> dynamic, Runnable runnable) {
+	public <T> PointOfInterest(Dynamic<T> dynamic, Runnable updateListener) {
 		this(
 			(BlockPos)dynamic.get("pos").map(BlockPos::deserialize).orElse(new BlockPos(0, 0, 0)),
 			Registry.POINT_OF_INTEREST_TYPE.get(new Identifier(dynamic.get("type").asString(""))),
 			dynamic.get("free_tickets").asInt(0),
-			runnable
+			updateListener
 		);
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
-		return dynamicOps.createMap(
+	public <T> T serialize(DynamicOps<T> ops) {
+		return ops.createMap(
 			ImmutableMap.of(
-				dynamicOps.createString("pos"),
-				this.pos.serialize(dynamicOps),
-				dynamicOps.createString("type"),
-				dynamicOps.createString(Registry.POINT_OF_INTEREST_TYPE.getId(this.type).toString()),
-				dynamicOps.createString("free_tickets"),
-				dynamicOps.createInt(this.freeTickets)
+				ops.createString("pos"),
+				this.pos.serialize(ops),
+				ops.createString("type"),
+				ops.createString(Registry.POINT_OF_INTEREST_TYPE.getId(this.type).toString()),
+				ops.createString("free_tickets"),
+				ops.createInt(this.freeTickets)
 			)
 		);
 	}
@@ -85,11 +85,11 @@ public class PointOfInterest implements DynamicSerializable {
 		return this.type;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		} else {
-			return object != null && this.getClass() == object.getClass() ? Objects.equals(this.pos, ((PointOfInterest)object).pos) : false;
+			return obj != null && this.getClass() == obj.getClass() ? Objects.equals(this.pos, ((PointOfInterest)obj).pos) : false;
 		}
 	}
 

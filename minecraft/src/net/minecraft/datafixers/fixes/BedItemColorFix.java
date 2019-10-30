@@ -13,8 +13,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BedItemColorFix extends DataFix {
-	public BedItemColorFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BedItemColorFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

@@ -16,25 +16,25 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
 		return true;
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		TallPlantBlock tallPlantBlock = (TallPlantBlock)(this == Blocks.FERN ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
-		if (tallPlantBlock.getDefaultState().canPlaceAt(serverWorld, blockPos) && serverWorld.isAir(blockPos.up())) {
-			tallPlantBlock.placeAt(serverWorld, blockPos, 2);
+		if (tallPlantBlock.getDefaultState().canPlaceAt(world, pos) && world.isAir(pos.up())) {
+			tallPlantBlock.placeAt(world, pos, 2);
 		}
 	}
 

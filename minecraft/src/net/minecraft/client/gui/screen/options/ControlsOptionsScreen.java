@@ -10,7 +10,7 @@ import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class ControlsOptionsScreen extends GameOptionsScreen {
@@ -19,8 +19,8 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	private ControlsListWidget keyBindingListWidget;
 	private ButtonWidget resetButton;
 
-	public ControlsOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(screen, gameOptions, new TranslatableText("controls.title"));
+	public ControlsOptionsScreen(Screen parent, GameOptions options) {
+		super(parent, options, new TranslatableText("controls.title"));
 	}
 
 	@Override
@@ -53,39 +53,39 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.focusedBinding != null) {
-			this.field_21336.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(i));
+			this.field_21336.setKeyCode(this.focusedBinding, InputUtil.Type.MOUSE.createFromCode(button));
 			this.focusedBinding = null;
 			KeyBinding.updateKeysByCode();
 			return true;
 		} else {
-			return super.mouseClicked(d, e, i);
+			return super.mouseClicked(mouseX, mouseY, button);
 		}
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (this.focusedBinding != null) {
-			if (i == 256) {
+			if (keyCode == 256) {
 				this.field_21336.setKeyCode(this.focusedBinding, InputUtil.UNKNOWN_KEYCODE);
 			} else {
-				this.field_21336.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(i, j));
+				this.field_21336.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(keyCode, scanCode));
 			}
 
 			this.focusedBinding = null;
-			this.time = SystemUtil.getMeasuringTimeMs();
+			this.time = Util.getMeasuringTimeMs();
 			KeyBinding.updateKeysByCode();
 			return true;
 		} else {
-			return super.keyPressed(i, j, k);
+			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.keyBindingListWidget.render(i, j, f);
+		this.keyBindingListWidget.render(mouseX, mouseY, delta);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		boolean bl = false;
 
@@ -97,6 +97,6 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 		}
 
 		this.resetButton.active = bl;
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

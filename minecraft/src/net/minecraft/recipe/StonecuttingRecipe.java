@@ -9,13 +9,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class StonecuttingRecipe extends CuttingRecipe {
-	public StonecuttingRecipe(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack) {
-		super(RecipeType.STONECUTTING, RecipeSerializer.STONECUTTING, identifier, string, ingredient, itemStack);
+	public StonecuttingRecipe(Identifier id, String group, Ingredient input, ItemStack output) {
+		super(RecipeType.STONECUTTING, RecipeSerializer.STONECUTTING, id, group, input, output);
 	}
 
 	@Override
-	public boolean matches(Inventory inventory, World world) {
-		return this.input.method_8093(inventory.getInvStack(0));
+	public boolean matches(Inventory inv, World world) {
+		return this.input.method_8093(inv.getInvStack(0));
 	}
 
 	@Environment(EnvType.CLIENT)

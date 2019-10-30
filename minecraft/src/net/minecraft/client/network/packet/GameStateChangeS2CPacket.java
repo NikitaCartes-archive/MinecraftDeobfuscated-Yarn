@@ -15,21 +15,21 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 	public GameStateChangeS2CPacket() {
 	}
 
-	public GameStateChangeS2CPacket(int i, float f) {
-		this.reason = i;
-		this.value = f;
+	public GameStateChangeS2CPacket(int reason, float value) {
+		this.reason = reason;
+		this.value = value;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.reason = packetByteBuf.readUnsignedByte();
-		this.value = packetByteBuf.readFloat();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.reason = buf.readUnsignedByte();
+		this.value = buf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.reason);
-		packetByteBuf.writeFloat(this.value);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.reason);
+		buf.writeFloat(this.value);
 	}
 
 	public void method_11490(ClientPlayPacketListener clientPlayPacketListener) {

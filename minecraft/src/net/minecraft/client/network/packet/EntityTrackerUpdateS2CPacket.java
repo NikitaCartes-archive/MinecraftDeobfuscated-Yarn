@@ -16,26 +16,26 @@ public class EntityTrackerUpdateS2CPacket implements Packet<ClientPlayPacketList
 	public EntityTrackerUpdateS2CPacket() {
 	}
 
-	public EntityTrackerUpdateS2CPacket(int i, DataTracker dataTracker, boolean bl) {
-		this.id = i;
+	public EntityTrackerUpdateS2CPacket(int id, DataTracker tracker, boolean bl) {
+		this.id = id;
 		if (bl) {
-			this.trackedValues = dataTracker.getAllEntries();
-			dataTracker.clearDirty();
+			this.trackedValues = tracker.getAllEntries();
+			tracker.clearDirty();
 		} else {
-			this.trackedValues = dataTracker.getDirtyEntries();
+			this.trackedValues = tracker.getDirtyEntries();
 		}
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.trackedValues = DataTracker.deserializePacket(packetByteBuf);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.trackedValues = DataTracker.deserializePacket(buf);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		DataTracker.entriesToPacket(this.trackedValues, packetByteBuf);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		DataTracker.entriesToPacket(this.trackedValues, buf);
 	}
 
 	public void method_11808(ClientPlayPacketListener clientPlayPacketListener) {

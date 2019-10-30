@@ -7,15 +7,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityModel<T>> extends EntityEyesFeatureRenderer<T, M> {
+public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityModel<T>> extends EyesFeatureRenderer<T, M> {
 	private static final Identifier SKIN = new Identifier("textures/entity/spider_eyes.png");
 
-	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
-		super(featureRendererContext);
+	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> context) {
+		super(context);
 	}
 
 	@Override
-	public Identifier getTexture() {
+	public Identifier getEyesTexture() {
 		return SKIN;
 	}
 }

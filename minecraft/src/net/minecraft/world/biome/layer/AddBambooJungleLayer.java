@@ -10,7 +10,7 @@ public enum AddBambooJungleLayer implements SouthEastSamplingLayer {
 	private static final int BAMBOO_JUNGLE_ID = Registry.BIOME.getRawId(Biomes.BAMBOO_JUNGLE);
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
-		return layerRandomnessSource.nextInt(10) == 0 && i == JUNGLE_ID ? BAMBOO_JUNGLE_ID : i;
+	public int sample(LayerRandomnessSource context, int se) {
+		return context.nextInt(10) == 0 && se == JUNGLE_ID ? BAMBOO_JUNGLE_ID : se;
 	}
 }

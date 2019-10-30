@@ -38,18 +38,18 @@ public class TraderInventory implements Inventory {
 	}
 
 	@Override
-	public ItemStack getInvStack(int i) {
-		return this.inventory.get(i);
+	public ItemStack getInvStack(int slot) {
+		return this.inventory.get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
-		ItemStack itemStack = this.inventory.get(i);
-		if (i == 2 && !itemStack.isEmpty()) {
-			return Inventories.splitStack(this.inventory, i, itemStack.getCount());
+	public ItemStack takeInvStack(int slot, int amount) {
+		ItemStack itemStack = this.inventory.get(slot);
+		if (slot == 2 && !itemStack.isEmpty()) {
+			return Inventories.splitStack(this.inventory, slot, itemStack.getCount());
 		} else {
-			ItemStack itemStack2 = Inventories.splitStack(this.inventory, i, j);
-			if (!itemStack2.isEmpty() && this.needRecipeUpdate(i)) {
+			ItemStack itemStack2 = Inventories.splitStack(this.inventory, slot, amount);
+			if (!itemStack2.isEmpty() && this.needRecipeUpdate(slot)) {
 				this.updateRecipes();
 			}
 
@@ -57,30 +57,30 @@ public class TraderInventory implements Inventory {
 		}
 	}
 
-	private boolean needRecipeUpdate(int i) {
-		return i == 0 || i == 1;
+	private boolean needRecipeUpdate(int slot) {
+		return slot == 0 || slot == 1;
 	}
 
 	@Override
-	public ItemStack removeInvStack(int i) {
-		return Inventories.removeStack(this.inventory, i);
+	public ItemStack removeInvStack(int slot) {
+		return Inventories.removeStack(this.inventory, slot);
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
-		this.inventory.set(i, itemStack);
-		if (!itemStack.isEmpty() && itemStack.getCount() > this.getInvMaxStackAmount()) {
-			itemStack.setCount(this.getInvMaxStackAmount());
+	public void setInvStack(int slot, ItemStack stack) {
+		this.inventory.set(slot, stack);
+		if (!stack.isEmpty() && stack.getCount() > this.getInvMaxStackAmount()) {
+			stack.setCount(this.getInvMaxStackAmount());
 		}
 
-		if (this.needRecipeUpdate(i)) {
+		if (this.needRecipeUpdate(slot)) {
 			this.updateRecipes();
 		}
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.trader.getCurrentCustomer() == playerEntity;
+	public boolean canPlayerUseInv(PlayerEntity player) {
+		return this.trader.getCurrentCustomer() == player;
 	}
 
 	@Override
@@ -131,8 +131,8 @@ public class TraderInventory implements Inventory {
 		return this.traderRecipe;
 	}
 
-	public void setRecipeIndex(int i) {
-		this.recipeIndex = i;
+	public void setRecipeIndex(int index) {
+		this.recipeIndex = index;
 		this.updateRecipes();
 	}
 

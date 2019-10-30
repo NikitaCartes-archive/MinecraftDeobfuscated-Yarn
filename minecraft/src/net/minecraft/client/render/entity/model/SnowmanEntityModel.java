@@ -36,20 +36,20 @@ public class SnowmanEntityModel<T extends Entity> extends CompositeEntityModel<T
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		this.field_3568.yaw = i * (float) (Math.PI / 180.0);
-		this.field_3568.pitch = j * (float) (Math.PI / 180.0);
-		this.field_3567.yaw = i * (float) (Math.PI / 180.0) * 0.25F;
-		float l = MathHelper.sin(this.field_3567.yaw);
-		float m = MathHelper.cos(this.field_3567.yaw);
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		this.field_3568.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.field_3568.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.field_3567.yaw = headYaw * (float) (Math.PI / 180.0) * 0.25F;
+		float f = MathHelper.sin(this.field_3567.yaw);
+		float g = MathHelper.cos(this.field_3567.yaw);
 		this.field_3566.roll = 1.0F;
 		this.field_3565.roll = -1.0F;
 		this.field_3566.yaw = 0.0F + this.field_3567.yaw;
 		this.field_3565.yaw = (float) Math.PI + this.field_3567.yaw;
-		this.field_3566.pivotX = m * 5.0F;
-		this.field_3566.pivotZ = -l * 5.0F;
-		this.field_3565.pivotX = -m * 5.0F;
-		this.field_3565.pivotZ = l * 5.0F;
+		this.field_3566.pivotX = g * 5.0F;
+		this.field_3566.pivotZ = -f * 5.0F;
+		this.field_3565.pivotX = -g * 5.0F;
+		this.field_3565.pivotZ = f * 5.0F;
 	}
 
 	@Override

@@ -20,9 +20,9 @@ public class TableBonusLootCondition implements LootCondition {
 	private final Enchantment enchantment;
 	private final float[] chances;
 
-	private TableBonusLootCondition(Enchantment enchantment, float[] fs) {
+	private TableBonusLootCondition(Enchantment enchantment, float[] chances) {
 		this.enchantment = enchantment;
-		this.chances = fs;
+		this.chances = chances;
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class TableBonusLootCondition implements LootCondition {
 		return lootContext.getRandom().nextFloat() < f;
 	}
 
-	public static LootCondition.Builder builder(Enchantment enchantment, float... fs) {
-		return () -> new TableBonusLootCondition(enchantment, fs);
+	public static LootCondition.Builder builder(Enchantment enchantment, float... chances) {
+		return () -> new TableBonusLootCondition(enchantment, chances);
 	}
 
 	public static class Factory extends LootCondition.Factory<TableBonusLootCondition> {

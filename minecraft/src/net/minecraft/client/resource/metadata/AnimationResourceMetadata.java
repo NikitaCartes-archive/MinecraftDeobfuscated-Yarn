@@ -15,11 +15,11 @@ public class AnimationResourceMetadata {
 	private final int defaultFrameTime;
 	private final boolean interpolate;
 
-	public AnimationResourceMetadata(List<AnimationFrameResourceMetadata> list, int i, int j, int k, boolean bl) {
-		this.frames = list;
-		this.width = i;
-		this.height = j;
-		this.defaultFrameTime = k;
+	public AnimationResourceMetadata(List<AnimationFrameResourceMetadata> frames, int width, int height, int defaultFrameTime, boolean bl) {
+		this.frames = frames;
+		this.width = width;
+		this.height = height;
+		this.defaultFrameTime = defaultFrameTime;
 		this.interpolate = bl;
 	}
 

@@ -21,10 +21,10 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	private final UniformLootTableRange countRange;
 	private final int limit;
 
-	private LootingEnchantLootFunction(LootCondition[] lootConditions, UniformLootTableRange uniformLootTableRange, int i) {
-		super(lootConditions);
-		this.countRange = uniformLootTableRange;
-		this.limit = i;
+	private LootingEnchantLootFunction(LootCondition[] conditions, UniformLootTableRange countRange, int limit) {
+		super(conditions);
+		this.countRange = countRange;
+		this.limit = limit;
 	}
 
 	@Override
@@ -37,42 +37,42 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Entity entity = lootContext.get(LootContextParameters.KILLER_ENTITY);
+	public ItemStack process(ItemStack stack, LootContext context) {
+		Entity entity = context.get(LootContextParameters.KILLER_ENTITY);
 		if (entity instanceof LivingEntity) {
 			int i = EnchantmentHelper.getLooting((LivingEntity)entity);
 			if (i == 0) {
-				return itemStack;
+				return stack;
 			}
 
-			float f = (float)i * this.countRange.nextFloat(lootContext.getRandom());
-			itemStack.increment(Math.round(f));
-			if (this.hasLimit() && itemStack.getCount() > this.limit) {
-				itemStack.setCount(this.limit);
+			float f = (float)i * this.countRange.nextFloat(context.getRandom());
+			stack.increment(Math.round(f));
+			if (this.hasLimit() && stack.getCount() > this.limit) {
+				stack.setCount(this.limit);
 			}
 		}
 
-		return itemStack;
+		return stack;
 	}
 
-	public static LootingEnchantLootFunction.Builder builder(UniformLootTableRange uniformLootTableRange) {
-		return new LootingEnchantLootFunction.Builder(uniformLootTableRange);
+	public static LootingEnchantLootFunction.Builder builder(UniformLootTableRange countRange) {
+		return new LootingEnchantLootFunction.Builder(countRange);
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<LootingEnchantLootFunction.Builder> {
 		private final UniformLootTableRange countRange;
 		private int limit = 0;
 
-		public Builder(UniformLootTableRange uniformLootTableRange) {
-			this.countRange = uniformLootTableRange;
+		public Builder(UniformLootTableRange countRange) {
+			this.countRange = countRange;
 		}
 
 		protected LootingEnchantLootFunction.Builder method_552() {
 			return this;
 		}
 
-		public LootingEnchantLootFunction.Builder withLimit(int i) {
-			this.limit = i;
+		public LootingEnchantLootFunction.Builder withLimit(int limit) {
+			this.limit = limit;
 			return this;
 		}
 

@@ -52,12 +52,12 @@ public class CodEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		float l = 1.0F;
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		float f = 1.0F;
 		if (!entity.isInsideWater()) {
-			l = 1.5F;
+			f = 1.5F;
 		}
 
-		this.tailFin.yaw = -l * 0.45F * MathHelper.sin(0.6F * h);
+		this.tailFin.yaw = -f * 0.45F * MathHelper.sin(0.6F * age);
 	}
 }

@@ -27,15 +27,15 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.passengerIds = packetByteBuf.readIntArray();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.passengerIds = buf.readIntArray();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		packetByteBuf.writeIntArray(this.passengerIds);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		buf.writeIntArray(this.passengerIds);
 	}
 
 	public void method_11842(ClientPlayPacketListener clientPlayPacketListener) {

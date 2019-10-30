@@ -34,8 +34,8 @@ public class MagmaCubeEntity extends SlimeEntity {
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
 	}
 
-	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
+	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		return world.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	@Override
@@ -44,9 +44,9 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected void setSize(int i, boolean bl) {
-		super.setSize(i, bl);
-		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(i * 3));
+	protected void setSize(int size, boolean heal) {
+		super.setSize(size, heal);
+		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(size * 3));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -93,18 +93,18 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected void swimUpward(Tag<Fluid> tag) {
-		if (tag == FluidTags.LAVA) {
+	protected void swimUpward(Tag<Fluid> fluid) {
+		if (fluid == FluidTags.LAVA) {
 			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
 		} else {
-			super.swimUpward(tag);
+			super.swimUpward(fluid);
 		}
 	}
 
 	@Override
-	public boolean handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
 		return false;
 	}
 
@@ -119,7 +119,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return this.isSmall() ? SoundEvents.ENTITY_MAGMA_CUBE_HURT_SMALL : SoundEvents.ENTITY_MAGMA_CUBE_HURT;
 	}
 

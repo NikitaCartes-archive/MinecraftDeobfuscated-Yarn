@@ -18,9 +18,9 @@ public abstract class DoorInteractGoal extends Goal {
 	private float field_6410;
 	private float field_6409;
 
-	public DoorInteractGoal(MobEntity mobEntity) {
-		this.mob = mobEntity;
-		if (!(mobEntity.getNavigation() instanceof MobNavigation)) {
+	public DoorInteractGoal(MobEntity mob) {
+		this.mob = mob;
+		if (!(mob.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for DoorInteractGoal");
 		}
 	}
@@ -39,11 +39,11 @@ public abstract class DoorInteractGoal extends Goal {
 		}
 	}
 
-	protected void setDoorOpen(boolean bl) {
+	protected void setDoorOpen(boolean open) {
 		if (this.field_6412) {
 			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
 			if (blockState.getBlock() instanceof DoorBlock) {
-				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, bl);
+				((DoorBlock)blockState.getBlock()).setOpen(this.mob.world, this.doorPos, open);
 			}
 		}
 	}
@@ -98,8 +98,8 @@ public abstract class DoorInteractGoal extends Goal {
 		}
 	}
 
-	public static boolean getDoor(World world, BlockPos blockPos) {
-		BlockState blockState = world.getBlockState(blockPos);
+	public static boolean getDoor(World world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
 		return blockState.getBlock() instanceof DoorBlock && blockState.getMaterial() == Material.WOOD;
 	}
 }

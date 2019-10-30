@@ -12,21 +12,21 @@ public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener
 	public BoatPaddleStateC2SPacket() {
 	}
 
-	public BoatPaddleStateC2SPacket(boolean bl, boolean bl2) {
-		this.leftPaddling = bl;
-		this.rightPaddling = bl2;
+	public BoatPaddleStateC2SPacket(boolean leftPaddling, boolean rightPaddling) {
+		this.leftPaddling = leftPaddling;
+		this.rightPaddling = rightPaddling;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.leftPaddling = packetByteBuf.readBoolean();
-		this.rightPaddling = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.leftPaddling = buf.readBoolean();
+		this.rightPaddling = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeBoolean(this.leftPaddling);
-		packetByteBuf.writeBoolean(this.rightPaddling);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeBoolean(this.leftPaddling);
+		buf.writeBoolean(this.rightPaddling);
 	}
 
 	public void method_12283(ServerPlayPacketListener serverPlayPacketListener) {

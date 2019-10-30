@@ -26,14 +26,14 @@ public class ItemStackParticleEffect implements ParticleEffect {
 	private final ParticleType<ItemStackParticleEffect> type;
 	private final ItemStack stack;
 
-	public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> particleType, ItemStack itemStack) {
-		this.type = particleType;
-		this.stack = itemStack;
+	public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> type, ItemStack stack) {
+		this.type = type;
+		this.stack = stack;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeItemStack(this.stack);
+	public void write(PacketByteBuf buf) {
+		buf.writeItemStack(this.stack);
 	}
 
 	@Override

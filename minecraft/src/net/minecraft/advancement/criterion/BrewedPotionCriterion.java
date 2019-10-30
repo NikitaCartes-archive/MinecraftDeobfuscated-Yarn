@@ -29,8 +29,8 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		return new BrewedPotionCriterion.Conditions(potion);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, Potion potion) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(potion));
+	public void trigger(ServerPlayerEntity player, Potion potion) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(potion));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

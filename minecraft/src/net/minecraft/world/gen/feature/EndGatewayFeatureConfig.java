@@ -10,13 +10,13 @@ public class EndGatewayFeatureConfig implements FeatureConfig {
 	private final Optional<BlockPos> exitPos;
 	private final boolean exact;
 
-	private EndGatewayFeatureConfig(Optional<BlockPos> optional, boolean bl) {
-		this.exitPos = optional;
-		this.exact = bl;
+	private EndGatewayFeatureConfig(Optional<BlockPos> exitPos, boolean exact) {
+		this.exitPos = exitPos;
+		this.exact = exact;
 	}
 
-	public static EndGatewayFeatureConfig createConfig(BlockPos blockPos, boolean bl) {
-		return new EndGatewayFeatureConfig(Optional.of(blockPos), bl);
+	public static EndGatewayFeatureConfig createConfig(BlockPos exitPortalPosition, boolean exitsAtSpawn) {
+		return new EndGatewayFeatureConfig(Optional.of(exitPortalPosition), exitsAtSpawn);
 	}
 
 	public static EndGatewayFeatureConfig createConfig() {
@@ -32,25 +32,25 @@ public class EndGatewayFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
+			ops,
 			(T)this.exitPos
 				.map(
-					blockPos -> dynamicOps.createMap(
+					blockPos -> ops.createMap(
 							ImmutableMap.of(
-								dynamicOps.createString("exit_x"),
-								dynamicOps.createInt(blockPos.getX()),
-								dynamicOps.createString("exit_y"),
-								dynamicOps.createInt(blockPos.getY()),
-								dynamicOps.createString("exit_z"),
-								dynamicOps.createInt(blockPos.getZ()),
-								dynamicOps.createString("exact"),
-								dynamicOps.createBoolean(this.exact)
+								ops.createString("exit_x"),
+								ops.createInt(blockPos.getX()),
+								ops.createString("exit_y"),
+								ops.createInt(blockPos.getY()),
+								ops.createString("exit_z"),
+								ops.createInt(blockPos.getZ()),
+								ops.createString("exact"),
+								ops.createBoolean(this.exact)
 							)
 						)
 				)
-				.orElse(dynamicOps.emptyMap())
+				.orElse(ops.emptyMap())
 		);
 	}
 

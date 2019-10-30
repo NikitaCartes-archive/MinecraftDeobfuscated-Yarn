@@ -20,10 +20,10 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class PillagerOutpostGenerator {
 	public static void addPieces(
-		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<StructurePiece> list, ChunkRandom chunkRandom
+		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos pos, List<StructurePiece> pieces, ChunkRandom random
 	) {
 		StructurePoolBasedGenerator.addPieces(
-			new Identifier("pillager_outpost/base_plates"), 7, PillagerOutpostGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
+			new Identifier("pillager_outpost/base_plates"), 7, PillagerOutpostGenerator.Piece::new, chunkGenerator, structureManager, pos, pieces, random
 		);
 	}
 
@@ -85,14 +85,12 @@ public class PillagerOutpostGenerator {
 	}
 
 	public static class Piece extends PoolStructurePiece {
-		public Piece(
-			StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox
-		) {
-			super(StructurePieceType.PCP, structureManager, structurePoolElement, blockPos, i, blockRotation, blockBox);
+		public Piece(StructureManager manager, StructurePoolElement element, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox) {
+			super(StructurePieceType.PCP, manager, element, pos, groundLevelDelta, rotation, boundingBox);
 		}
 
-		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(structureManager, compoundTag, StructurePieceType.PCP);
+		public Piece(StructureManager manager, CompoundTag tag) {
+			super(manager, tag, StructurePieceType.PCP);
 		}
 	}
 }

@@ -18,9 +18,9 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action action, @Nullable Identifier identifier) {
+	public AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action action, @Nullable Identifier tab) {
 		this.action = action;
-		this.tabToOpen = identifier;
+		this.tabToOpen = tab;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -34,18 +34,18 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.action = packetByteBuf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.action = buf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
 		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
-			this.tabToOpen = packetByteBuf.readIdentifier();
+			this.tabToOpen = buf.readIdentifier();
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.action);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.action);
 		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
-			packetByteBuf.writeIdentifier(this.tabToOpen);
+			buf.writeIdentifier(this.tabToOpen);
 		}
 	}
 

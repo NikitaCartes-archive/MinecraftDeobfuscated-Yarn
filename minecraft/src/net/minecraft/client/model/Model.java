@@ -15,16 +15,16 @@ public abstract class Model implements Consumer<ModelPart> {
 	public int textureWidth = 64;
 	public int textureHeight = 32;
 
-	public Model(Function<Identifier, RenderLayer> function) {
-		this.layerFactory = function;
+	public Model(Function<Identifier, RenderLayer> layerFactory) {
+		this.layerFactory = layerFactory;
 	}
 
 	public void method_22696(ModelPart modelPart) {
 	}
 
-	public final RenderLayer getLayer(Identifier identifier) {
-		return (RenderLayer)this.layerFactory.apply(identifier);
+	public final RenderLayer getLayer(Identifier texture) {
+		return (RenderLayer)this.layerFactory.apply(texture);
 	}
 
-	public abstract void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h);
+	public abstract void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b);
 }

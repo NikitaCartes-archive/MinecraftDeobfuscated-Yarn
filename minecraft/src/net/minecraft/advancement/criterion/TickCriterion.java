@@ -17,8 +17,8 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 		return new TickCriterion.Conditions();
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity) {
-		this.grant(serverPlayerEntity.getAdvancementManager());
+	public void trigger(ServerPlayerEntity player) {
+		this.grant(player.getAdvancementManager());
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

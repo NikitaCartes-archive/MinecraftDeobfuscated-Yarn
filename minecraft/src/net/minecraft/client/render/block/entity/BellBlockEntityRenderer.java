@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BellBlockEntity;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -29,15 +29,7 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 	}
 
 	public void method_17139(
-		BellBlockEntity bellBlockEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i,
-		int j
+		BellBlockEntity bellBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
 	) {
 		float h = (float)bellBlockEntity.ringTicks + g;
 		float k = 0.0F;
@@ -57,7 +49,7 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 
 		this.field_20816.pitch = k;
 		this.field_20816.roll = l;
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		this.field_20816.render(matrixStack, vertexConsumer, 0.0625F, i, j, this.getSprite(BELL_BODY_TEXTURE));
 	}
 }

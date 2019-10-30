@@ -13,9 +13,9 @@ import org.lwjgl.system.MemoryUtil;
 public class Clipboard {
 	private final ByteBuffer clipboardBuffer = ByteBuffer.allocateDirect(1024);
 
-	public String getClipboard(long l, GLFWErrorCallbackI gLFWErrorCallbackI) {
+	public String getClipboard(long window, GLFWErrorCallbackI gLFWErrorCallbackI) {
 		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(gLFWErrorCallbackI);
-		String string = GLFW.glfwGetClipboardString(l);
+		String string = GLFW.glfwGetClipboardString(window);
 		string = string != null ? SharedConstants.stripSupplementaryChars(string) : "";
 		GLFWErrorCallback gLFWErrorCallback2 = GLFW.glfwSetErrorCallback(gLFWErrorCallback);
 		if (gLFWErrorCallback2 != null) {
@@ -25,19 +25,19 @@ public class Clipboard {
 		return string;
 	}
 
-	private void setClipboard(long l, ByteBuffer byteBuffer, String string) {
+	private void setClipboard(long window, ByteBuffer byteBuffer, String string) {
 		MemoryUtil.memUTF8(string, true, byteBuffer);
-		GLFW.glfwSetClipboardString(l, byteBuffer);
+		GLFW.glfwSetClipboardString(window, byteBuffer);
 	}
 
-	public void setClipboard(long l, String string) {
+	public void setClipboard(long window, String string) {
 		int i = MemoryUtil.memLengthUTF8(string, true);
 		if (i < this.clipboardBuffer.capacity()) {
-			this.setClipboard(l, this.clipboardBuffer, string);
+			this.setClipboard(window, this.clipboardBuffer, string);
 			this.clipboardBuffer.clear();
 		} else {
 			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(i);
-			this.setClipboard(l, byteBuffer, string);
+			this.setClipboard(window, byteBuffer, string);
 		}
 	}
 }

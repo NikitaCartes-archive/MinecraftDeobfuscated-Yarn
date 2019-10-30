@@ -12,20 +12,20 @@ public class TestSet {
 	public TestSet() {
 	}
 
-	public TestSet(Collection<GameTest> collection) {
-		this.tests.addAll(collection);
+	public TestSet(Collection<GameTest> tests) {
+		this.tests.addAll(tests);
 	}
 
-	public void add(GameTest gameTest) {
-		this.tests.add(gameTest);
+	public void add(GameTest test) {
+		this.tests.add(test);
 		if (this.listener != null) {
-			gameTest.addListener(this.listener);
+			test.addListener(this.listener);
 		}
 	}
 
-	public void addListener(TestListener testListener) {
-		this.listener = testListener;
-		this.tests.forEach(gameTest -> gameTest.addListener(testListener));
+	public void addListener(TestListener listener) {
+		this.listener = listener;
+		this.tests.forEach(gameTest -> gameTest.addListener(listener));
 	}
 
 	public int getFailedRequiredTestCount() {

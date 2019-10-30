@@ -16,12 +16,12 @@ public class LeadItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext context) {
+		World world = context.getWorld();
+		BlockPos blockPos = context.getBlockPos();
 		Block block = world.getBlockState(blockPos).getBlock();
 		if (block.matches(BlockTags.FENCES)) {
-			PlayerEntity playerEntity = itemUsageContext.getPlayer();
+			PlayerEntity playerEntity = context.getPlayer();
 			if (!world.isClient && playerEntity != null) {
 				attachHeldMobsToBlock(playerEntity, world, blockPos);
 			}

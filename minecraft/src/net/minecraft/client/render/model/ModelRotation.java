@@ -36,17 +36,17 @@ public enum ModelRotation implements ModelBakeSettings {
 	private final int xRotations;
 	private final int yRotations;
 
-	private static int getIndex(int i, int j) {
-		return i * 360 + j;
+	private static int getIndex(int x, int y) {
+		return x * 360 + y;
 	}
 
-	private ModelRotation(int j, int k) {
-		this.index = getIndex(j, k);
-		Quaternion quaternion = new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), (float)(-k), true);
-		quaternion.hamiltonProduct(new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), (float)(-j), true));
+	private ModelRotation(int x, int y) {
+		this.index = getIndex(x, y);
+		Quaternion quaternion = new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), (float)(-y), true);
+		quaternion.hamiltonProduct(new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), (float)(-x), true));
 		this.quaternion = quaternion;
-		this.xRotations = MathHelper.abs(j / 90);
-		this.yRotations = MathHelper.abs(k / 90);
+		this.xRotations = MathHelper.abs(x / 90);
+		this.yRotations = MathHelper.abs(y / 90);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public enum ModelRotation implements ModelBakeSettings {
 		return new Rotation3(null, this.quaternion, null, null);
 	}
 
-	public static ModelRotation get(int i, int j) {
-		return (ModelRotation)BY_INDEX.get(getIndex(MathHelper.floorMod(i, 360), MathHelper.floorMod(j, 360)));
+	public static ModelRotation get(int x, int y) {
+		return (ModelRotation)BY_INDEX.get(getIndex(MathHelper.floorMod(x, 360), MathHelper.floorMod(y, 360)));
 	}
 }

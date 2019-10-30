@@ -28,9 +28,9 @@ import net.minecraft.world.gen.decorator.NoiseHeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.decorator.TrunkVineTreeDecorator;
-import net.minecraft.world.gen.feature.AbstractTreeFeatureConfig;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.BoulderFeatureConfig;
+import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
 import net.minecraft.world.gen.feature.BushFeatureConfig;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
@@ -42,7 +42,6 @@ import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
-import net.minecraft.world.gen.feature.NormalTreeFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -53,6 +52,7 @@ import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
@@ -138,7 +138,7 @@ public class DefaultBiomeFeatures {
 		.getDefaultState()
 		.with(MushroomBlock.UP, Boolean.valueOf(false))
 		.with(MushroomBlock.DOWN, Boolean.valueOf(false));
-	public static final NormalTreeFeatureConfig field_21126 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21126 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(4)
@@ -146,7 +146,7 @@ public class DefaultBiomeFeatures {
 		.method_23437(3)
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21167 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21167 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(4)
@@ -155,7 +155,7 @@ public class DefaultBiomeFeatures {
 		.method_23429(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21183 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21183 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(4)
@@ -163,7 +163,7 @@ public class DefaultBiomeFeatures {
 		.method_23437(3)
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21184 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21184 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES), new PineFoliagePlacer(1, 0)
 		)
 		.method_23428(7)
@@ -173,7 +173,7 @@ public class DefaultBiomeFeatures {
 		.method_23438(1)
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21185 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21185 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES), new SpruceFoliagePlacer(2, 1)
 		)
 		.method_23428(6)
@@ -183,7 +183,7 @@ public class DefaultBiomeFeatures {
 		.method_23436(2)
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21186 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21186 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(ACACIA_LOG), new SimpleStateProvider(ACACIA_LEAVES), new AcaciaFoliagePlacer(2, 0)
 		)
 		.method_23428(5)
@@ -192,7 +192,7 @@ public class DefaultBiomeFeatures {
 		.method_23433(0)
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21187 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21187 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(5)
@@ -200,7 +200,7 @@ public class DefaultBiomeFeatures {
 		.method_23437(3)
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21188 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21188 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(5)
@@ -209,7 +209,7 @@ public class DefaultBiomeFeatures {
 		.method_23437(3)
 		.method_23427()
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21189 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21189 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(3, 0)
 		)
 		.method_23428(5)
@@ -218,11 +218,11 @@ public class DefaultBiomeFeatures {
 		.method_23439(1)
 		.method_23429(ImmutableList.of(new LeaveVineTreeDecorator()))
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21190 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21190 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21191 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21191 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(4)
@@ -231,12 +231,12 @@ public class DefaultBiomeFeatures {
 		.method_23427()
 		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21192 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21192 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21193 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21193 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(4)
@@ -245,12 +245,12 @@ public class DefaultBiomeFeatures {
 		.method_23427()
 		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21194 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21194 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(OAK_LOG), new SimpleStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
 		)
 		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
 		.method_23431();
-	public static final NormalTreeFeatureConfig field_21195 = new NormalTreeFeatureConfig.Builder(
+	public static final BranchedTreeFeatureConfig field_21195 = new BranchedTreeFeatureConfig.Builder(
 			new SimpleStateProvider(BIRCH_LOG), new SimpleStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
 		)
 		.method_23428(5)
@@ -259,132 +259,130 @@ public class DefaultBiomeFeatures {
 		.method_23427()
 		.method_23429(ImmutableList.of(new BeehiveTreeDecorator(0.01F)))
 		.method_23431();
-	public static final AbstractTreeFeatureConfig field_21196 = new AbstractTreeFeatureConfig.Builder(
-			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(OAK_LEAVES)
-		)
+	public static final TreeFeatureConfig field_21196 = new TreeFeatureConfig.Builder(new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(OAK_LEAVES))
 		.baseHeight(4)
 		.build();
-	public static final MegaTreeFeatureConfig field_21197 = new MegaTreeFeatureConfig.class_4637(
+	public static final MegaTreeFeatureConfig field_21197 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(DARK_OAK_LOG), new SimpleStateProvider(DARK_OAK_LEAVES)
 		)
 		.method_23410(6)
 		.method_23409();
-	public static final MegaTreeFeatureConfig field_21198 = new MegaTreeFeatureConfig.class_4637(
+	public static final MegaTreeFeatureConfig field_21198 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
 		)
 		.method_23410(13)
 		.method_23412(15)
 		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
 		.method_23409();
-	public static final MegaTreeFeatureConfig field_21199 = new MegaTreeFeatureConfig.class_4637(
+	public static final MegaTreeFeatureConfig field_21199 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(SPRUCE_LOG), new SimpleStateProvider(SPRUCE_LEAVES)
 		)
 		.method_23410(3)
 		.method_23412(15)
 		.method_23411(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleStateProvider(PODZOL))))
 		.method_23409();
-	public static final MegaTreeFeatureConfig field_21200 = new MegaTreeFeatureConfig.class_4637(
+	public static final MegaTreeFeatureConfig field_21200 = new MegaTreeFeatureConfig.Builder(
 			new SimpleStateProvider(JUNGLE_LOG), new SimpleStateProvider(JUNGLE_LEAVES)
 		)
 		.method_23410(10)
 		.method_23412(20)
 		.method_23411(ImmutableList.of(new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.method_23409();
-	public static final FlowerFeatureConfig field_21201 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(GRASS), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21201 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(GRASS), new SimpleBlockPlacer())
 		.method_23417(128)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21202 = new FlowerFeatureConfig.class_4639(
+	public static final FlowerFeatureConfig field_21202 = new FlowerFeatureConfig.Builder(
 			new WeightedStateProvider().addState(GRASS, 1).addState(FERN, 4), new SimpleBlockPlacer()
 		)
 		.method_23417(128)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21203 = new FlowerFeatureConfig.class_4639(
+	public static final FlowerFeatureConfig field_21203 = new FlowerFeatureConfig.Builder(
 			new WeightedStateProvider().addState(GRASS, 3).addState(FERN, 1), new SimpleBlockPlacer()
 		)
 		.method_23421(ImmutableSet.of(PODZOL))
 		.method_23417(128)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21204 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(LILY_OF_THE_VALLEY), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21204 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(LILY_OF_THE_VALLEY), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21205 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(BLUE_ORCHID), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21205 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(BLUE_ORCHID), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21206 = new FlowerFeatureConfig.class_4639(
+	public static final FlowerFeatureConfig field_21206 = new FlowerFeatureConfig.Builder(
 			new WeightedStateProvider().addState(POPPY, 2).addState(DANDELION, 1), new SimpleBlockPlacer()
 		)
 		.method_23417(64)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21088 = new FlowerFeatureConfig.class_4639(new PlainFlowerStateProvider(), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21088 = new FlowerFeatureConfig.Builder(new PlainFlowerStateProvider(), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21089 = new FlowerFeatureConfig.class_4639(new ForestFlowerStateProvider(), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21089 = new FlowerFeatureConfig.Builder(new ForestFlowerStateProvider(), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21090 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(DEAD_BUSH), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21090 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(DEAD_BUSH), new SimpleBlockPlacer())
 		.method_23417(4)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21091 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(MELON), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21091 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(MELON), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23418(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.method_23416()
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21092 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(PUMPKIN), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21092 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(PUMPKIN), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23418(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21093 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(SWEET_BERRY_BUSH), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21093 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(SWEET_BERRY_BUSH), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23418(ImmutableSet.of(GRASS_BLOCK.getBlock()))
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21094 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(FIRE), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21094 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(FIRE), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23418(ImmutableSet.of(NETHERRACK.getBlock()))
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21095 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(LILY_PAD), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21095 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(LILY_PAD), new SimpleBlockPlacer())
 		.method_23417(10)
 		.method_23424();
-	public static final FlowerFeatureConfig field_21096 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(RED_MUSHROOM), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21096 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(RED_MUSHROOM), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21097 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(BROWN_MUSHROOM), new SimpleBlockPlacer())
+	public static final FlowerFeatureConfig field_21097 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(BROWN_MUSHROOM), new SimpleBlockPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21098 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(LILAC), new DoublePlantPlacer())
+	public static final FlowerFeatureConfig field_21098 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(LILAC), new DoublePlantPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21099 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(ROSE_BUSH), new DoublePlantPlacer())
+	public static final FlowerFeatureConfig field_21099 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(ROSE_BUSH), new DoublePlantPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21100 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(PEONY), new DoublePlantPlacer())
+	public static final FlowerFeatureConfig field_21100 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(PEONY), new DoublePlantPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21101 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(SUNFLOWER), new DoublePlantPlacer())
+	public static final FlowerFeatureConfig field_21101 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(SUNFLOWER), new DoublePlantPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21102 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(TALL_GRASS), new DoublePlantPlacer())
+	public static final FlowerFeatureConfig field_21102 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(TALL_GRASS), new DoublePlantPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21103 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(LARGE_FERN), new DoublePlantPlacer())
+	public static final FlowerFeatureConfig field_21103 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(LARGE_FERN), new DoublePlantPlacer())
 		.method_23417(64)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21104 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(CACTUS), new ColumnPlacer(1, 2))
+	public static final FlowerFeatureConfig field_21104 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(CACTUS), new ColumnPlacer(1, 2))
 		.method_23417(10)
 		.method_23419()
 		.method_23424();
-	public static final FlowerFeatureConfig field_21105 = new FlowerFeatureConfig.class_4639(new SimpleStateProvider(SUGAR_CANE), new ColumnPlacer(2, 2))
+	public static final FlowerFeatureConfig field_21105 = new FlowerFeatureConfig.Builder(new SimpleStateProvider(SUGAR_CANE), new ColumnPlacer(2, 2))
 		.method_23417(20)
 		.method_23420(4)
 		.method_23423(0)

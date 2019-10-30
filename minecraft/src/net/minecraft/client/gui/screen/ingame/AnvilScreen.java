@@ -22,8 +22,8 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/anvil.png");
 	private TextFieldWidget nameField;
 
-	public AnvilScreen(AnvilContainer anvilContainer, PlayerInventory playerInventory, Text text) {
-		super(anvilContainer, playerInventory, text);
+	public AnvilScreen(AnvilContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 	}
 
 	@Override
@@ -46,9 +46,9 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	}
 
 	@Override
-	public void resize(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient client, int width, int height) {
 		String string = this.nameField.getText();
-		this.init(minecraftClient, i, j);
+		this.init(client, width, height);
 		this.nameField.setText(string);
 	}
 
@@ -60,37 +60,37 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i == 256) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == 256) {
 			this.minecraft.player.closeContainer();
 		}
 
-		return !this.nameField.keyPressed(i, j, k) && !this.nameField.isActive() ? super.keyPressed(i, j, k) : true;
+		return !this.nameField.keyPressed(keyCode, scanCode, modifiers) && !this.nameField.isActive() ? super.keyPressed(keyCode, scanCode, modifiers) : true;
 	}
 
 	@Override
-	protected void drawForeground(int i, int j) {
+	protected void drawForeground(int mouseX, int mouseY) {
 		RenderSystem.disableBlend();
 		this.font.draw(this.title.asFormattedString(), 60.0F, 6.0F, 4210752);
-		int k = this.container.getLevelCost();
-		if (k > 0) {
-			int l = 8453920;
+		int i = this.container.getLevelCost();
+		if (i > 0) {
+			int j = 8453920;
 			boolean bl = true;
-			String string = I18n.translate("container.repair.cost", k);
-			if (k >= 40 && !this.minecraft.player.abilities.creativeMode) {
+			String string = I18n.translate("container.repair.cost", i);
+			if (i >= 40 && !this.minecraft.player.abilities.creativeMode) {
 				string = I18n.translate("container.repair.expensive");
-				l = 16736352;
+				j = 16736352;
 			} else if (!this.container.getSlot(2).hasStack()) {
 				bl = false;
 			} else if (!this.container.getSlot(2).canTakeItems(this.playerInventory.player)) {
-				l = 16736352;
+				j = 16736352;
 			}
 
 			if (bl) {
-				int m = this.containerWidth - 8 - this.font.getStringWidth(string) - 2;
-				int n = 69;
-				fill(m - 2, 67, this.containerWidth - 8, 79, 1325400064);
-				this.font.drawWithShadow(string, (float)m, 69.0F, l);
+				int k = this.containerWidth - 8 - this.font.getStringWidth(string) - 2;
+				int l = 69;
+				fill(k - 2, 67, this.containerWidth - 8, 79, 1325400064);
+				this.font.drawWithShadow(string, (float)k, 69.0F, j);
 			}
 		}
 	}
@@ -109,24 +109,24 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		super.render(i, j, f);
-		this.drawMouseoverTooltip(i, j);
+		super.render(mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(mouseX, mouseY);
 		RenderSystem.disableBlend();
-		this.nameField.render(i, j, f);
+		this.nameField.render(mouseX, mouseY, delta);
 	}
 
 	@Override
-	protected void drawBackground(float f, int i, int j) {
+	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(BG_TEX);
-		int k = (this.width - this.containerWidth) / 2;
-		int l = (this.height - this.containerHeight) / 2;
-		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
-		this.blit(k + 59, l + 20, 0, this.containerHeight + (this.container.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+		int i = (this.width - this.containerWidth) / 2;
+		int j = (this.height - this.containerHeight) / 2;
+		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
+		this.blit(i + 59, j + 20, 0, this.containerHeight + (this.container.getSlot(0).hasStack() ? 0 : 16), 110, 16);
 		if ((this.container.getSlot(0).hasStack() || this.container.getSlot(1).hasStack()) && !this.container.getSlot(2).hasStack()) {
-			this.blit(k + 99, l + 45, this.containerWidth, 0, 28, 21);
+			this.blit(i + 99, j + 45, this.containerWidth, 0, 28, 21);
 		}
 	}
 
@@ -136,14 +136,14 @@ public class AnvilScreen extends AbstractContainerScreen<AnvilContainer> impleme
 	}
 
 	@Override
-	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
-		if (i == 0) {
+	public void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack) {
+		if (slotId == 0) {
 			this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getName().getString());
 			this.nameField.setEditable(!itemStack.isEmpty());
 		}
 	}
 
 	@Override
-	public void onContainerPropertyUpdate(Container container, int i, int j) {
+	public void onContainerPropertyUpdate(Container container, int propertyId, int i) {
 	}
 }

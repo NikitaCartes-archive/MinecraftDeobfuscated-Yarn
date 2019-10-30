@@ -21,9 +21,9 @@ import net.minecraft.util.JsonHelper;
 public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	private final LootContext.EntityTarget entity;
 
-	public FillPlayerHeadLootFunction(LootCondition[] lootConditions, LootContext.EntityTarget entityTarget) {
-		super(lootConditions);
-		this.entity = entityTarget;
+	public FillPlayerHeadLootFunction(LootCondition[] conditions, LootContext.EntityTarget entity) {
+		super(conditions);
+		this.entity = entity;
 	}
 
 	@Override
@@ -32,16 +32,16 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.getItem() == Items.PLAYER_HEAD) {
-			Entity entity = lootContext.get(this.entity.getParameter());
+	public ItemStack process(ItemStack stack, LootContext context) {
+		if (stack.getItem() == Items.PLAYER_HEAD) {
+			Entity entity = context.get(this.entity.getParameter());
 			if (entity instanceof PlayerEntity) {
 				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-				itemStack.getOrCreateTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+				stack.getOrCreateTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
 			}
 		}
 
-		return itemStack;
+		return stack;
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<FillPlayerHeadLootFunction> {

@@ -16,24 +16,24 @@ public class BlockBreakingProgressS2CPacket implements Packet<ClientPlayPacketLi
 	public BlockBreakingProgressS2CPacket() {
 	}
 
-	public BlockBreakingProgressS2CPacket(int i, BlockPos blockPos, int j) {
-		this.entityId = i;
-		this.pos = blockPos;
-		this.progress = j;
+	public BlockBreakingProgressS2CPacket(int entityId, BlockPos pos, int progress) {
+		this.entityId = entityId;
+		this.pos = pos;
+		this.progress = progress;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.entityId = packetByteBuf.readVarInt();
-		this.pos = packetByteBuf.readBlockPos();
-		this.progress = packetByteBuf.readUnsignedByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.entityId = buf.readVarInt();
+		this.pos = buf.readBlockPos();
+		this.progress = buf.readUnsignedByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.entityId);
-		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeByte(this.progress);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.entityId);
+		buf.writeBlockPos(this.pos);
+		buf.writeByte(this.progress);
 	}
 
 	public void method_11279(ClientPlayPacketListener clientPlayPacketListener) {

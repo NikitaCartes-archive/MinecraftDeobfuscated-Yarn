@@ -14,9 +14,9 @@ public class GravityStructureProcessor extends StructureProcessor {
 	private final Heightmap.Type heightmap;
 	private final int offset;
 
-	public GravityStructureProcessor(Heightmap.Type type, int i) {
-		this.heightmap = type;
-		this.offset = i;
+	public GravityStructureProcessor(Heightmap.Type heightmap, int offset) {
+		this.heightmap = heightmap;
+		this.offset = offset;
 	}
 
 	public GravityStructureProcessor(Dynamic<?> dynamic) {
@@ -27,10 +27,10 @@ public class GravityStructureProcessor extends StructureProcessor {
 	@Override
 	public Structure.StructureBlockInfo process(
 		WorldView worldView,
-		BlockPos blockPos,
+		BlockPos pos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData placementData
 	) {
 		int i = worldView.getTopY(this.heightmap, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
 		int j = structureBlockInfo.pos.getY();

@@ -191,7 +191,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends CompositeE
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
 		this.method_2813(arm).rotate(matrixStack, 0.0625F);
 	}
 }

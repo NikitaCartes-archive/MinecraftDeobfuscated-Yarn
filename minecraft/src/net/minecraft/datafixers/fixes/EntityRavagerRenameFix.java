@@ -8,12 +8,12 @@ import java.util.Objects;
 public class EntityRavagerRenameFix extends EntityRenameFix {
 	public static final Map<String, String> ITEMS = ImmutableMap.builder().put("minecraft:illager_beast_spawn_egg", "minecraft:ravager_spawn_egg").build();
 
-	public EntityRavagerRenameFix(Schema schema, boolean bl) {
-		super("EntityRavagerRenameFix", schema, bl);
+	public EntityRavagerRenameFix(Schema outputSchema, boolean changesType) {
+		super("EntityRavagerRenameFix", outputSchema, changesType);
 	}
 
 	@Override
-	protected String rename(String string) {
-		return Objects.equals("minecraft:illager_beast", string) ? "minecraft:ravager" : string;
+	protected String rename(String oldName) {
+		return Objects.equals("minecraft:illager_beast", oldName) ? "minecraft:ravager" : oldName;
 	}
 }

@@ -13,12 +13,12 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	};
 	private final File packsFolder;
 
-	public FileResourcePackProvider(File file) {
-		this.packsFolder = file;
+	public FileResourcePackProvider(File packsFolder) {
+		this.packsFolder = packsFolder;
 	}
 
 	@Override
-	public <T extends ResourcePackProfile> void register(Map<String, T> map, ResourcePackProfile.Factory<T> factory) {
+	public <T extends ResourcePackProfile> void register(Map<String, T> registry, ResourcePackProfile.Factory<T> factory) {
 		if (!this.packsFolder.isDirectory()) {
 			this.packsFolder.mkdirs();
 		}
@@ -29,7 +29,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 				String string = "file/" + file.getName();
 				T resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP);
 				if (resourcePackProfile != null) {
-					map.put(string, resourcePackProfile);
+					registry.put(string, resourcePackProfile);
 				}
 			}
 		}

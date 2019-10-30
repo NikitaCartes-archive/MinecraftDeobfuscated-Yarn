@@ -29,8 +29,8 @@ public class PaintingEntity extends AbstractDecorationEntity {
 		super(entityType, world);
 	}
 
-	public PaintingEntity(World world, BlockPos blockPos, Direction direction) {
-		super(EntityType.PAINTING, world, blockPos);
+	public PaintingEntity(World world, BlockPos pos, Direction direction) {
+		super(EntityType.PAINTING, world, pos);
 		List<PaintingMotive> list = Lists.<PaintingMotive>newArrayList();
 		int i = 0;
 
@@ -70,15 +70,15 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
-		super.writeCustomDataToTag(compoundTag);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		tag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
+		super.writeCustomDataToTag(tag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.motive = Registry.MOTIVE.get(Identifier.tryParse(compoundTag.getString("Motive")));
-		super.readCustomDataFromTag(compoundTag);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		this.motive = Registry.MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
+		super.readCustomDataFromTag(tag);
 	}
 
 	@Override
@@ -112,14 +112,14 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void setPositionAndAngles(double d, double e, double f, float g, float h) {
-		this.setPosition(d, e, f);
+	public void setPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
+		this.setPosition(x, y, z);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-		BlockPos blockPos = this.blockPos.add(d - this.getX(), e - this.getY(), f - this.getZ());
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+		BlockPos blockPos = this.blockPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
 		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}
 

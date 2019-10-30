@@ -24,14 +24,14 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 	private BakedModel missingModel;
 	private Object2IntMap<BlockState> field_20278;
 
-	public BakedModelManager(SpriteAtlasTexture spriteAtlasTexture, BlockColors blockColors) {
-		this.spriteAtlas = spriteAtlasTexture;
-		this.colorMap = blockColors;
+	public BakedModelManager(SpriteAtlasTexture spriteAtlas, BlockColors colorMap) {
+		this.spriteAtlas = spriteAtlas;
+		this.colorMap = colorMap;
 		this.blockStateMaps = new BlockModels(this);
 	}
 
-	public BakedModel getModel(ModelIdentifier modelIdentifier) {
-		return (BakedModel)this.modelMap.getOrDefault(modelIdentifier, this.missingModel);
+	public BakedModel getModel(ModelIdentifier id) {
+		return (BakedModel)this.modelMap.getOrDefault(id, this.missingModel);
 	}
 
 	public BakedModel getMissingModel() {

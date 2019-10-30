@@ -21,7 +21,7 @@ public class LootContextParameters {
 	public static final LootContextParameter<ItemStack> TOOL = register("tool");
 	public static final LootContextParameter<Float> EXPLOSION_RADIUS = register("explosion_radius");
 
-	private static <T> LootContextParameter<T> register(String string) {
-		return new LootContextParameter<>(new Identifier(string));
+	private static <T> LootContextParameter<T> register(String name) {
+		return new LootContextParameter<>(new Identifier(name));
 	}
 }

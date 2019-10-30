@@ -13,18 +13,18 @@ public class EntityAttributeModifier {
 	private final UUID uuid;
 	private boolean serialize = true;
 
-	public EntityAttributeModifier(String string, double d, EntityAttributeModifier.Operation operation) {
-		this(MathHelper.randomUuid(ThreadLocalRandom.current()), (Supplier<String>)(() -> string), d, operation);
+	public EntityAttributeModifier(String name, double amount, EntityAttributeModifier.Operation operation) {
+		this(MathHelper.randomUuid(ThreadLocalRandom.current()), (Supplier<String>)(() -> name), amount, operation);
 	}
 
-	public EntityAttributeModifier(UUID uUID, String string, double d, EntityAttributeModifier.Operation operation) {
-		this(uUID, (Supplier<String>)(() -> string), d, operation);
+	public EntityAttributeModifier(UUID uuid, String name, double amount, EntityAttributeModifier.Operation operation) {
+		this(uuid, (Supplier<String>)(() -> name), amount, operation);
 	}
 
-	public EntityAttributeModifier(UUID uUID, Supplier<String> supplier, double d, EntityAttributeModifier.Operation operation) {
-		this.uuid = uUID;
-		this.nameGetter = supplier;
-		this.amount = d;
+	public EntityAttributeModifier(UUID uuid, Supplier<String> nameGetter, double amount, EntityAttributeModifier.Operation operation) {
+		this.uuid = uuid;
+		this.nameGetter = nameGetter;
+		this.amount = amount;
 		this.operation = operation;
 	}
 
@@ -48,16 +48,16 @@ public class EntityAttributeModifier {
 		return this.serialize;
 	}
 
-	public EntityAttributeModifier setSerialize(boolean bl) {
-		this.serialize = bl;
+	public EntityAttributeModifier setSerialize(boolean serialize) {
+		this.serialize = serialize;
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)o;
 			return Objects.equals(this.uuid, entityAttributeModifier.uuid);
 		} else {
 			return false;
@@ -91,19 +91,19 @@ public class EntityAttributeModifier {
 		private static final EntityAttributeModifier.Operation[] VALUES = new EntityAttributeModifier.Operation[]{ADDITION, MULTIPLY_BASE, MULTIPLY_TOTAL};
 		private final int id;
 
-		private Operation(int j) {
-			this.id = j;
+		private Operation(int id) {
+			this.id = id;
 		}
 
 		public int getId() {
 			return this.id;
 		}
 
-		public static EntityAttributeModifier.Operation fromId(int i) {
-			if (i >= 0 && i < VALUES.length) {
-				return VALUES[i];
+		public static EntityAttributeModifier.Operation fromId(int id) {
+			if (id >= 0 && id < VALUES.length) {
+				return VALUES[id];
 			} else {
-				throw new IllegalArgumentException("No operation with value " + i);
+				throw new IllegalArgumentException("No operation with value " + id);
 			}
 		}
 	}

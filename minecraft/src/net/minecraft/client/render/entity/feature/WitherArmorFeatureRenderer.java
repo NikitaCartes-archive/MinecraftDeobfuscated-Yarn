@@ -13,13 +13,13 @@ public class WitherArmorFeatureRenderer extends EnergySwirlOverlayFeatureRendere
 	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> model = new WitherEntityModel<>(0.5F);
 
-	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> context) {
+		super(context);
 	}
 
 	@Override
-	protected float getEnergySwirlX(float f) {
-		return MathHelper.cos(f * 0.02F) * 3.0F;
+	protected float getEnergySwirlX(float partialAge) {
+		return MathHelper.cos(partialAge * 0.02F) * 3.0F;
 	}
 
 	@Override

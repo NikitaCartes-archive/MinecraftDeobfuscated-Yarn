@@ -18,16 +18,16 @@ import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
-	public ItemWrittenBookPagesStrictJsonFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemWrittenBookPagesStrictJsonFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {
-		return dynamic.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamicxx -> {
-					if (!dynamicxx.asString().isPresent()) {
-						return dynamicxx;
+	public Dynamic<?> fixBookPages(Dynamic<?> tag) {
+		return tag.update("pages", dynamic2 -> DataFixUtils.orElse(dynamic2.asStreamOpt().map(stream -> stream.map(dynamic -> {
+					if (!dynamic.asString().isPresent()) {
+						return dynamic;
 					} else {
-						String string = dynamicxx.asString("");
+						String string = dynamic.asString("");
 						Text text = null;
 						if (!"null".equals(string) && !StringUtils.isEmpty(string)) {
 							if (string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
@@ -63,9 +63,9 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 							text = new LiteralText("");
 						}
 
-						return dynamicxx.createString(Text.Serializer.toJson(text));
+						return dynamic.createString(Text.Serializer.toJson(text));
 					}
-				})).map(dynamic::createList), dynamic.emptyList()));
+				})).map(tag::createList), tag.emptyList()));
 	}
 
 	@Override

@@ -6,11 +6,11 @@ public enum ActionResult {
 	PASS,
 	FAIL;
 
-	public boolean method_23665() {
+	public boolean isAccepted() {
 		return this == SUCCESS || this == CONSUME;
 	}
 
-	public boolean method_23666() {
+	public boolean shouldSwingHand() {
 		return this == SUCCESS;
 	}
 }

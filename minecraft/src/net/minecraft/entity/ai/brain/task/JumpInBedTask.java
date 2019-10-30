@@ -19,9 +19,9 @@ public class JumpInBedTask extends Task<MobEntity> {
 	private int jumpsRemaining;
 	private int ticksToNextJump;
 
-	public JumpInBedTask(float f) {
+	public JumpInBedTask(float walkSpeed) {
 		super(ImmutableMap.of(MemoryModuleType.NEAREST_BED, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
-		this.walkSpeed = f;
+		this.walkSpeed = walkSpeed;
 	}
 
 	protected boolean method_19971(ServerWorld serverWorld, MobEntity mobEntity) {
@@ -56,7 +56,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	@Override
-	protected boolean isTimeLimitExceeded(long l) {
+	protected boolean isTimeLimitExceeded(long time) {
 		return false;
 	}
 
@@ -74,37 +74,37 @@ public class JumpInBedTask extends Task<MobEntity> {
 		}
 	}
 
-	private void setWalkTarget(MobEntity mobEntity, BlockPos blockPos) {
-		mobEntity.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.walkSpeed, 0));
+	private void setWalkTarget(MobEntity mob, BlockPos pos) {
+		mob.getBrain().putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(pos, this.walkSpeed, 0));
 	}
 
-	private boolean shouldStartJumping(ServerWorld serverWorld, MobEntity mobEntity) {
-		return this.isAboveBed(serverWorld, mobEntity) || this.getNearestBed(mobEntity).isPresent();
+	private boolean shouldStartJumping(ServerWorld world, MobEntity mob) {
+		return this.isAboveBed(world, mob) || this.getNearestBed(mob).isPresent();
 	}
 
-	private boolean isAboveBed(ServerWorld serverWorld, MobEntity mobEntity) {
-		BlockPos blockPos = new BlockPos(mobEntity);
+	private boolean isAboveBed(ServerWorld world, MobEntity mob) {
+		BlockPos blockPos = new BlockPos(mob);
 		BlockPos blockPos2 = blockPos.method_10074();
-		return this.isBedAt(serverWorld, blockPos) || this.isBedAt(serverWorld, blockPos2);
+		return this.isBedAt(world, blockPos) || this.isBedAt(world, blockPos2);
 	}
 
-	private boolean isOnBed(ServerWorld serverWorld, MobEntity mobEntity) {
-		return this.isBedAt(serverWorld, new BlockPos(mobEntity));
+	private boolean isOnBed(ServerWorld world, MobEntity mob) {
+		return this.isBedAt(world, new BlockPos(mob));
 	}
 
-	private boolean isBedAt(ServerWorld serverWorld, BlockPos blockPos) {
-		return serverWorld.getBlockState(blockPos).matches(BlockTags.BEDS);
+	private boolean isBedAt(ServerWorld world, BlockPos pos) {
+		return world.getBlockState(pos).matches(BlockTags.BEDS);
 	}
 
-	private Optional<BlockPos> getNearestBed(MobEntity mobEntity) {
-		return mobEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_BED);
+	private Optional<BlockPos> getNearestBed(MobEntity mob) {
+		return mob.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_BED);
 	}
 
-	private boolean isBedGoneTooLong(ServerWorld serverWorld, MobEntity mobEntity) {
-		return !this.isAboveBed(serverWorld, mobEntity) && this.ticksOutOfBedUntilStopped <= 0;
+	private boolean isBedGoneTooLong(ServerWorld world, MobEntity mob) {
+		return !this.isAboveBed(world, mob) && this.ticksOutOfBedUntilStopped <= 0;
 	}
 
-	private boolean isDoneJumping(ServerWorld serverWorld, MobEntity mobEntity) {
-		return this.isAboveBed(serverWorld, mobEntity) && this.jumpsRemaining <= 0;
+	private boolean isDoneJumping(ServerWorld world, MobEntity mob) {
+		return this.isAboveBed(world, mob) && this.jumpsRemaining <= 0;
 	}
 }

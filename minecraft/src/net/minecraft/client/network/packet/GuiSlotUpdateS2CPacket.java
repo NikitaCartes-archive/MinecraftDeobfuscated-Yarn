@@ -16,10 +16,10 @@ public class GuiSlotUpdateS2CPacket implements Packet<ClientPlayPacketListener> 
 	public GuiSlotUpdateS2CPacket() {
 	}
 
-	public GuiSlotUpdateS2CPacket(int i, int j, ItemStack itemStack) {
-		this.id = i;
-		this.slot = j;
-		this.stack = itemStack.copy();
+	public GuiSlotUpdateS2CPacket(int id, int slot, ItemStack stack) {
+		this.id = id;
+		this.slot = slot;
+		this.stack = stack.copy();
 	}
 
 	public void method_11451(ClientPlayPacketListener clientPlayPacketListener) {
@@ -27,17 +27,17 @@ public class GuiSlotUpdateS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readByte();
-		this.slot = packetByteBuf.readShort();
-		this.stack = packetByteBuf.readItemStack();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readByte();
+		this.slot = buf.readShort();
+		this.stack = buf.readItemStack();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.id);
-		packetByteBuf.writeShort(this.slot);
-		packetByteBuf.writeItemStack(this.stack);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.id);
+		buf.writeShort(this.slot);
+		buf.writeItemStack(this.stack);
 	}
 
 	@Environment(EnvType.CLIENT)

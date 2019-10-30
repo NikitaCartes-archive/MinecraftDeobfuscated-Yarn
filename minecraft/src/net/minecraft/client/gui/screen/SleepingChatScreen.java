@@ -27,10 +27,10 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i == 256) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == 256) {
 			this.stopSleeping();
-		} else if (i == 257 || i == 335) {
+		} else if (keyCode == 257 || keyCode == 335) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
 				this.minecraft.player.sendChatMessage(string);
@@ -41,7 +41,7 @@ public class SleepingChatScreen extends ChatScreen {
 			return true;
 		}
 
-		return super.keyPressed(i, j, k);
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	private void stopSleeping() {

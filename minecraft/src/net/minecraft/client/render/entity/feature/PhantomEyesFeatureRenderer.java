@@ -7,15 +7,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class PhantomEyesFeatureRenderer<T extends Entity> extends EntityEyesFeatureRenderer<T, PhantomEntityModel<T>> {
+public class PhantomEyesFeatureRenderer<T extends Entity> extends EyesFeatureRenderer<T, PhantomEntityModel<T>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/phantom_eyes.png");
 
-	public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> context) {
+		super(context);
 	}
 
 	@Override
-	public Identifier getTexture() {
+	public Identifier getEyesTexture() {
 		return SKIN;
 	}
 }

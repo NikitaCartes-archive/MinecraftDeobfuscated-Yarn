@@ -9,24 +9,24 @@ public class CountExtraChanceDecoratorConfig implements DecoratorConfig {
 	public final float extraChance;
 	public final int extraCount;
 
-	public CountExtraChanceDecoratorConfig(int i, float f, int j) {
-		this.count = i;
-		this.extraChance = f;
-		this.extraCount = j;
+	public CountExtraChanceDecoratorConfig(int count, float extraChance, int extraCount) {
+		this.count = count;
+		this.extraChance = extraChance;
+		this.extraCount = extraCount;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("count"),
-					dynamicOps.createInt(this.count),
-					dynamicOps.createString("extra_chance"),
-					dynamicOps.createFloat(this.extraChance),
-					dynamicOps.createString("extra_count"),
-					dynamicOps.createInt(this.extraCount)
+					ops.createString("count"),
+					ops.createInt(this.count),
+					ops.createString("extra_chance"),
+					ops.createFloat(this.extraChance),
+					ops.createString("extra_count"),
+					ops.createInt(this.extraCount)
 				)
 			)
 		);

@@ -16,15 +16,12 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("feature"),
-					this.feature.serialize(dynamicOps).getValue(),
-					dynamicOps.createString("decorator"),
-					this.decorator.serialize(dynamicOps).getValue()
+					ops.createString("feature"), this.feature.serialize(ops).getValue(), ops.createString("decorator"), this.decorator.serialize(ops).getValue()
 				)
 			)
 		);

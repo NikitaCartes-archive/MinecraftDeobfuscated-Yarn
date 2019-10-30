@@ -13,30 +13,30 @@ public class ItemPlacementContext extends ItemUsageContext {
 	private final BlockPos placementPos;
 	protected boolean canReplaceExisting = true;
 
-	public ItemPlacementContext(ItemUsageContext itemUsageContext) {
-		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getHand(), itemUsageContext.getStack(), itemUsageContext.hit);
+	public ItemPlacementContext(ItemUsageContext context) {
+		this(context.getWorld(), context.getPlayer(), context.getHand(), context.getStack(), context.hit);
 	}
 
-	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
-		super(world, playerEntity, hand, itemStack, blockHitResult);
+	protected ItemPlacementContext(World world, @Nullable PlayerEntity player, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
+		super(world, player, hand, itemStack, blockHitResult);
 		this.placementPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 		this.canReplaceExisting = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
 	}
 
-	public static ItemPlacementContext offset(ItemPlacementContext itemPlacementContext, BlockPos blockPos, Direction direction) {
+	public static ItemPlacementContext offset(ItemPlacementContext context, BlockPos pos, Direction side) {
 		return new ItemPlacementContext(
-			itemPlacementContext.getWorld(),
-			itemPlacementContext.getPlayer(),
-			itemPlacementContext.getHand(),
-			itemPlacementContext.getStack(),
+			context.getWorld(),
+			context.getPlayer(),
+			context.getHand(),
+			context.getStack(),
 			new BlockHitResult(
 				new Vec3d(
-					(double)blockPos.getX() + 0.5 + (double)direction.getOffsetX() * 0.5,
-					(double)blockPos.getY() + 0.5 + (double)direction.getOffsetY() * 0.5,
-					(double)blockPos.getZ() + 0.5 + (double)direction.getOffsetZ() * 0.5
+					(double)pos.getX() + 0.5 + (double)side.getOffsetX() * 0.5,
+					(double)pos.getY() + 0.5 + (double)side.getOffsetY() * 0.5,
+					(double)pos.getZ() + 0.5 + (double)side.getOffsetZ() * 0.5
 				),
-				direction,
-				blockPos,
+				side,
+				pos,
 				false
 			)
 		);

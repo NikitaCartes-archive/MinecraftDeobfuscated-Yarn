@@ -84,7 +84,7 @@ public class RenderSystem {
 	public static void flipFrame(long l) {
 		GLFW.glfwPollEvents();
 		replayQueue();
-		Tessellator.getInstance().getBufferBuilder().clear();
+		Tessellator.getInstance().getBuffer().clear();
 		GLFW.glfwSwapBuffers(l);
 		GLFW.glfwPollEvents();
 	}
@@ -136,9 +136,9 @@ public class RenderSystem {
 		GlStateManager.enableAlphaTest();
 	}
 
-	public static void alphaFunc(int i, float f) {
+	public static void alphaFunc(int func, float ref) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.alphaFunc(i, f);
+		GlStateManager.alphaFunc(func, ref);
 	}
 
 	public static void enableLighting() {
@@ -161,14 +161,14 @@ public class RenderSystem {
 		GlStateManager.disableColorMaterial();
 	}
 
-	public static void colorMaterial(int i, int j) {
+	public static void colorMaterial(int face, int mode) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.colorMaterial(i, j);
+		GlStateManager.colorMaterial(face, mode);
 	}
 
-	public static void normal3f(float f, float g, float h) {
+	public static void normal3f(float nx, float ny, float nz) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.normal3f(f, g, h);
+		GlStateManager.normal3f(nx, ny, nz);
 	}
 
 	public static void disableDepthTest() {
@@ -181,14 +181,14 @@ public class RenderSystem {
 		GlStateManager.enableDepthTest();
 	}
 
-	public static void depthFunc(int i) {
+	public static void depthFunc(int func) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.depthFunc(i);
+		GlStateManager.depthFunc(func);
 	}
 
-	public static void depthMask(boolean bl) {
+	public static void depthMask(boolean mask) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.depthMask(bl);
+		GlStateManager.depthMask(mask);
 	}
 
 	public static void enableBlend() {
@@ -206,9 +206,9 @@ public class RenderSystem {
 		GlStateManager.blendFunc(sourceFactor.value, destFactor.value);
 	}
 
-	public static void blendFunc(int i, int j) {
+	public static void blendFunc(int sfactor, int dfactor) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFunc(i, j);
+		GlStateManager.blendFunc(sfactor, dfactor);
 	}
 
 	public static void blendFuncSeparate(
@@ -221,14 +221,14 @@ public class RenderSystem {
 		GlStateManager.blendFuncSeparate(sourceFactor.value, destFactor.value, sourceFactor2.value, destFactor2.value);
 	}
 
-	public static void blendFuncSeparate(int i, int j, int k, int l) {
+	public static void blendFuncSeparate(int sFactorRGB, int dFactorRGB, int sFactorAlpha, int dFactorAlpha) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFuncSeparate(i, j, k, l);
+		GlStateManager.blendFuncSeparate(sFactorRGB, dFactorRGB, sFactorAlpha, dFactorAlpha);
 	}
 
-	public static void blendEquation(int i) {
+	public static void blendEquation(int mode) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendEquation(i);
+		GlStateManager.blendEquation(mode);
 	}
 
 	public static void blendColor(float f, float g, float h, float i) {
@@ -316,9 +316,9 @@ public class RenderSystem {
 		GlStateManager.disableLineOffset();
 	}
 
-	public static void polygonOffset(float f, float g) {
+	public static void polygonOffset(float factor, float units) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.polygonOffset(f, g);
+		GlStateManager.polygonOffset(factor, units);
 	}
 
 	public static void enableColorLogicOp() {
@@ -360,8 +360,8 @@ public class RenderSystem {
 		GlStateManager.deleteTexture(i);
 	}
 
-	public static void bindTexture(int i) {
-		GlStateManager.bindTexture(i);
+	public static void bindTexture(int texture) {
+		GlStateManager.bindTexture(texture);
 	}
 
 	public static void shadeModel(int i) {
@@ -449,9 +449,9 @@ public class RenderSystem {
 		GlStateManager.ortho(d, e, f, g, h, i);
 	}
 
-	public static void rotatef(float f, float g, float h, float i) {
+	public static void rotatef(float angle, float x, float y, float z) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.rotatef(f, g, h, i);
+		GlStateManager.rotatef(angle, x, y, z);
 	}
 
 	public static void scalef(float f, float g, float h) {
@@ -479,14 +479,14 @@ public class RenderSystem {
 		GlStateManager.multMatrix(matrix4f);
 	}
 
-	public static void color4f(float f, float g, float h, float i) {
+	public static void color4f(float red, float green, float blue, float alpha) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.color4f(f, g, h, i);
+		GlStateManager.color4f(red, green, blue, alpha);
 	}
 
-	public static void color3f(float f, float g, float h) {
+	public static void color3f(float red, float green, float blue) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.color4f(f, g, h, 1.0F);
+		GlStateManager.color4f(red, green, blue, 1.0F);
 	}
 
 	public static void clearCurrentColor() {

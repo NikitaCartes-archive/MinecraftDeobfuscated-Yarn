@@ -31,8 +31,8 @@ public class StructureFeatures {
 	public static final StructureFeature<?> SHIPWRECK = register("Shipwreck", Feature.SHIPWRECK);
 	public static final StructureFeature<?> VILLAGE = register("Village", Feature.VILLAGE);
 
-	private static StructureFeature<?> register(String string, StructureFeature<?> structureFeature) {
-		return Registry.register(Registry.STRUCTURE_FEATURE, string.toLowerCase(Locale.ROOT), structureFeature);
+	private static StructureFeature<?> register(String name, StructureFeature<?> feature) {
+		return Registry.register(Registry.STRUCTURE_FEATURE, name.toLowerCase(Locale.ROOT), feature);
 	}
 
 	public static void initialize() {

@@ -28,16 +28,14 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
-		if (direction.getAxis() != Direction.Axis.Y
-			|| doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)
-			|| blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
-			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
+		if (facing.getAxis() != Direction.Axis.Y
+			|| doubleBlockHalf == DoubleBlockHalf.LOWER != (facing == Direction.UP)
+			|| neighborState.getBlock() == this && neighborState.get(HALF) != doubleBlockHalf) {
+			return doubleBlockHalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
-				: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+				: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 		} else {
 			return Blocks.AIR.getDefaultState();
 		}
@@ -45,55 +43,51 @@ public class TallPlantBlock extends PlantBlock {
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		return blockPos.getY() < 255 && itemPlacementContext.getWorld().getBlockState(blockPos.up()).canReplace(itemPlacementContext)
-			? super.getPlacementState(itemPlacementContext)
-			: null;
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockPos blockPos = ctx.getBlockPos();
+		return blockPos.getY() < 255 && ctx.getWorld().getBlockState(blockPos.up()).canReplace(ctx) ? super.getPlacementState(ctx) : null;
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		world.setBlockState(blockPos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), 3);
+	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+		world.setBlockState(pos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), 3);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		if (blockState.get(HALF) != DoubleBlockHalf.UPPER) {
-			return super.canPlaceAt(blockState, worldView, blockPos);
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		if (state.get(HALF) != DoubleBlockHalf.UPPER) {
+			return super.canPlaceAt(state, world, pos);
 		} else {
-			BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
-			return blockState2.getBlock() == this && blockState2.get(HALF) == DoubleBlockHalf.LOWER;
+			BlockState blockState = world.getBlockState(pos.method_10074());
+			return blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
 		}
 	}
 
-	public void placeAt(IWorld iWorld, BlockPos blockPos, int i) {
-		iWorld.setBlockState(blockPos, this.getDefaultState().with(HALF, DoubleBlockHalf.LOWER), i);
-		iWorld.setBlockState(blockPos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), i);
+	public void placeAt(IWorld world, BlockPos pos, int flags) {
+		world.setBlockState(pos, this.getDefaultState().with(HALF, DoubleBlockHalf.LOWER), flags);
+		world.setBlockState(pos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), flags);
 	}
 
 	@Override
-	public void afterBreak(
-		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
-	) {
-		super.afterBreak(world, playerEntity, blockPos, Blocks.AIR.getDefaultState(), blockEntity, itemStack);
+	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
+		super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
-		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.LOWER ? blockPos.up() : blockPos.method_10074();
-		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
-			world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
-			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
-			if (!world.isClient && !playerEntity.isCreative()) {
-				dropStacks(blockState, world, blockPos, null, playerEntity, playerEntity.getMainHandStack());
-				dropStacks(blockState2, world, blockPos2, null, playerEntity, playerEntity.getMainHandStack());
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
+		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.method_10074();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.getBlock() == this && blockState.get(HALF) != doubleBlockHalf) {
+			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
+			world.playLevelEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+			if (!world.isClient && !player.isCreative()) {
+				dropStacks(state, world, pos, null, player, player.getMainHandStack());
+				dropStacks(blockState, world, blockPos, null, player, player.getMainHandStack());
 			}
 		}
 
-		super.onBreak(world, blockPos, blockState, playerEntity);
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -108,7 +102,7 @@ public class TallPlantBlock extends PlantBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public long getRenderingSeed(BlockState blockState, BlockPos blockPos) {
-		return MathHelper.hashCode(blockPos.getX(), blockPos.down(blockState.get(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), blockPos.getZ());
+	public long getRenderingSeed(BlockState state, BlockPos pos) {
+		return MathHelper.hashCode(pos.getX(), pos.down(state.get(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
 	}
 }

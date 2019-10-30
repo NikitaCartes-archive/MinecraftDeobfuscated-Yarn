@@ -15,24 +15,24 @@ public class ExperienceBarUpdateS2CPacket implements Packet<ClientPlayPacketList
 	public ExperienceBarUpdateS2CPacket() {
 	}
 
-	public ExperienceBarUpdateS2CPacket(float f, int i, int j) {
-		this.barProgress = f;
-		this.experienceLevel = i;
-		this.experience = j;
+	public ExperienceBarUpdateS2CPacket(float barProgress, int experienceLevel, int experience) {
+		this.barProgress = barProgress;
+		this.experienceLevel = experienceLevel;
+		this.experience = experience;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.barProgress = packetByteBuf.readFloat();
-		this.experience = packetByteBuf.readVarInt();
-		this.experienceLevel = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.barProgress = buf.readFloat();
+		this.experience = buf.readVarInt();
+		this.experienceLevel = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeFloat(this.barProgress);
-		packetByteBuf.writeVarInt(this.experience);
-		packetByteBuf.writeVarInt(this.experienceLevel);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeFloat(this.barProgress);
+		buf.writeVarInt(this.experience);
+		buf.writeVarInt(this.experienceLevel);
 	}
 
 	public void method_11829(ClientPlayPacketListener clientPlayPacketListener) {

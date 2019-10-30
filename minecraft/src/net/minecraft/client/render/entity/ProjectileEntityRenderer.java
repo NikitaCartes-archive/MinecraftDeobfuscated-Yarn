@@ -2,10 +2,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -19,7 +19,7 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 	}
 
 	public void method_3875(
-		T projectileEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		T projectileEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, projectileEntity.prevYaw, projectileEntity.yaw) - 90.0F));
@@ -44,8 +44,8 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		matrixStack.scale(0.05625F, 0.05625F, 0.05625F);
 		matrixStack.translate(-4.0, 0.0, 0.0);
 		int u = projectileEntity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(this.getTexture(projectileEntity)));
-		Matrix4f matrix4f = matrixStack.peek();
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.getTexture(projectileEntity)));
+		Matrix4f matrix4f = matrixStack.peekModel();
 		this.method_23153(matrix4f, vertexConsumer, -7, -2, -2, 0.0F, 0.15625F, 1, 0, 0, u);
 		this.method_23153(matrix4f, vertexConsumer, -7, -2, 2, 0.15625F, 0.15625F, 1, 0, 0, u);
 		this.method_23153(matrix4f, vertexConsumer, -7, 2, 2, 0.15625F, 0.3125F, 1, 0, 0, u);
@@ -64,14 +64,14 @@ public abstract class ProjectileEntityRenderer<T extends ProjectileEntity> exten
 		}
 
 		matrixStack.pop();
-		super.render(projectileEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.render(projectileEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public void method_23153(Matrix4f matrix4f, VertexConsumer vertexConsumer, int i, int j, int k, float f, float g, int l, int m, int n, int o) {
 		vertexConsumer.vertex(matrix4f, (float)i, (float)j, (float)k)
 			.color(255, 255, 255, 255)
 			.texture(f, g)
-			.defaultOverlay(OverlayTexture.DEFAULT_UV)
+			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(o)
 			.normal((float)l, (float)n, (float)m)
 			.next();

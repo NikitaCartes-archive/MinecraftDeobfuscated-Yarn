@@ -23,24 +23,24 @@ public class BrigadierArgumentTypes {
 		ArgumentTypes.register("brigadier:string", StringArgumentType.class, new StringArgumentSerializer());
 	}
 
-	public static byte createFlag(boolean bl, boolean bl2) {
+	public static byte createFlag(boolean hasMin, boolean hasMax) {
 		byte b = 0;
-		if (bl) {
+		if (hasMin) {
 			b = (byte)(b | 1);
 		}
 
-		if (bl2) {
+		if (hasMax) {
 			b = (byte)(b | 2);
 		}
 
 		return b;
 	}
 
-	public static boolean hasMin(byte b) {
-		return (b & 1) != 0;
+	public static boolean hasMin(byte rangeFlag) {
+		return (rangeFlag & 1) != 0;
 	}
 
-	public static boolean hasMax(byte b) {
-		return (b & 2) != 0;
+	public static boolean hasMax(byte rangeFlag) {
+		return (rangeFlag & 2) != 0;
 	}
 }

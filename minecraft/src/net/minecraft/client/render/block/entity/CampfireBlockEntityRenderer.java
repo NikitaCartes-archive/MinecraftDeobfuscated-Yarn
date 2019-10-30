@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -26,7 +26,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 		double f,
 		float g,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		int j
 	) {
@@ -44,7 +44,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 				matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0F));
 				matrixStack.translate(-0.3125, -0.3125, 0.0);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
-				MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, layeredVertexConsumerStorage);
+				MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, vertexConsumerProvider);
 				matrixStack.pop();
 			}
 		}

@@ -26,15 +26,15 @@ public class AnimalMateGoal extends Goal {
 	private int timer;
 	private final double chance;
 
-	public AnimalMateGoal(AnimalEntity animalEntity, double d) {
-		this(animalEntity, d, animalEntity.getClass());
+	public AnimalMateGoal(AnimalEntity animal, double chance) {
+		this(animal, chance, animal.getClass());
 	}
 
-	public AnimalMateGoal(AnimalEntity animalEntity, double d, Class<? extends AnimalEntity> class_) {
-		this.animal = animalEntity;
-		this.world = animalEntity.world;
-		this.entityClass = class_;
-		this.chance = d;
+	public AnimalMateGoal(AnimalEntity animal, double chance, Class<? extends AnimalEntity> entityClass) {
+		this.animal = animal;
+		this.world = animal.world;
+		this.entityClass = entityClass;
+		this.chance = chance;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 

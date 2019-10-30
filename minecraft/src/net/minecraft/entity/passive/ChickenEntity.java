@@ -57,8 +57,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return this.isBaby() ? entityDimensions.height * 0.85F : entityDimensions.height * 0.92F;
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return this.isBaby() ? dimensions.height * 0.85F : dimensions.height * 0.92F;
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
 		return false;
 	}
 
@@ -104,7 +104,7 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_CHICKEN_HURT;
 	}
 
@@ -114,7 +114,7 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
 	}
 
@@ -123,46 +123,46 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean isBreedingItem(ItemStack itemStack) {
-		return BREEDING_INGREDIENT.method_8093(itemStack);
+	public boolean isBreedingItem(ItemStack stack) {
+		return BREEDING_INGREDIENT.method_8093(stack);
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity playerEntity) {
-		return this.hasJockey() ? 10 : super.getCurrentExperience(playerEntity);
+	protected int getCurrentExperience(PlayerEntity player) {
+		return this.hasJockey() ? 10 : super.getCurrentExperience(player);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.jockey = compoundTag.getBoolean("IsChickenJockey");
-		if (compoundTag.contains("EggLayTime")) {
-			this.eggLayTime = compoundTag.getInt("EggLayTime");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.jockey = tag.getBoolean("IsChickenJockey");
+		if (tag.contains("EggLayTime")) {
+			this.eggLayTime = tag.getInt("EggLayTime");
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("IsChickenJockey", this.jockey);
-		compoundTag.putInt("EggLayTime", this.eggLayTime);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("IsChickenJockey", this.jockey);
+		tag.putInt("EggLayTime", this.eggLayTime);
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double d) {
+	public boolean canImmediatelyDespawn(double distanceSquared) {
 		return this.hasJockey() && !this.hasPassengers();
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity entity) {
-		super.updatePassengerPosition(entity);
+	public void updatePassengerPosition(Entity passenger) {
+		super.updatePassengerPosition(passenger);
 		float f = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 		float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 		float h = 0.1F;
 		float i = 0.0F;
-		entity.setPosition(this.getX() + (double)(0.1F * f), this.method_23323(0.5) + entity.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
-		if (entity instanceof LivingEntity) {
-			((LivingEntity)entity).bodyYaw = this.bodyYaw;
+		passenger.setPosition(this.getX() + (double)(0.1F * f), this.getHeightAt(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
+		if (passenger instanceof LivingEntity) {
+			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}
 	}
 
@@ -170,7 +170,7 @@ public class ChickenEntity extends AnimalEntity {
 		return this.jockey;
 	}
 
-	public void setHasJockey(boolean bl) {
-		this.jockey = bl;
+	public void setHasJockey(boolean hasJockey) {
+		this.jockey = hasJockey;
 	}
 }

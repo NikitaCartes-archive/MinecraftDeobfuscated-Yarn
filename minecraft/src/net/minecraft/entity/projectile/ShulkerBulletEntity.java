@@ -55,21 +55,21 @@ public class ShulkerBulletEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ShulkerBulletEntity(World world, double d, double e, double f, double g, double h, double i) {
+	public ShulkerBulletEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		this(EntityType.SHULKER_BULLET, world);
-		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-		this.setVelocity(g, h, i);
+		this.setPositionAndAngles(x, y, z, this.yaw, this.pitch);
+		this.setVelocity(velocityX, velocityY, velocityZ);
 	}
 
-	public ShulkerBulletEntity(World world, LivingEntity livingEntity, Entity entity, Direction.Axis axis) {
+	public ShulkerBulletEntity(World world, LivingEntity owner, Entity target, Direction.Axis axis) {
 		this(EntityType.SHULKER_BULLET, world);
-		this.owner = livingEntity;
-		BlockPos blockPos = new BlockPos(livingEntity);
+		this.owner = owner;
+		BlockPos blockPos = new BlockPos(owner);
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.5;
 		double f = (double)blockPos.getZ() + 0.5;
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-		this.target = entity;
+		this.target = target;
 		this.direction = Direction.UP;
 		this.method_7486(axis);
 	}
@@ -80,55 +80,55 @@ public class ShulkerBulletEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void writeCustomDataToTag(CompoundTag tag) {
 		if (this.owner != null) {
 			BlockPos blockPos = new BlockPos(this.owner);
-			CompoundTag compoundTag2 = NbtHelper.fromUuid(this.owner.getUuid());
-			compoundTag2.putInt("X", blockPos.getX());
-			compoundTag2.putInt("Y", blockPos.getY());
-			compoundTag2.putInt("Z", blockPos.getZ());
-			compoundTag.put("Owner", compoundTag2);
+			CompoundTag compoundTag = NbtHelper.fromUuid(this.owner.getUuid());
+			compoundTag.putInt("X", blockPos.getX());
+			compoundTag.putInt("Y", blockPos.getY());
+			compoundTag.putInt("Z", blockPos.getZ());
+			tag.put("Owner", compoundTag);
 		}
 
 		if (this.target != null) {
 			BlockPos blockPos = new BlockPos(this.target);
-			CompoundTag compoundTag2 = NbtHelper.fromUuid(this.target.getUuid());
-			compoundTag2.putInt("X", blockPos.getX());
-			compoundTag2.putInt("Y", blockPos.getY());
-			compoundTag2.putInt("Z", blockPos.getZ());
-			compoundTag.put("Target", compoundTag2);
+			CompoundTag compoundTag = NbtHelper.fromUuid(this.target.getUuid());
+			compoundTag.putInt("X", blockPos.getX());
+			compoundTag.putInt("Y", blockPos.getY());
+			compoundTag.putInt("Z", blockPos.getZ());
+			tag.put("Target", compoundTag);
 		}
 
 		if (this.direction != null) {
-			compoundTag.putInt("Dir", this.direction.getId());
+			tag.putInt("Dir", this.direction.getId());
 		}
 
-		compoundTag.putInt("Steps", this.field_7627);
-		compoundTag.putDouble("TXD", this.field_7635);
-		compoundTag.putDouble("TYD", this.field_7633);
-		compoundTag.putDouble("TZD", this.field_7625);
+		tag.putInt("Steps", this.field_7627);
+		tag.putDouble("TXD", this.field_7635);
+		tag.putDouble("TYD", this.field_7633);
+		tag.putDouble("TZD", this.field_7625);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.field_7627 = compoundTag.getInt("Steps");
-		this.field_7635 = compoundTag.getDouble("TXD");
-		this.field_7633 = compoundTag.getDouble("TYD");
-		this.field_7625 = compoundTag.getDouble("TZD");
-		if (compoundTag.contains("Dir", 99)) {
-			this.direction = Direction.byId(compoundTag.getInt("Dir"));
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		this.field_7627 = tag.getInt("Steps");
+		this.field_7635 = tag.getDouble("TXD");
+		this.field_7633 = tag.getDouble("TYD");
+		this.field_7625 = tag.getDouble("TZD");
+		if (tag.contains("Dir", 99)) {
+			this.direction = Direction.byId(tag.getInt("Dir"));
 		}
 
-		if (compoundTag.contains("Owner", 10)) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("Owner");
-			this.ownerUuid = NbtHelper.toUuid(compoundTag2);
-			this.ownerPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
+		if (tag.contains("Owner", 10)) {
+			CompoundTag compoundTag = tag.getCompound("Owner");
+			this.ownerUuid = NbtHelper.toUuid(compoundTag);
+			this.ownerPos = new BlockPos(compoundTag.getInt("X"), compoundTag.getInt("Y"), compoundTag.getInt("Z"));
 		}
 
-		if (compoundTag.contains("Target", 10)) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("Target");
-			this.targetUuid = NbtHelper.toUuid(compoundTag2);
-			this.targetPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
+		if (tag.contains("Target", 10)) {
+			CompoundTag compoundTag = tag.getCompound("Target");
+			this.targetUuid = NbtHelper.toUuid(compoundTag);
+			this.targetPos = new BlockPos(compoundTag.getInt("X"), compoundTag.getInt("Y"), compoundTag.getInt("Z"));
 		}
 	}
 
@@ -301,8 +301,8 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		return d < 16384.0;
+	public boolean shouldRenderAtDistance(double distance) {
+		return distance < 16384.0;
 	}
 
 	@Override
@@ -340,7 +340,7 @@ public class ShulkerBulletEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
+	public boolean damage(DamageSource source, float amount) {
 		if (!this.world.isClient) {
 			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);

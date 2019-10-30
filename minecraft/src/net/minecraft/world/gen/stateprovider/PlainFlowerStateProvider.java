@@ -23,13 +23,13 @@ public class PlainFlowerStateProvider extends StateProvider {
 		super(StateProviderType.PLAIN_FLOWER_PROVIDER);
 	}
 
-	public <T> PlainFlowerStateProvider(Dynamic<T> dynamic) {
+	public <T> PlainFlowerStateProvider(Dynamic<T> configDeserializer) {
 		this();
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos blockPos) {
-		double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0, false);
+	public BlockState getBlockState(Random random, BlockPos pos) {
+		double d = Biome.FOLIAGE_NOISE.sample((double)pos.getX() / 200.0, (double)pos.getZ() / 200.0, false);
 		if (d < -0.8) {
 			return tulips[random.nextInt(tulips.length)];
 		} else {
@@ -38,9 +38,9 @@ public class PlainFlowerStateProvider extends StateProvider {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()));
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build())).getValue();
+		builder.put(ops.createString("type"), ops.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()));
+		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 }

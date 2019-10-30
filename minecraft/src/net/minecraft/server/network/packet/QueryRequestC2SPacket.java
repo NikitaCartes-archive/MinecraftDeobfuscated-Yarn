@@ -7,11 +7,11 @@ import net.minecraft.util.PacketByteBuf;
 
 public class QueryRequestC2SPacket implements Packet<ServerQueryPacketListener> {
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
+	public void read(PacketByteBuf buf) throws IOException {
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
+	public void write(PacketByteBuf buf) throws IOException {
 	}
 
 	public void method_12701(ServerQueryPacketListener serverQueryPacketListener) {

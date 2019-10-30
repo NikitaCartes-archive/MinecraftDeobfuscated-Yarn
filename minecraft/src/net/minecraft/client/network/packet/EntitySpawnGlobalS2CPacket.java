@@ -30,21 +30,21 @@ public class EntitySpawnGlobalS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.entityTypeId = packetByteBuf.readByte();
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.entityTypeId = buf.readByte();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		packetByteBuf.writeByte(this.entityTypeId);
-		packetByteBuf.writeDouble(this.x);
-		packetByteBuf.writeDouble(this.y);
-		packetByteBuf.writeDouble(this.z);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		buf.writeByte(this.entityTypeId);
+		buf.writeDouble(this.x);
+		buf.writeDouble(this.y);
+		buf.writeDouble(this.z);
 	}
 
 	public void method_11188(ClientPlayPacketListener clientPlayPacketListener) {

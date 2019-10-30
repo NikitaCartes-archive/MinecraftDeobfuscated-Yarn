@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
@@ -36,8 +36,8 @@ public class MapRenderer implements AutoCloseable {
 		this.getMapTexture(mapState).updateTexture();
 	}
 
-	public void draw(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, MapState mapState, boolean bl, int i) {
-		this.getMapTexture(mapState).draw(matrixStack, layeredVertexConsumerStorage, bl, i);
+	public void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, MapState mapState, boolean bl, int i) {
+		this.getMapTexture(mapState).draw(matrixStack, vertexConsumerProvider, bl, i);
 	}
 
 	private MapRenderer.MapTexture getMapTexture(MapState mapState) {
@@ -64,8 +64,8 @@ public class MapRenderer implements AutoCloseable {
 	}
 
 	@Nullable
-	public MapState getState(@Nullable MapRenderer.MapTexture mapTexture) {
-		return mapTexture != null ? mapTexture.mapState : null;
+	public MapState getState(@Nullable MapRenderer.MapTexture texture) {
+		return texture != null ? texture.mapState : null;
 	}
 
 	public void close() {
@@ -100,12 +100,12 @@ public class MapRenderer implements AutoCloseable {
 			this.texture.upload();
 		}
 
-		private void draw(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl, int i) {
+		private void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean bl, int i) {
 			int j = 0;
 			int k = 0;
 			float f = 0.0F;
-			Matrix4f matrix4f = matrixStack.peek();
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(this.id));
+			Matrix4f matrix4f = matrixStack.peekModel();
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getText(this.id));
 			vertexConsumer.vertex(matrix4f, 0.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(0.0F, 1.0F).light(i).next();
 			vertexConsumer.vertex(matrix4f, 128.0F, 128.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 1.0F).light(i).next();
 			vertexConsumer.vertex(matrix4f, 128.0F, 0.0F, -0.01F).color(255, 255, 255, 255).texture(1.0F, 0.0F).light(i).next();
@@ -124,9 +124,9 @@ public class MapRenderer implements AutoCloseable {
 					float h = (float)(b / 16 + 0) / 16.0F;
 					float m = (float)(b % 16 + 1) / 16.0F;
 					float n = (float)(b / 16 + 1) / 16.0F;
-					Matrix4f matrix4f2 = matrixStack.peek();
+					Matrix4f matrix4f2 = matrixStack.peekModel();
 					float o = -0.001F;
-					VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(MapRenderer.MAP_ICONS_TEXTURE));
+					VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getText(MapRenderer.MAP_ICONS_TEXTURE));
 					vertexConsumer2.vertex(matrix4f2, -1.0F, 1.0F, (float)l * -0.001F).color(255, 255, 255, 255).texture(g, h).light(i).next();
 					vertexConsumer2.vertex(matrix4f2, 1.0F, 1.0F, (float)l * -0.001F).color(255, 255, 255, 255).texture(m, h).light(i).next();
 					vertexConsumer2.vertex(matrix4f2, 1.0F, -1.0F, (float)l * -0.001F).color(255, 255, 255, 255).texture(m, n).light(i).next();
@@ -143,7 +143,7 @@ public class MapRenderer implements AutoCloseable {
 						);
 						matrixStack.scale(q, q, 1.0F);
 						matrixStack.translate(0.0, 0.0, -0.1F);
-						textRenderer.method_22942(string, 0.0F, 0.0F, -1, false, matrixStack.peek(), layeredVertexConsumerStorage, false, Integer.MIN_VALUE, i);
+						textRenderer.draw(string, 0.0F, 0.0F, -1, false, matrixStack.peekModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
 						matrixStack.pop();
 					}
 

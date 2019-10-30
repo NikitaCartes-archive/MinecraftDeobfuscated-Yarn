@@ -35,16 +35,16 @@ public class JigsawBlockEntity extends BlockEntity {
 		return this.finalState;
 	}
 
-	public void setAttachmentType(Identifier identifier) {
-		this.attachmentType = identifier;
+	public void setAttachmentType(Identifier value) {
+		this.attachmentType = value;
 	}
 
-	public void setTargetPool(Identifier identifier) {
-		this.targetPool = identifier;
+	public void setTargetPool(Identifier value) {
+		this.targetPool = value;
 	}
 
-	public void setFinalState(String string) {
-		this.finalState = string;
+	public void setFinalState(String value) {
+		this.finalState = value;
 	}
 
 	@Override

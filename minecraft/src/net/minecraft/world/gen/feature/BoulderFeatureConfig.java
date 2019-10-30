@@ -10,21 +10,18 @@ public class BoulderFeatureConfig implements FeatureConfig {
 	public final BlockState state;
 	public final int startRadius;
 
-	public BoulderFeatureConfig(BlockState blockState, int i) {
-		this.state = blockState;
-		this.startRadius = i;
+	public BoulderFeatureConfig(BlockState state, int startRadius) {
+		this.state = state;
+		this.startRadius = startRadius;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("state"),
-					BlockState.serialize(dynamicOps, this.state).getValue(),
-					dynamicOps.createString("start_radius"),
-					dynamicOps.createInt(this.startRadius)
+					ops.createString("state"), BlockState.serialize(ops, this.state).getValue(), ops.createString("start_radius"), ops.createInt(this.startRadius)
 				)
 			)
 		);

@@ -22,31 +22,31 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 	public PlaySoundFromEntityS2CPacket() {
 	}
 
-	public PlaySoundFromEntityS2CPacket(SoundEvent soundEvent, SoundCategory soundCategory, Entity entity, float f, float g) {
-		Validate.notNull(soundEvent, "sound");
-		this.sound = soundEvent;
-		this.category = soundCategory;
+	public PlaySoundFromEntityS2CPacket(SoundEvent sound, SoundCategory category, Entity entity, float volume, float pitch) {
+		Validate.notNull(sound, "sound");
+		this.sound = sound;
+		this.category = category;
 		this.entityId = entity.getEntityId();
-		this.volume = f;
-		this.pitch = g;
+		this.volume = volume;
+		this.pitch = pitch;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.sound = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
-		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
-		this.entityId = packetByteBuf.readVarInt();
-		this.volume = packetByteBuf.readFloat();
-		this.pitch = packetByteBuf.readFloat();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.sound = Registry.SOUND_EVENT.get(buf.readVarInt());
+		this.category = buf.readEnumConstant(SoundCategory.class);
+		this.entityId = buf.readVarInt();
+		this.volume = buf.readFloat();
+		this.pitch = buf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.sound));
-		packetByteBuf.writeEnumConstant(this.category);
-		packetByteBuf.writeVarInt(this.entityId);
-		packetByteBuf.writeFloat(this.volume);
-		packetByteBuf.writeFloat(this.pitch);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.sound));
+		buf.writeEnumConstant(this.category);
+		buf.writeVarInt(this.entityId);
+		buf.writeFloat(this.volume);
+		buf.writeFloat(this.pitch);
 	}
 
 	@Environment(EnvType.CLIENT)

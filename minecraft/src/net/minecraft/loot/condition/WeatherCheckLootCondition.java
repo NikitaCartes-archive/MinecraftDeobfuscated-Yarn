@@ -15,9 +15,9 @@ public class WeatherCheckLootCondition implements LootCondition {
 	@Nullable
 	private final Boolean thundering;
 
-	private WeatherCheckLootCondition(@Nullable Boolean boolean_, @Nullable Boolean boolean2) {
-		this.raining = boolean_;
-		this.thundering = boolean2;
+	private WeatherCheckLootCondition(@Nullable Boolean raining, @Nullable Boolean thundering) {
+		this.raining = raining;
+		this.thundering = thundering;
 	}
 
 	public boolean method_957(LootContext lootContext) {

@@ -10,15 +10,11 @@ import net.minecraft.world.World;
 public class AutomaticItemPlacementContext extends ItemPlacementContext {
 	private final Direction facing;
 
-	public AutomaticItemPlacementContext(World world, BlockPos blockPos, Direction direction, ItemStack itemStack, Direction direction2) {
+	public AutomaticItemPlacementContext(World world, BlockPos pos, Direction facing, ItemStack stack, Direction side) {
 		super(
-			world,
-			null,
-			Hand.MAIN_HAND,
-			itemStack,
-			new BlockHitResult(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), direction2, blockPos, false)
+			world, null, Hand.MAIN_HAND, stack, new BlockHitResult(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5), side, pos, false)
 		);
-		this.facing = direction;
+		this.facing = facing;
 	}
 
 	@Override

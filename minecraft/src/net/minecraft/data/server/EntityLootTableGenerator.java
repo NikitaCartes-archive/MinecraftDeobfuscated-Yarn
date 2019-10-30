@@ -38,7 +38,7 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
@@ -778,7 +778,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 							ItemEntry.builder(Items.TIPPED_ARROW)
 								.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 								.method_438(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)).withLimit(1))
-								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
+								.method_438(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
 						.method_356(KilledByPlayerLootCondition.builder())
 				)

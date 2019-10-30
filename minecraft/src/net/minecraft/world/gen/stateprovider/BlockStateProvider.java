@@ -20,21 +20,21 @@ public class BlockStateProvider extends StateProvider {
 		this.block = block;
 	}
 
-	public <T> BlockStateProvider(Dynamic<T> dynamic) {
-		this(BlockState.deserialize(dynamic.get("state").orElseEmptyMap()).getBlock());
+	public <T> BlockStateProvider(Dynamic<T> configDeserializer) {
+		this(BlockState.deserialize(configDeserializer.get("state").orElseEmptyMap()).getBlock());
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos blockPos) {
+	public BlockState getBlockState(Random random, BlockPos pos) {
 		Direction.Axis axis = Direction.Axis.pickRandomAxis(random);
 		return this.block.getDefaultState().with(PillarBlock.AXIS, axis);
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()))
-			.put(dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.block.getDefaultState()).getValue());
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build())).getValue();
+		builder.put(ops.createString("type"), ops.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()))
+			.put(ops.createString("state"), BlockState.serialize(ops, this.block.getDefaultState()).getValue());
+		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 }

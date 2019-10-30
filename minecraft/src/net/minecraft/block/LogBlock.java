@@ -7,13 +7,13 @@ import net.minecraft.world.BlockView;
 public class LogBlock extends PillarBlock {
 	private final MaterialColor endMaterialColor;
 
-	public LogBlock(MaterialColor materialColor, Block.Settings settings) {
+	public LogBlock(MaterialColor endMaterialColor, Block.Settings settings) {
 		super(settings);
-		this.endMaterialColor = materialColor;
+		this.endMaterialColor = endMaterialColor;
 	}
 
 	@Override
-	public MaterialColor getMapColor(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.get(AXIS) == Direction.Axis.Y ? this.endMaterialColor : this.materialColor;
+	public MaterialColor getMapColor(BlockState state, BlockView view, BlockPos pos) {
+		return state.get(AXIS) == Direction.Axis.Y ? this.endMaterialColor : this.materialColor;
 	}
 }

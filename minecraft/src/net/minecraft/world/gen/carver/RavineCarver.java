@@ -98,7 +98,9 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 	}
 
 	@Override
-	protected boolean isPositionExcluded(double d, double e, double f, int i) {
-		return (d * d + f * f) * (double)this.heightToHorizontalStretchFactor[i - 1] + e * e / 6.0 >= 1.0;
+	protected boolean isPositionExcluded(double scaledRelativeX, double scaledRelativeY, double scaledRelativeZ, int y) {
+		return (scaledRelativeX * scaledRelativeX + scaledRelativeZ * scaledRelativeZ) * (double)this.heightToHorizontalStretchFactor[y - 1]
+				+ scaledRelativeY * scaledRelativeY / 6.0
+			>= 1.0;
 	}
 }

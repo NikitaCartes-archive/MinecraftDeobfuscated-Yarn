@@ -8,9 +8,9 @@ import net.minecraft.util.math.BlockPos;
 public abstract class StateProvider implements DynamicSerializable {
 	protected final StateProviderType<?> stateProvider;
 
-	protected StateProvider(StateProviderType<?> stateProviderType) {
-		this.stateProvider = stateProviderType;
+	protected StateProvider(StateProviderType<?> stateProvider) {
+		this.stateProvider = stateProvider;
 	}
 
-	public abstract BlockState getBlockState(Random random, BlockPos blockPos);
+	public abstract BlockState getBlockState(Random random, BlockPos pos);
 }

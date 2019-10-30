@@ -1,5 +1,5 @@
 package net.minecraft.world.biome.layer;
 
 public interface LayerSampler {
-	int sample(int i, int j);
+	int sample(int x, int z);
 }

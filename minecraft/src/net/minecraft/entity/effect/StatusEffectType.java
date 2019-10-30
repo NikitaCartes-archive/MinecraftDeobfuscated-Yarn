@@ -11,8 +11,8 @@ public enum StatusEffectType {
 
 	private final Formatting formatting;
 
-	private StatusEffectType(Formatting formatting) {
-		this.formatting = formatting;
+	private StatusEffectType(Formatting format) {
+		this.formatting = format;
 	}
 
 	@Environment(EnvType.CLIENT)

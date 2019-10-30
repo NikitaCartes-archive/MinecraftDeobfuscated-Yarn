@@ -42,13 +42,13 @@ public class LootManager extends JsonDataLoader {
 	private Map<Identifier, LootTable> suppliers = ImmutableMap.of();
 	private final LootConditionManager conditionManager;
 
-	public LootManager(LootConditionManager lootConditionManager) {
+	public LootManager(LootConditionManager conditionManager) {
 		super(GSON, "loot_tables");
-		this.conditionManager = lootConditionManager;
+		this.conditionManager = conditionManager;
 	}
 
-	public LootTable getSupplier(Identifier identifier) {
-		return (LootTable)this.suppliers.getOrDefault(identifier, LootTable.EMPTY);
+	public LootTable getSupplier(Identifier id) {
+		return (LootTable)this.suppliers.getOrDefault(id, LootTable.EMPTY);
 	}
 
 	protected void method_20712(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
@@ -70,16 +70,16 @@ public class LootManager extends JsonDataLoader {
 		ImmutableMap<Identifier, LootTable> immutableMap = builder.build();
 		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.conditionManager::get, immutableMap::get);
 		immutableMap.forEach((identifier, lootTable) -> check(lootTableReporter, identifier, lootTable));
-		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
+		lootTableReporter.getMessages().forEach((key, value) -> LOGGER.warn("Found validation problem in " + key + ": " + value));
 		this.suppliers = immutableMap;
 	}
 
-	public static void check(LootTableReporter lootTableReporter, Identifier identifier, LootTable lootTable) {
-		lootTable.check(lootTableReporter.withContextType(lootTable.getType()).withSupplier("{" + identifier + "}", identifier));
+	public static void check(LootTableReporter reporter, Identifier id, LootTable table) {
+		table.check(reporter.withContextType(table.getType()).withSupplier("{" + id + "}", id));
 	}
 
-	public static JsonElement toJson(LootTable lootTable) {
-		return GSON.toJsonTree(lootTable);
+	public static JsonElement toJson(LootTable supplier) {
+		return GSON.toJsonTree(supplier);
 	}
 
 	public Set<Identifier> getSupplierNames() {

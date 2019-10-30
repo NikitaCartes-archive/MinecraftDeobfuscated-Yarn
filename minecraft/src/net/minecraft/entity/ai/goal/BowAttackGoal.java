@@ -19,16 +19,16 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 	private boolean field_6571;
 	private int field_6568 = -1;
 
-	public BowAttackGoal(T hostileEntity, double d, int i, float f) {
-		this.actor = hostileEntity;
-		this.speed = d;
-		this.attackInterval = i;
-		this.squaredRange = f * f;
+	public BowAttackGoal(T actor, double speed, int attackInterval, float range) {
+		this.actor = actor;
+		this.speed = speed;
+		this.attackInterval = attackInterval;
+		this.squaredRange = range * range;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 
-	public void setAttackInterval(int i) {
-		this.attackInterval = i;
+	public void setAttackInterval(int attackInterval) {
+		this.attackInterval = attackInterval;
 	}
 
 	@Override

@@ -32,30 +32,32 @@ public abstract class PathNodeMaker {
 		this.entity = null;
 	}
 
-	protected PathNode getNode(int i, int j, int k) {
-		return this.pathNodeCache.computeIfAbsent(PathNode.hash(i, j, k), l -> new PathNode(i, j, k));
+	protected PathNode getNode(int x, int y, int z) {
+		return this.pathNodeCache.computeIfAbsent(PathNode.hash(x, y, z), l -> new PathNode(x, y, z));
 	}
 
 	public abstract PathNode getStart();
 
-	public abstract TargetPathNode getNode(double d, double e, double f);
+	public abstract TargetPathNode getNode(double x, double y, double z);
 
-	public abstract int getSuccessors(PathNode[] pathNodes, PathNode pathNode);
+	public abstract int getSuccessors(PathNode[] successors, PathNode node);
 
-	public abstract PathNodeType getNodeType(BlockView blockView, int i, int j, int k, MobEntity mobEntity, int l, int m, int n, boolean bl, boolean bl2);
+	public abstract PathNodeType getNodeType(
+		BlockView world, int x, int y, int z, MobEntity mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors
+	);
 
-	public abstract PathNodeType getNodeType(BlockView blockView, int i, int j, int k);
+	public abstract PathNodeType getNodeType(BlockView world, int x, int y, int z);
 
-	public void setCanEnterOpenDoors(boolean bl) {
-		this.canEnterOpenDoors = bl;
+	public void setCanEnterOpenDoors(boolean canEnterOpenDoors) {
+		this.canEnterOpenDoors = canEnterOpenDoors;
 	}
 
-	public void setCanOpenDoors(boolean bl) {
-		this.canOpenDoors = bl;
+	public void setCanOpenDoors(boolean canOpenDoors) {
+		this.canOpenDoors = canOpenDoors;
 	}
 
-	public void setCanSwim(boolean bl) {
-		this.canSwim = bl;
+	public void setCanSwim(boolean canSwim) {
+		this.canSwim = canSwim;
 	}
 
 	public boolean canEnterOpenDoors() {

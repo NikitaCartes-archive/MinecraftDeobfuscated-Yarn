@@ -8,9 +8,9 @@ public class UploadResult {
 	public final int statusCode;
 	public final String errorMessage;
 
-	public UploadResult(int i, String string) {
-		this.statusCode = i;
-		this.errorMessage = string;
+	public UploadResult(int statusCode, String errorMessage) {
+		this.statusCode = statusCode;
+		this.errorMessage = errorMessage;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -18,13 +18,13 @@ public class UploadResult {
 		private int statusCode = -1;
 		private String errorMessage;
 
-		public UploadResult.Builder withStatusCode(int i) {
-			this.statusCode = i;
+		public UploadResult.Builder withStatusCode(int statusCode) {
+			this.statusCode = statusCode;
 			return this;
 		}
 
-		public UploadResult.Builder withErrorMessage(String string) {
-			this.errorMessage = string;
+		public UploadResult.Builder withErrorMessage(String errorMessage) {
+			this.errorMessage = errorMessage;
 			return this;
 		}
 

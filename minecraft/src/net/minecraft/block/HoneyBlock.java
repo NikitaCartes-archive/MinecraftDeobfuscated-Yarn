@@ -20,34 +20,34 @@ public class HoneyBlock extends TransparentBlock {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return SHAPE;
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
-		this.method_23358(world, blockPos, entity);
-		if (entity.handleFallDamage(f, 0.2F)) {
+	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
+		this.method_23358(world, pos, entity);
+		if (entity.handleFallDamage(distance, 0.2F)) {
 			entity.playSound(this.soundGroup.getFallSound(), this.soundGroup.getVolume() * 0.5F, this.soundGroup.getPitch() * 0.75F);
 		}
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (this.method_23356(blockPos, entity)) {
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		if (this.method_23356(pos, entity)) {
 			Vec3d vec3d = entity.getVelocity();
 			if (vec3d.y < -0.05) {
 				entity.setVelocity(new Vec3d(vec3d.x, -0.05, vec3d.z));
 			}
 
 			entity.fallDistance = 0.0F;
-			this.method_23357(world, blockPos, entity);
+			this.method_23357(world, pos, entity);
 			if (world.getTime() % 10L == 0L) {
 				entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0F, 1.0F);
 			}
 		}
 
-		super.onEntityCollision(blockState, world, blockPos, entity);
+		super.onEntityCollision(state, world, pos, entity);
 	}
 
 	private boolean method_23356(BlockPos blockPos, Entity entity) {

@@ -17,10 +17,10 @@ public class GoToIfNearbyTask extends Task<MobEntityWithAi> {
 	private long nextUpdateTime;
 	private final int maxDistance;
 
-	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> memoryModuleType, int i) {
-		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, memoryModuleType, MemoryModuleState.VALUE_PRESENT));
-		this.target = memoryModuleType;
-		this.maxDistance = i;
+	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, int maxDistance) {
+		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, target, MemoryModuleState.VALUE_PRESENT));
+		this.target = target;
+		this.maxDistance = maxDistance;
 	}
 
 	protected boolean method_18993(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {

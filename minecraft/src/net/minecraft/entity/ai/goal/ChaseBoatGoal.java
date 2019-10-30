@@ -16,8 +16,8 @@ public class ChaseBoatGoal extends Goal {
 	private LivingEntity passenger;
 	private ChaseBoatState state;
 
-	public ChaseBoatGoal(MobEntityWithAi mobEntityWithAi) {
-		this.mob = mobEntityWithAi;
+	public ChaseBoatGoal(MobEntityWithAi mob) {
+		this.mob = mob;
 	}
 
 	@Override

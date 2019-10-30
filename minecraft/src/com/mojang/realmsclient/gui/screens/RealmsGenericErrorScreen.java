@@ -13,19 +13,19 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 	private String line1;
 	private String line2;
 
-	public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, RealmsScreen realmsScreen) {
-		this.nextScreen = realmsScreen;
+	public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, RealmsScreen nextScreen) {
+		this.nextScreen = nextScreen;
 		this.errorMessage(realmsServiceException);
 	}
 
-	public RealmsGenericErrorScreen(String string, RealmsScreen realmsScreen) {
-		this.nextScreen = realmsScreen;
-		this.errorMessage(string);
+	public RealmsGenericErrorScreen(String message, RealmsScreen nextScreen) {
+		this.nextScreen = nextScreen;
+		this.errorMessage(message);
 	}
 
-	public RealmsGenericErrorScreen(String string, String string2, RealmsScreen realmsScreen) {
-		this.nextScreen = realmsScreen;
-		this.errorMessage(string, string2);
+	public RealmsGenericErrorScreen(String title, String message, RealmsScreen nextScreen) {
+		this.nextScreen = nextScreen;
+		this.errorMessage(title, message);
 	}
 
 	private void errorMessage(RealmsServiceException realmsServiceException) {
@@ -40,14 +40,14 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 		}
 	}
 
-	private void errorMessage(String string) {
+	private void errorMessage(String message) {
 		this.line1 = "An error occurred: ";
-		this.line2 = string;
+		this.line2 = message;
 	}
 
-	private void errorMessage(String string, String string2) {
-		this.line1 = string;
-		this.line2 = string2;
+	private void errorMessage(String title, String message) {
+		this.line1 = title;
+		this.line2 = message;
 	}
 
 	@Override
@@ -67,10 +67,10 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int xm, int ym, float a) {
 		this.renderBackground();
 		this.drawCenteredString(this.line1, this.width() / 2, 80, 16777215);
 		this.drawCenteredString(this.line2, this.width() / 2, 100, 16711680);
-		super.render(i, j, f);
+		super.render(xm, ym, a);
 	}
 }

@@ -21,14 +21,14 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	private final boolean yesNoQuestion;
 
 	public RealmsLongConfirmationScreen(
-		RealmsConfirmResultListener realmsConfirmResultListener, RealmsLongConfirmationScreen.Type type, String string, String string2, boolean bl, int i
+		RealmsConfirmResultListener listener, RealmsLongConfirmationScreen.Type type, String line2, String line3, boolean yesNoQuestion, int id
 	) {
-		this.listener = realmsConfirmResultListener;
-		this.id = i;
+		this.listener = listener;
+		this.id = id;
 		this.type = type;
-		this.line2 = string;
-		this.line3 = string2;
-		this.yesNoQuestion = bl;
+		this.line2 = line2;
+		this.line3 = line3;
+		this.yesNoQuestion = yesNoQuestion;
 		this.yesButton = getLocalizedString("gui.yes");
 		this.noButton = getLocalizedString("gui.no");
 		this.okButton = getLocalizedString("mco.gui.ok");
@@ -61,22 +61,22 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i == 256) {
+	public boolean keyPressed(int eventKey, int scancode, int mods) {
+		if (eventKey == 256) {
 			this.listener.confirmResult(false, this.id);
 			return true;
 		} else {
-			return super.keyPressed(i, j, k);
+			return super.keyPressed(eventKey, scancode, mods);
 		}
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int xm, int ym, float a) {
 		this.renderBackground();
 		this.drawCenteredString(this.type.text, this.width() / 2, RealmsConstants.row(2), this.type.colorCode);
 		this.drawCenteredString(this.line2, this.width() / 2, RealmsConstants.row(4), 16777215);
 		this.drawCenteredString(this.line3, this.width() / 2, RealmsConstants.row(6), 16777215);
-		super.render(i, j, f);
+		super.render(xm, ym, a);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -87,9 +87,9 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 		public final int colorCode;
 		public final String text;
 
-		private Type(String string2, int j) {
-			this.text = string2;
-			this.colorCode = j;
+		private Type(String text, int colorCode) {
+			this.text = text;
+			this.colorCode = colorCode;
 		}
 	}
 }

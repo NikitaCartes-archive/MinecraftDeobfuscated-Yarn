@@ -61,8 +61,8 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		return (Set<Item>)immutableSet.stream().filter(item -> !immutableSet2.contains(item)).collect(Collectors.toSet());
 	}
 
-	private static void giveHalfOfStack(VillagerEntity villagerEntity, Set<Item> set, LivingEntity livingEntity) {
-		BasicInventory basicInventory = villagerEntity.getInventory();
+	private static void giveHalfOfStack(VillagerEntity villager, Set<Item> validItems, LivingEntity target) {
+		BasicInventory basicInventory = villager.getInventory();
 		ItemStack itemStack = ItemStack.EMPTY;
 		int i = 0;
 
@@ -74,7 +74,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 				itemStack2 = basicInventory.getInvStack(i);
 				if (!itemStack2.isEmpty()) {
 					item = itemStack2.getItem();
-					if (set.contains(item)) {
+					if (validItems.contains(item)) {
 						if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
 							j = itemStack2.getCount() / 2;
 							break label28;
@@ -97,7 +97,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		}
 
 		if (!itemStack.isEmpty()) {
-			LookTargetUtil.give(villagerEntity, itemStack, livingEntity);
+			LookTargetUtil.give(villager, itemStack, target);
 		}
 	}
 }

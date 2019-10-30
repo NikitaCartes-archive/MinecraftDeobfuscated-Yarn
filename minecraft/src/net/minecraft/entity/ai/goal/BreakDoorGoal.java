@@ -12,13 +12,13 @@ public class BreakDoorGoal extends DoorInteractGoal {
 	protected int prevBreakProgress = -1;
 	protected int field_16596 = -1;
 
-	public BreakDoorGoal(MobEntity mobEntity, Predicate<Difficulty> predicate) {
-		super(mobEntity);
-		this.difficultySufficientPredicate = predicate;
+	public BreakDoorGoal(MobEntity mob, Predicate<Difficulty> difficultySufficientPredicate) {
+		super(mob);
+		this.difficultySufficientPredicate = difficultySufficientPredicate;
 	}
 
-	public BreakDoorGoal(MobEntity mobEntity, int i, Predicate<Difficulty> predicate) {
-		this(mobEntity, predicate);
+	public BreakDoorGoal(MobEntity mob, int i, Predicate<Difficulty> difficultySufficientPredicate) {
+		this(mob, difficultySufficientPredicate);
 		this.field_16596 = i;
 	}
 

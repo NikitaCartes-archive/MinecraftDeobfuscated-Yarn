@@ -61,8 +61,8 @@ public class UserCache {
 		}
 	};
 
-	public UserCache(GameProfileRepository gameProfileRepository, File file) {
-		this.profileRepository = gameProfileRepository;
+	public UserCache(GameProfileRepository profileRepository, File file) {
+		this.profileRepository = profileRepository;
 		this.cacheFile = file;
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeHierarchyAdapter(UserCache.Entry.class, new UserCache.JsonConverter());
@@ -70,31 +70,31 @@ public class UserCache {
 		this.load();
 	}
 
-	private static GameProfile findProfileByName(GameProfileRepository gameProfileRepository, String string) {
+	private static GameProfile findProfileByName(GameProfileRepository repository, String name) {
 		final GameProfile[] gameProfiles = new GameProfile[1];
 		ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 			@Override
-			public void onProfileLookupSucceeded(GameProfile gameProfile) {
-				gameProfiles[0] = gameProfile;
+			public void onProfileLookupSucceeded(GameProfile profile) {
+				gameProfiles[0] = profile;
 			}
 
 			@Override
-			public void onProfileLookupFailed(GameProfile gameProfile, Exception exception) {
+			public void onProfileLookupFailed(GameProfile profile, Exception exception) {
 				gameProfiles[0] = null;
 			}
 		};
-		gameProfileRepository.findProfilesByNames(new String[]{string}, Agent.MINECRAFT, profileLookupCallback);
+		repository.findProfilesByNames(new String[]{name}, Agent.MINECRAFT, profileLookupCallback);
 		if (!shouldUseRemote() && gameProfiles[0] == null) {
-			UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, string));
-			GameProfile gameProfile = new GameProfile(uUID, string);
+			UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
+			GameProfile gameProfile = new GameProfile(uUID, name);
 			profileLookupCallback.onProfileLookupSucceeded(gameProfile);
 		}
 
 		return gameProfiles[0];
 	}
 
-	public static void setUseRemote(boolean bl) {
-		useRemote = bl;
+	public static void setUseRemote(boolean value) {
+		useRemote = value;
 	}
 
 	private static boolean shouldUseRemote() {
@@ -105,8 +105,8 @@ public class UserCache {
 		this.add(gameProfile, null);
 	}
 
-	private void add(GameProfile gameProfile, Date date) {
-		UUID uUID = gameProfile.getId();
+	private void add(GameProfile profile, Date date) {
+		UUID uUID = profile.getId();
 		if (date == null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(new Date());
@@ -114,16 +114,16 @@ public class UserCache {
 			date = calendar.getTime();
 		}
 
-		UserCache.Entry entry = new UserCache.Entry(gameProfile, date);
+		UserCache.Entry entry = new UserCache.Entry(profile, date);
 		if (this.byUuid.containsKey(uUID)) {
 			UserCache.Entry entry2 = (UserCache.Entry)this.byUuid.get(uUID);
 			this.byName.remove(entry2.getProfile().getName().toLowerCase(Locale.ROOT));
-			this.byAccessTime.remove(gameProfile);
+			this.byAccessTime.remove(profile);
 		}
 
-		this.byName.put(gameProfile.getName().toLowerCase(Locale.ROOT), entry);
+		this.byName.put(profile.getName().toLowerCase(Locale.ROOT), entry);
 		this.byUuid.put(uUID, entry);
-		this.byAccessTime.addFirst(gameProfile);
+		this.byAccessTime.addFirst(profile);
 		this.save();
 	}
 

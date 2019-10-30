@@ -28,9 +28,9 @@ public class PortalForcer {
 	private final ServerWorld world;
 	private final Random random;
 
-	public PortalForcer(ServerWorld serverWorld) {
-		this.world = serverWorld;
-		this.random = new Random(serverWorld.getSeed());
+	public PortalForcer(ServerWorld world) {
+		this.world = world;
+		this.random = new Random(world.getSeed());
 	}
 
 	public boolean usePortal(Entity entity, float f) {
@@ -58,7 +58,7 @@ public class PortalForcer {
 	}
 
 	@Nullable
-	public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double d, double e, boolean bl) {
+	public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double x, double y, boolean canActivate) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 		pointOfInterestStorage.method_22439(this.world, blockPos, 128);
 		List<PointOfInterest> list = (List)pointOfInterestStorage.method_22383(
@@ -74,7 +74,7 @@ public class PortalForcer {
 			BlockPos blockPosxx = pointOfInterest.getPos();
 			this.world.method_14178().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPosxx), 3, blockPosxx);
 			BlockPattern.Result result = PortalBlock.findPortal(this.world, blockPosxx);
-			return result.getTeleportTarget(direction, blockPosxx, e, vec3d, d);
+			return result.getTeleportTarget(direction, blockPosxx, y, vec3d, x);
 		}).orElse(null);
 	}
 

@@ -17,24 +17,24 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 	public EntityEquipmentUpdateS2CPacket() {
 	}
 
-	public EntityEquipmentUpdateS2CPacket(int i, EquipmentSlot equipmentSlot, ItemStack itemStack) {
-		this.id = i;
-		this.slot = equipmentSlot;
-		this.stack = itemStack.copy();
+	public EntityEquipmentUpdateS2CPacket(int id, EquipmentSlot slot, ItemStack stack) {
+		this.id = id;
+		this.slot = slot;
+		this.stack = stack.copy();
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
-		this.slot = packetByteBuf.readEnumConstant(EquipmentSlot.class);
-		this.stack = packetByteBuf.readItemStack();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
+		this.slot = buf.readEnumConstant(EquipmentSlot.class);
+		this.stack = buf.readItemStack();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
-		packetByteBuf.writeEnumConstant(this.slot);
-		packetByteBuf.writeItemStack(this.stack);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
+		buf.writeEnumConstant(this.slot);
+		buf.writeItemStack(this.stack);
 	}
 
 	public void method_11823(ClientPlayPacketListener clientPlayPacketListener) {

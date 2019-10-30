@@ -8,8 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public class DefaultFlowerFeature extends FlowerFeature<FlowerFeatureConfig> {
-	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends FlowerFeatureConfig> function) {
-		super(function);
+	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends FlowerFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	public boolean method_23390(IWorld iWorld, BlockPos blockPos, FlowerFeatureConfig flowerFeatureConfig) {

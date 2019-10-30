@@ -21,15 +21,15 @@ public class QueryEntityNbtC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.transactionId = packetByteBuf.readVarInt();
-		this.entityId = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.transactionId = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.transactionId);
-		packetByteBuf.writeVarInt(this.entityId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.transactionId);
+		buf.writeVarInt(this.entityId);
 	}
 
 	public void method_12243(ServerPlayPacketListener serverPlayPacketListener) {

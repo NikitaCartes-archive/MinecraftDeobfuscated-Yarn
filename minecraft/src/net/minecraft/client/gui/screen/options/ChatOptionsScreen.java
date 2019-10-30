@@ -30,8 +30,8 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 	};
 	private AbstractButtonWidget narratorOptionButton;
 
-	public ChatOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(screen, gameOptions, new TranslatableText("options.chat.title"));
+	public ChatOptionsScreen(Screen parent, GameOptions options) {
+		super(parent, options, new TranslatableText("options.chat.title"));
 	}
 
 	@Override
@@ -58,10 +58,10 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	public void setNarratorMessage() {

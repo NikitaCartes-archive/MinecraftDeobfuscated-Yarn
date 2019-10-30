@@ -10,8 +10,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DesertPyramidFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	public DesertPyramidFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public DesertPyramidFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
@@ -35,13 +35,13 @@ public class DesertPyramidFeature extends AbstractTempleFeature<DefaultFeatureCo
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, i * 16, j * 16);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, x * 16, z * 16);
 			this.children.add(desertTempleGenerator);
 			this.setBoundingBoxFromChildren();
 		}

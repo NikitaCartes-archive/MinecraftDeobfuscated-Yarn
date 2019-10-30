@@ -42,30 +42,30 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.entityId = packetByteBuf.readVarInt();
-		this.type = packetByteBuf.readEnumConstant(PlayerInteractEntityC2SPacket.InteractionType.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.entityId = buf.readVarInt();
+		this.type = buf.readEnumConstant(PlayerInteractEntityC2SPacket.InteractionType.class);
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-			this.hitPos = new Vec3d((double)packetByteBuf.readFloat(), (double)packetByteBuf.readFloat(), (double)packetByteBuf.readFloat());
+			this.hitPos = new Vec3d((double)buf.readFloat(), (double)buf.readFloat(), (double)buf.readFloat());
 		}
 
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-			this.hand = packetByteBuf.readEnumConstant(Hand.class);
+			this.hand = buf.readEnumConstant(Hand.class);
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.entityId);
-		packetByteBuf.writeEnumConstant(this.type);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.entityId);
+		buf.writeEnumConstant(this.type);
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-			packetByteBuf.writeFloat((float)this.hitPos.x);
-			packetByteBuf.writeFloat((float)this.hitPos.y);
-			packetByteBuf.writeFloat((float)this.hitPos.z);
+			buf.writeFloat((float)this.hitPos.x);
+			buf.writeFloat((float)this.hitPos.y);
+			buf.writeFloat((float)this.hitPos.z);
 		}
 
 		if (this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT || this.type == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-			packetByteBuf.writeEnumConstant(this.hand);
+			buf.writeEnumConstant(this.hand);
 		}
 	}
 

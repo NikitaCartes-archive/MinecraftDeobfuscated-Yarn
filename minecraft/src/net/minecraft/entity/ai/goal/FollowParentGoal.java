@@ -9,9 +9,9 @@ public class FollowParentGoal extends Goal {
 	private final double speed;
 	private int delay;
 
-	public FollowParentGoal(AnimalEntity animalEntity, double d) {
-		this.animal = animalEntity;
-		this.speed = d;
+	public FollowParentGoal(AnimalEntity animal, double speed) {
+		this.animal = animal;
+		this.speed = speed;
 	}
 
 	@Override

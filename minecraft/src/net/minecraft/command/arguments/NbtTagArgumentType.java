@@ -19,8 +19,8 @@ public class NbtTagArgumentType implements ArgumentType<Tag> {
 		return new NbtTagArgumentType();
 	}
 
-	public static <S> Tag getTag(CommandContext<S> commandContext, String string) {
-		return commandContext.getArgument(string, Tag.class);
+	public static <S> Tag getTag(CommandContext<S> context, String name) {
+		return context.getArgument(name, Tag.class);
 	}
 
 	public Tag method_9388(StringReader stringReader) throws CommandSyntaxException {

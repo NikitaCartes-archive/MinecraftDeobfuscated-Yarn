@@ -6,8 +6,8 @@ import net.minecraft.util.Identifier;
 public abstract class SpecialCraftingRecipe implements CraftingRecipe {
 	private final Identifier id;
 
-	public SpecialCraftingRecipe(Identifier identifier) {
-		this.id = identifier;
+	public SpecialCraftingRecipe(Identifier id) {
+		this.id = id;
 	}
 
 	@Override

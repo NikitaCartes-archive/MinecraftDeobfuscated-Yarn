@@ -48,59 +48,59 @@ public class SimplexNoiseSampler {
 		}
 	}
 
-	private int getGradient(int i) {
-		return this.permutations[i & 0xFF];
+	private int getGradient(int hash) {
+		return this.permutations[hash & 0xFF];
 	}
 
-	protected static double dot(int[] is, double d, double e, double f) {
-		return (double)is[0] * d + (double)is[1] * e + (double)is[2] * f;
+	protected static double dot(int[] gArr, double x, double y, double z) {
+		return (double)gArr[0] * x + (double)gArr[1] * y + (double)gArr[2] * z;
 	}
 
-	private double grad(int i, double d, double e, double f, double g) {
-		double h = g - d * d - e * e - f * f;
-		double j;
-		if (h < 0.0) {
-			j = 0.0;
+	private double grad(int hash, double x, double y, double z, double d) {
+		double e = d - x * x - y * y - z * z;
+		double f;
+		if (e < 0.0) {
+			f = 0.0;
 		} else {
-			h *= h;
-			j = h * h * dot(gradients[i], d, e, f);
+			e *= e;
+			f = e * e * dot(gradients[hash], x, y, z);
 		}
 
-		return j;
+		return f;
 	}
 
-	public double sample(double d, double e) {
-		double f = (d + e) * SKEW_FACTOR_2D;
-		int i = MathHelper.floor(d + f);
-		int j = MathHelper.floor(e + f);
-		double g = (double)(i + j) * UNSKEW_FACTOR_2D;
-		double h = (double)i - g;
-		double k = (double)j - g;
-		double l = d - h;
-		double m = e - k;
-		int n;
-		int o;
-		if (l > m) {
-			n = 1;
-			o = 0;
+	public double sample(double x, double y) {
+		double d = (x + y) * SKEW_FACTOR_2D;
+		int i = MathHelper.floor(x + d);
+		int j = MathHelper.floor(y + d);
+		double e = (double)(i + j) * UNSKEW_FACTOR_2D;
+		double f = (double)i - e;
+		double g = (double)j - e;
+		double h = x - f;
+		double k = y - g;
+		int l;
+		int m;
+		if (h > k) {
+			l = 1;
+			m = 0;
 		} else {
-			n = 0;
-			o = 1;
+			l = 0;
+			m = 1;
 		}
 
-		double p = l - (double)n + UNSKEW_FACTOR_2D;
-		double q = m - (double)o + UNSKEW_FACTOR_2D;
-		double r = l - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
-		double s = m - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
-		int t = i & 0xFF;
-		int u = j & 0xFF;
-		int v = this.getGradient(t + this.getGradient(u)) % 12;
-		int w = this.getGradient(t + n + this.getGradient(u + o)) % 12;
-		int x = this.getGradient(t + 1 + this.getGradient(u + 1)) % 12;
-		double y = this.grad(v, l, m, 0.0, 0.5);
-		double z = this.grad(w, p, q, 0.0, 0.5);
-		double aa = this.grad(x, r, s, 0.0, 0.5);
-		return 70.0 * (y + z + aa);
+		double n = h - (double)l + UNSKEW_FACTOR_2D;
+		double o = k - (double)m + UNSKEW_FACTOR_2D;
+		double p = h - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
+		double q = k - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
+		int r = i & 0xFF;
+		int s = j & 0xFF;
+		int t = this.getGradient(r + this.getGradient(s)) % 12;
+		int u = this.getGradient(r + l + this.getGradient(s + m)) % 12;
+		int v = this.getGradient(r + 1 + this.getGradient(s + 1)) % 12;
+		double w = this.grad(t, h, k, 0.0, 0.5);
+		double z = this.grad(u, n, o, 0.0, 0.5);
+		double aa = this.grad(v, p, q, 0.0, 0.5);
+		return 70.0 * (w + z + aa);
 	}
 
 	public double method_22416(double d, double e, double f) {

@@ -24,8 +24,8 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private int field_18395;
 	private int field_18396;
 
-	public HoldTradeOffersTask(int i, int j) {
-		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), i, j);
+	public HoldTradeOffersTask(int rminRunTime, int maxRunTime) {
+		super(ImmutableMap.of(MemoryModuleType.INTERACTION_TARGET, MemoryModuleState.VALUE_PRESENT), rminRunTime, maxRunTime);
 	}
 
 	public boolean method_19599(ServerWorld serverWorld, VillagerEntity villagerEntity) {

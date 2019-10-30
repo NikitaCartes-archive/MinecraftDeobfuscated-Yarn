@@ -15,21 +15,21 @@ public class CooldownUpdateS2CPacket implements Packet<ClientPlayPacketListener>
 	public CooldownUpdateS2CPacket() {
 	}
 
-	public CooldownUpdateS2CPacket(Item item, int i) {
+	public CooldownUpdateS2CPacket(Item item, int cooldown) {
 		this.item = item;
-		this.cooldown = i;
+		this.cooldown = cooldown;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.item = Item.byRawId(packetByteBuf.readVarInt());
-		this.cooldown = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.item = Item.byRawId(buf.readVarInt());
+		this.cooldown = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(Item.getRawId(this.item));
-		packetByteBuf.writeVarInt(this.cooldown);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(Item.getRawId(this.item));
+		buf.writeVarInt(this.cooldown);
 	}
 
 	public void method_11455(ClientPlayPacketListener clientPlayPacketListener) {

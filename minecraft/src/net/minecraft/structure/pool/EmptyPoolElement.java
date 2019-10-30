@@ -21,21 +21,19 @@ public class EmptyPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
-	) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
 		return BlockBox.empty();
 	}
 
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		IWorld iWorld,
+		IWorld world,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
 		BlockRotation blockRotation,

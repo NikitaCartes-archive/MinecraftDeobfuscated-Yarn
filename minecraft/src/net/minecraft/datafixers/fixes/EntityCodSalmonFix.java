@@ -14,12 +14,12 @@ public class EntityCodSalmonFix extends EntityRenameFix {
 		.put("minecraft:cod_mob_spawn_egg", "minecraft:cod_spawn_egg")
 		.build();
 
-	public EntityCodSalmonFix(Schema schema, boolean bl) {
-		super("EntityCodSalmonFix", schema, bl);
+	public EntityCodSalmonFix(Schema outputSchema, boolean changesType) {
+		super("EntityCodSalmonFix", outputSchema, changesType);
 	}
 
 	@Override
-	protected String rename(String string) {
-		return (String)ENTITIES.getOrDefault(string, string);
+	protected String rename(String oldName) {
+		return (String)ENTITIES.getOrDefault(oldName, oldName);
 	}
 }

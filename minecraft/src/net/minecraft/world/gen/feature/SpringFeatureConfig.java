@@ -27,21 +27,21 @@ public class SpringFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("state"),
-					FluidState.serialize(dynamicOps, this.field_21283).getValue(),
-					dynamicOps.createString("requires_block_below"),
-					dynamicOps.createBoolean(this.field_21284),
-					dynamicOps.createString("rock_count"),
-					dynamicOps.createInt(this.field_21285),
-					dynamicOps.createString("hole_count"),
-					dynamicOps.createInt(this.field_21286),
-					dynamicOps.createString("valid_blocks"),
-					dynamicOps.createList(this.field_21287.stream().map(Registry.BLOCK::getId).map(Identifier::toString).map(dynamicOps::createString))
+					ops.createString("state"),
+					FluidState.serialize(ops, this.field_21283).getValue(),
+					ops.createString("requires_block_below"),
+					ops.createBoolean(this.field_21284),
+					ops.createString("rock_count"),
+					ops.createInt(this.field_21285),
+					ops.createString("hole_count"),
+					ops.createInt(this.field_21286),
+					ops.createString("valid_blocks"),
+					ops.createList(this.field_21287.stream().map(Registry.BLOCK::getId).map(Identifier::toString).map(ops::createString))
 				)
 			)
 		);

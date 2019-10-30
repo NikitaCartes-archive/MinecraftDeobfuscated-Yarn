@@ -21,8 +21,8 @@ public class PaintingManager extends SpriteAtlasHolder {
 		return Iterables.concat(Registry.MOTIVE.getIds(), Collections.singleton(PAINTING_BACK_ID));
 	}
 
-	public Sprite getPaintingSprite(PaintingMotive paintingMotive) {
-		return this.getSprite(Registry.MOTIVE.getId(paintingMotive));
+	public Sprite getPaintingSprite(PaintingMotive motive) {
+		return this.getSprite(Registry.MOTIVE.getId(motive));
 	}
 
 	public Sprite getBackSprite() {

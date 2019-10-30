@@ -15,21 +15,21 @@ public class TheEndBiomeSource extends BiomeSource {
 		Biomes.THE_END, Biomes.END_HIGHLANDS, Biomes.END_MIDLANDS, Biomes.SMALL_END_ISLANDS, Biomes.END_BARRENS
 	);
 
-	public TheEndBiomeSource(TheEndBiomeSourceConfig theEndBiomeSourceConfig) {
+	public TheEndBiomeSource(TheEndBiomeSourceConfig config) {
 		super(BIOMES);
-		this.random = new ChunkRandom(theEndBiomeSourceConfig.getSeed());
+		this.random = new ChunkRandom(config.getSeed());
 		this.random.consume(17292);
 		this.noise = new SimplexNoiseSampler(this.random);
 	}
 
 	@Override
-	public Biome getStoredBiome(int i, int j, int k) {
-		int l = i >> 2;
-		int m = k >> 2;
-		if ((long)l * (long)l + (long)m * (long)m <= 4096L) {
+	public Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
+		int i = biomeX >> 2;
+		int j = biomeZ >> 2;
+		if ((long)i * (long)i + (long)j * (long)j <= 4096L) {
 			return Biomes.THE_END;
 		} else {
-			float f = this.getNoiseRange(l * 2 + 1, m * 2 + 1);
+			float f = this.getNoiseRange(i * 2 + 1, j * 2 + 1);
 			if (f > 40.0F) {
 				return Biomes.END_HIGHLANDS;
 			} else if (f >= 0.0F) {

@@ -11,13 +11,13 @@ public class ConfiguredCarver<WC extends CarverConfig> {
 	public final Carver<WC> carver;
 	public final WC config;
 
-	public ConfiguredCarver(Carver<WC> carver, WC carverConfig) {
+	public ConfiguredCarver(Carver<WC> carver, WC config) {
 		this.carver = carver;
-		this.config = carverConfig;
+		this.config = config;
 	}
 
-	public boolean shouldCarve(Random random, int i, int j) {
-		return this.carver.shouldCarve(random, i, j, this.config);
+	public boolean shouldCarve(Random random, int chunkX, int chunkZ) {
+		return this.carver.shouldCarve(random, chunkX, chunkZ, this.config);
 	}
 
 	public boolean carve(Chunk chunk, Function<BlockPos, Biome> function, Random random, int i, int j, int k, int l, int m, BitSet bitSet) {

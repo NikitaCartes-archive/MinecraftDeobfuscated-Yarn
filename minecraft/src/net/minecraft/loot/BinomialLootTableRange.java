@@ -16,9 +16,9 @@ public final class BinomialLootTableRange implements LootTableRange {
 	private final int n;
 	private final float p;
 
-	public BinomialLootTableRange(int i, float f) {
-		this.n = i;
-		this.p = f;
+	public BinomialLootTableRange(int n, float p) {
+		this.n = n;
+		this.p = p;
 	}
 
 	@Override
@@ -34,8 +34,8 @@ public final class BinomialLootTableRange implements LootTableRange {
 		return i;
 	}
 
-	public static BinomialLootTableRange create(int i, float f) {
-		return new BinomialLootTableRange(i, f);
+	public static BinomialLootTableRange create(int n, float p) {
+		return new BinomialLootTableRange(n, p);
 	}
 
 	@Override

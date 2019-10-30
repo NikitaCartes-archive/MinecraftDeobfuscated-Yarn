@@ -17,7 +17,7 @@ public class TagReaders {
 		LongArrayTag.READER
 	};
 
-	public static TagReader<?> of(int i) {
-		return i >= 0 && i < VALUES.length ? VALUES[i] : TagReader.createInvalid(i);
+	public static TagReader<?> of(int type) {
+		return type >= 0 && type < VALUES.length ? VALUES[type] : TagReader.createInvalid(type);
 	}
 }

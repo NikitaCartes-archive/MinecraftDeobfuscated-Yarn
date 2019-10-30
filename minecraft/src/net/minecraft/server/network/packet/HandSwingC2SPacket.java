@@ -17,13 +17,13 @@ public class HandSwingC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.hand = packetByteBuf.readEnumConstant(Hand.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.hand = buf.readEnumConstant(Hand.class);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.hand);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.hand);
 	}
 
 	public void method_12511(ServerPlayPacketListener serverPlayPacketListener) {

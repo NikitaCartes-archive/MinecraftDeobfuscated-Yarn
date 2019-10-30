@@ -16,13 +16,13 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.status = packetByteBuf.readEnumConstant(ResourcePackStatusC2SPacket.Status.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.status = buf.readEnumConstant(ResourcePackStatusC2SPacket.Status.class);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.status);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.status);
 	}
 
 	public void method_12409(ServerPlayPacketListener serverPlayPacketListener) {

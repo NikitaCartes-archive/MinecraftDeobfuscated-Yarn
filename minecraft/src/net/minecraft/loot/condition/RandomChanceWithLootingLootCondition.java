@@ -18,9 +18,9 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 	private final float chance;
 	private final float lootingMultiplier;
 
-	private RandomChanceWithLootingLootCondition(float f, float g) {
-		this.chance = f;
-		this.lootingMultiplier = g;
+	private RandomChanceWithLootingLootCondition(float chance, float lootingMultiplier) {
+		this.chance = chance;
+		this.lootingMultiplier = lootingMultiplier;
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 		return lootContext.getRandom().nextFloat() < this.chance + (float)i * this.lootingMultiplier;
 	}
 
-	public static LootCondition.Builder builder(float f, float g) {
-		return () -> new RandomChanceWithLootingLootCondition(f, g);
+	public static LootCondition.Builder builder(float chance, float lootingMultiplier) {
+		return () -> new RandomChanceWithLootingLootCondition(chance, lootingMultiplier);
 	}
 
 	public static class Factory extends LootCondition.Factory<RandomChanceWithLootingLootCondition> {

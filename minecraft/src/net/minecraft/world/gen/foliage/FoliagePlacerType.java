@@ -11,12 +11,12 @@ public class FoliagePlacerType<P extends FoliagePlacer> {
 	public static final FoliagePlacerType<AcaciaFoliagePlacer> ACACIA_FOLIAGE_PLACER = register("acacia_foliage_placer", AcaciaFoliagePlacer::new);
 	private final Function<Dynamic<?>, P> deserializer;
 
-	private static <P extends FoliagePlacer> FoliagePlacerType<P> register(String string, Function<Dynamic<?>, P> function) {
-		return Registry.register(Registry.FOLIAGE_PLACER_TYPE, string, new FoliagePlacerType<>(function));
+	private static <P extends FoliagePlacer> FoliagePlacerType<P> register(String id, Function<Dynamic<?>, P> deserializer) {
+		return Registry.register(Registry.FOLIAGE_PLACER_TYPE, id, new FoliagePlacerType<>(deserializer));
 	}
 
-	private FoliagePlacerType(Function<Dynamic<?>, P> function) {
-		this.deserializer = function;
+	private FoliagePlacerType(Function<Dynamic<?>, P> deserializer) {
+		this.deserializer = deserializer;
 	}
 
 	public P deserialize(Dynamic<?> dynamic) {

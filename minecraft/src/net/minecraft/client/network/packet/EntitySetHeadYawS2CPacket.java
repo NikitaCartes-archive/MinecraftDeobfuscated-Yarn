@@ -16,21 +16,21 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 	public EntitySetHeadYawS2CPacket() {
 	}
 
-	public EntitySetHeadYawS2CPacket(Entity entity, byte b) {
+	public EntitySetHeadYawS2CPacket(Entity entity, byte headYaw) {
 		this.entity = entity.getEntityId();
-		this.headYaw = b;
+		this.headYaw = headYaw;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.entity = packetByteBuf.readVarInt();
-		this.headYaw = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.entity = buf.readVarInt();
+		this.headYaw = buf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.entity);
-		packetByteBuf.writeByte(this.headYaw);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.entity);
+		buf.writeByte(this.headYaw);
 	}
 
 	public void method_11788(ClientPlayPacketListener clientPlayPacketListener) {

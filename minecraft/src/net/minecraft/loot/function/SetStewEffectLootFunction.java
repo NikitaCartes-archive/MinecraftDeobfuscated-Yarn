@@ -27,15 +27,15 @@ import net.minecraft.util.registry.Registry;
 public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	private final Map<StatusEffect, UniformLootTableRange> effects;
 
-	private SetStewEffectLootFunction(LootCondition[] lootConditions, Map<StatusEffect, UniformLootTableRange> map) {
-		super(lootConditions);
-		this.effects = ImmutableMap.copyOf(map);
+	private SetStewEffectLootFunction(LootCondition[] conditions, Map<StatusEffect, UniformLootTableRange> effects) {
+		super(conditions);
+		this.effects = ImmutableMap.copyOf(effects);
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.getItem() == Items.SUSPICIOUS_STEW && !this.effects.isEmpty()) {
-			Random random = lootContext.getRandom();
+	public ItemStack process(ItemStack stack, LootContext context) {
+		if (stack.getItem() == Items.SUSPICIOUS_STEW && !this.effects.isEmpty()) {
+			Random random = context.getRandom();
 			int i = random.nextInt(this.effects.size());
 			Entry<StatusEffect, UniformLootTableRange> entry = Iterables.get(this.effects.entrySet(), i);
 			StatusEffect statusEffect = (StatusEffect)entry.getKey();
@@ -44,10 +44,10 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 				j *= 20;
 			}
 
-			SuspiciousStewItem.addEffectToStew(itemStack, statusEffect, j);
-			return itemStack;
+			SuspiciousStewItem.addEffectToStew(stack, statusEffect, j);
+			return stack;
 		} else {
-			return itemStack;
+			return stack;
 		}
 	}
 
@@ -62,8 +62,8 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public SetStewEffectLootFunction.Builder withEffect(StatusEffect statusEffect, UniformLootTableRange uniformLootTableRange) {
-			this.map.put(statusEffect, uniformLootTableRange);
+		public SetStewEffectLootFunction.Builder withEffect(StatusEffect effect, UniformLootTableRange durationRange) {
+			this.map.put(effect, durationRange);
 			return this;
 		}
 

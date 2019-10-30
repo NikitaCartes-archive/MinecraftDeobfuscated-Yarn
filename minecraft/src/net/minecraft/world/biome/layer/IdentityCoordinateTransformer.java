@@ -2,12 +2,12 @@ package net.minecraft.world.biome.layer;
 
 public interface IdentityCoordinateTransformer extends CoordinateTransformer {
 	@Override
-	default int transformX(int i) {
-		return i;
+	default int transformX(int x) {
+		return x;
 	}
 
 	@Override
-	default int transformZ(int i) {
-		return i;
+	default int transformZ(int y) {
+		return y;
 	}
 }

@@ -17,28 +17,28 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	private final LootTableRange range;
 	private final boolean treasureEnchantmentsAllowed;
 
-	private EnchantWithLevelsLootFunction(LootCondition[] lootConditions, LootTableRange lootTableRange, boolean bl) {
-		super(lootConditions);
-		this.range = lootTableRange;
-		this.treasureEnchantmentsAllowed = bl;
+	private EnchantWithLevelsLootFunction(LootCondition[] conditions, LootTableRange range, boolean treasureEnchantmentsAllowed) {
+		super(conditions);
+		this.range = range;
+		this.treasureEnchantmentsAllowed = treasureEnchantmentsAllowed;
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Random random = lootContext.getRandom();
-		return EnchantmentHelper.enchant(random, itemStack, this.range.next(random), this.treasureEnchantmentsAllowed);
+	public ItemStack process(ItemStack stack, LootContext context) {
+		Random random = context.getRandom();
+		return EnchantmentHelper.enchant(random, stack, this.range.next(random), this.treasureEnchantmentsAllowed);
 	}
 
-	public static EnchantWithLevelsLootFunction.Builder builder(LootTableRange lootTableRange) {
-		return new EnchantWithLevelsLootFunction.Builder(lootTableRange);
+	public static EnchantWithLevelsLootFunction.Builder builder(LootTableRange range) {
+		return new EnchantWithLevelsLootFunction.Builder(range);
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<EnchantWithLevelsLootFunction.Builder> {
 		private final LootTableRange range;
 		private boolean treasureEnchantmentsAllowed;
 
-		public Builder(LootTableRange lootTableRange) {
-			this.range = lootTableRange;
+		public Builder(LootTableRange range) {
+			this.range = range;
 		}
 
 		protected EnchantWithLevelsLootFunction.Builder method_483() {

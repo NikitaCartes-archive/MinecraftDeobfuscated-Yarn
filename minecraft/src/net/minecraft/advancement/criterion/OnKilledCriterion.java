@@ -13,8 +13,8 @@ import net.minecraft.util.Identifier;
 public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Conditions> {
 	private final Identifier id;
 
-	public OnKilledCriterion(Identifier identifier) {
-		this.id = identifier;
+	public OnKilledCriterion(Identifier id) {
+		this.id = id;
 	}
 
 	@Override
@@ -28,18 +28,18 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.test(serverPlayerEntity, entity, damageSource));
+	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.test(player, entity, source));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate entity;
 		private final DamageSourcePredicate killingBlow;
 
-		public Conditions(Identifier identifier, EntityPredicate entityPredicate, DamageSourcePredicate damageSourcePredicate) {
-			super(identifier);
-			this.entity = entityPredicate;
-			this.killingBlow = damageSourcePredicate;
+		public Conditions(Identifier id, EntityPredicate entity, DamageSourcePredicate killingBlow) {
+			super(id);
+			this.entity = entity;
+			this.killingBlow = killingBlow;
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate.Builder builder) {
@@ -58,8 +58,8 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 			return new OnKilledCriterion.Conditions(Criterions.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 
-		public boolean test(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
-			return !this.killingBlow.test(serverPlayerEntity, damageSource) ? false : this.entity.test(serverPlayerEntity, entity);
+		public boolean test(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {
+			return !this.killingBlow.test(player, killingBlow) ? false : this.entity.test(player, entity);
 		}
 
 		@Override

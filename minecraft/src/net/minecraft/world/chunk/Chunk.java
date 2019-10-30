@@ -16,7 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
@@ -29,9 +29,9 @@ import org.apache.logging.log4j.LogManager;
 
 public interface Chunk extends BlockView, StructureHolder {
 	@Nullable
-	BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl);
+	BlockState setBlockState(BlockPos pos, BlockState state, boolean bl);
 
-	void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity);
+	void setBlockEntity(BlockPos pos, BlockEntity blockEntity);
 
 	void addEntity(Entity entity);
 
@@ -60,15 +60,15 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 
-	void setHeightmap(Heightmap.Type type, long[] ls);
+	void setHeightmap(Heightmap.Type type, long[] heightmap);
 
 	Heightmap getHeightmap(Heightmap.Type type);
 
-	int sampleHeightmap(Heightmap.Type type, int i, int j);
+	int sampleHeightmap(Heightmap.Type type, int x, int z);
 
 	ChunkPos getPos();
 
-	void setLastSaveTime(long l);
+	void setLastSaveTime(long lastSaveTime);
 
 	Map<String, StructureStart> getStructureStarts();
 
@@ -95,7 +95,7 @@ public interface Chunk extends BlockView, StructureHolder {
 	@Nullable
 	BiomeArray getBiomeArray();
 
-	void setShouldSave(boolean bl);
+	void setShouldSave(boolean shouldSave);
 
 	boolean needsSaving();
 
@@ -118,7 +118,7 @@ public interface Chunk extends BlockView, StructureHolder {
 	}
 
 	@Nullable
-	CompoundTag getBlockEntityTagAt(BlockPos blockPos);
+	CompoundTag getBlockEntityTagAt(BlockPos pos);
 
 	@Nullable
 	CompoundTag method_20598(BlockPos blockPos);
@@ -130,24 +130,24 @@ public interface Chunk extends BlockView, StructureHolder {
 	TickScheduler<Fluid> getFluidTickScheduler();
 
 	default BitSet getCarvingMask(GenerationStep.Carver carver) {
-		throw (RuntimeException)SystemUtil.throwOrPause(new RuntimeException("Meaningless in this context"));
+		throw (RuntimeException)Util.throwOrPause(new RuntimeException("Meaningless in this context"));
 	}
 
 	UpgradeData getUpgradeData();
 
-	void setInhabitedTime(long l);
+	void setInhabitedTime(long inhabitedTime);
 
 	long getInhabitedTime();
 
-	static ShortList getList(ShortList[] shortLists, int i) {
-		if (shortLists[i] == null) {
-			shortLists[i] = new ShortArrayList();
+	static ShortList getList(ShortList[] lists, int index) {
+		if (lists[index] == null) {
+			lists[index] = new ShortArrayList();
 		}
 
-		return shortLists[i];
+		return lists[index];
 	}
 
 	boolean isLightOn();
 
-	void setLightOn(boolean bl);
+	void setLightOn(boolean lightOn);
 }

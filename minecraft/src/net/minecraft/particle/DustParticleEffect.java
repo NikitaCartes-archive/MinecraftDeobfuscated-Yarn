@@ -33,19 +33,19 @@ public class DustParticleEffect implements ParticleEffect {
 	private final float blue;
 	private final float scale;
 
-	public DustParticleEffect(float f, float g, float h, float i) {
-		this.red = f;
-		this.green = g;
-		this.blue = h;
-		this.scale = MathHelper.clamp(i, 0.01F, 4.0F);
+	public DustParticleEffect(float red, float green, float blue, float scale) {
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
+		this.scale = MathHelper.clamp(scale, 0.01F, 4.0F);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeFloat(this.red);
-		packetByteBuf.writeFloat(this.green);
-		packetByteBuf.writeFloat(this.blue);
-		packetByteBuf.writeFloat(this.scale);
+	public void write(PacketByteBuf buf) {
+		buf.writeFloat(this.red);
+		buf.writeFloat(this.green);
+		buf.writeFloat(this.blue);
+		buf.writeFloat(this.scale);
 	}
 
 	@Override

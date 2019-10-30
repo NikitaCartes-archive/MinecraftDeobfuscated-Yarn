@@ -11,23 +11,23 @@ public abstract class Sensor<E extends LivingEntity> {
 	private final int senseInterval;
 	private long lastSenseTime;
 
-	public Sensor(int i) {
-		this.senseInterval = i;
-		this.lastSenseTime = (long)RANDOM.nextInt(i);
+	public Sensor(int senseInterval) {
+		this.senseInterval = senseInterval;
+		this.lastSenseTime = (long)RANDOM.nextInt(senseInterval);
 	}
 
 	public Sensor() {
 		this(20);
 	}
 
-	public final void canSense(ServerWorld serverWorld, E livingEntity) {
+	public final void canSense(ServerWorld serverWorld, E entity) {
 		if (--this.lastSenseTime <= 0L) {
 			this.lastSenseTime = (long)this.senseInterval;
-			this.sense(serverWorld, livingEntity);
+			this.sense(serverWorld, entity);
 		}
 	}
 
-	protected abstract void sense(ServerWorld serverWorld, E livingEntity);
+	protected abstract void sense(ServerWorld world, E entity);
 
 	public abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
 }

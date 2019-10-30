@@ -22,28 +22,28 @@ public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketList
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.queryId = packetByteBuf.readVarInt();
-		if (packetByteBuf.readBoolean()) {
-			int i = packetByteBuf.readableBytes();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.queryId = buf.readVarInt();
+		if (buf.readBoolean()) {
+			int i = buf.readableBytes();
 			if (i < 0 || i > 1048576) {
 				throw new IOException("Payload may not be larger than 1048576 bytes");
 			}
 
-			this.response = new PacketByteBuf(packetByteBuf.readBytes(i));
+			this.response = new PacketByteBuf(buf.readBytes(i));
 		} else {
 			this.response = null;
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.queryId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.queryId);
 		if (this.response != null) {
-			packetByteBuf.writeBoolean(true);
-			packetByteBuf.writeBytes(this.response.copy());
+			buf.writeBoolean(true);
+			buf.writeBytes(this.response.copy());
 		} else {
-			packetByteBuf.writeBoolean(false);
+			buf.writeBoolean(false);
 		}
 	}
 

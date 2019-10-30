@@ -31,8 +31,8 @@ public class StructureProcessorRule {
 		this.tag = compoundTag;
 	}
 
-	public boolean test(BlockState blockState, BlockState blockState2, Random random) {
-		return this.inputPredicate.test(blockState, random) && this.locationPredicate.test(blockState2, random);
+	public boolean test(BlockState input, BlockState location, Random random) {
+		return this.inputPredicate.test(input, random) && this.locationPredicate.test(location, random);
 	}
 
 	public BlockState getOutputState() {

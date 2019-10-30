@@ -4,7 +4,7 @@ public enum HorizontalVoronoiBiomeAccessType implements BiomeAccessType {
 	INSTANCE;
 
 	@Override
-	public Biome getBiome(long l, int i, int j, int k, BiomeAccess.Storage storage) {
-		return VoronoiBiomeAccessType.INSTANCE.getBiome(l, i, 0, k, storage);
+	public Biome getBiome(long seed, int x, int y, int z, BiomeAccess.Storage storage) {
+		return VoronoiBiomeAccessType.INSTANCE.getBiome(seed, x, 0, z, storage);
 	}
 }

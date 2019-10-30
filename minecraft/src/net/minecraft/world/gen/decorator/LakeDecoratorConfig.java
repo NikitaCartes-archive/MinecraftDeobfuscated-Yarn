@@ -7,13 +7,13 @@ import com.mojang.datafixers.types.DynamicOps;
 public class LakeDecoratorConfig implements DecoratorConfig {
 	public final int chance;
 
-	public LakeDecoratorConfig(int i) {
-		this.chance = i;
+	public LakeDecoratorConfig(int chance) {
+		this.chance = chance;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("chance"), dynamicOps.createInt(this.chance))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("chance"), ops.createInt(this.chance))));
 	}
 
 	public static LakeDecoratorConfig deserialize(Dynamic<?> dynamic) {

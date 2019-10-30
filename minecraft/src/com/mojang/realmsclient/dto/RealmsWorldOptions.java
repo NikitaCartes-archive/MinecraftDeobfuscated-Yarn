@@ -37,27 +37,27 @@ public class RealmsWorldOptions extends ValueObject {
 	private static final boolean adventureMapDefault = false;
 
 	public RealmsWorldOptions(
-		Boolean boolean_,
-		Boolean boolean2,
-		Boolean boolean3,
-		Boolean boolean4,
-		Integer integer,
-		Boolean boolean5,
-		Integer integer2,
-		Integer integer3,
-		Boolean boolean6,
-		String string
+		Boolean pvp,
+		Boolean spawnAnimals,
+		Boolean spawnMonsters,
+		Boolean spawnNPCs,
+		Integer spawnProtection,
+		Boolean commandBlocks,
+		Integer difficulty,
+		Integer gameMode,
+		Boolean forceGameMode,
+		String slotName
 	) {
-		this.pvp = boolean_;
-		this.spawnAnimals = boolean2;
-		this.spawnMonsters = boolean3;
-		this.spawnNPCs = boolean4;
-		this.spawnProtection = integer;
-		this.commandBlocks = boolean5;
-		this.difficulty = integer2;
-		this.gameMode = integer3;
-		this.forceGameMode = boolean6;
-		this.slotName = string;
+		this.pvp = pvp;
+		this.spawnAnimals = spawnAnimals;
+		this.spawnMonsters = spawnMonsters;
+		this.spawnNPCs = spawnNPCs;
+		this.spawnProtection = spawnProtection;
+		this.commandBlocks = commandBlocks;
+		this.difficulty = difficulty;
+		this.gameMode = gameMode;
+		this.forceGameMode = forceGameMode;
+		this.slotName = slotName;
 	}
 
 	public static RealmsWorldOptions getDefaults() {
@@ -70,8 +70,8 @@ public class RealmsWorldOptions extends ValueObject {
 		return realmsWorldOptions;
 	}
 
-	public void setEmpty(boolean bl) {
-		this.empty = bl;
+	public void setEmpty(boolean empty) {
+		this.empty = empty;
 	}
 
 	public static RealmsWorldOptions parse(JsonObject jsonObject) {

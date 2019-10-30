@@ -13,5 +13,5 @@ public interface MultipartModelSelector {
 	MultipartModelSelector TRUE = stateManager -> blockState -> true;
 	MultipartModelSelector FALSE = stateManager -> blockState -> false;
 
-	Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager);
+	Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory);
 }

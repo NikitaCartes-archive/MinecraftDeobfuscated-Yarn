@@ -8,8 +8,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class LavaEmberParticle extends SpriteBillboardParticle {
-	private LavaEmberParticle(World world, double d, double e, double f) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	private LavaEmberParticle(World world, double x, double y, double z) {
+		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.8F;
 		this.velocityY *= 0.8F;
 		this.velocityZ *= 0.8F;
@@ -24,17 +24,17 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getColorMultiplier(float f) {
-		int i = super.getColorMultiplier(f);
+	public int getColorMultiplier(float tint) {
+		int i = super.getColorMultiplier(tint);
 		int j = 240;
 		int k = i >> 16 & 0xFF;
 		return 240 | k << 16;
 	}
 
 	@Override
-	public float getSize(float f) {
-		float g = ((float)this.age + f) / (float)this.maxAge;
-		return this.scale * (1.0F - g * g);
+	public float getSize(float tickDelta) {
+		float f = ((float)this.age + tickDelta) / (float)this.maxAge;
+		return this.scale * (1.0F - f * f);
 	}
 
 	@Override

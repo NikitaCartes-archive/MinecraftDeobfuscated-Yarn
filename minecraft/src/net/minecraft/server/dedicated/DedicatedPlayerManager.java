@@ -32,9 +32,9 @@ public class DedicatedPlayerManager extends PlayerManager {
 	}
 
 	@Override
-	public void setWhitelistEnabled(boolean bl) {
-		super.setWhitelistEnabled(bl);
-		this.method_13938().setUseWhitelist(bl);
+	public void setWhitelistEnabled(boolean whitelistEnabled) {
+		super.setWhitelistEnabled(whitelistEnabled);
+		this.method_13938().setUseWhitelist(whitelistEnabled);
 	}
 
 	@Override

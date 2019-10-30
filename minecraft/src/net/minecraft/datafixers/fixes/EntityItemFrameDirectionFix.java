@@ -7,8 +7,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityItemFrameDirectionFix extends ChoiceFix {
-	public EntityItemFrameDirectionFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityItemFrameDirectionFix", TypeReferences.ENTITY, "minecraft:item_frame");
+	public EntityItemFrameDirectionFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityItemFrameDirectionFix", TypeReferences.ENTITY, "minecraft:item_frame");
 	}
 
 	public Dynamic<?> fixDirection(Dynamic<?> dynamic) {

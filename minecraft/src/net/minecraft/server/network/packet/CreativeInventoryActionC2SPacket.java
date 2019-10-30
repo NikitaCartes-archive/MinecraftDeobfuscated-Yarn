@@ -26,15 +26,15 @@ public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacket
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.slot = packetByteBuf.readShort();
-		this.stack = packetByteBuf.readItemStack();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.slot = buf.readShort();
+		this.stack = buf.readItemStack();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeShort(this.slot);
-		packetByteBuf.writeItemStack(this.stack);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeShort(this.slot);
+		buf.writeItemStack(this.stack);
 	}
 
 	public int getSlot() {

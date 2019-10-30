@@ -20,11 +20,11 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 		return new UsedEnderEyeCriterion.Conditions(floatRange);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
-		double d = serverPlayerEntity.getX() - (double)blockPos.getX();
-		double e = serverPlayerEntity.getZ() - (double)blockPos.getZ();
+	public void trigger(ServerPlayerEntity player, BlockPos strongholdPos) {
+		double d = player.getX() - (double)strongholdPos.getX();
+		double e = player.getZ() - (double)strongholdPos.getZ();
 		double f = d * d + e * e;
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(f));
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(f));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -35,8 +35,8 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 			this.distance = floatRange;
 		}
 
-		public boolean matches(double d) {
-			return this.distance.testSqrt(d);
+		public boolean matches(double distance) {
+			return this.distance.testSqrt(distance);
 		}
 	}
 }

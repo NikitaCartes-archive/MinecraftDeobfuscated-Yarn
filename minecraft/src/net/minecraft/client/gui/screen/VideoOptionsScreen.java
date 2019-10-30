@@ -34,8 +34,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	};
 	private int mipmapLevels;
 
-	public VideoOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(screen, gameOptions, new TranslatableText("options.videoTitle"));
+	public VideoOptionsScreen(Screen parent, GameOptions options) {
+		super(parent, options, new TranslatableText("options.videoTitle"));
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.list.addSingleOptionEntry(new FullScreenOption(this.minecraft.getWindow()));
 		this.list.addAll(OPTIONS);
 		this.children.add(this.list);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), button -> {
 			this.minecraft.options.write();
 			this.minecraft.getWindow().method_4475();
 			this.minecraft.openScreen(this.field_21335);
@@ -65,10 +65,10 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		int j = this.field_21336.guiScale;
-		if (super.mouseClicked(d, e, i)) {
-			if (this.field_21336.guiScale != j) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		int i = this.field_21336.guiScale;
+		if (super.mouseClicked(mouseX, mouseY, button)) {
+			if (this.field_21336.guiScale != i) {
 				this.minecraft.onResolutionChanged();
 			}
 
@@ -79,12 +79,12 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseReleased(double d, double e, int i) {
-		int j = this.field_21336.guiScale;
-		if (super.mouseReleased(d, e, i)) {
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		int i = this.field_21336.guiScale;
+		if (super.mouseReleased(mouseX, mouseY, button)) {
 			return true;
-		} else if (this.list.mouseReleased(d, e, i)) {
-			if (this.field_21336.guiScale != j) {
+		} else if (this.list.mouseReleased(mouseX, mouseY, button)) {
+			if (this.field_21336.guiScale != i) {
 				this.minecraft.onResolutionChanged();
 			}
 
@@ -95,10 +95,10 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.list.render(i, j, f);
+		this.list.render(mouseX, mouseY, delta);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 5, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

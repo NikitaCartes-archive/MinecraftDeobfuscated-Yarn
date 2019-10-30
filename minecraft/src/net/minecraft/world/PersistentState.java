@@ -14,20 +14,20 @@ public abstract class PersistentState {
 	private final String key;
 	private boolean dirty;
 
-	public PersistentState(String string) {
-		this.key = string;
+	public PersistentState(String key) {
+		this.key = key;
 	}
 
-	public abstract void fromTag(CompoundTag compoundTag);
+	public abstract void fromTag(CompoundTag tag);
 
-	public abstract CompoundTag toTag(CompoundTag compoundTag);
+	public abstract CompoundTag toTag(CompoundTag tag);
 
 	public void markDirty() {
 		this.setDirty(true);
 	}
 
-	public void setDirty(boolean bl) {
-		this.dirty = bl;
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 
 	public boolean isDirty() {

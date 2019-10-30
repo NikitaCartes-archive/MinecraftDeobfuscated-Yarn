@@ -14,8 +14,8 @@ public class KeepAliveC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public KeepAliveC2SPacket(long l) {
-		this.id = l;
+	public KeepAliveC2SPacket(long id) {
+		this.id = id;
 	}
 
 	public void method_12266(ServerPlayPacketListener serverPlayPacketListener) {
@@ -23,13 +23,13 @@ public class KeepAliveC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readLong();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readLong();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeLong(this.id);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeLong(this.id);
 	}
 
 	public long getId() {

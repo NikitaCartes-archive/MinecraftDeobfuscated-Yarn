@@ -298,17 +298,17 @@ public class TrackedDataHandlerRegistry {
 		}
 	};
 
-	public static void register(TrackedDataHandler<?> trackedDataHandler) {
-		field_13328.add(trackedDataHandler);
+	public static void register(TrackedDataHandler<?> handler) {
+		field_13328.add(handler);
 	}
 
 	@Nullable
-	public static TrackedDataHandler<?> get(int i) {
-		return field_13328.get(i);
+	public static TrackedDataHandler<?> get(int id) {
+		return field_13328.get(id);
 	}
 
-	public static int getId(TrackedDataHandler<?> trackedDataHandler) {
-		return field_13328.getId(trackedDataHandler);
+	public static int getId(TrackedDataHandler<?> handler) {
+		return field_13328.getId(handler);
 	}
 
 	static {

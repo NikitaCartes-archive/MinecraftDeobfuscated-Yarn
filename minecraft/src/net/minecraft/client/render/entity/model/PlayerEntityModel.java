@@ -26,50 +26,50 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	private final ModelPart ears;
 	private final boolean thinArms;
 
-	public PlayerEntityModel(float f, boolean bl) {
-		super(RenderLayer::getEntityTranslucent, f, 0.0F, 64, 64);
-		this.thinArms = bl;
+	public PlayerEntityModel(float scale, boolean thinArms) {
+		super(RenderLayer::getEntityTranslucent, scale, 0.0F, 64, 64);
+		this.thinArms = thinArms;
 		this.ears = new ModelPart(this, 24, 0);
-		this.ears.addCuboid(-3.0F, -6.0F, -1.0F, 6.0F, 6.0F, 1.0F, f);
+		this.ears.addCuboid(-3.0F, -6.0F, -1.0F, 6.0F, 6.0F, 1.0F, scale);
 		this.cape = new ModelPart(this, 0, 0);
 		this.cape.setTextureSize(64, 32);
-		this.cape.addCuboid(-5.0F, 0.0F, -1.0F, 10.0F, 16.0F, 1.0F, f);
-		if (bl) {
+		this.cape.addCuboid(-5.0F, 0.0F, -1.0F, 10.0F, 16.0F, 1.0F, scale);
+		if (thinArms) {
 			this.leftArm = new ModelPart(this, 32, 48);
-			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f);
+			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, scale);
 			this.leftArm.setPivot(5.0F, 2.5F, 0.0F);
 			this.rightArm = new ModelPart(this, 40, 16);
-			this.rightArm.addCuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f);
+			this.rightArm.addCuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, scale);
 			this.rightArm.setPivot(-5.0F, 2.5F, 0.0F);
 			this.leftArmOverlay = new ModelPart(this, 48, 48);
-			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f + 0.25F);
+			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, scale + 0.25F);
 			this.leftArmOverlay.setPivot(5.0F, 2.5F, 0.0F);
 			this.rightArmOverlay = new ModelPart(this, 40, 32);
-			this.rightArmOverlay.addCuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, f + 0.25F);
+			this.rightArmOverlay.addCuboid(-2.0F, -2.0F, -2.0F, 3.0F, 12.0F, 4.0F, scale + 0.25F);
 			this.rightArmOverlay.setPivot(-5.0F, 2.5F, 10.0F);
 		} else {
 			this.leftArm = new ModelPart(this, 32, 48);
-			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
+			this.leftArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
 			this.leftArm.setPivot(5.0F, 2.0F, 0.0F);
 			this.leftArmOverlay = new ModelPart(this, 48, 48);
-			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
+			this.leftArmOverlay.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale + 0.25F);
 			this.leftArmOverlay.setPivot(5.0F, 2.0F, 0.0F);
 			this.rightArmOverlay = new ModelPart(this, 40, 32);
-			this.rightArmOverlay.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
+			this.rightArmOverlay.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale + 0.25F);
 			this.rightArmOverlay.setPivot(-5.0F, 2.0F, 10.0F);
 		}
 
 		this.leftLeg = new ModelPart(this, 16, 48);
-		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
+		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
 		this.leftLeg.setPivot(1.9F, 12.0F, 0.0F);
 		this.leftLegOverlay = new ModelPart(this, 0, 48);
-		this.leftLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
+		this.leftLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale + 0.25F);
 		this.leftLegOverlay.setPivot(1.9F, 12.0F, 0.0F);
 		this.rightLegOverlay = new ModelPart(this, 0, 32);
-		this.rightLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f + 0.25F);
+		this.rightLegOverlay.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale + 0.25F);
 		this.rightLegOverlay.setPivot(-1.9F, 12.0F, 0.0F);
 		this.bodyOverlay = new ModelPart(this, 16, 32);
-		this.bodyOverlay.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f + 0.25F);
+		this.bodyOverlay.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, scale + 0.25F);
 		this.bodyOverlay.setPivot(0.0F, 0.0F, 0.0F);
 	}
 
@@ -107,27 +107,27 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void setVisible(boolean bl) {
-		super.setVisible(bl);
-		this.leftArmOverlay.visible = bl;
-		this.rightArmOverlay.visible = bl;
-		this.leftLegOverlay.visible = bl;
-		this.rightLegOverlay.visible = bl;
-		this.bodyOverlay.visible = bl;
-		this.cape.visible = bl;
-		this.ears.visible = bl;
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		this.leftArmOverlay.visible = visible;
+		this.rightArmOverlay.visible = visible;
+		this.leftLegOverlay.visible = visible;
+		this.rightLegOverlay.visible = visible;
+		this.bodyOverlay.visible = visible;
+		this.cape.visible = visible;
+		this.ears.visible = visible;
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
 		ModelPart modelPart = this.getArm(arm);
 		if (this.thinArms) {
-			float g = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);
-			modelPart.pivotX += g;
-			modelPart.rotate(matrixStack, f);
-			modelPart.pivotX -= g;
+			float f = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);
+			modelPart.pivotX += f;
+			modelPart.rotate(matrixStack, angle);
+			modelPart.pivotX -= f;
 		} else {
-			modelPart.rotate(matrixStack, f);
+			modelPart.rotate(matrixStack, angle);
 		}
 	}
 

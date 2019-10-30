@@ -54,25 +54,25 @@ public class ShovelItem extends MiningToolItem {
 		ImmutableMap.of(Blocks.GRASS_BLOCK, Blocks.GRASS_PATH.getDefaultState())
 	);
 
-	public ShovelItem(ToolMaterial toolMaterial, float f, float g, Item.Settings settings) {
-		super(f, g, toolMaterial, EFFECTIVE_BLOCKS, settings);
+	public ShovelItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
+		super(attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState blockState) {
-		Block block = blockState.getBlock();
+	public boolean isEffectiveOn(BlockState state) {
+		Block block = state.getBlock();
 		return block == Blocks.SNOW || block == Blocks.SNOW_BLOCK;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getBlockPos();
+	public ActionResult useOnBlock(ItemUsageContext context) {
+		World world = context.getWorld();
+		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (itemUsageContext.getSide() == Direction.DOWN) {
+		if (context.getSide() == Direction.DOWN) {
 			return ActionResult.PASS;
 		} else {
-			PlayerEntity playerEntity = itemUsageContext.getPlayer();
+			PlayerEntity playerEntity = context.getPlayer();
 			BlockState blockState2 = (BlockState)PATH_BLOCKSTATES.get(blockState.getBlock());
 			BlockState blockState3 = null;
 			if (blockState2 != null && world.getBlockState(blockPos.up()).isAir()) {
@@ -87,7 +87,7 @@ public class ShovelItem extends MiningToolItem {
 				if (!world.isClient) {
 					world.setBlockState(blockPos, blockState3, 11);
 					if (playerEntity != null) {
-						itemUsageContext.getStack().damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
+						context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 					}
 				}
 

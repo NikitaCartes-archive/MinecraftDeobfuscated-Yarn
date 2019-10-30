@@ -13,8 +13,8 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 	private final int cookingTime;
 	private final CookingRecipeSerializer.RecipeFactory<T> recipeFactory;
 
-	public CookingRecipeSerializer(CookingRecipeSerializer.RecipeFactory<T> recipeFactory, int i) {
-		this.cookingTime = i;
+	public CookingRecipeSerializer(CookingRecipeSerializer.RecipeFactory<T> recipeFactory, int cookingTime) {
+		this.cookingTime = cookingTime;
 		this.recipeFactory = recipeFactory;
 	}
 
@@ -52,6 +52,6 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 	}
 
 	interface RecipeFactory<T extends AbstractCookingRecipe> {
-		T create(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i);
+		T create(Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime);
 	}
 }

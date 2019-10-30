@@ -49,15 +49,14 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 	}
 
-	public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<ItemPredicateArgumentType.ItemPredicateArgument>getArgument(string, ItemPredicateArgumentType.ItemPredicateArgument.class)
-			.create(commandContext);
+	public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		return context.<ItemPredicateArgumentType.ItemPredicateArgument>getArgument(name, ItemPredicateArgumentType.ItemPredicateArgument.class).create(context);
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-		stringReader.setCursor(suggestionsBuilder.getStart());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		StringReader stringReader = new StringReader(builder.getInput());
+		stringReader.setCursor(builder.getStart());
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true);
 
 		try {
@@ -65,7 +64,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return itemStringReader.getSuggestions(suggestionsBuilder);
+		return itemStringReader.getSuggestions(builder);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public interface Trader {
-	void setCurrentCustomer(@Nullable PlayerEntity playerEntity);
+	void setCurrentCustomer(@Nullable PlayerEntity customer);
 
 	@Nullable
 	PlayerEntity getCurrentCustomer();
@@ -32,7 +32,7 @@ public interface Trader {
 
 	int getExperience();
 
-	void setExperienceFromServer(int i);
+	void setExperienceFromServer(int experience);
 
 	boolean isLevelledTrader();
 

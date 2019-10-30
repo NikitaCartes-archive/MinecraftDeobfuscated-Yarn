@@ -54,7 +54,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_COW_HURT;
 	}
 
@@ -64,7 +64,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15F, 1.0F);
 	}
 
@@ -74,20 +74,20 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.BUCKET && !playerEntity.abilities.creativeMode && !this.isBaby()) {
-			playerEntity.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (itemStack.getItem() == Items.BUCKET && !player.abilities.creativeMode && !this.isBaby()) {
+			player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
 			itemStack.decrement(1);
 			if (itemStack.isEmpty()) {
-				playerEntity.setStackInHand(hand, new ItemStack(Items.MILK_BUCKET));
-			} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {
-				playerEntity.dropItem(new ItemStack(Items.MILK_BUCKET), false);
+				player.setStackInHand(hand, new ItemStack(Items.MILK_BUCKET));
+			} else if (!player.inventory.insertStack(new ItemStack(Items.MILK_BUCKET))) {
+				player.dropItem(new ItemStack(Items.MILK_BUCKET), false);
 			}
 
 			return true;
 		} else {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		}
 	}
 
@@ -96,7 +96,7 @@ public class CowEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return this.isBaby() ? entityDimensions.height * 0.95F : 1.3F;
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return this.isBaby() ? dimensions.height * 0.95F : 1.3F;
 	}
 }

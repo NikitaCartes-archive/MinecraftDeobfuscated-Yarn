@@ -13,13 +13,13 @@ public class DeadBushBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return SHAPE;
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		Block block = blockState.getBlock();
+	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+		Block block = floor.getBlock();
 		return block == Blocks.SAND
 			|| block == Blocks.RED_SAND
 			|| block == Blocks.TERRACOTTA

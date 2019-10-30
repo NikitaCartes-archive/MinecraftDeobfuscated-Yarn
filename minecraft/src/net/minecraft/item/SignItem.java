@@ -9,15 +9,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SignItem extends WallStandingBlockItem {
-	public SignItem(Item.Settings settings, Block block, Block block2) {
-		super(block, block2, settings);
+	public SignItem(Item.Settings settings, Block standingBlock, Block wallBlock) {
+		super(standingBlock, wallBlock, settings);
 	}
 
 	@Override
-	protected boolean postPlacement(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
-		boolean bl = super.postPlacement(blockPos, world, playerEntity, itemStack, blockState);
-		if (!world.isClient && !bl && playerEntity != null) {
-			playerEntity.openEditSignScreen((SignBlockEntity)world.getBlockEntity(blockPos));
+	protected boolean postPlacement(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
+		boolean bl = super.postPlacement(pos, world, player, stack, state);
+		if (!world.isClient && !bl && player != null) {
+			player.openEditSignScreen((SignBlockEntity)world.getBlockEntity(pos));
 		}
 
 		return bl;

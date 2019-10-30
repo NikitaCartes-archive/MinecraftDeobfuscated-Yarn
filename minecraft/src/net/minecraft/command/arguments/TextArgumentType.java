@@ -21,8 +21,8 @@ public class TextArgumentType implements ArgumentType<Text> {
 	private TextArgumentType() {
 	}
 
-	public static Text getTextArgument(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, Text.class);
+	public static Text getTextArgument(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, Text.class);
 	}
 
 	public static TextArgumentType text() {

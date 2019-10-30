@@ -13,7 +13,7 @@ public interface Toast {
 	Identifier TOASTS_TEX = new Identifier("textures/gui/toasts.png");
 	Object field_2208 = new Object();
 
-	Toast.Visibility draw(ToastManager toastManager, long l);
+	Toast.Visibility draw(ToastManager manager, long currentTime);
 
 	default Object getType() {
 		return field_2208;

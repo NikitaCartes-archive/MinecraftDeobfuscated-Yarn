@@ -10,8 +10,8 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,11 +27,11 @@ public class BlockEntityRenderDispatcher {
 	private final Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = Maps.<BlockEntityType<?>, BlockEntityRenderer<?>>newHashMap();
 	public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
 	private final BufferBuilder bufferBuilder = new BufferBuilder(256);
-	private TextRenderer fontRenderer;
+	private TextRenderer textRenderer;
 	public TextureManager textureManager;
 	public World world;
-	public Camera cameraEntity;
-	public HitResult hitResult;
+	public Camera camera;
+	public HitResult crosshairTarget;
 
 	private BlockEntityRenderDispatcher() {
 		this.register(BlockEntityType.SIGN, new SignBlockEntityRenderer(this));
@@ -64,22 +64,21 @@ public class BlockEntityRenderDispatcher {
 		return (BlockEntityRenderer<E>)this.renderers.get(blockEntity.getType());
 	}
 
-	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult hitResult) {
+	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Camera camera, HitResult crosshairTarget) {
 		if (this.world != world) {
 			this.setWorld(world);
 		}
 
 		this.textureManager = textureManager;
-		this.cameraEntity = camera;
-		this.fontRenderer = textRenderer;
-		this.hitResult = hitResult;
+		this.camera = camera;
+		this.textRenderer = textRenderer;
+		this.crosshairTarget = crosshairTarget;
 	}
 
 	public <E extends BlockEntity> void render(
-		E blockEntity, float f, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, double d, double e, double g
+		E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, double x, double y, double z
 	) {
-		if (blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z)
-			< blockEntity.getSquaredRenderDistance()) {
+		if (blockEntity.getSquaredDistance(this.camera.getPos().x, this.camera.getPos().y, this.camera.getPos().z) < blockEntity.getSquaredRenderDistance()) {
 			BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
 			if (blockEntityRenderer != null) {
 				if (blockEntity.hasWorld() && blockEntity.getType().supports(blockEntity.getCachedState().getBlock())) {
@@ -89,12 +88,12 @@ public class BlockEntityRenderDispatcher {
 						() -> render(
 								blockEntityRenderer,
 								blockEntity,
-								(double)blockPos.getX() - d,
-								(double)blockPos.getY() - e,
-								(double)blockPos.getZ() - g,
-								f,
-								matrixStack,
-								layeredVertexConsumerStorage
+								(double)blockPos.getX() - x,
+								(double)blockPos.getY() - y,
+								(double)blockPos.getZ() - z,
+								tickDelta,
+								matrix,
+								vertexConsumerProvider
 							)
 					);
 				}
@@ -103,14 +102,14 @@ public class BlockEntityRenderDispatcher {
 	}
 
 	private static <T extends BlockEntity> void render(
-		BlockEntityRenderer<T> blockEntityRenderer,
+		BlockEntityRenderer<T> renderer,
 		T blockEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		double x,
+		double y,
+		double z,
+		float tickDelta,
+		MatrixStack matrix,
+		VertexConsumerProvider vertexConsumerProvider
 	) {
 		World world = blockEntity.getWorld();
 		int i;
@@ -120,24 +119,22 @@ public class BlockEntityRenderDispatcher {
 			i = 15728880;
 		}
 
-		blockEntityRenderer.method_3569(blockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
+		renderer.render(blockEntity, x, y, z, tickDelta, matrix, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 	}
 
 	@Deprecated
-	public <E extends BlockEntity> void renderEntity(E blockEntity, MatrixStack matrixStack) {
-		LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(this.bufferBuilder);
-		this.renderEntity(blockEntity, matrixStack, drawer, 15728880, OverlayTexture.DEFAULT_UV);
-		drawer.draw();
+	public <E extends BlockEntity> void renderEntity(E entity, MatrixStack matrix) {
+		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(this.bufferBuilder);
+		this.renderEntity(entity, matrix, immediate, 15728880, OverlayTexture.DEFAULT_UV);
+		immediate.draw();
 	}
 
-	public <E extends BlockEntity> boolean renderEntity(
-		E blockEntity, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j
-	) {
-		BlockEntityRenderer<E> blockEntityRenderer = this.get(blockEntity);
+	public <E extends BlockEntity> boolean renderEntity(E entity, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
+		BlockEntityRenderer<E> blockEntityRenderer = this.get(entity);
 		if (blockEntityRenderer == null) {
 			return true;
 		} else {
-			runReported(blockEntity, () -> blockEntityRenderer.method_3569(blockEntity, 0.0, 0.0, 0.0, 0.0F, matrixStack, layeredVertexConsumerStorage, i, j));
+			runReported(entity, () -> blockEntityRenderer.render(entity, 0.0, 0.0, 0.0, 0.0F, matrix, vertexConsumerProvider, light, overlay));
 			return false;
 		}
 	}
@@ -156,11 +153,11 @@ public class BlockEntityRenderDispatcher {
 	public void setWorld(@Nullable World world) {
 		this.world = world;
 		if (world == null) {
-			this.cameraEntity = null;
+			this.camera = null;
 		}
 	}
 
-	public TextRenderer getFontRenderer() {
-		return this.fontRenderer;
+	public TextRenderer getTextRenderer() {
+		return this.textRenderer;
 	}
 }

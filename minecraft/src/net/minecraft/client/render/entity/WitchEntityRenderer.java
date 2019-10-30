@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.WitchHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.WitchEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,10 +19,10 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 	}
 
 	public void method_4155(
-		WitchEntity witchEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		WitchEntity witchEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		this.model.setLiftingNose(!witchEntity.getMainHandStack().isEmpty());
-		super.method_4072(witchEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.method_4072(witchEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public Identifier method_4154(WitchEntity witchEntity) {
