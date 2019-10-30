@@ -36,35 +36,35 @@ public class BlazeEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		float l = h * (float) Math.PI * -0.1F;
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		float f = age * (float) Math.PI * -0.1F;
 
-		for (int m = 0; m < 4; m++) {
-			this.rods[m].pivotY = -2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
-			this.rods[m].pivotX = MathHelper.cos(l) * 9.0F;
-			this.rods[m].pivotZ = MathHelper.sin(l) * 9.0F;
-			l++;
+		for (int i = 0; i < 4; i++) {
+			this.rods[i].pivotY = -2.0F + MathHelper.cos(((float)(i * 2) + age) * 0.25F);
+			this.rods[i].pivotX = MathHelper.cos(f) * 9.0F;
+			this.rods[i].pivotZ = MathHelper.sin(f) * 9.0F;
+			f++;
 		}
 
-		l = (float) (Math.PI / 4) + h * (float) Math.PI * 0.03F;
+		f = (float) (Math.PI / 4) + age * (float) Math.PI * 0.03F;
 
-		for (int m = 4; m < 8; m++) {
-			this.rods[m].pivotY = 2.0F + MathHelper.cos(((float)(m * 2) + h) * 0.25F);
-			this.rods[m].pivotX = MathHelper.cos(l) * 7.0F;
-			this.rods[m].pivotZ = MathHelper.sin(l) * 7.0F;
-			l++;
+		for (int i = 4; i < 8; i++) {
+			this.rods[i].pivotY = 2.0F + MathHelper.cos(((float)(i * 2) + age) * 0.25F);
+			this.rods[i].pivotX = MathHelper.cos(f) * 7.0F;
+			this.rods[i].pivotZ = MathHelper.sin(f) * 7.0F;
+			f++;
 		}
 
-		l = 0.47123894F + h * (float) Math.PI * -0.05F;
+		f = 0.47123894F + age * (float) Math.PI * -0.05F;
 
-		for (int m = 8; m < 12; m++) {
-			this.rods[m].pivotY = 11.0F + MathHelper.cos(((float)m * 1.5F + h) * 0.5F);
-			this.rods[m].pivotX = MathHelper.cos(l) * 5.0F;
-			this.rods[m].pivotZ = MathHelper.sin(l) * 5.0F;
-			l++;
+		for (int i = 8; i < 12; i++) {
+			this.rods[i].pivotY = 11.0F + MathHelper.cos(((float)i * 1.5F + age) * 0.5F);
+			this.rods[i].pivotX = MathHelper.cos(f) * 5.0F;
+			this.rods[i].pivotZ = MathHelper.sin(f) * 5.0F;
+			f++;
 		}
 
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		this.head.pitch = j * (float) (Math.PI / 180.0);
+		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 	}
 }

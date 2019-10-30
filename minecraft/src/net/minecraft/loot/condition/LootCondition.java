@@ -10,8 +10,6 @@ import net.minecraft.util.Identifier;
 
 @FunctionalInterface
 public interface LootCondition extends LootContextAware, Predicate<LootContext> {
-	LootCondition ALWAYS_FALSE = lootContext -> false;
-
 	@FunctionalInterface
 	public interface Builder {
 		LootCondition build();
@@ -20,8 +18,8 @@ public interface LootCondition extends LootContextAware, Predicate<LootContext> 
 			return InvertedLootCondition.builder(this);
 		}
 
-		default AlternativeLootCondition.Builder withCondition(LootCondition.Builder builder) {
-			return AlternativeLootCondition.builder(this, builder);
+		default AlternativeLootCondition.Builder withCondition(LootCondition.Builder condition) {
+			return AlternativeLootCondition.builder(this, condition);
 		}
 	}
 
@@ -29,9 +27,9 @@ public interface LootCondition extends LootContextAware, Predicate<LootContext> 
 		private final Identifier id;
 		private final Class<T> conditionClass;
 
-		protected Factory(Identifier identifier, Class<T> class_) {
-			this.id = identifier;
-			this.conditionClass = class_;
+		protected Factory(Identifier id, Class<T> clazz) {
+			this.id = id;
+			this.conditionClass = clazz;
 		}
 
 		public Identifier getId() {
@@ -42,8 +40,8 @@ public interface LootCondition extends LootContextAware, Predicate<LootContext> 
 			return this.conditionClass;
 		}
 
-		public abstract void toJson(JsonObject jsonObject, T lootCondition, JsonSerializationContext jsonSerializationContext);
+		public abstract void toJson(JsonObject json, T condition, JsonSerializationContext context);
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
+		public abstract T fromJson(JsonObject json, JsonDeserializationContext context);
 	}
 }

@@ -54,9 +54,9 @@ public class StructureBlockScreen extends Screen {
 	private ButtonWidget buttonShowBoundingBox;
 	private final DecimalFormat decimalFormat = new DecimalFormat("0.0###");
 
-	public StructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public StructureBlockScreen(StructureBlockBlockEntity structureBlock) {
 		super(new TranslatableText(Blocks.STRUCTURE_BLOCK.getTranslationKey()));
-		this.structureBlock = structureBlockBlockEntity;
+		this.structureBlock = structureBlock;
 		this.decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
 	}
 
@@ -163,8 +163,8 @@ public class StructureBlockScreen extends Screen {
 		}));
 		this.inputName = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("structure_block.structure_name")) {
 			@Override
-			public boolean charTyped(char c, int i) {
-				return !StructureBlockScreen.this.isValidCharacterForName(this.getText(), c, this.getCursor()) ? false : super.charTyped(c, i);
+			public boolean charTyped(char chr, int keyCode) {
+				return !StructureBlockScreen.this.isValidCharacterForName(this.getText(), chr, this.getCursor()) ? false : super.charTyped(chr, keyCode);
 			}
 		};
 		this.inputName.setMaxLength(64);
@@ -224,7 +224,7 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	@Override
-	public void resize(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient client, int width, int height) {
 		String string = this.inputName.getText();
 		String string2 = this.inputPosX.getText();
 		String string3 = this.inputPosY.getText();
@@ -235,7 +235,7 @@ public class StructureBlockScreen extends Screen {
 		String string8 = this.inputIntegrity.getText();
 		String string9 = this.inputSeed.getText();
 		String string10 = this.inputMetadata.getText();
-		this.init(minecraftClient, i, j);
+		this.init(client, width, height);
 		this.inputName.setText(string);
 		this.inputPosX.setText(string2);
 		this.inputPosY.setText(string3);
@@ -437,10 +437,10 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (super.keyPressed(i, j, k)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (i != 257 && i != 335) {
+		} else if (keyCode != 257 && keyCode != 335) {
 			return false;
 		} else {
 			this.done();
@@ -449,55 +449,55 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.DATA) {
 			this.drawString(this.font, I18n.translate("structure_block.structure_name"), this.width / 2 - 153, 30, 10526880);
-			this.inputName.render(i, j, f);
+			this.inputName.render(mouseX, mouseY, delta);
 		}
 
 		if (structureBlockMode == StructureBlockMode.LOAD || structureBlockMode == StructureBlockMode.SAVE) {
 			this.drawString(this.font, I18n.translate("structure_block.position"), this.width / 2 - 153, 70, 10526880);
-			this.inputPosX.render(i, j, f);
-			this.inputPosY.render(i, j, f);
-			this.inputPosZ.render(i, j, f);
+			this.inputPosX.render(mouseX, mouseY, delta);
+			this.inputPosY.render(mouseX, mouseY, delta);
+			this.inputPosZ.render(mouseX, mouseY, delta);
 			String string = I18n.translate("structure_block.include_entities");
-			int k = this.font.getStringWidth(string);
-			this.drawString(this.font, string, this.width / 2 + 154 - k, 150, 10526880);
+			int i = this.font.getStringWidth(string);
+			this.drawString(this.font, string, this.width / 2 + 154 - i, 150, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.SAVE) {
 			this.drawString(this.font, I18n.translate("structure_block.size"), this.width / 2 - 153, 110, 10526880);
-			this.inputSizeX.render(i, j, f);
-			this.inputSizeY.render(i, j, f);
-			this.inputSizeZ.render(i, j, f);
+			this.inputSizeX.render(mouseX, mouseY, delta);
+			this.inputSizeY.render(mouseX, mouseY, delta);
+			this.inputSizeZ.render(mouseX, mouseY, delta);
 			String string = I18n.translate("structure_block.detect_size");
-			int k = this.font.getStringWidth(string);
-			this.drawString(this.font, string, this.width / 2 + 154 - k, 110, 10526880);
+			int i = this.font.getStringWidth(string);
+			this.drawString(this.font, string, this.width / 2 + 154 - i, 110, 10526880);
 			String string2 = I18n.translate("structure_block.show_air");
-			int l = this.font.getStringWidth(string2);
-			this.drawString(this.font, string2, this.width / 2 + 154 - l, 70, 10526880);
+			int j = this.font.getStringWidth(string2);
+			this.drawString(this.font, string2, this.width / 2 + 154 - j, 70, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.LOAD) {
 			this.drawString(this.font, I18n.translate("structure_block.integrity"), this.width / 2 - 153, 110, 10526880);
-			this.inputIntegrity.render(i, j, f);
-			this.inputSeed.render(i, j, f);
+			this.inputIntegrity.render(mouseX, mouseY, delta);
+			this.inputSeed.render(mouseX, mouseY, delta);
 			String string = I18n.translate("structure_block.show_boundingbox");
-			int k = this.font.getStringWidth(string);
-			this.drawString(this.font, string, this.width / 2 + 154 - k, 70, 10526880);
+			int i = this.font.getStringWidth(string);
+			this.drawString(this.font, string, this.width / 2 + 154 - i, 70, 10526880);
 		}
 
 		if (structureBlockMode == StructureBlockMode.DATA) {
 			this.drawString(this.font, I18n.translate("structure_block.custom_data"), this.width / 2 - 153, 110, 10526880);
-			this.inputMetadata.render(i, j, f);
+			this.inputMetadata.render(mouseX, mouseY, delta);
 		}
 
 		String string = "structure_block.mode_info." + structureBlockMode.asString();
 		this.drawString(this.font, I18n.translate(string), this.width / 2 - 153, 174, 10526880);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	@Override

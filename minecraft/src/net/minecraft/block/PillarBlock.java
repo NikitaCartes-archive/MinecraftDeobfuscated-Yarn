@@ -16,20 +16,20 @@ public class PillarBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		switch (blockRotation) {
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		switch (rotation) {
 			case COUNTERCLOCKWISE_90:
 			case CLOCKWISE_90:
-				switch ((Direction.Axis)blockState.get(AXIS)) {
+				switch ((Direction.Axis)state.get(AXIS)) {
 					case X:
-						return blockState.with(AXIS, Direction.Axis.Z);
+						return state.with(AXIS, Direction.Axis.Z);
 					case Z:
-						return blockState.with(AXIS, Direction.Axis.X);
+						return state.with(AXIS, Direction.Axis.X);
 					default:
-						return blockState;
+						return state;
 				}
 			default:
-				return blockState;
+				return state;
 		}
 	}
 
@@ -39,7 +39,7 @@ public class PillarBlock extends Block {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(AXIS, itemPlacementContext.getSide().getAxis());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.getDefaultState().with(AXIS, ctx.getSide().getAxis());
 	}
 }

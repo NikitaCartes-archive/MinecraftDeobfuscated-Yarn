@@ -22,28 +22,28 @@ public class ChanneledLightningCriterion extends AbstractCriterion<ChanneledLigh
 		return new ChanneledLightningCriterion.Conditions(entityPredicates);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, collection));
+	public void trigger(ServerPlayerEntity player, Collection<? extends Entity> victims) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, victims));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate[] victims;
 
-		public Conditions(EntityPredicate[] entityPredicates) {
+		public Conditions(EntityPredicate[] victims) {
 			super(ChanneledLightningCriterion.ID);
-			this.victims = entityPredicates;
+			this.victims = victims;
 		}
 
-		public static ChanneledLightningCriterion.Conditions create(EntityPredicate... entityPredicates) {
-			return new ChanneledLightningCriterion.Conditions(entityPredicates);
+		public static ChanneledLightningCriterion.Conditions create(EntityPredicate... victims) {
+			return new ChanneledLightningCriterion.Conditions(victims);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
+		public boolean matches(ServerPlayerEntity player, Collection<? extends Entity> victims) {
 			for (EntityPredicate entityPredicate : this.victims) {
 				boolean bl = false;
 
-				for (Entity entity : collection) {
-					if (entityPredicate.test(serverPlayerEntity, entity)) {
+				for (Entity entity : victims) {
+					if (entityPredicate.test(player, entity)) {
 						bl = true;
 						break;
 					}

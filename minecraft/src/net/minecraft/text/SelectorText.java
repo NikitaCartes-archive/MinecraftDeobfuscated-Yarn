@@ -16,15 +16,15 @@ public class SelectorText extends BaseText implements ParsableText {
 	@Nullable
 	private final EntitySelector selector;
 
-	public SelectorText(String string) {
-		this.pattern = string;
+	public SelectorText(String pattern) {
+		this.pattern = pattern;
 		EntitySelector entitySelector = null;
 
 		try {
-			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(string));
+			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern));
 			entitySelector = entitySelectorReader.read();
 		} catch (CommandSyntaxException var4) {
-			LOGGER.warn("Invalid selector component: {}", string, var4.getMessage());
+			LOGGER.warn("Invalid selector component: {}", pattern, var4.getMessage());
 		}
 
 		this.selector = entitySelector;
@@ -35,10 +35,8 @@ public class SelectorText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public Text parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
-		return (Text)(serverCommandSource != null && this.selector != null
-			? EntitySelector.getNames(this.selector.getEntities(serverCommandSource))
-			: new LiteralText(""));
+	public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+		return (Text)(source != null && this.selector != null ? EntitySelector.getNames(this.selector.getEntities(source)) : new LiteralText(""));
 	}
 
 	@Override
@@ -51,14 +49,14 @@ public class SelectorText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof SelectorText)) {
+		} else if (!(o instanceof SelectorText)) {
 			return false;
 		} else {
-			SelectorText selectorText = (SelectorText)object;
-			return this.pattern.equals(selectorText.pattern) && super.equals(object);
+			SelectorText selectorText = (SelectorText)o;
+			return this.pattern.equals(selectorText.pattern) && super.equals(o);
 		}
 	}
 

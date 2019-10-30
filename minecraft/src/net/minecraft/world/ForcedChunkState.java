@@ -12,14 +12,14 @@ public class ForcedChunkState extends PersistentState {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		this.chunks = new LongOpenHashSet(compoundTag.getLongArray("Forced"));
+	public void fromTag(CompoundTag tag) {
+		this.chunks = new LongOpenHashSet(tag.getLongArray("Forced"));
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		compoundTag.putLongArray("Forced", this.chunks.toLongArray());
-		return compoundTag;
+	public CompoundTag toTag(CompoundTag tag) {
+		tag.putLongArray("Forced", this.chunks.toLongArray());
+		return tag;
 	}
 
 	public LongSet getChunks() {

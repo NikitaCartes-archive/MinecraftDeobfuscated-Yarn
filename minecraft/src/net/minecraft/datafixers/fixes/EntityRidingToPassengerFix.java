@@ -18,8 +18,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityRidingToPassengerFix extends DataFix {
-	public EntityRidingToPassengerFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityRidingToPassengerFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

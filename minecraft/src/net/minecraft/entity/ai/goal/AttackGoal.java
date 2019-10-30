@@ -11,9 +11,9 @@ public class AttackGoal extends Goal {
 	private LivingEntity target;
 	private int cooldown;
 
-	public AttackGoal(MobEntity mobEntity) {
-		this.mob = mobEntity;
-		this.world = mobEntity.world;
+	public AttackGoal(MobEntity mob) {
+		this.mob = mob;
+		this.world = mob.world;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 

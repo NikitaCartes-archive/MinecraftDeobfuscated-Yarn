@@ -35,8 +35,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	private int fuel;
 	protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int i) {
-			switch (i) {
+		public int get(int key) {
+			switch (key) {
 				case 0:
 					return BrewingStandBlockEntity.this.brewTime;
 				case 1:
@@ -47,13 +47,13 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 
 		@Override
-		public void set(int i, int j) {
-			switch (i) {
+		public void set(int key, int value) {
+			switch (key) {
 				case 0:
-					BrewingStandBlockEntity.this.brewTime = j;
+					BrewingStandBlockEntity.this.brewTime = value;
 					break;
 				case 1:
-					BrewingStandBlockEntity.this.fuel = j;
+					BrewingStandBlockEntity.this.fuel = value;
 			}
 		}
 
@@ -209,63 +209,63 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	public ItemStack getInvStack(int i) {
-		return i >= 0 && i < this.inventory.size() ? this.inventory.get(i) : ItemStack.EMPTY;
+	public ItemStack getInvStack(int slot) {
+		return slot >= 0 && slot < this.inventory.size() ? this.inventory.get(slot) : ItemStack.EMPTY;
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
-		return Inventories.splitStack(this.inventory, i, j);
+	public ItemStack takeInvStack(int slot, int amount) {
+		return Inventories.splitStack(this.inventory, slot, amount);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int i) {
-		return Inventories.removeStack(this.inventory, i);
+	public ItemStack removeInvStack(int slot) {
+		return Inventories.removeStack(this.inventory, slot);
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
-		if (i >= 0 && i < this.inventory.size()) {
-			this.inventory.set(i, itemStack);
+	public void setInvStack(int slot, ItemStack stack) {
+		if (slot >= 0 && slot < this.inventory.size()) {
+			this.inventory.set(slot, stack);
 		}
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+	public boolean canPlayerUseInv(PlayerEntity player) {
 		return this.world.getBlockEntity(this.pos) != this
 			? false
-			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+			: !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
 	}
 
 	@Override
-	public boolean isValidInvStack(int i, ItemStack itemStack) {
-		if (i == 3) {
-			return BrewingRecipeRegistry.isValidIngredient(itemStack);
+	public boolean isValidInvStack(int slot, ItemStack stack) {
+		if (slot == 3) {
+			return BrewingRecipeRegistry.isValidIngredient(stack);
 		} else {
-			Item item = itemStack.getItem();
-			return i == 4
+			Item item = stack.getItem();
+			return slot == 4
 				? item == Items.BLAZE_POWDER
-				: (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE) && this.getInvStack(i).isEmpty();
+				: (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE) && this.getInvStack(slot).isEmpty();
 		}
 	}
 
 	@Override
-	public int[] getInvAvailableSlots(Direction direction) {
-		if (direction == Direction.UP) {
+	public int[] getInvAvailableSlots(Direction side) {
+		if (side == Direction.UP) {
 			return TOP_SLOTS;
 		} else {
-			return direction == Direction.DOWN ? BOTTOM_SLOTS : SIDE_SLOTS;
+			return side == Direction.DOWN ? BOTTOM_SLOTS : SIDE_SLOTS;
 		}
 	}
 
 	@Override
-	public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
-		return this.isValidInvStack(i, itemStack);
+	public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+		return this.isValidInvStack(slot, stack);
 	}
 
 	@Override
-	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
-		return i == 3 ? itemStack.getItem() == Items.GLASS_BOTTLE : true;
+	public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+		return slot == 3 ? stack.getItem() == Items.GLASS_BOTTLE : true;
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
@@ -263,11 +263,11 @@ public class LevelProperties {
 		}
 	}
 
-	public LevelProperties(LevelInfo levelInfo, String string) {
+	public LevelProperties(LevelInfo levelInfo, String levelName) {
 		this.dataFixer = null;
 		this.playerWorldId = SharedConstants.getGameVersion().getWorldVersion();
 		this.loadLevelInfo(levelInfo);
-		this.levelName = string;
+		this.levelName = levelName;
 		this.difficulty = DEFAULT_DIFFICULTY;
 		this.initialized = false;
 	}
@@ -282,105 +282,105 @@ public class LevelProperties {
 		this.commandsAllowed = levelInfo.allowCommands();
 	}
 
-	public CompoundTag cloneWorldTag(@Nullable CompoundTag compoundTag) {
+	public CompoundTag cloneWorldTag(@Nullable CompoundTag playerTag) {
 		this.loadPlayerData();
-		if (compoundTag == null) {
-			compoundTag = this.playerData;
+		if (playerTag == null) {
+			playerTag = this.playerData;
 		}
 
-		CompoundTag compoundTag2 = new CompoundTag();
-		this.updateProperties(compoundTag2, compoundTag);
-		return compoundTag2;
+		CompoundTag compoundTag = new CompoundTag();
+		this.updateProperties(compoundTag, playerTag);
+		return compoundTag;
 	}
 
-	private void updateProperties(CompoundTag compoundTag, CompoundTag compoundTag2) {
-		CompoundTag compoundTag3 = new CompoundTag();
-		compoundTag3.putString("Name", SharedConstants.getGameVersion().getName());
-		compoundTag3.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
-		compoundTag3.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
-		compoundTag.put("Version", compoundTag3);
-		compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		compoundTag.putLong("RandomSeed", this.randomSeed);
-		compoundTag.putString("generatorName", this.generatorType.getStoredName());
-		compoundTag.putInt("generatorVersion", this.generatorType.getVersion());
+	private void updateProperties(CompoundTag levelTag, CompoundTag playerTag) {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.putString("Name", SharedConstants.getGameVersion().getName());
+		compoundTag.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
+		compoundTag.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
+		levelTag.put("Version", compoundTag);
+		levelTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		levelTag.putLong("RandomSeed", this.randomSeed);
+		levelTag.putString("generatorName", this.generatorType.getStoredName());
+		levelTag.putInt("generatorVersion", this.generatorType.getVersion());
 		if (!this.generatorOptions.isEmpty()) {
-			compoundTag.put("generatorOptions", this.generatorOptions);
+			levelTag.put("generatorOptions", this.generatorOptions);
 		}
 
 		if (this.legacyCustomOptions != null) {
-			compoundTag.putString("legacy_custom_options", this.legacyCustomOptions);
+			levelTag.putString("legacy_custom_options", this.legacyCustomOptions);
 		}
 
-		compoundTag.putInt("GameType", this.gameMode.getId());
-		compoundTag.putBoolean("MapFeatures", this.structures);
-		compoundTag.putInt("SpawnX", this.spawnX);
-		compoundTag.putInt("SpawnY", this.spawnY);
-		compoundTag.putInt("SpawnZ", this.spawnZ);
-		compoundTag.putLong("Time", this.time);
-		compoundTag.putLong("DayTime", this.timeOfDay);
-		compoundTag.putLong("SizeOnDisk", this.sizeOnDisk);
-		compoundTag.putLong("LastPlayed", SystemUtil.getEpochTimeMs());
-		compoundTag.putString("LevelName", this.levelName);
-		compoundTag.putInt("version", this.version);
-		compoundTag.putInt("clearWeatherTime", this.clearWeatherTime);
-		compoundTag.putInt("rainTime", this.rainTime);
-		compoundTag.putBoolean("raining", this.raining);
-		compoundTag.putInt("thunderTime", this.thunderTime);
-		compoundTag.putBoolean("thundering", this.thundering);
-		compoundTag.putBoolean("hardcore", this.hardcore);
-		compoundTag.putBoolean("allowCommands", this.commandsAllowed);
-		compoundTag.putBoolean("initialized", this.initialized);
-		compoundTag.putDouble("BorderCenterX", this.borderCenterX);
-		compoundTag.putDouble("BorderCenterZ", this.borderCenterZ);
-		compoundTag.putDouble("BorderSize", this.borderSize);
-		compoundTag.putLong("BorderSizeLerpTime", this.borderSizeLerpTime);
-		compoundTag.putDouble("BorderSafeZone", this.borderSafeZone);
-		compoundTag.putDouble("BorderDamagePerBlock", this.borderDamagePerBlock);
-		compoundTag.putDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
-		compoundTag.putDouble("BorderWarningBlocks", (double)this.borderWarningBlocks);
-		compoundTag.putDouble("BorderWarningTime", (double)this.borderWarningTime);
+		levelTag.putInt("GameType", this.gameMode.getId());
+		levelTag.putBoolean("MapFeatures", this.structures);
+		levelTag.putInt("SpawnX", this.spawnX);
+		levelTag.putInt("SpawnY", this.spawnY);
+		levelTag.putInt("SpawnZ", this.spawnZ);
+		levelTag.putLong("Time", this.time);
+		levelTag.putLong("DayTime", this.timeOfDay);
+		levelTag.putLong("SizeOnDisk", this.sizeOnDisk);
+		levelTag.putLong("LastPlayed", Util.getEpochTimeMs());
+		levelTag.putString("LevelName", this.levelName);
+		levelTag.putInt("version", this.version);
+		levelTag.putInt("clearWeatherTime", this.clearWeatherTime);
+		levelTag.putInt("rainTime", this.rainTime);
+		levelTag.putBoolean("raining", this.raining);
+		levelTag.putInt("thunderTime", this.thunderTime);
+		levelTag.putBoolean("thundering", this.thundering);
+		levelTag.putBoolean("hardcore", this.hardcore);
+		levelTag.putBoolean("allowCommands", this.commandsAllowed);
+		levelTag.putBoolean("initialized", this.initialized);
+		levelTag.putDouble("BorderCenterX", this.borderCenterX);
+		levelTag.putDouble("BorderCenterZ", this.borderCenterZ);
+		levelTag.putDouble("BorderSize", this.borderSize);
+		levelTag.putLong("BorderSizeLerpTime", this.borderSizeLerpTime);
+		levelTag.putDouble("BorderSafeZone", this.borderSafeZone);
+		levelTag.putDouble("BorderDamagePerBlock", this.borderDamagePerBlock);
+		levelTag.putDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
+		levelTag.putDouble("BorderWarningBlocks", (double)this.borderWarningBlocks);
+		levelTag.putDouble("BorderWarningTime", (double)this.borderWarningTime);
 		if (this.difficulty != null) {
-			compoundTag.putByte("Difficulty", (byte)this.difficulty.getId());
+			levelTag.putByte("Difficulty", (byte)this.difficulty.getId());
 		}
 
-		compoundTag.putBoolean("DifficultyLocked", this.difficultyLocked);
-		compoundTag.put("GameRules", this.gameRules.toNbt());
-		CompoundTag compoundTag4 = new CompoundTag();
+		levelTag.putBoolean("DifficultyLocked", this.difficultyLocked);
+		levelTag.put("GameRules", this.gameRules.toNbt());
+		CompoundTag compoundTag2 = new CompoundTag();
 
 		for (Entry<DimensionType, CompoundTag> entry : this.worldData.entrySet()) {
-			compoundTag4.put(String.valueOf(((DimensionType)entry.getKey()).getRawId()), (Tag)entry.getValue());
+			compoundTag2.put(String.valueOf(((DimensionType)entry.getKey()).getRawId()), (Tag)entry.getValue());
 		}
 
-		compoundTag.put("DimensionData", compoundTag4);
-		if (compoundTag2 != null) {
-			compoundTag.put("Player", compoundTag2);
+		levelTag.put("DimensionData", compoundTag2);
+		if (playerTag != null) {
+			levelTag.put("Player", playerTag);
 		}
 
-		CompoundTag compoundTag5 = new CompoundTag();
+		CompoundTag compoundTag3 = new CompoundTag();
 		ListTag listTag = new ListTag();
 
 		for (String string : this.enabledDataPacks) {
 			listTag.add(StringTag.of(string));
 		}
 
-		compoundTag5.put("Enabled", listTag);
+		compoundTag3.put("Enabled", listTag);
 		ListTag listTag2 = new ListTag();
 
 		for (String string2 : this.disabledDataPacks) {
 			listTag2.add(StringTag.of(string2));
 		}
 
-		compoundTag5.put("Disabled", listTag2);
-		compoundTag.put("DataPacks", compoundTag5);
+		compoundTag3.put("Disabled", listTag2);
+		levelTag.put("DataPacks", compoundTag3);
 		if (this.customBossEvents != null) {
-			compoundTag.put("CustomBossEvents", this.customBossEvents);
+			levelTag.put("CustomBossEvents", this.customBossEvents);
 		}
 
-		compoundTag.put("ScheduledEvents", this.scheduledEvents.toTag());
-		compoundTag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
-		compoundTag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
+		levelTag.put("ScheduledEvents", this.scheduledEvents.toTag());
+		levelTag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
+		levelTag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
 		if (this.wanderingTraderId != null) {
-			compoundTag.putString("WanderingTraderId", this.wanderingTraderId.toString());
+			levelTag.putString("WanderingTraderId", this.wanderingTraderId.toString());
 		}
 	}
 
@@ -388,8 +388,8 @@ public class LevelProperties {
 		return this.randomSeed;
 	}
 
-	public static long sha256Hash(long l) {
-		return Hashing.sha256().hashLong(l).asLong();
+	public static long sha256Hash(long seed) {
+		return Hashing.sha256().hashLong(seed).asLong();
 	}
 
 	public int getSpawnX() {
@@ -416,7 +416,7 @@ public class LevelProperties {
 		if (!this.playerDataLoaded && this.playerData != null) {
 			if (this.playerWorldId < SharedConstants.getGameVersion().getWorldVersion()) {
 				if (this.dataFixer == null) {
-					throw (NullPointerException)SystemUtil.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
+					throw (NullPointerException)Util.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
 				}
 
 				this.playerData = NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.playerWorldId);
@@ -432,26 +432,26 @@ public class LevelProperties {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setSpawnX(int i) {
-		this.spawnX = i;
+	public void setSpawnX(int spawnX) {
+		this.spawnX = spawnX;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setSpawnY(int i) {
-		this.spawnY = i;
+	public void setSpawnY(int spawnY) {
+		this.spawnY = spawnY;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setSpawnZ(int i) {
-		this.spawnZ = i;
+	public void setSpawnZ(int spawnZ) {
+		this.spawnZ = spawnZ;
 	}
 
-	public void setTime(long l) {
-		this.time = l;
+	public void setTime(long time) {
+		this.time = time;
 	}
 
-	public void setTimeOfDay(long l) {
-		this.timeOfDay = l;
+	public void setTimeOfDay(long timeOfDay) {
+		this.timeOfDay = timeOfDay;
 	}
 
 	public void setSpawnPos(BlockPos blockPos) {
@@ -464,16 +464,16 @@ public class LevelProperties {
 		return this.levelName;
 	}
 
-	public void setLevelName(String string) {
-		this.levelName = string;
+	public void setLevelName(String levelName) {
+		this.levelName = levelName;
 	}
 
 	public int getVersion() {
 		return this.version;
 	}
 
-	public void setVersion(int i) {
-		this.version = i;
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -485,40 +485,40 @@ public class LevelProperties {
 		return this.clearWeatherTime;
 	}
 
-	public void setClearWeatherTime(int i) {
-		this.clearWeatherTime = i;
+	public void setClearWeatherTime(int clearWeatherTime) {
+		this.clearWeatherTime = clearWeatherTime;
 	}
 
 	public boolean isThundering() {
 		return this.thundering;
 	}
 
-	public void setThundering(boolean bl) {
-		this.thundering = bl;
+	public void setThundering(boolean thundering) {
+		this.thundering = thundering;
 	}
 
 	public int getThunderTime() {
 		return this.thunderTime;
 	}
 
-	public void setThunderTime(int i) {
-		this.thunderTime = i;
+	public void setThunderTime(int thunderTime) {
+		this.thunderTime = thunderTime;
 	}
 
 	public boolean isRaining() {
 		return this.raining;
 	}
 
-	public void setRaining(boolean bl) {
-		this.raining = bl;
+	public void setRaining(boolean raining) {
+		this.raining = raining;
 	}
 
 	public int getRainTime() {
 		return this.rainTime;
 	}
 
-	public void setRainTime(int i) {
-		this.rainTime = i;
+	public void setRainTime(int rainTime) {
+		this.rainTime = rainTime;
 	}
 
 	public GameMode getGameMode() {
@@ -529,8 +529,8 @@ public class LevelProperties {
 		return this.structures;
 	}
 
-	public void setStructures(boolean bl) {
-		this.structures = bl;
+	public void setStructures(boolean structures) {
+		this.structures = structures;
 	}
 
 	public void setGameMode(GameMode gameMode) {
@@ -541,8 +541,8 @@ public class LevelProperties {
 		return this.hardcore;
 	}
 
-	public void setHardcore(boolean bl) {
-		this.hardcore = bl;
+	public void setHardcore(boolean hardcore) {
+		this.hardcore = hardcore;
 	}
 
 	public LevelGeneratorType getGeneratorType() {
@@ -565,16 +565,16 @@ public class LevelProperties {
 		return this.commandsAllowed;
 	}
 
-	public void setCommandsAllowed(boolean bl) {
-		this.commandsAllowed = bl;
+	public void setCommandsAllowed(boolean commandsAllowed) {
+		this.commandsAllowed = commandsAllowed;
 	}
 
 	public boolean isInitialized() {
 		return this.initialized;
 	}
 
-	public void setInitialized(boolean bl) {
-		this.initialized = bl;
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
 	}
 
 	public GameRules getGameRules() {
@@ -593,48 +593,48 @@ public class LevelProperties {
 		return this.borderSize;
 	}
 
-	public void setBorderSize(double d) {
-		this.borderSize = d;
+	public void setBorderSize(double borderSize) {
+		this.borderSize = borderSize;
 	}
 
 	public long getBorderSizeLerpTime() {
 		return this.borderSizeLerpTime;
 	}
 
-	public void setBorderSizeLerpTime(long l) {
-		this.borderSizeLerpTime = l;
+	public void setBorderSizeLerpTime(long borderSizeLerpTime) {
+		this.borderSizeLerpTime = borderSizeLerpTime;
 	}
 
 	public double getBorderSizeLerpTarget() {
 		return this.borderSizeLerpTarget;
 	}
 
-	public void setBorderSizeLerpTarget(double d) {
-		this.borderSizeLerpTarget = d;
+	public void setBorderSizeLerpTarget(double borderSizeLerpTarget) {
+		this.borderSizeLerpTarget = borderSizeLerpTarget;
 	}
 
-	public void borderCenterZ(double d) {
-		this.borderCenterZ = d;
+	public void borderCenterZ(double borderCenterZ) {
+		this.borderCenterZ = borderCenterZ;
 	}
 
-	public void setBorderCenterX(double d) {
-		this.borderCenterX = d;
+	public void setBorderCenterX(double borderCenterX) {
+		this.borderCenterX = borderCenterX;
 	}
 
 	public double getBorderSafeZone() {
 		return this.borderSafeZone;
 	}
 
-	public void setBorderSafeZone(double d) {
-		this.borderSafeZone = d;
+	public void setBorderSafeZone(double borderSafeZone) {
+		this.borderSafeZone = borderSafeZone;
 	}
 
 	public double getBorderDamagePerBlock() {
 		return this.borderDamagePerBlock;
 	}
 
-	public void setBorderDamagePerBlock(double d) {
-		this.borderDamagePerBlock = d;
+	public void setBorderDamagePerBlock(double borderDamagePerBlock) {
+		this.borderDamagePerBlock = borderDamagePerBlock;
 	}
 
 	public int getBorderWarningBlocks() {
@@ -645,12 +645,12 @@ public class LevelProperties {
 		return this.borderWarningTime;
 	}
 
-	public void setBorderWarningBlocks(int i) {
-		this.borderWarningBlocks = i;
+	public void setBorderWarningBlocks(int borderWarningBlocks) {
+		this.borderWarningBlocks = borderWarningBlocks;
 	}
 
-	public void setBorderWarningTime(int i) {
-		this.borderWarningTime = i;
+	public void setBorderWarningTime(int borderWarningTime) {
+		this.borderWarningTime = borderWarningTime;
 	}
 
 	public Difficulty getDifficulty() {
@@ -665,8 +665,8 @@ public class LevelProperties {
 		return this.difficultyLocked;
 	}
 
-	public void setDifficultyLocked(boolean bl) {
-		this.difficultyLocked = bl;
+	public void setDifficultyLocked(boolean difficultyLocked) {
+		this.difficultyLocked = difficultyLocked;
 	}
 
 	public Timer<MinecraftServer> getScheduledEvents() {
@@ -720,8 +720,8 @@ public class LevelProperties {
 		return compoundTag == null ? new CompoundTag() : compoundTag;
 	}
 
-	public void setWorldData(DimensionType dimensionType, CompoundTag compoundTag) {
-		this.worldData.put(dimensionType, compoundTag);
+	public void setWorldData(DimensionType type, CompoundTag compoundTag) {
+		this.worldData.put(type, compoundTag);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -752,27 +752,27 @@ public class LevelProperties {
 		return this.customBossEvents;
 	}
 
-	public void setCustomBossEvents(@Nullable CompoundTag compoundTag) {
-		this.customBossEvents = compoundTag;
+	public void setCustomBossEvents(@Nullable CompoundTag customBossEvents) {
+		this.customBossEvents = customBossEvents;
 	}
 
 	public int getWanderingTraderSpawnDelay() {
 		return this.wanderingTraderSpawnDelay;
 	}
 
-	public void setWanderingTraderSpawnDelay(int i) {
-		this.wanderingTraderSpawnDelay = i;
+	public void setWanderingTraderSpawnDelay(int wanderingTraderSpawnDelay) {
+		this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
 	}
 
 	public int getWanderingTraderSpawnChance() {
 		return this.wanderingTraderSpawnChance;
 	}
 
-	public void setWanderingTraderSpawnChance(int i) {
-		this.wanderingTraderSpawnChance = i;
+	public void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance) {
+		this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
 	}
 
-	public void setWanderingTraderId(UUID uUID) {
-		this.wanderingTraderId = uUID;
+	public void setWanderingTraderId(UUID wanderingTraderId) {
+		this.wanderingTraderId = wanderingTraderId;
 	}
 }

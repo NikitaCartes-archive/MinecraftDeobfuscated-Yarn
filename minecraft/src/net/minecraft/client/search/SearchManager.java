@@ -17,14 +17,14 @@ public class SearchManager implements SynchronousResourceReloadListener {
 	private final Map<SearchManager.Key<?>, SearchableContainer<?>> instances = Maps.<SearchManager.Key<?>, SearchableContainer<?>>newHashMap();
 
 	@Override
-	public void apply(ResourceManager resourceManager) {
+	public void apply(ResourceManager manager) {
 		for (SearchableContainer<?> searchableContainer : this.instances.values()) {
 			searchableContainer.reload();
 		}
 	}
 
-	public <T> void put(SearchManager.Key<T> key, SearchableContainer<T> searchableContainer) {
-		this.instances.put(key, searchableContainer);
+	public <T> void put(SearchManager.Key<T> key, SearchableContainer<T> value) {
+		this.instances.put(key, value);
 	}
 
 	public <T> SearchableContainer<T> get(SearchManager.Key<T> key) {

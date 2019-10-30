@@ -20,8 +20,8 @@ public class AdvancementCommand {
 		return CommandSource.suggestIdentifiers(collection.stream().map(Advancement::getId), suggestionsBuilder);
 	};
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("advancement")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -216,71 +216,64 @@ public class AdvancementCommand {
 	}
 
 	private static int executeAdvancement(
-		ServerCommandSource serverCommandSource,
-		Collection<ServerPlayerEntity> collection,
-		AdvancementCommand.Operation operation,
-		Collection<Advancement> collection2
+		ServerCommandSource source, Collection<ServerPlayerEntity> targets, AdvancementCommand.Operation operation, Collection<Advancement> selection
 	) {
 		int i = 0;
 
-		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			i += operation.processAll(serverPlayerEntity, collection2);
+		for (ServerPlayerEntity serverPlayerEntity : targets) {
+			i += operation.processAll(serverPlayerEntity, selection);
 		}
 
 		if (i == 0) {
-			if (collection2.size() == 1) {
-				if (collection.size() == 1) {
+			if (selection.size() == 1) {
+				if (targets.size() == 1) {
 					throw new CommandException(
 						new TranslatableText(
 							operation.getCommandPrefix() + ".one.to.one.failure",
-							((Advancement)collection2.iterator().next()).toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+							((Advancement)selection.iterator().next()).toHoverableText(),
+							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 						)
 					);
 				} else {
 					throw new CommandException(
-						new TranslatableText(
-							operation.getCommandPrefix() + ".one.to.many.failure", ((Advancement)collection2.iterator().next()).toHoverableText(), collection.size()
-						)
+						new TranslatableText(operation.getCommandPrefix() + ".one.to.many.failure", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size())
 					);
 				}
-			} else if (collection.size() == 1) {
+			} else if (targets.size() == 1) {
 				throw new CommandException(
 					new TranslatableText(
-						operation.getCommandPrefix() + ".many.to.one.failure", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+						operation.getCommandPrefix() + ".many.to.one.failure", selection.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 					)
 				);
 			} else {
-				throw new CommandException(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.failure", collection2.size(), collection.size()));
+				throw new CommandException(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.failure", selection.size(), targets.size()));
 			}
 		} else {
-			if (collection2.size() == 1) {
-				if (collection.size() == 1) {
-					serverCommandSource.sendFeedback(
+			if (selection.size() == 1) {
+				if (targets.size() == 1) {
+					source.sendFeedback(
 						new TranslatableText(
 							operation.getCommandPrefix() + ".one.to.one.success",
-							((Advancement)collection2.iterator().next()).toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+							((Advancement)selection.iterator().next()).toHoverableText(),
+							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 						),
 						true
 					);
 				} else {
-					serverCommandSource.sendFeedback(
-						new TranslatableText(
-							operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)collection2.iterator().next()).toHoverableText(), collection.size()
-						),
+					source.sendFeedback(
+						new TranslatableText(operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size()),
 						true
 					);
 				}
-			} else if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
+			} else if (targets.size() == 1) {
+				source.sendFeedback(
 					new TranslatableText(
-						operation.getCommandPrefix() + ".many.to.one.success", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+						operation.getCommandPrefix() + ".many.to.one.success", selection.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.success", collection2.size(), collection.size()), true);
+				source.sendFeedback(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.success", selection.size(), targets.size()), true);
 			}
 
 			return i;
@@ -288,51 +281,47 @@ public class AdvancementCommand {
 	}
 
 	private static int executeCriterion(
-		ServerCommandSource serverCommandSource,
-		Collection<ServerPlayerEntity> collection,
-		AdvancementCommand.Operation operation,
-		Advancement advancement,
-		String string
+		ServerCommandSource source, Collection<ServerPlayerEntity> targets, AdvancementCommand.Operation operation, Advancement advancement, String criterion
 	) {
 		int i = 0;
-		if (!advancement.getCriteria().containsKey(string)) {
-			throw new CommandException(new TranslatableText("commands.advancement.criterionNotFound", advancement.toHoverableText(), string));
+		if (!advancement.getCriteria().containsKey(criterion)) {
+			throw new CommandException(new TranslatableText("commands.advancement.criterionNotFound", advancement.toHoverableText(), criterion));
 		} else {
-			for (ServerPlayerEntity serverPlayerEntity : collection) {
-				if (operation.processEachCriterion(serverPlayerEntity, advancement, string)) {
+			for (ServerPlayerEntity serverPlayerEntity : targets) {
+				if (operation.processEachCriterion(serverPlayerEntity, advancement, criterion)) {
 					i++;
 				}
 			}
 
 			if (i == 0) {
-				if (collection.size() == 1) {
+				if (targets.size() == 1) {
 					throw new CommandException(
 						new TranslatableText(
 							operation.getCommandPrefix() + ".criterion.to.one.failure",
-							string,
+							criterion,
 							advancement.toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 						)
 					);
 				} else {
 					throw new CommandException(
-						new TranslatableText(operation.getCommandPrefix() + ".criterion.to.many.failure", string, advancement.toHoverableText(), collection.size())
+						new TranslatableText(operation.getCommandPrefix() + ".criterion.to.many.failure", criterion, advancement.toHoverableText(), targets.size())
 					);
 				}
 			} else {
-				if (collection.size() == 1) {
-					serverCommandSource.sendFeedback(
+				if (targets.size() == 1) {
+					source.sendFeedback(
 						new TranslatableText(
 							operation.getCommandPrefix() + ".criterion.to.one.success",
-							string,
+							criterion,
 							advancement.toHoverableText(),
-							((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 						),
 						true
 					);
 				} else {
-					serverCommandSource.sendFeedback(
-						new TranslatableText(operation.getCommandPrefix() + ".criterion.to.many.success", string, advancement.toHoverableText(), collection.size()), true
+					source.sendFeedback(
+						new TranslatableText(operation.getCommandPrefix() + ".criterion.to.many.success", criterion, advancement.toHoverableText(), targets.size()), true
 					);
 				}
 
@@ -357,10 +346,10 @@ public class AdvancementCommand {
 		return list;
 	}
 
-	private static void addChildrenRecursivelyToList(Advancement advancement, List<Advancement> list) {
-		for (Advancement advancement2 : advancement.getChildren()) {
-			list.add(advancement2);
-			addChildrenRecursivelyToList(advancement2, list);
+	private static void addChildrenRecursivelyToList(Advancement parent, List<Advancement> childList) {
+		for (Advancement advancement : parent.getChildren()) {
+			childList.add(advancement);
+			addChildrenRecursivelyToList(advancement, childList);
 		}
 	}
 
@@ -381,8 +370,8 @@ public class AdvancementCommand {
 			}
 
 			@Override
-			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String string) {
-				return serverPlayerEntity.getAdvancementManager().grantCriterion(advancement, string);
+			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterion) {
+				return serverPlayerEntity.getAdvancementManager().grantCriterion(advancement, criterion);
 			}
 		},
 		REVOKE("revoke") {
@@ -401,8 +390,8 @@ public class AdvancementCommand {
 			}
 
 			@Override
-			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String string) {
-				return serverPlayerEntity.getAdvancementManager().revokeCriterion(advancement, string);
+			protected boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterion) {
+				return serverPlayerEntity.getAdvancementManager().revokeCriterion(advancement, criterion);
 			}
 		};
 
@@ -426,7 +415,7 @@ public class AdvancementCommand {
 
 		protected abstract boolean processEach(ServerPlayerEntity serverPlayerEntity, Advancement advancement);
 
-		protected abstract boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String string);
+		protected abstract boolean processEachCriterion(ServerPlayerEntity serverPlayerEntity, Advancement advancement, String criterion);
 
 		protected String getCommandPrefix() {
 			return this.commandPrefix;

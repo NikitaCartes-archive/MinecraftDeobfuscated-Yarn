@@ -30,18 +30,23 @@ public class DimensionType implements DynamicSerializable {
 	private final boolean hasSkyLight;
 	private final BiomeAccessType biomeAccessType;
 
-	private static DimensionType register(String string, DimensionType dimensionType) {
-		return Registry.register(Registry.DIMENSION_TYPE, dimensionType.id, string, dimensionType);
+	private static DimensionType register(String id, DimensionType dimension) {
+		return Registry.register(Registry.DIMENSION_TYPE, dimension.id, id, dimension);
 	}
 
 	protected DimensionType(
-		int i, String string, String string2, BiFunction<World, DimensionType, ? extends Dimension> biFunction, boolean bl, BiomeAccessType biomeAccessType
+		int dimensionId,
+		String suffix,
+		String saveDir,
+		BiFunction<World, DimensionType, ? extends Dimension> factory,
+		boolean hasSkylight,
+		BiomeAccessType biomeAccessType
 	) {
-		this.id = i;
-		this.suffix = string;
-		this.saveDir = string2;
-		this.factory = biFunction;
-		this.hasSkyLight = bl;
+		this.id = dimensionId;
+		this.suffix = suffix;
+		this.saveDir = saveDir;
+		this.factory = factory;
+		this.hasSkyLight = hasSkylight;
 		this.biomeAccessType = biomeAccessType;
 	}
 
@@ -61,8 +66,8 @@ public class DimensionType implements DynamicSerializable {
 		return this.suffix;
 	}
 
-	public File getFile(File file) {
-		return this.saveDir.isEmpty() ? file : new File(file, this.saveDir);
+	public File getSaveDirectory(File root) {
+		return this.saveDir.isEmpty() ? root : new File(root, this.saveDir);
 	}
 
 	public Dimension create(World world) {
@@ -97,7 +102,7 @@ public class DimensionType implements DynamicSerializable {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
-		return dynamicOps.createString(Registry.DIMENSION_TYPE.getId(this).toString());
+	public <T> T serialize(DynamicOps<T> ops) {
+		return ops.createString(Registry.DIMENSION_TYPE.getId(this).toString());
 	}
 }

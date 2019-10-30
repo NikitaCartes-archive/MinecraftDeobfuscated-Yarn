@@ -14,24 +14,24 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class OminousBannerItemRenameFix extends DataFix {
-	public OminousBannerItemRenameFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OminousBannerItemRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private Dynamic<?> fixBannerName(Dynamic<?> dynamic) {
-		Optional<? extends Dynamic<?>> optional = dynamic.get("display").get();
+	private Dynamic<?> fixBannerName(Dynamic<?> tag) {
+		Optional<? extends Dynamic<?>> optional = tag.get("display").get();
 		if (optional.isPresent()) {
-			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
-			Optional<String> optional2 = dynamic2.get("Name").asString();
+			Dynamic<?> dynamic = (Dynamic<?>)optional.get();
+			Optional<String> optional2 = dynamic.get("Name").asString();
 			if (optional2.isPresent()) {
 				String string = (String)optional2.get();
 				string = string.replace("\"translate\":\"block.minecraft.illager_banner\"", "\"translate\":\"block.minecraft.ominous_banner\"");
-				dynamic2 = dynamic2.set("Name", dynamic2.createString(string));
+				dynamic = dynamic.set("Name", dynamic.createString(string));
 			}
 
-			return dynamic.set("display", dynamic2);
+			return tag.set("display", dynamic);
 		} else {
-			return dynamic;
+			return tag;
 		}
 	}
 

@@ -107,13 +107,13 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getRecentlyGeneratedBeamHeight(float f) {
-		return MathHelper.clamp(((float)this.age + f) / 200.0F, 0.0F, 1.0F);
+	public float getRecentlyGeneratedBeamHeight(float tickDelta) {
+		return MathHelper.clamp(((float)this.age + tickDelta) / 200.0F, 0.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getCooldownBeamHeight(float f) {
-		return 1.0F - MathHelper.clamp(((float)this.teleportCooldown - f) / 40.0F, 0.0F, 1.0F);
+	public float getCooldownBeamHeight(float tickDelta) {
+		return 1.0F - MathHelper.clamp(((float)this.teleportCooldown - tickDelta) / 40.0F, 0.0F, 1.0F);
 	}
 
 	@Nullable
@@ -204,17 +204,17 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		this.markDirty();
 	}
 
-	private static BlockPos findExitPortalPos(BlockView blockView, BlockPos blockPos, int i, boolean bl) {
-		BlockPos blockPos2 = null;
+	private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean bl) {
+		BlockPos blockPos = null;
 
-		for (int j = -i; j <= i; j++) {
-			for (int k = -i; k <= i; k++) {
-				if (j != 0 || k != 0 || bl) {
-					for (int l = 255; l > (blockPos2 == null ? 0 : blockPos2.getY()); l--) {
-						BlockPos blockPos3 = new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
-						BlockState blockState = blockView.getBlockState(blockPos3);
-						if (blockState.method_21743(blockView, blockPos3) && (bl || blockState.getBlock() != Blocks.BEDROCK)) {
-							blockPos2 = blockPos3;
+		for (int i = -searchRadius; i <= searchRadius; i++) {
+			for (int j = -searchRadius; j <= searchRadius; j++) {
+				if (i != 0 || j != 0 || bl) {
+					for (int k = 255; k > (blockPos == null ? 0 : blockPos.getY()); k--) {
+						BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
+						BlockState blockState = world.getBlockState(blockPos2);
+						if (blockState.isFullCube(world, blockPos2) && (bl || blockState.getBlock() != Blocks.BEDROCK)) {
+							blockPos = blockPos2;
 							break;
 						}
 					}
@@ -222,11 +222,11 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			}
 		}
 
-		return blockPos2 == null ? blockPos : blockPos2;
+		return blockPos == null ? pos : blockPos;
 	}
 
-	private static WorldChunk getChunk(World world, Vec3d vec3d) {
-		return world.method_8497(MathHelper.floor(vec3d.x / 16.0), MathHelper.floor(vec3d.z / 16.0));
+	private static WorldChunk getChunk(World world, Vec3d pos) {
+		return world.method_8497(MathHelper.floor(pos.x / 16.0), MathHelper.floor(pos.z / 16.0));
 	}
 
 	@Nullable
@@ -243,8 +243,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			BlockPos blockPos5 = blockPos4.up();
 			BlockPos blockPos6 = blockPos4.up(2);
 			if (blockState.getBlock() == Blocks.END_STONE
-				&& !worldChunk.getBlockState(blockPos5).method_21743(worldChunk, blockPos5)
-				&& !worldChunk.getBlockState(blockPos6).method_21743(worldChunk, blockPos6)) {
+				&& !worldChunk.getBlockState(blockPos5).isFullCube(worldChunk, blockPos5)
+				&& !worldChunk.getBlockState(blockPos6).isFullCube(worldChunk, blockPos6)) {
 				double e = blockPos4.getSquaredDistance(0.0, 0.0, 0.0, true);
 				if (blockPos3 == null || e < d) {
 					blockPos3 = blockPos4;

@@ -22,8 +22,8 @@ import net.minecraft.text.LiteralText;
 public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("techtests.piston", "techtests");
 
-	public TestFunction method_22302(StringReader stringReader) throws CommandSyntaxException {
-		String string = stringReader.readUnquotedString();
+	public TestFunction method_22302(StringReader reader) throws CommandSyntaxException {
+		String string = reader.readUnquotedString();
 		Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
 		if (optional.isPresent()) {
 			return (TestFunction)optional.get();
@@ -33,12 +33,12 @@ public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
 		}
 	}
 
-	public static TestFunctionArgumentType method_22371() {
+	public static TestFunctionArgumentType testFunction() {
 		return new TestFunctionArgumentType();
 	}
 
-	public static TestFunction getFunction(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, TestFunction.class);
+	public static TestFunction getFunction(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, TestFunction.class);
 	}
 
 	@Override

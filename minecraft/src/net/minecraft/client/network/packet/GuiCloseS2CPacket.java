@@ -11,8 +11,8 @@ public class GuiCloseS2CPacket implements Packet<ClientPlayPacketListener> {
 	public GuiCloseS2CPacket() {
 	}
 
-	public GuiCloseS2CPacket(int i) {
-		this.id = i;
+	public GuiCloseS2CPacket(int id) {
+		this.id = id;
 	}
 
 	public void method_11427(ClientPlayPacketListener clientPlayPacketListener) {
@@ -20,12 +20,12 @@ public class GuiCloseS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readUnsignedByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readUnsignedByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.id);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.id);
 	}
 }

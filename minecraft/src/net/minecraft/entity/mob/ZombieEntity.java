@@ -75,8 +75,8 @@ public class ZombieEntity extends HostileEntity {
 	private int inWaterTime;
 	private int ticksUntilWaterConversion;
 
-	public ZombieEntity(EntityType<? extends ZombieEntity> entityType, World world) {
-		super(entityType, world);
+	public ZombieEntity(EntityType<? extends ZombieEntity> type, World world) {
+		super(type, world);
 	}
 
 	public ZombieEntity(World world) {
@@ -128,12 +128,12 @@ public class ZombieEntity extends HostileEntity {
 		return this.canBreakDoors;
 	}
 
-	public void setCanBreakDoors(boolean bl) {
+	public void setCanBreakDoors(boolean canBreakDoors) {
 		if (this.shouldBreakDoors()) {
-			if (this.canBreakDoors != bl) {
-				this.canBreakDoors = bl;
-				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
-				if (bl) {
+			if (this.canBreakDoors != canBreakDoors) {
+				this.canBreakDoors = canBreakDoors;
+				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(canBreakDoors);
+				if (canBreakDoors) {
 					this.goalSelector.add(1, this.breakDoorsGoal);
 				} else {
 					this.goalSelector.remove(this.breakDoorsGoal);
@@ -155,32 +155,32 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity playerEntity) {
+	protected int getCurrentExperience(PlayerEntity player) {
 		if (this.isBaby()) {
 			this.experiencePoints = (int)((float)this.experiencePoints * 2.5F);
 		}
 
-		return super.getCurrentExperience(playerEntity);
+		return super.getCurrentExperience(player);
 	}
 
-	public void setBaby(boolean bl) {
-		this.getDataTracker().set(BABY, bl);
+	public void setBaby(boolean baby) {
+		this.getDataTracker().set(BABY, baby);
 		if (this.world != null && !this.world.isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS);
-			if (bl) {
+			if (baby) {
 				entityAttributeInstance.addModifier(BABY_SPEED_BONUS);
 			}
 		}
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (BABY.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (BABY.equals(data)) {
 			this.calculateDimensions();
 		}
 
-		super.onTrackedDataSet(trackedData);
+		super.onTrackedDataSet(data);
 	}
 
 	protected boolean canConvertInWater() {
@@ -237,8 +237,8 @@ public class ZombieEntity extends HostileEntity {
 		super.tickMovement();
 	}
 
-	private void setTicksUntilWaterConversion(int i) {
-		this.ticksUntilWaterConversion = i;
+	private void setTicksUntilWaterConversion(int ticksUntilWaterConversion) {
+		this.ticksUntilWaterConversion = ticksUntilWaterConversion;
 		this.getDataTracker().set(CONVERTING_IN_WATER, true);
 	}
 
@@ -286,11 +286,11 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		if (super.damage(damageSource, f)) {
+	public boolean damage(DamageSource source, float amount) {
+		if (super.damage(source, amount)) {
 			LivingEntity livingEntity = this.getTarget();
-			if (livingEntity == null && damageSource.getAttacker() instanceof LivingEntity) {
-				livingEntity = (LivingEntity)damageSource.getAttacker();
+			if (livingEntity == null && source.getAttacker() instanceof LivingEntity) {
+				livingEntity = (LivingEntity)source.getAttacker();
 			}
 
 			if (livingEntity != null
@@ -333,12 +333,12 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity entity) {
-		boolean bl = super.tryAttack(entity);
+	public boolean tryAttack(Entity target) {
+		boolean bl = super.tryAttack(target);
 		if (bl) {
 			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
 			if (this.getMainHandStack().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
-				entity.setOnFireFor(2 * (int)f);
+				target.setOnFireFor(2 * (int)f);
 			}
 		}
 
@@ -351,7 +351,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_ZOMBIE_HURT;
 	}
 
@@ -365,7 +365,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(this.getStepSound(), 0.15F, 1.0F);
 	}
 
@@ -375,8 +375,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty localDifficulty) {
-		super.initEquipment(localDifficulty);
+	protected void initEquipment(LocalDifficulty difficulty) {
+		super.initEquipment(difficulty);
 		if (this.random.nextFloat() < (this.world.getDifficulty() == Difficulty.HARD ? 0.05F : 0.01F)) {
 			int i = this.random.nextInt(3);
 			if (i == 0) {
@@ -388,40 +388,40 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.isBaby()) {
-			compoundTag.putBoolean("IsBaby", true);
+			tag.putBoolean("IsBaby", true);
 		}
 
-		compoundTag.putBoolean("CanBreakDoors", this.canBreakDoors());
-		compoundTag.putInt("InWaterTime", this.isInsideWater() ? this.inWaterTime : -1);
-		compoundTag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
+		tag.putBoolean("CanBreakDoors", this.canBreakDoors());
+		tag.putInt("InWaterTime", this.isInsideWater() ? this.inWaterTime : -1);
+		tag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.getBoolean("IsBaby")) {
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.getBoolean("IsBaby")) {
 			this.setBaby(true);
 		}
 
-		this.setCanBreakDoors(compoundTag.getBoolean("CanBreakDoors"));
-		this.inWaterTime = compoundTag.getInt("InWaterTime");
-		if (compoundTag.contains("DrownedConversionTime", 99) && compoundTag.getInt("DrownedConversionTime") > -1) {
-			this.setTicksUntilWaterConversion(compoundTag.getInt("DrownedConversionTime"));
+		this.setCanBreakDoors(tag.getBoolean("CanBreakDoors"));
+		this.inWaterTime = tag.getInt("InWaterTime");
+		if (tag.contains("DrownedConversionTime", 99) && tag.getInt("DrownedConversionTime") > -1) {
+			this.setTicksUntilWaterConversion(tag.getInt("DrownedConversionTime"));
 		}
 	}
 
 	@Override
-	public void onKilledOther(LivingEntity livingEntity) {
-		super.onKilledOther(livingEntity);
-		if ((this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) && livingEntity instanceof VillagerEntity) {
+	public void onKilledOther(LivingEntity other) {
+		super.onKilledOther(other);
+		if ((this.world.getDifficulty() == Difficulty.NORMAL || this.world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity) {
 			if (this.world.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
 				return;
 			}
 
-			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
+			VillagerEntity villagerEntity = (VillagerEntity)other;
 			ZombieVillagerEntity zombieVillagerEntity = EntityType.ZOMBIE_VILLAGER.create(this.world);
 			zombieVillagerEntity.copyPositionAndRotation(villagerEntity);
 			villagerEntity.remove();
@@ -450,51 +450,49 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return this.isBaby() ? 0.93F : 1.74F;
 	}
 
 	@Override
-	protected boolean canPickupItem(ItemStack itemStack) {
-		return itemStack.getItem() == Items.EGG && this.isBaby() && this.hasVehicle() ? false : super.canPickupItem(itemStack);
+	protected boolean canPickupItem(ItemStack stack) {
+		return stack.getItem() == Items.EGG && this.isBaby() && this.hasVehicle() ? false : super.canPickupItem(stack);
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
-		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		float f = localDifficulty.getClampedLocalDifficulty();
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		float f = difficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
 		if (entityData == null) {
-			entityData = new ZombieEntity.Data(iWorld.getRandom().nextFloat() < 0.05F);
+			entityData = new ZombieEntity.Data(world.getRandom().nextFloat() < 0.05F);
 		}
 
 		if (entityData instanceof ZombieEntity.Data) {
 			ZombieEntity.Data data = (ZombieEntity.Data)entityData;
 			if (data.baby) {
 				this.setBaby(true);
-				if ((double)iWorld.getRandom().nextFloat() < 0.05) {
-					List<ChickenEntity> list = iWorld.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
+				if ((double)world.getRandom().nextFloat() < 0.05) {
+					List<ChickenEntity> list = world.getEntities(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
 					if (!list.isEmpty()) {
 						ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
 						chickenEntity.setHasJockey(true);
 						this.startRiding(chickenEntity);
 					}
-				} else if ((double)iWorld.getRandom().nextFloat() < 0.05) {
+				} else if ((double)world.getRandom().nextFloat() < 0.05) {
 					ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
 					chickenEntity2.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-					chickenEntity2.initialize(iWorld, localDifficulty, SpawnType.JOCKEY, null, null);
+					chickenEntity2.initialize(world, difficulty, SpawnType.JOCKEY, null, null);
 					chickenEntity2.setHasJockey(true);
-					iWorld.spawnEntity(chickenEntity2);
+					world.spawnEntity(chickenEntity2);
 					this.startRiding(chickenEntity2);
 				}
 			}
 
 			this.setCanBreakDoors(this.shouldBreakDoors() && this.random.nextFloat() < f * 0.1F);
-			this.initEquipment(localDifficulty);
-			this.updateEnchantments(localDifficulty);
+			this.initEquipment(difficulty);
+			this.updateEnchantments(difficulty);
 		}
 
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
@@ -511,16 +509,16 @@ public class ZombieEntity extends HostileEntity {
 		return entityData;
 	}
 
-	protected void applyAttributeModifiers(float f) {
+	protected void applyAttributeModifiers(float chanceMultiplier) {
 		this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE)
 			.addModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADDITION));
-		double d = this.random.nextDouble() * 1.5 * (double)f;
+		double d = this.random.nextDouble() * 1.5 * (double)chanceMultiplier;
 		if (d > 1.0) {
 			this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE)
 				.addModifier(new EntityAttributeModifier("Random zombie-spawn bonus", d, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
 		}
 
-		if (this.random.nextFloat() < f * 0.05F) {
+		if (this.random.nextFloat() < chanceMultiplier * 0.05F) {
 			this.getAttributeInstance(SPAWN_REINFORCEMENTS)
 				.addModifier(new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.ADDITION));
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH)
@@ -535,9 +533,9 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
-		super.dropEquipment(damageSource, i, bl);
-		Entity entity = damageSource.getAttacker();
+	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+		super.dropEquipment(source, lootingMultiplier, allowDrops);
+		Entity entity = source.getAttacker();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.shouldDropHead()) {
@@ -557,24 +555,24 @@ public class ZombieEntity extends HostileEntity {
 	public class Data implements EntityData {
 		public final boolean baby;
 
-		private Data(boolean bl) {
-			this.baby = bl;
+		private Data(boolean baby) {
+			this.baby = baby;
 		}
 	}
 
 	class DestroyEggGoal extends StepAndDestroyBlockGoal {
-		DestroyEggGoal(MobEntityWithAi mobEntityWithAi, double d, int i) {
-			super(Blocks.TURTLE_EGG, mobEntityWithAi, d, i);
+		DestroyEggGoal(MobEntityWithAi mob, double speed, int maxYDifference) {
+			super(Blocks.TURTLE_EGG, mob, speed, maxYDifference);
 		}
 
 		@Override
-		public void tickStepping(IWorld iWorld, BlockPos blockPos) {
-			iWorld.playSound(null, blockPos, SoundEvents.ENTITY_ZOMBIE_DESTROY_EGG, SoundCategory.HOSTILE, 0.5F, 0.9F + ZombieEntity.this.random.nextFloat() * 0.2F);
+		public void tickStepping(IWorld world, BlockPos pos) {
+			world.playSound(null, pos, SoundEvents.ENTITY_ZOMBIE_DESTROY_EGG, SoundCategory.HOSTILE, 0.5F, 0.9F + ZombieEntity.this.random.nextFloat() * 0.2F);
 		}
 
 		@Override
-		public void onDestroyBlock(World world, BlockPos blockPos) {
-			world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
+		public void onDestroyBlock(World world, BlockPos pos) {
+			world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_BREAK, SoundCategory.BLOCKS, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
 		}
 
 		@Override

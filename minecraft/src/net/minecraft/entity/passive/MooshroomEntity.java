@@ -43,17 +43,17 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-		return worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.MYCELIUM ? 10.0F : worldView.getBrightness(blockPos) - 0.5F;
+	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+		return worldView.getBlockState(pos.method_10074()).getBlock() == Blocks.MYCELIUM ? 10.0F : worldView.getBrightness(pos) - 0.5F;
 	}
 
-	public static boolean canSpawn(EntityType<MooshroomEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.MYCELIUM && iWorld.getBaseLightLevel(blockPos, 0) > 8;
+	public static boolean canSpawn(EntityType<MooshroomEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		return world.getBlockState(pos.method_10074()).getBlock() == Blocks.MYCELIUM && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightningEntity) {
-		UUID uUID = lightningEntity.getUuid();
+	public void onStruckByLightning(LightningEntity lightning) {
+		UUID uUID = lightning.getUuid();
 		if (!uUID.equals(this.lightningId)) {
 			this.setType(this.getMooshroomType() == MooshroomEntity.Type.RED ? MooshroomEntity.Type.BROWN : MooshroomEntity.Type.RED);
 			this.lightningId = uUID;
@@ -68,9 +68,9 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.BOWL && !this.isBaby() && !playerEntity.abilities.creativeMode) {
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (itemStack.getItem() == Items.BOWL && !this.isBaby() && !player.abilities.creativeMode) {
 			itemStack.decrement(1);
 			boolean bl = false;
 			ItemStack itemStack2;
@@ -85,9 +85,9 @@ public class MooshroomEntity extends CowEntity {
 			}
 
 			if (itemStack.isEmpty()) {
-				playerEntity.setStackInHand(hand, itemStack2);
-			} else if (!playerEntity.inventory.insertStack(itemStack2)) {
-				playerEntity.dropItem(itemStack2, false);
+				player.setStackInHand(hand, itemStack2);
+			} else if (!player.inventory.insertStack(itemStack2)) {
+				player.dropItem(itemStack2, false);
 			}
 
 			SoundEvent soundEvent;
@@ -100,7 +100,7 @@ public class MooshroomEntity extends CowEntity {
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return true;
 		} else if (itemStack.getItem() == Items.SHEARS && !this.isBaby()) {
-			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.method_23323(0.5), this.getZ(), 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.getHeightAt(0.5), this.getZ(), 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
 				this.remove();
 				CowEntity cowEntity = EntityType.COW.create(this.world);
@@ -121,10 +121,10 @@ public class MooshroomEntity extends CowEntity {
 
 				for (int i = 0; i < 5; i++) {
 					this.world
-						.spawnEntity(new ItemEntity(this.world, this.getX(), this.method_23323(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+						.spawnEntity(new ItemEntity(this.world, this.getX(), this.getHeightAt(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
 				}
 
-				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 				this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0F, 1.0F);
 			}
 
@@ -137,7 +137,7 @@ public class MooshroomEntity extends CowEntity {
 							.addParticle(
 								ParticleTypes.SMOKE,
 								this.getX() + (double)(this.random.nextFloat() / 2.0F),
-								this.method_23323(0.5),
+								this.getHeightAt(0.5),
 								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
 								0.0,
 								(double)(this.random.nextFloat() / 5.0F),
@@ -146,7 +146,7 @@ public class MooshroomEntity extends CowEntity {
 					}
 				} else {
 					Pair<StatusEffect, Integer> pair = this.getStewEffectFrom(itemStack);
-					if (!playerEntity.abilities.creativeMode) {
+					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
 
@@ -155,7 +155,7 @@ public class MooshroomEntity extends CowEntity {
 							.addParticle(
 								ParticleTypes.EFFECT,
 								this.getX() + (double)(this.random.nextFloat() / 2.0F),
-								this.method_23323(0.5),
+								this.getHeightAt(0.5),
 								this.getZ() + (double)(this.random.nextFloat() / 2.0F),
 								0.0,
 								(double)(this.random.nextFloat() / 5.0F),
@@ -169,35 +169,35 @@ public class MooshroomEntity extends CowEntity {
 				}
 			}
 
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putString("Type", this.getMooshroomType().name);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putString("Type", this.getMooshroomType().name);
 		if (this.stewEffect != null) {
-			compoundTag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
-			compoundTag.putInt("EffectDuration", this.stewEffectDuration);
+			tag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
+			tag.putInt("EffectDuration", this.stewEffectDuration);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setType(MooshroomEntity.Type.fromName(compoundTag.getString("Type")));
-		if (compoundTag.contains("EffectId", 1)) {
-			this.stewEffect = StatusEffect.byRawId(compoundTag.getByte("EffectId"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setType(MooshroomEntity.Type.fromName(tag.getString("Type")));
+		if (tag.contains("EffectId", 1)) {
+			this.stewEffect = StatusEffect.byRawId(tag.getByte("EffectId"));
 		}
 
-		if (compoundTag.contains("EffectDuration", 3)) {
-			this.stewEffectDuration = compoundTag.getInt("EffectDuration");
+		if (tag.contains("EffectDuration", 3)) {
+			this.stewEffectDuration = tag.getInt("EffectDuration");
 		}
 	}
 
-	private Pair<StatusEffect, Integer> getStewEffectFrom(ItemStack itemStack) {
-		FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).getBlock();
+	private Pair<StatusEffect, Integer> getStewEffectFrom(ItemStack flower) {
+		FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)flower.getItem()).getBlock();
 		return Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration());
 	}
 
@@ -215,9 +215,9 @@ public class MooshroomEntity extends CowEntity {
 		return mooshroomEntity;
 	}
 
-	private MooshroomEntity.Type chooseBabyType(MooshroomEntity mooshroomEntity) {
+	private MooshroomEntity.Type chooseBabyType(MooshroomEntity mooshroom) {
 		MooshroomEntity.Type type = this.getMooshroomType();
-		MooshroomEntity.Type type2 = mooshroomEntity.getMooshroomType();
+		MooshroomEntity.Type type2 = mooshroom.getMooshroomType();
 		MooshroomEntity.Type type3;
 		if (type == type2 && this.random.nextInt(1024) == 0) {
 			type3 = type == MooshroomEntity.Type.BROWN ? MooshroomEntity.Type.RED : MooshroomEntity.Type.BROWN;
@@ -235,9 +235,9 @@ public class MooshroomEntity extends CowEntity {
 		private final String name;
 		private final BlockState mushroom;
 
-		private Type(String string2, BlockState blockState) {
-			this.name = string2;
-			this.mushroom = blockState;
+		private Type(String name, BlockState mushroom) {
+			this.name = name;
+			this.mushroom = mushroom;
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -245,9 +245,9 @@ public class MooshroomEntity extends CowEntity {
 			return this.mushroom;
 		}
 
-		private static MooshroomEntity.Type fromName(String string) {
+		private static MooshroomEntity.Type fromName(String name) {
 			for (MooshroomEntity.Type type : values()) {
-				if (type.name.equals(string)) {
+				if (type.name.equals(name)) {
 					return type;
 				}
 			}

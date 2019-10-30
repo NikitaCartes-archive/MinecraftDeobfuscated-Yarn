@@ -15,10 +15,10 @@ public class DisconnectedScreen extends Screen {
 	private final Screen parent;
 	private int reasonHeight;
 
-	public DisconnectedScreen(Screen screen, String string, Text text) {
-		super(new TranslatableText(string));
-		this.parent = screen;
-		this.reason = text;
+	public DisconnectedScreen(Screen parent, String title, Text reason) {
+		super(new TranslatableText(title));
+		this.parent = parent;
+		this.reason = reason;
 	}
 
 	@Override
@@ -43,17 +43,17 @@ public class DisconnectedScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
-		int k = this.height / 2 - this.reasonHeight / 2;
+		int i = this.height / 2 - this.reasonHeight / 2;
 		if (this.reasonFormatted != null) {
 			for (String string : this.reasonFormatted) {
-				this.drawCenteredString(this.font, string, this.width / 2, k, 16777215);
-				k += 9;
+				this.drawCenteredString(this.font, string, this.width / 2, i, 16777215);
+				i += 9;
 			}
 		}
 
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

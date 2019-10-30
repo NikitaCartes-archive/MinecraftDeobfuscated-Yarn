@@ -14,7 +14,7 @@ public class GiantEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 10.440001F;
 	}
 
@@ -27,7 +27,7 @@ public class GiantEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-		return worldView.getBrightness(blockPos) - 0.5F;
+	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+		return worldView.getBrightness(pos) - 0.5F;
 	}
 }

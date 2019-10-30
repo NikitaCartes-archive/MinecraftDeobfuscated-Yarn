@@ -8,21 +8,21 @@ public class BiomeAccess {
 	private final long seed;
 	private final BiomeAccessType type;
 
-	public BiomeAccess(BiomeAccess.Storage storage, long l, BiomeAccessType biomeAccessType) {
+	public BiomeAccess(BiomeAccess.Storage storage, long seed, BiomeAccessType type) {
 		this.storage = storage;
-		this.seed = l;
-		this.type = biomeAccessType;
+		this.seed = seed;
+		this.type = type;
 	}
 
-	public BiomeAccess withSource(BiomeSource biomeSource) {
-		return new BiomeAccess(biomeSource, this.seed, this.type);
+	public BiomeAccess withSource(BiomeSource source) {
+		return new BiomeAccess(source, this.seed, this.type);
 	}
 
-	public Biome getBiome(BlockPos blockPos) {
-		return this.type.getBiome(this.seed, blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.storage);
+	public Biome getBiome(BlockPos pos) {
+		return this.type.getBiome(this.seed, pos.getX(), pos.getY(), pos.getZ(), this.storage);
 	}
 
 	public interface Storage {
-		Biome getStoredBiome(int i, int j, int k);
+		Biome getStoredBiome(int biomeX, int biomeY, int biomeZ);
 	}
 }

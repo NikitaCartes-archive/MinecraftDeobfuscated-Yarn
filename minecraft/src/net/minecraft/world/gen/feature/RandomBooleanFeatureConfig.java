@@ -14,15 +14,15 @@ public class RandomBooleanFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("feature_true"),
-					this.featureTrue.serialize(dynamicOps).getValue(),
-					dynamicOps.createString("feature_false"),
-					this.featureFalse.serialize(dynamicOps).getValue()
+					ops.createString("feature_true"),
+					this.featureTrue.serialize(ops).getValue(),
+					ops.createString("feature_false"),
+					this.featureFalse.serialize(ops).getValue()
 				)
 			)
 		);

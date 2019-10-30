@@ -16,25 +16,25 @@ public class WetSpongeBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
 		if (world.getDimension().doesWaterVaporize()) {
-			world.setBlockState(blockPos, Blocks.SPONGE.getDefaultState(), 3);
-			world.playLevelEvent(2009, blockPos, 0);
-			world.playSound(null, blockPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, (1.0F + world.getRandom().nextFloat() * 0.2F) * 0.7F);
+			world.setBlockState(pos, Blocks.SPONGE.getDefaultState(), 3);
+			world.playLevelEvent(2009, pos, 0);
+			world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, (1.0F + world.getRandom().nextFloat() * 0.2F) * 0.7F);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		Direction direction = Direction.random(random);
 		if (direction != Direction.UP) {
-			BlockPos blockPos2 = blockPos.offset(direction);
-			BlockState blockState2 = world.getBlockState(blockPos2);
-			if (!blockState.isOpaque() || !blockState2.isSideSolidFullSquare(world, blockPos2, direction.getOpposite())) {
-				double d = (double)blockPos.getX();
-				double e = (double)blockPos.getY();
-				double f = (double)blockPos.getZ();
+			BlockPos blockPos = pos.offset(direction);
+			BlockState blockState = world.getBlockState(blockPos);
+			if (!state.isOpaque() || !blockState.isSideSolidFullSquare(world, blockPos, direction.getOpposite())) {
+				double d = (double)pos.getX();
+				double e = (double)pos.getY();
+				double f = (double)pos.getZ();
 				if (direction == Direction.DOWN) {
 					e -= 0.05;
 					d += random.nextDouble();

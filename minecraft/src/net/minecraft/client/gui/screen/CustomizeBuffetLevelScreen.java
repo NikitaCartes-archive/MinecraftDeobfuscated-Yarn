@@ -17,7 +17,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.source.BiomeSourceType;
 
@@ -34,10 +34,10 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private int biomeListLength;
 	private ButtonWidget confirmButton;
 
-	public CustomizeBuffetLevelScreen(CreateWorldScreen createWorldScreen, CompoundTag compoundTag) {
+	public CustomizeBuffetLevelScreen(CreateWorldScreen parent, CompoundTag generatorOptionsTag) {
 		super(new TranslatableText("createWorld.customize.buffet.title"));
-		this.parent = createWorldScreen;
-		this.generatorOptionsTag = compoundTag;
+		this.parent = parent;
+		this.generatorOptionsTag = generatorOptionsTag;
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				20,
 				I18n.translate("createWorld.customize.buffet.generatortype")
 					+ " "
-					+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength))),
+					+ I18n.translate(Util.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength))),
 				buttonWidget -> {
 					this.biomeListLength++;
 					if (this.biomeListLength >= CHUNK_GENERATOR_TYPES.size()) {
@@ -61,7 +61,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 					buttonWidget.setMessage(
 						I18n.translate("createWorld.customize.buffet.generatortype")
 							+ " "
-							+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength)))
+							+ I18n.translate(Util.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength)))
 					);
 				}
 			)
@@ -137,13 +137,13 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderDirtBackground(0);
-		this.biomeSelectionList.render(i, j, f);
+		this.biomeSelectionList.render(mouseX, mouseY, delta);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
 		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -186,8 +186,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		class BuffetBiomeItem extends AlwaysSelectedEntryListWidget.Entry<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
 			private final Identifier biome;
 
-			public BuffetBiomeItem(Identifier identifier) {
-				this.biome = identifier;
+			public BuffetBiomeItem(Identifier biome) {
+				this.biome = biome;
 			}
 
 			@Override
@@ -196,8 +196,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			}
 
 			@Override
-			public boolean mouseClicked(double d, double e, int i) {
-				if (i == 0) {
+			public boolean mouseClicked(double mouseX, double mouseY, int button) {
+				if (button == 0) {
 					BuffetBiomesListWidget.this.method_20089(this);
 					CustomizeBuffetLevelScreen.this.refreshConfirmButton();
 					return true;

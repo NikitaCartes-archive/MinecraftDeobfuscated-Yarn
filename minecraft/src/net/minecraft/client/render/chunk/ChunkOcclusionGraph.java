@@ -11,25 +11,25 @@ public class ChunkOcclusionGraph {
 	private static final int DIRECTION_COUNT = Direction.values().length;
 	private final BitSet visibility = new BitSet(DIRECTION_COUNT * DIRECTION_COUNT);
 
-	public void addOpenEdgeFaces(Set<Direction> set) {
-		for (Direction direction : set) {
-			for (Direction direction2 : set) {
+	public void addOpenEdgeFaces(Set<Direction> faces) {
+		for (Direction direction : faces) {
+			for (Direction direction2 : faces) {
 				this.setVisibleThrough(direction, direction2, true);
 			}
 		}
 	}
 
-	public void setVisibleThrough(Direction direction, Direction direction2, boolean bl) {
-		this.visibility.set(direction.ordinal() + direction2.ordinal() * DIRECTION_COUNT, bl);
-		this.visibility.set(direction2.ordinal() + direction.ordinal() * DIRECTION_COUNT, bl);
+	public void setVisibleThrough(Direction from, Direction to, boolean visible) {
+		this.visibility.set(from.ordinal() + to.ordinal() * DIRECTION_COUNT, visible);
+		this.visibility.set(to.ordinal() + from.ordinal() * DIRECTION_COUNT, visible);
 	}
 
-	public void fill(boolean bl) {
-		this.visibility.set(0, this.visibility.size(), bl);
+	public void fill(boolean visible) {
+		this.visibility.set(0, this.visibility.size(), visible);
 	}
 
-	public boolean isVisibleThrough(Direction direction, Direction direction2) {
-		return this.visibility.get(direction.ordinal() + direction2.ordinal() * DIRECTION_COUNT);
+	public boolean isVisibleThrough(Direction from, Direction to) {
+		return this.visibility.get(from.ordinal() + to.ordinal() * DIRECTION_COUNT);
 	}
 
 	public String toString() {

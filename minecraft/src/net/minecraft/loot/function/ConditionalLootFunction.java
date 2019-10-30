@@ -21,28 +21,28 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	protected final LootCondition[] conditions;
 	private final Predicate<LootContext> predicate;
 
-	protected ConditionalLootFunction(LootCondition[] lootConditions) {
-		this.conditions = lootConditions;
-		this.predicate = LootConditions.joinAnd(lootConditions);
+	protected ConditionalLootFunction(LootCondition[] conditions) {
+		this.conditions = conditions;
+		this.predicate = LootConditions.joinAnd(conditions);
 	}
 
 	public final ItemStack method_521(ItemStack itemStack, LootContext lootContext) {
 		return this.predicate.test(lootContext) ? this.process(itemStack, lootContext) : itemStack;
 	}
 
-	protected abstract ItemStack process(ItemStack itemStack, LootContext lootContext);
+	protected abstract ItemStack process(ItemStack stack, LootContext context);
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		LootFunction.super.check(lootTableReporter);
+	public void check(LootTableReporter reporter) {
+		LootFunction.super.check(reporter);
 
 		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].check(lootTableReporter.makeChild(".conditions[" + i + "]"));
+			this.conditions[i].check(reporter.makeChild(".conditions[" + i + "]"));
 		}
 	}
 
-	protected static ConditionalLootFunction.Builder<?> builder(Function<LootCondition[], LootFunction> function) {
-		return new ConditionalLootFunction.Joiner(function);
+	protected static ConditionalLootFunction.Builder<?> builder(Function<LootCondition[], LootFunction> joiner) {
+		return new ConditionalLootFunction.Joiner(joiner);
 	}
 
 	public abstract static class Builder<T extends ConditionalLootFunction.Builder<T>> implements LootFunction.Builder, LootConditionConsumingBuilder<T> {
@@ -80,14 +80,14 @@ public abstract class ConditionalLootFunction implements LootFunction {
 			return this.fromJson(jsonObject, jsonDeserializationContext, lootConditions);
 		}
 
-		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
+		public abstract T fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions);
 	}
 
 	static final class Joiner extends ConditionalLootFunction.Builder<ConditionalLootFunction.Joiner> {
 		private final Function<LootCondition[], LootFunction> joiner;
 
-		public Joiner(Function<LootCondition[], LootFunction> function) {
-			this.joiner = function;
+		public Joiner(Function<LootCondition[], LootFunction> joiner) {
+			this.joiner = joiner;
 		}
 
 		protected ConditionalLootFunction.Joiner method_527() {

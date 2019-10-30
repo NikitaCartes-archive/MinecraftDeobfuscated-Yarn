@@ -14,23 +14,23 @@ public class ShaderParseException extends IOException {
 	private final List<ShaderParseException.JsonStackTrace> traces = Lists.<ShaderParseException.JsonStackTrace>newArrayList();
 	private final String message;
 
-	public ShaderParseException(String string) {
+	public ShaderParseException(String message) {
 		this.traces.add(new ShaderParseException.JsonStackTrace());
-		this.message = string;
+		this.message = message;
 	}
 
-	public ShaderParseException(String string, Throwable throwable) {
-		super(throwable);
+	public ShaderParseException(String message, Throwable cause) {
+		super(cause);
 		this.traces.add(new ShaderParseException.JsonStackTrace());
-		this.message = string;
+		this.message = message;
 	}
 
-	public void addFaultyElement(String string) {
-		((ShaderParseException.JsonStackTrace)this.traces.get(0)).add(string);
+	public void addFaultyElement(String jsonKey) {
+		((ShaderParseException.JsonStackTrace)this.traces.get(0)).add(jsonKey);
 	}
 
-	public void addFaultyFile(String string) {
-		((ShaderParseException.JsonStackTrace)this.traces.get(0)).fileName = string;
+	public void addFaultyFile(String path) {
+		((ShaderParseException.JsonStackTrace)this.traces.get(0)).fileName = path;
 		this.traces.add(0, new ShaderParseException.JsonStackTrace());
 	}
 
@@ -38,16 +38,16 @@ public class ShaderParseException extends IOException {
 		return "Invalid " + this.traces.get(this.traces.size() - 1) + ": " + this.message;
 	}
 
-	public static ShaderParseException wrap(Exception exception) {
-		if (exception instanceof ShaderParseException) {
-			return (ShaderParseException)exception;
+	public static ShaderParseException wrap(Exception cause) {
+		if (cause instanceof ShaderParseException) {
+			return (ShaderParseException)cause;
 		} else {
-			String string = exception.getMessage();
-			if (exception instanceof FileNotFoundException) {
+			String string = cause.getMessage();
+			if (cause instanceof FileNotFoundException) {
 				string = "File not found";
 			}
 
-			return new ShaderParseException(string, exception);
+			return new ShaderParseException(string, cause);
 		}
 	}
 
@@ -60,8 +60,8 @@ public class ShaderParseException extends IOException {
 		private JsonStackTrace() {
 		}
 
-		private void add(String string) {
-			this.faultyElements.add(0, string);
+		private void add(String element) {
+			this.faultyElements.add(0, element);
 		}
 
 		public String joinStackTrace() {

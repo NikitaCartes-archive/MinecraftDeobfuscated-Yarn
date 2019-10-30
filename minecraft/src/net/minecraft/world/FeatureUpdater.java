@@ -13,14 +13,14 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class FeatureUpdater {
-	private static final Map<String, String> OLD_TO_NEW = SystemUtil.consume(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> OLD_TO_NEW = Util.create(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Village", "Village");
 		hashMap.put("Mineshaft", "Mineshaft");
 		hashMap.put("Mansion", "Mansion");
@@ -33,7 +33,7 @@ public class FeatureUpdater {
 		hashMap.put("Fortress", "Fortress");
 		hashMap.put("EndCity", "EndCity");
 	});
-	private static final Map<String, String> ANCIENT_TO_OLD = SystemUtil.consume(Maps.<String, String>newHashMap(), hashMap -> {
+	private static final Map<String, String> ANCIENT_TO_OLD = Util.create(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("Iglu", "Igloo");
 		hashMap.put("TeDP", "Desert_Pyramid");
 		hashMap.put("TeJP", "Jungle_Pyramid");
@@ -102,18 +102,19 @@ public class FeatureUpdater {
 		return compoundTag;
 	}
 
-	private boolean needsUpdate(int i, int j, String string) {
+	private boolean needsUpdate(int chunkX, int chunkZ, String id) {
 		return !this.needsUpdate
 			? false
-			: this.featureIdToChunkTag.get(string) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).contains(ChunkPos.toLong(i, j));
+			: this.featureIdToChunkTag.get(id) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(id))).contains(ChunkPos.toLong(chunkX, chunkZ));
 	}
 
-	private boolean needsUpdate(int i, int j) {
+	private boolean needsUpdate(int chunkX, int chunkZ) {
 		if (!this.needsUpdate) {
 			return false;
 		} else {
 			for (String string : this.field_17659) {
-				if (this.featureIdToChunkTag.get(string) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(ChunkPos.toLong(i, j))) {
+				if (this.featureIdToChunkTag.get(string) != null
+					&& ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(ChunkPos.toLong(chunkX, chunkZ))) {
 					return true;
 				}
 			}

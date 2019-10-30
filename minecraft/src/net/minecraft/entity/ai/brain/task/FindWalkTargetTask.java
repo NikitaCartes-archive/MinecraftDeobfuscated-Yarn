@@ -17,8 +17,8 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	private final int field_19352;
 	private final int field_19353;
 
-	public FindWalkTargetTask(float f) {
-		this(f, 10, 7);
+	public FindWalkTargetTask(float walkSpeed) {
+		this(walkSpeed, 10, 7);
 	}
 
 	public FindWalkTargetTask(float f, int i, int j) {

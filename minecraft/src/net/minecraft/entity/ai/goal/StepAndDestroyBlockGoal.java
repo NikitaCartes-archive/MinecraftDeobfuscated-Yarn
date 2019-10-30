@@ -25,10 +25,10 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	private final MobEntity stepAndDestroyMob;
 	private int counter;
 
-	public StepAndDestroyBlockGoal(Block block, MobEntityWithAi mobEntityWithAi, double d, int i) {
-		super(mobEntityWithAi, d, 24, i);
-		this.targetBlock = block;
-		this.stepAndDestroyMob = mobEntityWithAi;
+	public StepAndDestroyBlockGoal(Block targetBlock, MobEntityWithAi mob, double speed, int maxYDifference) {
+		super(mob, speed, 24, maxYDifference);
+		this.targetBlock = targetBlock;
+		this.stepAndDestroyMob = mob;
 	}
 
 	@Override
@@ -63,10 +63,10 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		this.counter = 0;
 	}
 
-	public void tickStepping(IWorld iWorld, BlockPos blockPos) {
+	public void tickStepping(IWorld world, BlockPos pos) {
 	}
 
-	public void onDestroyBlock(World world, BlockPos blockPos) {
+	public void onDestroyBlock(World world, BlockPos pos) {
 	}
 
 	@Override
@@ -125,17 +125,15 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Nullable
-	private BlockPos tweakToProperPos(BlockPos blockPos, BlockView blockView) {
-		if (blockView.getBlockState(blockPos).getBlock() == this.targetBlock) {
-			return blockPos;
+	private BlockPos tweakToProperPos(BlockPos pos, BlockView view) {
+		if (view.getBlockState(pos).getBlock() == this.targetBlock) {
+			return pos;
 		} else {
-			BlockPos[] blockPoss = new BlockPos[]{
-				blockPos.method_10074(), blockPos.west(), blockPos.east(), blockPos.north(), blockPos.south(), blockPos.method_10074().method_10074()
-			};
+			BlockPos[] blockPoss = new BlockPos[]{pos.method_10074(), pos.west(), pos.east(), pos.north(), pos.south(), pos.method_10074().method_10074()};
 
-			for (BlockPos blockPos2 : blockPoss) {
-				if (blockView.getBlockState(blockPos2).getBlock() == this.targetBlock) {
-					return blockPos2;
+			for (BlockPos blockPos : blockPoss) {
+				if (view.getBlockState(blockPos).getBlock() == this.targetBlock) {
+					return blockPos;
 				}
 			}
 
@@ -144,10 +142,10 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
-		Chunk chunk = worldView.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
+	protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+		Chunk chunk = worldView.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
 		return chunk == null
 			? false
-			: chunk.getBlockState(blockPos).getBlock() == this.targetBlock && chunk.getBlockState(blockPos.up()).isAir() && chunk.getBlockState(blockPos.up(2)).isAir();
+			: chunk.getBlockState(pos).getBlock() == this.targetBlock && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();
 	}
 }

@@ -9,10 +9,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		Camera camera = this.field_4624.gameRenderer.getCamera();
 		IWorld iWorld = this.field_4624.world;
 		DimensionType dimensionType = iWorld.getDimension().getType();
@@ -44,12 +44,12 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.disableTexture();
 		RenderSystem.disableDepthTest();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
-		LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
-		VertexConsumer vertexConsumer = drawer.getBuffer(RenderLayer.getLines());
+		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+		VertexConsumer vertexConsumer = immediate.getBuffer(RenderLayer.getLines());
 		if (this.field_4626.containsKey(dimensionType)) {
 			for (BlockBox blockBox : ((Map)this.field_4626.get(dimensionType)).values()) {
 				if (blockPos.isWithinDistance(blockBox.method_22874(), 500.0)) {
-					WorldRenderer.drawBoxOutline(
+					WorldRenderer.drawBox(
 						vertexConsumer,
 						(double)blockBox.minX - d,
 						(double)blockBox.minY - e,
@@ -73,7 +73,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 				Boolean boolean_ = (Boolean)((Map)this.field_4625.get(dimensionType)).get(string);
 				if (blockPos.isWithinDistance(blockBox2.method_22874(), 500.0)) {
 					if (boolean_) {
-						WorldRenderer.drawBoxOutline(
+						WorldRenderer.drawBox(
 							vertexConsumer,
 							(double)blockBox2.minX - d,
 							(double)blockBox2.minY - e,
@@ -87,7 +87,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 							1.0F
 						);
 					} else {
-						WorldRenderer.drawBoxOutline(
+						WorldRenderer.drawBox(
 							vertexConsumer,
 							(double)blockBox2.minX - d,
 							(double)blockBox2.minY - e,
@@ -105,7 +105,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		drawer.draw();
+		immediate.draw();
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableTexture();
 		RenderSystem.popMatrix();

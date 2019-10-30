@@ -53,8 +53,8 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		switch ((Direction)blockState.get(FACING)) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		switch ((Direction)state.get(FACING)) {
 			case DOWN:
 				return DOWN_SHAPE;
 			case NORTH:
@@ -71,8 +71,8 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		switch ((Direction)blockState.get(FACING)) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
+		switch ((Direction)state.get(FACING)) {
 			case DOWN:
 				return DOWN_RAY_TRACE_SHAPE;
 			case NORTH:
@@ -89,20 +89,20 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		Direction direction = itemPlacementContext.getSide().getOpposite();
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		Direction direction = ctx.getSide().getOpposite();
 		return this.getDefaultState().with(FACING, direction.getAxis() == Direction.Axis.Y ? Direction.DOWN : direction).with(ENABLED, Boolean.valueOf(true));
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView view) {
 		return new HopperBlockEntity();
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 		if (itemStack.hasCustomName()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				((HopperBlockEntity)blockEntity).setCustomName(itemStack.getName());
 			}
@@ -110,21 +110,21 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState2.getBlock() != blockState.getBlock()) {
-			this.updateEnabled(world, blockPos, blockState);
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+		if (oldState.getBlock() != state.getBlock()) {
+			this.updateEnabled(world, pos, state);
 		}
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof HopperBlockEntity) {
-				playerEntity.openContainer((HopperBlockEntity)blockEntity);
-				playerEntity.incrementStat(Stats.INSPECT_HOPPER);
+				player.openContainer((HopperBlockEntity)blockEntity);
+				player.incrementStat(Stats.INSPECT_HOPPER);
 			}
 
 			return ActionResult.SUCCESS;
@@ -132,53 +132,53 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		this.updateEnabled(world, blockPos, blockState);
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+		this.updateEnabled(world, pos, state);
 	}
 
-	private void updateEnabled(World world, BlockPos blockPos, BlockState blockState) {
-		boolean bl = !world.isReceivingRedstonePower(blockPos);
-		if (bl != (Boolean)blockState.get(ENABLED)) {
-			world.setBlockState(blockPos, blockState.with(ENABLED, Boolean.valueOf(bl)), 4);
+	private void updateEnabled(World world, BlockPos pos, BlockState state) {
+		boolean bl = !world.isReceivingRedstonePower(pos);
+		if (bl != (Boolean)state.get(ENABLED)) {
+			world.setBlockState(pos, state.with(ENABLED, Boolean.valueOf(bl)), 4);
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState.getBlock() != blockState2.getBlock()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (state.getBlock() != newState.getBlock()) {
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof HopperBlockEntity) {
-				ItemScatterer.spawn(world, blockPos, (HopperBlockEntity)blockEntity);
-				world.updateHorizontalAdjacent(blockPos, this);
+				ItemScatterer.spawn(world, pos, (HopperBlockEntity)blockEntity);
+				world.updateHorizontalAdjacent(pos, this);
 			}
 
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+			super.onBlockRemoved(state, world, pos, newState, moved);
 		}
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return Container.calculateComparatorOutput(world.getBlockEntity(blockPos));
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		return Container.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 
 	@Override
@@ -187,15 +187,15 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof HopperBlockEntity) {
 			((HopperBlockEntity)blockEntity).onEntityCollided(entity);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

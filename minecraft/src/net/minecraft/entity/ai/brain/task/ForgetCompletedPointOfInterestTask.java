@@ -20,30 +20,30 @@ public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
 	private final MemoryModuleType<GlobalPos> memoryModule;
 	private final Predicate<PointOfInterestType> condition;
 
-	public ForgetCompletedPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType) {
-		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT));
+	public ForgetCompletedPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModule) {
+		super(ImmutableMap.of(memoryModule, MemoryModuleState.VALUE_PRESENT));
 		this.condition = pointOfInterestType.getCompletionCondition();
-		this.memoryModule = memoryModuleType;
+		this.memoryModule = memoryModule;
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		GlobalPos globalPos = (GlobalPos)livingEntity.getBrain().getOptionalMemory(this.memoryModule).get();
-		return Objects.equals(serverWorld.getDimension().getType(), globalPos.getDimension()) && globalPos.getPos().isWithinDistance(livingEntity.getPos(), 5.0);
+	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+		GlobalPos globalPos = (GlobalPos)entity.getBrain().getOptionalMemory(this.memoryModule).get();
+		return Objects.equals(world.getDimension().getType(), globalPos.getDimension()) && globalPos.getPos().isWithinDistance(entity.getPos(), 5.0);
 	}
 
 	@Override
-	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		Brain<?> brain = livingEntity.getBrain();
+	protected void run(ServerWorld world, LivingEntity entity, long time) {
+		Brain<?> brain = entity.getBrain();
 		GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(this.memoryModule).get();
 		BlockPos blockPos = globalPos.getPos();
-		ServerWorld serverWorld2 = serverWorld.getServer().getWorld(globalPos.getDimension());
-		if (this.method_20499(serverWorld2, blockPos)) {
+		ServerWorld serverWorld = world.getServer().getWorld(globalPos.getDimension());
+		if (this.method_20499(serverWorld, blockPos)) {
 			brain.forget(this.memoryModule);
-		} else if (this.method_20500(serverWorld2, blockPos, livingEntity)) {
+		} else if (this.method_20500(serverWorld, blockPos, entity)) {
 			brain.forget(this.memoryModule);
-			serverWorld.getPointOfInterestStorage().releaseTicket(blockPos);
-			DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos);
+			world.getPointOfInterestStorage().releaseTicket(blockPos);
+			DebugRendererInfoManager.sendPointOfInterest(world, blockPos);
 		}
 	}
 

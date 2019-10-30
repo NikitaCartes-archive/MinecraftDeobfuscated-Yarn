@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.SnowmanEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -15,13 +15,13 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> context) {
+		super(context);
 	}
 
 	public void method_4201(
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		SnowGolemEntity snowGolemEntity,
 		float f,
@@ -48,7 +48,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 					ModelTransformation.Type.HEAD,
 					false,
 					matrixStack,
-					layeredVertexConsumerStorage,
+					vertexConsumerProvider,
 					snowGolemEntity.world,
 					snowGolemEntity.getLightmapCoordinates(),
 					LivingEntityRenderer.method_23622(snowGolemEntity, 0.0F)

@@ -21,11 +21,11 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClickWindowC2SPacket(int i, int j, int k, SlotActionType slotActionType, ItemStack itemStack, short s) {
+	public ClickWindowC2SPacket(int i, int j, int k, SlotActionType slotActionType, ItemStack stack, short s) {
 		this.syncId = i;
 		this.slot = j;
 		this.button = k;
-		this.stack = itemStack.copy();
+		this.stack = stack.copy();
 		this.transactionId = s;
 		this.actionType = slotActionType;
 	}
@@ -35,23 +35,23 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.syncId = packetByteBuf.readByte();
-		this.slot = packetByteBuf.readShort();
-		this.button = packetByteBuf.readByte();
-		this.transactionId = packetByteBuf.readShort();
-		this.actionType = packetByteBuf.readEnumConstant(SlotActionType.class);
-		this.stack = packetByteBuf.readItemStack();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.syncId = buf.readByte();
+		this.slot = buf.readShort();
+		this.button = buf.readByte();
+		this.transactionId = buf.readShort();
+		this.actionType = buf.readEnumConstant(SlotActionType.class);
+		this.stack = buf.readItemStack();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.syncId);
-		packetByteBuf.writeShort(this.slot);
-		packetByteBuf.writeByte(this.button);
-		packetByteBuf.writeShort(this.transactionId);
-		packetByteBuf.writeEnumConstant(this.actionType);
-		packetByteBuf.writeItemStack(this.stack);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.syncId);
+		buf.writeShort(this.slot);
+		buf.writeByte(this.button);
+		buf.writeShort(this.transactionId);
+		buf.writeEnumConstant(this.actionType);
+		buf.writeItemStack(this.stack);
 	}
 
 	public int getSyncId() {

@@ -6,15 +6,15 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 
 public class EntityZombieSplitFix extends EntitySimpleTransformFix {
-	public EntityZombieSplitFix(Schema schema, boolean bl) {
-		super("EntityZombieSplitFix", schema, bl);
+	public EntityZombieSplitFix(Schema outputSchema, boolean changesType) {
+		super("EntityZombieSplitFix", outputSchema, changesType);
 	}
 
 	@Override
-	protected Pair<String, Dynamic<?>> transform(String string, Dynamic<?> dynamic) {
-		if (Objects.equals("Zombie", string)) {
-			String string2 = "Zombie";
-			int i = dynamic.get("ZombieType").asInt(0);
+	protected Pair<String, Dynamic<?>> transform(String choice, Dynamic<?> tag) {
+		if (Objects.equals("Zombie", choice)) {
+			String string = "Zombie";
+			int i = tag.get("ZombieType").asInt(0);
 			switch (i) {
 				case 0:
 				default:
@@ -24,17 +24,17 @@ public class EntityZombieSplitFix extends EntitySimpleTransformFix {
 				case 3:
 				case 4:
 				case 5:
-					string2 = "ZombieVillager";
-					dynamic = dynamic.set("Profession", dynamic.createInt(i - 1));
+					string = "ZombieVillager";
+					tag = tag.set("Profession", tag.createInt(i - 1));
 					break;
 				case 6:
-					string2 = "Husk";
+					string = "Husk";
 			}
 
-			dynamic = dynamic.remove("ZombieType");
-			return Pair.of(string2, dynamic);
+			tag = tag.remove("ZombieType");
+			return Pair.of(string, tag);
 		} else {
-			return Pair.of(string, dynamic);
+			return Pair.of(choice, tag);
 		}
 	}
 }

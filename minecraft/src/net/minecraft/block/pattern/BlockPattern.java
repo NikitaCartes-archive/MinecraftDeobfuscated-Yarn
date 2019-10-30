@@ -18,13 +18,13 @@ public class BlockPattern {
 	private final int height;
 	private final int width;
 
-	public BlockPattern(Predicate<CachedBlockPosition>[][][] predicates) {
-		this.pattern = predicates;
-		this.depth = predicates.length;
+	public BlockPattern(Predicate<CachedBlockPosition>[][][] pattern) {
+		this.pattern = pattern;
+		this.depth = pattern.length;
 		if (this.depth > 0) {
-			this.height = predicates[0].length;
+			this.height = pattern[0].length;
 			if (this.height > 0) {
-				this.width = predicates[0][0].length;
+				this.width = pattern[0][0].length;
 			} else {
 				this.width = 0;
 			}
@@ -47,20 +47,18 @@ public class BlockPattern {
 	}
 
 	@Nullable
-	private BlockPattern.Result testTransform(
-		BlockPos blockPos, Direction direction, Direction direction2, LoadingCache<BlockPos, CachedBlockPosition> loadingCache
-	) {
+	private BlockPattern.Result testTransform(BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> loadingCache) {
 		for (int i = 0; i < this.width; i++) {
 			for (int j = 0; j < this.height; j++) {
 				for (int k = 0; k < this.depth; k++) {
-					if (!this.pattern[k][j][i].test(loadingCache.getUnchecked(translate(blockPos, direction, direction2, i, j, k)))) {
+					if (!this.pattern[k][j][i].test(loadingCache.getUnchecked(translate(frontTopLeft, forwards, up, i, j, k)))) {
 						return null;
 					}
 				}
 			}
 		}
 
-		return new BlockPattern.Result(blockPos, direction, direction2, loadingCache, this.width, this.height, this.depth);
+		return new BlockPattern.Result(frontTopLeft, forwards, up, loadingCache, this.width, this.height, this.depth);
 	}
 
 	@Nullable
@@ -88,15 +86,15 @@ public class BlockPattern {
 		return CacheBuilder.newBuilder().build(new BlockPattern.BlockStateCacheLoader(worldView, bl));
 	}
 
-	protected static BlockPos translate(BlockPos blockPos, Direction direction, Direction direction2, int i, int j, int k) {
-		if (direction != direction2 && direction != direction2.getOpposite()) {
-			Vec3i vec3i = new Vec3i(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
-			Vec3i vec3i2 = new Vec3i(direction2.getOffsetX(), direction2.getOffsetY(), direction2.getOffsetZ());
+	protected static BlockPos translate(BlockPos pos, Direction forwards, Direction up, int offsetLeft, int offsetDown, int offsetForwards) {
+		if (forwards != up && forwards != up.getOpposite()) {
+			Vec3i vec3i = new Vec3i(forwards.getOffsetX(), forwards.getOffsetY(), forwards.getOffsetZ());
+			Vec3i vec3i2 = new Vec3i(up.getOffsetX(), up.getOffsetY(), up.getOffsetZ());
 			Vec3i vec3i3 = vec3i.crossProduct(vec3i2);
-			return blockPos.add(
-				vec3i2.getX() * -j + vec3i3.getX() * i + vec3i.getX() * k,
-				vec3i2.getY() * -j + vec3i3.getY() * i + vec3i.getY() * k,
-				vec3i2.getZ() * -j + vec3i3.getZ() * i + vec3i.getZ() * k
+			return pos.add(
+				vec3i2.getX() * -offsetDown + vec3i3.getX() * offsetLeft + vec3i.getX() * offsetForwards,
+				vec3i2.getY() * -offsetDown + vec3i3.getY() * offsetLeft + vec3i.getY() * offsetForwards,
+				vec3i2.getZ() * -offsetDown + vec3i3.getZ() * offsetLeft + vec3i.getZ() * offsetForwards
 			);
 		} else {
 			throw new IllegalArgumentException("Invalid forwards & up combination");
@@ -126,14 +124,16 @@ public class BlockPattern {
 		private final int height;
 		private final int depth;
 
-		public Result(BlockPos blockPos, Direction direction, Direction direction2, LoadingCache<BlockPos, CachedBlockPosition> loadingCache, int i, int j, int k) {
-			this.frontTopLeft = blockPos;
-			this.forwards = direction;
-			this.up = direction2;
+		public Result(
+			BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> loadingCache, int width, int height, int depth
+		) {
+			this.frontTopLeft = frontTopLeft;
+			this.forwards = forwards;
+			this.up = up;
 			this.cache = loadingCache;
-			this.width = i;
-			this.height = j;
-			this.depth = k;
+			this.width = width;
+			this.height = height;
+			this.depth = depth;
 		}
 
 		public BlockPos getFrontTopLeft() {
@@ -210,10 +210,10 @@ public class BlockPattern {
 		public final Vec3d velocity;
 		public final int yaw;
 
-		public TeleportTarget(Vec3d vec3d, Vec3d vec3d2, int i) {
-			this.pos = vec3d;
-			this.velocity = vec3d2;
-			this.yaw = i;
+		public TeleportTarget(Vec3d pos, Vec3d velocity, int yaw) {
+			this.pos = pos;
+			this.velocity = velocity;
+			this.yaw = yaw;
 		}
 	}
 }

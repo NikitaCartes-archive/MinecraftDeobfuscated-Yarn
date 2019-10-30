@@ -27,12 +27,12 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 		super(BlockEntityType.SKULL);
 	}
 
-	public static void setUserCache(UserCache userCache) {
-		SkullBlockEntity.userCache = userCache;
+	public static void setUserCache(UserCache value) {
+		userCache = value;
 	}
 
-	public static void setSessionService(MinecraftSessionService minecraftSessionService) {
-		sessionService = minecraftSessionService;
+	public static void setSessionService(MinecraftSessionService value) {
+		sessionService = value;
 	}
 
 	@Override
@@ -74,8 +74,8 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getTicksPowered(float f) {
-		return this.isPowered ? (float)this.ticksPowered + f : (float)this.ticksPowered;
+	public float getTicksPowered(float tickDelta) {
+		return this.isPowered ? (float)this.ticksPowered + tickDelta : (float)this.ticksPowered;
 	}
 
 	@Nullable
@@ -105,27 +105,27 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 		this.markDirty();
 	}
 
-	public static GameProfile loadProperties(GameProfile gameProfile) {
-		if (gameProfile != null && !ChatUtil.isEmpty(gameProfile.getName())) {
-			if (gameProfile.isComplete() && gameProfile.getProperties().containsKey("textures")) {
-				return gameProfile;
+	public static GameProfile loadProperties(GameProfile profile) {
+		if (profile != null && !ChatUtil.isEmpty(profile.getName())) {
+			if (profile.isComplete() && profile.getProperties().containsKey("textures")) {
+				return profile;
 			} else if (userCache != null && sessionService != null) {
-				GameProfile gameProfile2 = userCache.findByName(gameProfile.getName());
-				if (gameProfile2 == null) {
-					return gameProfile;
+				GameProfile gameProfile = userCache.findByName(profile.getName());
+				if (gameProfile == null) {
+					return profile;
 				} else {
-					Property property = Iterables.getFirst(gameProfile2.getProperties().get("textures"), null);
+					Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
 					if (property == null) {
-						gameProfile2 = sessionService.fillProfileProperties(gameProfile2, true);
+						gameProfile = sessionService.fillProfileProperties(gameProfile, true);
 					}
 
-					return gameProfile2;
+					return gameProfile;
 				}
 			} else {
-				return gameProfile;
+				return profile;
 			}
 		} else {
-			return gameProfile;
+			return profile;
 		}
 	}
 }

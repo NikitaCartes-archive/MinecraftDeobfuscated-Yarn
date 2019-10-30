@@ -56,8 +56,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	private ContainerLock lock = ContainerLock.NONE;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
-		public int get(int i) {
-			switch (i) {
+		public int get(int key) {
+			switch (key) {
 				case 0:
 					return BeaconBlockEntity.this.level;
 				case 1:
@@ -70,20 +70,20 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		}
 
 		@Override
-		public void set(int i, int j) {
-			switch (i) {
+		public void set(int key, int value) {
+			switch (key) {
 				case 0:
-					BeaconBlockEntity.this.level = j;
+					BeaconBlockEntity.this.level = value;
 					break;
 				case 1:
 					if (!BeaconBlockEntity.this.world.isClient && !BeaconBlockEntity.this.beamSegments.isEmpty()) {
 						BeaconBlockEntity.this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT);
 					}
 
-					BeaconBlockEntity.this.primary = BeaconBlockEntity.getPotionEffectById(j);
+					BeaconBlockEntity.this.primary = BeaconBlockEntity.getPotionEffectById(value);
 					break;
 				case 2:
-					BeaconBlockEntity.this.secondary = BeaconBlockEntity.getPotionEffectById(j);
+					BeaconBlockEntity.this.secondary = BeaconBlockEntity.getPotionEffectById(value);
 			}
 		}
 
@@ -182,20 +182,20 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		}
 	}
 
-	private void updateLevel(int i, int j, int k) {
+	private void updateLevel(int x, int y, int z) {
 		this.level = 0;
 
-		for (int l = 1; l <= 4; this.level = l++) {
-			int m = j - l;
-			if (m < 0) {
+		for (int i = 1; i <= 4; this.level = i++) {
+			int j = y - i;
+			if (j < 0) {
 				break;
 			}
 
 			boolean bl = true;
 
-			for (int n = i - l; n <= i + l && bl; n++) {
-				for (int o = k - l; o <= k + l; o++) {
-					Block block = this.world.getBlockState(new BlockPos(n, m, o)).getBlock();
+			for (int k = x - i; k <= x + i && bl; k++) {
+				for (int l = z - i; l <= z + i; l++) {
+					Block block = this.world.getBlockState(new BlockPos(k, j, l)).getBlock();
 					if (block != Blocks.EMERALD_BLOCK && block != Blocks.GOLD_BLOCK && block != Blocks.DIAMOND_BLOCK && block != Blocks.IRON_BLOCK) {
 						bl = false;
 						break;
@@ -270,8 +270,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	@Nullable
-	private static StatusEffect getPotionEffectById(int i) {
-		StatusEffect statusEffect = StatusEffect.byRawId(i);
+	private static StatusEffect getPotionEffectById(int id) {
+		StatusEffect statusEffect = StatusEffect.byRawId(id);
 		return EFFECTS.contains(statusEffect) ? statusEffect : null;
 	}
 
@@ -307,9 +307,9 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	@Nullable
 	@Override
-	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
-			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
+			? new BeaconContainer(syncId, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
 			: null;
 	}
 
@@ -322,8 +322,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		private final float[] color;
 		private int height;
 
-		public BeamSegment(float[] fs) {
-			this.color = fs;
+		public BeamSegment(float[] color) {
+			this.color = color;
 			this.height = 1;
 		}
 

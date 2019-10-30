@@ -20,24 +20,24 @@ public class ChunkStreamVersion {
 	private final ChunkStreamVersion.Wrapper<InputStream> inputStreamWrapper;
 	private final ChunkStreamVersion.Wrapper<OutputStream> outputStreamWrapper;
 
-	private ChunkStreamVersion(int i, ChunkStreamVersion.Wrapper<InputStream> wrapper, ChunkStreamVersion.Wrapper<OutputStream> wrapper2) {
-		this.id = i;
-		this.inputStreamWrapper = wrapper;
-		this.outputStreamWrapper = wrapper2;
+	private ChunkStreamVersion(int id, ChunkStreamVersion.Wrapper<InputStream> inputStreamWrapper, ChunkStreamVersion.Wrapper<OutputStream> outputStreamWrapper) {
+		this.id = id;
+		this.inputStreamWrapper = inputStreamWrapper;
+		this.outputStreamWrapper = outputStreamWrapper;
 	}
 
-	private static ChunkStreamVersion add(ChunkStreamVersion chunkStreamVersion) {
-		VERSIONS.put(chunkStreamVersion.id, chunkStreamVersion);
-		return chunkStreamVersion;
+	private static ChunkStreamVersion add(ChunkStreamVersion version) {
+		VERSIONS.put(version.id, version);
+		return version;
 	}
 
 	@Nullable
-	public static ChunkStreamVersion get(int i) {
-		return VERSIONS.get(i);
+	public static ChunkStreamVersion get(int id) {
+		return VERSIONS.get(id);
 	}
 
-	public static boolean exists(int i) {
-		return VERSIONS.containsKey(i);
+	public static boolean exists(int id) {
+		return VERSIONS.containsKey(id);
 	}
 
 	public int getId() {

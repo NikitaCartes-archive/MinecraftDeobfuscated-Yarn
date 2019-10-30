@@ -17,10 +17,10 @@ public class EscapeSunlightGoal extends Goal {
 	private final double speed;
 	private final World world;
 
-	public EscapeSunlightGoal(MobEntityWithAi mobEntityWithAi, double d) {
-		this.mob = mobEntityWithAi;
-		this.speed = d;
-		this.world = mobEntityWithAi.world;
+	public EscapeSunlightGoal(MobEntityWithAi mob, double speed) {
+		this.mob = mob;
+		this.speed = speed;
+		this.world = mob.world;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 

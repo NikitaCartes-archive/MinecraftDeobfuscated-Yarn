@@ -14,22 +14,22 @@ public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListe
 	private PacketByteBuf payload;
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.queryId = packetByteBuf.readVarInt();
-		this.channel = packetByteBuf.readIdentifier();
-		int i = packetByteBuf.readableBytes();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.queryId = buf.readVarInt();
+		this.channel = buf.readIdentifier();
+		int i = buf.readableBytes();
 		if (i >= 0 && i <= 1048576) {
-			this.payload = new PacketByteBuf(packetByteBuf.readBytes(i));
+			this.payload = new PacketByteBuf(buf.readBytes(i));
 		} else {
 			throw new IOException("Payload may not be larger than 1048576 bytes");
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.queryId);
-		packetByteBuf.writeIdentifier(this.channel);
-		packetByteBuf.writeBytes(this.payload.copy());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.queryId);
+		buf.writeIdentifier(this.channel);
+		buf.writeBytes(this.payload.copy());
 	}
 
 	public void method_12591(ClientLoginPacketListener clientLoginPacketListener) {

@@ -19,7 +19,7 @@ import net.minecraft.client.network.packet.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -62,25 +62,25 @@ public class ChunkHolder {
 	private boolean field_19238;
 
 	public ChunkHolder(
-		ChunkPos chunkPos,
-		int i,
+		ChunkPos pos,
+		int level,
 		LightingProvider lightingProvider,
 		ChunkHolder.LevelUpdateListener levelUpdateListener,
 		ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider
 	) {
-		this.pos = chunkPos;
+		this.pos = pos;
 		this.lightingProvider = lightingProvider;
 		this.levelUpdateListener = levelUpdateListener;
 		this.playersWatchingChunkProvider = playersWatchingChunkProvider;
 		this.lastTickLevel = ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
 		this.level = this.lastTickLevel;
 		this.completedLevel = this.lastTickLevel;
-		this.setLevel(i);
+		this.setLevel(level);
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getFuture(ChunkStatus chunkStatus) {
+	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getFuture(ChunkStatus leastStatus) {
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.futuresByStatus
-			.get(chunkStatus.getIndex());
+			.get(leastStatus.getIndex());
 		return completableFuture == null ? UNLOADED_CHUNK_FUTURE : completableFuture;
 	}
 
@@ -141,15 +141,15 @@ public class ChunkHolder {
 		return this.future;
 	}
 
-	public void markForBlockUpdate(int i, int j, int k) {
+	public void markForBlockUpdate(int x, int y, int z) {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
-			this.sectionsNeedingUpdateMask |= 1 << (j >> 4);
+			this.sectionsNeedingUpdateMask |= 1 << (y >> 4);
 			if (this.blockUpdateCount < 64) {
-				short s = (short)(i << 12 | k << 8 | j);
+				short s = (short)(x << 12 | z << 8 | y);
 
-				for (int l = 0; l < this.blockUpdateCount; l++) {
-					if (this.blockUpdatePositions[l] == s) {
+				for (int i = 0; i < this.blockUpdateCount; i++) {
+					if (this.blockUpdatePositions[i] == s) {
 						return;
 					}
 				}
@@ -159,14 +159,14 @@ public class ChunkHolder {
 		}
 	}
 
-	public void markForLightUpdate(LightType lightType, int i) {
+	public void markForLightUpdate(LightType type, int y) {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
 			worldChunk.setShouldSave(true);
-			if (lightType == LightType.SKY) {
-				this.skyLightUpdateBits |= 1 << i - -1;
+			if (type == LightType.SKY) {
+				this.skyLightUpdateBits |= 1 << y - -1;
 			} else {
-				this.blockLightUpdateBits |= 1 << i - -1;
+				this.blockLightUpdateBits |= 1 << y - -1;
 			}
 		}
 	}
@@ -229,8 +229,8 @@ public class ChunkHolder {
 		}
 	}
 
-	private void sendBlockEntityUpdatePacket(World world, BlockPos blockPos) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	private void sendBlockEntityUpdatePacket(World world, BlockPos pos) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity != null) {
 			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.toUpdatePacket();
 			if (blockEntityUpdateS2CPacket != null) {
@@ -239,12 +239,14 @@ public class ChunkHolder {
 		}
 	}
 
-	private void sendPacketToPlayersWatching(Packet<?> packet, boolean bl) {
-		this.playersWatchingChunkProvider.getPlayersWatchingChunk(this.pos, bl).forEach(serverPlayerEntity -> serverPlayerEntity.networkHandler.sendPacket(packet));
+	private void sendPacketToPlayersWatching(Packet<?> packet, boolean onlyOnWatchDistanceEdge) {
+		this.playersWatchingChunkProvider
+			.getPlayersWatchingChunk(this.pos, onlyOnWatchDistanceEdge)
+			.forEach(serverPlayerEntity -> serverPlayerEntity.networkHandler.sendPacket(packet));
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> createFuture(ChunkStatus chunkStatus, ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
-		int i = chunkStatus.getIndex();
+	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> createFuture(ChunkStatus targetStatus, ThreadedAnvilChunkStorage chunkStorage) {
+		int i = targetStatus.getIndex();
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.futuresByStatus
 			.get(i);
 		if (completableFuture != null) {
@@ -254,8 +256,8 @@ public class ChunkHolder {
 			}
 		}
 
-		if (getTargetGenerationStatus(this.level).isAtLeast(chunkStatus)) {
-			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture2 = threadedAnvilChunkStorage.createChunkFuture(this, chunkStatus);
+		if (getTargetGenerationStatus(this.level).isAtLeast(targetStatus)) {
+			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture2 = chunkStorage.createChunkFuture(this, targetStatus);
 			this.updateFuture(completableFuture2);
 			this.futuresByStatus.set(i, completableFuture2);
 			return completableFuture2;
@@ -264,8 +266,8 @@ public class ChunkHolder {
 		}
 	}
 
-	private void updateFuture(CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> completableFuture) {
-		this.future = this.future.thenCombine(completableFuture, (chunk, either) -> either.map(chunkx -> chunkx, unloaded -> chunk));
+	private void updateFuture(CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> newChunkFuture) {
+		this.future = this.future.thenCombine(newChunkFuture, (chunk, either) -> either.map(chunkx -> chunkx, unloaded -> chunk));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -285,15 +287,15 @@ public class ChunkHolder {
 		return this.completedLevel;
 	}
 
-	private void setCompletedLevel(int i) {
-		this.completedLevel = i;
+	private void setCompletedLevel(int level) {
+		this.completedLevel = level;
 	}
 
-	public void setLevel(int i) {
-		this.level = i;
+	public void setLevel(int level) {
+		this.level = level;
 	}
 
-	protected void tick(ThreadedAnvilChunkStorage threadedAnvilChunkStorage) {
+	protected void tick(ThreadedAnvilChunkStorage chunkStorage) {
 		ChunkStatus chunkStatus = getTargetGenerationStatus(this.lastTickLevel);
 		ChunkStatus chunkStatus2 = getTargetGenerationStatus(this.level);
 		boolean bl = this.lastTickLevel <= ThreadedAnvilChunkStorage.MAX_LEVEL;
@@ -322,20 +324,20 @@ public class ChunkHolder {
 		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.BORDER);
 		this.field_19238 |= bl4;
 		if (!bl3 && bl4) {
-			this.borderFuture = threadedAnvilChunkStorage.createBorderFuture(this);
+			this.borderFuture = chunkStorage.createBorderFuture(this);
 			this.updateFuture(this.borderFuture);
 		}
 
 		if (bl3 && !bl4) {
 			CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = this.borderFuture;
 			this.borderFuture = UNLOADED_WORLD_CHUNK_FUTURE;
-			this.updateFuture(completableFuture.thenApply(either -> either.ifLeft(threadedAnvilChunkStorage::method_20576)));
+			this.updateFuture(completableFuture.thenApply(either -> either.ifLeft(chunkStorage::method_20576)));
 		}
 
 		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
 		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
 		if (!bl5 && bl6) {
-			this.tickingFuture = threadedAnvilChunkStorage.createTickingFuture(this);
+			this.tickingFuture = chunkStorage.createTickingFuture(this);
 			this.updateFuture(this.tickingFuture);
 		}
 
@@ -348,10 +350,10 @@ public class ChunkHolder {
 		boolean bl8 = levelType2.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
 		if (!bl7 && bl8) {
 			if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
-				throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException());
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException());
 			}
 
-			this.entityTickingFuture = threadedAnvilChunkStorage.createEntityTickingChunkFuture(this.pos);
+			this.entityTickingFuture = chunkStorage.createEntityTickingChunkFuture(this.pos);
 			this.updateFuture(this.entityTickingFuture);
 		}
 
@@ -364,12 +366,12 @@ public class ChunkHolder {
 		this.lastTickLevel = this.level;
 	}
 
-	public static ChunkStatus getTargetGenerationStatus(int i) {
-		return i < 33 ? ChunkStatus.FULL : ChunkStatus.getTargetGenerationStatus(i - 33);
+	public static ChunkStatus getTargetGenerationStatus(int level) {
+		return level < 33 ? ChunkStatus.FULL : ChunkStatus.getTargetGenerationStatus(level - 33);
 	}
 
-	public static ChunkHolder.LevelType getLevelType(int i) {
-		return LEVEL_TYPES[MathHelper.clamp(33 - i + 1, 0, LEVEL_TYPES.length - 1)];
+	public static ChunkHolder.LevelType getLevelType(int distance) {
+		return LEVEL_TYPES[MathHelper.clamp(33 - distance + 1, 0, LEVEL_TYPES.length - 1)];
 	}
 
 	public boolean method_20384() {
@@ -407,11 +409,11 @@ public class ChunkHolder {
 	}
 
 	public interface LevelUpdateListener {
-		void updateLevel(ChunkPos chunkPos, IntSupplier intSupplier, int i, IntConsumer intConsumer);
+		void updateLevel(ChunkPos pos, IntSupplier levelGetter, int targetLevel, IntConsumer levelSetter);
 	}
 
 	public interface PlayersWatchingChunkProvider {
-		Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean bl);
+		Stream<ServerPlayerEntity> getPlayersWatchingChunk(ChunkPos chunkPos, boolean onlyOnWatchDistanceEdge);
 	}
 
 	public interface Unloaded {

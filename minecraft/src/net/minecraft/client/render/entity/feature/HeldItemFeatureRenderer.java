@@ -3,7 +3,7 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -15,22 +15,12 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
-	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
-		super(featureRendererContext);
+	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> context) {
+		super(context);
 	}
 
 	public void method_17162(
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i,
-		T livingEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
 	) {
 		boolean bl = livingEntity.getMainArm() == Arm.RIGHT;
 		ItemStack itemStack = bl ? livingEntity.getOffHandStack() : livingEntity.getMainHandStack();
@@ -43,8 +33,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 			}
 
-			this.renderItem(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, layeredVertexConsumerStorage);
-			this.renderItem(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, layeredVertexConsumerStorage);
+			this.renderItem(livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider);
+			this.renderItem(livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider);
 			matrixStack.pop();
 		}
 	}
@@ -55,7 +45,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		ModelTransformation.Type type,
 		Arm arm,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		VertexConsumerProvider vertexConsumerProvider
 	) {
 		if (!itemStack.isEmpty()) {
 			matrixStack.push();
@@ -64,7 +54,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F));
 			boolean bl = arm == Arm.LEFT;
 			matrixStack.translate((double)((float)(bl ? -1 : 1) / 16.0F), 0.125, -0.625);
-			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, layeredVertexConsumerStorage);
+			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider);
 			matrixStack.pop();
 		}
 	}

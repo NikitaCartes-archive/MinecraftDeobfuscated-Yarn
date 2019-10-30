@@ -13,18 +13,18 @@ public class SlimeBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
+	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
 		if (entity.method_21750()) {
-			super.onLandedUpon(world, blockPos, entity, f);
+			super.onLandedUpon(world, pos, entity, distance);
 		} else {
-			entity.handleFallDamage(f, 0.0F);
+			entity.handleFallDamage(distance, 0.0F);
 		}
 	}
 
 	@Override
-	public void onEntityLand(BlockView blockView, Entity entity) {
+	public void onEntityLand(BlockView world, Entity entity) {
 		if (entity.method_21750()) {
-			super.onEntityLand(blockView, entity);
+			super.onEntityLand(world, entity);
 		} else {
 			this.method_21847(entity);
 		}
@@ -39,13 +39,13 @@ public class SlimeBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
+	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
 		double d = Math.abs(entity.getVelocity().y);
 		if (d < 0.1 && !entity.method_21749()) {
 			double e = 0.4 + d * 0.2;
 			entity.setVelocity(entity.getVelocity().multiply(e, 1.0, e));
 		}
 
-		super.onSteppedOn(world, blockPos, entity);
+		super.onSteppedOn(world, pos, entity);
 	}
 }

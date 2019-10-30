@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface Drawable {
-	void render(int i, int j, float f);
+	void render(int mouseX, int mouseY, float delta);
 }

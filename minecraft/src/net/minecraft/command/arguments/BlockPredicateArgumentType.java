@@ -58,15 +58,15 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		}
 	}
 
-	public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<BlockPredicateArgumentType.BlockPredicate>getArgument(string, BlockPredicateArgumentType.BlockPredicate.class)
-			.create(commandContext.getSource().getMinecraftServer().getTagManager());
+	public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		return context.<BlockPredicateArgumentType.BlockPredicate>getArgument(name, BlockPredicateArgumentType.BlockPredicate.class)
+			.create(context.getSource().getMinecraftServer().getTagManager());
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-		stringReader.setCursor(suggestionsBuilder.getStart());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		StringReader stringReader = new StringReader(builder.getInput());
+		stringReader.setCursor(builder.getStart());
 		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true);
 
 		try {
@@ -74,7 +74,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return blockArgumentParser.getSuggestions(suggestionsBuilder);
+		return blockArgumentParser.getSuggestions(builder);
 	}
 
 	@Override
@@ -92,14 +92,14 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		@Nullable
 		private final CompoundTag nbt;
 
-		public StatePredicate(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
-			this.state = blockState;
-			this.properties = set;
-			this.nbt = compoundTag;
+		public StatePredicate(BlockState state, Set<Property<?>> properties, @Nullable CompoundTag nbt) {
+			this.state = state;
+			this.properties = properties;
+			this.nbt = nbt;
 		}
 
-		public boolean method_9648(CachedBlockPosition cachedBlockPosition) {
-			BlockState blockState = cachedBlockPosition.getBlockState();
+		public boolean method_9648(CachedBlockPosition pos) {
+			BlockState blockState = pos.getBlockState();
 			if (blockState.getBlock() != this.state.getBlock()) {
 				return false;
 			} else {
@@ -112,7 +112,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 				if (this.nbt == null) {
 					return true;
 				} else {
-					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
+					BlockEntity blockEntity = pos.getBlockEntity();
 					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
 				}
 			}
@@ -125,10 +125,10 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		private final CompoundTag nbt;
 		private final Map<String, String> properties;
 
-		private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable CompoundTag compoundTag) {
+		private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable CompoundTag nbt) {
 			this.tag = tag;
 			this.properties = map;
-			this.nbt = compoundTag;
+			this.nbt = nbt;
 		}
 
 		public boolean method_9649(CachedBlockPosition cachedBlockPosition) {

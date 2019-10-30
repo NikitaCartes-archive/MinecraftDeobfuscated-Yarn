@@ -7,11 +7,11 @@ import net.minecraft.util.profiler.Profiler;
 public interface ResourceReloadListener {
 	CompletableFuture<Void> reload(
 		ResourceReloadListener.Synchronizer synchronizer,
-		ResourceManager resourceManager,
-		Profiler profiler,
-		Profiler profiler2,
-		Executor executor,
-		Executor executor2
+		ResourceManager manager,
+		Profiler prepareProfiler,
+		Profiler applyProfiler,
+		Executor prepareExecutor,
+		Executor applyExecutor
 	);
 
 	default String getName() {
@@ -19,6 +19,6 @@ public interface ResourceReloadListener {
 	}
 
 	public interface Synchronizer {
-		<T> CompletableFuture<T> whenPrepared(T object);
+		<T> CompletableFuture<T> whenPrepared(T preparedObject);
 	}
 }

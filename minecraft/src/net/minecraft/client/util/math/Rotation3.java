@@ -5,7 +5,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Quaternion;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -21,7 +21,7 @@ public final class Rotation3 {
 	private Vector3f field_20904;
 	@Nullable
 	private Quaternion field_20905;
-	private static final Rotation3 IDENTITY = SystemUtil.get(() -> {
+	private static final Rotation3 IDENTITY = Util.create(() -> {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
 		Rotation3 rotation3 = new Rotation3(matrix4f);
@@ -40,9 +40,9 @@ public final class Rotation3 {
 	public Rotation3(@Nullable Vector3f vector3f, @Nullable Quaternion quaternion, @Nullable Vector3f vector3f2, @Nullable Quaternion quaternion2) {
 		this.matrix = setup(vector3f, quaternion, vector3f2, quaternion2);
 		this.field_20902 = vector3f != null ? vector3f : new Vector3f();
-		this.field_20903 = quaternion != null ? quaternion : new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+		this.field_20903 = quaternion != null ? quaternion : Quaternion.IDENTITY.copy();
 		this.field_20904 = vector3f2 != null ? vector3f2 : new Vector3f(1.0F, 1.0F, 1.0F);
-		this.field_20905 = quaternion2 != null ? quaternion2 : new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+		this.field_20905 = quaternion2 != null ? quaternion2 : Quaternion.IDENTITY.copy();
 		this.initialized = true;
 	}
 
@@ -50,9 +50,9 @@ public final class Rotation3 {
 		return IDENTITY;
 	}
 
-	public Rotation3 multiply(Rotation3 rotation3) {
+	public Rotation3 multiply(Rotation3 other) {
 		Matrix4f matrix4f = this.getMatrix();
-		matrix4f.multiply(rotation3.getMatrix());
+		matrix4f.multiply(other.getMatrix());
 		return new Rotation3(matrix4f);
 	}
 

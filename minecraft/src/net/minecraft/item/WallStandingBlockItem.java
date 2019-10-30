@@ -12,22 +12,22 @@ import net.minecraft.world.WorldView;
 public class WallStandingBlockItem extends BlockItem {
 	protected final Block wallBlock;
 
-	public WallStandingBlockItem(Block block, Block block2, Item.Settings settings) {
-		super(block, settings);
-		this.wallBlock = block2;
+	public WallStandingBlockItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
+		super(standingBlock, settings);
+		this.wallBlock = wallBlock;
 	}
 
 	@Nullable
 	@Override
-	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
+	protected BlockState getPlacementState(ItemPlacementContext context) {
+		BlockState blockState = this.wallBlock.getPlacementState(context);
 		BlockState blockState2 = null;
-		WorldView worldView = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		WorldView worldView = context.getWorld();
+		BlockPos blockPos = context.getBlockPos();
 
-		for (Direction direction : itemPlacementContext.getPlacementDirections()) {
+		for (Direction direction : context.getPlacementDirections()) {
 			if (direction != Direction.UP) {
-				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
+				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(context) : blockState;
 				if (blockState3 != null && blockState3.canPlaceAt(worldView, blockPos)) {
 					blockState2 = blockState3;
 					break;

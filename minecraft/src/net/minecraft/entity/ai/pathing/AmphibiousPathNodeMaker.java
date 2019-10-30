@@ -37,82 +37,82 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	@Override
 	public PathNode getStart() {
 		return this.getNode(
-			MathHelper.floor(this.entity.getBoundingBox().minX),
-			MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
-			MathHelper.floor(this.entity.getBoundingBox().minZ)
+			MathHelper.floor(this.entity.getBoundingBox().x1),
+			MathHelper.floor(this.entity.getBoundingBox().y1 + 0.5),
+			MathHelper.floor(this.entity.getBoundingBox().z1)
 		);
 	}
 
 	@Override
-	public TargetPathNode getNode(double d, double e, double f) {
-		return new TargetPathNode(this.getNode(MathHelper.floor(d), MathHelper.floor(e + 0.5), MathHelper.floor(f)));
+	public TargetPathNode getNode(double x, double y, double z) {
+		return new TargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y + 0.5), MathHelper.floor(z)));
 	}
 
 	@Override
-	public int getSuccessors(PathNode[] pathNodes, PathNode pathNode) {
+	public int getSuccessors(PathNode[] successors, PathNode node) {
 		int i = 0;
 		int j = 1;
-		BlockPos blockPos = new BlockPos(pathNode.x, pathNode.y, pathNode.z);
+		BlockPos blockPos = new BlockPos(node.x, node.y, node.z);
 		double d = this.method_66(blockPos);
-		PathNode pathNode2 = this.method_65(pathNode.x, pathNode.y, pathNode.z + 1, 1, d);
-		PathNode pathNode3 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z, 1, d);
-		PathNode pathNode4 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z, 1, d);
-		PathNode pathNode5 = this.method_65(pathNode.x, pathNode.y, pathNode.z - 1, 1, d);
-		PathNode pathNode6 = this.method_65(pathNode.x, pathNode.y + 1, pathNode.z, 0, d);
-		PathNode pathNode7 = this.method_65(pathNode.x, pathNode.y - 1, pathNode.z, 1, d);
+		PathNode pathNode = this.method_65(node.x, node.y, node.z + 1, 1, d);
+		PathNode pathNode2 = this.method_65(node.x - 1, node.y, node.z, 1, d);
+		PathNode pathNode3 = this.method_65(node.x + 1, node.y, node.z, 1, d);
+		PathNode pathNode4 = this.method_65(node.x, node.y, node.z - 1, 1, d);
+		PathNode pathNode5 = this.method_65(node.x, node.y + 1, node.z, 0, d);
+		PathNode pathNode6 = this.method_65(node.x, node.y - 1, node.z, 1, d);
+		if (pathNode != null && !pathNode.visited) {
+			successors[i++] = pathNode;
+		}
+
 		if (pathNode2 != null && !pathNode2.visited) {
-			pathNodes[i++] = pathNode2;
+			successors[i++] = pathNode2;
 		}
 
 		if (pathNode3 != null && !pathNode3.visited) {
-			pathNodes[i++] = pathNode3;
+			successors[i++] = pathNode3;
 		}
 
 		if (pathNode4 != null && !pathNode4.visited) {
-			pathNodes[i++] = pathNode4;
+			successors[i++] = pathNode4;
 		}
 
 		if (pathNode5 != null && !pathNode5.visited) {
-			pathNodes[i++] = pathNode5;
+			successors[i++] = pathNode5;
 		}
 
 		if (pathNode6 != null && !pathNode6.visited) {
-			pathNodes[i++] = pathNode6;
+			successors[i++] = pathNode6;
 		}
 
-		if (pathNode7 != null && !pathNode7.visited) {
-			pathNodes[i++] = pathNode7;
-		}
-
-		boolean bl = pathNode5 == null || pathNode5.type == PathNodeType.OPEN || pathNode5.penalty != 0.0F;
-		boolean bl2 = pathNode2 == null || pathNode2.type == PathNodeType.OPEN || pathNode2.penalty != 0.0F;
-		boolean bl3 = pathNode4 == null || pathNode4.type == PathNodeType.OPEN || pathNode4.penalty != 0.0F;
-		boolean bl4 = pathNode3 == null || pathNode3.type == PathNodeType.OPEN || pathNode3.penalty != 0.0F;
+		boolean bl = pathNode4 == null || pathNode4.type == PathNodeType.OPEN || pathNode4.penalty != 0.0F;
+		boolean bl2 = pathNode == null || pathNode.type == PathNodeType.OPEN || pathNode.penalty != 0.0F;
+		boolean bl3 = pathNode3 == null || pathNode3.type == PathNodeType.OPEN || pathNode3.penalty != 0.0F;
+		boolean bl4 = pathNode2 == null || pathNode2.type == PathNodeType.OPEN || pathNode2.penalty != 0.0F;
 		if (bl && bl4) {
-			PathNode pathNode8 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z - 1, 1, d);
-			if (pathNode8 != null && !pathNode8.visited) {
-				pathNodes[i++] = pathNode8;
+			PathNode pathNode7 = this.method_65(node.x - 1, node.y, node.z - 1, 1, d);
+			if (pathNode7 != null && !pathNode7.visited) {
+				successors[i++] = pathNode7;
 			}
 		}
 
 		if (bl && bl3) {
-			PathNode pathNode8 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z - 1, 1, d);
-			if (pathNode8 != null && !pathNode8.visited) {
-				pathNodes[i++] = pathNode8;
+			PathNode pathNode7 = this.method_65(node.x + 1, node.y, node.z - 1, 1, d);
+			if (pathNode7 != null && !pathNode7.visited) {
+				successors[i++] = pathNode7;
 			}
 		}
 
 		if (bl2 && bl4) {
-			PathNode pathNode8 = this.method_65(pathNode.x - 1, pathNode.y, pathNode.z + 1, 1, d);
-			if (pathNode8 != null && !pathNode8.visited) {
-				pathNodes[i++] = pathNode8;
+			PathNode pathNode7 = this.method_65(node.x - 1, node.y, node.z + 1, 1, d);
+			if (pathNode7 != null && !pathNode7.visited) {
+				successors[i++] = pathNode7;
 			}
 		}
 
 		if (bl2 && bl3) {
-			PathNode pathNode8 = this.method_65(pathNode.x + 1, pathNode.y, pathNode.z + 1, 1, d);
-			if (pathNode8 != null && !pathNode8.visited) {
-				pathNodes[i++] = pathNode8;
+			PathNode pathNode7 = this.method_65(node.x + 1, node.y, node.z + 1, 1, d);
+			if (pathNode7 != null && !pathNode7.visited) {
+				successors[i++] = pathNode7;
 			}
 		}
 
@@ -209,30 +209,30 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	}
 
 	@Override
-	protected PathNodeType adjustNodeType(BlockView blockView, boolean bl, boolean bl2, BlockPos blockPos, PathNodeType pathNodeType) {
-		if (pathNodeType == PathNodeType.RAIL
-			&& !(blockView.getBlockState(blockPos).getBlock() instanceof AbstractRailBlock)
-			&& !(blockView.getBlockState(blockPos.method_10074()).getBlock() instanceof AbstractRailBlock)) {
-			pathNodeType = PathNodeType.FENCE;
+	protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
+		if (type == PathNodeType.RAIL
+			&& !(world.getBlockState(pos).getBlock() instanceof AbstractRailBlock)
+			&& !(world.getBlockState(pos.method_10074()).getBlock() instanceof AbstractRailBlock)) {
+			type = PathNodeType.FENCE;
 		}
 
-		if (pathNodeType == PathNodeType.DOOR_OPEN || pathNodeType == PathNodeType.DOOR_WOOD_CLOSED || pathNodeType == PathNodeType.DOOR_IRON_CLOSED) {
-			pathNodeType = PathNodeType.BLOCKED;
+		if (type == PathNodeType.DOOR_OPEN || type == PathNodeType.DOOR_WOOD_CLOSED || type == PathNodeType.DOOR_IRON_CLOSED) {
+			type = PathNodeType.BLOCKED;
 		}
 
-		if (pathNodeType == PathNodeType.LEAVES) {
-			pathNodeType = PathNodeType.BLOCKED;
+		if (type == PathNodeType.LEAVES) {
+			type = PathNodeType.BLOCKED;
 		}
 
-		return pathNodeType;
+		return type;
 	}
 
 	@Override
-	public PathNodeType getNodeType(BlockView blockView, int i, int j, int k) {
-		PathNodeType pathNodeType = getBasicPathNodeType(blockView, i, j, k);
+	public PathNodeType getNodeType(BlockView world, int x, int y, int z) {
+		PathNodeType pathNodeType = getBasicPathNodeType(world, x, y, z);
 		if (pathNodeType == PathNodeType.WATER) {
 			for (Direction direction : Direction.values()) {
-				PathNodeType pathNodeType2 = getBasicPathNodeType(blockView, i + direction.getOffsetX(), j + direction.getOffsetY(), k + direction.getOffsetZ());
+				PathNodeType pathNodeType2 = getBasicPathNodeType(world, x + direction.getOffsetX(), y + direction.getOffsetY(), z + direction.getOffsetZ());
 				if (pathNodeType2 == PathNodeType.BLOCKED) {
 					return PathNodeType.WATER_BORDER;
 				}
@@ -240,9 +240,9 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 			return PathNodeType.WATER;
 		} else {
-			if (pathNodeType == PathNodeType.OPEN && j >= 1) {
-				Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
-				PathNodeType pathNodeType3 = getBasicPathNodeType(blockView, i, j - 1, k);
+			if (pathNodeType == PathNodeType.OPEN && y >= 1) {
+				Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+				PathNodeType pathNodeType3 = getBasicPathNodeType(world, x, y - 1, z);
 				if (pathNodeType3 != PathNodeType.WALKABLE && pathNodeType3 != PathNodeType.OPEN && pathNodeType3 != PathNodeType.LAVA) {
 					pathNodeType = PathNodeType.WALKABLE;
 				} else {
@@ -262,7 +262,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 				}
 			}
 
-			return method_59(blockView, i, j, k, pathNodeType);
+			return method_59(world, x, y, z, pathNodeType);
 		}
 	}
 }

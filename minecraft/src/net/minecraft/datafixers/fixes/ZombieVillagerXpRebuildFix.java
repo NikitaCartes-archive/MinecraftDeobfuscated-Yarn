@@ -7,8 +7,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ZombieVillagerXpRebuildFix extends ChoiceFix {
-	public ZombieVillagerXpRebuildFix(Schema schema, boolean bl) {
-		super(schema, bl, "Zombie Villager XP rebuild", TypeReferences.ENTITY, "minecraft:zombie_villager");
+	public ZombieVillagerXpRebuildFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "Zombie Villager XP rebuild", TypeReferences.ENTITY, "minecraft:zombie_villager");
 	}
 
 	@Override

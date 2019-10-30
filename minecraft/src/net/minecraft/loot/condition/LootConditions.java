@@ -19,32 +19,32 @@ public class LootConditions {
 	private static final Map<Identifier, LootCondition.Factory<?>> byId = Maps.<Identifier, LootCondition.Factory<?>>newHashMap();
 	private static final Map<Class<? extends LootCondition>, LootCondition.Factory<?>> byClass = Maps.<Class<? extends LootCondition>, LootCondition.Factory<?>>newHashMap();
 
-	public static <T extends LootCondition> void register(LootCondition.Factory<? extends T> factory) {
-		Identifier identifier = factory.getId();
-		Class<T> class_ = (Class<T>)factory.getConditionClass();
+	public static <T extends LootCondition> void register(LootCondition.Factory<? extends T> condition) {
+		Identifier identifier = condition.getId();
+		Class<T> class_ = (Class<T>)condition.getConditionClass();
 		if (byId.containsKey(identifier)) {
 			throw new IllegalArgumentException("Can't re-register item condition name " + identifier);
 		} else if (byClass.containsKey(class_)) {
 			throw new IllegalArgumentException("Can't re-register item condition class " + class_.getName());
 		} else {
-			byId.put(identifier, factory);
-			byClass.put(class_, factory);
+			byId.put(identifier, condition);
+			byClass.put(class_, condition);
 		}
 	}
 
-	public static LootCondition.Factory<?> get(Identifier identifier) {
-		LootCondition.Factory<?> factory = (LootCondition.Factory<?>)byId.get(identifier);
+	public static LootCondition.Factory<?> get(Identifier id) {
+		LootCondition.Factory<?> factory = (LootCondition.Factory<?>)byId.get(id);
 		if (factory == null) {
-			throw new IllegalArgumentException("Unknown loot item condition '" + identifier + "'");
+			throw new IllegalArgumentException("Unknown loot item condition '" + id + "'");
 		} else {
 			return factory;
 		}
 	}
 
-	public static <T extends LootCondition> LootCondition.Factory<T> getFactory(T lootCondition) {
-		LootCondition.Factory<T> factory = (LootCondition.Factory<T>)byClass.get(lootCondition.getClass());
+	public static <T extends LootCondition> LootCondition.Factory<T> getFactory(T condition) {
+		LootCondition.Factory<T> factory = (LootCondition.Factory<T>)byClass.get(condition.getClass());
 		if (factory == null) {
-			throw new IllegalArgumentException("Unknown loot item condition " + lootCondition);
+			throw new IllegalArgumentException("Unknown loot item condition " + condition);
 		} else {
 			return factory;
 		}
@@ -53,15 +53,15 @@ public class LootConditions {
 	public static <T> Predicate<T> joinAnd(Predicate<T>[] predicates) {
 		switch (predicates.length) {
 			case 0:
-				return object -> true;
+				return predicatesx -> true;
 			case 1:
 				return predicates[0];
 			case 2:
 				return predicates[0].and(predicates[1]);
 			default:
-				return object -> {
+				return operand -> {
 					for (Predicate<T> predicate : predicates) {
-						if (!predicate.test(object)) {
+						if (!predicate.test(operand)) {
 							return false;
 						}
 					}
@@ -74,15 +74,15 @@ public class LootConditions {
 	public static <T> Predicate<T> joinOr(Predicate<T>[] predicates) {
 		switch (predicates.length) {
 			case 0:
-				return object -> false;
+				return predicatesx -> false;
 			case 1:
 				return predicates[0];
 			case 2:
 				return predicates[0].or(predicates[1]);
 			default:
-				return object -> {
+				return operand -> {
 					for (Predicate<T> predicate : predicates) {
-						if (predicate.test(object)) {
+						if (predicate.test(operand)) {
 							return true;
 						}
 					}

@@ -31,21 +31,21 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.pos = packetByteBuf.readBlockPos();
-		this.command = packetByteBuf.readString(32767);
-		this.type = packetByteBuf.readEnumConstant(CommandBlockBlockEntity.Type.class);
-		int i = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.pos = buf.readBlockPos();
+		this.command = buf.readString(32767);
+		this.type = buf.readEnumConstant(CommandBlockBlockEntity.Type.class);
+		int i = buf.readByte();
 		this.trackOutput = (i & 1) != 0;
 		this.conditional = (i & 2) != 0;
 		this.alwaysActive = (i & 4) != 0;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeString(this.command);
-		packetByteBuf.writeEnumConstant(this.type);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeBlockPos(this.pos);
+		buf.writeString(this.command);
+		buf.writeEnumConstant(this.type);
 		int i = 0;
 		if (this.trackOutput) {
 			i |= 1;
@@ -59,7 +59,7 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 			i |= 4;
 		}
 
-		packetByteBuf.writeByte(i);
+		buf.writeByte(i);
 	}
 
 	public void method_12469(ServerPlayPacketListener serverPlayPacketListener) {

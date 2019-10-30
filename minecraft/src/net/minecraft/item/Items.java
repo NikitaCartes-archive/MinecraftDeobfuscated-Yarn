@@ -1258,7 +1258,7 @@ public class Items {
 	public static final Item BEE_NEST = register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
 	public static final Item BEE_HIVE = register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
 	public static final Item HONEY_BOTTLE = register(
-		"honey_bottle", new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(1))
+		"honey_bottle", new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(16))
 	);
 	public static final Item field_21086 = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
 	public static final Item field_21087 = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
@@ -1267,27 +1267,27 @@ public class Items {
 		return register(new BlockItem(block, new Item.Settings()));
 	}
 
-	private static Item register(Block block, ItemGroup itemGroup) {
-		return register(new BlockItem(block, new Item.Settings().group(itemGroup)));
+	private static Item register(Block block, ItemGroup group) {
+		return register(new BlockItem(block, new Item.Settings().group(group)));
 	}
 
-	private static Item register(BlockItem blockItem) {
-		return register(blockItem.getBlock(), blockItem);
+	private static Item register(BlockItem item) {
+		return register(item.getBlock(), item);
 	}
 
-	protected static Item register(Block block, Item item) {
-		return register(Registry.BLOCK.getId(block), item);
+	protected static Item register(Block block, Item iem) {
+		return register(Registry.BLOCK.getId(block), iem);
 	}
 
-	private static Item register(String string, Item item) {
-		return register(new Identifier(string), item);
+	private static Item register(String id, Item item) {
+		return register(new Identifier(id), item);
 	}
 
-	private static Item register(Identifier identifier, Item item) {
+	private static Item register(Identifier id, Item item) {
 		if (item instanceof BlockItem) {
 			((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
 		}
 
-		return Registry.register(Registry.ITEM, identifier, item);
+		return Registry.register(Registry.ITEM, id, item);
 	}
 }

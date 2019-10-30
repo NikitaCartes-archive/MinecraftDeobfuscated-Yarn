@@ -30,17 +30,17 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, collection, i));
+	public void trigger(ServerPlayerEntity player, Collection<Entity> victims, int amount) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, victims, amount));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate[] victims;
 		private final NumberRange.IntRange uniqueEntityTypes;
 
-		public Conditions(EntityPredicate[] entityPredicates, NumberRange.IntRange intRange) {
+		public Conditions(EntityPredicate[] victims, NumberRange.IntRange intRange) {
 			super(KilledByCrossbowCriterion.ID);
-			this.victims = entityPredicates;
+			this.victims = victims;
 			this.uniqueEntityTypes = intRange;
 		}
 
@@ -60,9 +60,9 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 			return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
+		public boolean matches(ServerPlayerEntity player, Collection<Entity> victims, int amount) {
 			if (this.victims.length > 0) {
-				List<Entity> list = Lists.<Entity>newArrayList(collection);
+				List<Entity> list = Lists.<Entity>newArrayList(victims);
 
 				for (EntityPredicate entityPredicate : this.victims) {
 					boolean bl = false;
@@ -70,7 +70,7 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 
 					while (iterator.hasNext()) {
 						Entity entity = (Entity)iterator.next();
-						if (entityPredicate.test(serverPlayerEntity, entity)) {
+						if (entityPredicate.test(player, entity)) {
 							iterator.remove();
 							bl = true;
 							break;
@@ -88,11 +88,11 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 			} else {
 				Set<EntityType<?>> set = Sets.<EntityType<?>>newHashSet();
 
-				for (Entity entity2 : collection) {
+				for (Entity entity2 : victims) {
 					set.add(entity2.getType());
 				}
 
-				return this.uniqueEntityTypes.test(set.size()) && this.uniqueEntityTypes.test(i);
+				return this.uniqueEntityTypes.test(set.size()) && this.uniqueEntityTypes.test(amount);
 			}
 		}
 

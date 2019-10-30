@@ -52,49 +52,49 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		return d < 4096.0 && !this.wasShotByEntity();
+	public boolean shouldRenderAtDistance(double distance) {
+		return distance < 4096.0 && !this.wasShotByEntity();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderFrom(double d, double e, double f) {
-		return super.shouldRenderFrom(d, e, f) && !this.wasShotByEntity();
+	public boolean shouldRenderFrom(double x, double y, double z) {
+		return super.shouldRenderFrom(x, y, z) && !this.wasShotByEntity();
 	}
 
-	public FireworkEntity(World world, double d, double e, double f, ItemStack itemStack) {
+	public FireworkEntity(World world, double x, double y, double z, ItemStack item) {
 		super(EntityType.FIREWORK_ROCKET, world);
 		this.life = 0;
-		this.setPosition(d, e, f);
+		this.setPosition(x, y, z);
 		int i = 1;
-		if (!itemStack.isEmpty() && itemStack.hasTag()) {
-			this.dataTracker.set(ITEM, itemStack.copy());
-			i += itemStack.getOrCreateSubTag("Fireworks").getByte("Flight");
+		if (!item.isEmpty() && item.hasTag()) {
+			this.dataTracker.set(ITEM, item.copy());
+			i += item.getOrCreateSubTag("Fireworks").getByte("Flight");
 		}
 
 		this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
 		this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
 	}
 
-	public FireworkEntity(World world, ItemStack itemStack, LivingEntity livingEntity) {
-		this(world, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), itemStack);
-		this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(livingEntity.getEntityId()));
-		this.shooter = livingEntity;
+	public FireworkEntity(World world, ItemStack item, LivingEntity shooter) {
+		this(world, shooter.getX(), shooter.getY(), shooter.getZ(), item);
+		this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getEntityId()));
+		this.shooter = shooter;
 	}
 
-	public FireworkEntity(World world, ItemStack itemStack, double d, double e, double f, boolean bl) {
-		this(world, d, e, f, itemStack);
-		this.dataTracker.set(SHOT_AT_ANGLE, bl);
+	public FireworkEntity(World world, ItemStack item, double x, double y, double z, boolean shotAtAngle) {
+		this(world, x, y, z, item);
+		this.dataTracker.set(SHOT_AT_ANGLE, shotAtAngle);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setVelocityClient(double d, double e, double f) {
-		this.setVelocity(d, e, f);
+	public void setVelocityClient(double x, double y, double z) {
+		this.setVelocity(x, y, z);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float g = MathHelper.sqrt(d * d + f * f);
-			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
-			this.pitch = (float)(MathHelper.atan2(e, (double)g) * 180.0F / (float)Math.PI);
+			float f = MathHelper.sqrt(x * x + z * z);
+			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
+			this.pitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
 			this.prevYaw = this.yaw;
 			this.prevPitch = this.pitch;
 		}
@@ -249,7 +249,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 					boolean bl = false;
 
 					for (int i = 0; i < 2; i++) {
-						Vec3d vec3d2 = new Vec3d(livingEntity.getX(), livingEntity.method_23323(0.5 * (double)i), livingEntity.getZ());
+						Vec3d vec3d2 = new Vec3d(livingEntity.getX(), livingEntity.getHeightAt(0.5 * (double)i), livingEntity.getZ());
 						HitResult hitResult = this.world
 							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
 						if (hitResult.getType() == HitResult.Type.MISS) {
@@ -277,8 +277,8 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 17 && this.world.isClient) {
+	public void handleStatus(byte status) {
+		if (status == 17 && this.world.isClient) {
 			if (!this.hasExplosionEffects()) {
 				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
 					this.world
@@ -292,32 +292,32 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 			}
 		}
 
-		super.handleStatus(b);
+		super.handleStatus(status);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putInt("Life", this.life);
-		compoundTag.putInt("LifeTime", this.lifeTime);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		tag.putInt("Life", this.life);
+		tag.putInt("LifeTime", this.lifeTime);
 		ItemStack itemStack = this.dataTracker.get(ITEM);
 		if (!itemStack.isEmpty()) {
-			compoundTag.put("FireworksItem", itemStack.toTag(new CompoundTag()));
+			tag.put("FireworksItem", itemStack.toTag(new CompoundTag()));
 		}
 
-		compoundTag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
+		tag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.life = compoundTag.getInt("Life");
-		this.lifeTime = compoundTag.getInt("LifeTime");
-		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("FireworksItem"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		this.life = tag.getInt("Life");
+		this.lifeTime = tag.getInt("LifeTime");
+		ItemStack itemStack = ItemStack.fromTag(tag.getCompound("FireworksItem"));
 		if (!itemStack.isEmpty()) {
 			this.dataTracker.set(ITEM, itemStack);
 		}
 
-		if (compoundTag.contains("ShotAtAngle")) {
-			this.dataTracker.set(SHOT_AT_ANGLE, compoundTag.getBoolean("ShotAtAngle"));
+		if (tag.contains("ShotAtAngle")) {
+			this.dataTracker.set(SHOT_AT_ANGLE, tag.getBoolean("ShotAtAngle"));
 		}
 	}
 
@@ -339,17 +339,17 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	@Override
-	public void setVelocity(double d, double e, double f, float g, float h) {
-		float i = MathHelper.sqrt(d * d + e * e + f * f);
-		d /= (double)i;
-		e /= (double)i;
-		f /= (double)i;
-		d += this.random.nextGaussian() * 0.0075F * (double)h;
-		e += this.random.nextGaussian() * 0.0075F * (double)h;
-		f += this.random.nextGaussian() * 0.0075F * (double)h;
-		d *= (double)g;
-		e *= (double)g;
-		f *= (double)g;
-		this.setVelocity(d, e, f);
+	public void setVelocity(double x, double y, double z, float speed, float divergence) {
+		float f = MathHelper.sqrt(x * x + y * y + z * z);
+		x /= (double)f;
+		y /= (double)f;
+		z /= (double)f;
+		x += this.random.nextGaussian() * 0.0075F * (double)divergence;
+		y += this.random.nextGaussian() * 0.0075F * (double)divergence;
+		z += this.random.nextGaussian() * 0.0075F * (double)divergence;
+		x *= (double)speed;
+		y *= (double)speed;
+		z *= (double)speed;
+		this.setVelocity(x, y, z);
 	}
 }

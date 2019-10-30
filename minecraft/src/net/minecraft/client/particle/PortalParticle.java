@@ -11,22 +11,22 @@ public class PortalParticle extends SpriteBillboardParticle {
 	private final double startY;
 	private final double startZ;
 
-	private PortalParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f);
-		this.velocityX = g;
-		this.velocityY = h;
-		this.velocityZ = i;
-		this.x = d;
-		this.y = e;
-		this.z = f;
+	private PortalParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+		super(world, x, y, z);
+		this.velocityX = velocityX;
+		this.velocityY = velocityY;
+		this.velocityZ = velocityZ;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		this.startX = this.x;
 		this.startY = this.y;
 		this.startZ = this.z;
 		this.scale = 0.1F * (this.random.nextFloat() * 0.2F + 0.5F);
-		float j = this.random.nextFloat() * 0.6F + 0.4F;
-		this.colorRed = j * 0.9F;
-		this.colorGreen = j * 0.3F;
-		this.colorBlue = j;
+		float f = this.random.nextFloat() * 0.6F + 0.4F;
+		this.colorRed = f * 0.9F;
+		this.colorGreen = f * 0.3F;
+		this.colorBlue = f;
 		this.maxAge = (int)(Math.random() * 10.0) + 40;
 	}
 
@@ -36,29 +36,29 @@ public class PortalParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public void move(double d, double e, double f) {
-		this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+	public void move(double dx, double dy, double dz) {
+		this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
 		this.repositionFromBoundingBox();
 	}
 
 	@Override
-	public float getSize(float f) {
-		float g = ((float)this.age + f) / (float)this.maxAge;
-		g = 1.0F - g;
-		g *= g;
-		g = 1.0F - g;
-		return this.scale * g;
+	public float getSize(float tickDelta) {
+		float f = ((float)this.age + tickDelta) / (float)this.maxAge;
+		f = 1.0F - f;
+		f *= f;
+		f = 1.0F - f;
+		return this.scale * f;
 	}
 
 	@Override
-	public int getColorMultiplier(float f) {
-		int i = super.getColorMultiplier(f);
-		float g = (float)this.age / (float)this.maxAge;
-		g *= g;
-		g *= g;
+	public int getColorMultiplier(float tint) {
+		int i = super.getColorMultiplier(tint);
+		float f = (float)this.age / (float)this.maxAge;
+		f *= f;
+		f *= f;
 		int j = i & 0xFF;
 		int k = i >> 16 & 0xFF;
-		k += (int)(g * 15.0F * 16.0F);
+		k += (int)(f * 15.0F * 16.0F);
 		if (k > 240) {
 			k = 240;
 		}

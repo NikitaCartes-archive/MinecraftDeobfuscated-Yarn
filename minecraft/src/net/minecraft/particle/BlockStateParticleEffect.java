@@ -24,14 +24,14 @@ public class BlockStateParticleEffect implements ParticleEffect {
 	private final ParticleType<BlockStateParticleEffect> type;
 	private final BlockState blockState;
 
-	public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> particleType, BlockState blockState) {
-		this.type = particleType;
+	public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {
+		this.type = type;
 		this.blockState = blockState;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeVarInt(Block.STATE_IDS.getId(this.blockState));
+	public void write(PacketByteBuf buf) {
+		buf.writeVarInt(Block.STATE_IDS.getId(this.blockState));
 	}
 
 	@Override

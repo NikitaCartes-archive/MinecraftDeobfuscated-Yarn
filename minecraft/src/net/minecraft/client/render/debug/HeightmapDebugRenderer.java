@@ -17,12 +17,12 @@ import net.minecraft.world.IWorld;
 public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 
-	public HeightmapDebugRenderer(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public HeightmapDebugRenderer(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		Camera camera = this.client.gameRenderer.getCamera();
 		IWorld iWorld = this.client.world;
 		double d = camera.getPos().x;
@@ -34,13 +34,13 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
 			int i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			if (iWorld.getBlockState(blockPos2.add(0, i, 0).method_10074()).isAir()) {
-				WorldRenderer.buildBoxOutline(
+				WorldRenderer.drawBox(
 					bufferBuilder,
 					(double)((float)blockPos2.getX() + 0.25F) - d,
 					(double)i - e,
@@ -54,7 +54,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 					0.5F
 				);
 			} else {
-				WorldRenderer.buildBoxOutline(
+				WorldRenderer.drawBox(
 					bufferBuilder,
 					(double)((float)blockPos2.getX() + 0.25F) - d,
 					(double)i - e,

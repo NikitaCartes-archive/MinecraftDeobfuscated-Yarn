@@ -24,25 +24,25 @@ public class BakedQuadFactory {
 	private static final float field_4259 = 1.0F / (float)Math.cos((float) (Math.PI / 4)) - 1.0F;
 
 	public BakedQuad bake(
-		Vector3f vector3f,
-		Vector3f vector3f2,
-		ModelElementFace modelElementFace,
-		Sprite sprite,
-		Direction direction,
-		ModelBakeSettings modelBakeSettings,
-		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
-		boolean bl,
+		Vector3f from,
+		Vector3f to,
+		ModelElementFace face,
+		Sprite texture,
+		Direction side,
+		ModelBakeSettings settings,
+		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
+		boolean shade,
 		Identifier identifier
 	) {
-		ModelElementTexture modelElementTexture = modelElementFace.textureData;
-		if (modelBakeSettings.isUvLocked()) {
-			modelElementTexture = uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation(), identifier);
+		ModelElementTexture modelElementTexture = face.textureData;
+		if (settings.isUvLocked()) {
+			modelElementTexture = uvLock(face.textureData, side, settings.getRotation(), identifier);
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
 		System.arraycopy(modelElementTexture.uvs, 0, fs, 0, fs.length);
-		float f = (float)sprite.getWidth() / (sprite.getMaxU() - sprite.getMinU());
-		float g = (float)sprite.getHeight() / (sprite.getMaxV() - sprite.getMinV());
+		float f = (float)texture.getWidth() / (texture.getMaxU() - texture.getMinU());
+		float g = (float)texture.getHeight() / (texture.getMaxV() - texture.getMinV());
 		float h = 4.0F / Math.max(g, f);
 		float i = (modelElementTexture.uvs[0] + modelElementTexture.uvs[0] + modelElementTexture.uvs[2] + modelElementTexture.uvs[2]) / 4.0F;
 		float j = (modelElementTexture.uvs[1] + modelElementTexture.uvs[1] + modelElementTexture.uvs[3] + modelElementTexture.uvs[3]) / 4.0F;
@@ -50,14 +50,14 @@ public class BakedQuadFactory {
 		modelElementTexture.uvs[2] = MathHelper.lerp(h, modelElementTexture.uvs[2], i);
 		modelElementTexture.uvs[1] = MathHelper.lerp(h, modelElementTexture.uvs[1], j);
 		modelElementTexture.uvs[3] = MathHelper.lerp(h, modelElementTexture.uvs[3], j);
-		int[] is = this.method_3458(modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelBakeSettings.getRotation(), modelRotation, bl);
-		Direction direction2 = method_3467(is);
+		int[] is = this.method_3458(modelElementTexture, texture, side, this.method_3459(from, to), settings.getRotation(), rotation, shade);
+		Direction direction = method_3467(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
-		if (modelRotation == null) {
-			this.method_3462(is, direction2);
+		if (rotation == null) {
+			this.method_3462(is, direction);
 		}
 
-		return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
+		return new BakedQuad(is, face.tintIndex, direction, texture);
 	}
 
 	public static ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, Rotation3 rotation3, Identifier identifier) {

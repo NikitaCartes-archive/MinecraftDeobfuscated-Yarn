@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.TropicalFishSomethingFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.TintableCompositeModel;
@@ -29,14 +29,7 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 	}
 
 	public void method_4140(
-		TropicalFishEntity tropicalFishEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		TropicalFishEntity tropicalFishEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = (TintableCompositeModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0
 			? this.field_4800
@@ -44,7 +37,7 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 		this.model = tintableCompositeModel;
 		float[] fs = tropicalFishEntity.getBaseColorComponents();
 		tintableCompositeModel.setColorMultiplier(fs[0], fs[1], fs[2]);
-		super.method_4072(tropicalFishEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.method_4072(tropicalFishEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 		tintableCompositeModel.setColorMultiplier(1.0F, 1.0F, 1.0F);
 	}
 

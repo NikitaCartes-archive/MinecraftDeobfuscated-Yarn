@@ -24,10 +24,10 @@ public class PngFile {
 	public final int width;
 	public final int height;
 
-	public PngFile(String string, InputStream inputStream) throws IOException {
+	public PngFile(String name, InputStream in) throws IOException {
 		try (
 			MemoryStack memoryStack = MemoryStack.stackPush();
-			PngFile.Reader reader = createReader(inputStream);
+			PngFile.Reader reader = createReader(in);
 			STBIReadCallback sTBIReadCallback = STBIReadCallback.create(reader::read);
 			STBISkipCallback sTBISkipCallback = STBISkipCallback.create(reader::skip);
 			STBIEOFCallback sTBIEOFCallback = STBIEOFCallback.create(reader::eof);
@@ -40,7 +40,7 @@ public class PngFile {
 			IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 			IntBuffer intBuffer3 = memoryStack.mallocInt(1);
 			if (!STBImage.stbi_info_from_callbacks(sTBIIOCallbacks, 0L, intBuffer, intBuffer2, intBuffer3)) {
-				throw new IOException("Could not read info from the PNG file " + string + " " + STBImage.stbi_failure_reason());
+				throw new IOException("Could not read info from the PNG file " + name + " " + STBImage.stbi_failure_reason());
 			}
 
 			this.width = intBuffer.get(0);
@@ -48,143 +48,143 @@ public class PngFile {
 		}
 	}
 
-	private static PngFile.Reader createReader(InputStream inputStream) {
-		return (PngFile.Reader)(inputStream instanceof FileInputStream
-			? new PngFile.FileReader(((FileInputStream)inputStream).getChannel())
-			: new PngFile.ChannelReader(Channels.newChannel(inputStream)));
+	private static PngFile.Reader createReader(InputStream is) {
+		return (PngFile.Reader)(is instanceof FileInputStream
+			? new PngFile.SeekableChannelReader(((FileInputStream)is).getChannel())
+			: new PngFile.ChannelReader(Channels.newChannel(is)));
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class ChannelReader extends PngFile.Reader {
-		private final ReadableByteChannel field_5229;
-		private long field_5233 = MemoryUtil.nmemAlloc(128L);
-		private int field_5232 = 128;
-		private int field_5231;
-		private int field_5230;
+		private final ReadableByteChannel channel;
+		private long buffer = MemoryUtil.nmemAlloc(128L);
+		private int bufferSize = 128;
+		private int bufferPosition;
+		private int readPosition;
 
 		private ChannelReader(ReadableByteChannel readableByteChannel) {
-			this.field_5229 = readableByteChannel;
+			this.channel = readableByteChannel;
 		}
 
-		private void method_4548(int i) throws IOException {
-			ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(this.field_5233, this.field_5232);
-			if (i + this.field_5230 > this.field_5232) {
-				this.field_5232 = i + this.field_5230;
-				byteBuffer = MemoryUtil.memRealloc(byteBuffer, this.field_5232);
-				this.field_5233 = MemoryUtil.memAddress(byteBuffer);
+		private void readToBuffer(int size) throws IOException {
+			ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(this.buffer, this.bufferSize);
+			if (size + this.readPosition > this.bufferSize) {
+				this.bufferSize = size + this.readPosition;
+				byteBuffer = MemoryUtil.memRealloc(byteBuffer, this.bufferSize);
+				this.buffer = MemoryUtil.memAddress(byteBuffer);
 			}
 
-			byteBuffer.position(this.field_5231);
+			byteBuffer.position(this.bufferPosition);
 
-			while (i + this.field_5230 > this.field_5231) {
+			while (size + this.readPosition > this.bufferPosition) {
 				try {
-					int j = this.field_5229.read(byteBuffer);
-					if (j == -1) {
+					int i = this.channel.read(byteBuffer);
+					if (i == -1) {
 						break;
 					}
 				} finally {
-					this.field_5231 = byteBuffer.position();
+					this.bufferPosition = byteBuffer.position();
 				}
 			}
 		}
 
 		@Override
-		public int method_4544(long l, int i) throws IOException {
-			this.method_4548(i);
-			if (i + this.field_5230 > this.field_5231) {
-				i = this.field_5231 - this.field_5230;
+		public int read(long data, int size) throws IOException {
+			this.readToBuffer(size);
+			if (size + this.readPosition > this.bufferPosition) {
+				size = this.bufferPosition - this.readPosition;
 			}
 
-			MemoryUtil.memCopy(this.field_5233 + (long)this.field_5230, l, (long)i);
-			this.field_5230 += i;
-			return i;
+			MemoryUtil.memCopy(this.buffer + (long)this.readPosition, data, (long)size);
+			this.readPosition += size;
+			return size;
 		}
 
 		@Override
-		public void method_4545(int i) throws IOException {
-			if (i > 0) {
-				this.method_4548(i);
-				if (i + this.field_5230 > this.field_5231) {
+		public void skip(int n) throws IOException {
+			if (n > 0) {
+				this.readToBuffer(n);
+				if (n + this.readPosition > this.bufferPosition) {
 					throw new EOFException("Can't skip past the EOF.");
 				}
 			}
 
-			if (this.field_5230 + i < 0) {
-				throw new IOException("Can't seek before the beginning: " + (this.field_5230 + i));
+			if (this.readPosition + n < 0) {
+				throw new IOException("Can't seek before the beginning: " + (this.readPosition + n));
 			} else {
-				this.field_5230 += i;
+				this.readPosition += n;
 			}
 		}
 
 		@Override
 		public void close() throws IOException {
-			MemoryUtil.nmemFree(this.field_5233);
-			this.field_5229.close();
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class FileReader extends PngFile.Reader {
-		private final SeekableByteChannel field_5234;
-
-		private FileReader(SeekableByteChannel seekableByteChannel) {
-			this.field_5234 = seekableByteChannel;
-		}
-
-		@Override
-		public int method_4544(long l, int i) throws IOException {
-			ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(l, i);
-			return this.field_5234.read(byteBuffer);
-		}
-
-		@Override
-		public void method_4545(int i) throws IOException {
-			this.field_5234.position(this.field_5234.position() + (long)i);
-		}
-
-		@Override
-		public int eof(long l) {
-			return super.eof(l) != 0 && this.field_5234.isOpen() ? 1 : 0;
-		}
-
-		@Override
-		public void close() throws IOException {
-			this.field_5234.close();
+			MemoryUtil.nmemFree(this.buffer);
+			this.channel.close();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	abstract static class Reader implements AutoCloseable {
-		protected boolean field_5228;
+		protected boolean errored;
 
 		private Reader() {
 		}
 
-		int read(long l, long m, int i) {
+		int read(long user, long data, int size) {
 			try {
-				return this.method_4544(m, i);
+				return this.read(data, size);
 			} catch (IOException var7) {
-				this.field_5228 = true;
+				this.errored = true;
 				return 0;
 			}
 		}
 
-		void skip(long l, int i) {
+		void skip(long user, int n) {
 			try {
-				this.method_4545(i);
+				this.skip(n);
 			} catch (IOException var5) {
-				this.field_5228 = true;
+				this.errored = true;
 			}
 		}
 
-		int eof(long l) {
-			return this.field_5228 ? 1 : 0;
+		int eof(long user) {
+			return this.errored ? 1 : 0;
 		}
 
-		protected abstract int method_4544(long l, int i) throws IOException;
+		protected abstract int read(long data, int size) throws IOException;
 
-		protected abstract void method_4545(int i) throws IOException;
+		protected abstract void skip(int n) throws IOException;
 
 		public abstract void close() throws IOException;
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class SeekableChannelReader extends PngFile.Reader {
+		private final SeekableByteChannel channel;
+
+		private SeekableChannelReader(SeekableByteChannel channel) {
+			this.channel = channel;
+		}
+
+		@Override
+		public int read(long data, int size) throws IOException {
+			ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(data, size);
+			return this.channel.read(byteBuffer);
+		}
+
+		@Override
+		public void skip(int n) throws IOException {
+			this.channel.position(this.channel.position() + (long)n);
+		}
+
+		@Override
+		public int eof(long user) {
+			return super.eof(user) != 0 && this.channel.isOpen() ? 1 : 0;
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.channel.close();
+		}
 	}
 }

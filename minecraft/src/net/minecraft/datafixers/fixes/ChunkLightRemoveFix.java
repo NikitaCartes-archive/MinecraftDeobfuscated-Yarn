@@ -9,8 +9,8 @@ import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ChunkLightRemoveFix extends DataFix {
-	public ChunkLightRemoveFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ChunkLightRemoveFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

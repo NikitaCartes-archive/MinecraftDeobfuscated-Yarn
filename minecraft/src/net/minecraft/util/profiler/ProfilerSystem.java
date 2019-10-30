@@ -11,7 +11,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,7 +72,7 @@ public class ProfilerSystem implements ReadableProfiler {
 
 			this.location = this.location + string;
 			this.nameList.add(this.location);
-			this.timeList.add(SystemUtil.getMeasuringTimeNano());
+			this.timeList.add(Util.getMeasuringTimeNano());
 		}
 	}
 
@@ -88,7 +88,7 @@ public class ProfilerSystem implements ReadableProfiler {
 		} else if (this.timeList.isEmpty()) {
 			LOGGER.error("Tried to pop one too many times! Mismatched push() and pop()?");
 		} else {
-			long l = SystemUtil.getMeasuringTimeNano();
+			long l = Util.getMeasuringTimeNano();
 			long m = this.timeList.removeLong(this.timeList.size() - 1);
 			this.nameList.remove(this.nameList.size() - 1);
 			long n = l - m;
@@ -118,7 +118,7 @@ public class ProfilerSystem implements ReadableProfiler {
 	@Override
 	public ProfileResult getResults() {
 		return new ProfileResultImpl(
-			this.nameDurationMap, this.field_19381, this.field_15732, this.field_15729, SystemUtil.getMeasuringTimeNano(), this.field_16266.getAsInt()
+			this.nameDurationMap, this.field_19381, this.field_15732, this.field_15729, Util.getMeasuringTimeNano(), this.field_16266.getAsInt()
 		);
 	}
 }

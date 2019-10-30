@@ -15,9 +15,9 @@ import net.minecraft.util.math.BlockPos;
 public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 	private final float speed;
 
-	public WanderIndoorsTask(float f) {
+	public WanderIndoorsTask(float speed) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
-		this.speed = f;
+		this.speed = speed;
 	}
 
 	protected boolean method_20421(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {

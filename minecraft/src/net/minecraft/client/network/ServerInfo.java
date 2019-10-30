@@ -23,10 +23,10 @@ public class ServerInfo {
 	private String icon;
 	private boolean local;
 
-	public ServerInfo(String string, String string2, boolean bl) {
-		this.name = string;
-		this.address = string2;
-		this.local = bl;
+	public ServerInfo(String name, String address, boolean local) {
+		this.name = name;
+		this.address = address;
+		this.local = local;
 	}
 
 	public CompoundTag serialize() {
@@ -54,14 +54,14 @@ public class ServerInfo {
 		this.resourcePackState = resourcePackState;
 	}
 
-	public static ServerInfo deserialize(CompoundTag compoundTag) {
-		ServerInfo serverInfo = new ServerInfo(compoundTag.getString("name"), compoundTag.getString("ip"), false);
-		if (compoundTag.contains("icon", 8)) {
-			serverInfo.setIcon(compoundTag.getString("icon"));
+	public static ServerInfo deserialize(CompoundTag tag) {
+		ServerInfo serverInfo = new ServerInfo(tag.getString("name"), tag.getString("ip"), false);
+		if (tag.contains("icon", 8)) {
+			serverInfo.setIcon(tag.getString("icon"));
 		}
 
-		if (compoundTag.contains("acceptTextures", 1)) {
-			if (compoundTag.getBoolean("acceptTextures")) {
+		if (tag.contains("acceptTextures", 1)) {
+			if (tag.getBoolean("acceptTextures")) {
 				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
 			} else {
 				serverInfo.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
@@ -102,8 +102,8 @@ public class ServerInfo {
 
 		private final Text name;
 
-		private ResourcePackState(String string2) {
-			this.name = new TranslatableText("addServer.resourcePack." + string2);
+		private ResourcePackState(String name) {
+			this.name = new TranslatableText("addServer.resourcePack." + name);
 		}
 
 		public Text getName() {

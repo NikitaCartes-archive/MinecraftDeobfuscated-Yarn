@@ -16,11 +16,11 @@ public class LightPredicate {
 		this.range = intRange;
 	}
 
-	public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
+	public boolean test(ServerWorld world, BlockPos pos) {
 		if (this == ANY) {
 			return true;
 		} else {
-			return !serverWorld.canSetBlock(blockPos) ? false : this.range.test(serverWorld.getLightLevel(blockPos));
+			return !world.canSetBlock(pos) ? false : this.range.test(world.getLightLevel(pos));
 		}
 	}
 
@@ -34,9 +34,9 @@ public class LightPredicate {
 		}
 	}
 
-	public static LightPredicate fromJson(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "light");
+	public static LightPredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "light");
 			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("light"));
 			return new LightPredicate(intRange);
 		} else {

@@ -8,22 +8,17 @@ public class MineshaftFeatureConfig implements FeatureConfig {
 	public final double probability;
 	public final MineshaftFeature.Type type;
 
-	public MineshaftFeatureConfig(double d, MineshaftFeature.Type type) {
-		this.probability = d;
+	public MineshaftFeatureConfig(double probability, MineshaftFeature.Type type) {
+		this.probability = probability;
 		this.type = type;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
-				ImmutableMap.of(
-					dynamicOps.createString("probability"),
-					dynamicOps.createDouble(this.probability),
-					dynamicOps.createString("type"),
-					dynamicOps.createString(this.type.getName())
-				)
+			ops,
+			ops.createMap(
+				ImmutableMap.of(ops.createString("probability"), ops.createDouble(this.probability), ops.createString("type"), ops.createString(this.type.getName()))
 			)
 		);
 	}

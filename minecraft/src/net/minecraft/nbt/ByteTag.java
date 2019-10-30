@@ -32,21 +32,21 @@ public class ByteTag extends AbstractNumberTag {
 	public static final ByteTag ONE = of((byte)1);
 	private final byte value;
 
-	private ByteTag(byte b) {
-		this.value = b;
+	private ByteTag(byte value) {
+		this.value = value;
 	}
 
-	public static ByteTag of(byte b) {
-		return ByteTag.Cache.VALUES[128 + b];
+	public static ByteTag of(byte value) {
+		return ByteTag.Cache.VALUES[128 + value];
 	}
 
-	public static ByteTag of(boolean bl) {
-		return bl ? ONE : ZERO;
+	public static ByteTag of(boolean value) {
+		return value ? ONE : ZERO;
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeByte(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeByte(this.value);
 	}
 
 	@Override
@@ -68,8 +68,8 @@ public class ByteTag extends AbstractNumberTag {
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof ByteTag && this.value == ((ByteTag)object).value;
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof ByteTag && this.value == ((ByteTag)o).value;
 	}
 
 	public int hashCode() {
@@ -77,7 +77,7 @@ public class ByteTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("b").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

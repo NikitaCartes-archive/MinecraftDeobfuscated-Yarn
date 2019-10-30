@@ -15,10 +15,10 @@ public class GoToEntityTargetGoal extends Goal {
 	private final double speed;
 	private final float maxDistance;
 
-	public GoToEntityTargetGoal(MobEntityWithAi mobEntityWithAi, double d, float f) {
-		this.mob = mobEntityWithAi;
-		this.speed = d;
-		this.maxDistance = f;
+	public GoToEntityTargetGoal(MobEntityWithAi mob, double speed, float maxDistance) {
+		this.mob = mob;
+		this.speed = speed;
+		this.maxDistance = maxDistance;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 

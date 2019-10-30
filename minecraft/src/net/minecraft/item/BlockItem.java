@@ -36,31 +36,29 @@ public class BlockItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		ActionResult actionResult = this.place(new ItemPlacementContext(itemUsageContext));
-		return actionResult != ActionResult.SUCCESS && this.isFood()
-			? this.use(itemUsageContext.world, itemUsageContext.player, itemUsageContext.hand).getResult()
-			: actionResult;
+	public ActionResult useOnBlock(ItemUsageContext context) {
+		ActionResult actionResult = this.place(new ItemPlacementContext(context));
+		return actionResult != ActionResult.SUCCESS && this.isFood() ? this.use(context.world, context.player, context.hand).getResult() : actionResult;
 	}
 
-	public ActionResult place(ItemPlacementContext itemPlacementContext) {
-		if (!itemPlacementContext.canPlace()) {
+	public ActionResult place(ItemPlacementContext context) {
+		if (!context.canPlace()) {
 			return ActionResult.FAIL;
 		} else {
-			ItemPlacementContext itemPlacementContext2 = this.getPlacementContext(itemPlacementContext);
-			if (itemPlacementContext2 == null) {
+			ItemPlacementContext itemPlacementContext = this.getPlacementContext(context);
+			if (itemPlacementContext == null) {
 				return ActionResult.FAIL;
 			} else {
-				BlockState blockState = this.getPlacementState(itemPlacementContext2);
+				BlockState blockState = this.getPlacementState(itemPlacementContext);
 				if (blockState == null) {
 					return ActionResult.FAIL;
-				} else if (!this.place(itemPlacementContext2, blockState)) {
+				} else if (!this.place(itemPlacementContext, blockState)) {
 					return ActionResult.FAIL;
 				} else {
-					BlockPos blockPos = itemPlacementContext2.getBlockPos();
-					World world = itemPlacementContext2.getWorld();
-					PlayerEntity playerEntity = itemPlacementContext2.getPlayer();
-					ItemStack itemStack = itemPlacementContext2.getStack();
+					BlockPos blockPos = itemPlacementContext.getBlockPos();
+					World world = itemPlacementContext.getWorld();
+					PlayerEntity playerEntity = itemPlacementContext.getPlayer();
+					ItemStack itemStack = itemPlacementContext.getStack();
 					BlockState blockState2 = world.getBlockState(blockPos);
 					Block block = blockState2.getBlock();
 					if (block == blockState.getBlock()) {
@@ -88,86 +86,86 @@ public class BlockItem extends Item {
 		}
 	}
 
-	protected SoundEvent getPlaceSound(BlockState blockState) {
-		return blockState.getSoundGroup().getPlaceSound();
+	protected SoundEvent getPlaceSound(BlockState state) {
+		return state.getSoundGroup().getPlaceSound();
 	}
 
 	@Nullable
-	public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext;
+	public ItemPlacementContext getPlacementContext(ItemPlacementContext context) {
+		return context;
 	}
 
-	protected boolean postPlacement(BlockPos blockPos, World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockState blockState) {
-		return writeTagToBlockEntity(world, playerEntity, blockPos, itemStack);
+	protected boolean postPlacement(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
+		return writeTagToBlockEntity(world, player, pos, stack);
 	}
 
 	@Nullable
-	protected BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.getBlock().getPlacementState(itemPlacementContext);
-		return blockState != null && this.canPlace(itemPlacementContext, blockState) ? blockState : null;
+	protected BlockState getPlacementState(ItemPlacementContext context) {
+		BlockState blockState = this.getBlock().getPlacementState(context);
+		return blockState != null && this.canPlace(context, blockState) ? blockState : null;
 	}
 
-	private BlockState placeFromTag(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
-		BlockState blockState2 = blockState;
-		CompoundTag compoundTag = itemStack.getTag();
+	private BlockState placeFromTag(BlockPos pos, World world, ItemStack stack, BlockState state) {
+		BlockState blockState = state;
+		CompoundTag compoundTag = stack.getTag();
 		if (compoundTag != null) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("BlockStateTag");
-			StateManager<Block, BlockState> stateManager = blockState.getBlock().getStateFactory();
+			StateManager<Block, BlockState> stateManager = state.getBlock().getStateFactory();
 
 			for (String string : compoundTag2.getKeys()) {
 				Property<?> property = stateManager.getProperty(string);
 				if (property != null) {
 					String string2 = compoundTag2.get(string).asString();
-					blockState2 = with(blockState2, property, string2);
+					blockState = with(blockState, property, string2);
 				}
 			}
 		}
 
-		if (blockState2 != blockState) {
-			world.setBlockState(blockPos, blockState2, 2);
+		if (blockState != state) {
+			world.setBlockState(pos, blockState, 2);
 		}
 
-		return blockState2;
+		return blockState;
 	}
 
-	private static <T extends Comparable<T>> BlockState with(BlockState blockState, Property<T> property, String string) {
-		return (BlockState)property.parse(string).map(comparable -> blockState.with(property, comparable)).orElse(blockState);
+	private static <T extends Comparable<T>> BlockState with(BlockState state, Property<T> property, String name) {
+		return (BlockState)property.parse(name).map(value -> state.with(property, value)).orElse(state);
 	}
 
-	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
-		PlayerEntity playerEntity = itemPlacementContext.getPlayer();
+	protected boolean canPlace(ItemPlacementContext context, BlockState state) {
+		PlayerEntity playerEntity = context.getPlayer();
 		EntityContext entityContext = playerEntity == null ? EntityContext.absent() : EntityContext.of(playerEntity);
-		return (!this.checkStatePlacement() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()))
-			&& itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), entityContext);
+		return (!this.checkStatePlacement() || state.canPlaceAt(context.getWorld(), context.getBlockPos()))
+			&& context.getWorld().canPlace(state, context.getBlockPos(), entityContext);
 	}
 
 	protected boolean checkStatePlacement() {
 		return true;
 	}
 
-	protected boolean place(ItemPlacementContext itemPlacementContext, BlockState blockState) {
-		return itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos(), blockState, 11);
+	protected boolean place(ItemPlacementContext context, BlockState state) {
+		return context.getWorld().setBlockState(context.getBlockPos(), state, 11);
 	}
 
-	public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity playerEntity, BlockPos blockPos, ItemStack itemStack) {
+	public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity player, BlockPos pos, ItemStack stack) {
 		MinecraftServer minecraftServer = world.getServer();
 		if (minecraftServer == null) {
 			return false;
 		} else {
-			CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+			CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
 			if (compoundTag != null) {
-				BlockEntity blockEntity = world.getBlockEntity(blockPos);
+				BlockEntity blockEntity = world.getBlockEntity(pos);
 				if (blockEntity != null) {
-					if (!world.isClient && blockEntity.shouldNotCopyTagFromItem() && (playerEntity == null || !playerEntity.isCreativeLevelTwoOp())) {
+					if (!world.isClient && blockEntity.shouldNotCopyTagFromItem() && (player == null || !player.isCreativeLevelTwoOp())) {
 						return false;
 					}
 
 					CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
 					CompoundTag compoundTag3 = compoundTag2.method_10553();
 					compoundTag2.copyFrom(compoundTag);
-					compoundTag2.putInt("x", blockPos.getX());
-					compoundTag2.putInt("y", blockPos.getY());
-					compoundTag2.putInt("z", blockPos.getZ());
+					compoundTag2.putInt("x", pos.getX());
+					compoundTag2.putInt("y", pos.getY());
+					compoundTag2.putInt("z", pos.getZ());
 					if (!compoundTag2.equals(compoundTag3)) {
 						blockEntity.fromTag(compoundTag2);
 						blockEntity.markDirty();
@@ -186,17 +184,17 @@ public class BlockItem extends Item {
 	}
 
 	@Override
-	public void appendStacks(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
-		if (this.isIn(itemGroup)) {
-			this.getBlock().addStacksForDisplay(itemGroup, defaultedList);
+	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+		if (this.isIn(group)) {
+			this.getBlock().addStacksForDisplay(group, stacks);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		super.appendTooltip(itemStack, world, list, tooltipContext);
-		this.getBlock().buildTooltip(itemStack, world, list, tooltipContext);
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		super.appendTooltip(stack, world, tooltip, context);
+		this.getBlock().buildTooltip(stack, world, tooltip, context);
 	}
 
 	public Block getBlock() {

@@ -31,6 +31,7 @@ public abstract class Particle {
 	private Box boundingBox = EMPTY_BOUNDING_BOX;
 	protected boolean onGround;
 	protected boolean collidesWithWorld = true;
+	private boolean field_21507;
 	protected boolean dead;
 	protected float spacingXZ = 0.6F;
 	protected float spacingY = 1.8F;
@@ -48,52 +49,52 @@ public abstract class Particle {
 	public static double cameraY;
 	public static double cameraZ;
 
-	protected Particle(World world, double d, double e, double f) {
+	protected Particle(World world, double x, double y, double z) {
 		this.world = world;
 		this.setBoundingBoxSpacing(0.2F, 0.2F);
-		this.setPos(d, e, f);
-		this.prevPosX = d;
-		this.prevPosY = e;
-		this.prevPosZ = f;
+		this.setPos(x, y, z);
+		this.prevPosX = x;
+		this.prevPosY = y;
+		this.prevPosZ = z;
 		this.maxAge = (int)(4.0F / (this.random.nextFloat() * 0.9F + 0.1F));
 	}
 
-	public Particle(World world, double d, double e, double f, double g, double h, double i) {
-		this(world, d, e, f);
-		this.velocityX = g + (Math.random() * 2.0 - 1.0) * 0.4F;
-		this.velocityY = h + (Math.random() * 2.0 - 1.0) * 0.4F;
-		this.velocityZ = i + (Math.random() * 2.0 - 1.0) * 0.4F;
-		float j = (float)(Math.random() + Math.random() + 1.0) * 0.15F;
-		float k = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
-		this.velocityX = this.velocityX / (double)k * (double)j * 0.4F;
-		this.velocityY = this.velocityY / (double)k * (double)j * 0.4F + 0.1F;
-		this.velocityZ = this.velocityZ / (double)k * (double)j * 0.4F;
+	public Particle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+		this(world, x, y, z);
+		this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * 0.4F;
+		this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * 0.4F;
+		this.velocityZ = velocityZ + (Math.random() * 2.0 - 1.0) * 0.4F;
+		float f = (float)(Math.random() + Math.random() + 1.0) * 0.15F;
+		float g = MathHelper.sqrt(this.velocityX * this.velocityX + this.velocityY * this.velocityY + this.velocityZ * this.velocityZ);
+		this.velocityX = this.velocityX / (double)g * (double)f * 0.4F;
+		this.velocityY = this.velocityY / (double)g * (double)f * 0.4F + 0.1F;
+		this.velocityZ = this.velocityZ / (double)g * (double)f * 0.4F;
 	}
 
-	public Particle move(float f) {
-		this.velocityX *= (double)f;
-		this.velocityY = (this.velocityY - 0.1F) * (double)f + 0.1F;
-		this.velocityZ *= (double)f;
+	public Particle move(float speed) {
+		this.velocityX *= (double)speed;
+		this.velocityY = (this.velocityY - 0.1F) * (double)speed + 0.1F;
+		this.velocityZ *= (double)speed;
 		return this;
 	}
 
-	public Particle scale(float f) {
-		this.setBoundingBoxSpacing(0.2F * f, 0.2F * f);
+	public Particle scale(float scale) {
+		this.setBoundingBoxSpacing(0.2F * scale, 0.2F * scale);
 		return this;
 	}
 
-	public void setColor(float f, float g, float h) {
-		this.colorRed = f;
-		this.colorGreen = g;
-		this.colorBlue = h;
+	public void setColor(float red, float green, float blue) {
+		this.colorRed = red;
+		this.colorGreen = green;
+		this.colorBlue = blue;
 	}
 
-	protected void setColorAlpha(float f) {
-		this.colorAlpha = f;
+	protected void setColorAlpha(float alpha) {
+		this.colorAlpha = alpha;
 	}
 
-	public void setMaxAge(int i) {
-		this.maxAge = i;
+	public void setMaxAge(int maxAge) {
+		this.maxAge = maxAge;
 	}
 
 	public int getMaxAge() {
@@ -119,7 +120,7 @@ public abstract class Particle {
 		}
 	}
 
-	public abstract void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k);
+	public abstract void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta, float f, float g, float h, float i, float j);
 
 	public abstract ParticleTextureSheet getType();
 
@@ -147,62 +148,70 @@ public abstract class Particle {
 		this.dead = true;
 	}
 
-	protected void setBoundingBoxSpacing(float f, float g) {
-		if (f != this.spacingXZ || g != this.spacingY) {
-			this.spacingXZ = f;
-			this.spacingY = g;
+	protected void setBoundingBoxSpacing(float spacingXZ, float spacingY) {
+		if (spacingXZ != this.spacingXZ || spacingY != this.spacingY) {
+			this.spacingXZ = spacingXZ;
+			this.spacingY = spacingY;
 			Box box = this.getBoundingBox();
-			double d = (box.minX + box.maxX - (double)f) / 2.0;
-			double e = (box.minZ + box.maxZ - (double)f) / 2.0;
-			this.setBoundingBox(new Box(d, box.minY, e, d + (double)this.spacingXZ, box.minY + (double)this.spacingY, e + (double)this.spacingXZ));
+			double d = (box.x1 + box.x2 - (double)spacingXZ) / 2.0;
+			double e = (box.z1 + box.z2 - (double)spacingXZ) / 2.0;
+			this.setBoundingBox(new Box(d, box.y1, e, d + (double)this.spacingXZ, box.y1 + (double)this.spacingY, e + (double)this.spacingXZ));
 		}
 	}
 
-	public void setPos(double d, double e, double f) {
-		this.x = d;
-		this.y = e;
-		this.z = f;
-		float g = this.spacingXZ / 2.0F;
-		float h = this.spacingY;
-		this.setBoundingBox(new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
+	public void setPos(double x, double y, double z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		float f = this.spacingXZ / 2.0F;
+		float g = this.spacingY;
+		this.setBoundingBox(new Box(x - (double)f, y, z - (double)f, x + (double)f, y + (double)g, z + (double)f));
 	}
 
-	public void move(double d, double e, double f) {
-		double g = d;
-		double h = e;
-		double i = f;
-		if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
+	public void move(double dx, double dy, double dz) {
+		if (this.field_21507) {
+			dy = 0.0;
+		}
+
+		double d = dx;
+		double e = dy;
+		double f = dz;
+		if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0) && !this.field_21507) {
 			Vec3d vec3d = Entity.adjustMovementForCollisions(
-				null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<>(Stream.empty())
+				null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<>(Stream.empty())
 			);
-			d = vec3d.x;
-			e = vec3d.y;
-			f = vec3d.z;
+			dx = vec3d.x;
+			dy = vec3d.y;
+			dz = vec3d.z;
 		}
 
-		if (d != 0.0 || e != 0.0 || f != 0.0) {
-			this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+		if (dx != 0.0 || dy != 0.0 || dz != 0.0) {
+			this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
 			this.repositionFromBoundingBox();
 		}
 
-		this.onGround = h != e && h < 0.0;
-		if (g != d) {
+		if (Math.abs(dy) < 1.0E-5F) {
+			this.field_21507 = true;
+		}
+
+		this.onGround = e != dy && e < 0.0;
+		if (d != dx) {
 			this.velocityX = 0.0;
 		}
 
-		if (i != f) {
+		if (f != dz) {
 			this.velocityZ = 0.0;
 		}
 	}
 
 	protected void repositionFromBoundingBox() {
 		Box box = this.getBoundingBox();
-		this.x = (box.minX + box.maxX) / 2.0;
-		this.y = box.minY;
-		this.z = (box.minZ + box.maxZ) / 2.0;
+		this.x = (box.x1 + box.x2) / 2.0;
+		this.y = box.y1;
+		this.z = (box.z1 + box.z2) / 2.0;
 	}
 
-	protected int getColorMultiplier(float f) {
+	protected int getColorMultiplier(float tint) {
 		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 		return this.world.isChunkLoaded(blockPos) ? this.world.getLightmapCoordinates(blockPos) : 0;
 	}

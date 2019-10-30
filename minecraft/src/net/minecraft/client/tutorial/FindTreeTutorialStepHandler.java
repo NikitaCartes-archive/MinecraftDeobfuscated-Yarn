@@ -89,9 +89,9 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onTarget(ClientWorld clientWorld, HitResult hitResult) {
+	public void onTarget(ClientWorld world, HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.BLOCK) {
-			BlockState blockState = clientWorld.getBlockState(((BlockHitResult)hitResult).getBlockPos());
+			BlockState blockState = world.getBlockState(((BlockHitResult)hitResult).getBlockPos());
 			if (TREE_BLOCKS.contains(blockState.getBlock())) {
 				this.tutorialManager.setStep(TutorialStep.PUNCH_TREE);
 			}
@@ -99,18 +99,18 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onSlotUpdate(ItemStack itemStack) {
+	public void onSlotUpdate(ItemStack stack) {
 		for (Block block : TREE_BLOCKS) {
-			if (itemStack.getItem() == block.asItem()) {
+			if (stack.getItem() == block.asItem()) {
 				this.tutorialManager.setStep(TutorialStep.CRAFT_PLANKS);
 				return;
 			}
 		}
 	}
 
-	public static boolean hasBrokenTreeBlocks(ClientPlayerEntity clientPlayerEntity) {
+	public static boolean hasBrokenTreeBlocks(ClientPlayerEntity player) {
 		for (Block block : TREE_BLOCKS) {
-			if (clientPlayerEntity.getStats().getStat(Stats.MINED.getOrCreateStat(block)) > 0) {
+			if (player.getStats().getStat(Stats.MINED.getOrCreateStat(block)) > 0) {
 				return true;
 			}
 		}

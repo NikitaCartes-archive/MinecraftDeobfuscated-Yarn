@@ -27,7 +27,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -307,19 +307,19 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> list) {
+	private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> structureBlockEntities) {
 		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.mode == StructureBlockMode.CORNER
 				&& Objects.equals(this.structureName, structureBlockBlockEntity.structureName);
-		return (List<StructureBlockBlockEntity>)list.stream().filter(predicate).collect(Collectors.toList());
+		return (List<StructureBlockBlockEntity>)structureBlockEntities.stream().filter(predicate).collect(Collectors.toList());
 	}
 
-	private List<StructureBlockBlockEntity> findStructureBlockEntities(BlockPos blockPos, BlockPos blockPos2) {
+	private List<StructureBlockBlockEntity> findStructureBlockEntities(BlockPos pos1, BlockPos pos2) {
 		List<StructureBlockBlockEntity> list = Lists.<StructureBlockBlockEntity>newArrayList();
 
-		for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
-			BlockState blockState = this.world.getBlockState(blockPos3);
+		for (BlockPos blockPos : BlockPos.iterate(pos1, pos2)) {
+			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
-				BlockEntity blockEntity = this.world.getBlockEntity(blockPos3);
+				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 				if (blockEntity != null && blockEntity instanceof StructureBlockBlockEntity) {
 					list.add((StructureBlockBlockEntity)blockEntity);
 				}
@@ -329,33 +329,33 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return list;
 	}
 
-	private BlockBox makeBoundingBox(BlockPos blockPos, List<StructureBlockBlockEntity> list) {
+	private BlockBox makeBoundingBox(BlockPos center, List<StructureBlockBlockEntity> corners) {
 		BlockBox blockBox;
-		if (list.size() > 1) {
-			BlockPos blockPos2 = ((StructureBlockBlockEntity)list.get(0)).getPos();
-			blockBox = new BlockBox(blockPos2, blockPos2);
-		} else {
+		if (corners.size() > 1) {
+			BlockPos blockPos = ((StructureBlockBlockEntity)corners.get(0)).getPos();
 			blockBox = new BlockBox(blockPos, blockPos);
+		} else {
+			blockBox = new BlockBox(center, center);
 		}
 
-		for (StructureBlockBlockEntity structureBlockBlockEntity : list) {
-			BlockPos blockPos3 = structureBlockBlockEntity.getPos();
-			if (blockPos3.getX() < blockBox.minX) {
-				blockBox.minX = blockPos3.getX();
-			} else if (blockPos3.getX() > blockBox.maxX) {
-				blockBox.maxX = blockPos3.getX();
+		for (StructureBlockBlockEntity structureBlockBlockEntity : corners) {
+			BlockPos blockPos2 = structureBlockBlockEntity.getPos();
+			if (blockPos2.getX() < blockBox.minX) {
+				blockBox.minX = blockPos2.getX();
+			} else if (blockPos2.getX() > blockBox.maxX) {
+				blockBox.maxX = blockPos2.getX();
 			}
 
-			if (blockPos3.getY() < blockBox.minY) {
-				blockBox.minY = blockPos3.getY();
-			} else if (blockPos3.getY() > blockBox.maxY) {
-				blockBox.maxY = blockPos3.getY();
+			if (blockPos2.getY() < blockBox.minY) {
+				blockBox.minY = blockPos2.getY();
+			} else if (blockPos2.getY() > blockBox.maxY) {
+				blockBox.maxY = blockPos2.getY();
 			}
 
-			if (blockPos3.getZ() < blockBox.minZ) {
-				blockBox.minZ = blockPos3.getZ();
-			} else if (blockPos3.getZ() > blockBox.maxZ) {
-				blockBox.maxZ = blockPos3.getZ();
+			if (blockPos2.getZ() < blockBox.minZ) {
+				blockBox.minZ = blockPos2.getZ();
+			} else if (blockPos2.getZ() > blockBox.maxZ) {
+				blockBox.maxZ = blockPos2.getZ();
 			}
 		}
 
@@ -399,11 +399,11 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.loadStructure(true);
 	}
 
-	private static Random createRandom(long l) {
-		return l == 0L ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(l);
+	private static Random createRandom(long seed) {
+		return seed == 0L ? new Random(Util.getMeasuringTimeMs()) : new Random(seed);
 	}
 
-	public boolean loadStructure(boolean bl) {
+	public boolean loadStructure(boolean resizeDisabled) {
 		if (this.mode == StructureBlockMode.LOAD && !this.world.isClient && this.structureName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
 			StructureManager structureManager = serverWorld.getStructureManager();
@@ -415,28 +415,28 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			return structure == null ? false : this.place(bl, structure);
+			return structure == null ? false : this.place(resizeDisabled, structure);
 		} else {
 			return false;
 		}
 	}
 
-	public boolean place(boolean bl, Structure structure) {
+	public boolean place(boolean resizeDisabled, Structure structure) {
 		BlockPos blockPos = this.getPos();
 		if (!ChatUtil.isEmpty(structure.getAuthor())) {
 			this.author = structure.getAuthor();
 		}
 
 		BlockPos blockPos2 = structure.getSize();
-		boolean bl2 = this.size.equals(blockPos2);
-		if (!bl2) {
+		boolean bl = this.size.equals(blockPos2);
+		if (!bl) {
 			this.size = blockPos2;
 			this.markDirty();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			this.world.updateListeners(blockPos, blockState, blockState, 3);
 		}
 
-		if (bl && !bl2) {
+		if (resizeDisabled && !bl) {
 			return false;
 		} else {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
@@ -501,8 +501,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.showBoundingBox;
 	}
 
-	public void setShowBoundingBox(boolean bl) {
-		this.showBoundingBox = bl;
+	public void setShowBoundingBox(boolean showBoundingBox) {
+		this.showBoundingBox = showBoundingBox;
 	}
 
 	public static enum Action {

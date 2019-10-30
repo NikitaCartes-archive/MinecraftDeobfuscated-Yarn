@@ -14,28 +14,28 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class ItemCustomNameToComponentFix extends DataFix {
-	public ItemCustomNameToComponentFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemCustomNameToComponentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
-		Optional<? extends Dynamic<?>> optional = dynamic.get("display").get();
+	private Dynamic<?> fixCustomName(Dynamic<?> tag) {
+		Optional<? extends Dynamic<?>> optional = tag.get("display").get();
 		if (optional.isPresent()) {
-			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
-			Optional<String> optional2 = dynamic2.get("Name").asString();
+			Dynamic<?> dynamic = (Dynamic<?>)optional.get();
+			Optional<String> optional2 = dynamic.get("Name").asString();
 			if (optional2.isPresent()) {
-				dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(new LiteralText((String)optional2.get()))));
+				dynamic = dynamic.set("Name", dynamic.createString(Text.Serializer.toJson(new LiteralText((String)optional2.get()))));
 			} else {
-				Optional<String> optional3 = dynamic2.get("LocName").asString();
+				Optional<String> optional3 = dynamic.get("LocName").asString();
 				if (optional3.isPresent()) {
-					dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(new TranslatableText((String)optional3.get()))));
-					dynamic2 = dynamic2.remove("LocName");
+					dynamic = dynamic.set("Name", dynamic.createString(Text.Serializer.toJson(new TranslatableText((String)optional3.get()))));
+					dynamic = dynamic.remove("LocName");
 				}
 			}
 
-			return dynamic.set("display", dynamic2);
+			return tag.set("display", dynamic);
 		} else {
-			return dynamic;
+			return tag;
 		}
 	}
 

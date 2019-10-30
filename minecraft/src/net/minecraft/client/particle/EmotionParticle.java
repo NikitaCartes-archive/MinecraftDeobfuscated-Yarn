@@ -8,8 +8,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class EmotionParticle extends SpriteBillboardParticle {
-	private EmotionParticle(World world, double d, double e, double f) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	private EmotionParticle(World world, double x, double y, double z) {
+		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.01F;
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;
@@ -25,8 +25,8 @@ public class EmotionParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float getSize(float f) {
-		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
+	public float getSize(float tickDelta) {
+		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 
 	@Override

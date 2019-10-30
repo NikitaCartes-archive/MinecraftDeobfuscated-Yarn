@@ -19,43 +19,43 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	private final WeightedList<Task<? super E>> tasks = new WeightedList<>();
 
 	public CompositeTask(
-		Map<MemoryModuleType<?>, MemoryModuleState> map,
-		Set<MemoryModuleType<?>> set,
+		Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState,
+		Set<MemoryModuleType<?>> memoriesToForgetWhenStopped,
 		CompositeTask.Order order,
 		CompositeTask.RunMode runMode,
-		List<Pair<Task<? super E>, Integer>> list
+		List<Pair<Task<? super E>, Integer>> tasks
 	) {
-		super(map);
-		this.memoriesToForgetWhenStopped = set;
+		super(requiredMemoryState);
+		this.memoriesToForgetWhenStopped = memoriesToForgetWhenStopped;
 		this.order = order;
 		this.runMode = runMode;
-		list.forEach(pair -> this.tasks.add((Task<? super E>)pair.getFirst(), (Integer)pair.getSecond()));
+		tasks.forEach(pair -> this.tasks.add((Task<? super E>)pair.getFirst(), (Integer)pair.getSecond()));
 	}
 
 	@Override
-	protected boolean shouldKeepRunning(ServerWorld serverWorld, E livingEntity, long l) {
-		return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).anyMatch(task -> task.shouldKeepRunning(serverWorld, livingEntity, l));
+	protected boolean shouldKeepRunning(ServerWorld world, E entity, long time) {
+		return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).anyMatch(task -> task.shouldKeepRunning(world, entity, time));
 	}
 
 	@Override
-	protected boolean isTimeLimitExceeded(long l) {
+	protected boolean isTimeLimitExceeded(long time) {
 		return false;
 	}
 
 	@Override
-	protected void run(ServerWorld serverWorld, E livingEntity, long l) {
+	protected void run(ServerWorld world, E entity, long time) {
 		this.order.apply(this.tasks);
-		this.runMode.run(this.tasks, serverWorld, livingEntity, l);
+		this.runMode.run(this.tasks, world, entity, time);
 	}
 
 	@Override
-	protected void keepRunning(ServerWorld serverWorld, E livingEntity, long l) {
-		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.tick(serverWorld, livingEntity, l));
+	protected void keepRunning(ServerWorld world, E entity, long time) {
+		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.tick(world, entity, time));
 	}
 
 	@Override
-	protected void finishRunning(ServerWorld serverWorld, E livingEntity, long l) {
-		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(serverWorld, livingEntity, l));
+	protected void finishRunning(ServerWorld serverWorld, E livingEntity, long time) {
+		this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(serverWorld, livingEntity, time));
 		this.memoriesToForgetWhenStopped.forEach(livingEntity.getBrain()::forget);
 	}
 
@@ -79,28 +79,28 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 			this.consumer = consumer;
 		}
 
-		public void apply(WeightedList<?> weightedList) {
-			this.consumer.accept(weightedList);
+		public void apply(WeightedList<?> list) {
+			this.consumer.accept(list);
 		}
 	}
 
 	static enum RunMode {
 		RUN_ONE {
 			@Override
-			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
-				weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(serverWorld, livingEntity, l)).findFirst();
+			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
+				tasks.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
 			}
 		},
 		TRY_ALL {
 			@Override
-			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l) {
-				weightedList.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(serverWorld, livingEntity, l));
+			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
+				tasks.stream().filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
 			}
 		};
 
 		private RunMode() {
 		}
 
-		public abstract <E extends LivingEntity> void run(WeightedList<Task<? super E>> weightedList, ServerWorld serverWorld, E livingEntity, long l);
+		public abstract <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time);
 	}
 }

@@ -10,9 +10,9 @@ import net.minecraft.text.TranslatableText;
 public class ProjectileDamageSource extends EntityDamageSource {
 	private final Entity attacker;
 
-	public ProjectileDamageSource(String string, Entity entity, @Nullable Entity entity2) {
-		super(string, entity);
-		this.attacker = entity2;
+	public ProjectileDamageSource(String name, Entity projectile, @Nullable Entity entity) {
+		super(name, projectile);
+		this.attacker = entity;
 	}
 
 	@Nullable

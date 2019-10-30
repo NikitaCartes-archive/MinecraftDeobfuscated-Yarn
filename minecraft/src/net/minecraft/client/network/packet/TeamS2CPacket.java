@@ -29,10 +29,10 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	public TeamS2CPacket() {
 	}
 
-	public TeamS2CPacket(Team team, int i) {
+	public TeamS2CPacket(Team team, int mode) {
 		this.teamName = team.getName();
-		this.mode = i;
-		if (i == 0 || i == 2) {
+		this.mode = mode;
+		if (mode == 0 || mode == 2) {
 			this.displayName = team.getDisplayName();
 			this.flags = team.getFriendlyFlagsBitwise();
 			this.nameTagVisibilityRule = team.getNameTagVisibilityRule().name;
@@ -42,65 +42,65 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.suffix = team.getSuffix();
 		}
 
-		if (i == 0) {
+		if (mode == 0) {
 			this.playerList.addAll(team.getPlayerList());
 		}
 	}
 
-	public TeamS2CPacket(Team team, Collection<String> collection, int i) {
+	public TeamS2CPacket(Team team, Collection<String> playerList, int i) {
 		if (i != 3 && i != 4) {
 			throw new IllegalArgumentException("Method must be join or leave for player constructor");
-		} else if (collection != null && !collection.isEmpty()) {
+		} else if (playerList != null && !playerList.isEmpty()) {
 			this.mode = i;
 			this.teamName = team.getName();
-			this.playerList.addAll(collection);
+			this.playerList.addAll(playerList);
 		} else {
 			throw new IllegalArgumentException("Players cannot be null/empty");
 		}
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.teamName = packetByteBuf.readString(16);
-		this.mode = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.teamName = buf.readString(16);
+		this.mode = buf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
-			this.displayName = packetByteBuf.readText();
-			this.flags = packetByteBuf.readByte();
-			this.nameTagVisibilityRule = packetByteBuf.readString(40);
-			this.collisionRule = packetByteBuf.readString(40);
-			this.color = packetByteBuf.readEnumConstant(Formatting.class);
-			this.prefix = packetByteBuf.readText();
-			this.suffix = packetByteBuf.readText();
+			this.displayName = buf.readText();
+			this.flags = buf.readByte();
+			this.nameTagVisibilityRule = buf.readString(40);
+			this.collisionRule = buf.readString(40);
+			this.color = buf.readEnumConstant(Formatting.class);
+			this.prefix = buf.readText();
+			this.suffix = buf.readText();
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
-			int i = packetByteBuf.readVarInt();
+			int i = buf.readVarInt();
 
 			for (int j = 0; j < i; j++) {
-				this.playerList.add(packetByteBuf.readString(40));
+				this.playerList.add(buf.readString(40));
 			}
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeString(this.teamName);
-		packetByteBuf.writeByte(this.mode);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeString(this.teamName);
+		buf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			packetByteBuf.writeText(this.displayName);
-			packetByteBuf.writeByte(this.flags);
-			packetByteBuf.writeString(this.nameTagVisibilityRule);
-			packetByteBuf.writeString(this.collisionRule);
-			packetByteBuf.writeEnumConstant(this.color);
-			packetByteBuf.writeText(this.prefix);
-			packetByteBuf.writeText(this.suffix);
+			buf.writeText(this.displayName);
+			buf.writeByte(this.flags);
+			buf.writeString(this.nameTagVisibilityRule);
+			buf.writeString(this.collisionRule);
+			buf.writeEnumConstant(this.color);
+			buf.writeText(this.prefix);
+			buf.writeText(this.suffix);
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
-			packetByteBuf.writeVarInt(this.playerList.size());
+			buf.writeVarInt(this.playerList.size());
 
 			for (String string : this.playerList) {
-				packetByteBuf.writeString(string);
+				buf.writeString(string);
 			}
 		}
 	}

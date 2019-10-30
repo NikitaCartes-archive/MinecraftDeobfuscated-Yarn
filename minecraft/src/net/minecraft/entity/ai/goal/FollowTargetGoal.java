@@ -16,20 +16,27 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	protected LivingEntity targetEntity;
 	protected TargetPredicate targetPredicate;
 
-	public FollowTargetGoal(MobEntity mobEntity, Class<T> class_, boolean bl) {
-		this(mobEntity, class_, bl, false);
+	public FollowTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility) {
+		this(mob, targetClass, checkVisibility, false);
 	}
 
-	public FollowTargetGoal(MobEntity mobEntity, Class<T> class_, boolean bl, boolean bl2) {
-		this(mobEntity, class_, 10, bl, bl2, null);
+	public FollowTargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, boolean checkCanNavigate) {
+		this(mob, targetClass, 10, checkVisibility, checkCanNavigate, null);
 	}
 
-	public FollowTargetGoal(MobEntity mobEntity, Class<T> class_, int i, boolean bl, boolean bl2, @Nullable Predicate<LivingEntity> predicate) {
-		super(mobEntity, bl, bl2);
-		this.targetClass = class_;
-		this.reciprocalChance = i;
+	public FollowTargetGoal(
+		MobEntity mob,
+		Class<T> targetClass,
+		int reciprocalChance,
+		boolean checkVisibility,
+		boolean checkCanNavigate,
+		@Nullable Predicate<LivingEntity> targetPredicate
+	) {
+		super(mob, checkVisibility, checkCanNavigate);
+		this.targetClass = targetClass;
+		this.reciprocalChance = reciprocalChance;
 		this.setControls(EnumSet.of(Goal.Control.TARGET));
-		this.targetPredicate = new TargetPredicate().setBaseMaxDistance(this.getFollowRange()).setPredicate(predicate);
+		this.targetPredicate = new TargetPredicate().setBaseMaxDistance(this.getFollowRange()).setPredicate(targetPredicate);
 	}
 
 	@Override
@@ -42,8 +49,8 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		}
 	}
 
-	protected Box getSearchBox(double d) {
-		return this.mob.getBoundingBox().expand(d, 4.0, d);
+	protected Box getSearchBox(double distance) {
+		return this.mob.getBoundingBox().expand(distance, 4.0, distance);
 	}
 
 	protected void findClosestTarget() {

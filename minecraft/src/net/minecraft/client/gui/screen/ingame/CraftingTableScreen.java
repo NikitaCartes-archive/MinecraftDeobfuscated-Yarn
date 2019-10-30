@@ -20,8 +20,8 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 	private final RecipeBookWidget recipeBookGui = new RecipeBookWidget();
 	private boolean isNarrow;
 
-	public CraftingTableScreen(CraftingTableContainer craftingTableContainer, PlayerInventory playerInventory, Text text) {
-		super(craftingTableContainer, playerInventory, text);
+	public CraftingTableScreen(CraftingTableContainer container, PlayerInventory inventory, Text title) {
+		super(container, inventory, title);
 	}
 
 	@Override
@@ -47,60 +47,63 @@ public class CraftingTableScreen extends AbstractContainerScreen<CraftingTableCo
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		if (this.recipeBookGui.isOpen() && this.isNarrow) {
-			this.drawBackground(f, i, j);
-			this.recipeBookGui.render(i, j, f);
+			this.drawBackground(delta, mouseX, mouseY);
+			this.recipeBookGui.render(mouseX, mouseY, delta);
 		} else {
-			this.recipeBookGui.render(i, j, f);
-			super.render(i, j, f);
-			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, f);
+			this.recipeBookGui.render(mouseX, mouseY, delta);
+			super.render(mouseX, mouseY, delta);
+			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, delta);
 		}
 
-		this.drawMouseoverTooltip(i, j);
-		this.recipeBookGui.drawTooltip(this.left, this.top, i, j);
+		this.drawMouseoverTooltip(mouseX, mouseY);
+		this.recipeBookGui.drawTooltip(this.left, this.top, mouseX, mouseY);
 		this.focusOn(this.recipeBookGui);
 	}
 
 	@Override
-	protected void drawForeground(int i, int j) {
+	protected void drawForeground(int mouseX, int mouseY) {
 		this.font.draw(this.title.asFormattedString(), 28.0F, 6.0F, 4210752);
 		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(float f, int i, int j) {
+	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(BG_TEX);
-		int k = this.left;
-		int l = (this.height - this.containerHeight) / 2;
-		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		int i = this.left;
+		int j = (this.height - this.containerHeight) / 2;
+		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
 	}
 
 	@Override
-	protected boolean isPointWithinBounds(int i, int j, int k, int l, double d, double e) {
-		return (!this.isNarrow || !this.recipeBookGui.isOpen()) && super.isPointWithinBounds(i, j, k, l, d, e);
+	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
+		return (!this.isNarrow || !this.recipeBookGui.isOpen()) && super.isPointWithinBounds(xPosition, yPosition, width, height, pointX, pointY);
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (this.recipeBookGui.mouseClicked(d, e, i)) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (this.recipeBookGui.mouseClicked(mouseX, mouseY, button)) {
 			return true;
 		} else {
-			return this.isNarrow && this.recipeBookGui.isOpen() ? true : super.mouseClicked(d, e, i);
+			return this.isNarrow && this.recipeBookGui.isOpen() ? true : super.mouseClicked(mouseX, mouseY, button);
 		}
 	}
 
 	@Override
-	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
-		return this.recipeBookGui.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
+	protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
+		boolean bl = mouseX < (double)left
+			|| mouseY < (double)top
+			|| mouseX >= (double)(left + this.containerWidth)
+			|| mouseY >= (double)(top + this.containerHeight);
+		return this.recipeBookGui.isClickOutsideBounds(mouseX, mouseY, this.left, this.top, this.containerWidth, this.containerHeight, button) && bl;
 	}
 
 	@Override
-	protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
-		super.onMouseClick(slot, i, j, slotActionType);
+	protected void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType) {
+		super.onMouseClick(slot, invSlot, button, slotActionType);
 		this.recipeBookGui.slotClicked(slot);
 	}
 

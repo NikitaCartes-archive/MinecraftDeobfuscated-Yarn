@@ -37,7 +37,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		Camera camera = this.field_4505.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
@@ -48,7 +48,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (Entry<BlockPos, BlockPos> entry : this.field_4507.entrySet()) {
@@ -59,7 +59,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 			float i = (float)(blockPos3.getZ() * 128 % 256) / 256.0F;
 			float j = (Float)this.field_4508.get(blockPos2);
 			if (blockPos.isWithinDistance(blockPos2, 160.0)) {
-				WorldRenderer.buildBoxOutline(
+				WorldRenderer.drawBox(
 					bufferBuilder,
 					(double)((float)blockPos2.getX() + 0.5F) - d - (double)j,
 					(double)((float)blockPos2.getY() + 0.5F) - e - (double)j,
@@ -77,7 +77,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 
 		for (BlockPos blockPos4 : this.field_4506) {
 			if (blockPos.isWithinDistance(blockPos4, 160.0)) {
-				WorldRenderer.buildBoxOutline(
+				WorldRenderer.drawBox(
 					bufferBuilder,
 					(double)blockPos4.getX() - d,
 					(double)blockPos4.getY() - e,

@@ -5,8 +5,8 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 public class DamageModifierStatusEffect extends StatusEffect {
 	protected final double modifier;
 
-	protected DamageModifierStatusEffect(StatusEffectType statusEffectType, int i, double d) {
-		super(statusEffectType, i);
+	protected DamageModifierStatusEffect(StatusEffectType statusEffectType, int color, double d) {
+		super(statusEffectType, color);
 		this.modifier = d;
 	}
 

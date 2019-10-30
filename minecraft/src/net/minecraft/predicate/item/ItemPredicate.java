@@ -55,41 +55,41 @@ public class ItemPredicate {
 	public ItemPredicate(
 		@Nullable Tag<Item> tag,
 		@Nullable Item item,
-		NumberRange.IntRange intRange,
-		NumberRange.IntRange intRange2,
-		EnchantmentPredicate[] enchantmentPredicates,
-		EnchantmentPredicate[] enchantmentPredicates2,
+		NumberRange.IntRange count,
+		NumberRange.IntRange durability,
+		EnchantmentPredicate[] enchantments,
+		EnchantmentPredicate[] storedEnchantments,
 		@Nullable Potion potion,
-		NbtPredicate nbtPredicate
+		NbtPredicate nbt
 	) {
 		this.tag = tag;
 		this.item = item;
-		this.count = intRange;
-		this.durability = intRange2;
-		this.enchantments = enchantmentPredicates;
-		this.storedEnchantments = enchantmentPredicates2;
+		this.count = count;
+		this.durability = durability;
+		this.enchantments = enchantments;
+		this.storedEnchantments = storedEnchantments;
 		this.potion = potion;
-		this.nbt = nbtPredicate;
+		this.nbt = nbt;
 	}
 
-	public boolean test(ItemStack itemStack) {
+	public boolean test(ItemStack stack) {
 		if (this == ANY) {
 			return true;
-		} else if (this.tag != null && !this.tag.contains(itemStack.getItem())) {
+		} else if (this.tag != null && !this.tag.contains(stack.getItem())) {
 			return false;
-		} else if (this.item != null && itemStack.getItem() != this.item) {
+		} else if (this.item != null && stack.getItem() != this.item) {
 			return false;
-		} else if (!this.count.test(itemStack.getCount())) {
+		} else if (!this.count.test(stack.getCount())) {
 			return false;
-		} else if (!this.durability.isDummy() && !itemStack.isDamageable()) {
+		} else if (!this.durability.isDummy() && !stack.isDamageable()) {
 			return false;
-		} else if (!this.durability.test(itemStack.getMaxDamage() - itemStack.getDamage())) {
+		} else if (!this.durability.test(stack.getMaxDamage() - stack.getDamage())) {
 			return false;
-		} else if (!this.nbt.test(itemStack)) {
+		} else if (!this.nbt.test(stack)) {
 			return false;
 		} else {
 			if (this.enchantments.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack.getEnchantments());
+				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack.getEnchantments());
 
 				for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
 					if (!enchantmentPredicate.test(map)) {
@@ -99,7 +99,7 @@ public class ItemPredicate {
 			}
 
 			if (this.storedEnchantments.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(EnchantedBookItem.getEnchantmentTag(itemStack));
+				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(EnchantedBookItem.getEnchantmentTag(stack));
 
 				for (EnchantmentPredicate enchantmentPredicatex : this.storedEnchantments) {
 					if (!enchantmentPredicatex.test(map)) {
@@ -108,14 +108,14 @@ public class ItemPredicate {
 				}
 			}
 
-			Potion potion = PotionUtil.getPotion(itemStack);
+			Potion potion = PotionUtil.getPotion(stack);
 			return this.potion == null || this.potion == potion;
 		}
 	}
 
-	public static ItemPredicate deserialize(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "item");
+	public static ItemPredicate deserialize(@Nullable JsonElement el) {
+		if (el != null && !el.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(el, "item");
 			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("count"));
 			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
 			if (jsonObject.has("data")) {
@@ -196,9 +196,9 @@ public class ItemPredicate {
 		}
 	}
 
-	public static ItemPredicate[] deserializeAll(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonArray jsonArray = JsonHelper.asArray(jsonElement, "items");
+	public static ItemPredicate[] deserializeAll(@Nullable JsonElement el) {
+		if (el != null && !el.isJsonNull()) {
+			JsonArray jsonArray = JsonHelper.asArray(el, "items");
 			ItemPredicate[] itemPredicates = new ItemPredicate[jsonArray.size()];
 
 			for (int i = 0; i < itemPredicates.length; i++) {
@@ -241,18 +241,13 @@ public class ItemPredicate {
 			return this;
 		}
 
-		public ItemPredicate.Builder count(NumberRange.IntRange intRange) {
-			this.count = intRange;
+		public ItemPredicate.Builder nbt(CompoundTag nbt) {
+			this.nbt = new NbtPredicate(nbt);
 			return this;
 		}
 
-		public ItemPredicate.Builder nbt(CompoundTag compoundTag) {
-			this.nbt = new NbtPredicate(compoundTag);
-			return this;
-		}
-
-		public ItemPredicate.Builder enchantment(EnchantmentPredicate enchantmentPredicate) {
-			this.enchantments.add(enchantmentPredicate);
+		public ItemPredicate.Builder enchantment(EnchantmentPredicate enchantment) {
+			this.enchantments.add(enchantment);
 			return this;
 		}
 

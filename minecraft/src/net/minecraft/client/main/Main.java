@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.properties.PropertyMap.Serializer;
+import com.mojang.blaze3d.systems.RenderCallStorage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.net.Authenticator;
@@ -20,7 +21,6 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4491;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.WindowSettings;
@@ -28,8 +28,8 @@ import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +38,7 @@ import org.apache.logging.log4j.Logger;
 public class Main {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void main(String[] strings) {
+	public static void main(String[] args) {
 		OptionParser optionParser = new OptionParser();
 		optionParser.allowsUnrecognizedOptions();
 		optionParser.accepts("demo");
@@ -53,7 +53,7 @@ public class Main {
 		OptionSpec<Integer> optionSpec7 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
 		OptionSpec<String> optionSpec8 = optionParser.accepts("proxyUser").withRequiredArg();
 		OptionSpec<String> optionSpec9 = optionParser.accepts("proxyPass").withRequiredArg();
-		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + SystemUtil.getMeasuringTimeMs() % 1000L);
+		OptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + Util.getMeasuringTimeMs() % 1000L);
 		OptionSpec<String> optionSpec11 = optionParser.accepts("uuid").withRequiredArg();
 		OptionSpec<String> optionSpec12 = optionParser.accepts("accessToken").withRequiredArg().required();
 		OptionSpec<String> optionSpec13 = optionParser.accepts("version").withRequiredArg().required();
@@ -67,7 +67,7 @@ public class Main {
 		OptionSpec<String> optionSpec21 = optionParser.accepts("userType").withRequiredArg().defaultsTo("legacy");
 		OptionSpec<String> optionSpec22 = optionParser.accepts("versionType").withRequiredArg().defaultsTo("release");
 		OptionSpec<String> optionSpec23 = optionParser.nonOptions();
-		OptionSet optionSet = optionParser.parse(strings);
+		OptionSet optionSet = optionParser.parse(args);
 		List<String> list = optionSet.valuesOf(optionSpec23);
 		if (!list.isEmpty()) {
 			System.out.println("Completely ignored arguments: " + list);
@@ -131,7 +131,7 @@ public class Main {
 		};
 		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 		Runtime.getRuntime().addShutdownHook(thread);
-		new class_4491();
+		new RenderCallStorage();
 
 		final MinecraftClient minecraftClient;
 		try {
@@ -143,7 +143,7 @@ public class Main {
 		} catch (Throwable var65) {
 			CrashReport crashReport = CrashReport.create(var65, "Initializing game");
 			crashReport.addElement("Initialization");
-			MinecraftClient.method_22681(null, runArgs.game.version, null, crashReport);
+			MinecraftClient.addSystemDetailsToCrashReport(null, runArgs.game.version, null, crashReport);
 			MinecraftClient.printCrashReport(crashReport);
 			return;
 		}
@@ -187,8 +187,8 @@ public class Main {
 		}
 	}
 
-	private static OptionalInt toOptional(@Nullable Integer integer) {
-		return integer != null ? OptionalInt.of(integer) : OptionalInt.empty();
+	private static OptionalInt toOptional(@Nullable Integer i) {
+		return i != null ? OptionalInt.of(i) : OptionalInt.empty();
 	}
 
 	@Nullable
@@ -208,8 +208,8 @@ public class Main {
 		}
 	}
 
-	private static boolean isNotNullOrEmpty(@Nullable String string) {
-		return string != null && !string.isEmpty();
+	private static boolean isNotNullOrEmpty(@Nullable String s) {
+		return s != null && !s.isEmpty();
 	}
 
 	static {

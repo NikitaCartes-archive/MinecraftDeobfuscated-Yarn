@@ -27,13 +27,13 @@ public class TrueTypeFontLoader implements FontLoader {
 	private final float shiftY;
 	private final String excludedCharacters;
 
-	public TrueTypeFontLoader(Identifier identifier, float f, float g, float h, float i, String string) {
-		this.filename = identifier;
-		this.size = f;
-		this.oversample = g;
-		this.shiftX = h;
-		this.shiftY = i;
-		this.excludedCharacters = string;
+	public TrueTypeFontLoader(Identifier filename, float size, float oversample, float shiftX, float shiftY, String excludedCharacters) {
+		this.filename = filename;
+		this.size = size;
+		this.oversample = oversample;
+		this.shiftX = shiftX;
+		this.shiftY = shiftY;
+		this.excludedCharacters = excludedCharacters;
 	}
 
 	public static FontLoader fromJson(JsonObject jsonObject) {

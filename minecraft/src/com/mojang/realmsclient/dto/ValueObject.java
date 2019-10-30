@@ -24,7 +24,7 @@ public abstract class ValueObject {
 		return stringBuilder.toString();
 	}
 
-	private static boolean isStatic(Field field) {
-		return Modifier.isStatic(field.getModifiers());
+	private static boolean isStatic(Field f) {
+		return Modifier.isStatic(f.getModifiers());
 	}
 }

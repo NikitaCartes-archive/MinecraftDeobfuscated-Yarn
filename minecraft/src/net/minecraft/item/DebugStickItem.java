@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
@@ -29,74 +29,74 @@ public class DebugStickItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack stack) {
 		return true;
 	}
 
 	@Override
-	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
 		if (!world.isClient) {
-			this.use(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.MAIN_HAND));
+			this.use(miner, state, world, pos, false, miner.getStackInHand(Hand.MAIN_HAND));
 		}
 
 		return false;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		PlayerEntity playerEntity = itemUsageContext.getPlayer();
-		World world = itemUsageContext.getWorld();
+	public ActionResult useOnBlock(ItemUsageContext context) {
+		PlayerEntity playerEntity = context.getPlayer();
+		World world = context.getWorld();
 		if (!world.isClient && playerEntity != null) {
-			BlockPos blockPos = itemUsageContext.getBlockPos();
-			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getStack());
+			BlockPos blockPos = context.getBlockPos();
+			this.use(playerEntity, world.getBlockState(blockPos), world, blockPos, true, context.getStack());
 		}
 
 		return ActionResult.SUCCESS;
 	}
 
-	private void use(PlayerEntity playerEntity, BlockState blockState, IWorld iWorld, BlockPos blockPos, boolean bl, ItemStack itemStack) {
-		if (playerEntity.isCreativeLevelTwoOp()) {
-			Block block = blockState.getBlock();
+	private void use(PlayerEntity player, BlockState state, IWorld world, BlockPos pos, boolean update, ItemStack stack) {
+		if (player.isCreativeLevelTwoOp()) {
+			Block block = state.getBlock();
 			StateManager<Block, BlockState> stateManager = block.getStateFactory();
 			Collection<Property<?>> collection = stateManager.getProperties();
 			String string = Registry.BLOCK.getId(block).toString();
 			if (collection.isEmpty()) {
-				sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".empty", string));
+				sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
 			} else {
-				CompoundTag compoundTag = itemStack.getOrCreateSubTag("DebugProperty");
+				CompoundTag compoundTag = stack.getOrCreateSubTag("DebugProperty");
 				String string2 = compoundTag.getString(string);
 				Property<?> property = stateManager.getProperty(string2);
-				if (bl) {
+				if (update) {
 					if (property == null) {
 						property = (Property<?>)collection.iterator().next();
 					}
 
-					BlockState blockState2 = cycle(blockState, property, playerEntity.shouldCancelInteraction());
-					iWorld.setBlockState(blockPos, blockState2, 18);
-					sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState2, property)));
+					BlockState blockState = cycle(state, property, player.shouldCancelInteraction());
+					world.setBlockState(pos, blockState, 18);
+					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
 				} else {
-					property = cycle(collection, property, playerEntity.shouldCancelInteraction());
+					property = cycle(collection, property, player.shouldCancelInteraction());
 					String string3 = property.getName();
 					compoundTag.putString(string, string3);
-					sendMessage(playerEntity, new TranslatableText(this.getTranslationKey() + ".select", string3, getValueString(blockState, property)));
+					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, getValueString(state, property)));
 				}
 			}
 		}
 	}
 
-	private static <T extends Comparable<T>> BlockState cycle(BlockState blockState, Property<T> property, boolean bl) {
-		return blockState.with(property, cycle(property.getValues(), blockState.get(property), bl));
+	private static <T extends Comparable<T>> BlockState cycle(BlockState state, Property<T> property, boolean inverse) {
+		return state.with(property, cycle(property.getValues(), state.get(property), inverse));
 	}
 
-	private static <T> T cycle(Iterable<T> iterable, @Nullable T object, boolean bl) {
-		return bl ? SystemUtil.previous(iterable, object) : SystemUtil.next(iterable, object);
+	private static <T> T cycle(Iterable<T> elements, @Nullable T current, boolean inverse) {
+		return inverse ? Util.previous(elements, current) : Util.next(elements, current);
 	}
 
-	private static void sendMessage(PlayerEntity playerEntity, Text text) {
-		((ServerPlayerEntity)playerEntity).sendChatMessage(text, MessageType.GAME_INFO);
+	private static void sendMessage(PlayerEntity player, Text message) {
+		((ServerPlayerEntity)player).sendChatMessage(message, MessageType.GAME_INFO);
 	}
 
-	private static <T extends Comparable<T>> String getValueString(BlockState blockState, Property<T> property) {
-		return property.name(blockState.get(property));
+	private static <T extends Comparable<T>> String getValueString(BlockState state, Property<T> property) {
+		return property.name(state.get(property));
 	}
 }

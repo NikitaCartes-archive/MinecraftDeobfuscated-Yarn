@@ -57,12 +57,12 @@ public class RealmsDataFetcher {
 		}
 	}
 
-	public synchronized void initWithSpecificTaskList(List<RealmsDataFetcher.Task> list) {
+	public synchronized void initWithSpecificTaskList(List<RealmsDataFetcher.Task> tasks) {
 		if (this.stopped) {
 			this.stopped = false;
 			this.cancelTasks();
 
-			for (RealmsDataFetcher.Task task : list) {
+			for (RealmsDataFetcher.Task task : tasks) {
 				this.fetchStatus.put(task, false);
 				switch (task) {
 					case SERVER_LIST:
@@ -167,11 +167,11 @@ public class RealmsDataFetcher {
 		}
 	}
 
-	private synchronized void setServers(List<RealmsServer> list) {
+	private synchronized void setServers(List<RealmsServer> newServers) {
 		int i = 0;
 
 		for (RealmsServer realmsServer : this.removedServers) {
-			if (list.remove(realmsServer)) {
+			if (newServers.remove(realmsServer)) {
 				i++;
 			}
 		}
@@ -180,16 +180,16 @@ public class RealmsDataFetcher {
 			this.removedServers.clear();
 		}
 
-		this.servers = list;
+		this.servers = newServers;
 	}
 
-	public synchronized void removeItem(RealmsServer realmsServer) {
-		this.servers.remove(realmsServer);
-		this.removedServers.add(realmsServer);
+	public synchronized void removeItem(RealmsServer server) {
+		this.servers.remove(server);
+		this.removedServers.add(server);
 	}
 
-	private void sort(List<RealmsServer> list) {
-		list.sort(new RealmsServer.McoServerComparator(Realms.getName()));
+	private void sort(List<RealmsServer> servers) {
+		servers.sort(new RealmsServer.McoServerComparator(Realms.getName()));
 	}
 
 	private boolean isActive() {

@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.EndermanEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
@@ -25,20 +25,13 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 	}
 
 	public void method_3911(
-		EndermanEntity endermanEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		EndermanEntity endermanEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		BlockState blockState = endermanEntity.getCarriedBlock();
 		EndermanEntityModel<EndermanEntity> endermanEntityModel = this.getModel();
 		endermanEntityModel.carryingBlock = blockState != null;
 		endermanEntityModel.angry = endermanEntity.isAngry();
-		super.method_4072(endermanEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.method_4072(endermanEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public Vec3d method_23160(EndermanEntity endermanEntity, double d, double e, double f, float g) {

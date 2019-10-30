@@ -60,8 +60,8 @@ public class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 		return this.enabled;
 	}
 
-	public void setEnabled(boolean bl) {
-		this.enabled = bl;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public File getFile() {
@@ -106,8 +106,8 @@ public class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 		return this.map.size() < 1;
 	}
 
-	protected String toString(K object) {
-		return object.toString();
+	protected String toString(K profile) {
+		return profile.toString();
 	}
 
 	protected boolean contains(K object) {

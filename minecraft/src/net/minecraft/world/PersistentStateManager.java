@@ -24,60 +24,60 @@ public class PersistentStateManager {
 	private final DataFixer dataFixer;
 	private final File directory;
 
-	public PersistentStateManager(File file, DataFixer dataFixer) {
+	public PersistentStateManager(File directory, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
-		this.directory = file;
+		this.directory = directory;
 	}
 
-	private File getFile(String string) {
-		return new File(this.directory, string + ".dat");
+	private File getFile(String id) {
+		return new File(this.directory, id + ".dat");
 	}
 
-	public <T extends PersistentState> T getOrCreate(Supplier<T> supplier, String string) {
-		T persistentState = this.get(supplier, string);
+	public <T extends PersistentState> T getOrCreate(Supplier<T> factory, String id) {
+		T persistentState = this.get(factory, id);
 		if (persistentState != null) {
 			return persistentState;
 		} else {
-			T persistentState2 = (T)supplier.get();
+			T persistentState2 = (T)factory.get();
 			this.set(persistentState2);
 			return persistentState2;
 		}
 	}
 
 	@Nullable
-	public <T extends PersistentState> T get(Supplier<T> supplier, String string) {
-		PersistentState persistentState = (PersistentState)this.loadedStates.get(string);
-		if (persistentState == null && !this.loadedStates.containsKey(string)) {
-			persistentState = this.readFromFile(supplier, string);
-			this.loadedStates.put(string, persistentState);
+	public <T extends PersistentState> T get(Supplier<T> factory, String id) {
+		PersistentState persistentState = (PersistentState)this.loadedStates.get(id);
+		if (persistentState == null && !this.loadedStates.containsKey(id)) {
+			persistentState = this.readFromFile(factory, id);
+			this.loadedStates.put(id, persistentState);
 		}
 
 		return (T)persistentState;
 	}
 
 	@Nullable
-	private <T extends PersistentState> T readFromFile(Supplier<T> supplier, String string) {
+	private <T extends PersistentState> T readFromFile(Supplier<T> factory, String id) {
 		try {
-			File file = this.getFile(string);
+			File file = this.getFile(id);
 			if (file.exists()) {
-				T persistentState = (T)supplier.get();
-				CompoundTag compoundTag = this.readTag(string, SharedConstants.getGameVersion().getWorldVersion());
+				T persistentState = (T)factory.get();
+				CompoundTag compoundTag = this.readTag(id, SharedConstants.getGameVersion().getWorldVersion());
 				persistentState.fromTag(compoundTag.getCompound("data"));
 				return persistentState;
 			}
 		} catch (Exception var6) {
-			LOGGER.error("Error loading saved data: {}", string, var6);
+			LOGGER.error("Error loading saved data: {}", id, var6);
 		}
 
 		return null;
 	}
 
-	public void set(PersistentState persistentState) {
-		this.loadedStates.put(persistentState.getId(), persistentState);
+	public void set(PersistentState state) {
+		this.loadedStates.put(state.getId(), state);
 	}
 
-	public CompoundTag readTag(String string, int i) throws IOException {
-		File file = this.getFile(string);
+	public CompoundTag readTag(String id, int dataVersion) throws IOException {
+		File file = this.getFile(id);
 		PushbackInputStream pushbackInputStream = new PushbackInputStream(new FileInputStream(file), 2);
 		Throwable var5 = null;
 
@@ -110,8 +110,8 @@ public class PersistentStateManager {
 				}
 			}
 
-			int j = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-			var36 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
+			int i = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
+			var36 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, i, dataVersion);
 		} catch (Throwable var33) {
 			var5 = var33;
 			throw var33;

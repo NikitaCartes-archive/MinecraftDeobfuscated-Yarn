@@ -10,10 +10,10 @@ public class ChatHudLine {
 	private final Text text;
 	private final int id;
 
-	public ChatHudLine(int i, Text text, int j) {
+	public ChatHudLine(int creationTick, Text text, int id) {
 		this.text = text;
-		this.creationTick = i;
-		this.id = j;
+		this.creationTick = creationTick;
+		this.id = id;
 	}
 
 	public Text getText() {

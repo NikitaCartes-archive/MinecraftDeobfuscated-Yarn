@@ -127,38 +127,38 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		}
 	}
 
-	public static int tickViewerCount(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k, int l, int m) {
-		if (!world.isClient && m != 0 && (i + j + k + l) % 200 == 0) {
-			m = countViewers(world, lockableContainerBlockEntity, j, k, l);
+	public static int tickViewerCount(World world, LockableContainerBlockEntity blockEntity, int ticksOpen, int x, int y, int z, int viewerCount) {
+		if (!world.isClient && viewerCount != 0 && (ticksOpen + x + y + z) % 200 == 0) {
+			viewerCount = countViewers(world, blockEntity, x, y, z);
 		}
 
-		return m;
+		return viewerCount;
 	}
 
-	public static int countViewers(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k) {
-		int l = 0;
+	public static int countViewers(World world, LockableContainerBlockEntity container, int ticksOpen, int x, int y) {
+		int i = 0;
 		float f = 5.0F;
 
 		for (PlayerEntity playerEntity : world.getNonSpectatingEntities(
 			PlayerEntity.class,
 			new Box(
-				(double)((float)i - 5.0F),
-				(double)((float)j - 5.0F),
-				(double)((float)k - 5.0F),
-				(double)((float)(i + 1) + 5.0F),
-				(double)((float)(j + 1) + 5.0F),
-				(double)((float)(k + 1) + 5.0F)
+				(double)((float)ticksOpen - 5.0F),
+				(double)((float)x - 5.0F),
+				(double)((float)y - 5.0F),
+				(double)((float)(ticksOpen + 1) + 5.0F),
+				(double)((float)(x + 1) + 5.0F),
+				(double)((float)(y + 1) + 5.0F)
 			)
 		)) {
 			if (playerEntity.container instanceof GenericContainer) {
 				Inventory inventory = ((GenericContainer)playerEntity.container).getInventory();
-				if (inventory == lockableContainerBlockEntity || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(lockableContainerBlockEntity)) {
-					l++;
+				if (inventory == container || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(container)) {
+					i++;
 				}
 			}
 		}
 
-		return l;
+		return i;
 	}
 
 	private void playSound(SoundEvent soundEvent) {
@@ -188,8 +188,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-		if (!playerEntity.isSpectator()) {
+	public void onInvOpen(PlayerEntity player) {
+		if (!player.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
 			}
@@ -200,8 +200,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-		if (!playerEntity.isSpectator()) {
+	public void onInvClose(PlayerEntity player) {
+		if (!player.isSpectator()) {
 			this.viewerCount--;
 			this.onInvOpenOrClose();
 		}
@@ -221,8 +221,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-		this.inventory = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> list) {
+		this.inventory = list;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -231,10 +231,10 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
 	}
 
-	public static int getPlayersLookingInChestCount(BlockView blockView, BlockPos blockPos) {
-		BlockState blockState = blockView.getBlockState(blockPos);
+	public static int getPlayersLookingInChestCount(BlockView world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
 		if (blockState.getBlock().hasBlockEntity()) {
-			BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				return ((ChestBlockEntity)blockEntity).viewerCount;
 			}
@@ -243,10 +243,10 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		return 0;
 	}
 
-	public static void copyInventory(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-		DefaultedList<ItemStack> defaultedList = chestBlockEntity.getInvStackList();
-		chestBlockEntity.setInvStackList(chestBlockEntity2.getInvStackList());
-		chestBlockEntity2.setInvStackList(defaultedList);
+	public static void copyInventory(ChestBlockEntity from, ChestBlockEntity to) {
+		DefaultedList<ItemStack> defaultedList = from.getInvStackList();
+		from.setInvStackList(to.getInvStackList());
+		to.setInvStackList(defaultedList);
 	}
 
 	@Override

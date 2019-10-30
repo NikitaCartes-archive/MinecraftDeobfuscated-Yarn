@@ -22,7 +22,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -57,23 +57,23 @@ public class ChunkRegion implements IWorld {
 	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getFluidTickScheduler());
 	private final BiomeAccess biomeAccess;
 
-	public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
-		int i = MathHelper.floor(Math.sqrt((double)list.size()));
-		if (i * i != list.size()) {
-			throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Cache size is not a square."));
+	public ChunkRegion(ServerWorld world, List<Chunk> chunks) {
+		int i = MathHelper.floor(Math.sqrt((double)chunks.size()));
+		if (i * i != chunks.size()) {
+			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
 		} else {
-			ChunkPos chunkPos = ((Chunk)list.get(list.size() / 2)).getPos();
-			this.chunks = list;
+			ChunkPos chunkPos = ((Chunk)chunks.get(chunks.size() / 2)).getPos();
+			this.chunks = chunks;
 			this.centerChunkX = chunkPos.x;
 			this.centerChunkZ = chunkPos.z;
 			this.width = i;
-			this.world = serverWorld;
-			this.seed = serverWorld.getSeed();
-			this.generatorSettings = serverWorld.method_14178().getChunkGenerator().getConfig();
-			this.seaLevel = serverWorld.getSeaLevel();
-			this.levelProperties = serverWorld.getLevelProperties();
-			this.random = serverWorld.getRandom();
-			this.dimension = serverWorld.getDimension();
+			this.world = world;
+			this.seed = world.getSeed();
+			this.generatorSettings = world.method_14178().getChunkGenerator().getConfig();
+			this.seaLevel = world.getSeaLevel();
+			this.levelProperties = world.getLevelProperties();
+			this.random = world.getRandom();
+			this.dimension = world.getDimension();
 			this.biomeAccess = new BiomeAccess(this, LevelProperties.sha256Hash(this.seed), this.dimension.getType().getBiomeAccessType());
 		}
 	}
@@ -87,63 +87,63 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public Chunk getChunk(int i, int j) {
-		return this.getChunk(i, j, ChunkStatus.EMPTY);
+	public Chunk getChunk(int chunkX, int chunkZ) {
+		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY);
 	}
 
 	@Nullable
 	@Override
-	public Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl) {
+	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		Chunk chunk;
-		if (this.isChunkLoaded(i, j)) {
+		if (this.isChunkLoaded(chunkX, chunkZ)) {
 			ChunkPos chunkPos = ((Chunk)this.chunks.get(0)).getPos();
-			int k = i - chunkPos.x;
-			int l = j - chunkPos.z;
-			chunk = (Chunk)this.chunks.get(k + l * this.width);
-			if (chunk.getStatus().isAtLeast(chunkStatus)) {
+			int i = chunkX - chunkPos.x;
+			int j = chunkZ - chunkPos.z;
+			chunk = (Chunk)this.chunks.get(i + j * this.width);
+			if (chunk.getStatus().isAtLeast(leastStatus)) {
 				return chunk;
 			}
 		} else {
 			chunk = null;
 		}
 
-		if (!bl) {
+		if (!create) {
 			return null;
 		} else {
 			Chunk chunk2 = (Chunk)this.chunks.get(0);
 			Chunk chunk3 = (Chunk)this.chunks.get(this.chunks.size() - 1);
-			LOGGER.error("Requested chunk : {} {}", i, j);
+			LOGGER.error("Requested chunk : {} {}", chunkX, chunkZ);
 			LOGGER.error("Region bounds : {} {} | {} {}", chunk2.getPos().x, chunk2.getPos().z, chunk3.getPos().x, chunk3.getPos().z);
 			if (chunk != null) {
-				throw (RuntimeException)SystemUtil.throwOrPause(
-					new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j))
+				throw (RuntimeException)Util.throwOrPause(
+					new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunk.getStatus(), chunkX, chunkZ))
 				);
 			} else {
-				throw (RuntimeException)SystemUtil.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j)));
+				throw (RuntimeException)Util.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ)));
 			}
 		}
 	}
 
 	@Override
-	public boolean isChunkLoaded(int i, int j) {
+	public boolean isChunkLoaded(int chunkX, int chunkZ) {
 		Chunk chunk = (Chunk)this.chunks.get(0);
 		Chunk chunk2 = (Chunk)this.chunks.get(this.chunks.size() - 1);
-		return i >= chunk.getPos().x && i <= chunk2.getPos().x && j >= chunk.getPos().z && j <= chunk2.getPos().z;
+		return chunkX >= chunk.getPos().x && chunkX <= chunk2.getPos().x && chunkZ >= chunk.getPos().z && chunkZ <= chunk2.getPos().z;
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos blockPos) {
-		return this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4).getBlockState(blockPos);
+	public BlockState getBlockState(BlockPos pos) {
+		return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4).getBlockState(pos);
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos blockPos) {
-		return this.getChunk(blockPos).getFluidState(blockPos);
+	public FluidState getFluidState(BlockPos pos) {
+		return this.getChunk(pos).getFluidState(pos);
 	}
 
 	@Nullable
 	@Override
-	public PlayerEntity getClosestPlayer(double d, double e, double f, double g, Predicate<Entity> predicate) {
+	public PlayerEntity getClosestPlayer(double x, double y, double z, double maxDistance, Predicate<Entity> targetPredicate) {
 		return null;
 	}
 
@@ -158,8 +158,8 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public Biome getGeneratorStoredBiome(int i, int j, int k) {
-		return this.world.getGeneratorStoredBiome(i, j, k);
+	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+		return this.world.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
 	}
 
 	@Override
@@ -168,32 +168,32 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean breakBlock(BlockPos blockPos, boolean bl, @Nullable Entity entity) {
-		BlockState blockState = this.getBlockState(blockPos);
+	public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
+		BlockState blockState = this.getBlockState(pos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
-			if (bl) {
-				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
-				Block.dropStacks(blockState, this.world, blockPos, blockEntity, entity, ItemStack.EMPTY);
+			if (drop) {
+				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(pos) : null;
+				Block.dropStacks(blockState, this.world, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+			return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		Chunk chunk = this.getChunk(blockPos);
-		BlockEntity blockEntity = chunk.getBlockEntity(blockPos);
+	public BlockEntity getBlockEntity(BlockPos pos) {
+		Chunk chunk = this.getChunk(pos);
+		BlockEntity blockEntity = chunk.getBlockEntity(pos);
 		if (blockEntity != null) {
 			return blockEntity;
 		} else {
-			CompoundTag compoundTag = chunk.getBlockEntityTagAt(blockPos);
+			CompoundTag compoundTag = chunk.getBlockEntityTagAt(pos);
 			if (compoundTag != null) {
 				if ("DUMMY".equals(compoundTag.getString("id"))) {
-					Block block = this.getBlockState(blockPos).getBlock();
+					Block block = this.getBlockState(pos).getBlock();
 					if (!(block instanceof BlockEntityProvider)) {
 						return null;
 					}
@@ -204,13 +204,13 @@ public class ChunkRegion implements IWorld {
 				}
 
 				if (blockEntity != null) {
-					chunk.setBlockEntity(blockPos, blockEntity);
+					chunk.setBlockEntity(pos, blockEntity);
 					return blockEntity;
 				}
 			}
 
-			if (chunk.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
-				LOGGER.warn("Tried to access a block entity before it was created. {}", blockPos);
+			if (chunk.getBlockState(pos).getBlock() instanceof BlockEntityProvider) {
+				LOGGER.warn("Tried to access a block entity before it was created. {}", pos);
 			}
 
 			return null;
@@ -218,31 +218,31 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean setBlockState(BlockPos blockPos, BlockState blockState, int i) {
-		Chunk chunk = this.getChunk(blockPos);
-		BlockState blockState2 = chunk.setBlockState(blockPos, blockState, false);
-		if (blockState2 != null) {
-			this.world.onBlockChanged(blockPos, blockState2, blockState);
+	public boolean setBlockState(BlockPos pos, BlockState state, int flags) {
+		Chunk chunk = this.getChunk(pos);
+		BlockState blockState = chunk.setBlockState(pos, state, false);
+		if (blockState != null) {
+			this.world.onBlockChanged(pos, blockState, state);
 		}
 
-		Block block = blockState.getBlock();
+		Block block = state.getBlock();
 		if (block.hasBlockEntity()) {
 			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
-				chunk.setBlockEntity(blockPos, ((BlockEntityProvider)block).createBlockEntity(this));
+				chunk.setBlockEntity(pos, ((BlockEntityProvider)block).createBlockEntity(this));
 			} else {
 				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putInt("x", blockPos.getX());
-				compoundTag.putInt("y", blockPos.getY());
-				compoundTag.putInt("z", blockPos.getZ());
+				compoundTag.putInt("x", pos.getX());
+				compoundTag.putInt("y", pos.getY());
+				compoundTag.putInt("z", pos.getZ());
 				compoundTag.putString("id", "DUMMY");
 				chunk.addPendingBlockEntityTag(compoundTag);
 			}
-		} else if (blockState2 != null && blockState2.getBlock().hasBlockEntity()) {
-			chunk.removeBlockEntity(blockPos);
+		} else if (blockState != null && blockState.getBlock().hasBlockEntity()) {
+			chunk.removeBlockEntity(pos);
 		}
 
-		if (blockState.shouldPostProcess(this, blockPos)) {
-			this.markBlockForPostProcessing(blockPos);
+		if (state.shouldPostProcess(this, pos)) {
+			this.markBlockForPostProcessing(pos);
 		}
 
 		return true;
@@ -261,8 +261,8 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean removeBlock(BlockPos blockPos, boolean bl) {
-		return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+	public boolean removeBlock(BlockPos pos, boolean move) {
+		return this.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 	}
 
 	@Override
@@ -286,8 +286,8 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public LocalDifficulty getLocalDifficulty(BlockPos blockPos) {
-		if (!this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
+	public LocalDifficulty getLocalDifficulty(BlockPos pos) {
+		if (!this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)) {
 			throw new RuntimeException("We are asking a region for a chunk out of bound");
 		} else {
 			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.getMoonSize());
@@ -325,24 +325,24 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public void updateNeighbors(BlockPos blockPos, Block block) {
+	public void updateNeighbors(BlockPos pos, Block block) {
 	}
 
 	@Override
-	public int getTopY(Heightmap.Type type, int i, int j) {
-		return this.getChunk(i >> 4, j >> 4).sampleHeightmap(type, i & 15, j & 15) + 1;
+	public int getTopY(Heightmap.Type heightmap, int x, int z) {
+		return this.getChunk(x >> 4, z >> 4).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity playerEntity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+	public void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
 	}
 
 	@Override
-	public void addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
+	public void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -357,17 +357,17 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> predicate) {
-		return predicate.test(this.getBlockState(blockPos));
+	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> state) {
+		return state.test(this.getBlockState(blockPos));
 	}
 
 	@Override
-	public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> getEntities(Class<? extends T> entityClass, Box box, @Nullable Predicate<? super T> predicate) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public List<Entity> getEntities(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
+	public List<Entity> getEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate) {
 		return Collections.emptyList();
 	}
 

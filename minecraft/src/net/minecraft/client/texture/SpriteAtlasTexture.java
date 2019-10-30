@@ -19,7 +19,7 @@ import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -45,8 +45,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	private int mipLevel;
 	private final Sprite missingSprite = MissingSprite.getMissingSprite();
 
-	public SpriteAtlasTexture(String string) {
-		this.atlasPath = string;
+	public SpriteAtlasTexture(String atlasPath) {
+		this.atlasPath = atlasPath;
 		this.maxTextureSize = RenderSystem.maxSupportedTextureSize();
 	}
 
@@ -187,7 +187,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 					}
 
 					concurrentLinkedQueue.add(sprite);
-				}, SystemUtil.getServerWorkerExecutor()));
+				}, Util.getServerWorkerExecutor()));
 			}
 		}
 
@@ -195,11 +195,11 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		return concurrentLinkedQueue;
 	}
 
-	private List<Sprite> loadSprites(ResourceManager resourceManager, TextureStitcher textureStitcher) {
+	private List<Sprite> loadSprites(ResourceManager resourceManager, TextureStitcher stitcher) {
 		ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue();
 		List<CompletableFuture<?>> list = Lists.<CompletableFuture<?>>newArrayList();
 
-		for (Sprite sprite : textureStitcher.getStitchedSprites()) {
+		for (Sprite sprite : stitcher.getStitchedSprites()) {
 			if (sprite == this.missingSprite) {
 				concurrentLinkedQueue.add(sprite);
 			} else {
@@ -207,7 +207,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 					if (this.loadSprite(resourceManager, sprite)) {
 						concurrentLinkedQueue.add(sprite);
 					}
-				}, SystemUtil.getServerWorkerExecutor()));
+				}, Util.getServerWorkerExecutor()));
 			}
 		}
 
@@ -215,14 +215,14 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		return Lists.<Sprite>newArrayList(concurrentLinkedQueue);
 	}
 
-	private boolean loadSprite(ResourceManager resourceManager, Sprite sprite) {
+	private boolean loadSprite(ResourceManager container, Sprite sprite) {
 		Identifier identifier = this.getTexturePath(sprite.getId());
 		Resource resource = null;
 
 		label45: {
 			boolean crashReport;
 			try {
-				resource = resourceManager.getResource(identifier);
+				resource = container.getResource(identifier);
 				sprite.load(resource, this.mipLevel + 1);
 				break label45;
 			} catch (RuntimeException var13) {
@@ -277,8 +277,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		}
 	}
 
-	public void setMipLevel(int i) {
-		this.mipLevel = i;
+	public void setMipLevel(int mipLevel) {
+		this.mipLevel = mipLevel;
 	}
 
 	public Sprite getSprite(Identifier identifier) {
@@ -302,11 +302,11 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		final int height;
 		final List<Sprite> sprites;
 
-		public Data(Set<Identifier> set, int i, int j, List<Sprite> list) {
-			this.spriteIds = set;
-			this.width = i;
-			this.height = j;
-			this.sprites = list;
+		public Data(Set<Identifier> spriteIds, int width, int height, List<Sprite> sprites) {
+			this.spriteIds = spriteIds;
+			this.width = width;
+			this.height = height;
+			this.sprites = sprites;
 		}
 	}
 }

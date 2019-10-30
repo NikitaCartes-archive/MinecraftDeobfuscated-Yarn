@@ -11,7 +11,7 @@ public interface Tag {
 	Formatting GOLD = Formatting.GOLD;
 	Formatting RED = Formatting.RED;
 
-	void write(DataOutput dataOutput) throws IOException;
+	void write(DataOutput output) throws IOException;
 
 	String toString();
 
@@ -29,5 +29,5 @@ public interface Tag {
 		return this.toText("", 0);
 	}
 
-	Text toText(String string, int i);
+	Text toText(String indent, int depth);
 }

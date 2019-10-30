@@ -25,10 +25,10 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	private final Block block;
 	private final Set<Property<?>> properties;
 
-	private CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> set) {
+	private CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> properties) {
 		super(lootConditions);
 		this.block = block;
-		this.properties = set;
+		this.properties = properties;
 	}
 
 	@Override
@@ -37,10 +37,10 @@ public class CopyStateFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	protected ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		BlockState blockState = lootContext.get(LootContextParameters.BLOCK_STATE);
+	protected ItemStack process(ItemStack stack, LootContext context) {
+		BlockState blockState = context.get(LootContextParameters.BLOCK_STATE);
 		if (blockState != null) {
-			CompoundTag compoundTag = itemStack.getOrCreateTag();
+			CompoundTag compoundTag = stack.getOrCreateTag();
 			CompoundTag compoundTag2;
 			if (compoundTag.contains("BlockStateTag", 10)) {
 				compoundTag2 = compoundTag.getCompound("BlockStateTag");
@@ -52,7 +52,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 			this.properties.stream().filter(blockState::contains).forEach(property -> compoundTag2.putString(property.getName(), method_21893(blockState, property)));
 		}
 
-		return itemStack;
+		return stack;
 	}
 
 	public static CopyStateFunction.Builder getBuilder(Block block) {

@@ -19,15 +19,13 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	protected final Identifier id;
 	protected final String group;
 
-	public CuttingRecipe(
-		RecipeType<?> recipeType, RecipeSerializer<?> recipeSerializer, Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack
-	) {
-		this.type = recipeType;
-		this.serializer = recipeSerializer;
-		this.id = identifier;
-		this.group = string;
-		this.input = ingredient;
-		this.output = itemStack;
+	public CuttingRecipe(RecipeType<?> type, RecipeSerializer<?> serializer, Identifier id, String group, Ingredient input, ItemStack output) {
+		this.type = type;
+		this.serializer = serializer;
+		this.id = id;
+		this.group = group;
+		this.input = input;
+		this.output = output;
 	}
 
 	@Override
@@ -65,20 +63,20 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int i, int j) {
+	public boolean fits(int width, int height) {
 		return true;
 	}
 
 	@Override
-	public ItemStack craft(Inventory inventory) {
+	public ItemStack craft(Inventory inv) {
 		return this.output.copy();
 	}
 
 	public static class Serializer<T extends CuttingRecipe> implements RecipeSerializer<T> {
-		final CuttingRecipe.Serializer.class_3974<T> field_17648;
+		final CuttingRecipe.Serializer.RecipeFactory<T> recipeFactory;
 
-		protected Serializer(CuttingRecipe.Serializer.class_3974<T> arg) {
-			this.field_17648 = arg;
+		protected Serializer(CuttingRecipe.Serializer.RecipeFactory<T> recipeFactory) {
+			this.recipeFactory = recipeFactory;
 		}
 
 		public T method_17881(Identifier identifier, JsonObject jsonObject) {
@@ -93,14 +91,14 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 			String string2 = JsonHelper.getString(jsonObject, "result");
 			int i = JsonHelper.getInt(jsonObject, "count");
 			ItemStack itemStack = new ItemStack(Registry.ITEM.get(new Identifier(string2)), i);
-			return this.field_17648.create(identifier, string, ingredient, itemStack);
+			return this.recipeFactory.create(identifier, string, ingredient, itemStack);
 		}
 
 		public T method_17882(Identifier identifier, PacketByteBuf packetByteBuf) {
 			String string = packetByteBuf.readString(32767);
 			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 			ItemStack itemStack = packetByteBuf.readItemStack();
-			return this.field_17648.create(identifier, string, ingredient, itemStack);
+			return this.recipeFactory.create(identifier, string, ingredient, itemStack);
 		}
 
 		public void method_17880(PacketByteBuf packetByteBuf, T cuttingRecipe) {
@@ -109,7 +107,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 			packetByteBuf.writeItemStack(cuttingRecipe.output);
 		}
 
-		interface class_3974<T extends CuttingRecipe> {
+		interface RecipeFactory<T extends CuttingRecipe> {
 			T create(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack);
 		}
 	}

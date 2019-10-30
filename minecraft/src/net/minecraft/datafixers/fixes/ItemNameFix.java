@@ -13,9 +13,9 @@ import net.minecraft.datafixers.TypeReferences;
 public abstract class ItemNameFix extends DataFix {
 	private final String name;
 
-	public ItemNameFix(Schema schema, String string) {
-		super(schema, false);
-		this.name = string;
+	public ItemNameFix(Schema outputSchema, String name) {
+		super(outputSchema, false);
+		this.name = name;
 	}
 
 	@Override
@@ -30,11 +30,11 @@ public abstract class ItemNameFix extends DataFix {
 
 	protected abstract String rename(String string);
 
-	public static DataFix create(Schema schema, String string, Function<String, String> function) {
-		return new ItemNameFix(schema, string) {
+	public static DataFix create(Schema outputSchema, String name, Function<String, String> rename) {
+		return new ItemNameFix(outputSchema, name) {
 			@Override
 			protected String rename(String string) {
-				return (String)function.apply(string);
+				return (String)rename.apply(string);
 			}
 		};
 	}

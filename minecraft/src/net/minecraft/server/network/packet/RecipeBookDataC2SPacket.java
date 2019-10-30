@@ -43,36 +43,36 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.mode = packetByteBuf.readEnumConstant(RecipeBookDataC2SPacket.Mode.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.mode = buf.readEnumConstant(RecipeBookDataC2SPacket.Mode.class);
 		if (this.mode == RecipeBookDataC2SPacket.Mode.SHOWN) {
-			this.recipeId = packetByteBuf.readIdentifier();
+			this.recipeId = buf.readIdentifier();
 		} else if (this.mode == RecipeBookDataC2SPacket.Mode.SETTINGS) {
-			this.guiOpen = packetByteBuf.readBoolean();
-			this.filteringCraftable = packetByteBuf.readBoolean();
-			this.furnaceGuiOpen = packetByteBuf.readBoolean();
-			this.furnaceFilteringCraftable = packetByteBuf.readBoolean();
-			this.blastFurnaceGuiOpen = packetByteBuf.readBoolean();
-			this.blastFurnaceFilteringCraftable = packetByteBuf.readBoolean();
-			this.smokerGuiOpen = packetByteBuf.readBoolean();
-			this.smokerGuiFilteringCraftable = packetByteBuf.readBoolean();
+			this.guiOpen = buf.readBoolean();
+			this.filteringCraftable = buf.readBoolean();
+			this.furnaceGuiOpen = buf.readBoolean();
+			this.furnaceFilteringCraftable = buf.readBoolean();
+			this.blastFurnaceGuiOpen = buf.readBoolean();
+			this.blastFurnaceFilteringCraftable = buf.readBoolean();
+			this.smokerGuiOpen = buf.readBoolean();
+			this.smokerGuiFilteringCraftable = buf.readBoolean();
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.mode);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.mode);
 		if (this.mode == RecipeBookDataC2SPacket.Mode.SHOWN) {
-			packetByteBuf.writeIdentifier(this.recipeId);
+			buf.writeIdentifier(this.recipeId);
 		} else if (this.mode == RecipeBookDataC2SPacket.Mode.SETTINGS) {
-			packetByteBuf.writeBoolean(this.guiOpen);
-			packetByteBuf.writeBoolean(this.filteringCraftable);
-			packetByteBuf.writeBoolean(this.furnaceGuiOpen);
-			packetByteBuf.writeBoolean(this.furnaceFilteringCraftable);
-			packetByteBuf.writeBoolean(this.blastFurnaceGuiOpen);
-			packetByteBuf.writeBoolean(this.blastFurnaceFilteringCraftable);
-			packetByteBuf.writeBoolean(this.smokerGuiOpen);
-			packetByteBuf.writeBoolean(this.smokerGuiFilteringCraftable);
+			buf.writeBoolean(this.guiOpen);
+			buf.writeBoolean(this.filteringCraftable);
+			buf.writeBoolean(this.furnaceGuiOpen);
+			buf.writeBoolean(this.furnaceFilteringCraftable);
+			buf.writeBoolean(this.blastFurnaceGuiOpen);
+			buf.writeBoolean(this.blastFurnaceFilteringCraftable);
+			buf.writeBoolean(this.smokerGuiOpen);
+			buf.writeBoolean(this.smokerGuiFilteringCraftable);
 		}
 	}
 

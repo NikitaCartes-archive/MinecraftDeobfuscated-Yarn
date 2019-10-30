@@ -117,7 +117,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean showsDeathScreen = true;
 
 	public ClientPlayerEntity(
-		MinecraftClient minecraftClient,
+		MinecraftClient client,
 		ClientWorld clientWorld,
 		ClientPlayNetworkHandler clientPlayNetworkHandler,
 		StatHandler statHandler,
@@ -127,24 +127,24 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.networkHandler = clientPlayNetworkHandler;
 		this.stats = statHandler;
 		this.recipeBook = clientRecipeBook;
-		this.client = minecraftClient;
+		this.client = client;
 		this.dimension = DimensionType.OVERWORLD;
-		this.tickables.add(new AmbientSoundPlayer(this, minecraftClient.getSoundManager()));
+		this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
 		this.tickables.add(new BubbleColumnSoundPlayer(this));
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
+	public boolean damage(DamageSource source, float amount) {
 		return false;
 	}
 
 	@Override
-	public void heal(float f) {
+	public void heal(float amount) {
 	}
 
 	@Override
-	public boolean startRiding(Entity entity, boolean bl) {
-		if (!super.startRiding(entity, bl)) {
+	public boolean startRiding(Entity entity, boolean force) {
+		if (!super.startRiding(entity, force)) {
 			return false;
 		} else {
 			if (entity instanceof AbstractMinecartEntity) {
@@ -168,13 +168,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public float getPitch(float f) {
+	public float getPitch(float tickDelta) {
 		return this.pitch;
 	}
 
 	@Override
-	public float getYaw(float f) {
-		return this.hasVehicle() ? super.getYaw(f) : this.yaw;
+	public float getYaw(float tickDelta) {
+		return this.hasVehicle() ? super.getYaw(tickDelta) : this.yaw;
 	}
 
 	@Override
@@ -254,11 +254,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean dropSelectedItem(boolean bl) {
-		PlayerActionC2SPacket.Action action = bl ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
+	public boolean dropSelectedItem(boolean dropEntireStack) {
+		PlayerActionC2SPacket.Action action = dropEntireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
 		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
 		return this.inventory
-				.takeInvStack(this.inventory.selectedSlot, bl && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1)
+				.takeInvStack(
+					this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1
+				)
 			!= ItemStack.EMPTY;
 	}
 
@@ -278,9 +280,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	protected void applyDamage(DamageSource damageSource, float f) {
-		if (!this.isInvulnerableTo(damageSource)) {
-			this.setHealth(this.getHealth() - f);
+	protected void applyDamage(DamageSource source, float amount) {
+		if (!this.isInvulnerableTo(source)) {
+			this.setHealth(this.getHealth() - amount);
 		}
 	}
 
@@ -337,8 +339,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.OPEN_INVENTORY));
 	}
 
-	public void setServerBrand(String string) {
-		this.serverBrand = string;
+	public void setServerBrand(String serverBrand) {
+		this.serverBrand = serverBrand;
 	}
 
 	public String getServerBrand() {
@@ -370,39 +372,39 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void addChatMessage(Text text, boolean bl) {
+	public void addChatMessage(Text message, boolean bl) {
 		if (bl) {
-			this.client.inGameHud.setOverlayMessage(text, false);
+			this.client.inGameHud.setOverlayMessage(message, false);
 		} else {
-			this.client.inGameHud.getChatHud().addMessage(text);
+			this.client.inGameHud.getChatHud().addMessage(message);
 		}
 	}
 
 	@Override
-	protected void pushOutOfBlocks(double d, double e, double f) {
-		BlockPos blockPos = new BlockPos(d, e, f);
+	protected void pushOutOfBlocks(double x, double y, double z) {
+		BlockPos blockPos = new BlockPos(x, y, z);
 		if (this.cannotFitAt(blockPos)) {
-			double g = d - (double)blockPos.getX();
-			double h = f - (double)blockPos.getZ();
+			double d = x - (double)blockPos.getX();
+			double e = z - (double)blockPos.getZ();
 			Direction direction = null;
-			double i = 9999.0;
-			if (!this.cannotFitAt(blockPos.west()) && g < i) {
-				i = g;
+			double f = 9999.0;
+			if (!this.cannotFitAt(blockPos.west()) && d < f) {
+				f = d;
 				direction = Direction.WEST;
 			}
 
-			if (!this.cannotFitAt(blockPos.east()) && 1.0 - g < i) {
-				i = 1.0 - g;
+			if (!this.cannotFitAt(blockPos.east()) && 1.0 - d < f) {
+				f = 1.0 - d;
 				direction = Direction.EAST;
 			}
 
-			if (!this.cannotFitAt(blockPos.north()) && h < i) {
-				i = h;
+			if (!this.cannotFitAt(blockPos.north()) && e < f) {
+				f = e;
 				direction = Direction.NORTH;
 			}
 
-			if (!this.cannotFitAt(blockPos.south()) && 1.0 - h < i) {
-				i = 1.0 - h;
+			if (!this.cannotFitAt(blockPos.south()) && 1.0 - e < f) {
+				f = 1.0 - e;
 				direction = Direction.SOUTH;
 			}
 
@@ -425,11 +427,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private boolean cannotFitAt(BlockPos blockPos) {
+	private boolean cannotFitAt(BlockPos pos) {
 		Box box = this.getBoundingBox();
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
 
-		for (int i = MathHelper.floor(box.minY); i < MathHelper.ceil(box.maxY); i++) {
+		for (int i = MathHelper.floor(box.y1); i < MathHelper.ceil(box.y2); i++) {
 			mutable.setY(i);
 			if (!this.doesNotSuffocate(mutable)) {
 				return true;
@@ -440,33 +442,33 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void setSprinting(boolean bl) {
-		super.setSprinting(bl);
+	public void setSprinting(boolean sprinting) {
+		super.setSprinting(sprinting);
 		this.field_3921 = 0;
 	}
 
-	public void setExperience(float f, int i, int j) {
-		this.experienceProgress = f;
-		this.totalExperience = i;
-		this.experienceLevel = j;
+	public void setExperience(float progress, int total, int level) {
+		this.experienceProgress = progress;
+		this.totalExperience = total;
+		this.experienceLevel = level;
 	}
 
 	@Override
-	public void sendMessage(Text text) {
-		this.client.inGameHud.getChatHud().addMessage(text);
+	public void sendMessage(Text message) {
+		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 
 	@Override
-	public void handleStatus(byte b) {
-		if (b >= 24 && b <= 28) {
-			this.setClientPermissionLevel(b - 24);
+	public void handleStatus(byte status) {
+		if (status >= 24 && status <= 28) {
+			this.setClientPermissionLevel(status - 24);
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
-	public void setShowsDeathScreen(boolean bl) {
-		this.showsDeathScreen = bl;
+	public void setShowsDeathScreen(boolean shouldShow) {
+		this.showsDeathScreen = shouldShow;
 	}
 
 	public boolean showsDeathScreen() {
@@ -474,13 +476,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void playSound(SoundEvent soundEvent, float f, float g) {
-		this.world.playSound(this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), f, g, false);
+	public void playSound(SoundEvent sound, float volume, float pitch) {
+		this.world.playSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch, false);
 	}
 
 	@Override
-	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-		this.world.playSound(this.getX(), this.getY(), this.getZ(), soundEvent, soundCategory, f, g, false);
+	public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
+		this.world.playSound(this.getX(), this.getY(), this.getZ(), event, category, volume, pitch, false);
 	}
 
 	@Override
@@ -515,9 +517,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		super.onTrackedDataSet(trackedData);
-		if (LIVING_FLAGS.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		super.onTrackedDataSet(data);
+		if (LIVING_FLAGS.equals(data)) {
 			boolean bl = (this.dataTracker.get(LIVING_FLAGS) & 1) > 0;
 			Hand hand = (this.dataTracker.get(LIVING_FLAGS) & 2) > 0 ? Hand.OFF_HAND : Hand.MAIN_HAND;
 			if (bl && !this.usingItem) {
@@ -527,7 +529,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
-		if (FLAGS.equals(trackedData) && this.isFallFlying() && !this.field_3939) {
+		if (FLAGS.equals(data) && this.isFallFlying() && !this.field_3939) {
 			this.client.getSoundManager().play(new ElytraSoundInstance(this));
 		}
 	}
@@ -567,21 +569,21 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
-		Item item = itemStack.getItem();
+	public void openEditBookScreen(ItemStack book, Hand hand) {
+		Item item = book.getItem();
 		if (item == Items.WRITABLE_BOOK) {
-			this.client.openScreen(new BookEditScreen(this, itemStack, hand));
+			this.client.openScreen(new BookEditScreen(this, book, hand));
 		}
 	}
 
 	@Override
-	public void addCritParticles(Entity entity) {
-		this.client.particleManager.addEmitter(entity, ParticleTypes.CRIT);
+	public void addCritParticles(Entity target) {
+		this.client.particleManager.addEmitter(target, ParticleTypes.CRIT);
 	}
 
 	@Override
-	public void addEnchantedHitParticles(Entity entity) {
-		this.client.particleManager.addEmitter(entity, ParticleTypes.ENCHANTED_HIT);
+	public void addEnchantedHitParticles(Entity target) {
+		this.client.particleManager.addEmitter(target, ParticleTypes.ENCHANTED_HIT);
 	}
 
 	@Override
@@ -689,10 +691,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 		}
 
+		boolean bl6 = false;
 		if (this.abilities.allowFlying) {
 			if (this.client.interactionManager.isFlyingLocked()) {
 				if (!this.abilities.flying) {
 					this.abilities.flying = true;
+					bl6 = true;
 					this.sendAbilitiesUpdate();
 				}
 			} else if (!bl && this.input.jumping && !bl4) {
@@ -700,13 +704,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					this.field_7489 = 7;
 				} else if (!this.isSwimming()) {
 					this.abilities.flying = !this.abilities.flying;
+					bl6 = true;
 					this.sendAbilitiesUpdate();
 					this.field_7489 = 0;
 				}
 			}
 		}
 
-		if (this.input.jumping && !bl && !this.abilities.flying) {
+		if (this.input.jumping && !bl6 && !bl && !this.abilities.flying) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
 				this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
@@ -832,20 +837,20 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Nullable
 	@Override
-	public StatusEffectInstance removeStatusEffect(@Nullable StatusEffect statusEffect) {
-		if (statusEffect == StatusEffects.NAUSEA) {
+	public StatusEffectInstance removeStatusEffect(@Nullable StatusEffect effect) {
+		if (effect == StatusEffects.NAUSEA) {
 			this.lastNauseaStrength = 0.0F;
 			this.nextNauseaStrength = 0.0F;
 		}
 
-		return super.removeStatusEffect(statusEffect);
+		return super.removeStatusEffect(effect);
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d vec3d) {
+	public void move(MovementType type, Vec3d movement) {
 		double d = this.getX();
 		double e = this.getZ();
-		super.move(movementType, vec3d);
+		super.move(type, movement);
 		this.method_3148((float)(this.getX() - d), (float)(this.getZ() - e));
 	}
 
@@ -879,7 +884,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			float l = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);
 			if (!(l < -0.15F)) {
 				EntityContext entityContext = EntityContext.of(this);
-				BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().maxY, this.getZ());
+				BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().y2, this.getZ());
 				BlockState blockState = this.world.getBlockState(blockPos);
 				if (blockState.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
 					blockPos = blockPos.up();
@@ -913,7 +918,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						while (iterator.hasNext()) {
 							Box box2 = (Box)iterator.next();
 							if (box2.intersects(vec3d10, vec3d11) || box2.intersects(vec3d12, vec3d13)) {
-								t = (float)box2.maxY;
+								t = (float)box2.y2;
 								Vec3d vec3d14 = box2.getCenter();
 								BlockPos blockPos2 = new BlockPos(vec3d14);
 

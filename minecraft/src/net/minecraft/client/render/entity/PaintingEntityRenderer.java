@@ -3,10 +3,10 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -27,24 +27,17 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 	}
 
 	public void method_4075(
-		PaintingEntity paintingEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		PaintingEntity paintingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		matrixStack.push();
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
 		PaintingMotive paintingMotive = paintingEntity.motive;
 		float i = 0.0625F;
 		matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(this.method_4077(paintingEntity)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.method_4077(paintingEntity)));
 		PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
 		this.method_4074(
-			matrixStack.peek(),
+			matrixStack.peekModel(),
 			vertexConsumer,
 			paintingEntity,
 			paintingMotive.getWidth(),
@@ -53,7 +46,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 			paintingManager.getBackSprite()
 		);
 		matrixStack.pop();
-		super.render(paintingEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.render(paintingEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public Identifier method_4077(PaintingEntity paintingEntity) {
@@ -144,7 +137,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 		vertexConsumer.vertex(matrix4f, f, g, j)
 			.color(255, 255, 255, 255)
 			.texture(h, i)
-			.defaultOverlay(OverlayTexture.DEFAULT_UV)
+			.overlay(OverlayTexture.DEFAULT_UV)
 			.light(n)
 			.normal((float)k, (float)l, (float)m)
 			.next();

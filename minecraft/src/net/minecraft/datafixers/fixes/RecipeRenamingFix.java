@@ -21,8 +21,8 @@ public class RecipeRenamingFix extends DataFix {
 		.put("minecraft:spruce_bark", "minecraft:spruce_wood")
 		.build();
 
-	public RecipeRenamingFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public RecipeRenamingFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

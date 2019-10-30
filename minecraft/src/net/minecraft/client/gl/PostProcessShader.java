@@ -17,40 +17,40 @@ import net.minecraft.resource.ResourceManager;
 @Environment(EnvType.CLIENT)
 public class PostProcessShader implements AutoCloseable {
 	private final JsonGlProgram program;
-	public final GlFramebuffer input;
-	public final GlFramebuffer output;
+	public final Framebuffer input;
+	public final Framebuffer output;
 	private final List<Object> samplerValues = Lists.<Object>newArrayList();
 	private final List<String> samplerNames = Lists.<String>newArrayList();
 	private final List<Integer> samplerWidths = Lists.<Integer>newArrayList();
 	private final List<Integer> samplerHeights = Lists.<Integer>newArrayList();
 	private Matrix4f projectionMatrix;
 
-	public PostProcessShader(ResourceManager resourceManager, String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
-		this.program = new JsonGlProgram(resourceManager, string);
-		this.input = glFramebuffer;
-		this.output = glFramebuffer2;
+	public PostProcessShader(ResourceManager resourceManager, String programName, Framebuffer input, Framebuffer output) throws IOException {
+		this.program = new JsonGlProgram(resourceManager, programName);
+		this.input = input;
+		this.output = output;
 	}
 
 	public void close() {
 		this.program.close();
 	}
 
-	public void addAuxTarget(String string, Object object, int i, int j) {
-		this.samplerNames.add(this.samplerNames.size(), string);
-		this.samplerValues.add(this.samplerValues.size(), object);
-		this.samplerWidths.add(this.samplerWidths.size(), i);
-		this.samplerHeights.add(this.samplerHeights.size(), j);
+	public void addAuxTarget(String name, Object target, int width, int height) {
+		this.samplerNames.add(this.samplerNames.size(), name);
+		this.samplerValues.add(this.samplerValues.size(), target);
+		this.samplerWidths.add(this.samplerWidths.size(), width);
+		this.samplerHeights.add(this.samplerHeights.size(), height);
 	}
 
-	public void setProjectionMatrix(Matrix4f matrix4f) {
-		this.projectionMatrix = matrix4f;
+	public void setProjectionMatrix(Matrix4f projectionMatrix) {
+		this.projectionMatrix = projectionMatrix;
 	}
 
-	public void render(float f) {
+	public void render(float time) {
 		this.input.endWrite();
-		float g = (float)this.output.texWidth;
-		float h = (float)this.output.texHeight;
-		RenderSystem.viewport(0, 0, (int)g, (int)h);
+		float f = (float)this.output.textureWidth;
+		float g = (float)this.output.textureHeight;
+		RenderSystem.viewport(0, 0, (int)f, (int)g);
 		this.program.bindSampler("DiffuseSampler", this.input);
 
 		for (int i = 0; i < this.samplerValues.size(); i++) {
@@ -61,9 +61,9 @@ public class PostProcessShader implements AutoCloseable {
 		}
 
 		this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
-		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.texWidth, (float)this.input.texHeight);
-		this.program.getUniformByNameOrDummy("OutSize").set(g, h);
-		this.program.getUniformByNameOrDummy("Time").set(f);
+		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.textureWidth, (float)this.input.textureHeight);
+		this.program.getUniformByNameOrDummy("OutSize").set(f, g);
+		this.program.getUniformByNameOrDummy("Time").set(time);
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		this.program
 			.getUniformByNameOrDummy("ScreenSize")
@@ -72,12 +72,12 @@ public class PostProcessShader implements AutoCloseable {
 		this.output.clear(MinecraftClient.IS_SYSTEM_MAC);
 		this.output.beginWrite(false);
 		RenderSystem.depthMask(false);
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(0.0, 0.0, 500.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)g, 0.0, 500.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex((double)g, (double)h, 500.0).color(255, 255, 255, 255).next();
-		bufferBuilder.vertex(0.0, (double)h, 500.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)f, 0.0, 500.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex((double)f, (double)g, 500.0).color(255, 255, 255, 255).next();
+		bufferBuilder.vertex(0.0, (double)g, 500.0).color(255, 255, 255, 255).next();
 		bufferBuilder.end();
 		BufferRenderer.draw(bufferBuilder);
 		RenderSystem.depthMask(true);
@@ -86,8 +86,8 @@ public class PostProcessShader implements AutoCloseable {
 		this.input.endRead();
 
 		for (Object object : this.samplerValues) {
-			if (object instanceof GlFramebuffer) {
-				((GlFramebuffer)object).endRead();
+			if (object instanceof Framebuffer) {
+				((Framebuffer)object).endRead();
 			}
 		}
 	}

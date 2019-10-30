@@ -25,18 +25,18 @@ public class CoralParentBlock extends Block implements Waterloggable {
 		this.setDefaultState(this.stateFactory.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
 	}
 
-	protected void checkLivingConditions(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-		if (!isInWater(blockState, iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
+	protected void checkLivingConditions(BlockState state, IWorld world, BlockPos pos) {
+		if (!isInWater(state, world, pos)) {
+			world.getBlockTickScheduler().schedule(pos, this, 60 + world.getRandom().nextInt(40));
 		}
 	}
 
-	protected static boolean isInWater(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
+	protected static boolean isInWater(BlockState state, BlockView world, BlockPos pos) {
+		if ((Boolean)state.get(WATERLOGGED)) {
 			return true;
 		} else {
 			for (Direction direction : Direction.values()) {
-				if (blockView.getFluidState(blockPos.offset(direction)).matches(FluidTags.WATER)) {
+				if (world.getFluidState(pos.offset(direction)).matches(FluidTags.WATER)) {
 					return true;
 				}
 			}
@@ -47,33 +47,31 @@ public class CoralParentBlock extends Block implements Waterloggable {
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return SHAPE;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if ((Boolean)state.get(WATERLOGGED)) {
+			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
+		return facing == Direction.DOWN && !this.canPlaceAt(state, world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.method_10074();
-		return worldView.getBlockState(blockPos2).isSideSolidFullSquare(worldView, blockPos2, Direction.UP);
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		BlockPos blockPos = pos.method_10074();
+		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 
 	@Override
@@ -82,7 +80,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
+	public FluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 }

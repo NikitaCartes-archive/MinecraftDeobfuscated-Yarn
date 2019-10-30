@@ -29,8 +29,8 @@ public class SetBaseBiomesLayer implements IdentitySamplingLayer {
 	private final int field_20621;
 	private int[] chosenGroup1 = DRY_BIOMES;
 
-	public SetBaseBiomesLayer(LevelGeneratorType levelGeneratorType, int i) {
-		if (levelGeneratorType == LevelGeneratorType.DEFAULT_1_1) {
+	public SetBaseBiomesLayer(LevelGeneratorType generatorType, int i) {
+		if (generatorType == LevelGeneratorType.DEFAULT_1_1) {
 			this.chosenGroup1 = OLD_GROUP_1;
 			this.field_20621 = -1;
 		} else {
@@ -39,39 +39,39 @@ public class SetBaseBiomesLayer implements IdentitySamplingLayer {
 	}
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
+	public int sample(LayerRandomnessSource context, int value) {
 		if (this.field_20621 >= 0) {
 			return this.field_20621;
 		} else {
-			int j = (i & 3840) >> 8;
-			i &= -3841;
-			if (!BiomeLayers.isOcean(i) && i != MUSHROOM_FIELDS_ID) {
-				switch (i) {
+			int i = (value & 3840) >> 8;
+			value &= -3841;
+			if (!BiomeLayers.isOcean(value) && value != MUSHROOM_FIELDS_ID) {
+				switch (value) {
 					case 1:
-						if (j > 0) {
-							return layerRandomnessSource.nextInt(3) == 0 ? BADLANDS_PLATEAU_ID : WOODED_BADLANDS_PLATEAU_ID;
+						if (i > 0) {
+							return context.nextInt(3) == 0 ? BADLANDS_PLATEAU_ID : WOODED_BADLANDS_PLATEAU_ID;
 						}
 
-						return this.chosenGroup1[layerRandomnessSource.nextInt(this.chosenGroup1.length)];
+						return this.chosenGroup1[context.nextInt(this.chosenGroup1.length)];
 					case 2:
-						if (j > 0) {
+						if (i > 0) {
 							return JUNGLE_ID;
 						}
 
-						return TEMPERATE_BIOMES[layerRandomnessSource.nextInt(TEMPERATE_BIOMES.length)];
+						return TEMPERATE_BIOMES[context.nextInt(TEMPERATE_BIOMES.length)];
 					case 3:
-						if (j > 0) {
+						if (i > 0) {
 							return GIANT_TREE_TAIGA_ID;
 						}
 
-						return COOL_BIOMES[layerRandomnessSource.nextInt(COOL_BIOMES.length)];
+						return COOL_BIOMES[context.nextInt(COOL_BIOMES.length)];
 					case 4:
-						return SNOWY_BIOMES[layerRandomnessSource.nextInt(SNOWY_BIOMES.length)];
+						return SNOWY_BIOMES[context.nextInt(SNOWY_BIOMES.length)];
 					default:
 						return MUSHROOM_FIELDS_ID;
 				}
 			} else {
-				return i;
+				return value;
 			}
 		}
 	}

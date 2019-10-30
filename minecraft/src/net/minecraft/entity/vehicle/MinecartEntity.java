@@ -10,19 +10,19 @@ public class MinecartEntity extends AbstractMinecartEntity {
 		super(entityType, world);
 	}
 
-	public MinecartEntity(World world, double d, double e, double f) {
-		super(EntityType.MINECART, world, d, e, f);
+	public MinecartEntity(World world, double x, double y, double z) {
+		super(EntityType.MINECART, world, x, y, z);
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		if (playerEntity.shouldCancelInteraction()) {
+	public boolean interact(PlayerEntity player, Hand hand) {
+		if (player.shouldCancelInteraction()) {
 			return false;
 		} else if (this.hasPassengers()) {
 			return true;
 		} else {
 			if (!this.world.isClient) {
-				playerEntity.startRiding(this);
+				player.startRiding(this);
 			}
 
 			return true;
@@ -30,8 +30,8 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void onActivatorRail(int i, int j, int k, boolean bl) {
-		if (bl) {
+	public void onActivatorRail(int x, int y, int z, boolean powered) {
+		if (powered) {
 			if (this.hasPassengers()) {
 				this.removeAllPassengers();
 			}

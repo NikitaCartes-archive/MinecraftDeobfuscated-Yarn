@@ -24,8 +24,8 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, intRange, intRange2);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack, i));
+	public void trigger(ServerPlayerEntity player, ItemStack stack, int damage) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(stack, damage));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -33,22 +33,22 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		private final NumberRange.IntRange durability;
 		private final NumberRange.IntRange delta;
 
-		public Conditions(ItemPredicate itemPredicate, NumberRange.IntRange intRange, NumberRange.IntRange intRange2) {
+		public Conditions(ItemPredicate item, NumberRange.IntRange intRange, NumberRange.IntRange intRange2) {
 			super(ItemDurabilityChangedCriterion.ID);
-			this.item = itemPredicate;
+			this.item = item;
 			this.durability = intRange;
 			this.delta = intRange2;
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions create(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
-			return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, intRange, NumberRange.IntRange.ANY);
+		public static ItemDurabilityChangedCriterion.Conditions create(ItemPredicate item, NumberRange.IntRange intRange) {
+			return new ItemDurabilityChangedCriterion.Conditions(item, intRange, NumberRange.IntRange.ANY);
 		}
 
-		public boolean matches(ItemStack itemStack, int i) {
-			if (!this.item.test(itemStack)) {
+		public boolean matches(ItemStack stack, int damage) {
+			if (!this.item.test(stack)) {
 				return false;
 			} else {
-				return !this.durability.test(itemStack.getMaxDamage() - i) ? false : this.delta.test(itemStack.getDamage() - i);
+				return !this.durability.test(stack.getMaxDamage() - damage) ? false : this.delta.test(stack.getDamage() - damage);
 			}
 		}
 

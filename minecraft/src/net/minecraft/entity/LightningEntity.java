@@ -27,14 +27,14 @@ public class LightningEntity extends Entity {
 	@Nullable
 	private ServerPlayerEntity channeller;
 
-	public LightningEntity(World world, double d, double e, double f, boolean bl) {
+	public LightningEntity(World world, double x, double y, double z, boolean cosmetic) {
 		super(EntityType.LIGHTNING_BOLT, world);
 		this.ignoreCameraFrustum = true;
-		this.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
+		this.setPositionAndAngles(x, y, z, 0.0F, 0.0F);
 		this.ambientTick = 2;
 		this.seed = this.random.nextLong();
 		this.remainingActions = this.random.nextInt(3) + 1;
-		this.cosmetic = bl;
+		this.cosmetic = cosmetic;
 		Difficulty difficulty = world.getDifficulty();
 		if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
 			this.spawnFire(4);
@@ -46,8 +46,8 @@ public class LightningEntity extends Entity {
 		return SoundCategory.WEATHER;
 	}
 
-	public void setChanneller(@Nullable ServerPlayerEntity serverPlayerEntity) {
-		this.channeller = serverPlayerEntity;
+	public void setChanneller(@Nullable ServerPlayerEntity channeller) {
+		this.channeller = channeller;
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class LightningEntity extends Entity {
 		}
 	}
 
-	private void spawnFire(int i) {
+	private void spawnFire(int spreadAttempts) {
 		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			BlockState blockState = Blocks.FIRE.getDefaultState();
 			BlockPos blockPos = new BlockPos(this);
@@ -112,7 +112,7 @@ public class LightningEntity extends Entity {
 				this.world.setBlockState(blockPos, blockState);
 			}
 
-			for (int j = 0; j < i; j++) {
+			for (int i = 0; i < spreadAttempts; i++) {
 				BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
 				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
 					this.world.setBlockState(blockPos2, blockState);
@@ -123,9 +123,9 @@ public class LightningEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		double e = 64.0 * getRenderDistanceMultiplier();
-		return d < e * e;
+	public boolean shouldRenderAtDistance(double distance) {
+		double d = 64.0 * getRenderDistanceMultiplier();
+		return distance < d * d;
 	}
 
 	@Override
@@ -133,11 +133,11 @@ public class LightningEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+	protected void readCustomDataFromTag(CompoundTag tag) {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void writeCustomDataToTag(CompoundTag tag) {
 	}
 
 	@Override

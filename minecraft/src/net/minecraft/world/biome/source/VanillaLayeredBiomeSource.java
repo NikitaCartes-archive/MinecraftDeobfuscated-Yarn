@@ -78,15 +78,13 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 		Biomes.MODIFIED_BADLANDS_PLATEAU
 	);
 
-	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig) {
+	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig config) {
 		super(BIOMES);
-		this.noiseLayer = BiomeLayers.build(
-			vanillaLayeredBiomeSourceConfig.getSeed(), vanillaLayeredBiomeSourceConfig.getGeneratorType(), vanillaLayeredBiomeSourceConfig.getGeneratorSettings()
-		);
+		this.noiseLayer = BiomeLayers.build(config.getSeed(), config.getGeneratorType(), config.getGeneratorSettings());
 	}
 
 	@Override
-	public Biome getStoredBiome(int i, int j, int k) {
-		return this.noiseLayer.sample(i, k);
+	public Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
+		return this.noiseLayer.sample(biomeX, biomeZ);
 	}
 }

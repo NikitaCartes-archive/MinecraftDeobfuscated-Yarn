@@ -24,8 +24,8 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-		super.render(matrixStack, vertexConsumer, i, j, f, g, h);
-		this.field_3377.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
+		super.render(matrixStack, vertexConsumer, i, j, r, g, b);
+		this.field_3377.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
 	}
 }

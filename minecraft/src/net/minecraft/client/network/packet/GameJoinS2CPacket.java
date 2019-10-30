@@ -26,56 +26,65 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public GameJoinS2CPacket(
-		int i, GameMode gameMode, long l, boolean bl, DimensionType dimensionType, int j, LevelGeneratorType levelGeneratorType, int k, boolean bl2, boolean bl3
+		int playerEntityId,
+		GameMode gameMode,
+		long seed,
+		boolean hardcore,
+		DimensionType dimensionType,
+		int maxPlayers,
+		LevelGeneratorType levelGeneratorType,
+		int chunkLoadDistance,
+		boolean reducedDebugInfo,
+		boolean showsDeathScreen
 	) {
-		this.playerEntityId = i;
+		this.playerEntityId = playerEntityId;
 		this.dimension = dimensionType;
-		this.seed = l;
+		this.seed = seed;
 		this.gameMode = gameMode;
-		this.maxPlayers = j;
-		this.hardcore = bl;
+		this.maxPlayers = maxPlayers;
+		this.hardcore = hardcore;
 		this.generatorType = levelGeneratorType;
-		this.chunkLoadDistance = k;
-		this.reducedDebugInfo = bl2;
-		this.showsDeathScreen = bl3;
+		this.chunkLoadDistance = chunkLoadDistance;
+		this.reducedDebugInfo = reducedDebugInfo;
+		this.showsDeathScreen = showsDeathScreen;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.playerEntityId = packetByteBuf.readInt();
-		int i = packetByteBuf.readUnsignedByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.playerEntityId = buf.readInt();
+		int i = buf.readUnsignedByte();
 		this.hardcore = (i & 8) == 8;
 		i &= -9;
 		this.gameMode = GameMode.byId(i);
-		this.dimension = DimensionType.byRawId(packetByteBuf.readInt());
-		this.seed = packetByteBuf.readLong();
-		this.maxPlayers = packetByteBuf.readUnsignedByte();
-		this.generatorType = LevelGeneratorType.getTypeFromName(packetByteBuf.readString(16));
+		this.dimension = DimensionType.byRawId(buf.readInt());
+		this.seed = buf.readLong();
+		this.maxPlayers = buf.readUnsignedByte();
+		this.generatorType = LevelGeneratorType.getTypeFromName(buf.readString(16));
 		if (this.generatorType == null) {
 			this.generatorType = LevelGeneratorType.DEFAULT;
 		}
 
-		this.chunkLoadDistance = packetByteBuf.readVarInt();
-		this.reducedDebugInfo = packetByteBuf.readBoolean();
-		this.showsDeathScreen = packetByteBuf.readBoolean();
+		this.chunkLoadDistance = buf.readVarInt();
+		this.reducedDebugInfo = buf.readBoolean();
+		this.showsDeathScreen = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeInt(this.playerEntityId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeInt(this.playerEntityId);
 		int i = this.gameMode.getId();
 		if (this.hardcore) {
 			i |= 8;
 		}
 
-		packetByteBuf.writeByte(i);
-		packetByteBuf.writeInt(this.dimension.getRawId());
-		packetByteBuf.writeLong(this.seed);
-		packetByteBuf.writeByte(this.maxPlayers);
-		packetByteBuf.writeString(this.generatorType.getName());
-		packetByteBuf.writeVarInt(this.chunkLoadDistance);
-		packetByteBuf.writeBoolean(this.reducedDebugInfo);
-		packetByteBuf.writeBoolean(this.showsDeathScreen);
+		buf.writeByte(i);
+		buf.writeInt(this.dimension.getRawId());
+		buf.writeLong(this.seed);
+		buf.writeByte(this.maxPlayers);
+		buf.writeString(this.generatorType.getName());
+		buf.writeVarInt(this.chunkLoadDistance);
+		buf.writeBoolean(this.reducedDebugInfo);
+		buf.writeBoolean(this.showsDeathScreen);
 	}
 
 	public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {

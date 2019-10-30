@@ -5,12 +5,12 @@ import java.util.UUID;
 import java.util.function.IntPredicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
 	public static final float SQUARE_ROOT_OF_TWO = sqrt(2.0F);
-	private static final float[] SINE_TABLE = SystemUtil.consume(new float[65536], fs -> {
+	private static final float[] SINE_TABLE = Util.create(new float[65536], fs -> {
 		for (int ix = 0; ix < fs.length; ix++) {
 			fs[ix] = (float)Math.sin((double)ix * Math.PI * 2.0 / 65536.0);
 		}
@@ -82,35 +82,35 @@ public class MathHelper {
 		return d > (double)i ? i + 1 : i;
 	}
 
-	public static int clamp(int i, int j, int k) {
-		if (i < j) {
-			return j;
+	public static int clamp(int value, int min, int max) {
+		if (value < min) {
+			return min;
 		} else {
-			return i > k ? k : i;
+			return value > max ? max : value;
 		}
 	}
 
-	public static float clamp(float f, float g, float h) {
-		if (f < g) {
-			return g;
+	public static float clamp(float value, float min, float max) {
+		if (value < min) {
+			return min;
 		} else {
-			return f > h ? h : f;
+			return value > max ? max : value;
 		}
 	}
 
-	public static double clamp(double d, double e, double f) {
-		if (d < e) {
-			return e;
+	public static double clamp(double value, double min, double max) {
+		if (value < min) {
+			return min;
 		} else {
-			return d > f ? f : d;
+			return value > max ? max : value;
 		}
 	}
 
-	public static double clampedLerp(double d, double e, double f) {
-		if (f < 0.0) {
-			return d;
+	public static double clampedLerp(double first, double second, double delta) {
+		if (delta < 0.0) {
+			return first;
 		} else {
-			return f > 1.0 ? e : lerp(f, d, e);
+			return delta > 1.0 ? second : lerp(delta, first, second);
 		}
 	}
 
@@ -130,35 +130,35 @@ public class MathHelper {
 		return Math.floorDiv(i, j);
 	}
 
-	public static int nextInt(Random random, int i, int j) {
-		return i >= j ? i : random.nextInt(j - i + 1) + i;
+	public static int nextInt(Random random, int min, int max) {
+		return min >= max ? min : random.nextInt(max - min + 1) + min;
 	}
 
-	public static float nextFloat(Random random, float f, float g) {
-		return f >= g ? f : random.nextFloat() * (g - f) + f;
+	public static float nextFloat(Random random, float min, float max) {
+		return min >= max ? min : random.nextFloat() * (max - min) + min;
 	}
 
-	public static double nextDouble(Random random, double d, double e) {
-		return d >= e ? d : random.nextDouble() * (e - d) + d;
+	public static double nextDouble(Random random, double min, double max) {
+		return min >= max ? min : random.nextDouble() * (max - min) + min;
 	}
 
-	public static double average(long[] ls) {
+	public static double average(long[] array) {
 		long l = 0L;
 
-		for (long m : ls) {
+		for (long m : array) {
 			l += m;
 		}
 
-		return (double)l / (double)ls.length;
+		return (double)l / (double)array.length;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static boolean approximatelyEquals(float f, float g) {
-		return Math.abs(g - f) < 1.0E-5F;
+	public static boolean approximatelyEquals(float a, float b) {
+		return Math.abs(b - a) < 1.0E-5F;
 	}
 
-	public static boolean approximatelyEquals(double d, double e) {
-		return Math.abs(e - d) < 1.0E-5F;
+	public static boolean approximatelyEquals(double a, double b) {
+		return Math.abs(b - a) < 1.0E-5F;
 	}
 
 	public static int floorMod(int i, int j) {
@@ -215,18 +215,18 @@ public class MathHelper {
 		return e;
 	}
 
-	public static float subtractAngles(float f, float g) {
-		return wrapDegrees(g - f);
+	public static float subtractAngles(float start, float end) {
+		return wrapDegrees(end - start);
 	}
 
-	public static float angleBetween(float f, float g) {
-		return abs(subtractAngles(f, g));
+	public static float angleBetween(float first, float second) {
+		return abs(subtractAngles(first, second));
 	}
 
-	public static float method_20306(float f, float g, float h) {
-		float i = subtractAngles(f, g);
-		float j = clamp(i, -h, h);
-		return g - j;
+	public static float method_20306(float start, float end, float speed) {
+		float f = subtractAngles(start, end);
+		float g = clamp(f, -speed, speed);
+		return end - g;
 	}
 
 	public static float method_15348(float f, float g, float h) {
@@ -240,37 +240,37 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int parseInt(String string, int i) {
-		return NumberUtils.toInt(string, i);
+	public static int parseInt(String string, int fallback) {
+		return NumberUtils.toInt(string, fallback);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int parseInt(String string, int i, int j) {
-		return Math.max(j, parseInt(string, i));
+	public static int parseInt(String string, int fallback, int minimum) {
+		return Math.max(minimum, parseInt(string, fallback));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static double parseDouble(String string, double d) {
+	public static double parseDouble(String string, double fallback) {
 		try {
 			return Double.parseDouble(string);
 		} catch (Throwable var4) {
-			return d;
+			return fallback;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static double parseDouble(String string, double d, double e) {
-		return Math.max(e, parseDouble(string, d));
+	public static double parseDouble(String string, double fallback, double d) {
+		return Math.max(d, parseDouble(string, fallback));
 	}
 
-	public static int smallestEncompassingPowerOfTwo(int i) {
-		int j = i - 1;
-		j |= j >> 1;
-		j |= j >> 2;
-		j |= j >> 4;
-		j |= j >> 8;
-		j |= j >> 16;
-		return j + 1;
+	public static int smallestEncompassingPowerOfTwo(int value) {
+		int i = value - 1;
+		i |= i >> 1;
+		i |= i >> 2;
+		i |= i >> 4;
+		i |= i >> 8;
+		i |= i >> 16;
+		return i + 1;
 	}
 
 	private static boolean isPowerOfTwo(int i) {
@@ -302,28 +302,28 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int packRgb(float f, float g, float h) {
-		return packRgb(floor(f * 255.0F), floor(g * 255.0F), floor(h * 255.0F));
+	public static int packRgb(float r, float g, float b) {
+		return packRgb(floor(r * 255.0F), floor(g * 255.0F), floor(b * 255.0F));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int packRgb(int i, int j, int k) {
-		int l = (i << 8) + j;
-		return (l << 8) + k;
+	public static int packRgb(int r, int g, int b) {
+		int i = (r << 8) + g;
+		return (i << 8) + b;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int multiplyColors(int i, int j) {
-		int k = (i & 0xFF0000) >> 16;
-		int l = (j & 0xFF0000) >> 16;
-		int m = (i & 0xFF00) >> 8;
-		int n = (j & 0xFF00) >> 8;
-		int o = (i & 0xFF) >> 0;
-		int p = (j & 0xFF) >> 0;
-		int q = (int)((float)k * (float)l / 255.0F);
-		int r = (int)((float)m * (float)n / 255.0F);
-		int s = (int)((float)o * (float)p / 255.0F);
-		return i & 0xFF000000 | q << 16 | r << 8 | s;
+	public static int multiplyColors(int first, int second) {
+		int i = (first & 0xFF0000) >> 16;
+		int j = (second & 0xFF0000) >> 16;
+		int k = (first & 0xFF00) >> 8;
+		int l = (second & 0xFF00) >> 8;
+		int m = (first & 0xFF) >> 0;
+		int n = (second & 0xFF) >> 0;
+		int o = (int)((float)i * (float)j / 255.0F);
+		int p = (int)((float)k * (float)l / 255.0F);
+		int q = (int)((float)m * (float)n / 255.0F);
+		return first & 0xFF000000 | o << 16 | p << 8 | q;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -331,16 +331,16 @@ public class MathHelper {
 		return f - (float)floor(f);
 	}
 
-	public static double fractionalPart(double d) {
-		return d - (double)lfloor(d);
+	public static double fractionalPart(double value) {
+		return value - (double)lfloor(value);
 	}
 
-	public static long hashCode(Vec3i vec3i) {
-		return hashCode(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+	public static long hashCode(Vec3i vec) {
+		return hashCode(vec.getX(), vec.getY(), vec.getZ());
 	}
 
-	public static long hashCode(int i, int j, int k) {
-		long l = (long)(i * 3129871) ^ (long)k * 116129781L ^ (long)j;
+	public static long hashCode(int x, int y, int z) {
+		long l = (long)(x * 3129871) ^ (long)z * 116129781L ^ (long)y;
 		l = l * l * 42317861L + l * 11L;
 		return l >> 16;
 	}
@@ -355,8 +355,8 @@ public class MathHelper {
 		return randomUuid(RANDOM);
 	}
 
-	public static double minusDiv(double d, double e, double f) {
-		return (d - e) / (f - e);
+	public static double minusDiv(double numerator, double delta, double denominator) {
+		return (numerator - delta) / (denominator - delta);
 	}
 
 	public static double atan2(double d, double e) {
@@ -409,83 +409,83 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float fastInverseSqrt(float f) {
-		float g = 0.5F * f;
-		int i = Float.floatToIntBits(f);
+	public static float fastInverseSqrt(float x) {
+		float f = 0.5F * x;
+		int i = Float.floatToIntBits(x);
 		i = 1597463007 - (i >> 1);
-		f = Float.intBitsToFloat(i);
-		return f * (1.5F - g * f * f);
+		x = Float.intBitsToFloat(i);
+		return x * (1.5F - f * x * x);
 	}
 
-	public static double fastInverseSqrt(double d) {
-		double e = 0.5 * d;
-		long l = Double.doubleToRawLongBits(d);
+	public static double fastInverseSqrt(double x) {
+		double d = 0.5 * x;
+		long l = Double.doubleToRawLongBits(x);
 		l = 6910469410427058090L - (l >> 1);
-		d = Double.longBitsToDouble(l);
-		return d * (1.5 - e * d * d);
+		x = Double.longBitsToDouble(l);
+		return x * (1.5 - d * x * x);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float fastInverseCbrt(float f) {
-		int i = Float.floatToIntBits(f);
+	public static float fastInverseCbrt(float x) {
+		int i = Float.floatToIntBits(x);
 		i = 1419967116 - i / 3;
-		float g = Float.intBitsToFloat(i);
-		g = 0.6666667F * g + 1.0F / (3.0F * g * g * f);
-		return 0.6666667F * g + 1.0F / (3.0F * g * g * f);
+		float f = Float.intBitsToFloat(i);
+		f = 0.6666667F * f + 1.0F / (3.0F * f * f * x);
+		return 0.6666667F * f + 1.0F / (3.0F * f * f * x);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int hsvToRgb(float f, float g, float h) {
-		int i = (int)(f * 6.0F) % 6;
-		float j = f * 6.0F - (float)i;
-		float k = h * (1.0F - g);
-		float l = h * (1.0F - j * g);
-		float m = h * (1.0F - (1.0F - j) * g);
-		float n;
-		float o;
-		float p;
+	public static int hsvToRgb(float hue, float saturation, float value) {
+		int i = (int)(hue * 6.0F) % 6;
+		float f = hue * 6.0F - (float)i;
+		float g = value * (1.0F - saturation);
+		float h = value * (1.0F - f * saturation);
+		float j = value * (1.0F - (1.0F - f) * saturation);
+		float k;
+		float l;
+		float m;
 		switch (i) {
 			case 0:
-				n = h;
-				o = m;
-				p = k;
+				k = value;
+				l = j;
+				m = g;
 				break;
 			case 1:
-				n = l;
-				o = h;
-				p = k;
+				k = h;
+				l = value;
+				m = g;
 				break;
 			case 2:
-				n = k;
-				o = h;
-				p = m;
+				k = g;
+				l = value;
+				m = j;
 				break;
 			case 3:
-				n = k;
-				o = l;
-				p = h;
+				k = g;
+				l = h;
+				m = value;
 				break;
 			case 4:
-				n = m;
-				o = k;
-				p = h;
+				k = j;
+				l = g;
+				m = value;
 				break;
 			case 5:
-				n = h;
-				o = k;
-				p = l;
+				k = value;
+				l = g;
+				m = h;
 				break;
 			default:
-				throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + f + ", " + g + ", " + h);
+				throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
 		}
 
-		int q = clamp((int)(n * 255.0F), 0, 255);
-		int r = clamp((int)(o * 255.0F), 0, 255);
-		int s = clamp((int)(p * 255.0F), 0, 255);
-		return q << 16 | r << 8 | s;
+		int n = clamp((int)(k * 255.0F), 0, 255);
+		int o = clamp((int)(l * 255.0F), 0, 255);
+		int p = clamp((int)(m * 255.0F), 0, 255);
+		return n << 16 | o << 8 | p;
 	}
 
-	public static int method_15354(int i) {
+	public static int idealHash(int i) {
 		i ^= i >>> 16;
 		i *= -2048144789;
 		i ^= i >>> 13;
@@ -493,37 +493,37 @@ public class MathHelper {
 		return i ^ i >>> 16;
 	}
 
-	public static int binarySearch(int i, int j, IntPredicate intPredicate) {
-		int k = j - i;
+	public static int binarySearch(int start, int end, IntPredicate leftPredicate) {
+		int i = end - start;
 
-		while (k > 0) {
-			int l = k / 2;
-			int m = i + l;
-			if (intPredicate.test(m)) {
-				k = l;
+		while (i > 0) {
+			int j = i / 2;
+			int k = start + j;
+			if (leftPredicate.test(k)) {
+				i = j;
 			} else {
-				i = m + 1;
-				k -= l + 1;
+				start = k + 1;
+				i -= j + 1;
 			}
 		}
 
-		return i;
+		return start;
 	}
 
-	public static float lerp(float f, float g, float h) {
-		return g + f * (h - g);
+	public static float lerp(float delta, float first, float second) {
+		return first + delta * (second - first);
 	}
 
-	public static double lerp(double d, double e, double f) {
-		return e + d * (f - e);
+	public static double lerp(double delta, double first, double second) {
+		return first + delta * (second - first);
 	}
 
-	public static double lerp2(double d, double e, double f, double g, double h, double i) {
-		return lerp(e, lerp(d, f, g), lerp(d, h, i));
+	public static double lerp2(double deltaX, double deltaY, double d, double e, double f, double g) {
+		return lerp(deltaY, lerp(deltaX, d, e), lerp(deltaX, f, g));
 	}
 
-	public static double lerp3(double d, double e, double f, double g, double h, double i, double j, double k, double l, double m, double n) {
-		return lerp(f, lerp2(d, e, g, h, i, j), lerp2(d, e, k, l, m, n));
+	public static double lerp3(double deltaX, double deltaY, double deltaZ, double d, double e, double f, double g, double h, double i, double j, double k) {
+		return lerp(deltaZ, lerp2(deltaX, deltaY, d, e, f, g), lerp2(deltaX, deltaY, h, i, j, k));
 	}
 
 	public static double perlinFade(double d) {
@@ -539,8 +539,8 @@ public class MathHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float lerpAngleDegrees(float f, float g, float h) {
-		return g + f * wrapDegrees(h - g);
+	public static float lerpAngleDegrees(float delta, float first, float second) {
+		return first + delta * wrapDegrees(second - first);
 	}
 
 	@Deprecated

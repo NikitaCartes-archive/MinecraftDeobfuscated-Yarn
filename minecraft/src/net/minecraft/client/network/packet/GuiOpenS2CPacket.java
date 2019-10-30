@@ -15,10 +15,10 @@ public class GuiOpenS2CPacket implements Packet<ClientPlayPacketListener> {
 	public GuiOpenS2CPacket() {
 	}
 
-	public GuiOpenS2CPacket(int i, int j, int k) {
-		this.id = i;
-		this.slotCount = j;
-		this.entityHorseId = k;
+	public GuiOpenS2CPacket(int id, int slotCount, int entityHorseId) {
+		this.id = id;
+		this.slotCount = slotCount;
+		this.entityHorseId = entityHorseId;
 	}
 
 	public void method_11437(ClientPlayPacketListener clientPlayPacketListener) {
@@ -26,17 +26,17 @@ public class GuiOpenS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readUnsignedByte();
-		this.slotCount = packetByteBuf.readVarInt();
-		this.entityHorseId = packetByteBuf.readInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readUnsignedByte();
+		this.slotCount = buf.readVarInt();
+		this.entityHorseId = buf.readInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.id);
-		packetByteBuf.writeVarInt(this.slotCount);
-		packetByteBuf.writeInt(this.entityHorseId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.id);
+		buf.writeVarInt(this.slotCount);
+		buf.writeInt(this.entityHorseId);
 	}
 
 	@Environment(EnvType.CLIENT)

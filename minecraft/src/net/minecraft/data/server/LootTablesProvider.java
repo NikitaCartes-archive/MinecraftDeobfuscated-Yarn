@@ -76,8 +76,8 @@ public class LootTablesProvider implements DataProvider {
 		}
 	}
 
-	private static Path getOutput(Path path, Identifier identifier) {
-		return path.resolve("data/" + identifier.getNamespace() + "/loot_tables/" + identifier.getPath() + ".json");
+	private static Path getOutput(Path rootOutput, Identifier lootTableId) {
+		return rootOutput.resolve("data/" + lootTableId.getNamespace() + "/loot_tables/" + lootTableId.getPath() + ".json");
 	}
 
 	@Override

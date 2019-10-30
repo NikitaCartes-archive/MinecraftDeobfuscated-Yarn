@@ -24,7 +24,7 @@ public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
 			final Map<String, T> map = Maps.<String, T>newHashMap();
 
 			for (T object : class_.getEnumConstants()) {
-				map.put(this.toString(object), object);
+				map.put(this.getKey(object), object);
 			}
 
 			return new TypeAdapter<T>() {
@@ -33,7 +33,7 @@ public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
 					if (object == null) {
 						jsonWriter.nullValue();
 					} else {
-						jsonWriter.value(LowercaseEnumTypeAdapterFactory.this.toString(object));
+						jsonWriter.value(LowercaseEnumTypeAdapterFactory.this.getKey(object));
 					}
 				}
 
@@ -51,7 +51,7 @@ public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
 		}
 	}
 
-	private String toString(Object object) {
-		return object instanceof Enum ? ((Enum)object).name().toLowerCase(Locale.ROOT) : object.toString().toLowerCase(Locale.ROOT);
+	private String getKey(Object o) {
+		return o instanceof Enum ? ((Enum)o).name().toLowerCase(Locale.ROOT) : o.toString().toLowerCase(Locale.ROOT);
 	}
 }

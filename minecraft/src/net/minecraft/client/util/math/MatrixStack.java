@@ -4,13 +4,13 @@ import com.google.common.collect.Queues;
 import java.util.Deque;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class MatrixStack {
-	private final Deque<MatrixStack.Entry> stack = SystemUtil.consume(Queues.<MatrixStack.Entry>newArrayDeque(), arrayDeque -> {
+	private final Deque<MatrixStack.Entry> stack = Util.create(Queues.<MatrixStack.Entry>newArrayDeque(), arrayDeque -> {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
 		Matrix3f matrix3f = new Matrix3f();
@@ -18,28 +18,28 @@ public class MatrixStack {
 		arrayDeque.add(new MatrixStack.Entry(matrix4f, matrix3f));
 	});
 
-	public void translate(double d, double e, double f) {
+	public void translate(double x, double y, double z) {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
-		matrix4f.addToLastColumn(new Vector3f((float)d, (float)e, (float)f));
+		matrix4f.addToLastColumn(new Vector3f((float)x, (float)y, (float)z));
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		entry.modelMatrix.multiply(matrix4f);
 	}
 
-	public void scale(float f, float g, float h) {
+	public void scale(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
-		matrix4f.set(0, 0, f);
-		matrix4f.set(1, 1, g);
-		matrix4f.set(2, 2, h);
+		matrix4f.set(0, 0, x);
+		matrix4f.set(1, 1, y);
+		matrix4f.set(2, 2, z);
 		entry.modelMatrix.multiply(matrix4f);
-		if (f != g || g != h) {
-			float i = MathHelper.fastInverseCbrt(f * g * h);
+		if (x != y || y != z) {
+			float f = MathHelper.fastInverseCbrt(x * y * z);
 			Matrix3f matrix3f = new Matrix3f();
-			matrix3f.set(0, 0, i / f);
-			matrix3f.set(1, 1, i / g);
-			matrix3f.set(2, 2, i / h);
+			matrix3f.set(0, 0, f / x);
+			matrix3f.set(1, 1, f / y);
+			matrix3f.set(2, 2, f / z);
 			entry.normalMatrix.multiply(matrix3f);
 		}
 	}
@@ -59,7 +59,7 @@ public class MatrixStack {
 		this.stack.removeLast();
 	}
 
-	public Matrix4f peek() {
+	public Matrix4f peekModel() {
 		return ((MatrixStack.Entry)this.stack.getLast()).modelMatrix;
 	}
 

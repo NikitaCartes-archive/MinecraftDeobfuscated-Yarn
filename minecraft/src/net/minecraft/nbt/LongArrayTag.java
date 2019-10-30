@@ -37,16 +37,16 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	};
 	private long[] value;
 
-	public LongArrayTag(long[] ls) {
-		this.value = ls;
+	public LongArrayTag(long[] value) {
+		this.value = value;
 	}
 
-	public LongArrayTag(LongSet longSet) {
-		this.value = longSet.toLongArray();
+	public LongArrayTag(LongSet value) {
+		this.value = value.toLongArray();
 	}
 
-	public LongArrayTag(List<Long> list) {
-		this(toArray(list));
+	public LongArrayTag(List<Long> value) {
+		this(toArray(value));
 	}
 
 	private static long[] toArray(List<Long> list) {
@@ -61,11 +61,11 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeInt(this.value.length);
+	public void write(DataOutput output) throws IOException {
+		output.writeInt(this.value.length);
 
 		for (long l : this.value) {
-			dataOutput.writeLong(l);
+			output.writeLong(l);
 		}
 	}
 
@@ -100,8 +100,8 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return new LongArrayTag(ls);
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof LongArrayTag && Arrays.equals(this.value, ((LongArrayTag)object).value);
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof LongArrayTag && Arrays.equals(this.value, ((LongArrayTag)o).value);
 	}
 
 	public int hashCode() {
@@ -109,14 +109,14 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("L").formatted(RED);
 		Text text2 = new LiteralText("[").append(text).append(";");
 
-		for (int j = 0; j < this.value.length; j++) {
-			Text text3 = new LiteralText(String.valueOf(this.value[j])).formatted(GOLD);
+		for (int i = 0; i < this.value.length; i++) {
+			Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
 			text2.append(" ").append(text3).append(text);
-			if (j != this.value.length - 1) {
+			if (i != this.value.length - 1) {
 				text2.append(",");
 			}
 		}
@@ -148,9 +148,9 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public boolean setTag(int i, Tag tag) {
+	public boolean setTag(int index, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
-			this.value[i] = ((AbstractNumberTag)tag).getLong();
+			this.value[index] = ((AbstractNumberTag)tag).getLong();
 			return true;
 		} else {
 			return false;
@@ -158,9 +158,9 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public boolean addTag(int i, Tag tag) {
+	public boolean addTag(int index, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
-			this.value = ArrayUtils.add(this.value, i, ((AbstractNumberTag)tag).getLong());
+			this.value = ArrayUtils.add(this.value, index, ((AbstractNumberTag)tag).getLong());
 			return true;
 		} else {
 			return false;

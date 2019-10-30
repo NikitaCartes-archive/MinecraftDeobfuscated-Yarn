@@ -25,16 +25,16 @@ public class FollowOwnerGoal extends Goal {
 	private float field_6447;
 	private final boolean field_21078;
 
-	public FollowOwnerGoal(TameableEntity tameableEntity, double d, float f, float g, boolean bl) {
-		this.tameable = tameableEntity;
-		this.world = tameableEntity.world;
-		this.field_6442 = d;
-		this.navigation = tameableEntity.getNavigation();
-		this.minDistance = f;
-		this.maxDistance = g;
+	public FollowOwnerGoal(TameableEntity tameable, double speed, float minDistance, float maxDistance, boolean bl) {
+		this.tameable = tameable;
+		this.world = tameable.world;
+		this.field_6442 = speed;
+		this.navigation = tameable.getNavigation();
+		this.minDistance = minDistance;
+		this.maxDistance = maxDistance;
 		this.field_21078 = bl;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		if (!(tameableEntity.getNavigation() instanceof MobNavigation) && !(tameableEntity.getNavigation() instanceof BirdNavigation)) {
+		if (!(tameable.getNavigation() instanceof MobNavigation) && !(tameable.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
 	}

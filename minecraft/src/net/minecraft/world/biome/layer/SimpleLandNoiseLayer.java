@@ -4,7 +4,7 @@ public enum SimpleLandNoiseLayer implements IdentitySamplingLayer {
 	INSTANCE;
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i) {
-		return BiomeLayers.isShallowOcean(i) ? i : layerRandomnessSource.nextInt(299999) + 2;
+	public int sample(LayerRandomnessSource context, int value) {
+		return BiomeLayers.isShallowOcean(value) ? value : context.nextInt(299999) + 2;
 	}
 }

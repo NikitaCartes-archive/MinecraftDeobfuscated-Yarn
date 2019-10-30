@@ -192,10 +192,10 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos blockPos) {
-		int i = blockPos.getX();
-		int j = blockPos.getY();
-		int k = blockPos.getZ();
+	public BlockState getBlockState(BlockPos pos) {
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
 		if (this.world.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			BlockState blockState = null;
 			if (j == 60) {
@@ -227,16 +227,16 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos blockPos) {
-		return this.getFluidState(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	public FluidState getFluidState(BlockPos pos) {
+		return this.getFluidState(pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	public FluidState getFluidState(int i, int j, int k) {
+	public FluidState getFluidState(int x, int y, int i) {
 		try {
-			if (j >= 0 && j >> 4 < this.sections.length) {
-				ChunkSection chunkSection = this.sections[j >> 4];
+			if (y >= 0 && y >> 4 < this.sections.length) {
+				ChunkSection chunkSection = this.sections[y >> 4];
 				if (!ChunkSection.isEmpty(chunkSection)) {
-					return chunkSection.getFluidState(i & 15, j & 15, k & 15);
+					return chunkSection.getFluidState(x & 15, y & 15, i & 15);
 				}
 			}
 
@@ -244,20 +244,20 @@ public class WorldChunk implements Chunk {
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being got");
-			crashReportSection.add("Location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(i, j, k)));
+			crashReportSection.add("Location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(x, y, i)));
 			throw new CrashException(crashReport);
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
-		int i = blockPos.getX() & 15;
-		int j = blockPos.getY();
-		int k = blockPos.getZ() & 15;
+	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+		int i = pos.getX() & 15;
+		int j = pos.getY();
+		int k = pos.getZ() & 15;
 		ChunkSection chunkSection = this.sections[j >> 4];
 		if (chunkSection == EMPTY_SECTION) {
-			if (blockState.isAir()) {
+			if (state.isAir()) {
 				return null;
 			}
 
@@ -266,53 +266,53 @@ public class WorldChunk implements Chunk {
 		}
 
 		boolean bl2 = chunkSection.isEmpty();
-		BlockState blockState2 = chunkSection.setBlockState(i, j & 15, k, blockState);
-		if (blockState2 == blockState) {
+		BlockState blockState = chunkSection.setBlockState(i, j & 15, k, state);
+		if (blockState == state) {
 			return null;
 		} else {
-			Block block = blockState.getBlock();
-			Block block2 = blockState2.getBlock();
-			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, blockState);
+			Block block = state.getBlock();
+			Block block2 = blockState.getBlock();
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(i, j, k, state);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(i, j, k, state);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(i, j, k, state);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, state);
 			boolean bl3 = chunkSection.isEmpty();
 			if (bl2 != bl3) {
-				this.world.getChunkManager().getLightingProvider().updateSectionStatus(blockPos, bl3);
+				this.world.getChunkManager().getLightingProvider().updateSectionStatus(pos, bl3);
 			}
 
 			if (!this.world.isClient) {
-				blockState2.onBlockRemoved(this.world, blockPos, blockState, bl);
+				blockState.onBlockRemoved(this.world, pos, state, bl);
 			} else if (block2 != block && block2 instanceof BlockEntityProvider) {
-				this.world.removeBlockEntity(blockPos);
+				this.world.removeBlockEntity(pos);
 			}
 
 			if (chunkSection.getBlockState(i, j & 15, k).getBlock() != block) {
 				return null;
 			} else {
 				if (block2 instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.CHECK);
+					BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 					if (blockEntity != null) {
 						blockEntity.resetBlock();
 					}
 				}
 
 				if (!this.world.isClient) {
-					blockState.onBlockAdded(this.world, blockPos, blockState2, bl);
+					state.onBlockAdded(this.world, pos, blockState, bl);
 				}
 
 				if (block instanceof BlockEntityProvider) {
-					BlockEntity blockEntity = this.getBlockEntity(blockPos, WorldChunk.CreationType.CHECK);
+					BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 					if (blockEntity == null) {
 						blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
-						this.world.setBlockEntity(blockPos, blockEntity);
+						this.world.setBlockEntity(pos, blockEntity);
 					} else {
 						blockEntity.resetBlock();
 					}
 				}
 
 				this.shouldSave = true;
-				return blockState2;
+				return blockState;
 			}
 		}
 	}
@@ -349,8 +349,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void setHeightmap(Heightmap.Type type, long[] ls) {
-		((Heightmap)this.heightmaps.get(type)).setTo(ls);
+	public void setHeightmap(Heightmap.Type type, long[] heightmap) {
+		((Heightmap)this.heightmaps.get(type)).setTo(heightmap);
 	}
 
 	public void remove(Entity entity) {
@@ -370,8 +370,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public int sampleHeightmap(Heightmap.Type type, int i, int j) {
-		return ((Heightmap)this.heightmaps.get(type)).get(i & 15, j & 15) - 1;
+	public int sampleHeightmap(Heightmap.Type type, int x, int z) {
+		return ((Heightmap)this.heightmaps.get(type)).get(x & 15, z & 15) - 1;
 	}
 
 	@Nullable
@@ -383,17 +383,17 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		return this.getBlockEntity(blockPos, WorldChunk.CreationType.CHECK);
+	public BlockEntity getBlockEntity(BlockPos pos) {
+		return this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 	}
 
 	@Nullable
-	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
-		BlockEntity blockEntity = (BlockEntity)this.blockEntities.get(blockPos);
+	public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
+		BlockEntity blockEntity = (BlockEntity)this.blockEntities.get(pos);
 		if (blockEntity == null) {
-			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.remove(blockPos);
+			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.remove(pos);
 			if (compoundTag != null) {
-				BlockEntity blockEntity2 = this.loadBlockEntity(blockPos, compoundTag);
+				BlockEntity blockEntity2 = this.loadBlockEntity(pos, compoundTag);
 				if (blockEntity2 != null) {
 					return blockEntity2;
 				}
@@ -402,11 +402,11 @@ public class WorldChunk implements Chunk {
 
 		if (blockEntity == null) {
 			if (creationType == WorldChunk.CreationType.IMMEDIATE) {
-				blockEntity = this.createBlockEntity(blockPos);
-				this.world.setBlockEntity(blockPos, blockEntity);
+				blockEntity = this.createBlockEntity(pos);
+				this.world.setBlockEntity(pos, blockEntity);
 			}
 		} else if (blockEntity.isRemoved()) {
-			this.blockEntities.remove(blockPos);
+			this.blockEntities.remove(pos);
 			return null;
 		}
 
@@ -421,11 +421,11 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
-		if (this.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
-			blockEntity.setWorld(this.world, blockPos);
+	public void setBlockEntity(BlockPos pos, BlockEntity blockEntity) {
+		if (this.getBlockState(pos).getBlock() instanceof BlockEntityProvider) {
+			blockEntity.setWorld(this.world, pos);
 			blockEntity.cancelRemoval();
-			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(blockPos.toImmutable(), blockEntity);
+			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(pos.toImmutable(), blockEntity);
 			if (blockEntity2 != null && blockEntity2 != blockEntity) {
 				blockEntity2.markRemoved();
 			}
@@ -477,24 +477,24 @@ public class WorldChunk implements Chunk {
 		this.shouldSave = true;
 	}
 
-	public void getEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
-		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
-		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
+	public void getEntities(@Nullable Entity except, Box box, List<Entity> entityList, @Nullable Predicate<? super Entity> predicate) {
+		int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
+		int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
 			if (!this.entitySections[k].isEmpty()) {
-				for (Entity entity2 : this.entitySections[k]) {
-					if (entity2.getBoundingBox().intersects(box) && entity2 != entity) {
-						if (predicate == null || predicate.test(entity2)) {
-							list.add(entity2);
+				for (Entity entity : this.entitySections[k]) {
+					if (entity.getBoundingBox().intersects(box) && entity != except) {
+						if (predicate == null || predicate.test(entity)) {
+							entityList.add(entity);
 						}
 
-						if (entity2 instanceof EnderDragonEntity) {
-							for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity2).method_5690()) {
-								if (enderDragonPart != entity && enderDragonPart.getBoundingBox().intersects(box) && (predicate == null || predicate.test(enderDragonPart))) {
-									list.add(enderDragonPart);
+						if (entity instanceof EnderDragonEntity) {
+							for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
+								if (enderDragonPart != except && enderDragonPart.getBoundingBox().intersects(box) && (predicate == null || predicate.test(enderDragonPart))) {
+									entityList.add(enderDragonPart);
 								}
 							}
 						}
@@ -504,31 +504,31 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public <T extends Entity> void getEntities(@Nullable EntityType<?> entityType, Box box, List<? super T> list, Predicate<? super T> predicate) {
-		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
-		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
+	public <T extends Entity> void getEntities(@Nullable EntityType<?> type, Box box, List<? super T> list, Predicate<? super T> predicate) {
+		int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
+		int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
 			for (Entity entity : this.entitySections[k].getAllOfType(Entity.class)) {
-				if ((entityType == null || entity.getType() == entityType) && entity.getBoundingBox().intersects(box) && predicate.test(entity)) {
+				if ((type == null || entity.getType() == type) && entity.getBoundingBox().intersects(box) && predicate.test(entity)) {
 					list.add(entity);
 				}
 			}
 		}
 	}
 
-	public <T extends Entity> void getEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
-		int i = MathHelper.floor((box.minY - 2.0) / 16.0);
-		int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
+	public <T extends Entity> void getEntities(Class<? extends T> entityClass, Box box, List<T> result, @Nullable Predicate<? super T> predicate) {
+		int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
+		int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
 		j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
 
 		for (int k = i; k <= j; k++) {
-			for (T entity : this.entitySections[k].getAllOfType(class_)) {
+			for (T entity : this.entitySections[k].getAllOfType(entityClass)) {
 				if (entity.getBoundingBox().intersects(box) && (predicate == null || predicate.test(entity))) {
-					list.add(entity);
+					result.add(entity);
 				}
 			}
 		}
@@ -608,8 +608,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
-		return (CompoundTag)this.pendingBlockEntityTags.get(blockPos);
+	public CompoundTag getBlockEntityTagAt(BlockPos pos) {
+		return (CompoundTag)this.pendingBlockEntityTags.get(pos);
 	}
 
 	@Override
@@ -629,8 +629,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void setShouldSave(boolean bl) {
-		this.shouldSave = bl;
+	public void setShouldSave(boolean shouldSave) {
+		this.shouldSave = shouldSave;
 	}
 
 	@Override
@@ -638,24 +638,24 @@ public class WorldChunk implements Chunk {
 		return this.shouldSave || this.unsaved && this.world.getTime() != this.lastSaveTime;
 	}
 
-	public void setUnsaved(boolean bl) {
-		this.unsaved = bl;
+	public void setUnsaved(boolean unsaved) {
+		this.unsaved = unsaved;
 	}
 
 	@Override
-	public void setLastSaveTime(long l) {
-		this.lastSaveTime = l;
+	public void setLastSaveTime(long lastSaveTime) {
+		this.lastSaveTime = lastSaveTime;
 	}
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(String string) {
-		return (StructureStart)this.structureStarts.get(string);
+	public StructureStart getStructureStart(String structure) {
+		return (StructureStart)this.structureStarts.get(structure);
 	}
 
 	@Override
-	public void setStructureStart(String string, StructureStart structureStart) {
-		this.structureStarts.put(string, structureStart);
+	public void setStructureStart(String structure, StructureStart start) {
+		this.structureStarts.put(structure, start);
 	}
 
 	@Override
@@ -670,13 +670,13 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public LongSet getStructureReferences(String string) {
-		return (LongSet)this.structureReferences.computeIfAbsent(string, stringx -> new LongOpenHashSet());
+	public LongSet getStructureReferences(String structure) {
+		return (LongSet)this.structureReferences.computeIfAbsent(structure, string -> new LongOpenHashSet());
 	}
 
 	@Override
-	public void addStructureReference(String string, long l) {
-		((LongSet)this.structureReferences.computeIfAbsent(string, stringx -> new LongOpenHashSet())).add(l);
+	public void addStructureReference(String structure, long reference) {
+		((LongSet)this.structureReferences.computeIfAbsent(structure, string -> new LongOpenHashSet())).add(reference);
 	}
 
 	@Override
@@ -685,9 +685,9 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void setStructureReferences(Map<String, LongSet> map) {
+	public void setStructureReferences(Map<String, LongSet> structureReferences) {
 		this.structureReferences.clear();
-		this.structureReferences.putAll(map);
+		this.structureReferences.putAll(structureReferences);
 	}
 
 	@Override
@@ -696,8 +696,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void setInhabitedTime(long l) {
-		this.inhabitedTime = l;
+	public void setInhabitedTime(long inhabitedTime) {
+		this.inhabitedTime = inhabitedTime;
 	}
 
 	public void runPostProcessing() {
@@ -727,25 +727,25 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Nullable
-	private BlockEntity loadBlockEntity(BlockPos blockPos, CompoundTag compoundTag) {
+	private BlockEntity loadBlockEntity(BlockPos pos, CompoundTag compoundTag) {
 		BlockEntity blockEntity;
 		if ("DUMMY".equals(compoundTag.getString("id"))) {
-			Block block = this.getBlockState(blockPos).getBlock();
+			Block block = this.getBlockState(pos).getBlock();
 			if (block instanceof BlockEntityProvider) {
 				blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 			} else {
 				blockEntity = null;
-				LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", blockPos, this.getBlockState(blockPos));
+				LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", pos, this.getBlockState(pos));
 			}
 		} else {
 			blockEntity = BlockEntity.createFromTag(compoundTag);
 		}
 
 		if (blockEntity != null) {
-			blockEntity.setWorld(this.world, blockPos);
+			blockEntity.setWorld(this.world, pos);
 			this.addBlockEntity(blockEntity);
 		} else {
-			LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", this.getBlockState(blockPos), blockPos);
+			LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", this.getBlockState(pos), pos);
 		}
 
 		return blockEntity;
@@ -800,8 +800,8 @@ public class WorldChunk implements Chunk {
 		return this.levelTypeProvider == null ? ChunkHolder.LevelType.BORDER : (ChunkHolder.LevelType)this.levelTypeProvider.get();
 	}
 
-	public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> supplier) {
-		this.levelTypeProvider = supplier;
+	public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> levelTypeProvider) {
+		this.levelTypeProvider = levelTypeProvider;
 	}
 
 	@Override
@@ -810,8 +810,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void setLightOn(boolean bl) {
-		this.isLightOn = bl;
+	public void setLightOn(boolean lightOn) {
+		this.isLightOn = lightOn;
 		this.setShouldSave(true);
 	}
 

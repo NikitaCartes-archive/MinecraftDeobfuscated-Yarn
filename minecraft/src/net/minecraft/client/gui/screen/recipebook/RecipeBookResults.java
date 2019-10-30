@@ -32,17 +32,17 @@ public class RecipeBookResults {
 		}
 	}
 
-	public void initialize(MinecraftClient minecraftClient, int i, int j) {
+	public void initialize(MinecraftClient minecraftClient, int parentLeft, int parentTop) {
 		this.client = minecraftClient;
 		this.recipeBook = minecraftClient.player.getRecipeBook();
 
-		for (int k = 0; k < this.resultButtons.size(); k++) {
-			((AnimatedResultButton)this.resultButtons.get(k)).setPos(i + 11 + 25 * (k % 5), j + 31 + 25 * (k / 5));
+		for (int i = 0; i < this.resultButtons.size(); i++) {
+			((AnimatedResultButton)this.resultButtons.get(i)).setPos(parentLeft + 11 + 25 * (i % 5), parentTop + 31 + 25 * (i / 5));
 		}
 
-		this.nextPageButton = new ToggleButtonWidget(i + 93, j + 137, 12, 17, false);
+		this.nextPageButton = new ToggleButtonWidget(parentLeft + 93, parentTop + 137, 12, 17, false);
 		this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
-		this.prevPageButton = new ToggleButtonWidget(i + 38, j + 137, 12, 17, true);
+		this.prevPageButton = new ToggleButtonWidget(parentLeft + 38, parentTop + 137, 12, 17, true);
 		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
 	}
 
@@ -51,10 +51,10 @@ public class RecipeBookResults {
 		this.recipeDisplayListeners.add(recipeBookWidget);
 	}
 
-	public void setResults(List<RecipeResultCollection> list, boolean bl) {
+	public void setResults(List<RecipeResultCollection> list, boolean resetCurrentPage) {
 		this.resultCollections = list;
 		this.pageCount = (int)Math.ceil((double)list.size() / 20.0);
-		if (this.pageCount <= this.currentPage || bl) {
+		if (this.pageCount <= this.currentPage || resetCurrentPage) {
 			this.currentPage = 0;
 		}
 
@@ -83,25 +83,25 @@ public class RecipeBookResults {
 		this.prevPageButton.visible = this.pageCount > 1 && this.currentPage > 0;
 	}
 
-	public void draw(int i, int j, int k, int l, float f) {
+	public void draw(int left, int top, int mouseX, int mouseY, float delta) {
 		if (this.pageCount > 1) {
 			String string = this.currentPage + 1 + "/" + this.pageCount;
-			int m = this.client.textRenderer.getStringWidth(string);
-			this.client.textRenderer.draw(string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
+			int i = this.client.textRenderer.getStringWidth(string);
+			this.client.textRenderer.draw(string, (float)(left - i / 2 + 73), (float)(top + 141), -1);
 		}
 
 		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-			animatedResultButton.render(k, l, f);
+			animatedResultButton.render(mouseX, mouseY, delta);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
 				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
-		this.prevPageButton.render(k, l, f);
-		this.nextPageButton.render(k, l, f);
-		this.alternatesWidget.render(k, l, f);
+		this.prevPageButton.render(mouseX, mouseY, delta);
+		this.nextPageButton.render(mouseX, mouseY, delta);
+		this.alternatesWidget.render(mouseX, mouseY, delta);
 	}
 
 	public void drawTooltip(int i, int j) {
@@ -124,11 +124,11 @@ public class RecipeBookResults {
 		this.alternatesWidget.setVisible(false);
 	}
 
-	public boolean mouseClicked(double d, double e, int i, int j, int k, int l, int m) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button, int areaLeft, int areaTop, int areaWidth, int areaHeight) {
 		this.lastClickedRecipe = null;
 		this.resultCollection = null;
 		if (this.alternatesWidget.isVisible()) {
-			if (this.alternatesWidget.mouseClicked(d, e, i)) {
+			if (this.alternatesWidget.mouseClicked(mouseX, mouseY, button)) {
 				this.lastClickedRecipe = this.alternatesWidget.getLastClickedRecipe();
 				this.resultCollection = this.alternatesWidget.getResults();
 			} else {
@@ -136,29 +136,29 @@ public class RecipeBookResults {
 			}
 
 			return true;
-		} else if (this.nextPageButton.mouseClicked(d, e, i)) {
+		} else if (this.nextPageButton.mouseClicked(mouseX, mouseY, button)) {
 			this.currentPage++;
 			this.refreshResultButtons();
 			return true;
-		} else if (this.prevPageButton.mouseClicked(d, e, i)) {
+		} else if (this.prevPageButton.mouseClicked(mouseX, mouseY, button)) {
 			this.currentPage--;
 			this.refreshResultButtons();
 			return true;
 		} else {
 			for (AnimatedResultButton animatedResultButton : this.resultButtons) {
-				if (animatedResultButton.mouseClicked(d, e, i)) {
-					if (i == 0) {
+				if (animatedResultButton.mouseClicked(mouseX, mouseY, button)) {
+					if (button == 0) {
 						this.lastClickedRecipe = animatedResultButton.currentRecipe();
 						this.resultCollection = animatedResultButton.getResultCollection();
-					} else if (i == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
+					} else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
 						this.alternatesWidget
 							.showAlternatesForResult(
 								this.client,
 								animatedResultButton.getResultCollection(),
 								animatedResultButton.x,
 								animatedResultButton.y,
-								j + l / 2,
-								k + 13 + m / 2,
+								areaLeft + areaWidth / 2,
+								areaTop + 13 + areaHeight / 2,
 								(float)animatedResultButton.getWidth()
 							);
 					}

@@ -45,25 +45,25 @@ public class LocationPredicate {
 	private final FluidPredicate fluid;
 
 	public LocationPredicate(
-		NumberRange.FloatRange floatRange,
-		NumberRange.FloatRange floatRange2,
-		NumberRange.FloatRange floatRange3,
+		NumberRange.FloatRange x,
+		NumberRange.FloatRange y,
+		NumberRange.FloatRange z,
 		@Nullable Biome biome,
-		@Nullable StructureFeature<?> structureFeature,
-		@Nullable DimensionType dimensionType,
-		LightPredicate lightPredicate,
-		BlockPredicate blockPredicate,
-		FluidPredicate fluidPredicate
+		@Nullable StructureFeature<?> feature,
+		@Nullable DimensionType dimension,
+		LightPredicate light,
+		BlockPredicate block,
+		FluidPredicate fluid
 	) {
-		this.x = floatRange;
-		this.y = floatRange2;
-		this.z = floatRange3;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		this.biome = biome;
-		this.feature = structureFeature;
-		this.dimension = dimensionType;
-		this.light = lightPredicate;
-		this.block = blockPredicate;
-		this.fluid = fluidPredicate;
+		this.feature = feature;
+		this.dimension = dimension;
+		this.light = light;
+		this.block = block;
+		this.fluid = fluid;
 	}
 
 	public static LocationPredicate biome(Biome biome) {
@@ -80,27 +80,27 @@ public class LocationPredicate {
 		);
 	}
 
-	public static LocationPredicate dimension(DimensionType dimensionType) {
+	public static LocationPredicate dimension(DimensionType dimension) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			null,
 			null,
-			dimensionType,
+			dimension,
 			LightPredicate.ANY,
 			BlockPredicate.ANY,
 			FluidPredicate.ANY
 		);
 	}
 
-	public static LocationPredicate feature(StructureFeature<?> structureFeature) {
+	public static LocationPredicate feature(StructureFeature<?> feature) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			null,
-			structureFeature,
+			feature,
 			null,
 			LightPredicate.ANY,
 			BlockPredicate.ANY,
@@ -108,28 +108,28 @@ public class LocationPredicate {
 		);
 	}
 
-	public boolean test(ServerWorld serverWorld, double d, double e, double f) {
-		return this.test(serverWorld, (float)d, (float)e, (float)f);
+	public boolean test(ServerWorld world, double x, double y, double z) {
+		return this.test(world, (float)x, (float)y, (float)z);
 	}
 
-	public boolean test(ServerWorld serverWorld, float f, float g, float h) {
-		if (!this.x.test(f)) {
+	public boolean test(ServerWorld world, float x, float y, float z) {
+		if (!this.x.test(x)) {
 			return false;
-		} else if (!this.y.test(g)) {
+		} else if (!this.y.test(y)) {
 			return false;
-		} else if (!this.z.test(h)) {
+		} else if (!this.z.test(z)) {
 			return false;
-		} else if (this.dimension != null && this.dimension != serverWorld.dimension.getType()) {
+		} else if (this.dimension != null && this.dimension != world.dimension.getType()) {
 			return false;
 		} else {
-			BlockPos blockPos = new BlockPos((double)f, (double)g, (double)h);
-			boolean bl = serverWorld.canSetBlock(blockPos);
-			if (this.biome == null || bl && this.biome == serverWorld.getBiome(blockPos)) {
-				if (this.feature == null || bl && this.feature.isInsideStructure(serverWorld, blockPos)) {
-					if (!this.light.test(serverWorld, blockPos)) {
+			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
+			boolean bl = world.canSetBlock(blockPos);
+			if (this.biome == null || bl && this.biome == world.getBiome(blockPos)) {
+				if (this.feature == null || bl && this.feature.isInsideStructure(world, blockPos)) {
+					if (!this.light.test(world, blockPos)) {
 						return false;
 					} else {
-						return !this.block.test(serverWorld, blockPos) ? false : this.fluid.test(serverWorld, blockPos);
+						return !this.block.test(world, blockPos) ? false : this.fluid.test(world, blockPos);
 					}
 				} else {
 					return false;
@@ -172,9 +172,9 @@ public class LocationPredicate {
 		}
 	}
 
-	public static LocationPredicate fromJson(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "location");
+	public static LocationPredicate fromJson(@Nullable JsonElement element) {
+		if (element != null && !element.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(element, "location");
 			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "position", new JsonObject());
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));

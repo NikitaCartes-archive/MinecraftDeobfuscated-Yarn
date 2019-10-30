@@ -18,10 +18,10 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttackMob & Cros
 	private int field_6592;
 	private int field_16529;
 
-	public CrossbowAttackGoal(T hostileEntity, double d, float f) {
-		this.actor = hostileEntity;
-		this.speed = d;
-		this.squaredRange = f * f;
+	public CrossbowAttackGoal(T actor, double speed, float range) {
+		this.actor = actor;
+		this.speed = speed;
+		this.squaredRange = range * range;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 

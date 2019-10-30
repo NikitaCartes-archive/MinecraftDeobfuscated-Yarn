@@ -23,17 +23,17 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		return new EnchantedItemCriterion.Conditions(itemPredicate, intRange);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(itemStack, i));
+	public void trigger(ServerPlayerEntity player, ItemStack stack, int levels) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(stack, levels));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
 		private final NumberRange.IntRange levels;
 
-		public Conditions(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
+		public Conditions(ItemPredicate item, NumberRange.IntRange intRange) {
 			super(EnchantedItemCriterion.ID);
-			this.item = itemPredicate;
+			this.item = item;
 			this.levels = intRange;
 		}
 
@@ -41,8 +41,8 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 			return new EnchantedItemCriterion.Conditions(ItemPredicate.ANY, NumberRange.IntRange.ANY);
 		}
 
-		public boolean matches(ItemStack itemStack, int i) {
-			return !this.item.test(itemStack) ? false : this.levels.test(i);
+		public boolean matches(ItemStack stack, int levels) {
+			return !this.item.test(stack) ? false : this.levels.test(levels);
 		}
 
 		@Override

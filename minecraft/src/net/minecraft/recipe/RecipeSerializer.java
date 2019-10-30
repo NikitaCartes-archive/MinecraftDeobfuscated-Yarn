@@ -39,13 +39,13 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	CookingRecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
 	RecipeSerializer<StonecuttingRecipe> STONECUTTING = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
 
-	T read(Identifier identifier, JsonObject jsonObject);
+	T read(Identifier id, JsonObject json);
 
-	T read(Identifier identifier, PacketByteBuf packetByteBuf);
+	T read(Identifier id, PacketByteBuf buf);
 
-	void write(PacketByteBuf packetByteBuf, T recipe);
+	void write(PacketByteBuf buf, T recipe);
 
-	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String string, S recipeSerializer) {
-		return Registry.register(Registry.RECIPE_SERIALIZER, string, recipeSerializer);
+	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
+		return Registry.register(Registry.RECIPE_SERIALIZER, id, serializer);
 	}
 }

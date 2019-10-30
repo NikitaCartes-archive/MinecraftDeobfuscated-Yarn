@@ -4,7 +4,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -14,28 +14,18 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>> extends FeatureRenderer<T, M> {
-	public StickingOutThingsFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
-		super(livingEntityRenderer);
+	public StickingOutThingsFeatureRenderer(LivingEntityRenderer<T, M> entityRenderer) {
+		super(entityRenderer);
 	}
 
-	protected abstract int getThingCount(T livingEntity);
+	protected abstract int getThingCount(T entity);
 
 	protected abstract void renderThing(
-		MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity, float f, float g, float h, float i
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float z, float tickDelta, float f, float g
 	);
 
 	public void method_22132(
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i,
-		T livingEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
 	) {
 		int n = this.getThingCount(livingEntity);
 		Random random = new Random((long)livingEntity.getEntityId());
@@ -55,7 +45,7 @@ public abstract class StickingOutThingsFeatureRenderer<T extends LivingEntity, M
 				p = -1.0F * (p * 2.0F - 1.0F);
 				q = -1.0F * (q * 2.0F - 1.0F);
 				r = -1.0F * (r * 2.0F - 1.0F);
-				this.renderThing(matrixStack, layeredVertexConsumerStorage, livingEntity, p, q, r, h);
+				this.renderThing(matrixStack, vertexConsumerProvider, livingEntity, p, q, r, h);
 				matrixStack.pop();
 			}
 		}

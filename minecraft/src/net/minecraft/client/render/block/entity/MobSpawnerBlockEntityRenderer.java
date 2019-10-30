@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
@@ -24,7 +24,7 @@ public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawne
 		double f,
 		float g,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		int j
 	) {
@@ -47,7 +47,7 @@ public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawne
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-30.0F));
 			matrixStack.scale(h, h, h);
 			entity.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
-			MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0F, g, matrixStack, layeredVertexConsumerStorage);
+			MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0F, g, matrixStack, vertexConsumerProvider);
 		}
 
 		matrixStack.pop();

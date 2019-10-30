@@ -9,15 +9,15 @@ import net.fabricmc.api.Environment;
 public class UploadTokenCache {
 	private static final Map<Long, String> tokenCache = Maps.<Long, String>newHashMap();
 
-	public static String get(long l) {
-		return (String)tokenCache.get(l);
+	public static String get(long worldId) {
+		return (String)tokenCache.get(worldId);
 	}
 
-	public static void invalidate(long l) {
-		tokenCache.remove(l);
+	public static void invalidate(long world) {
+		tokenCache.remove(world);
 	}
 
-	public static void put(long l, String string) {
-		tokenCache.put(l, string);
+	public static void put(long wid, String token) {
+		tokenCache.put(wid, token);
 	}
 }

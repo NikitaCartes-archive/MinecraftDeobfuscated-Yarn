@@ -30,8 +30,8 @@ public class CloneCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.failed"));
 	public static final Predicate<CachedBlockPosition> IS_AIR_PREDICATE = cachedBlockPosition -> !cachedBlockPosition.getBlockState().isAir();
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("clone")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -216,16 +216,11 @@ public class CloneCommand {
 	}
 
 	private static int execute(
-		ServerCommandSource serverCommandSource,
-		BlockPos blockPos,
-		BlockPos blockPos2,
-		BlockPos blockPos3,
-		Predicate<CachedBlockPosition> predicate,
-		CloneCommand.Mode mode
+		ServerCommandSource source, BlockPos begin, BlockPos end, BlockPos destination, Predicate<CachedBlockPosition> filter, CloneCommand.Mode mode
 	) throws CommandSyntaxException {
-		BlockBox blockBox = new BlockBox(blockPos, blockPos2);
-		BlockPos blockPos4 = blockPos3.add(blockBox.getDimensions());
-		BlockBox blockBox2 = new BlockBox(blockPos3, blockPos4);
+		BlockBox blockBox = new BlockBox(begin, end);
+		BlockPos blockPos = destination.add(blockBox.getDimensions());
+		BlockBox blockBox2 = new BlockBox(destination, blockPos);
 		if (!mode.allowsOverlap() && blockBox2.intersects(blockBox)) {
 			throw OVERLAP_EXCEPTION.create();
 		} else {
@@ -233,33 +228,33 @@ public class CloneCommand {
 			if (i > 32768) {
 				throw TOOBIG_EXCEPTION.create(32768, i);
 			} else {
-				ServerWorld serverWorld = serverCommandSource.getWorld();
-				if (serverWorld.isRegionLoaded(blockPos, blockPos2) && serverWorld.isRegionLoaded(blockPos3, blockPos4)) {
+				ServerWorld serverWorld = source.getWorld();
+				if (serverWorld.isRegionLoaded(begin, end) && serverWorld.isRegionLoaded(destination, blockPos)) {
 					List<CloneCommand.BlockInfo> list = Lists.<CloneCommand.BlockInfo>newArrayList();
 					List<CloneCommand.BlockInfo> list2 = Lists.<CloneCommand.BlockInfo>newArrayList();
 					List<CloneCommand.BlockInfo> list3 = Lists.<CloneCommand.BlockInfo>newArrayList();
 					Deque<BlockPos> deque = Lists.<BlockPos>newLinkedList();
-					BlockPos blockPos5 = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
+					BlockPos blockPos2 = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
 
 					for (int j = blockBox.minZ; j <= blockBox.maxZ; j++) {
 						for (int k = blockBox.minY; k <= blockBox.maxY; k++) {
 							for (int l = blockBox.minX; l <= blockBox.maxX; l++) {
-								BlockPos blockPos6 = new BlockPos(l, k, j);
-								BlockPos blockPos7 = blockPos6.add(blockPos5);
-								CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(serverWorld, blockPos6, false);
+								BlockPos blockPos3 = new BlockPos(l, k, j);
+								BlockPos blockPos4 = blockPos3.add(blockPos2);
+								CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(serverWorld, blockPos3, false);
 								BlockState blockState = cachedBlockPosition.getBlockState();
-								if (predicate.test(cachedBlockPosition)) {
-									BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos6);
+								if (filter.test(cachedBlockPosition)) {
+									BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos3);
 									if (blockEntity != null) {
 										CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
-										list2.add(new CloneCommand.BlockInfo(blockPos7, blockState, compoundTag));
-										deque.addLast(blockPos6);
-									} else if (!blockState.isFullOpaque(serverWorld, blockPos6) && !blockState.method_21743(serverWorld, blockPos6)) {
-										list3.add(new CloneCommand.BlockInfo(blockPos7, blockState, null));
-										deque.addFirst(blockPos6);
+										list2.add(new CloneCommand.BlockInfo(blockPos4, blockState, compoundTag));
+										deque.addLast(blockPos3);
+									} else if (!blockState.isFullOpaque(serverWorld, blockPos3) && !blockState.isFullCube(serverWorld, blockPos3)) {
+										list3.add(new CloneCommand.BlockInfo(blockPos4, blockState, null));
+										deque.addFirst(blockPos3);
 									} else {
-										list.add(new CloneCommand.BlockInfo(blockPos7, blockState, null));
-										deque.addLast(blockPos6);
+										list.add(new CloneCommand.BlockInfo(blockPos4, blockState, null));
+										deque.addLast(blockPos3);
 									}
 								}
 							}
@@ -267,14 +262,14 @@ public class CloneCommand {
 					}
 
 					if (mode == CloneCommand.Mode.MOVE) {
-						for (BlockPos blockPos8 : deque) {
-							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos8);
+						for (BlockPos blockPos5 : deque) {
+							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos5);
 							Clearable.clear(blockEntity2);
-							serverWorld.setBlockState(blockPos8, Blocks.BARRIER.getDefaultState(), 2);
+							serverWorld.setBlockState(blockPos5, Blocks.BARRIER.getDefaultState(), 2);
 						}
 
-						for (BlockPos blockPos8 : deque) {
-							serverWorld.setBlockState(blockPos8, Blocks.AIR.getDefaultState(), 3);
+						for (BlockPos blockPos5 : deque) {
+							serverWorld.setBlockState(blockPos5, Blocks.AIR.getDefaultState(), 3);
 						}
 					}
 
@@ -315,11 +310,11 @@ public class CloneCommand {
 						serverWorld.updateNeighbors(blockInfo2x.pos, blockInfo2x.state.getBlock());
 					}
 
-					serverWorld.method_14196().copyScheduledTicks(blockBox, blockPos5);
+					serverWorld.method_14196().copyScheduledTicks(blockBox, blockPos2);
 					if (lx == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {
-						serverCommandSource.sendFeedback(new TranslatableText("commands.clone.success", lx), true);
+						source.sendFeedback(new TranslatableText("commands.clone.success", lx), true);
 						return lx;
 					}
 				} else {
@@ -335,10 +330,10 @@ public class CloneCommand {
 		@Nullable
 		public final CompoundTag blockEntityTag;
 
-		public BlockInfo(BlockPos blockPos, BlockState blockState, @Nullable CompoundTag compoundTag) {
-			this.pos = blockPos;
-			this.state = blockState;
-			this.blockEntityTag = compoundTag;
+		public BlockInfo(BlockPos pos, BlockState state, @Nullable CompoundTag blockEntityTag) {
+			this.pos = pos;
+			this.state = state;
+			this.blockEntityTag = blockEntityTag;
 		}
 	}
 
@@ -349,8 +344,8 @@ public class CloneCommand {
 
 		private final boolean allowsOverlap;
 
-		private Mode(boolean bl) {
-			this.allowsOverlap = bl;
+		private Mode(boolean allowsOverlap) {
+			this.allowsOverlap = allowsOverlap;
 		}
 
 		public boolean allowsOverlap() {

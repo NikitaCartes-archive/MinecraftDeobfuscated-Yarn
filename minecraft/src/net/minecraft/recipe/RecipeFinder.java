@@ -18,9 +18,9 @@ import net.minecraft.util.registry.Registry;
 public class RecipeFinder {
 	public final Int2IntMap idToAmountMap = new Int2IntOpenHashMap();
 
-	public void addNormalItem(ItemStack itemStack) {
-		if (!itemStack.isDamaged() && !itemStack.hasEnchantments() && !itemStack.hasCustomName()) {
-			this.addItem(itemStack);
+	public void addNormalItem(ItemStack stack) {
+		if (!stack.isDamaged() && !stack.hasEnchantments() && !stack.hasCustomName()) {
+			this.addItem(stack);
 		}
 	}
 
@@ -44,34 +44,34 @@ public class RecipeFinder {
 		return this.idToAmountMap.get(i) > 0;
 	}
 
-	private int take(int i, int j) {
-		int k = this.idToAmountMap.get(i);
-		if (k >= j) {
-			this.idToAmountMap.put(i, k - j);
-			return i;
+	private int take(int id, int amount) {
+		int i = this.idToAmountMap.get(id);
+		if (i >= amount) {
+			this.idToAmountMap.put(id, i - amount);
+			return id;
 		} else {
 			return 0;
 		}
 	}
 
-	private void addItem(int i, int j) {
-		this.idToAmountMap.put(i, this.idToAmountMap.get(i) + j);
+	private void addItem(int id, int amount) {
+		this.idToAmountMap.put(id, this.idToAmountMap.get(id) + amount);
 	}
 
-	public boolean findRecipe(Recipe<?> recipe, @Nullable IntList intList) {
-		return this.findRecipe(recipe, intList, 1);
+	public boolean findRecipe(Recipe<?> recipe, @Nullable IntList outMatchingInputIds) {
+		return this.findRecipe(recipe, outMatchingInputIds, 1);
 	}
 
-	public boolean findRecipe(Recipe<?> recipe, @Nullable IntList intList, int i) {
-		return new RecipeFinder.Filter(recipe).find(i, intList);
+	public boolean findRecipe(Recipe<?> recipe, @Nullable IntList outMatchingInputIds, int amount) {
+		return new RecipeFinder.Filter(recipe).find(amount, outMatchingInputIds);
 	}
 
-	public int countRecipeCrafts(Recipe<?> recipe, @Nullable IntList intList) {
-		return this.countRecipeCrafts(recipe, Integer.MAX_VALUE, intList);
+	public int countRecipeCrafts(Recipe<?> recipe, @Nullable IntList outMatchingInputIds) {
+		return this.countRecipeCrafts(recipe, Integer.MAX_VALUE, outMatchingInputIds);
 	}
 
-	public int countRecipeCrafts(Recipe<?> recipe, int i, @Nullable IntList intList) {
-		return new RecipeFinder.Filter(recipe).countCrafts(i, intList);
+	public int countRecipeCrafts(Recipe<?> recipe, int limit, @Nullable IntList outMatchingInputIds) {
+		return new RecipeFinder.Filter(recipe).countCrafts(limit, outMatchingInputIds);
 	}
 
 	public static ItemStack getStackFromId(int i) {
@@ -91,9 +91,9 @@ public class RecipeFinder {
 		private final BitSet field_7558;
 		private final IntList field_7557 = new IntArrayList();
 
-		public Filter(Recipe<?> recipe) {
-			this.recipe = recipe;
-			this.ingredients.addAll(recipe.getPreviewInputs());
+		public Filter(Recipe<?> recipe2) {
+			this.recipe = recipe2;
+			this.ingredients.addAll(recipe2.getPreviewInputs());
 			this.ingredients.removeIf(Ingredient::isEmpty);
 			this.ingredientCount = this.ingredients.size();
 			this.field_7551 = this.method_7422();
@@ -111,49 +111,49 @@ public class RecipeFinder {
 			}
 		}
 
-		public boolean find(int i, @Nullable IntList intList) {
-			if (i <= 0) {
+		public boolean find(int amount, @Nullable IntList outMatchingInputIds) {
+			if (amount <= 0) {
 				return true;
 			} else {
-				int j;
-				for (j = 0; this.method_7423(i); j++) {
-					RecipeFinder.this.take(this.field_7551[this.field_7557.getInt(0)], i);
-					int k = this.field_7557.size() - 1;
-					this.method_7421(this.field_7557.getInt(k));
+				int i;
+				for (i = 0; this.method_7423(amount); i++) {
+					RecipeFinder.this.take(this.field_7551[this.field_7557.getInt(0)], amount);
+					int j = this.field_7557.size() - 1;
+					this.method_7421(this.field_7557.getInt(j));
 
-					for (int l = 0; l < k; l++) {
-						this.method_7414((l & 1) == 0, this.field_7557.get(l), this.field_7557.get(l + 1));
+					for (int k = 0; k < j; k++) {
+						this.method_7414((k & 1) == 0, this.field_7557.get(k), this.field_7557.get(k + 1));
 					}
 
 					this.field_7557.clear();
 					this.field_7558.clear(0, this.ingredientCount + this.field_7553);
 				}
 
-				boolean bl = j == this.ingredientCount;
-				boolean bl2 = bl && intList != null;
+				boolean bl = i == this.ingredientCount;
+				boolean bl2 = bl && outMatchingInputIds != null;
 				if (bl2) {
-					intList.clear();
+					outMatchingInputIds.clear();
 				}
 
 				this.field_7558.clear(0, this.ingredientCount + this.field_7553 + this.ingredientCount);
-				int m = 0;
+				int l = 0;
 				List<Ingredient> list = this.recipe.getPreviewInputs();
 
-				for (int n = 0; n < list.size(); n++) {
-					if (bl2 && ((Ingredient)list.get(n)).isEmpty()) {
-						intList.add(0);
+				for (int m = 0; m < list.size(); m++) {
+					if (bl2 && ((Ingredient)list.get(m)).isEmpty()) {
+						outMatchingInputIds.add(0);
 					} else {
-						for (int o = 0; o < this.field_7553; o++) {
-							if (this.method_7425(false, m, o)) {
-								this.method_7414(true, o, m);
-								RecipeFinder.this.addItem(this.field_7551[o], i);
+						for (int n = 0; n < this.field_7553; n++) {
+							if (this.method_7425(false, l, n)) {
+								this.method_7414(true, n, l);
+								RecipeFinder.this.addItem(this.field_7551[n], amount);
 								if (bl2) {
-									intList.add(this.field_7551[o]);
+									outMatchingInputIds.add(this.field_7551[n]);
 								}
 							}
 						}
 
-						m++;
+						l++;
 					}
 				}
 
@@ -266,24 +266,24 @@ public class RecipeFinder {
 			return (bl ? 0 : this.ingredientCount) + i;
 		}
 
-		public int countCrafts(int i, @Nullable IntList intList) {
-			int j = 0;
-			int k = Math.min(i, this.method_7415()) + 1;
+		public int countCrafts(int limit, @Nullable IntList outMatchingInputIds) {
+			int i = 0;
+			int j = Math.min(limit, this.method_7415()) + 1;
 
 			while (true) {
-				int l = (j + k) / 2;
-				if (this.find(l, null)) {
-					if (k - j <= 1) {
-						if (l > 0) {
-							this.find(l, intList);
+				int k = (i + j) / 2;
+				if (this.find(k, null)) {
+					if (j - i <= 1) {
+						if (k > 0) {
+							this.find(k, outMatchingInputIds);
 						}
 
-						return l;
+						return k;
 					}
 
-					j = l;
+					i = k;
 				} else {
-					k = l;
+					j = k;
 				}
 			}
 		}

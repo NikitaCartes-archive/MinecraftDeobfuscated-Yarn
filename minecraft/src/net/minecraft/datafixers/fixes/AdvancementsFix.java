@@ -68,8 +68,8 @@ public class AdvancementsFix extends DataFix {
 		.put("minecraft:recipes/transportation/golden_rail", "minecraft:recipes/transportation/powered_rail")
 		.build();
 
-	public AdvancementsFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public AdvancementsFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

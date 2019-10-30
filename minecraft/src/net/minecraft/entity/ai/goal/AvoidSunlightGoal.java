@@ -7,8 +7,8 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 public class AvoidSunlightGoal extends Goal {
 	private final MobEntityWithAi mob;
 
-	public AvoidSunlightGoal(MobEntityWithAi mobEntityWithAi) {
-		this.mob = mobEntityWithAi;
+	public AvoidSunlightGoal(MobEntityWithAi mob) {
+		this.mob = mob;
 	}
 
 	@Override

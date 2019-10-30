@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BedBlockEntityFix extends DataFix {
-	public BedBlockEntityFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BedBlockEntityFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

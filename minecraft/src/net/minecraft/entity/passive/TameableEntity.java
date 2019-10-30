@@ -29,8 +29,8 @@ public abstract class TameableEntity extends AnimalEntity {
 	protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	protected SitGoal sitGoal;
 
-	protected TameableEntity(EntityType<? extends TameableEntity> entityType, World world) {
-		super(entityType, world);
+	protected TameableEntity(EntityType<? extends TameableEntity> type, World world) {
+		super(type, world);
 		this.onTamedChanged();
 	}
 
@@ -42,25 +42,25 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.getOwnerUuid() == null) {
-			compoundTag.putString("OwnerUUID", "");
+			tag.putString("OwnerUUID", "");
 		} else {
-			compoundTag.putString("OwnerUUID", this.getOwnerUuid().toString());
+			tag.putString("OwnerUUID", this.getOwnerUuid().toString());
 		}
 
-		compoundTag.putBoolean("Sitting", this.isSitting());
+		tag.putBoolean("Sitting", this.isSitting());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		String string;
-		if (compoundTag.contains("OwnerUUID", 8)) {
-			string = compoundTag.getString("OwnerUUID");
+		if (tag.contains("OwnerUUID", 8)) {
+			string = tag.getString("OwnerUUID");
 		} else {
-			String string2 = compoundTag.getString("Owner");
+			String string2 = tag.getString("Owner");
 			string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
 		}
 
@@ -74,21 +74,21 @@ public abstract class TameableEntity extends AnimalEntity {
 		}
 
 		if (this.sitGoal != null) {
-			this.sitGoal.setEnabledWithOwner(compoundTag.getBoolean("Sitting"));
+			this.sitGoal.setEnabledWithOwner(tag.getBoolean("Sitting"));
 		}
 
-		this.setSitting(compoundTag.getBoolean("Sitting"));
+		this.setSitting(tag.getBoolean("Sitting"));
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
+	public boolean canBeLeashedBy(PlayerEntity player) {
 		return !this.isLeashed();
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected void showEmoteParticle(boolean bl) {
+	protected void showEmoteParticle(boolean positive) {
 		ParticleEffect particleEffect = ParticleTypes.HEART;
-		if (!bl) {
+		if (!positive) {
 			particleEffect = ParticleTypes.SMOKE;
 		}
 
@@ -102,13 +102,13 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 7) {
+	public void handleStatus(byte status) {
+		if (status == 7) {
 			this.showEmoteParticle(true);
-		} else if (b == 6) {
+		} else if (status == 6) {
 			this.showEmoteParticle(false);
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
@@ -116,9 +116,9 @@ public abstract class TameableEntity extends AnimalEntity {
 		return (this.dataTracker.get(TAMEABLE_FLAGS) & 4) != 0;
 	}
 
-	public void setTamed(boolean bl) {
+	public void setTamed(boolean tamed) {
 		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
-		if (bl) {
+		if (tamed) {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 4));
 		} else {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -5));
@@ -134,9 +134,9 @@ public abstract class TameableEntity extends AnimalEntity {
 		return (this.dataTracker.get(TAMEABLE_FLAGS) & 1) != 0;
 	}
 
-	public void setSitting(boolean bl) {
+	public void setSitting(boolean sitting) {
 		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
-		if (bl) {
+		if (sitting) {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 1));
 		} else {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -2));
@@ -148,15 +148,15 @@ public abstract class TameableEntity extends AnimalEntity {
 		return (UUID)this.dataTracker.get(OWNER_UUID).orElse(null);
 	}
 
-	public void setOwnerUuid(@Nullable UUID uUID) {
-		this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uUID));
+	public void setOwnerUuid(@Nullable UUID uuid) {
+		this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uuid));
 	}
 
-	public void setOwner(PlayerEntity playerEntity) {
+	public void setOwner(PlayerEntity player) {
 		this.setTamed(true);
-		this.setOwnerUuid(playerEntity.getUuid());
-		if (playerEntity instanceof ServerPlayerEntity) {
-			Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)playerEntity, this);
+		this.setOwnerUuid(player.getUuid());
+		if (player instanceof ServerPlayerEntity) {
+			Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
 		}
 	}
 
@@ -171,19 +171,19 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canTarget(LivingEntity livingEntity) {
-		return this.isOwner(livingEntity) ? false : super.canTarget(livingEntity);
+	public boolean canTarget(LivingEntity target) {
+		return this.isOwner(target) ? false : super.canTarget(target);
 	}
 
-	public boolean isOwner(LivingEntity livingEntity) {
-		return livingEntity == this.getOwner();
+	public boolean isOwner(LivingEntity entity) {
+		return entity == this.getOwner();
 	}
 
 	public SitGoal getSitGoal() {
 		return this.sitGoal;
 	}
 
-	public boolean canAttackWithOwner(LivingEntity livingEntity, LivingEntity livingEntity2) {
+	public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
 		return true;
 	}
 
@@ -200,27 +200,27 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean isTeammate(Entity entity) {
+	public boolean isTeammate(Entity other) {
 		if (this.isTamed()) {
 			LivingEntity livingEntity = this.getOwner();
-			if (entity == livingEntity) {
+			if (other == livingEntity) {
 				return true;
 			}
 
 			if (livingEntity != null) {
-				return livingEntity.isTeammate(entity);
+				return livingEntity.isTeammate(other);
 			}
 		}
 
-		return super.isTeammate(entity);
+		return super.isTeammate(other);
 	}
 
 	@Override
-	public void onDeath(DamageSource damageSource) {
+	public void onDeath(DamageSource source) {
 		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
 			this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
 		}
 
-		super.onDeath(damageSource);
+		super.onDeath(source);
 	}
 }

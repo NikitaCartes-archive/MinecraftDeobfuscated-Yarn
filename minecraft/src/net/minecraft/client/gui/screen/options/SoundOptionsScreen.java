@@ -14,8 +14,8 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SoundOptionsScreen extends GameOptionsScreen {
-	public SoundOptionsScreen(Screen screen, GameOptions gameOptions) {
-		super(screen, gameOptions, new TranslatableText("options.sounds.title"));
+	public SoundOptionsScreen(Screen parent, GameOptions options) {
+		super(parent, options, new TranslatableText("options.sounds.title"));
 	}
 
 	@Override
@@ -54,9 +54,9 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 15, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

@@ -14,18 +14,18 @@ public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListene
 	public LoginDisconnectS2CPacket() {
 	}
 
-	public LoginDisconnectS2CPacket(Text text) {
-		this.reason = text;
+	public LoginDisconnectS2CPacket(Text reason) {
+		this.reason = reason;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.reason = Text.Serializer.fromLenientJson(packetByteBuf.readString(262144));
+	public void read(PacketByteBuf buf) throws IOException {
+		this.reason = Text.Serializer.fromLenientJson(buf.readString(262144));
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeText(this.reason);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeText(this.reason);
 	}
 
 	public void method_12637(ClientLoginPacketListener clientLoginPacketListener) {

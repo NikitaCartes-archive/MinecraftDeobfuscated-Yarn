@@ -93,22 +93,24 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return this.animationStage;
 	}
 
-	public Box getBoundingBox(BlockState blockState) {
-		return this.getBoundingBox(blockState.get(ShulkerBoxBlock.FACING));
+	public Box getBoundingBox(BlockState state) {
+		return this.getBoundingBox(state.get(ShulkerBoxBlock.FACING));
 	}
 
-	public Box getBoundingBox(Direction direction) {
+	public Box getBoundingBox(Direction openDirection) {
 		float f = this.getAnimationProgress(1.0F);
 		return VoxelShapes.fullCube()
 			.getBoundingBox()
 			.stretch(
-				(double)(0.5F * f * (float)direction.getOffsetX()), (double)(0.5F * f * (float)direction.getOffsetY()), (double)(0.5F * f * (float)direction.getOffsetZ())
+				(double)(0.5F * f * (float)openDirection.getOffsetX()),
+				(double)(0.5F * f * (float)openDirection.getOffsetY()),
+				(double)(0.5F * f * (float)openDirection.getOffsetZ())
 			);
 	}
 
-	private Box getCollisionBox(Direction direction) {
-		Direction direction2 = direction.getOpposite();
-		return this.getBoundingBox(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
+	private Box getCollisionBox(Direction facing) {
+		Direction direction = facing.getOpposite();
+		return this.getBoundingBox(facing).shrink((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ());
 	}
 
 	private void pushEntities() {
@@ -128,27 +130,27 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 						switch (direction.getAxis()) {
 							case X:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									d = box.maxX - box2.minX;
+									d = box.x2 - box2.x1;
 								} else {
-									d = box2.maxX - box.minX;
+									d = box2.x2 - box.x1;
 								}
 
 								d += 0.01;
 								break;
 							case Y:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									e = box.maxY - box2.minY;
+									e = box.y2 - box2.y1;
 								} else {
-									e = box2.maxY - box.minY;
+									e = box2.y2 - box.y1;
 								}
 
 								e += 0.01;
 								break;
 							case Z:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									f = box.maxZ - box2.minZ;
+									f = box.z2 - box2.z1;
 								} else {
-									f = box2.maxZ - box.minZ;
+									f = box2.z2 - box.z1;
 								}
 
 								f += 0.01;
@@ -193,8 +195,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity playerEntity) {
-		if (!playerEntity.isSpectator()) {
+	public void onInvOpen(PlayerEntity player) {
+		if (!player.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
 			}
@@ -208,8 +210,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity playerEntity) {
-		if (!playerEntity.isSpectator()) {
+	public void onInvClose(PlayerEntity player) {
+		if (!player.isSpectator()) {
 			this.viewerCount--;
 			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount <= 0) {
@@ -235,19 +237,19 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return this.serializeInventory(compoundTag);
 	}
 
-	public void deserializeInventory(CompoundTag compoundTag) {
+	public void deserializeInventory(CompoundTag tag) {
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag) && compoundTag.contains("Items", 9)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+		if (!this.deserializeLootTable(tag) && tag.contains("Items", 9)) {
+			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 
-	public CompoundTag serializeInventory(CompoundTag compoundTag) {
-		if (!this.serializeLootTable(compoundTag)) {
-			Inventories.toTag(compoundTag, this.inventory, false);
+	public CompoundTag serializeInventory(CompoundTag tag) {
+		if (!this.serializeLootTable(tag)) {
+			Inventories.toTag(tag, this.inventory, false);
 		}
 
-		return compoundTag;
+		return tag;
 	}
 
 	@Override
@@ -256,8 +258,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-		this.inventory = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> list) {
+		this.inventory = list;
 	}
 
 	@Override
@@ -272,17 +274,17 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public int[] getInvAvailableSlots(Direction direction) {
+	public int[] getInvAvailableSlots(Direction side) {
 		return AVAILABLE_SLOTS;
 	}
 
 	@Override
-	public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
-		return !(Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock);
+	public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+		return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
 	}
 
 	@Override
-	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
+	public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
 		return true;
 	}
 

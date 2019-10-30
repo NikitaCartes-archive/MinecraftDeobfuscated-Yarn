@@ -20,26 +20,26 @@ public final class Vector3f {
 	public Vector3f() {
 	}
 
-	public Vector3f(float f, float g, float h) {
-		this.x = f;
-		this.y = g;
-		this.z = h;
+	public Vector3f(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vector3f(Vector3f vector3f) {
-		this(vector3f.x, vector3f.y, vector3f.z);
+	public Vector3f(Vector3f other) {
+		this(other.x, other.y, other.z);
 	}
 
-	public Vector3f(Vec3d vec3d) {
-		this((float)vec3d.x, (float)vec3d.y, (float)vec3d.z);
+	public Vector3f(Vec3d other) {
+		this((float)other.x, (float)other.y, (float)other.z);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			Vector3f vector3f = (Vector3f)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			Vector3f vector3f = (Vector3f)o;
 			if (Float.compare(vector3f.x, this.x) != 0) {
 				return false;
 			} else {
@@ -69,51 +69,51 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void scale(float f) {
-		this.x *= f;
-		this.y *= f;
-		this.z *= f;
+	public void scale(float scale) {
+		this.x *= scale;
+		this.y *= scale;
+		this.z *= scale;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static float clampFloat(float f, float g, float h) {
-		if (f < g) {
-			return g;
+	private static float clampFloat(float v, float min, float max) {
+		if (v < min) {
+			return min;
 		} else {
-			return f > h ? h : f;
+			return v > max ? max : v;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void clamp(float f, float g) {
-		this.x = clampFloat(this.x, f, g);
-		this.y = clampFloat(this.y, f, g);
-		this.z = clampFloat(this.z, f, g);
+	public void clamp(float min, float max) {
+		this.x = clampFloat(this.x, min, max);
+		this.y = clampFloat(this.y, min, max);
+		this.z = clampFloat(this.z, min, max);
 	}
 
-	public void set(float f, float g, float h) {
-		this.x = f;
-		this.y = g;
-		this.z = h;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public void add(float f, float g, float h) {
-		this.x += f;
-		this.y += g;
-		this.z += h;
+	public void set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void subtract(Vector3f vector3f) {
-		this.x = this.x - vector3f.x;
-		this.y = this.y - vector3f.y;
-		this.z = this.z - vector3f.z;
+	public void add(float x, float y, float z) {
+		this.x += x;
+		this.y += y;
+		this.z += z;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float dot(Vector3f vector3f) {
-		return this.x * vector3f.x + this.y * vector3f.y + this.z * vector3f.z;
+	public void subtract(Vector3f other) {
+		this.x = this.x - other.x;
+		this.y = this.y - other.y;
+		this.z = this.z - other.z;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float dot(Vector3f other) {
+		return this.x * other.x + this.y * other.y + this.z * other.z;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -131,13 +131,13 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void cross(Vector3f vector3f) {
+	public void cross(Vector3f vector) {
 		float f = this.x;
 		float g = this.y;
 		float h = this.z;
-		float i = vector3f.getX();
-		float j = vector3f.getY();
-		float k = vector3f.getZ();
+		float i = vector.getX();
+		float j = vector.getY();
+		float k = vector.getZ();
 		this.x = g * k - h * j;
 		this.y = h * i - f * k;
 		this.z = f * j - g * i;

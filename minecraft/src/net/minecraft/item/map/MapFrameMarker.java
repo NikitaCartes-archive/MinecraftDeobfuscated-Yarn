@@ -9,16 +9,16 @@ public class MapFrameMarker {
 	private final int rotation;
 	private final int entityId;
 
-	public MapFrameMarker(BlockPos blockPos, int i, int j) {
-		this.pos = blockPos;
-		this.rotation = i;
-		this.entityId = j;
+	public MapFrameMarker(BlockPos pos, int rotation, int entityId) {
+		this.pos = pos;
+		this.rotation = rotation;
+		this.entityId = entityId;
 	}
 
-	public static MapFrameMarker fromTag(CompoundTag compoundTag) {
-		BlockPos blockPos = NbtHelper.toBlockPos(compoundTag.getCompound("Pos"));
-		int i = compoundTag.getInt("Rotation");
-		int j = compoundTag.getInt("EntityId");
+	public static MapFrameMarker fromTag(CompoundTag tag) {
+		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
+		int i = tag.getInt("Rotation");
+		int j = tag.getInt("EntityId");
 		return new MapFrameMarker(blockPos, i, j);
 	}
 
@@ -46,7 +46,7 @@ public class MapFrameMarker {
 		return getKey(this.pos);
 	}
 
-	public static String getKey(BlockPos blockPos) {
-		return "frame-" + blockPos.getX() + "," + blockPos.getY() + "," + blockPos.getZ();
+	public static String getKey(BlockPos pos) {
+		return "frame-" + pos.getX() + "," + pos.getY() + "," + pos.getZ();
 	}
 }

@@ -7,12 +7,12 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityArmorStandSilentFix extends ChoiceFix {
-	public EntityArmorStandSilentFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
+	public EntityArmorStandSilentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
 	}
 
-	public Dynamic<?> fixSilent(Dynamic<?> dynamic) {
-		return dynamic.get("Silent").asBoolean(false) && !dynamic.get("Marker").asBoolean(false) ? dynamic.remove("Silent") : dynamic;
+	public Dynamic<?> fixSilent(Dynamic<?> tag) {
+		return tag.get("Silent").asBoolean(false) && !tag.get("Marker").asBoolean(false) ? tag.remove("Silent") : tag;
 	}
 
 	@Override

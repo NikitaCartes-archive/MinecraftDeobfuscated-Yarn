@@ -9,29 +9,29 @@ import net.minecraft.world.World;
 public interface BlockContext {
 	BlockContext EMPTY = new BlockContext() {
 		@Override
-		public <T> Optional<T> run(BiFunction<World, BlockPos, T> biFunction) {
+		public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
 			return Optional.empty();
 		}
 	};
 
-	static BlockContext create(World world, BlockPos blockPos) {
+	static BlockContext create(World world2, BlockPos world) {
 		return new BlockContext() {
 			@Override
-			public <T> Optional<T> run(BiFunction<World, BlockPos, T> biFunction) {
-				return Optional.of(biFunction.apply(world, blockPos));
+			public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
+				return Optional.of(function.apply(world2, world));
 			}
 		};
 	}
 
-	<T> Optional<T> run(BiFunction<World, BlockPos, T> biFunction);
+	<T> Optional<T> run(BiFunction<World, BlockPos, T> function);
 
-	default <T> T run(BiFunction<World, BlockPos, T> biFunction, T object) {
-		return (T)this.run(biFunction).orElse(object);
+	default <T> T run(BiFunction<World, BlockPos, T> function, T defaultValue) {
+		return (T)this.run(function).orElse(defaultValue);
 	}
 
-	default void run(BiConsumer<World, BlockPos> biConsumer) {
+	default void run(BiConsumer<World, BlockPos> function) {
 		this.run((BiFunction)((world, blockPos) -> {
-			biConsumer.accept(world, blockPos);
+			function.accept(world, blockPos);
 			return Optional.empty();
 		}));
 	}

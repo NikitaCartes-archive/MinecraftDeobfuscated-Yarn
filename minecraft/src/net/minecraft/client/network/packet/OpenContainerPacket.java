@@ -19,24 +19,24 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	public OpenContainerPacket() {
 	}
 
-	public OpenContainerPacket(int i, ContainerType<?> containerType, Text text) {
-		this.syncId = i;
-		this.containerId = Registry.MENU.getRawId(containerType);
-		this.name = text;
+	public OpenContainerPacket(int syncId, ContainerType<?> type, Text name) {
+		this.syncId = syncId;
+		this.containerId = Registry.MENU.getRawId(type);
+		this.name = name;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.syncId = packetByteBuf.readVarInt();
-		this.containerId = packetByteBuf.readVarInt();
-		this.name = packetByteBuf.readText();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.syncId = buf.readVarInt();
+		this.containerId = buf.readVarInt();
+		this.name = buf.readText();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.syncId);
-		packetByteBuf.writeVarInt(this.containerId);
-		packetByteBuf.writeText(this.name);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.syncId);
+		buf.writeVarInt(this.containerId);
+		buf.writeText(this.name);
 	}
 
 	public void method_17591(ClientPlayPacketListener clientPlayPacketListener) {

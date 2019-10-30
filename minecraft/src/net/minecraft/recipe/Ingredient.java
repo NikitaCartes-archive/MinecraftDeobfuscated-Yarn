@@ -36,8 +36,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 	private ItemStack[] matchingStacks;
 	private IntList ids;
 
-	private Ingredient(Stream<? extends Ingredient.Entry> stream) {
-		this.entries = (Ingredient.Entry[])stream.filter(NON_EMPTY).toArray(Ingredient.Entry[]::new);
+	private Ingredient(Stream<? extends Ingredient.Entry> entries) {
+		this.entries = (Ingredient.Entry[])entries.filter(NON_EMPTY).toArray(Ingredient.Entry[]::new);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -85,12 +85,12 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return this.ids;
 	}
 
-	public void write(PacketByteBuf packetByteBuf) {
+	public void write(PacketByteBuf buf) {
 		this.cacheMatchingStacks();
-		packetByteBuf.writeVarInt(this.matchingStacks.length);
+		buf.writeVarInt(this.matchingStacks.length);
 
 		for (int i = 0; i < this.matchingStacks.length; i++) {
-			packetByteBuf.writeItemStack(this.matchingStacks[i]);
+			buf.writeItemStack(this.matchingStacks[i]);
 		}
 	}
 
@@ -112,55 +112,55 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return this.entries.length == 0 && (this.matchingStacks == null || this.matchingStacks.length == 0) && (this.ids == null || this.ids.isEmpty());
 	}
 
-	private static Ingredient ofEntries(Stream<? extends Ingredient.Entry> stream) {
-		Ingredient ingredient = new Ingredient(stream);
+	private static Ingredient ofEntries(Stream<? extends Ingredient.Entry> entries) {
+		Ingredient ingredient = new Ingredient(entries);
 		return ingredient.entries.length == 0 ? EMPTY : ingredient;
 	}
 
-	public static Ingredient ofItems(ItemConvertible... itemConvertibles) {
-		return ofEntries(Arrays.stream(itemConvertibles).map(itemConvertible -> new Ingredient.StackEntry(new ItemStack(itemConvertible))));
+	public static Ingredient ofItems(ItemConvertible... items) {
+		return ofEntries(Arrays.stream(items).map(item -> new Ingredient.StackEntry(new ItemStack(item))));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Ingredient ofStacks(ItemStack... itemStacks) {
-		return ofEntries(Arrays.stream(itemStacks).map(itemStack -> new Ingredient.StackEntry(itemStack)));
+	public static Ingredient ofStacks(ItemStack... stacks) {
+		return ofEntries(Arrays.stream(stacks).map(stack -> new Ingredient.StackEntry(stack)));
 	}
 
 	public static Ingredient fromTag(Tag<Item> tag) {
 		return ofEntries(Stream.of(new Ingredient.TagEntry(tag)));
 	}
 
-	public static Ingredient fromPacket(PacketByteBuf packetByteBuf) {
-		int i = packetByteBuf.readVarInt();
-		return ofEntries(Stream.generate(() -> new Ingredient.StackEntry(packetByteBuf.readItemStack())).limit((long)i));
+	public static Ingredient fromPacket(PacketByteBuf buf) {
+		int i = buf.readVarInt();
+		return ofEntries(Stream.generate(() -> new Ingredient.StackEntry(buf.readItemStack())).limit((long)i));
 	}
 
-	public static Ingredient fromJson(@Nullable JsonElement jsonElement) {
-		if (jsonElement == null || jsonElement.isJsonNull()) {
+	public static Ingredient fromJson(@Nullable JsonElement json) {
+		if (json == null || json.isJsonNull()) {
 			throw new JsonSyntaxException("Item cannot be null");
-		} else if (jsonElement.isJsonObject()) {
-			return ofEntries(Stream.of(entryFromJson(jsonElement.getAsJsonObject())));
-		} else if (jsonElement.isJsonArray()) {
-			JsonArray jsonArray = jsonElement.getAsJsonArray();
+		} else if (json.isJsonObject()) {
+			return ofEntries(Stream.of(entryFromJson(json.getAsJsonObject())));
+		} else if (json.isJsonArray()) {
+			JsonArray jsonArray = json.getAsJsonArray();
 			if (jsonArray.size() == 0) {
 				throw new JsonSyntaxException("Item array cannot be empty, at least one item must be defined");
 			} else {
-				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElementx -> entryFromJson(JsonHelper.asObject(jsonElementx, "item"))));
+				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElement -> entryFromJson(JsonHelper.asObject(jsonElement, "item"))));
 			}
 		} else {
 			throw new JsonSyntaxException("Expected item to be object or array of objects");
 		}
 	}
 
-	public static Ingredient.Entry entryFromJson(JsonObject jsonObject) {
-		if (jsonObject.has("item") && jsonObject.has("tag")) {
+	public static Ingredient.Entry entryFromJson(JsonObject json) {
+		if (json.has("item") && json.has("tag")) {
 			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
-		} else if (jsonObject.has("item")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
+		} else if (json.has("item")) {
+			Identifier identifier = new Identifier(JsonHelper.getString(json, "item"));
 			Item item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
 			return new Ingredient.StackEntry(new ItemStack(item));
-		} else if (jsonObject.has("tag")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "tag"));
+		} else if (json.has("tag")) {
+			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
 			Tag<Item> tag = ItemTags.getContainer().get(identifier);
 			if (tag == null) {
 				throw new JsonSyntaxException("Unknown item tag '" + identifier + "'");
@@ -181,8 +181,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 	static class StackEntry implements Ingredient.Entry {
 		private final ItemStack stack;
 
-		private StackEntry(ItemStack itemStack) {
-			this.stack = itemStack;
+		private StackEntry(ItemStack stack) {
+			this.stack = stack;
 		}
 
 		@Override

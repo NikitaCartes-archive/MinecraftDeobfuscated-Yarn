@@ -21,8 +21,8 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 		return new RecipeUnlockedCriterion.Conditions(identifier);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(recipe));
+	public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(recipe));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

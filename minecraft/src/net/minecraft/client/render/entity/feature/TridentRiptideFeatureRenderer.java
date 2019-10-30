@@ -3,10 +3,10 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -18,26 +18,16 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 	public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
 	private final ModelPart field_21012 = new ModelPart(64, 64, 0, 0);
 
-	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> context) {
+		super(context);
 		this.field_21012.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 32.0F, 16.0F);
 	}
 
 	public void method_4203(
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i,
-		T livingEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
 	) {
 		if (livingEntity.isUsingRiptide()) {
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
 
 			for (int n = 0; n < 3; n++) {
 				matrixStack.push();

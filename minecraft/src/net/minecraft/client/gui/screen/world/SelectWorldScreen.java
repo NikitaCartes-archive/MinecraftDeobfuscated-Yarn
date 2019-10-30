@@ -21,14 +21,14 @@ public class SelectWorldScreen extends Screen {
 	protected TextFieldWidget searchBox;
 	private WorldListWidget levelList;
 
-	public SelectWorldScreen(Screen screen) {
+	public SelectWorldScreen(Screen parent) {
 		super(new TranslatableText("selectWorld.title"));
-		this.parent = screen;
+		this.parent = parent;
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double f) {
-		return super.mouseScrolled(d, e, f);
+	public boolean mouseScrolled(double d, double e, double amount) {
+		return super.mouseScrolled(d, e, amount);
 	}
 
 	@Override
@@ -97,29 +97,29 @@ public class SelectWorldScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		return super.keyPressed(i, j, k) ? true : this.searchBox.keyPressed(i, j, k);
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		return super.keyPressed(keyCode, scanCode, modifiers) ? true : this.searchBox.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
-	public boolean charTyped(char c, int i) {
-		return this.searchBox.charTyped(c, i);
+	public boolean charTyped(char chr, int keyCode) {
+		return this.searchBox.charTyped(chr, keyCode);
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.tooltipText = null;
-		this.levelList.render(i, j, f);
-		this.searchBox.render(i, j, f);
+		this.levelList.render(mouseX, mouseY, delta);
+		this.searchBox.render(mouseX, mouseY, delta);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 		if (this.tooltipText != null) {
-			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), i, j);
+			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), mouseX, mouseY);
 		}
 	}
 
-	public void setTooltip(String string) {
-		this.tooltipText = string;
+	public void setTooltip(String value) {
+		this.tooltipText = value;
 	}
 
 	public void worldSelected(boolean bl) {

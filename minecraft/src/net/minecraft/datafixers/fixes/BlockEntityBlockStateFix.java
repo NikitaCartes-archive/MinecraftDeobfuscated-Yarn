@@ -9,8 +9,8 @@ import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BlockEntityBlockStateFix extends ChoiceFix {
-	public BlockEntityBlockStateFix(Schema schema, boolean bl) {
-		super(schema, bl, "BlockEntityBlockStateFix", TypeReferences.BLOCK_ENTITY, "minecraft:piston");
+	public BlockEntityBlockStateFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "BlockEntityBlockStateFix", TypeReferences.BLOCK_ENTITY, "minecraft:piston");
 	}
 
 	@Override

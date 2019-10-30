@@ -1987,8 +1987,8 @@ public class Blocks {
 		"honeycomb_block", new Block(Block.Settings.of(Material.CLAY, MaterialColor.ORANGE).strength(0.6F).sounds(BlockSoundGroup.CORAL))
 	);
 
-	private static Block register(String string, Block block) {
-		return Registry.register(Registry.BLOCK, string, block);
+	private static Block register(String id, Block block) {
+		return Registry.register(Registry.BLOCK, id, block);
 	}
 
 	static {

@@ -16,11 +16,11 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RenderLayers {
-	private static final Map<Block, RenderLayer> BLOCKS = SystemUtil.consume(Maps.<Block, RenderLayer>newHashMap(), hashMap -> {
+	private static final Map<Block, RenderLayer> BLOCKS = Util.create(Maps.<Block, RenderLayer>newHashMap(), hashMap -> {
 		RenderLayer renderLayer = RenderLayer.getCutoutMipped();
 		hashMap.put(Blocks.GRASS_BLOCK, renderLayer);
 		hashMap.put(Blocks.IRON_BARS, renderLayer);
@@ -240,7 +240,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.FROSTED_ICE, renderLayer3);
 		hashMap.put(Blocks.BUBBLE_COLUMN, renderLayer3);
 	});
-	private static final Map<Item, RenderLayer> ITEMS = SystemUtil.consume(Maps.<Item, RenderLayer>newHashMap(), hashMap -> {
+	private static final Map<Item, RenderLayer> ITEMS = Util.create(Maps.<Item, RenderLayer>newHashMap(), hashMap -> {
 		RenderLayer renderLayer = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		hashMap.put(Items.LEVER, renderLayer);
 		hashMap.put(Items.OAK_SIGN, renderLayer);
@@ -255,15 +255,15 @@ public class RenderLayers {
 		hashMap.put(Items.BARRIER, renderLayer);
 		hashMap.put(Items.STRUCTURE_VOID, renderLayer);
 	});
-	private static final Map<Fluid, RenderLayer> FLUIDS = SystemUtil.consume(Maps.<Fluid, RenderLayer>newHashMap(), hashMap -> {
+	private static final Map<Fluid, RenderLayer> FLUIDS = Util.create(Maps.<Fluid, RenderLayer>newHashMap(), hashMap -> {
 		RenderLayer renderLayer = RenderLayer.getTranslucent();
 		hashMap.put(Fluids.FLOWING_WATER, renderLayer);
 		hashMap.put(Fluids.WATER, renderLayer);
 	});
 	private static boolean fancyGraphics;
 
-	public static RenderLayer getBlockLayer(BlockState blockState) {
-		Block block = blockState.getBlock();
+	public static RenderLayer getBlockLayer(BlockState state) {
+		Block block = state.getBlock();
 		if (block instanceof LeavesBlock) {
 			return fancyGraphics ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
 		} else {
@@ -272,8 +272,8 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getEntityBlockLayer(BlockState blockState) {
-		RenderLayer renderLayer = getBlockLayer(blockState);
+	public static RenderLayer getEntityBlockLayer(BlockState state) {
+		RenderLayer renderLayer = getBlockLayer(state);
 		if (renderLayer == RenderLayer.getTranslucent()) {
 			return RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		} else {
@@ -283,8 +283,8 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getItemLayer(ItemStack itemStack) {
-		Item item = itemStack.getItem();
+	public static RenderLayer getItemLayer(ItemStack stack) {
+		Item item = stack.getItem();
 		RenderLayer renderLayer = (RenderLayer)ITEMS.get(item);
 		if (renderLayer != null) {
 			return renderLayer;
@@ -296,12 +296,12 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getFluidLayer(FluidState fluidState) {
-		RenderLayer renderLayer = (RenderLayer)FLUIDS.get(fluidState.getFluid());
+	public static RenderLayer getFluidLayer(FluidState state) {
+		RenderLayer renderLayer = (RenderLayer)FLUIDS.get(state.getFluid());
 		return renderLayer != null ? renderLayer : RenderLayer.getSolid();
 	}
 
-	public static void setFancyGraphics(boolean bl) {
-		fancyGraphics = bl;
+	public static void setFancyGraphics(boolean fancyGraphics) {
+		RenderLayers.fancyGraphics = fancyGraphics;
 	}
 }

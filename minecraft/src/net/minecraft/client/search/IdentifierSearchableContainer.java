@@ -60,19 +60,19 @@ public class IdentifierSearchableContainer<T> implements SearchableContainer<T> 
 		});
 	}
 
-	protected int compare(T object, T object2) {
-		return Integer.compare(this.entryIds.getInt(object), this.entryIds.getInt(object2));
+	protected int compare(T object1, T object2) {
+		return Integer.compare(this.entryIds.getInt(object1), this.entryIds.getInt(object2));
 	}
 
 	@Override
-	public List<T> findAll(String string) {
-		int i = string.indexOf(58);
+	public List<T> findAll(String text) {
+		int i = text.indexOf(58);
 		if (i == -1) {
-			return this.byPath.findAll(string);
+			return this.byPath.findAll(text);
 		} else {
-			List<T> list = this.byNamespace.findAll(string.substring(0, i).trim());
-			String string2 = string.substring(i + 1).trim();
-			List<T> list2 = this.byPath.findAll(string2);
+			List<T> list = this.byNamespace.findAll(text.substring(0, i).trim());
+			String string = text.substring(i + 1).trim();
+			List<T> list2 = this.byPath.findAll(string);
 			return Lists.<T>newArrayList(new IdentifierSearchableContainer.Iterator<>(list.iterator(), list2.iterator(), this::compare));
 		}
 	}

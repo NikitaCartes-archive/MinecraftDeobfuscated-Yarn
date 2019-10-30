@@ -9,34 +9,34 @@ public abstract class ChunkToNibbleArrayMap<M extends ChunkToNibbleArrayMap<M>> 
 	private boolean cacheEnabled;
 	protected final Long2ObjectOpenHashMap<ChunkNibbleArray> arrays;
 
-	protected ChunkToNibbleArrayMap(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
-		this.arrays = long2ObjectOpenHashMap;
+	protected ChunkToNibbleArrayMap(Long2ObjectOpenHashMap<ChunkNibbleArray> arrays) {
+		this.arrays = arrays;
 		this.clearCache();
 		this.cacheEnabled = true;
 	}
 
 	public abstract M copy();
 
-	public void replaceWithCopy(long l) {
-		this.arrays.put(l, this.arrays.get(l).copy());
+	public void replaceWithCopy(long pos) {
+		this.arrays.put(pos, this.arrays.get(pos).copy());
 		this.clearCache();
 	}
 
-	public boolean containsKey(long l) {
-		return this.arrays.containsKey(l);
+	public boolean containsKey(long chunkPos) {
+		return this.arrays.containsKey(chunkPos);
 	}
 
 	@Nullable
-	public ChunkNibbleArray get(long l) {
+	public ChunkNibbleArray get(long chunkPos) {
 		if (this.cacheEnabled) {
 			for (int i = 0; i < 2; i++) {
-				if (l == this.cachePositions[i]) {
+				if (chunkPos == this.cachePositions[i]) {
 					return this.cacheArrays[i];
 				}
 			}
 		}
 
-		ChunkNibbleArray chunkNibbleArray = this.arrays.get(l);
+		ChunkNibbleArray chunkNibbleArray = this.arrays.get(chunkPos);
 		if (chunkNibbleArray == null) {
 			return null;
 		} else {
@@ -46,7 +46,7 @@ public abstract class ChunkToNibbleArrayMap<M extends ChunkToNibbleArrayMap<M>> 
 					this.cacheArrays[j] = this.cacheArrays[j - 1];
 				}
 
-				this.cachePositions[0] = l;
+				this.cachePositions[0] = chunkPos;
 				this.cacheArrays[0] = chunkNibbleArray;
 			}
 
@@ -55,12 +55,12 @@ public abstract class ChunkToNibbleArrayMap<M extends ChunkToNibbleArrayMap<M>> 
 	}
 
 	@Nullable
-	public ChunkNibbleArray removeChunk(long l) {
-		return this.arrays.remove(l);
+	public ChunkNibbleArray removeChunk(long chunkPos) {
+		return this.arrays.remove(chunkPos);
 	}
 
-	public void put(long l, ChunkNibbleArray chunkNibbleArray) {
-		this.arrays.put(l, chunkNibbleArray);
+	public void put(long pos, ChunkNibbleArray data) {
+		this.arrays.put(pos, data);
 	}
 
 	public void clearCache() {

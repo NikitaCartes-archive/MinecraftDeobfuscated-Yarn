@@ -27,7 +27,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -65,21 +65,21 @@ public class RecipeManager extends JsonDataLoader {
 		LOGGER.info("Loaded {} recipes", map2.size());
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> recipeType, C inventory, World world) {
-		return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).findFirst();
+	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
+		return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.get(recipe, world, inventory))).findFirst();
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> recipeType, C inventory, World world) {
-		return (List<T>)this.getAllOfType(recipeType)
+	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> type, C inventory, World world) {
+		return (List<T>)this.getAllOfType(type)
 			.values()
 			.stream()
-			.flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory)))
+			.flatMap(recipe -> Util.stream(type.get(recipe, world, inventory)))
 			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 
-	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllOfType(RecipeType<T> recipeType) {
-		return (Map<Identifier, Recipe<C>>)this.recipes.getOrDefault(recipeType, Collections.emptyMap());
+	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllOfType(RecipeType<T> type) {
+		return (Map<Identifier, Recipe<C>>)this.recipes.getOrDefault(type, Collections.emptyMap());
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
@@ -97,8 +97,8 @@ public class RecipeManager extends JsonDataLoader {
 		}
 	}
 
-	public Optional<? extends Recipe<?>> get(Identifier identifier) {
-		return this.recipes.values().stream().map(map -> (Recipe)map.get(identifier)).filter(Objects::nonNull).findFirst();
+	public Optional<? extends Recipe<?>> get(Identifier id) {
+		return this.recipes.values().stream().map(map -> (Recipe)map.get(id)).filter(Objects::nonNull).findFirst();
 	}
 
 	public Collection<Recipe<?>> values() {
@@ -109,19 +109,19 @@ public class RecipeManager extends JsonDataLoader {
 		return this.recipes.values().stream().flatMap(map -> map.keySet().stream());
 	}
 
-	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
-		String string = JsonHelper.getString(jsonObject, "type");
+	public static Recipe<?> deserialize(Identifier id, JsonObject json) {
+		String string = JsonHelper.getString(json, "type");
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
 				.getOrEmpty(new Identifier(string))
 				.orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '" + string + "'")))
-			.read(identifier, jsonObject);
+			.read(id, json);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setRecipes(Iterable<Recipe<?>> iterable) {
+	public void setRecipes(Iterable<Recipe<?>> recipes) {
 		this.errored = false;
 		Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map = Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap();
-		iterable.forEach(recipe -> {
+		recipes.forEach(recipe -> {
 			Map<Identifier, Recipe<?>> map2 = (Map<Identifier, Recipe<?>>)map.computeIfAbsent(recipe.getType(), recipeType -> Maps.newHashMap());
 			Recipe<?> recipe2 = (Recipe<?>)map2.put(recipe.getId(), recipe);
 			if (recipe2 != null) {

@@ -34,51 +34,47 @@ public class AdvancementWidget extends DrawableHelper {
 	private final int xPos;
 	private final int yPos;
 
-	public AdvancementWidget(AdvancementTab advancementTab, MinecraftClient minecraftClient, Advancement advancement, AdvancementDisplay advancementDisplay) {
-		this.tab = advancementTab;
+	public AdvancementWidget(AdvancementTab tab, MinecraftClient client, Advancement advancement, AdvancementDisplay display) {
+		this.tab = tab;
 		this.advancement = advancement;
-		this.display = advancementDisplay;
-		this.client = minecraftClient;
-		this.title = minecraftClient.textRenderer.trimToWidth(advancementDisplay.getTitle().asFormattedString(), 163);
-		this.xPos = MathHelper.floor(advancementDisplay.getX() * 28.0F);
-		this.yPos = MathHelper.floor(advancementDisplay.getY() * 27.0F);
+		this.display = display;
+		this.client = client;
+		this.title = client.textRenderer.trimToWidth(display.getTitle().asFormattedString(), 163);
+		this.xPos = MathHelper.floor(display.getX() * 28.0F);
+		this.yPos = MathHelper.floor(display.getY() * 27.0F);
 		int i = advancement.getRequirementCount();
 		int j = String.valueOf(i).length();
-		int k = i > 1
-			? minecraftClient.textRenderer.getStringWidth("  ")
-				+ minecraftClient.textRenderer.getStringWidth("0") * j * 2
-				+ minecraftClient.textRenderer.getStringWidth("/")
-			: 0;
-		int l = 29 + minecraftClient.textRenderer.getStringWidth(this.title) + k;
-		String string = advancementDisplay.getDescription().asFormattedString();
+		int k = i > 1 ? client.textRenderer.getStringWidth("  ") + client.textRenderer.getStringWidth("0") * j * 2 + client.textRenderer.getStringWidth("/") : 0;
+		int l = 29 + client.textRenderer.getStringWidth(this.title) + k;
+		String string = display.getDescription().asFormattedString();
 		this.description = this.wrapDescription(string, l);
 
 		for (String string2 : this.description) {
-			l = Math.max(l, minecraftClient.textRenderer.getStringWidth(string2));
+			l = Math.max(l, client.textRenderer.getStringWidth(string2));
 		}
 
 		this.width = l + 3 + 5;
 	}
 
-	private List<String> wrapDescription(String string, int i) {
-		if (string.isEmpty()) {
+	private List<String> wrapDescription(String description, int width) {
+		if (description.isEmpty()) {
 			return Collections.emptyList();
 		} else {
-			List<String> list = this.client.textRenderer.wrapStringToWidthAsList(string, i);
+			List<String> list = this.client.textRenderer.wrapStringToWidthAsList(description, width);
 			if (list.size() < 2) {
 				return list;
 			} else {
-				String string2 = (String)list.get(0);
-				String string3 = (String)list.get(1);
-				int j = this.client.textRenderer.getStringWidth(string2 + ' ' + string3.split(" ")[0]);
-				if (j - i <= 10) {
-					return this.client.textRenderer.wrapStringToWidthAsList(string, j);
+				String string = (String)list.get(0);
+				String string2 = (String)list.get(1);
+				int i = this.client.textRenderer.getStringWidth(string + ' ' + string2.split(" ")[0]);
+				if (i - width <= 10) {
+					return this.client.textRenderer.wrapStringToWidthAsList(description, i);
 				} else {
-					Matcher matcher = BACKSLASH_S_PATTERN.matcher(string2);
+					Matcher matcher = BACKSLASH_S_PATTERN.matcher(string);
 					if (matcher.matches()) {
-						int k = this.client.textRenderer.getStringWidth(matcher.group(1));
-						if (i - k <= 10) {
-							return this.client.textRenderer.wrapStringToWidthAsList(string, k);
+						int j = this.client.textRenderer.getStringWidth(matcher.group(1));
+						if (width - j <= 10) {
+							return this.client.textRenderer.wrapStringToWidthAsList(description, j);
 						}
 					}
 
@@ -97,36 +93,36 @@ public class AdvancementWidget extends DrawableHelper {
 		return advancement != null && advancement.getDisplay() != null ? this.tab.getWidget(advancement) : null;
 	}
 
-	public void renderLines(int i, int j, boolean bl) {
+	public void renderLines(int x, int y, boolean firstPass) {
 		if (this.parent != null) {
-			int k = i + this.parent.xPos + 13;
-			int l = i + this.parent.xPos + 26 + 4;
-			int m = j + this.parent.yPos + 13;
-			int n = i + this.xPos + 13;
-			int o = j + this.yPos + 13;
-			int p = bl ? -16777216 : -1;
-			if (bl) {
-				this.hLine(l, k, m - 1, p);
-				this.hLine(l + 1, k, m, p);
-				this.hLine(l, k, m + 1, p);
-				this.hLine(n, l - 1, o - 1, p);
-				this.hLine(n, l - 1, o, p);
-				this.hLine(n, l - 1, o + 1, p);
-				this.vLine(l - 1, o, m, p);
-				this.vLine(l + 1, o, m, p);
+			int i = x + this.parent.xPos + 13;
+			int j = x + this.parent.xPos + 26 + 4;
+			int k = y + this.parent.yPos + 13;
+			int l = x + this.xPos + 13;
+			int m = y + this.yPos + 13;
+			int n = firstPass ? -16777216 : -1;
+			if (firstPass) {
+				this.hLine(j, i, k - 1, n);
+				this.hLine(j + 1, i, k, n);
+				this.hLine(j, i, k + 1, n);
+				this.hLine(l, j - 1, m - 1, n);
+				this.hLine(l, j - 1, m, n);
+				this.hLine(l, j - 1, m + 1, n);
+				this.vLine(j - 1, m, k, n);
+				this.vLine(j + 1, m, k, n);
 			} else {
-				this.hLine(l, k, m, p);
-				this.hLine(n, l, o, p);
-				this.vLine(l, o, m, p);
+				this.hLine(j, i, k, n);
+				this.hLine(l, j, m, n);
+				this.vLine(j, m, k, n);
 			}
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
-			advancementWidget.renderLines(i, j, bl);
+			advancementWidget.renderLines(x, y, firstPass);
 		}
 	}
 
-	public void renderWidgets(int i, int j) {
+	public void renderWidgets(int x, int y) {
 		if (!this.display.isHidden() || this.progress != null && this.progress.isDone()) {
 			float f = this.progress == null ? 0.0F : this.progress.getProgressBarPercentage();
 			AdvancementObtainedStatus advancementObtainedStatus;
@@ -137,45 +133,45 @@ public class AdvancementWidget extends DrawableHelper {
 			}
 
 			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
-			this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
-			this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+			this.blit(x + this.xPos + 3, y + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
+			this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), x + this.xPos + 8, y + this.yPos + 5);
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
-			advancementWidget.renderWidgets(i, j);
+			advancementWidget.renderWidgets(x, y);
 		}
 	}
 
-	public void setProgress(AdvancementProgress advancementProgress) {
-		this.progress = advancementProgress;
+	public void setProgress(AdvancementProgress progress) {
+		this.progress = progress;
 	}
 
-	public void addChild(AdvancementWidget advancementWidget) {
-		this.children.add(advancementWidget);
+	public void addChild(AdvancementWidget widget) {
+		this.children.add(widget);
 	}
 
-	public void drawTooltip(int i, int j, float f, int k, int l) {
-		boolean bl = k + i + this.xPos + this.width + 26 >= this.tab.getScreen().width;
+	public void drawTooltip(int originX, int originY, float alpha, int x, int y) {
+		boolean bl = x + originX + this.xPos + this.width + 26 >= this.tab.getScreen().width;
 		String string = this.progress == null ? null : this.progress.getProgressBarFraction();
-		int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
-		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.description.size() * 9;
-		float g = this.progress == null ? 0.0F : this.progress.getProgressBarPercentage();
-		int n = MathHelper.floor(g * (float)this.width);
+		int i = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
+		boolean bl2 = 113 - originY - this.yPos - 26 <= 6 + this.description.size() * 9;
+		float f = this.progress == null ? 0.0F : this.progress.getProgressBarPercentage();
+		int j = MathHelper.floor(f * (float)this.width);
 		AdvancementObtainedStatus advancementObtainedStatus;
 		AdvancementObtainedStatus advancementObtainedStatus2;
 		AdvancementObtainedStatus advancementObtainedStatus3;
-		if (g >= 1.0F) {
-			n = this.width / 2;
+		if (f >= 1.0F) {
+			j = this.width / 2;
 			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
 			advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
 			advancementObtainedStatus3 = AdvancementObtainedStatus.OBTAINED;
-		} else if (n < 2) {
-			n = this.width / 2;
+		} else if (j < 2) {
+			j = this.width / 2;
 			advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			advancementObtainedStatus2 = AdvancementObtainedStatus.UNOBTAINED;
 			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
-		} else if (n > this.width - 2) {
-			n = this.width / 2;
+		} else if (j > this.width - 2) {
+			j = this.width / 2;
 			advancementObtainedStatus = AdvancementObtainedStatus.OBTAINED;
 			advancementObtainedStatus2 = AdvancementObtainedStatus.OBTAINED;
 			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
@@ -185,53 +181,53 @@ public class AdvancementWidget extends DrawableHelper {
 			advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
 		}
 
-		int o = this.width - n;
+		int k = this.width - j;
 		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
-		int p = j + this.yPos;
-		int q;
+		int l = originY + this.yPos;
+		int m;
 		if (bl) {
-			q = i + this.xPos - this.width + 26 + 6;
+			m = originX + this.xPos - this.width + 26 + 6;
 		} else {
-			q = i + this.xPos;
+			m = originX + this.xPos;
 		}
 
-		int r = 32 + this.description.size() * 9;
+		int n = 32 + this.description.size() * 9;
 		if (!this.description.isEmpty()) {
 			if (bl2) {
-				this.method_2324(q, p + 26 - r, this.width, r, 10, 200, 26, 0, 52);
+				this.method_2324(m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
 			} else {
-				this.method_2324(q, p, this.width, r, 10, 200, 26, 0, 52);
+				this.method_2324(m, l, this.width, n, 10, 200, 26, 0, 52);
 			}
 		}
 
-		this.blit(q, p, 0, advancementObtainedStatus.getSpriteIndex() * 26, n, 26);
-		this.blit(q + n, p, 200 - o, advancementObtainedStatus2.getSpriteIndex() * 26, o, 26);
-		this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
+		this.blit(m, l, 0, advancementObtainedStatus.getSpriteIndex() * 26, j, 26);
+		this.blit(m + j, l, 200 - k, advancementObtainedStatus2.getSpriteIndex() * 26, k, 26);
+		this.blit(originX + this.xPos + 3, originY + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
 		if (bl) {
-			this.client.textRenderer.drawWithShadow(this.title, (float)(q + 5), (float)(j + this.yPos + 9), -1);
+			this.client.textRenderer.drawWithShadow(this.title, (float)(m + 5), (float)(originY + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.textRenderer.drawWithShadow(string, (float)(i + this.xPos - m), (float)(j + this.yPos + 9), -1);
+				this.client.textRenderer.drawWithShadow(string, (float)(originX + this.xPos - i), (float)(originY + this.yPos + 9), -1);
 			}
 		} else {
-			this.client.textRenderer.drawWithShadow(this.title, (float)(i + this.xPos + 32), (float)(j + this.yPos + 9), -1);
+			this.client.textRenderer.drawWithShadow(this.title, (float)(originX + this.xPos + 32), (float)(originY + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.textRenderer.drawWithShadow(string, (float)(i + this.xPos + this.width - m - 5), (float)(j + this.yPos + 9), -1);
+				this.client.textRenderer.drawWithShadow(string, (float)(originX + this.xPos + this.width - i - 5), (float)(originY + this.yPos + 9), -1);
 			}
 		}
 
 		if (bl2) {
-			for (int s = 0; s < this.description.size(); s++) {
-				this.client.textRenderer.draw((String)this.description.get(s), (float)(q + 5), (float)(p + 26 - r + 7 + s * 9), -5592406);
+			for (int o = 0; o < this.description.size(); o++) {
+				this.client.textRenderer.draw((String)this.description.get(o), (float)(m + 5), (float)(l + 26 - n + 7 + o * 9), -5592406);
 			}
 		} else {
-			for (int s = 0; s < this.description.size(); s++) {
-				this.client.textRenderer.draw((String)this.description.get(s), (float)(q + 5), (float)(j + this.yPos + 9 + 17 + s * 9), -5592406);
+			for (int o = 0; o < this.description.size(); o++) {
+				this.client.textRenderer.draw((String)this.description.get(o), (float)(m + 5), (float)(originY + this.yPos + 9 + 17 + o * 9), -5592406);
 			}
 		}
 
-		this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+		this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), originX + this.xPos + 8, originY + this.yPos + 5);
 	}
 
 	protected void method_2324(int i, int j, int k, int l, int m, int n, int o, int p, int q) {
@@ -265,13 +261,13 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 	}
 
-	public boolean shouldRender(int i, int j, int k, int l) {
+	public boolean shouldRender(int originX, int originY, int mouseX, int mouseY) {
 		if (!this.display.isHidden() || this.progress != null && this.progress.isDone()) {
-			int m = i + this.xPos;
-			int n = m + 26;
-			int o = j + this.yPos;
-			int p = o + 26;
-			return k >= m && k <= n && l >= o && l <= p;
+			int i = originX + this.xPos;
+			int j = i + 26;
+			int k = originY + this.yPos;
+			int l = k + 26;
+			return mouseX >= i && mouseX <= j && mouseY >= k && mouseY <= l;
 		} else {
 			return false;
 		}

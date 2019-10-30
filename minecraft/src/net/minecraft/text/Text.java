@@ -27,15 +27,15 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public interface Text extends Message, Iterable<Text> {
 	Text setStyle(Style style);
 
 	Style getStyle();
 
-	default Text append(String string) {
-		return this.append(new LiteralText(string));
+	default Text append(String text) {
+		return this.append(new LiteralText(text));
 	}
 
 	Text append(Text text);
@@ -49,18 +49,18 @@ public interface Text extends Message, Iterable<Text> {
 		return stringBuilder.toString();
 	}
 
-	default String asTruncatedString(int i) {
+	default String asTruncatedString(int length) {
 		StringBuilder stringBuilder = new StringBuilder();
 		Iterator<Text> iterator = this.stream().iterator();
 
 		while (iterator.hasNext()) {
-			int j = i - stringBuilder.length();
-			if (j <= 0) {
+			int i = length - stringBuilder.length();
+			if (i <= 0) {
 				break;
 			}
 
 			String string = ((Text)iterator.next()).asString();
-			stringBuilder.append(string.length() <= j ? string : string.substring(0, j));
+			stringBuilder.append(string.length() <= i ? string : string.substring(0, i));
 		}
 
 		return stringBuilder.toString();
@@ -121,14 +121,14 @@ public interface Text extends Message, Iterable<Text> {
 		return text;
 	}
 
-	default Text styled(Consumer<Style> consumer) {
-		consumer.accept(this.getStyle());
+	default Text styled(Consumer<Style> transformer) {
+		transformer.accept(this.getStyle());
 		return this;
 	}
 
-	default Text formatted(Formatting... formattings) {
-		for (Formatting formatting : formattings) {
-			this.formatted(formatting);
+	default Text formatted(Formatting... formatting) {
+		for (Formatting formatting2 : formatting) {
+			this.formatted(formatting2);
 		}
 
 		return this;
@@ -169,7 +169,7 @@ public interface Text extends Message, Iterable<Text> {
 	}
 
 	public static class Serializer implements JsonDeserializer<Text>, JsonSerializer<Text> {
-		private static final Gson GSON = SystemUtil.get(() -> {
+		private static final Gson GSON = Util.create(() -> {
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			gsonBuilder.disableHtmlEscaping();
 			gsonBuilder.registerTypeHierarchyAdapter(Text.class, new Text.Serializer());
@@ -177,7 +177,7 @@ public interface Text extends Message, Iterable<Text> {
 			gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());
 			return gsonBuilder.create();
 		});
-		private static final Field JSON_READER_POS = SystemUtil.get(() -> {
+		private static final Field JSON_READER_POS = Util.create(() -> {
 			try {
 				new JsonReader(new StringReader(""));
 				Field field = JsonReader.class.getDeclaredField("pos");
@@ -187,7 +187,7 @@ public interface Text extends Message, Iterable<Text> {
 				throw new IllegalStateException("Couldn't get field 'pos' for JsonReader", var1);
 			}
 		});
-		private static final Field JSON_READER_LINE_START = SystemUtil.get(() -> {
+		private static final Field JSON_READER_LINE_START = Util.create(() -> {
 			try {
 				new JsonReader(new StringReader(""));
 				Field field = JsonReader.class.getDeclaredField("lineStart");
@@ -294,13 +294,13 @@ public interface Text extends Message, Iterable<Text> {
 			}
 		}
 
-		private void addStyle(Style style, JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
-			JsonElement jsonElement = jsonSerializationContext.serialize(style);
+		private void addStyle(Style style, JsonObject json, JsonSerializationContext context) {
+			JsonElement jsonElement = context.serialize(style);
 			if (jsonElement.isJsonObject()) {
-				JsonObject jsonObject2 = (JsonObject)jsonElement;
+				JsonObject jsonObject = (JsonObject)jsonElement;
 
-				for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
-					jsonObject.add((String)entry.getKey(), (JsonElement)entry.getValue());
+				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+					json.add((String)entry.getKey(), (JsonElement)entry.getValue());
 				}
 			}
 		}
@@ -363,13 +363,16 @@ public interface Text extends Message, Iterable<Text> {
 				if (text instanceof NbtText.BlockNbtText) {
 					NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)text;
 					jsonObject.addProperty("block", blockNbtText.getPos());
+				} else if (text instanceof NbtText.EntityNbtText) {
+					NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)text;
+					jsonObject.addProperty("entity", entityNbtText.getSelector());
 				} else {
-					if (!(text instanceof NbtText.EntityNbtText)) {
+					if (!(text instanceof NbtText.StorageNbtText)) {
 						throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
 					}
 
-					NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)text;
-					jsonObject.addProperty("entity", entityNbtText.getSelector());
+					NbtText.StorageNbtText storageNbtText = (NbtText.StorageNbtText)text;
+					jsonObject.addProperty("storage", storageNbtText.method_23728().toString());
 				}
 			}
 
@@ -385,35 +388,35 @@ public interface Text extends Message, Iterable<Text> {
 		}
 
 		@Nullable
-		public static Text fromJson(String string) {
-			return JsonHelper.deserialize(GSON, string, Text.class, false);
+		public static Text fromJson(String json) {
+			return JsonHelper.deserialize(GSON, json, Text.class, false);
 		}
 
 		@Nullable
-		public static Text fromJson(JsonElement jsonElement) {
-			return GSON.fromJson(jsonElement, Text.class);
+		public static Text fromJson(JsonElement json) {
+			return GSON.fromJson(json, Text.class);
 		}
 
 		@Nullable
-		public static Text fromLenientJson(String string) {
-			return JsonHelper.deserialize(GSON, string, Text.class, true);
+		public static Text fromLenientJson(String json) {
+			return JsonHelper.deserialize(GSON, json, Text.class, true);
 		}
 
-		public static Text fromJson(com.mojang.brigadier.StringReader stringReader) {
+		public static Text fromJson(com.mojang.brigadier.StringReader reader) {
 			try {
-				JsonReader jsonReader = new JsonReader(new StringReader(stringReader.getRemaining()));
+				JsonReader jsonReader = new JsonReader(new StringReader(reader.getRemaining()));
 				jsonReader.setLenient(false);
 				Text text = GSON.<Text>getAdapter(Text.class).read(jsonReader);
-				stringReader.setCursor(stringReader.getCursor() + getPosition(jsonReader));
+				reader.setCursor(reader.getCursor() + getPosition(jsonReader));
 				return text;
 			} catch (StackOverflowError | IOException var3) {
 				throw new JsonParseException(var3);
 			}
 		}
 
-		private static int getPosition(JsonReader jsonReader) {
+		private static int getPosition(JsonReader reader) {
 			try {
-				return JSON_READER_POS.getInt(jsonReader) - JSON_READER_LINE_START.getInt(jsonReader) + 1;
+				return JSON_READER_POS.getInt(reader) - JSON_READER_LINE_START.getInt(reader) + 1;
 			} catch (IllegalAccessException var2) {
 				throw new IllegalStateException("Couldn't read position of JsonReader", var2);
 			}

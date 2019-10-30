@@ -13,7 +13,7 @@ import net.minecraft.client.util.Untracker;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
@@ -44,8 +44,8 @@ public class GlStateManager {
 	private static final GlStateManager.ClearState CLEAR = new GlStateManager.ClearState();
 	private static final GlStateManager.StencilState STENCIL = new GlStateManager.StencilState();
 	private static final FloatBuffer field_20771 = GlAllocationUtils.allocateFloatBuffer(4);
-	private static final Vector3f field_20772 = SystemUtil.consume(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::reciprocal);
-	private static final Vector3f field_20773 = SystemUtil.consume(new Vector3f(-0.2F, 1.0F, 0.7F), Vector3f::reciprocal);
+	private static final Vector3f field_20772 = Util.create(new Vector3f(0.2F, 1.0F, -0.7F), Vector3f::reciprocal);
+	private static final Vector3f field_20773 = Util.create(new Vector3f(-0.2F, 1.0F, 0.7F), Vector3f::reciprocal);
 	private static int activeTexture;
 	private static final GlStateManager.Texture2DState[] TEXTURES = (GlStateManager.Texture2DState[])IntStream.range(0, 8)
 		.mapToObj(i -> new GlStateManager.Texture2DState())
@@ -87,12 +87,12 @@ public class GlStateManager {
 	}
 
 	@Deprecated
-	public static void alphaFunc(int i, float f) {
+	public static void alphaFunc(int func, float ref) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		if (i != ALPHA_TEST.func || f != ALPHA_TEST.ref) {
-			ALPHA_TEST.func = i;
-			ALPHA_TEST.ref = f;
-			GL11.glAlphaFunc(i, f);
+		if (func != ALPHA_TEST.func || ref != ALPHA_TEST.ref) {
+			ALPHA_TEST.func = func;
+			ALPHA_TEST.ref = ref;
+			GL11.glAlphaFunc(func, ref);
 		}
 	}
 
@@ -127,12 +127,12 @@ public class GlStateManager {
 	}
 
 	@Deprecated
-	public static void colorMaterial(int i, int j) {
+	public static void colorMaterial(int face, int mode) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (i != COLOR_MATERIAL.face || j != COLOR_MATERIAL.mode) {
-			COLOR_MATERIAL.face = i;
-			COLOR_MATERIAL.mode = j;
-			GL11.glColorMaterial(i, j);
+		if (face != COLOR_MATERIAL.face || mode != COLOR_MATERIAL.mode) {
+			COLOR_MATERIAL.face = face;
+			COLOR_MATERIAL.mode = mode;
+			GL11.glColorMaterial(face, mode);
 		}
 	}
 
@@ -164,19 +164,19 @@ public class GlStateManager {
 		DEPTH.capState.enable();
 	}
 
-	public static void depthFunc(int i) {
+	public static void depthFunc(int func) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		if (i != DEPTH.func) {
-			DEPTH.func = i;
-			GL11.glDepthFunc(i);
+		if (func != DEPTH.func) {
+			DEPTH.func = func;
+			GL11.glDepthFunc(func);
 		}
 	}
 
-	public static void depthMask(boolean bl) {
+	public static void depthMask(boolean mask) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (bl != DEPTH.mask) {
-			DEPTH.mask = bl;
-			GL11.glDepthMask(bl);
+		if (mask != DEPTH.mask) {
+			DEPTH.mask = mask;
+			GL11.glDepthMask(mask);
 		}
 	}
 
@@ -190,23 +190,23 @@ public class GlStateManager {
 		BLEND.capState.enable();
 	}
 
-	public static void blendFunc(int i, int j) {
+	public static void blendFunc(int sfactor, int dfactor) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (i != BLEND.sfactor || j != BLEND.dfactor) {
-			BLEND.sfactor = i;
-			BLEND.dfactor = j;
-			GL11.glBlendFunc(i, j);
+		if (sfactor != BLEND.sfactor || dfactor != BLEND.dfactor) {
+			BLEND.sfactor = sfactor;
+			BLEND.dfactor = dfactor;
+			GL11.glBlendFunc(sfactor, dfactor);
 		}
 	}
 
-	public static void blendFuncSeparate(int i, int j, int k, int l) {
+	public static void blendFuncSeparate(int sfactor, int dfactor, int srcAlpha, int dstAlpha) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		if (i != BLEND.sfactor || j != BLEND.dfactor || k != BLEND.srcAlpha || l != BLEND.dstAlpha) {
-			BLEND.sfactor = i;
-			BLEND.dfactor = j;
-			BLEND.srcAlpha = k;
-			BLEND.dstAlpha = l;
-			blendFuncseparate(i, j, k, l);
+		if (sfactor != BLEND.sfactor || dfactor != BLEND.dfactor || srcAlpha != BLEND.srcAlpha || dstAlpha != BLEND.dstAlpha) {
+			BLEND.sfactor = sfactor;
+			BLEND.dfactor = dfactor;
+			BLEND.srcAlpha = srcAlpha;
+			BLEND.dstAlpha = dstAlpha;
+			blendFuncseparate(sfactor, dfactor, srcAlpha, dstAlpha);
 		}
 	}
 
@@ -219,38 +219,38 @@ public class GlStateManager {
 		GL14.glBlendEquation(i);
 	}
 
-	public static String initFramebufferSupport(GLCapabilities gLCapabilities) {
+	public static String initFramebufferSupport(GLCapabilities capabilities) {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);
-		if (gLCapabilities.OpenGL30) {
+		if (capabilities.OpenGL30) {
 			fboMode = GlStateManager.FBOMode.BASE;
-			FramebufferInfo.field_20457 = 36160;
-			FramebufferInfo.field_20458 = 36161;
+			FramebufferInfo.target = 36160;
+			FramebufferInfo.renderBufferTarget = 36161;
 			FramebufferInfo.field_20459 = 36064;
-			FramebufferInfo.field_20460 = 36096;
+			FramebufferInfo.attachment = 36096;
 			FramebufferInfo.field_20461 = 36053;
 			FramebufferInfo.field_20462 = 36054;
 			FramebufferInfo.field_20463 = 36055;
 			FramebufferInfo.field_20464 = 36059;
 			FramebufferInfo.field_20465 = 36060;
 			return "OpenGL 3.0";
-		} else if (gLCapabilities.GL_ARB_framebuffer_object) {
+		} else if (capabilities.GL_ARB_framebuffer_object) {
 			fboMode = GlStateManager.FBOMode.ARB;
-			FramebufferInfo.field_20457 = 36160;
-			FramebufferInfo.field_20458 = 36161;
+			FramebufferInfo.target = 36160;
+			FramebufferInfo.renderBufferTarget = 36161;
 			FramebufferInfo.field_20459 = 36064;
-			FramebufferInfo.field_20460 = 36096;
+			FramebufferInfo.attachment = 36096;
 			FramebufferInfo.field_20461 = 36053;
 			FramebufferInfo.field_20463 = 36055;
 			FramebufferInfo.field_20462 = 36054;
 			FramebufferInfo.field_20464 = 36059;
 			FramebufferInfo.field_20465 = 36060;
 			return "ARB_framebuffer_object extension";
-		} else if (gLCapabilities.GL_EXT_framebuffer_object) {
+		} else if (capabilities.GL_EXT_framebuffer_object) {
 			fboMode = GlStateManager.FBOMode.EXT;
-			FramebufferInfo.field_20457 = 36160;
-			FramebufferInfo.field_20458 = 36161;
+			FramebufferInfo.target = 36160;
+			FramebufferInfo.renderBufferTarget = 36161;
 			FramebufferInfo.field_20459 = 36064;
-			FramebufferInfo.field_20460 = 36096;
+			FramebufferInfo.attachment = 36096;
 			FramebufferInfo.field_20461 = 36053;
 			FramebufferInfo.field_20463 = 36055;
 			FramebufferInfo.field_20462 = 36054;
@@ -407,31 +407,31 @@ public class GlStateManager {
 		GL15.glDeleteBuffers(i);
 	}
 
-	public static void bindFramebuffer(int i, int j) {
+	public static void bindFramebuffer(int target, int framebuffer) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
 			case BASE:
-				GL30.glBindFramebuffer(i, j);
+				GL30.glBindFramebuffer(target, framebuffer);
 				break;
 			case ARB:
-				ARBFramebufferObject.glBindFramebuffer(i, j);
+				ARBFramebufferObject.glBindFramebuffer(target, framebuffer);
 				break;
 			case EXT:
-				EXTFramebufferObject.glBindFramebufferEXT(i, j);
+				EXTFramebufferObject.glBindFramebufferEXT(target, framebuffer);
 		}
 	}
 
-	public static void bindRenderbuffer(int i, int j) {
+	public static void bindRenderbuffer(int target, int renderbuffer) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
 			case BASE:
-				GL30.glBindRenderbuffer(i, j);
+				GL30.glBindRenderbuffer(target, renderbuffer);
 				break;
 			case ARB:
-				ARBFramebufferObject.glBindRenderbuffer(i, j);
+				ARBFramebufferObject.glBindRenderbuffer(target, renderbuffer);
 				break;
 			case EXT:
-				EXTFramebufferObject.glBindRenderbufferEXT(i, j);
+				EXTFramebufferObject.glBindRenderbufferEXT(target, renderbuffer);
 		}
 	}
 
@@ -505,17 +505,17 @@ public class GlStateManager {
 		}
 	}
 
-	public static void framebufferRenderbuffer(int i, int j, int k, int l) {
+	public static void framebufferRenderbuffer(int target, int attachment, int renderBufferTarget, int renderBuffer) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		switch (fboMode) {
 			case BASE:
-				GL30.glFramebufferRenderbuffer(i, j, k, l);
+				GL30.glFramebufferRenderbuffer(target, attachment, renderBufferTarget, renderBuffer);
 				break;
 			case ARB:
-				ARBFramebufferObject.glFramebufferRenderbuffer(i, j, k, l);
+				ARBFramebufferObject.glFramebufferRenderbuffer(target, attachment, renderBufferTarget, renderBuffer);
 				break;
 			case EXT:
-				EXTFramebufferObject.glFramebufferRenderbufferEXT(i, j, k, l);
+				EXTFramebufferObject.glFramebufferRenderbufferEXT(target, attachment, renderBufferTarget, renderBuffer);
 		}
 	}
 
@@ -642,11 +642,8 @@ public class GlStateManager {
 
 	public static void method_22616(Matrix4f matrix4f) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		enableLighting();
 		enableLight(0);
 		enableLight(1);
-		enableColorMaterial();
-		colorMaterial(1032, 5634);
 		Vector4f vector4f = new Vector4f(field_20772);
 		vector4f.multiply(matrix4f);
 		light(16384, 4611, method_22613(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0F));
@@ -663,8 +660,6 @@ public class GlStateManager {
 		shadeModel(7424);
 		float g = 0.4F;
 		lightModel(2899, method_22613(0.4F, 0.4F, 0.4F, 1.0F));
-		disableLighting();
-		disableColorMaterial();
 	}
 
 	public static void method_22617(Matrix4f matrix4f) {
@@ -858,9 +853,9 @@ public class GlStateManager {
 	}
 
 	@Deprecated
-	private static GlStateManager.TexGenCoordState getGenCoordState(GlStateManager.TexCoord texCoord) {
+	private static GlStateManager.TexGenCoordState getGenCoordState(GlStateManager.TexCoord coord) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		switch (texCoord) {
+		switch (coord) {
 			case S:
 				return TEX_GEN.s;
 			case T:
@@ -1048,10 +1043,10 @@ public class GlStateManager {
 		}
 	}
 
-	public static void clear(int i, boolean bl) {
+	public static void clear(int mask, boolean getError) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		GL11.glClear(i);
-		if (bl) {
+		GL11.glClear(mask);
+		if (getError) {
 			getError();
 		}
 	}

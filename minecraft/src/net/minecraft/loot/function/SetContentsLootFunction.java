@@ -22,32 +22,32 @@ import net.minecraft.util.JsonHelper;
 public class SetContentsLootFunction extends ConditionalLootFunction {
 	private final List<LootEntry> entries;
 
-	private SetContentsLootFunction(LootCondition[] lootConditions, List<LootEntry> list) {
-		super(lootConditions);
-		this.entries = ImmutableList.copyOf(list);
+	private SetContentsLootFunction(LootCondition[] conditions, List<LootEntry> entries) {
+		super(conditions);
+		this.entries = ImmutableList.copyOf(entries);
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.isEmpty()) {
-			return itemStack;
+	public ItemStack process(ItemStack stack, LootContext context) {
+		if (stack.isEmpty()) {
+			return stack;
 		} else {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-			this.entries.forEach(lootEntry -> lootEntry.expand(lootContext, lootChoice -> lootChoice.drop(LootTable.limitedConsumer(defaultedList::add), lootContext)));
+			this.entries.forEach(entry -> entry.expand(context, choice -> choice.drop(LootTable.limitedConsumer(defaultedList::add), context)));
 			CompoundTag compoundTag = new CompoundTag();
 			Inventories.toTag(compoundTag, defaultedList);
-			CompoundTag compoundTag2 = itemStack.getOrCreateTag();
+			CompoundTag compoundTag2 = stack.getOrCreateTag();
 			compoundTag2.put("BlockEntityTag", compoundTag.copyFrom(compoundTag2.getCompound("BlockEntityTag")));
-			return itemStack;
+			return stack;
 		}
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		super.check(lootTableReporter);
+	public void check(LootTableReporter reporter) {
+		super.check(reporter);
 
 		for (int i = 0; i < this.entries.size(); i++) {
-			((LootEntry)this.entries.get(i)).check(lootTableReporter.makeChild(".entry[" + i + "]"));
+			((LootEntry)this.entries.get(i)).check(reporter.makeChild(".entry[" + i + "]"));
 		}
 	}
 
@@ -62,8 +62,8 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public SetContentsLootFunction.Builer withEntry(LootEntry.Builder<?> builder) {
-			this.entries.add(builder.build());
+		public SetContentsLootFunction.Builer withEntry(LootEntry.Builder<?> entryBuilder) {
+			this.entries.add(entryBuilder.build());
 			return this;
 		}
 

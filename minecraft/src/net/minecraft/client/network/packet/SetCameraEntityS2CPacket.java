@@ -21,13 +21,13 @@ public class SetCameraEntityS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.id);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.id);
 	}
 
 	public void method_11801(ClientPlayPacketListener clientPlayPacketListener) {

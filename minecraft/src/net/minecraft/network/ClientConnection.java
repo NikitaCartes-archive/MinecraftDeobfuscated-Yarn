@@ -142,8 +142,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 	}
 
-	private static <T extends PacketListener> void handlePacket(Packet<T> packet, PacketListener packetListener) {
-		packet.apply((T)packetListener);
+	private static <T extends PacketListener> void handlePacket(Packet<T> packet, PacketListener listener) {
+		packet.apply((T)listener);
 	}
 
 	public void setPacketListener(PacketListener packetListener) {
@@ -156,16 +156,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.send(packet, null);
 	}
 
-	public void send(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+	public void send(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener) {
 		if (this.isOpen()) {
 			this.sendQueuedPackets();
-			this.sendImmediately(packet, genericFutureListener);
+			this.sendImmediately(packet, listener);
 		} else {
-			this.packetQueue.add(new ClientConnection.PacketWrapper(packet, genericFutureListener));
+			this.packetQueue.add(new ClientConnection.PacketWrapper(packet, listener));
 		}
 	}
 
-	private void sendImmediately(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+	private void sendImmediately(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener) {
 		NetworkState networkState = NetworkState.getPacketHandlerState(packet);
 		NetworkState networkState2 = this.channel.attr(ATTR_KEY_PROTOCOL).get();
 		this.packetsSentCounter++;
@@ -180,8 +180,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			}
 
 			ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
-			if (genericFutureListener != null) {
-				channelFuture.addListener(genericFutureListener);
+			if (listener != null) {
+				channelFuture.addListener(listener);
 			}
 
 			channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
@@ -192,8 +192,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				}
 
 				ChannelFuture channelFuturex = this.channel.writeAndFlush(packet);
-				if (genericFutureListener != null) {
-					channelFuturex.addListener(genericFutureListener);
+				if (listener != null) {
+					channelFuturex.addListener(listener);
 				}
 
 				channelFuturex.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
@@ -238,10 +238,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.address;
 	}
 
-	public void disconnect(Text text) {
+	public void disconnect(Text disconnectReason) {
 		if (this.channel.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
-			this.disconnectReason = text;
+			this.disconnectReason = disconnectReason;
 		}
 	}
 
@@ -250,11 +250,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static ClientConnection connect(InetAddress inetAddress, int i, boolean bl) {
+	public static ClientConnection connect(InetAddress address, int port, boolean shouldUseNativeTransport) {
 		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		Class<? extends SocketChannel> class_;
 		Lazy<? extends EventLoopGroup> lazy;
-		if (Epoll.isAvailable() && bl) {
+		if (Epoll.isAvailable() && shouldUseNativeTransport) {
 			class_ = EpollSocketChannel.class;
 			lazy = CLIENT_IO_GROUP_EPOLL;
 		} else {
@@ -284,20 +284,20 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				}
 			)
 			.channel(class_)
-			.connect(inetAddress, i)
+			.connect(address, port)
 			.syncUninterruptibly();
 		return clientConnection;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static ClientConnection connect(SocketAddress socketAddress) {
+	public static ClientConnection connect(SocketAddress address) {
 		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
 		new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
 				channel.pipeline().addLast("packet_handler", clientConnection);
 			}
-		}).channel(LocalChannel.class).connect(socketAddress).syncUninterruptibly();
+		}).channel(LocalChannel.class).connect(address).syncUninterruptibly();
 		return clientConnection;
 	}
 

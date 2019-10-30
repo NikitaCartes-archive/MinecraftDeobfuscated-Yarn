@@ -39,8 +39,8 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		switch ((Direction.Axis)blockState.get(AXIS)) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		switch ((Direction.Axis)state.get(AXIS)) {
 			case Z:
 				return Z_SHAPE;
 			case X:
@@ -50,16 +50,14 @@ public class PortalBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (serverWorld.dimension.hasVisibleSky()
-			&& serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)
-			&& random.nextInt(2000) < serverWorld.getDifficulty().getId()) {
-			while (serverWorld.getBlockState(blockPos).getBlock() == this) {
-				blockPos = blockPos.method_10074();
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
+			while (world.getBlockState(pos).getBlock() == this) {
+				pos = pos.method_10074();
 			}
 
-			if (serverWorld.getBlockState(blockPos).allowsSpawning(serverWorld, blockPos, EntityType.ZOMBIE_PIGMAN)) {
-				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(serverWorld, null, null, null, blockPos.up(), SpawnType.STRUCTURE, false, false);
+			if (world.getBlockState(pos).allowsSpawning(world, pos, EntityType.ZOMBIE_PIGMAN)) {
+				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, pos.up(), SpawnType.STRUCTURE, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}
@@ -67,8 +65,8 @@ public class PortalBlock extends Block {
 		}
 	}
 
-	public boolean createPortalAt(IWorld iWorld, BlockPos blockPos) {
-		PortalBlock.AreaHelper areaHelper = this.createAreaHelper(iWorld, blockPos);
+	public boolean createPortalAt(IWorld world, BlockPos pos) {
+		PortalBlock.AreaHelper areaHelper = this.createAreaHelper(world, pos);
 		if (areaHelper != null) {
 			areaHelper.createPortal();
 			return true;
@@ -78,43 +76,41 @@ public class PortalBlock extends Block {
 	}
 
 	@Nullable
-	public PortalBlock.AreaHelper createAreaHelper(IWorld iWorld, BlockPos blockPos) {
-		PortalBlock.AreaHelper areaHelper = new PortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.X);
+	public PortalBlock.AreaHelper createAreaHelper(IWorld world, BlockPos pos) {
+		PortalBlock.AreaHelper areaHelper = new PortalBlock.AreaHelper(world, pos, Direction.Axis.X);
 		if (areaHelper.isValid() && areaHelper.foundPortalBlocks == 0) {
 			return areaHelper;
 		} else {
-			PortalBlock.AreaHelper areaHelper2 = new PortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.Z);
+			PortalBlock.AreaHelper areaHelper2 = new PortalBlock.AreaHelper(world, pos, Direction.Axis.Z);
 			return areaHelper2.isValid() && areaHelper2.foundPortalBlocks == 0 ? areaHelper2 : null;
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		Direction.Axis axis = direction.getAxis();
-		Direction.Axis axis2 = blockState.get(AXIS);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		Direction.Axis axis = facing.getAxis();
+		Direction.Axis axis2 = state.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
-		return !bl && blockState2.getBlock() != this && !new PortalBlock.AreaHelper(iWorld, blockPos, axis2).wasAlreadyValid()
+		return !bl && neighborState.getBlock() != this && !new PortalBlock.AreaHelper(world, pos, axis2).wasAlreadyValid()
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!entity.hasVehicle() && !entity.hasPassengers() && entity.canUsePortals()) {
-			entity.setInPortal(blockPos);
+			entity.setInPortal(pos);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(100) == 0) {
 			world.playSound(
-				(double)blockPos.getX() + 0.5,
-				(double)blockPos.getY() + 0.5,
-				(double)blockPos.getZ() + 0.5,
+				(double)pos.getX() + 0.5,
+				(double)pos.getY() + 0.5,
+				(double)pos.getZ() + 0.5,
 				SoundEvents.BLOCK_PORTAL_AMBIENT,
 				SoundCategory.BLOCKS,
 				0.5F,
@@ -124,18 +120,18 @@ public class PortalBlock extends Block {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			double d = (double)((float)blockPos.getX() + random.nextFloat());
-			double e = (double)((float)blockPos.getY() + random.nextFloat());
-			double f = (double)((float)blockPos.getZ() + random.nextFloat());
+			double d = (double)((float)pos.getX() + random.nextFloat());
+			double e = (double)((float)pos.getY() + random.nextFloat());
+			double f = (double)((float)pos.getZ() + random.nextFloat());
 			double g = ((double)random.nextFloat() - 0.5) * 0.5;
 			double h = ((double)random.nextFloat() - 0.5) * 0.5;
 			double j = ((double)random.nextFloat() - 0.5) * 0.5;
 			int k = random.nextInt(2) * 2 - 1;
-			if (world.getBlockState(blockPos.west()).getBlock() != this && world.getBlockState(blockPos.east()).getBlock() != this) {
-				d = (double)blockPos.getX() + 0.5 + 0.25 * (double)k;
+			if (world.getBlockState(pos.west()).getBlock() != this && world.getBlockState(pos.east()).getBlock() != this) {
+				d = (double)pos.getX() + 0.5 + 0.25 * (double)k;
 				g = (double)(random.nextFloat() * 2.0F * (float)k);
 			} else {
-				f = (double)blockPos.getZ() + 0.5 + 0.25 * (double)k;
+				f = (double)pos.getZ() + 0.5 + 0.25 * (double)k;
 				j = (double)(random.nextFloat() * 2.0F * (float)k);
 			}
 
@@ -145,25 +141,25 @@ public class PortalBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		switch (blockRotation) {
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		switch (rotation) {
 			case COUNTERCLOCKWISE_90:
 			case CLOCKWISE_90:
-				switch ((Direction.Axis)blockState.get(AXIS)) {
+				switch ((Direction.Axis)state.get(AXIS)) {
 					case Z:
-						return blockState.with(AXIS, Direction.Axis.X);
+						return state.with(AXIS, Direction.Axis.X);
 					case X:
-						return blockState.with(AXIS, Direction.Axis.Z);
+						return state.with(AXIS, Direction.Axis.Z);
 					default:
-						return blockState;
+						return state;
 				}
 			default:
-				return blockState;
+				return state;
 		}
 	}
 
@@ -240,8 +236,8 @@ public class PortalBlock extends Block {
 		private int height;
 		private int width;
 
-		public AreaHelper(IWorld iWorld, BlockPos blockPos, Direction.Axis axis) {
-			this.world = iWorld;
+		public AreaHelper(IWorld world, BlockPos pos, Direction.Axis axis) {
+			this.world = world;
 			this.axis = axis;
 			if (axis == Direction.Axis.X) {
 				this.positiveDir = Direction.EAST;
@@ -251,15 +247,15 @@ public class PortalBlock extends Block {
 				this.negativeDir = Direction.SOUTH;
 			}
 
-			BlockPos blockPos2 = blockPos;
+			BlockPos blockPos = pos;
 
-			while (blockPos.getY() > blockPos2.getY() - 21 && blockPos.getY() > 0 && this.validStateInsidePortal(iWorld.getBlockState(blockPos.method_10074()))) {
-				blockPos = blockPos.method_10074();
+			while (pos.getY() > blockPos.getY() - 21 && pos.getY() > 0 && this.validStateInsidePortal(world.getBlockState(pos.method_10074()))) {
+				pos = pos.method_10074();
 			}
 
-			int i = this.distanceToPortalEdge(blockPos, this.positiveDir) - 1;
+			int i = this.distanceToPortalEdge(pos, this.positiveDir) - 1;
 			if (i >= 0) {
-				this.lowerCorner = blockPos.method_10079(this.positiveDir, i);
+				this.lowerCorner = pos.method_10079(this.positiveDir, i);
 				this.width = this.distanceToPortalEdge(this.lowerCorner, this.negativeDir);
 				if (this.width < 2 || this.width > 21) {
 					this.lowerCorner = null;
@@ -272,16 +268,16 @@ public class PortalBlock extends Block {
 			}
 		}
 
-		protected int distanceToPortalEdge(BlockPos blockPos, Direction direction) {
+		protected int distanceToPortalEdge(BlockPos pos, Direction dir) {
 			int i;
 			for (i = 0; i < 22; i++) {
-				BlockPos blockPos2 = blockPos.method_10079(direction, i);
-				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos2)) || this.world.getBlockState(blockPos2.method_10074()).getBlock() != Blocks.OBSIDIAN) {
+				BlockPos blockPos = pos.method_10079(dir, i);
+				if (!this.validStateInsidePortal(this.world.getBlockState(blockPos)) || this.world.getBlockState(blockPos.method_10074()).getBlock() != Blocks.OBSIDIAN) {
 					break;
 				}
 			}
 
-			Block block = this.world.getBlockState(blockPos.method_10079(direction, i)).getBlock();
+			Block block = this.world.getBlockState(pos.method_10079(dir, i)).getBlock();
 			return block == Blocks.OBSIDIAN ? i : 0;
 		}
 
@@ -339,9 +335,9 @@ public class PortalBlock extends Block {
 			}
 		}
 
-		protected boolean validStateInsidePortal(BlockState blockState) {
-			Block block = blockState.getBlock();
-			return blockState.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
+		protected boolean validStateInsidePortal(BlockState state) {
+			Block block = state.getBlock();
+			return state.isAir() || block == Blocks.FIRE || block == Blocks.NETHER_PORTAL;
 		}
 
 		public boolean isValid() {

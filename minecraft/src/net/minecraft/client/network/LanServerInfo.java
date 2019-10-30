@@ -2,7 +2,7 @@ package net.minecraft.client.network;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class LanServerInfo {
@@ -10,10 +10,10 @@ public class LanServerInfo {
 	private final String addressPort;
 	private long lastTimeMillis;
 
-	public LanServerInfo(String string, String string2) {
-		this.motd = string;
-		this.addressPort = string2;
-		this.lastTimeMillis = SystemUtil.getMeasuringTimeMs();
+	public LanServerInfo(String motd, String string) {
+		this.motd = motd;
+		this.addressPort = string;
+		this.lastTimeMillis = Util.getMeasuringTimeMs();
 	}
 
 	public String getMotd() {
@@ -25,6 +25,6 @@ public class LanServerInfo {
 	}
 
 	public void updateLastTime() {
-		this.lastTimeMillis = SystemUtil.getMeasuringTimeMs();
+		this.lastTimeMillis = Util.getMeasuringTimeMs();
 	}
 }

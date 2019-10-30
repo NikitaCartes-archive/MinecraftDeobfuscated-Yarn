@@ -30,27 +30,27 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<Enchantment> enchantments;
 
-	private EnchantRandomlyLootFunction(LootCondition[] lootConditions, Collection<Enchantment> collection) {
-		super(lootConditions);
-		this.enchantments = ImmutableList.copyOf(collection);
+	private EnchantRandomlyLootFunction(LootCondition[] conditions, Collection<Enchantment> enchantments) {
+		super(conditions);
+		this.enchantments = ImmutableList.copyOf(enchantments);
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Random random = lootContext.getRandom();
+	public ItemStack process(ItemStack stack, LootContext context) {
+		Random random = context.getRandom();
 		Enchantment enchantment2;
 		if (this.enchantments.isEmpty()) {
 			List<Enchantment> list = Lists.<Enchantment>newArrayList();
 
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
-				if (itemStack.getItem() == Items.BOOK || enchantment.isAcceptableItem(itemStack)) {
+				if (stack.getItem() == Items.BOOK || enchantment.isAcceptableItem(stack)) {
 					list.add(enchantment);
 				}
 			}
 
 			if (list.isEmpty()) {
-				LOGGER.warn("Couldn't find a compatible enchantment for {}", itemStack);
-				return itemStack;
+				LOGGER.warn("Couldn't find a compatible enchantment for {}", stack);
+				return stack;
 			}
 
 			enchantment2 = (Enchantment)list.get(random.nextInt(list.size()));
@@ -59,18 +59,18 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		}
 
 		int i = MathHelper.nextInt(random, enchantment2.getMinimumLevel(), enchantment2.getMaximumLevel());
-		if (itemStack.getItem() == Items.BOOK) {
-			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
-			EnchantedBookItem.addEnchantment(itemStack, new InfoEnchantment(enchantment2, i));
+		if (stack.getItem() == Items.BOOK) {
+			stack = new ItemStack(Items.ENCHANTED_BOOK);
+			EnchantedBookItem.addEnchantment(stack, new InfoEnchantment(enchantment2, i));
 		} else {
-			itemStack.addEnchantment(enchantment2, i);
+			stack.addEnchantment(enchantment2, i);
 		}
 
-		return itemStack;
+		return stack;
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder() {
-		return builder(lootConditions -> new EnchantRandomlyLootFunction(lootConditions, ImmutableList.<Enchantment>of()));
+		return builder(conditions -> new EnchantRandomlyLootFunction(conditions, ImmutableList.<Enchantment>of()));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<EnchantRandomlyLootFunction> {

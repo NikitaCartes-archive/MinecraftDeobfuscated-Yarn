@@ -21,12 +21,12 @@ public class SelectionManager {
 	private int selectionStart;
 	private int selectionEnd;
 
-	public SelectionManager(MinecraftClient minecraftClient, Supplier<String> supplier, Consumer<String> consumer, int i) {
-		this.client = minecraftClient;
-		this.fontRenderer = minecraftClient.textRenderer;
-		this.stringGetter = supplier;
-		this.stringSetter = consumer;
-		this.maxLength = i;
+	public SelectionManager(MinecraftClient client, Supplier<String> getter, Consumer<String> setter, int maxLength) {
+		this.client = client;
+		this.fontRenderer = client.textRenderer;
+		this.stringGetter = getter;
+		this.stringSetter = setter;
+		this.maxLength = maxLength;
 		this.moveCaretToEnd();
 	}
 
@@ -52,24 +52,24 @@ public class SelectionManager {
 		}
 	}
 
-	public boolean handleSpecialKey(int i) {
+	public boolean handleSpecialKey(int keyCode) {
 		String string = (String)this.stringGetter.get();
-		if (Screen.isSelectAll(i)) {
+		if (Screen.isSelectAll(keyCode)) {
 			this.selectionEnd = 0;
 			this.selectionStart = string.length();
 			return true;
-		} else if (Screen.isCopy(i)) {
+		} else if (Screen.isCopy(keyCode)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			return true;
-		} else if (Screen.isPaste(i)) {
+		} else if (Screen.isPaste(keyCode)) {
 			this.insert(SharedConstants.stripInvalidChars(Formatting.strip(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.selectionEnd = this.selectionStart;
 			return true;
-		} else if (Screen.isCut(i)) {
+		} else if (Screen.isCut(keyCode)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			this.deleteSelectedText();
 			return true;
-		} else if (i == 259) {
+		} else if (keyCode == 259) {
 			if (!string.isEmpty()) {
 				if (this.selectionEnd != this.selectionStart) {
 					this.deleteSelectedText();
@@ -81,7 +81,7 @@ public class SelectionManager {
 			}
 
 			return true;
-		} else if (i == 261) {
+		} else if (keyCode == 261) {
 			if (!string.isEmpty()) {
 				if (this.selectionEnd != this.selectionStart) {
 					this.deleteSelectedText();
@@ -92,12 +92,12 @@ public class SelectionManager {
 			}
 
 			return true;
-		} else if (i == 263) {
-			int j = this.fontRenderer.isRightToLeft() ? 1 : -1;
+		} else if (keyCode == 263) {
+			int i = this.fontRenderer.isRightToLeft() ? 1 : -1;
 			if (Screen.hasControlDown()) {
-				this.selectionStart = this.fontRenderer.findWordEdge(string, j, this.selectionStart, true);
+				this.selectionStart = this.fontRenderer.findWordEdge(string, i, this.selectionStart, true);
 			} else {
-				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + j));
+				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + i));
 			}
 
 			if (!Screen.hasShiftDown()) {
@@ -105,12 +105,12 @@ public class SelectionManager {
 			}
 
 			return true;
-		} else if (i == 262) {
-			int jx = this.fontRenderer.isRightToLeft() ? -1 : 1;
+		} else if (keyCode == 262) {
+			int ix = this.fontRenderer.isRightToLeft() ? -1 : 1;
 			if (Screen.hasControlDown()) {
-				this.selectionStart = this.fontRenderer.findWordEdge(string, jx, this.selectionStart, true);
+				this.selectionStart = this.fontRenderer.findWordEdge(string, ix, this.selectionStart, true);
 			} else {
-				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + jx));
+				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + ix));
 			}
 
 			if (!Screen.hasShiftDown()) {
@@ -118,14 +118,14 @@ public class SelectionManager {
 			}
 
 			return true;
-		} else if (i == 268) {
+		} else if (keyCode == 268) {
 			this.selectionStart = 0;
 			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
-		} else if (i == 269) {
+		} else if (keyCode == 269) {
 			this.selectionStart = ((String)this.stringGetter.get()).length();
 			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;

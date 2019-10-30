@@ -25,10 +25,10 @@ public class TextureStitcher {
 	private final int maxWidth;
 	private final int maxHeight;
 
-	public TextureStitcher(int i, int j, int k) {
-		this.mipLevel = k;
-		this.maxWidth = i;
-		this.maxHeight = j;
+	public TextureStitcher(int maxWidth, int maxHeight, int mipLevel) {
+		this.mipLevel = mipLevel;
+		this.maxWidth = maxWidth;
+		this.maxHeight = maxHeight;
 	}
 
 	public int getWidth() {
@@ -75,8 +75,8 @@ public class TextureStitcher {
 		return list;
 	}
 
-	private static int applyMipLevel(int i, int j) {
-		return (i >> j) + ((i & (1 << j) - 1) == 0 ? 0 : 1) << j;
+	private static int applyMipLevel(int size, int mipLevel) {
+		return (size >> mipLevel) + ((size & (1 << mipLevel) - 1) == 0 ? 0 : 1) << mipLevel;
 	}
 
 	private boolean fit(TextureStitcher.Holder holder) {
@@ -133,10 +133,10 @@ public class TextureStitcher {
 		public final int width;
 		public final int height;
 
-		public Holder(Sprite sprite, int i) {
+		public Holder(Sprite sprite, int mipLevel) {
 			this.sprite = sprite;
-			this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), i);
-			this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), i);
+			this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), mipLevel);
+			this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), mipLevel);
 		}
 
 		public String toString() {
@@ -153,11 +153,11 @@ public class TextureStitcher {
 		private List<TextureStitcher.Slot> subSlots;
 		private TextureStitcher.Holder texture;
 
-		public Slot(int i, int j, int k, int l) {
-			this.x = i;
-			this.y = j;
-			this.width = k;
-			this.height = l;
+		public Slot(int x, int y, int width, int height) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
 		}
 
 		public TextureStitcher.Holder getTexture() {

@@ -26,20 +26,20 @@ public class BlockPredicate {
 	private final StatePredicate state;
 	private final NbtPredicate nbt;
 
-	public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Block block, StatePredicate statePredicate, NbtPredicate nbtPredicate) {
+	public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Block block, StatePredicate state, NbtPredicate nbt) {
 		this.tag = tag;
 		this.block = block;
-		this.state = statePredicate;
-		this.nbt = nbtPredicate;
+		this.state = state;
+		this.nbt = nbt;
 	}
 
-	public boolean test(ServerWorld serverWorld, BlockPos blockPos) {
+	public boolean test(ServerWorld world, BlockPos pos) {
 		if (this == ANY) {
 			return true;
-		} else if (!serverWorld.canSetBlock(blockPos)) {
+		} else if (!world.canSetBlock(pos)) {
 			return false;
 		} else {
-			BlockState blockState = serverWorld.getBlockState(blockPos);
+			BlockState blockState = world.getBlockState(pos);
 			Block block = blockState.getBlock();
 			if (this.tag != null && !this.tag.contains(block)) {
 				return false;
@@ -49,7 +49,7 @@ public class BlockPredicate {
 				return false;
 			} else {
 				if (this.nbt != NbtPredicate.ANY) {
-					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
+					BlockEntity blockEntity = world.getBlockEntity(pos);
 					if (blockEntity == null || !this.nbt.test(blockEntity.toTag(new CompoundTag()))) {
 						return false;
 					}
@@ -60,9 +60,9 @@ public class BlockPredicate {
 		}
 	}
 
-	public static BlockPredicate fromJson(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "block");
+	public static BlockPredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "block");
 			NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
 			Block block = null;
 			if (jsonObject.has("block")) {

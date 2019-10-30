@@ -30,25 +30,25 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return (Integer)blockState.get(POWER);
+	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+		return (Integer)state.get(POWER);
 	}
 
-	public static void updateState(BlockState blockState, World world, BlockPos blockPos) {
+	public static void updateState(BlockState state, World world, BlockPos pos) {
 		if (world.dimension.hasSkyLight()) {
-			int i = world.getLightLevel(LightType.SKY, blockPos) - world.getAmbientDarkness();
+			int i = world.getLightLevel(LightType.SKY, pos) - world.getAmbientDarkness();
 			float f = world.getSkyAngleRadians(1.0F);
-			boolean bl = (Boolean)blockState.get(INVERTED);
+			boolean bl = (Boolean)state.get(INVERTED);
 			if (bl) {
 				i = 15 - i;
 			} else if (i > 0) {
@@ -58,40 +58,40 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 			}
 
 			i = MathHelper.clamp(i, 0, 15);
-			if ((Integer)blockState.get(POWER) != i) {
-				world.setBlockState(blockPos, blockState.with(POWER, Integer.valueOf(i)), 3);
+			if ((Integer)state.get(POWER) != i) {
+				world.setBlockState(pos, state.with(POWER, Integer.valueOf(i)), 3);
 			}
 		}
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if (playerEntity.canModifyWorld()) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (player.canModifyWorld()) {
 			if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {
-				BlockState blockState2 = blockState.cycle(INVERTED);
-				world.setBlockState(blockPos, blockState2, 4);
-				updateState(blockState2, world, blockPos);
+				BlockState blockState = state.cycle(INVERTED);
+				world.setBlockState(pos, blockState, 4);
+				updateState(blockState, world, pos);
 				return ActionResult.SUCCESS;
 			}
 		} else {
-			return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.onUse(state, world, pos, player, hand, hit);
 		}
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState blockState) {
+	public boolean emitsRedstonePower(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView view) {
 		return new DaylightDetectorBlockEntity();
 	}
 

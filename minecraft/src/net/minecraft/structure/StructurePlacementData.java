@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -58,8 +58,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setPosition(BlockPos blockPos) {
-		this.position = blockPos;
+	public StructurePlacementData setPosition(BlockPos position) {
+		this.position = position;
 		return this;
 	}
 
@@ -68,13 +68,13 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setChunkPosition(ChunkPos chunkPos) {
-		this.chunkPosition = chunkPos;
+	public StructurePlacementData setChunkPosition(ChunkPos chunkPosition) {
+		this.chunkPosition = chunkPosition;
 		return this;
 	}
 
-	public StructurePlacementData setBoundingBox(BlockBox blockBox) {
-		this.boundingBox = blockBox;
+	public StructurePlacementData setBoundingBox(BlockBox boundingBox) {
+		this.boundingBox = boundingBox;
 		return this;
 	}
 
@@ -93,13 +93,13 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData addProcessor(StructureProcessor structureProcessor) {
-		this.processors.add(structureProcessor);
+	public StructurePlacementData addProcessor(StructureProcessor processor) {
+		this.processors.add(processor);
 		return this;
 	}
 
-	public StructurePlacementData removeProcessor(StructureProcessor structureProcessor) {
-		this.processors.remove(structureProcessor);
+	public StructurePlacementData removeProcessor(StructureProcessor processor) {
+		this.processors.remove(processor);
 		return this;
 	}
 
@@ -115,11 +115,11 @@ public class StructurePlacementData {
 		return this.position;
 	}
 
-	public Random getRandom(@Nullable BlockPos blockPos) {
+	public Random getRandom(@Nullable BlockPos pos) {
 		if (this.random != null) {
 			return this.random;
 		} else {
-			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(MathHelper.hashCode(blockPos));
+			return pos == null ? new Random(Util.getMeasuringTimeMs()) : new Random(MathHelper.hashCode(pos));
 		}
 	}
 

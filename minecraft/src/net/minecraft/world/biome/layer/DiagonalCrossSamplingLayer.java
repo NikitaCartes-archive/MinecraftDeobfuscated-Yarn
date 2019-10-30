@@ -1,17 +1,17 @@
 package net.minecraft.world.biome.layer;
 
 public interface DiagonalCrossSamplingLayer extends ParentedLayer, NorthWestCoordinateTransformer {
-	int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m);
+	int sample(LayerRandomnessSource context, int sw, int se, int ne, int nw, int center);
 
 	@Override
-	default int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {
+	default int sample(LayerSampleContext<?> context, LayerSampler parent, int x, int z) {
 		return this.sample(
-			layerSampleContext,
-			layerSampler.sample(this.transformX(i + 0), this.transformZ(j + 2)),
-			layerSampler.sample(this.transformX(i + 2), this.transformZ(j + 2)),
-			layerSampler.sample(this.transformX(i + 2), this.transformZ(j + 0)),
-			layerSampler.sample(this.transformX(i + 0), this.transformZ(j + 0)),
-			layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 1))
+			context,
+			parent.sample(this.transformX(x + 0), this.transformZ(z + 2)),
+			parent.sample(this.transformX(x + 2), this.transformZ(z + 2)),
+			parent.sample(this.transformX(x + 2), this.transformZ(z + 0)),
+			parent.sample(this.transformX(x + 0), this.transformZ(z + 0)),
+			parent.sample(this.transformX(x + 1), this.transformZ(z + 1))
 		);
 	}
 }

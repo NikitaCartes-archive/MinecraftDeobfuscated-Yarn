@@ -11,12 +11,12 @@ public class GameTestBatch {
 	@Nullable
 	private final Consumer<ServerWorld> worldSetter;
 
-	public GameTestBatch(String string, Collection<TestFunction> collection, @Nullable Consumer<ServerWorld> consumer) {
-		if (collection.isEmpty()) {
+	public GameTestBatch(String id, Collection<TestFunction> testFunctions, @Nullable Consumer<ServerWorld> consumer) {
+		if (testFunctions.isEmpty()) {
 			throw new IllegalArgumentException("A GameTestBatch must include at least one TestFunction!");
 		} else {
-			this.id = string;
-			this.testFunctions = collection;
+			this.id = id;
+			this.testFunctions = testFunctions;
 			this.worldSetter = consumer;
 		}
 	}
@@ -29,9 +29,9 @@ public class GameTestBatch {
 		return this.testFunctions;
 	}
 
-	public void setWorld(ServerWorld serverWorld) {
+	public void setWorld(ServerWorld world) {
 		if (this.worldSetter != null) {
-			this.worldSetter.accept(serverWorld);
+			this.worldSetter.accept(world);
 		}
 	}
 }

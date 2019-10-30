@@ -26,10 +26,10 @@ public class RealmsInviteScreen extends RealmsScreen {
 	private String errorMsg;
 	private boolean showError;
 
-	public RealmsInviteScreen(RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsScreen realmsScreen, RealmsServer realmsServer) {
-		this.configureScreen = realmsConfigureWorldScreen;
-		this.lastScreen = realmsScreen;
-		this.serverData = realmsServer;
+	public RealmsInviteScreen(RealmsConfigureWorldScreen configureScreen, RealmsScreen lastScreen, RealmsServer serverData) {
+		this.configureScreen = configureScreen;
+		this.lastScreen = lastScreen;
+		this.serverData = serverData;
 	}
 
 	@Override
@@ -84,31 +84,31 @@ public class RealmsInviteScreen extends RealmsScreen {
 		}
 	}
 
-	private void showError(String string) {
+	private void showError(String errorMsg) {
 		this.showError = true;
-		this.errorMsg = string;
-		Realms.narrateNow(string);
+		this.errorMsg = errorMsg;
+		Realms.narrateNow(errorMsg);
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i == 256) {
+	public boolean keyPressed(int eventKey, int scancode, int mods) {
+		if (eventKey == 256) {
 			Realms.setScreen(this.lastScreen);
 			return true;
 		} else {
-			return super.keyPressed(i, j, k);
+			return super.keyPressed(eventKey, scancode, mods);
 		}
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int xm, int ym, float a) {
 		this.renderBackground();
 		this.drawString(getLocalizedString("mco.configure.world.invite.profile.name"), this.width() / 2 - 100, RealmsConstants.row(1), 10526880);
 		if (this.showError) {
 			this.drawCenteredString(this.errorMsg, this.width() / 2, RealmsConstants.row(5), 16711680);
 		}
 
-		this.profileName.render(i, j, f);
-		super.render(i, j, f);
+		this.profileName.render(xm, ym, a);
+		super.render(xm, ym, a);
 	}
 }

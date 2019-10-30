@@ -20,10 +20,10 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 	private final ControlsOptionsScreen gui;
 	private int maxKeyNameLength;
 
-	public ControlsListWidget(ControlsOptionsScreen controlsOptionsScreen, MinecraftClient minecraftClient) {
-		super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 43, controlsOptionsScreen.height - 32, 20);
-		this.gui = controlsOptionsScreen;
-		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
+	public ControlsListWidget(ControlsOptionsScreen gui, MinecraftClient client) {
+		super(client, gui.width + 45, gui.height, 43, gui.height - 32, 20);
+		this.gui = gui;
+		KeyBinding[] keyBindings = ArrayUtils.clone(client.options.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
 
@@ -34,7 +34,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				this.addEntry(new ControlsListWidget.CategoryEntry(string2));
 			}
 
-			int i = minecraftClient.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
+			int i = client.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
 			if (i > this.maxKeyNameLength) {
 				this.maxKeyNameLength = i;
 			}
@@ -92,19 +92,19 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private final ButtonWidget editButton;
 		private final ButtonWidget resetButton;
 
-		private KeyBindingEntry(KeyBinding keyBinding) {
-			this.binding = keyBinding;
-			this.bindingName = I18n.translate(keyBinding.getId());
-			this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> ControlsListWidget.this.gui.focusedBinding = keyBinding) {
+		private KeyBindingEntry(KeyBinding binding) {
+			this.binding = binding;
+			this.bindingName = I18n.translate(binding.getId());
+			this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> ControlsListWidget.this.gui.focusedBinding = binding) {
 				@Override
 				protected String getNarrationMessage() {
-					return keyBinding.isNotBound()
+					return binding.isNotBound()
 						? I18n.translate("narrator.controls.unbound", KeyBindingEntry.this.bindingName)
 						: I18n.translate("narrator.controls.bound", KeyBindingEntry.this.bindingName, super.getNarrationMessage());
 				}
 			};
 			this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset"), buttonWidget -> {
-				ControlsListWidget.this.minecraft.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
+				ControlsListWidget.this.minecraft.options.setKeyCode(binding, binding.getDefaultKeyCode());
 				KeyBinding.updateKeysByCode();
 			}) {
 				@Override
@@ -152,13 +152,13 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		public boolean mouseClicked(double d, double e, int i) {
-			return this.editButton.mouseClicked(d, e, i) ? true : this.resetButton.mouseClicked(d, e, i);
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			return this.editButton.mouseClicked(mouseX, mouseY, button) ? true : this.resetButton.mouseClicked(mouseX, mouseY, button);
 		}
 
 		@Override
-		public boolean mouseReleased(double d, double e, int i) {
-			return this.editButton.mouseReleased(d, e, i) || this.resetButton.mouseReleased(d, e, i);
+		public boolean mouseReleased(double mouseX, double mouseY, int button) {
+			return this.editButton.mouseReleased(mouseX, mouseY, button) || this.resetButton.mouseReleased(mouseX, mouseY, button);
 		}
 	}
 }

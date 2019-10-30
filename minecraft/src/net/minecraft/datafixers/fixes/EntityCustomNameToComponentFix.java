@@ -13,8 +13,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class EntityCustomNameToComponentFix extends DataFix {
-	public EntityCustomNameToComponentFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityCustomNameToComponentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -28,8 +28,8 @@ public class EntityCustomNameToComponentFix extends DataFix {
 		);
 	}
 
-	public static Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
-		String string = dynamic.get("CustomName").asString("");
-		return string.isEmpty() ? dynamic.remove("CustomName") : dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(new LiteralText(string))));
+	public static Dynamic<?> fixCustomName(Dynamic<?> tag) {
+		String string = tag.get("CustomName").asString("");
+		return string.isEmpty() ? tag.remove("CustomName") : tag.set("CustomName", tag.createString(Text.Serializer.toJson(new LiteralText(string))));
 	}
 }

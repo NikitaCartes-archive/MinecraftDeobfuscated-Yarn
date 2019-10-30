@@ -13,8 +13,8 @@ public class KeepAliveS2CPacket implements Packet<ClientPlayPacketListener> {
 	public KeepAliveS2CPacket() {
 	}
 
-	public KeepAliveS2CPacket(long l) {
-		this.id = l;
+	public KeepAliveS2CPacket(long id) {
+		this.id = id;
 	}
 
 	public void method_11518(ClientPlayPacketListener clientPlayPacketListener) {
@@ -22,13 +22,13 @@ public class KeepAliveS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readLong();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readLong();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeLong(this.id);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeLong(this.id);
 	}
 
 	@Environment(EnvType.CLIENT)

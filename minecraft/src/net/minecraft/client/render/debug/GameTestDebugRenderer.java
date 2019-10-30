@@ -6,15 +6,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 	private final Map<BlockPos, GameTestDebugRenderer.Marker> markers = Maps.<BlockPos, GameTestDebugRenderer.Marker>newHashMap();
 
-	public void addMarker(BlockPos blockPos, int i, String string, int j) {
-		this.markers.put(blockPos, new GameTestDebugRenderer.Marker(i, string, SystemUtil.getMeasuringTimeMs() + (long)j));
+	public void addMarker(BlockPos pos, int color, String message, int duration) {
+		this.markers.put(pos, new GameTestDebugRenderer.Marker(color, message, Util.getMeasuringTimeMs() + (long)duration));
 	}
 
 	@Override
@@ -23,9 +23,9 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void method_23109(long l) {
-		long m = SystemUtil.getMeasuringTimeMs();
-		this.markers.entrySet().removeIf(entry -> m > ((GameTestDebugRenderer.Marker)entry.getValue()).removalTime);
+	public void render(long limitTime) {
+		long l = Util.getMeasuringTimeMs();
+		this.markers.entrySet().removeIf(entry -> l > ((GameTestDebugRenderer.Marker)entry.getValue()).removalTime);
 		this.markers.forEach(this::method_23111);
 	}
 
@@ -37,12 +37,12 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 		);
 		RenderSystem.color4f(0.0F, 1.0F, 0.0F, 0.75F);
 		RenderSystem.disableTexture();
-		DebugRenderer.method_23103(blockPos, 0.02F, marker.method_23112(), marker.method_23113(), marker.method_23114(), marker.method_23115());
+		DebugRenderer.drawBox(blockPos, 0.02F, marker.method_23112(), marker.method_23113(), marker.method_23114(), marker.method_23115());
 		if (!marker.message.isEmpty()) {
 			double d = (double)blockPos.getX() + 0.5;
 			double e = (double)blockPos.getY() + 1.2;
 			double f = (double)blockPos.getZ() + 0.5;
-			DebugRenderer.method_23107(marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
+			DebugRenderer.drawString(marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
 		}
 
 		RenderSystem.enableTexture();
@@ -56,10 +56,10 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 		public String message;
 		public long removalTime;
 
-		public Marker(int i, String string, long l) {
-			this.color = i;
-			this.message = string;
-			this.removalTime = l;
+		public Marker(int color, String message, long removalTime) {
+			this.color = color;
+			this.message = message;
+			this.removalTime = removalTime;
 		}
 
 		public float method_23112() {

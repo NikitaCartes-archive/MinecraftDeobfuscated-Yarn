@@ -35,61 +35,59 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return WallTorchBlock.getBoundingShape(blockState);
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return WallTorchBlock.getBoundingShape(state);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		return Blocks.WALL_TORCH.canPlaceAt(blockState, worldView, blockPos);
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		return Blocks.WALL_TORCH.canPlaceAt(state, world, pos);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return Blocks.WALL_TORCH.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return Blocks.WALL_TORCH.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = Blocks.WALL_TORCH.getPlacementState(itemPlacementContext);
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockState blockState = Blocks.WALL_TORCH.getPlacementState(ctx);
 		return blockState == null ? null : this.getDefaultState().with(FACING, blockState.get(FACING));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(LIT_2)) {
-			Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+		if ((Boolean)state.get(LIT_2)) {
+			Direction direction = ((Direction)state.get(FACING)).getOpposite();
 			double d = 0.27;
-			double e = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
-			double f = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
-			double g = (double)blockPos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
+			double e = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
+			double f = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
+			double g = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
 			world.addParticle(DustParticleEffect.RED, e, f, g, 0.0, 0.0, 0.0);
 		}
 	}
 
 	@Override
-	protected boolean shouldUnpower(World world, BlockPos blockPos, BlockState blockState) {
-		Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
-		return world.isEmittingRedstonePower(blockPos.offset(direction), direction);
+	protected boolean shouldUnpower(World world, BlockPos pos, BlockState state) {
+		Direction direction = ((Direction)state.get(FACING)).getOpposite();
+		return world.isEmittingRedstonePower(pos.offset(direction), direction);
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(LIT_2) && blockState.get(FACING) != direction ? 15 : 0;
+	public int getWeakRedstonePower(BlockState state, BlockView view, BlockPos pos, Direction facing) {
+		return state.get(LIT_2) && state.get(FACING) != facing ? 15 : 0;
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return Blocks.WALL_TORCH.rotate(blockState, blockRotation);
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return Blocks.WALL_TORCH.rotate(state, rotation);
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return Blocks.WALL_TORCH.mirror(blockState, blockMirror);
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		return Blocks.WALL_TORCH.mirror(state, mirror);
 	}
 
 	@Override

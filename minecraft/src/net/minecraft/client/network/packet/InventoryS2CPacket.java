@@ -17,33 +17,33 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 	public InventoryS2CPacket() {
 	}
 
-	public InventoryS2CPacket(int i, DefaultedList<ItemStack> defaultedList) {
-		this.guiId = i;
-		this.slotStackList = DefaultedList.<ItemStack>ofSize(defaultedList.size(), ItemStack.EMPTY);
+	public InventoryS2CPacket(int guiId, DefaultedList<ItemStack> slotStackList) {
+		this.guiId = guiId;
+		this.slotStackList = DefaultedList.<ItemStack>ofSize(slotStackList.size(), ItemStack.EMPTY);
 
-		for (int j = 0; j < this.slotStackList.size(); j++) {
-			this.slotStackList.set(j, defaultedList.get(j).copy());
+		for (int i = 0; i < this.slotStackList.size(); i++) {
+			this.slotStackList.set(i, slotStackList.get(i).copy());
 		}
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.guiId = packetByteBuf.readUnsignedByte();
-		int i = packetByteBuf.readShort();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.guiId = buf.readUnsignedByte();
+		int i = buf.readShort();
 		this.slotStackList = DefaultedList.<ItemStack>ofSize(i, ItemStack.EMPTY);
 
 		for (int j = 0; j < i; j++) {
-			this.slotStackList.set(j, packetByteBuf.readItemStack());
+			this.slotStackList.set(j, buf.readItemStack());
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.guiId);
-		packetByteBuf.writeShort(this.slotStackList.size());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.guiId);
+		buf.writeShort(this.slotStackList.size());
 
 		for (ItemStack itemStack : this.slotStackList) {
-			packetByteBuf.writeItemStack(itemStack);
+			buf.writeItemStack(itemStack);
 		}
 	}
 

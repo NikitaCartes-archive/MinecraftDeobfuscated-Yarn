@@ -78,32 +78,32 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 	}
 
 	@Override
-	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
+	public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float r, float g, float b) {
 		if (this.isChild) {
-			float k = 2.0F;
+			float f = 2.0F;
 			matrixStack.push();
-			float l = 0.7F;
+			float h = 0.7F;
 			matrixStack.scale(0.71428573F, 0.64935064F, 0.7936508F);
 			matrixStack.translate(0.0, 1.3125, 0.22F);
-			this.field_20935.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
+			this.field_20935.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
 			matrixStack.pop();
 			matrixStack.push();
-			float m = 1.1F;
+			float k = 1.1F;
 			matrixStack.scale(0.625F, 0.45454544F, 0.45454544F);
 			matrixStack.translate(0.0, 2.0625, 0.0);
-			this.field_20936.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h);
+			this.field_20936.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b);
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.scale(0.45454544F, 0.41322312F, 0.45454544F);
 			matrixStack.translate(0.0, 2.0625, 0.0);
 			ImmutableList.of(this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
 			matrixStack.pop();
 		} else {
 			ImmutableList.of(
 					this.field_20935, this.field_20936, this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429
 				)
-				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, f, g, h));
+				.forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625F, i, j, null, r, g, b));
 		}
 	}
 }

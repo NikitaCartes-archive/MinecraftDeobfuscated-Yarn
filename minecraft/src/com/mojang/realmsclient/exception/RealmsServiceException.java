@@ -12,20 +12,20 @@ public class RealmsServiceException extends Exception {
 	public final int errorCode;
 	public final String errorMsg;
 
-	public RealmsServiceException(int i, String string, RealmsError realmsError) {
-		super(string);
-		this.httpResultCode = i;
-		this.httpResponseContent = string;
-		this.errorCode = realmsError.getErrorCode();
-		this.errorMsg = realmsError.getErrorMessage();
+	public RealmsServiceException(int httpResultCode, String httpResponseText, RealmsError error) {
+		super(httpResponseText);
+		this.httpResultCode = httpResultCode;
+		this.httpResponseContent = httpResponseText;
+		this.errorCode = error.getErrorCode();
+		this.errorMsg = error.getErrorMessage();
 	}
 
-	public RealmsServiceException(int i, String string, int j, String string2) {
-		super(string);
-		this.httpResultCode = i;
-		this.httpResponseContent = string;
-		this.errorCode = j;
-		this.errorMsg = string2;
+	public RealmsServiceException(int httpResultCode, String httpResponseText, int errorCode, String errorMsg) {
+		super(httpResponseText);
+		this.httpResultCode = httpResultCode;
+		this.httpResponseContent = httpResponseText;
+		this.errorCode = errorCode;
+		this.errorMsg = errorMsg;
 	}
 
 	public String toString() {

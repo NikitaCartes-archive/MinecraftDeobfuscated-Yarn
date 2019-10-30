@@ -19,8 +19,8 @@ public class HoldingPatternPhase extends AbstractPhase {
 	private Vec3d field_7045;
 	private boolean field_7044;
 
-	public HoldingPatternPhase(EnderDragonEntity enderDragonEntity) {
-		super(enderDragonEntity);
+	public HoldingPatternPhase(EnderDragonEntity dragon) {
+		super(dragon);
 	}
 
 	@Override
@@ -129,9 +129,9 @@ public class HoldingPatternPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void crystalDestroyed(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource, @Nullable PlayerEntity playerEntity) {
-		if (playerEntity != null && !playerEntity.abilities.invulnerable) {
-			this.method_6843(playerEntity);
+	public void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
+		if (player != null && !player.abilities.invulnerable) {
+			this.method_6843(player);
 		}
 	}
 }

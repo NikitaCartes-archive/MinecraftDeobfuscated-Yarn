@@ -51,7 +51,7 @@ public abstract class Fluid {
 	protected void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
 	}
 
-	protected void onScheduledTick(World world, BlockPos blockPos, FluidState fluidState) {
+	protected void onScheduledTick(World world, BlockPos pos, FluidState state) {
 	}
 
 	protected void onRandomTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
@@ -65,7 +65,7 @@ public abstract class Fluid {
 
 	protected abstract boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction);
 
-	protected abstract Vec3d getVelocity(BlockView blockView, BlockPos blockPos, FluidState fluidState);
+	protected abstract Vec3d getVelocity(BlockView world, BlockPos pos, FluidState state);
 
 	public abstract int getTickRate(WorldView worldView);
 

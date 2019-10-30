@@ -29,17 +29,17 @@ public class TemptGoal extends Goal {
 	private final Ingredient food;
 	private final boolean canBeScared;
 
-	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, Ingredient ingredient, boolean bl) {
-		this(mobEntityWithAi, d, bl, ingredient);
+	public TemptGoal(MobEntityWithAi mob, double speed, Ingredient food, boolean canBeScared) {
+		this(mob, speed, canBeScared, food);
 	}
 
-	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl, Ingredient ingredient) {
-		this.mob = mobEntityWithAi;
-		this.speed = d;
-		this.food = ingredient;
-		this.canBeScared = bl;
+	public TemptGoal(MobEntityWithAi mob, double speed, boolean canBeScared, Ingredient food) {
+		this.mob = mob;
+		this.speed = speed;
+		this.food = food;
+		this.canBeScared = canBeScared;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation) && !(mobEntityWithAi.getNavigation() instanceof BirdNavigation)) {
+		if (!(mob.getNavigation() instanceof MobNavigation) && !(mob.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
 		}
 	}
@@ -55,8 +55,8 @@ public class TemptGoal extends Goal {
 		}
 	}
 
-	protected boolean isTempedBy(ItemStack itemStack) {
-		return this.food.method_8093(itemStack);
+	protected boolean isTempedBy(ItemStack stack) {
+		return this.food.method_8093(stack);
 	}
 
 	@Override

@@ -7,14 +7,14 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	private final Biome[] biomeArray;
 	private final int gridSize;
 
-	public CheckerboardBiomeSource(CheckerboardBiomeSourceConfig checkerboardBiomeSourceConfig) {
-		super(ImmutableSet.copyOf(checkerboardBiomeSourceConfig.getBiomes()));
-		this.biomeArray = checkerboardBiomeSourceConfig.getBiomes();
-		this.gridSize = checkerboardBiomeSourceConfig.getSize() + 2;
+	public CheckerboardBiomeSource(CheckerboardBiomeSourceConfig config) {
+		super(ImmutableSet.copyOf(config.getBiomes()));
+		this.biomeArray = config.getBiomes();
+		this.gridSize = config.getSize() + 2;
 	}
 
 	@Override
-	public Biome getStoredBiome(int i, int j, int k) {
-		return this.biomeArray[Math.abs(((i >> this.gridSize) + (k >> this.gridSize)) % this.biomeArray.length)];
+	public Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
+		return this.biomeArray[Math.abs(((biomeX >> this.gridSize) + (biomeZ >> this.gridSize)) % this.biomeArray.length)];
 	}
 }

@@ -13,14 +13,11 @@ public class SimpleRandomFeatureConfig implements FeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
-				ImmutableMap.of(
-					dynamicOps.createString("features"),
-					dynamicOps.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(dynamicOps).getValue()))
-				)
+			ops,
+			ops.createMap(
+				ImmutableMap.of(ops.createString("features"), ops.createList(this.features.stream().map(configuredFeature -> configuredFeature.serialize(ops).getValue())))
 			)
 		);
 	}

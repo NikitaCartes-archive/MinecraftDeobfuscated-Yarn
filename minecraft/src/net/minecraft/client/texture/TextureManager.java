@@ -58,28 +58,28 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		abstractTexture.bindTexture();
 	}
 
-	public boolean registerTexture(Identifier identifier, AbstractTexture abstractTexture) {
+	public boolean registerTexture(Identifier id, AbstractTexture abstractTexture) {
 		boolean bl = true;
 
 		try {
 			abstractTexture.load(this.resourceContainer);
 		} catch (IOException var8) {
-			if (identifier != MISSING_IDENTIFIER) {
-				LOGGER.warn("Failed to load texture: {}", identifier, var8);
+			if (id != MISSING_IDENTIFIER) {
+				LOGGER.warn("Failed to load texture: {}", id, var8);
 			}
 
 			abstractTexture = MissingSprite.getMissingSpriteTexture();
-			this.textures.put(identifier, abstractTexture);
+			this.textures.put(id, abstractTexture);
 			bl = false;
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Registering texture");
 			CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
-			crashReportSection.add("Resource location", identifier);
+			crashReportSection.add("Resource location", id);
 			crashReportSection.add("Texture object class", (CrashCallable<String>)(() -> abstractTexture.getClass().getName()));
 			throw new CrashException(crashReport);
 		}
 
-		this.textures.put(identifier, abstractTexture);
+		this.textures.put(id, abstractTexture);
 		if (bl && abstractTexture instanceof TextureTickListener) {
 			this.tickListeners.add((TextureTickListener)abstractTexture);
 		}
@@ -92,16 +92,16 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		return (AbstractTexture)this.textures.get(identifier);
 	}
 
-	public Identifier registerDynamicTexture(String string, NativeImageBackedTexture nativeImageBackedTexture) {
-		Integer integer = (Integer)this.dynamicIdCounters.get(string);
+	public Identifier registerDynamicTexture(String prefix, NativeImageBackedTexture nativeImageBackedTexture) {
+		Integer integer = (Integer)this.dynamicIdCounters.get(prefix);
 		if (integer == null) {
 			integer = 1;
 		} else {
 			integer = integer + 1;
 		}
 
-		this.dynamicIdCounters.put(string, integer);
-		Identifier identifier = new Identifier(String.format("dynamic/%s_%d", string, integer));
+		this.dynamicIdCounters.put(prefix, integer);
+		Identifier identifier = new Identifier(String.format("dynamic/%s_%d", prefix, integer));
 		this.registerTexture(identifier, nativeImageBackedTexture);
 		return identifier;
 	}
@@ -110,13 +110,13 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		if (!this.textures.containsKey(identifier)) {
 			AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
 			this.textures.put(identifier, asyncTexture);
-			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), TextureManager::method_22812);
+			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), TextureManager::runOnRenderThread);
 		} else {
 			return CompletableFuture.completedFuture(null);
 		}
 	}
 
-	private static void method_22812(Runnable runnable) {
+	private static void runOnRenderThread(Runnable runnable) {
 		MinecraftClient.getInstance().execute(() -> RenderSystem.recordRenderCall(runnable::run));
 	}
 
@@ -137,13 +137,15 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 	@Override
 	public CompletableFuture<Void> reload(
 		ResourceReloadListener.Synchronizer synchronizer,
-		ResourceManager resourceManager,
-		Profiler profiler,
-		Profiler profiler2,
-		Executor executor,
-		Executor executor2
+		ResourceManager manager,
+		Profiler prepareProfiler,
+		Profiler applyProfiler,
+		Executor prepareExecutor,
+		Executor applyExecutor
 	) {
-		return CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
+		return CompletableFuture.allOf(
+				TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, prepareExecutor)
+			)
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();
@@ -156,7 +158,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 					if (abstractTexture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
 						iterator.remove();
 					} else {
-						abstractTexture.registerTexture(this, resourceManager, identifier, executor2);
+						abstractTexture.registerTexture(this, manager, identifier, applyExecutor);
 					}
 				}
 			}, runnable -> RenderSystem.recordRenderCall(runnable::run));

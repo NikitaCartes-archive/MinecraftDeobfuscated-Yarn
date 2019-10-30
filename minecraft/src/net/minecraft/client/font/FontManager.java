@@ -194,14 +194,14 @@ public class FontManager implements AutoCloseable {
 		});
 	}
 
-	public void setForceUnicodeFont(boolean bl, Executor executor, Executor executor2) {
-		if (bl != this.forceUnicodeFont) {
-			this.forceUnicodeFont = bl;
+	public void setForceUnicodeFont(boolean forceUnicodeFont, Executor executor, Executor executor2) {
+		if (forceUnicodeFont != this.forceUnicodeFont) {
+			this.forceUnicodeFont = forceUnicodeFont;
 			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
 			ResourceReloadListener.Synchronizer synchronizer = new ResourceReloadListener.Synchronizer() {
 				@Override
-				public <T> CompletableFuture<T> whenPrepared(T object) {
-					return CompletableFuture.completedFuture(object);
+				public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
+					return CompletableFuture.completedFuture(preparedObject);
 				}
 			};
 			this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);

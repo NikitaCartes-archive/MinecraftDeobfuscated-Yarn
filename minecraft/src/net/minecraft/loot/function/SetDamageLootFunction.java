@@ -17,25 +17,25 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final UniformLootTableRange durabilityRange;
 
-	private SetDamageLootFunction(LootCondition[] lootConditions, UniformLootTableRange uniformLootTableRange) {
-		super(lootConditions);
-		this.durabilityRange = uniformLootTableRange;
+	private SetDamageLootFunction(LootCondition[] contents, UniformLootTableRange durabilityRange) {
+		super(contents);
+		this.durabilityRange = durabilityRange;
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (itemStack.isDamageable()) {
-			float f = 1.0F - this.durabilityRange.nextFloat(lootContext.getRandom());
-			itemStack.setDamage(MathHelper.floor(f * (float)itemStack.getMaxDamage()));
+	public ItemStack process(ItemStack stack, LootContext context) {
+		if (stack.isDamageable()) {
+			float f = 1.0F - this.durabilityRange.nextFloat(context.getRandom());
+			stack.setDamage(MathHelper.floor(f * (float)stack.getMaxDamage()));
 		} else {
-			LOGGER.warn("Couldn't set damage of loot item {}", itemStack);
+			LOGGER.warn("Couldn't set damage of loot item {}", stack);
 		}
 
-		return itemStack;
+		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(UniformLootTableRange uniformLootTableRange) {
-		return builder(lootConditions -> new SetDamageLootFunction(lootConditions, uniformLootTableRange));
+	public static ConditionalLootFunction.Builder<?> builder(UniformLootTableRange durabilityRange) {
+		return builder(conditions -> new SetDamageLootFunction(conditions, durabilityRange));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetDamageLootFunction> {

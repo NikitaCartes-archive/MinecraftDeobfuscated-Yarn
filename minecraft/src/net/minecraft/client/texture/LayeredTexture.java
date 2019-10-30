@@ -18,8 +18,8 @@ public class LayeredTexture extends AbstractTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public final List<String> locations;
 
-	public LayeredTexture(String... strings) {
-		this.locations = Lists.<String>newArrayList(strings);
+	public LayeredTexture(String... locations) {
+		this.locations = Lists.<String>newArrayList(locations);
 		if (this.locations.isEmpty()) {
 			throw new IllegalStateException("Layered texture with no layers.");
 		}

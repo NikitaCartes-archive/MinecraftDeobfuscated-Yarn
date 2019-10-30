@@ -36,17 +36,17 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::entityToTag;
 	private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.toTag(new CompoundTag());
 
-	private CopyNbtLootFunction(LootCondition[] lootConditions, CopyNbtLootFunction.Source source, List<CopyNbtLootFunction.Operation> list) {
-		super(lootConditions);
+	private CopyNbtLootFunction(LootCondition[] conditions, CopyNbtLootFunction.Source source, List<CopyNbtLootFunction.Operation> operations) {
+		super(conditions);
 		this.source = source;
-		this.operations = ImmutableList.copyOf(list);
+		this.operations = ImmutableList.copyOf(operations);
 	}
 
-	private static NbtPathArgumentType.NbtPath parseNbtPath(String string) {
+	private static NbtPathArgumentType.NbtPath parseNbtPath(String nbtPath) {
 		try {
-			return new NbtPathArgumentType().method_9362(new StringReader(string));
+			return new NbtPathArgumentType().method_9362(new StringReader(nbtPath));
 		} catch (CommandSyntaxException var2) {
-			throw new IllegalArgumentException("Failed to parse path " + string, var2);
+			throw new IllegalArgumentException("Failed to parse path " + nbtPath, var2);
 		}
 	}
 
@@ -56,13 +56,13 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Tag tag = (Tag)this.source.getter.apply(lootContext);
+	public ItemStack process(ItemStack stack, LootContext context) {
+		Tag tag = (Tag)this.source.getter.apply(context);
 		if (tag != null) {
-			this.operations.forEach(operation -> operation.execute(itemStack::getOrCreateTag, tag));
+			this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, tag));
 		}
 
-		return itemStack;
+		return stack;
 	}
 
 	public static CopyNbtLootFunction.Builder builder(CopyNbtLootFunction.Source source) {
@@ -77,13 +77,13 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			this.source = source;
 		}
 
-		public CopyNbtLootFunction.Builder withOperation(String string, String string2, CopyNbtLootFunction.Operator operator) {
-			this.operations.add(new CopyNbtLootFunction.Operation(string, string2, operator));
+		public CopyNbtLootFunction.Builder withOperation(String source, String target, CopyNbtLootFunction.Operator operator) {
+			this.operations.add(new CopyNbtLootFunction.Operation(source, target, operator));
 			return this;
 		}
 
-		public CopyNbtLootFunction.Builder withOperation(String string, String string2) {
-			return this.withOperation(string, string2, CopyNbtLootFunction.Operator.REPLACE);
+		public CopyNbtLootFunction.Builder withOperation(String source, String target) {
+			return this.withOperation(source, target, CopyNbtLootFunction.Operator.REPLACE);
 		}
 
 		protected CopyNbtLootFunction.Builder method_16855() {
@@ -129,19 +129,19 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		private final NbtPathArgumentType.NbtPath parsedTargetPath;
 		private final CopyNbtLootFunction.Operator operator;
 
-		private Operation(String string, String string2, CopyNbtLootFunction.Operator operator) {
-			this.sourcePath = string;
-			this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(string);
-			this.targetPath = string2;
-			this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(string2);
+		private Operation(String source, String target, CopyNbtLootFunction.Operator operator) {
+			this.sourcePath = source;
+			this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(source);
+			this.targetPath = target;
+			this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(target);
 			this.operator = operator;
 		}
 
-		public void execute(Supplier<Tag> supplier, Tag tag) {
+		public void execute(Supplier<Tag> itemTagTagGetter, Tag sourceEntityTag) {
 			try {
-				List<Tag> list = this.parsedSourcePath.get(tag);
+				List<Tag> list = this.parsedSourcePath.get(sourceEntityTag);
 				if (!list.isEmpty()) {
-					this.operator.merge((Tag)supplier.get(), this.parsedTargetPath, list);
+					this.operator.merge((Tag)itemTagTagGetter.get(), this.parsedTargetPath, list);
 				}
 			} catch (CommandSyntaxException var4) {
 			}
@@ -155,10 +155,10 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			return jsonObject;
 		}
 
-		public static CopyNbtLootFunction.Operation fromJson(JsonObject jsonObject) {
-			String string = JsonHelper.getString(jsonObject, "source");
-			String string2 = JsonHelper.getString(jsonObject, "target");
-			CopyNbtLootFunction.Operator operator = CopyNbtLootFunction.Operator.get(JsonHelper.getString(jsonObject, "op"));
+		public static CopyNbtLootFunction.Operation fromJson(JsonObject json) {
+			String string = JsonHelper.getString(json, "source");
+			String string2 = JsonHelper.getString(json, "target");
+			CopyNbtLootFunction.Operator operator = CopyNbtLootFunction.Operator.get(JsonHelper.getString(json, "op"));
 			return new CopyNbtLootFunction.Operation(string, string2, operator);
 		}
 	}
@@ -166,30 +166,30 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public static enum Operator {
 		REPLACE("replace") {
 			@Override
-			public void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-				nbtPath.put(tag, Iterables.getLast(list)::copy);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				tragetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
 			}
 		},
 		APPEND("append") {
 			@Override
-			public void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-				List<Tag> list2 = nbtPath.getOrInit(tag, ListTag::new);
-				list2.forEach(tagx -> {
-					if (tagx instanceof ListTag) {
-						list.forEach(tag2 -> ((ListTag)tagx).add(tag2.copy()));
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				List<Tag> list = tragetPath.getOrInit(itemTag, ListTag::new);
+				list.forEach(foundTag -> {
+					if (foundTag instanceof ListTag) {
+						sourceTags.forEach(listTag -> ((ListTag)foundTag).add(listTag.copy()));
 					}
 				});
 			}
 		},
 		MERGE("merge") {
 			@Override
-			public void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
-				List<Tag> list2 = nbtPath.getOrInit(tag, CompoundTag::new);
-				list2.forEach(tagx -> {
-					if (tagx instanceof CompoundTag) {
-						list.forEach(tag2 -> {
-							if (tag2 instanceof CompoundTag) {
-								((CompoundTag)tagx).copyFrom((CompoundTag)tag2);
+			public void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+				List<Tag> list = tragetPath.getOrInit(itemTag, CompoundTag::new);
+				list.forEach(foundTag -> {
+					if (foundTag instanceof CompoundTag) {
+						sourceTags.forEach(compoundTag -> {
+							if (compoundTag instanceof CompoundTag) {
+								((CompoundTag)foundTag).copyFrom((CompoundTag)compoundTag);
 							}
 						});
 					}
@@ -199,20 +199,20 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		private final String name;
 
-		public abstract void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException;
+		public abstract void merge(Tag itemTag, NbtPathArgumentType.NbtPath tragetPath, List<Tag> sourceTags) throws CommandSyntaxException;
 
-		private Operator(String string2) {
-			this.name = string2;
+		private Operator(String name) {
+			this.name = name;
 		}
 
-		public static CopyNbtLootFunction.Operator get(String string) {
+		public static CopyNbtLootFunction.Operator get(String name) {
 			for (CopyNbtLootFunction.Operator operator : values()) {
-				if (operator.name.equals(string)) {
+				if (operator.name.equals(name)) {
 					return operator;
 				}
 			}
 
-			throw new IllegalArgumentException("Invalid merge strategy" + string);
+			throw new IllegalArgumentException("Invalid merge strategy" + name);
 		}
 	}
 
@@ -226,23 +226,23 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		public final LootContextParameter<?> parameter;
 		public final Function<LootContext, Tag> getter;
 
-		private <T> Source(String string2, LootContextParameter<T> lootContextParameter, Function<? super T, Tag> function) {
-			this.name = string2;
-			this.parameter = lootContextParameter;
-			this.getter = lootContext -> {
-				T object = lootContext.get(lootContextParameter);
-				return object != null ? (Tag)function.apply(object) : null;
+		private <T> Source(String name, LootContextParameter<T> parameter, Function<? super T, Tag> operator) {
+			this.name = name;
+			this.parameter = parameter;
+			this.getter = context -> {
+				T object = context.get(parameter);
+				return object != null ? (Tag)operator.apply(object) : null;
 			};
 		}
 
-		public static CopyNbtLootFunction.Source get(String string) {
+		public static CopyNbtLootFunction.Source get(String name) {
 			for (CopyNbtLootFunction.Source source : values()) {
-				if (source.name.equals(string)) {
+				if (source.name.equals(name)) {
 					return source;
 				}
 			}
 
-			throw new IllegalArgumentException("Invalid tag source " + string);
+			throw new IllegalArgumentException("Invalid tag source " + name);
 		}
 	}
 }

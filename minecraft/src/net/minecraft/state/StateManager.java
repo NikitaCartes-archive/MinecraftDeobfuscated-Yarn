@@ -23,10 +23,10 @@ public class StateManager<O, S extends State<S>> {
 	private final ImmutableSortedMap<String, Property<?>> properties;
 	private final ImmutableList<S> states;
 
-	protected <A extends AbstractState<O, S>> StateManager(O object, StateManager.Factory<O, S, A> factory, Map<String, Property<?>> map) {
-		this.owner = object;
-		this.properties = ImmutableSortedMap.copyOf(map);
-		Map<Map<Property<?>, Comparable<?>>, A> map2 = Maps.<Map<Property<?>, Comparable<?>>, A>newLinkedHashMap();
+	protected <A extends AbstractState<O, S>> StateManager(O owner, StateManager.Factory<O, S, A> factory, Map<String, Property<?>> namedProperties) {
+		this.owner = owner;
+		this.properties = ImmutableSortedMap.copyOf(namedProperties);
+		Map<Map<Property<?>, Comparable<?>>, A> map = Maps.<Map<Property<?>, Comparable<?>>, A>newLinkedHashMap();
 		List<A> list = Lists.<A>newArrayList();
 		Stream<List<Comparable<?>>> stream = Stream.of(Collections.emptyList());
 
@@ -39,14 +39,14 @@ public class StateManager<O, S extends State<S>> {
 		}
 
 		stream.forEach(list2 -> {
-			Map<Property<?>, Comparable<?>> map2x = MapUtil.createMap(this.properties.values(), list2);
-			A abstractStatex = factory.create(object, ImmutableMap.copyOf(map2x));
-			map2.put(map2x, abstractStatex);
+			Map<Property<?>, Comparable<?>> map2 = MapUtil.createMap(this.properties.values(), list2);
+			A abstractStatex = factory.create(owner, ImmutableMap.copyOf(map2));
+			map.put(map2, abstractStatex);
 			list.add(abstractStatex);
 		});
 
 		for (A abstractState : list) {
-			abstractState.createWithTable(map2);
+			abstractState.createWithTable(map);
 		}
 
 		this.states = ImmutableList.copyOf(list);
@@ -76,20 +76,20 @@ public class StateManager<O, S extends State<S>> {
 	}
 
 	@Nullable
-	public Property<?> getProperty(String string) {
-		return this.properties.get(string);
+	public Property<?> getProperty(String name) {
+		return this.properties.get(name);
 	}
 
 	public static class Builder<O, S extends State<S>> {
 		private final O owner;
 		private final Map<String, Property<?>> namedProperties = Maps.<String, Property<?>>newHashMap();
 
-		public Builder(O object) {
-			this.owner = object;
+		public Builder(O owner) {
+			this.owner = owner;
 		}
 
-		public StateManager.Builder<O, S> add(Property<?>... propertys) {
-			for (Property<?> property : propertys) {
+		public StateManager.Builder<O, S> add(Property<?>... properties) {
+			for (Property<?> property : properties) {
 				this.validate(property);
 				this.namedProperties.put(property.getName(), property);
 			}
@@ -126,6 +126,6 @@ public class StateManager<O, S extends State<S>> {
 	}
 
 	public interface Factory<O, S extends State<S>, A extends AbstractState<O, S>> {
-		A create(O object, ImmutableMap<Property<?>, Comparable<?>> immutableMap);
+		A create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries);
 	}
 }

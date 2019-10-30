@@ -3,18 +3,18 @@ package net.minecraft.container;
 public class ArrayPropertyDelegate implements PropertyDelegate {
 	private final int[] data;
 
-	public ArrayPropertyDelegate(int i) {
-		this.data = new int[i];
+	public ArrayPropertyDelegate(int size) {
+		this.data = new int[size];
 	}
 
 	@Override
-	public int get(int i) {
-		return this.data[i];
+	public int get(int key) {
+		return this.data[key];
 	}
 
 	@Override
-	public void set(int i, int j) {
-		this.data[i] = j;
+	public void set(int key, int value) {
+		this.data[key] = value;
 	}
 
 	@Override

@@ -17,24 +17,24 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	public LoginHelloS2CPacket() {
 	}
 
-	public LoginHelloS2CPacket(String string, PublicKey publicKey, byte[] bs) {
-		this.serverId = string;
+	public LoginHelloS2CPacket(String serverId, PublicKey publicKey, byte[] nonce) {
+		this.serverId = serverId;
 		this.publicKey = publicKey;
-		this.nonce = bs;
+		this.nonce = nonce;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.serverId = packetByteBuf.readString(20);
-		this.publicKey = NetworkEncryptionUtils.readEncodedPublicKey(packetByteBuf.readByteArray());
-		this.nonce = packetByteBuf.readByteArray();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.serverId = buf.readString(20);
+		this.publicKey = NetworkEncryptionUtils.readEncodedPublicKey(buf.readByteArray());
+		this.nonce = buf.readByteArray();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeString(this.serverId);
-		packetByteBuf.writeByteArray(this.publicKey.getEncoded());
-		packetByteBuf.writeByteArray(this.nonce);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeString(this.serverId);
+		buf.writeByteArray(this.publicKey.getEncoded());
+		buf.writeByteArray(this.nonce);
 	}
 
 	public void method_12612(ClientLoginPacketListener clientLoginPacketListener) {

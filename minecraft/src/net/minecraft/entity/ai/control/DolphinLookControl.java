@@ -6,8 +6,8 @@ import net.minecraft.util.math.MathHelper;
 public class DolphinLookControl extends LookControl {
 	private final int field_6357;
 
-	public DolphinLookControl(MobEntity mobEntity, int i) {
-		super(mobEntity);
+	public DolphinLookControl(MobEntity entity, int i) {
+		super(entity);
 		this.field_6357 = i;
 	}
 

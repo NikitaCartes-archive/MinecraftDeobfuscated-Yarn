@@ -10,16 +10,16 @@ import net.minecraft.util.JsonHelper;
 public class RandomChanceLootCondition implements LootCondition {
 	private final float chance;
 
-	private RandomChanceLootCondition(float f) {
-		this.chance = f;
+	private RandomChanceLootCondition(float chance) {
+		this.chance = chance;
 	}
 
 	public boolean method_934(LootContext lootContext) {
 		return lootContext.getRandom().nextFloat() < this.chance;
 	}
 
-	public static LootCondition.Builder builder(float f) {
-		return () -> new RandomChanceLootCondition(f);
+	public static LootCondition.Builder builder(float chance) {
+		return () -> new RandomChanceLootCondition(chance);
 	}
 
 	public static class Factory extends LootCondition.Factory<RandomChanceLootCondition> {

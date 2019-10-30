@@ -27,12 +27,12 @@ public class RecipeBookGhostSlots {
 		this.time = 0.0F;
 	}
 
-	public void addSlot(Ingredient ingredient, int i, int j) {
-		this.slots.add(new RecipeBookGhostSlots.GhostInputSlot(ingredient, i, j));
+	public void addSlot(Ingredient ingredient, int x, int y) {
+		this.slots.add(new RecipeBookGhostSlots.GhostInputSlot(ingredient, x, y));
 	}
 
-	public RecipeBookGhostSlots.GhostInputSlot getSlot(int i) {
-		return (RecipeBookGhostSlots.GhostInputSlot)this.slots.get(i);
+	public RecipeBookGhostSlots.GhostInputSlot getSlot(int index) {
+		return (RecipeBookGhostSlots.GhostInputSlot)this.slots.get(index);
 	}
 
 	public int getSlotCount() {
@@ -48,29 +48,29 @@ public class RecipeBookGhostSlots {
 		this.recipe = recipe;
 	}
 
-	public void draw(MinecraftClient minecraftClient, int i, int j, boolean bl, float f) {
+	public void draw(MinecraftClient client, int x, int y, boolean bl, float lastFrameDuration) {
 		if (!Screen.hasControlDown()) {
-			this.time += f;
+			this.time += lastFrameDuration;
 		}
 
-		for (int k = 0; k < this.slots.size(); k++) {
-			RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = (RecipeBookGhostSlots.GhostInputSlot)this.slots.get(k);
-			int l = ghostInputSlot.getX() + i;
-			int m = ghostInputSlot.getY() + j;
-			if (k == 0 && bl) {
-				DrawableHelper.fill(l - 4, m - 4, l + 20, m + 20, 822018048);
+		for (int i = 0; i < this.slots.size(); i++) {
+			RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = (RecipeBookGhostSlots.GhostInputSlot)this.slots.get(i);
+			int j = ghostInputSlot.getX() + x;
+			int k = ghostInputSlot.getY() + y;
+			if (i == 0 && bl) {
+				DrawableHelper.fill(j - 4, k - 4, j + 20, k + 20, 822018048);
 			} else {
-				DrawableHelper.fill(l, m, l + 16, m + 16, 822018048);
+				DrawableHelper.fill(j, k, j + 16, k + 16, 822018048);
 			}
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
-			ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
-			itemRenderer.renderGuiItem(minecraftClient.player, itemStack, l, m);
+			ItemRenderer itemRenderer = client.getItemRenderer();
+			itemRenderer.renderGuiItem(client.player, itemStack, j, k);
 			RenderSystem.depthFunc(516);
-			DrawableHelper.fill(l, m, l + 16, m + 16, 822083583);
+			DrawableHelper.fill(j, k, j + 16, k + 16, 822083583);
 			RenderSystem.depthFunc(515);
-			if (k == 0) {
-				itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);
+			if (i == 0) {
+				itemRenderer.renderGuiItemOverlay(client.textRenderer, itemStack, j, k);
 			}
 		}
 	}
@@ -81,10 +81,10 @@ public class RecipeBookGhostSlots {
 		private final int x;
 		private final int y;
 
-		public GhostInputSlot(Ingredient ingredient, int i, int j) {
+		public GhostInputSlot(Ingredient ingredient, int x, int y) {
 			this.ingredient = ingredient;
-			this.x = i;
-			this.y = j;
+			this.x = x;
+			this.y = y;
 		}
 
 		public int getX() {

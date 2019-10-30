@@ -37,24 +37,24 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	protected int headerHeight;
 	private boolean scrolling;
 
-	public ListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-		this.minecraft = minecraftClient;
-		this.width = i;
-		this.height = j;
-		this.top = k;
-		this.bottom = l;
-		this.itemHeight = m;
+	public ListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+		this.minecraft = client;
+		this.width = width;
+		this.height = height;
+		this.top = top;
+		this.bottom = bottom;
+		this.itemHeight = itemHeight;
 		this.left = 0;
-		this.right = i;
+		this.right = width;
 	}
 
-	public void updateSize(int i, int j, int k, int l) {
-		this.width = i;
-		this.height = j;
-		this.top = k;
-		this.bottom = l;
+	public void updateSize(int width, int height, int y, int bottom) {
+		this.width = width;
+		this.height = height;
+		this.top = y;
+		this.bottom = bottom;
 		this.left = 0;
-		this.right = i;
+		this.right = width;
 	}
 
 	public void setRenderSelection(boolean bl) {
@@ -84,11 +84,11 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		return Collections.emptyList();
 	}
 
-	protected boolean selectItem(int i, int j, double d, double e) {
+	protected boolean selectItem(int index, int button, double mouseX, double mouseY) {
 		return true;
 	}
 
-	protected abstract boolean isSelectedItem(int i);
+	protected abstract boolean isSelectedItem(int index);
 
 	protected int getMaxPosition() {
 		return this.getItemCount() * this.itemHeight + this.headerHeight;
@@ -96,10 +96,10 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 
 	protected abstract void renderBackground();
 
-	protected void updateItemPosition(int i, int j, int k, float f) {
+	protected void updateItemPosition(int index, int i, int j, float f) {
 	}
 
-	protected abstract void renderItem(int i, int j, int k, int l, int m, int n, float f);
+	protected abstract void renderItem(int index, int y, int i, int j, int k, int l, float f);
 
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
 	}
@@ -135,34 +135,34 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		return (int)this.scroll;
 	}
 
-	public boolean isMouseInList(double d, double e) {
-		return e >= (double)this.top && e <= (double)this.bottom && d >= (double)this.left && d <= (double)this.right;
+	public boolean isMouseInList(double mouseX, double mouseY) {
+		return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
 	}
 
 	public int getScrollBottom() {
 		return (int)this.scroll - this.height - this.headerHeight;
 	}
 
-	public void scroll(int i) {
-		this.scroll += (double)i;
+	public void scroll(int amount) {
+		this.scroll += (double)amount;
 		this.capYPosition();
 		this.yDrag = -2;
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.renderBackground();
-			int k = this.getScrollbarPosition();
-			int l = k + 6;
+			int i = this.getScrollbarPosition();
+			int j = i + 6;
 			this.capYPosition();
 			RenderSystem.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			float g = 32.0F;
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			float f = 32.0F;
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 			bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0)
 				.texture((float)this.left / 32.0F, (float)(this.bottom + (int)this.scroll) / 32.0F)
 				.color(32, 32, 32, 255)
@@ -180,13 +180,13 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 				.color(32, 32, 32, 255)
 				.next();
 			tessellator.draw();
-			int m = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
-			int n = this.top + 4 - (int)this.scroll;
+			int k = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
+			int l = this.top + 4 - (int)this.scroll;
 			if (this.renderHeader) {
-				this.renderHeader(m, n, tessellator);
+				this.renderHeader(k, l, tessellator);
 			}
 
-			this.renderList(m, n, i, j, f);
+			this.renderList(k, l, mouseX, mouseY, delta);
 			RenderSystem.disableDepthTest();
 			this.renderHoleBackground(0, this.top, 255, 255);
 			this.renderHoleBackground(this.bottom, this.height, 255, 255);
@@ -197,49 +197,49 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			RenderSystem.disableAlphaTest();
 			RenderSystem.shadeModel(7425);
 			RenderSystem.disableTexture();
-			int o = 4;
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			int m = 4;
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 			bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.right, (double)(this.top + 4), 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.right, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.left, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
 			tessellator.draw();
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 			bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.right, (double)(this.bottom - 4), 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.left, (double)(this.bottom - 4), 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 0).next();
 			tessellator.draw();
-			int p = this.getMaxScroll();
-			if (p > 0) {
-				int q = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-				q = MathHelper.clamp(q, 32, this.bottom - this.top - 8);
-				int r = (int)this.scroll * (this.bottom - this.top - q) / p + this.top;
-				if (r < this.top) {
-					r = this.top;
+			int n = this.getMaxScroll();
+			if (n > 0) {
+				int o = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+				o = MathHelper.clamp(o, 32, this.bottom - this.top - 8);
+				int p = (int)this.scroll * (this.bottom - this.top - o) / n + this.top;
+				if (p < this.top) {
+					p = this.top;
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)l, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)l, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)k, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+				bufferBuilder.vertex((double)i, (double)this.bottom, 0.0).texture(0.0F, 1.0F).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)j, (double)this.bottom, 0.0).texture(1.0F, 1.0F).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)j, (double)this.top, 0.0).texture(1.0F, 0.0F).color(0, 0, 0, 255).next();
+				bufferBuilder.vertex((double)i, (double)this.top, 0.0).texture(0.0F, 0.0F).color(0, 0, 0, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+				bufferBuilder.vertex((double)i, (double)(p + o), 0.0).texture(0.0F, 1.0F).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)j, (double)(p + o), 0.0).texture(1.0F, 1.0F).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)j, (double)p, 0.0).texture(1.0F, 0.0F).color(128, 128, 128, 255).next();
+				bufferBuilder.vertex((double)i, (double)p, 0.0).texture(0.0F, 0.0F).color(128, 128, 128, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
-				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
+				bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+				bufferBuilder.vertex((double)i, (double)(p + o - 1), 0.0).texture(0.0F, 1.0F).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(j - 1), (double)(p + o - 1), 0.0).texture(1.0F, 1.0F).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)(j - 1), (double)p, 0.0).texture(1.0F, 0.0F).color(192, 192, 192, 255).next();
+				bufferBuilder.vertex((double)i, (double)p, 0.0).texture(0.0F, 0.0F).color(192, 192, 192, 255).next();
 				tessellator.draw();
 			}
 
-			this.renderDecorations(i, j);
+			this.renderDecorations(mouseX, mouseY);
 			RenderSystem.enableTexture();
 			RenderSystem.shadeModel(7424);
 			RenderSystem.enableAlphaTest();
@@ -252,16 +252,16 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		this.updateScrollingState(d, e, i);
-		if (this.isVisible() && this.isMouseInList(d, e)) {
-			int j = this.getItemAtPosition(d, e);
-			if (j == -1 && i == 0) {
-				this.clickedHeader((int)(d - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(e - (double)this.top) + (int)this.scroll - 4);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		this.updateScrollingState(mouseX, mouseY, button);
+		if (this.isVisible() && this.isMouseInList(mouseX, mouseY)) {
+			int i = this.getItemAtPosition(mouseX, mouseY);
+			if (i == -1 && button == 0) {
+				this.clickedHeader((int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.scroll - 4);
 				return true;
-			} else if (j != -1 && this.selectItem(j, i, d, e)) {
-				if (this.children().size() > j) {
-					this.setFocused((Element)this.children().get(j));
+			} else if (i != -1 && this.selectItem(i, button, mouseX, mouseY)) {
+				if (this.children().size() > i) {
+					this.setFocused((Element)this.children().get(i));
 				}
 
 				this.setDragging(true);
@@ -275,37 +275,37 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean mouseReleased(double d, double e, int i) {
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if (this.getFocused() != null) {
-			this.getFocused().mouseReleased(d, e, i);
+			this.getFocused().mouseReleased(mouseX, mouseY, button);
 		}
 
 		return false;
 	}
 
 	@Override
-	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		if (super.mouseDragged(d, e, i, f, g)) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
 			return true;
-		} else if (this.isVisible() && i == 0 && this.scrolling) {
-			if (e < (double)this.top) {
+		} else if (this.isVisible() && button == 0 && this.scrolling) {
+			if (mouseY < (double)this.top) {
 				this.scroll = 0.0;
-			} else if (e > (double)this.bottom) {
+			} else if (mouseY > (double)this.bottom) {
 				this.scroll = (double)this.getMaxScroll();
 			} else {
-				double h = (double)this.getMaxScroll();
-				if (h < 1.0) {
-					h = 1.0;
+				double d = (double)this.getMaxScroll();
+				if (d < 1.0) {
+					d = 1.0;
 				}
 
-				int j = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
-				j = MathHelper.clamp(j, 32, this.bottom - this.top - 8);
-				double k = h / (double)(this.bottom - this.top - j);
-				if (k < 1.0) {
-					k = 1.0;
+				int i = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
+				i = MathHelper.clamp(i, 32, this.bottom - this.top - 8);
+				double e = d / (double)(this.bottom - this.top - i);
+				if (e < 1.0) {
+					e = 1.0;
 				}
 
-				this.scroll += g * k;
+				this.scroll += deltaY * e;
 				this.capYPosition();
 			}
 
@@ -316,25 +316,25 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double f) {
+	public boolean mouseScrolled(double d, double e, double amount) {
 		if (!this.isVisible()) {
 			return false;
 		} else {
-			this.scroll = this.scroll - f * (double)this.itemHeight / 2.0;
+			this.scroll = this.scroll - amount * (double)this.itemHeight / 2.0;
 			return true;
 		}
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (!this.isVisible()) {
 			return false;
-		} else if (super.keyPressed(i, j, k)) {
+		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (i == 264) {
+		} else if (keyCode == 264) {
 			this.moveSelection(1);
 			return true;
-		} else if (i == 265) {
+		} else if (keyCode == 265) {
 			this.moveSelection(-1);
 			return true;
 		} else {
@@ -346,54 +346,54 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean charTyped(char c, int i) {
-		return !this.isVisible() ? false : super.charTyped(c, i);
+	public boolean charTyped(char chr, int keyCode) {
+		return !this.isVisible() ? false : super.charTyped(chr, keyCode);
 	}
 
 	@Override
-	public boolean isMouseOver(double d, double e) {
-		return this.isMouseInList(d, e);
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return this.isMouseInList(mouseX, mouseY);
 	}
 
 	public int getRowWidth() {
 		return 220;
 	}
 
-	protected void renderList(int i, int j, int k, int l, float f) {
-		int m = this.getItemCount();
+	protected void renderList(int x, int y, int mouseX, int mouseY, float f) {
+		int i = this.getItemCount();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 
-		for (int n = 0; n < m; n++) {
-			int o = j + n * this.itemHeight + this.headerHeight;
-			int p = this.itemHeight - 4;
-			if (o > this.bottom || o + p < this.top) {
-				this.updateItemPosition(n, i, o, f);
+		for (int j = 0; j < i; j++) {
+			int k = y + j * this.itemHeight + this.headerHeight;
+			int l = this.itemHeight - 4;
+			if (k > this.bottom || k + l < this.top) {
+				this.updateItemPosition(j, x, k, f);
 			}
 
-			if (this.renderSelection && this.isSelectedItem(n)) {
-				int q = this.left + this.width / 2 - this.getRowWidth() / 2;
-				int r = this.left + this.width / 2 + this.getRowWidth() / 2;
+			if (this.renderSelection && this.isSelectedItem(j)) {
+				int m = this.left + this.width / 2 - this.getRowWidth() / 2;
+				int n = this.left + this.width / 2 + this.getRowWidth() / 2;
 				RenderSystem.disableTexture();
 				float g = this.isFocused() ? 1.0F : 0.5F;
 				RenderSystem.color4f(g, g, g, 1.0F);
 				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)q, (double)(o + p + 2), 0.0).next();
-				bufferBuilder.vertex((double)r, (double)(o + p + 2), 0.0).next();
-				bufferBuilder.vertex((double)r, (double)(o - 2), 0.0).next();
-				bufferBuilder.vertex((double)q, (double)(o - 2), 0.0).next();
+				bufferBuilder.vertex((double)m, (double)(k + l + 2), 0.0).next();
+				bufferBuilder.vertex((double)n, (double)(k + l + 2), 0.0).next();
+				bufferBuilder.vertex((double)n, (double)(k - 2), 0.0).next();
+				bufferBuilder.vertex((double)m, (double)(k - 2), 0.0).next();
 				tessellator.draw();
 				RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
 				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)(q + 1), (double)(o + p + 1), 0.0).next();
-				bufferBuilder.vertex((double)(r - 1), (double)(o + p + 1), 0.0).next();
-				bufferBuilder.vertex((double)(r - 1), (double)(o - 1), 0.0).next();
-				bufferBuilder.vertex((double)(q + 1), (double)(o - 1), 0.0).next();
+				bufferBuilder.vertex((double)(m + 1), (double)(k + l + 1), 0.0).next();
+				bufferBuilder.vertex((double)(n - 1), (double)(k + l + 1), 0.0).next();
+				bufferBuilder.vertex((double)(n - 1), (double)(k - 1), 0.0).next();
+				bufferBuilder.vertex((double)(m + 1), (double)(k - 1), 0.0).next();
 				tessellator.draw();
 				RenderSystem.enableTexture();
 			}
 
-			this.renderItem(n, i, o, p, k, l, f);
+			this.renderItem(j, x, k, l, mouseX, mouseY, f);
 		}
 	}
 
@@ -407,11 +407,11 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 
 	protected void renderHoleBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 		bufferBuilder.vertex((double)this.left, (double)j, 0.0).texture(0.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
 		bufferBuilder.vertex((double)(this.left + this.width), (double)j, 0.0).texture((float)this.width / 32.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
 		bufferBuilder.vertex((double)(this.left + this.width), (double)i, 0.0).texture((float)this.width / 32.0F, (float)i / 32.0F).color(64, 64, 64, k).next();
@@ -419,9 +419,9 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		tessellator.draw();
 	}
 
-	public void setLeftPos(int i) {
-		this.left = i;
-		this.right = i + this.width;
+	public void setLeftPos(int x) {
+		this.left = x;
+		this.right = x + this.width;
 	}
 
 	public int getItemHeight() {

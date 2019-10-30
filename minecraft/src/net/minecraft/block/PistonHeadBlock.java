@@ -48,8 +48,8 @@ public class PistonHeadBlock extends FacingBlock {
 		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.DEFAULT).with(SHORT, Boolean.valueOf(false)));
 	}
 
-	private VoxelShape getHeadShape(BlockState blockState) {
-		switch ((Direction)blockState.get(FACING)) {
+	private VoxelShape getHeadShape(BlockState state) {
+		switch ((Direction)state.get(FACING)) {
 			case DOWN:
 			default:
 				return DOWN_HEAD_SHAPE;
@@ -67,18 +67,18 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return VoxelShapes.union(this.getHeadShape(blockState), this.getArmShape(blockState));
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return VoxelShapes.union(this.getHeadShape(state), this.getArmShape(state));
 	}
 
-	private VoxelShape getArmShape(BlockState blockState) {
-		boolean bl = (Boolean)blockState.get(SHORT);
-		switch ((Direction)blockState.get(FACING)) {
+	private VoxelShape getArmShape(BlockState state) {
+		boolean bl = (Boolean)state.get(SHORT);
+		switch ((Direction)state.get(FACING)) {
 			case DOWN:
 			default:
 				return bl ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE;
@@ -96,69 +96,67 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		if (!world.isClient && playerEntity.abilities.creativeMode) {
-			BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
-			Block block = world.getBlockState(blockPos2).getBlock();
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (!world.isClient && player.abilities.creativeMode) {
+			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
+			Block block = world.getBlockState(blockPos).getBlock();
 			if (block == Blocks.PISTON || block == Blocks.STICKY_PISTON) {
-				world.removeBlock(blockPos2, false);
-			}
-		}
-
-		super.onBreak(world, blockPos, blockState, playerEntity);
-	}
-
-	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState.getBlock() != blockState2.getBlock()) {
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
-			Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
-			blockPos = blockPos.offset(direction);
-			BlockState blockState3 = world.getBlockState(blockPos);
-			if ((blockState3.getBlock() == Blocks.PISTON || blockState3.getBlock() == Blocks.STICKY_PISTON) && (Boolean)blockState3.get(PistonBlock.EXTENDED)) {
-				dropStacks(blockState3, world, blockPos);
 				world.removeBlock(blockPos, false);
 			}
 		}
+
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (state.getBlock() != newState.getBlock()) {
+			super.onBlockRemoved(state, world, pos, newState, moved);
+			Direction direction = ((Direction)state.get(FACING)).getOpposite();
+			pos = pos.offset(direction);
+			BlockState blockState = world.getBlockState(pos);
+			if ((blockState.getBlock() == Blocks.PISTON || blockState.getBlock() == Blocks.STICKY_PISTON) && (Boolean)blockState.get(PistonBlock.EXTENDED)) {
+				dropStacks(blockState, world, pos);
+				world.removeBlock(pos, false);
+			}
+		}
+	}
+
+	@Override
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return facing.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		Block block = worldView.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getBlock();
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		Block block = world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite())).getBlock();
 		return block == Blocks.PISTON || block == Blocks.STICKY_PISTON || block == Blocks.MOVING_PISTON;
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		if (blockState.canPlaceAt(world, blockPos)) {
-			BlockPos blockPos3 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
-			world.getBlockState(blockPos3).neighborUpdate(world, blockPos3, block, blockPos2, false);
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+		if (state.canPlaceAt(world, pos)) {
+			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
+			world.getBlockState(blockPos).neighborUpdate(world, blockPos, block, neighborPos, false);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(blockState.get(TYPE) == PistonType.STICKY ? Blocks.STICKY_PISTON : Blocks.PISTON);
+	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+		return new ItemStack(state.get(TYPE) == PistonType.STICKY ? Blocks.STICKY_PISTON : Blocks.PISTON);
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 
 	@Override
@@ -167,7 +165,7 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

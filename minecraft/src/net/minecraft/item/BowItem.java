@@ -18,58 +18,57 @@ import net.minecraft.world.World;
 public class BowItem extends RangedWeaponItem {
 	public BowItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(new Identifier("pull"), (itemStack, world, livingEntity) -> {
-			if (livingEntity == null) {
+		this.addPropertyGetter(new Identifier("pull"), (stack, world, entity) -> {
+			if (entity == null) {
 				return 0.0F;
 			} else {
-				return livingEntity.getActiveItem().getItem() != Items.BOW ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / 20.0F;
+				return entity.getActiveItem().getItem() != Items.BOW ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
 			}
 		});
 		this.addPropertyGetter(
-			new Identifier("pulling"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			new Identifier("pulling"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 	}
 
 	@Override
-	public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
-		if (livingEntity instanceof PlayerEntity) {
-			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-			boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, itemStack) > 0;
-			ItemStack itemStack2 = playerEntity.getArrowType(itemStack);
-			if (!itemStack2.isEmpty() || bl) {
-				if (itemStack2.isEmpty()) {
-					itemStack2 = new ItemStack(Items.ARROW);
+	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+		if (user instanceof PlayerEntity) {
+			PlayerEntity playerEntity = (PlayerEntity)user;
+			boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
+			ItemStack itemStack = playerEntity.getArrowType(stack);
+			if (!itemStack.isEmpty() || bl) {
+				if (itemStack.isEmpty()) {
+					itemStack = new ItemStack(Items.ARROW);
 				}
 
-				int j = this.getMaxUseTime(itemStack) - i;
-				float f = getPullProgress(j);
+				int i = this.getMaxUseTime(stack) - remainingUseTicks;
+				float f = getPullProgress(i);
 				if (!((double)f < 0.1)) {
-					boolean bl2 = bl && itemStack2.getItem() == Items.ARROW;
+					boolean bl2 = bl && itemStack.getItem() == Items.ARROW;
 					if (!world.isClient) {
-						ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.ARROW);
-						ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack2, playerEntity);
+						ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
+						ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
 						projectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
 						if (f == 1.0F) {
 							projectileEntity.setCritical(true);
 						}
 
-						int k = EnchantmentHelper.getLevel(Enchantments.POWER, itemStack);
+						int j = EnchantmentHelper.getLevel(Enchantments.POWER, stack);
+						if (j > 0) {
+							projectileEntity.setDamage(projectileEntity.getDamage() + (double)j * 0.5 + 0.5);
+						}
+
+						int k = EnchantmentHelper.getLevel(Enchantments.PUNCH, stack);
 						if (k > 0) {
-							projectileEntity.setDamage(projectileEntity.getDamage() + (double)k * 0.5 + 0.5);
+							projectileEntity.setPunch(k);
 						}
 
-						int l = EnchantmentHelper.getLevel(Enchantments.PUNCH, itemStack);
-						if (l > 0) {
-							projectileEntity.setPunch(l);
-						}
-
-						if (EnchantmentHelper.getLevel(Enchantments.FLAME, itemStack) > 0) {
+						if (EnchantmentHelper.getLevel(Enchantments.FLAME, stack) > 0) {
 							projectileEntity.setOnFireFor(100);
 						}
 
-						itemStack.damage(1, playerEntity, playerEntity2 -> playerEntity2.sendToolBreakStatus(playerEntity.getActiveHand()));
-						if (bl2 || playerEntity.abilities.creativeMode && (itemStack2.getItem() == Items.SPECTRAL_ARROW || itemStack2.getItem() == Items.TIPPED_ARROW)) {
+						stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
+						if (bl2 || playerEntity.abilities.creativeMode && (itemStack.getItem() == Items.SPECTRAL_ARROW || itemStack.getItem() == Items.TIPPED_ARROW)) {
 							projectileEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
 						}
 
@@ -87,9 +86,9 @@ public class BowItem extends RangedWeaponItem {
 						1.0F / (RANDOM.nextFloat() * 0.4F + 1.2F) + f * 0.5F
 					);
 					if (!bl2 && !playerEntity.abilities.creativeMode) {
-						itemStack2.decrement(1);
-						if (itemStack2.isEmpty()) {
-							playerEntity.inventory.removeOne(itemStack2);
+						itemStack.decrement(1);
+						if (itemStack.isEmpty()) {
+							playerEntity.inventory.removeOne(itemStack);
 						}
 					}
 
@@ -99,8 +98,8 @@ public class BowItem extends RangedWeaponItem {
 		}
 	}
 
-	public static float getPullProgress(int i) {
-		float f = (float)i / 20.0F;
+	public static float getPullProgress(int useTicks) {
+		float f = (float)useTicks / 20.0F;
 		f = (f * f + f * 2.0F) / 3.0F;
 		if (f > 1.0F) {
 			f = 1.0F;
@@ -110,24 +109,24 @@ public class BowItem extends RangedWeaponItem {
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack itemStack) {
+	public int getMaxUseTime(ItemStack stack) {
 		return 72000;
 	}
 
 	@Override
-	public UseAction getUseAction(ItemStack itemStack) {
+	public UseAction getUseAction(ItemStack stack) {
 		return UseAction.BOW;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		boolean bl = !playerEntity.getArrowType(itemStack).isEmpty();
-		if (!playerEntity.abilities.creativeMode && !bl) {
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
+		boolean bl = !user.getArrowType(itemStack).isEmpty();
+		if (!user.abilities.creativeMode && !bl) {
 			return TypedActionResult.fail(itemStack);
 		} else {
-			playerEntity.setCurrentHand(hand);
-			return TypedActionResult.successWithoutSwing(itemStack);
+			user.setCurrentHand(hand);
+			return TypedActionResult.consume(itemStack);
 		}
 	}
 

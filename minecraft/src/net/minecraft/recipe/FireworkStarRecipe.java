@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.world.World;
 
 public class FireworkStarRecipe extends SpecialCraftingRecipe {
@@ -31,7 +31,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	);
 	private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItems(Items.DIAMOND);
 	private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItems(Items.GLOWSTONE_DUST);
-	private static final Map<Item, FireworkItem.Type> TYPE_MODIFIER_MAP = SystemUtil.consume(Maps.<Item, FireworkItem.Type>newHashMap(), hashMap -> {
+	private static final Map<Item, FireworkItem.Type> TYPE_MODIFIER_MAP = Util.create(Maps.<Item, FireworkItem.Type>newHashMap(), hashMap -> {
 		hashMap.put(Items.FIRE_CHARGE, FireworkItem.Type.LARGE_BALL);
 		hashMap.put(Items.FEATHER, FireworkItem.Type.BURST);
 		hashMap.put(Items.GOLD_NUGGET, FireworkItem.Type.STAR);
@@ -123,8 +123,8 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean fits(int i, int j) {
-		return i * j >= 2;
+	public boolean fits(int width, int height) {
+		return width * height >= 2;
 	}
 
 	@Override

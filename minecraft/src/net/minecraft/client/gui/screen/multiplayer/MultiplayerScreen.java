@@ -38,9 +38,9 @@ public class MultiplayerScreen extends Screen {
 	private LanServerQueryManager.LanServerDetector lanServerDetector;
 	private boolean initialized;
 
-	public MultiplayerScreen(Screen screen) {
+	public MultiplayerScreen(Screen parent) {
 		super(new TranslatableText("multiplayer.title"));
-		this.parent = screen;
+		this.parent = parent;
 	}
 
 	@Override
@@ -134,9 +134,9 @@ public class MultiplayerScreen extends Screen {
 		this.minecraft.openScreen(new MultiplayerScreen(this.parent));
 	}
 
-	private void removeEntry(boolean bl) {
+	private void removeEntry(boolean confirmedAction) {
 		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
-		if (bl && entry instanceof MultiplayerServerListWidget.ServerEntry) {
+		if (confirmedAction && entry instanceof MultiplayerServerListWidget.ServerEntry) {
 			this.serverList.remove(((MultiplayerServerListWidget.ServerEntry)entry).getServer());
 			this.serverList.saveFile();
 			this.serverListWidget.method_20122(null);
@@ -146,9 +146,9 @@ public class MultiplayerScreen extends Screen {
 		this.minecraft.openScreen(this);
 	}
 
-	private void editEntry(boolean bl) {
+	private void editEntry(boolean confirmedAction) {
 		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
-		if (bl && entry instanceof MultiplayerServerListWidget.ServerEntry) {
+		if (confirmedAction && entry instanceof MultiplayerServerListWidget.ServerEntry) {
 			ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
 			serverInfo.name = this.selectedEntry.name;
 			serverInfo.address = this.selectedEntry.address;
@@ -160,8 +160,8 @@ public class MultiplayerScreen extends Screen {
 		this.minecraft.openScreen(this);
 	}
 
-	private void addEntry(boolean bl) {
-		if (bl) {
+	private void addEntry(boolean confirmedAction) {
+		if (confirmedAction) {
 			this.serverList.add(this.selectedEntry);
 			this.serverList.saveFile();
 			this.serverListWidget.method_20122(null);
@@ -171,8 +171,8 @@ public class MultiplayerScreen extends Screen {
 		this.minecraft.openScreen(this);
 	}
 
-	private void directConnect(boolean bl) {
-		if (bl) {
+	private void directConnect(boolean confirmedAction) {
+		if (confirmedAction) {
 			this.connect(this.selectedEntry);
 		} else {
 			this.minecraft.openScreen(this);
@@ -180,15 +180,15 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (super.keyPressed(i, j, k)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (i == 294) {
+		} else if (keyCode == 294) {
 			this.refresh();
 			return true;
 		} else if (this.serverListWidget.getSelected() != null) {
-			if (i != 257 && i != 335) {
-				return this.serverListWidget.keyPressed(i, j, k);
+			if (keyCode != 257 && keyCode != 335) {
+				return this.serverListWidget.keyPressed(keyCode, scanCode, modifiers);
 			} else {
 				this.connect();
 				return true;
@@ -199,14 +199,14 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.tooltipText = null;
 		this.renderBackground();
-		this.serverListWidget.render(i, j, f);
+		this.serverListWidget.render(mouseX, mouseY, delta);
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 		if (this.tooltipText != null) {
-			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), i, j);
+			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), mouseX, mouseY);
 		}
 	}
 
@@ -220,8 +220,8 @@ public class MultiplayerScreen extends Screen {
 		}
 	}
 
-	private void connect(ServerInfo serverInfo) {
-		this.minecraft.openScreen(new ConnectScreen(this, this.minecraft, serverInfo));
+	private void connect(ServerInfo entry) {
+		this.minecraft.openScreen(new ConnectScreen(this, this.minecraft, entry));
 	}
 
 	public void select(MultiplayerServerListWidget.Entry entry) {
@@ -247,8 +247,8 @@ public class MultiplayerScreen extends Screen {
 		return this.serverListPinger;
 	}
 
-	public void setTooltip(String string) {
-		this.tooltipText = string;
+	public void setTooltip(String text) {
+		this.tooltipText = text;
 	}
 
 	public ServerList getServerList() {

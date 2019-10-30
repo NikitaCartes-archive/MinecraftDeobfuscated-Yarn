@@ -11,12 +11,12 @@ import net.minecraft.text.Text;
 public class ChatListenerHud implements ClientChatListener {
 	private final MinecraftClient client;
 
-	public ChatListenerHud(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public ChatListenerHud(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override
-	public void onChatMessage(MessageType messageType, Text text) {
-		this.client.inGameHud.getChatHud().addMessage(text);
+	public void onChatMessage(MessageType messageType, Text message) {
+		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 }

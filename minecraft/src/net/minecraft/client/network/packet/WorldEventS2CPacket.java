@@ -17,27 +17,27 @@ public class WorldEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	public WorldEventS2CPacket() {
 	}
 
-	public WorldEventS2CPacket(int i, BlockPos blockPos, int j, boolean bl) {
-		this.eventId = i;
-		this.pos = blockPos.toImmutable();
-		this.data = j;
-		this.global = bl;
+	public WorldEventS2CPacket(int eventId, BlockPos pos, int data, boolean global) {
+		this.eventId = eventId;
+		this.pos = pos.toImmutable();
+		this.data = data;
+		this.global = global;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.eventId = packetByteBuf.readInt();
-		this.pos = packetByteBuf.readBlockPos();
-		this.data = packetByteBuf.readInt();
-		this.global = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.eventId = buf.readInt();
+		this.pos = buf.readBlockPos();
+		this.data = buf.readInt();
+		this.global = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeInt(this.eventId);
-		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeInt(this.data);
-		packetByteBuf.writeBoolean(this.global);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeInt(this.eventId);
+		buf.writeBlockPos(this.pos);
+		buf.writeInt(this.data);
+		buf.writeBoolean(this.global);
 	}
 
 	public void method_11535(ClientPlayPacketListener clientPlayPacketListener) {

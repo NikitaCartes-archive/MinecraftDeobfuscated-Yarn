@@ -14,8 +14,8 @@ public final class Matrix4f {
 		this(new float[16]);
 	}
 
-	public Matrix4f(float[] fs) {
-		this.components = fs;
+	public Matrix4f(float[] components) {
+		this.components = components;
 	}
 
 	public Matrix4f(Quaternion quaternion) {
@@ -45,15 +45,15 @@ public final class Matrix4f {
 		this.set(1, 2, 2.0F * (n - p));
 	}
 
-	public Matrix4f(Matrix4f matrix4f) {
-		this(Arrays.copyOf(matrix4f.components, 16));
+	public Matrix4f(Matrix4f matrix) {
+		this(Arrays.copyOf(matrix.components, 16));
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			Matrix4f matrix4f = (Matrix4f)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			Matrix4f matrix4f = (Matrix4f)o;
 			return Arrays.equals(this.components, matrix4f.components);
 		} else {
 			return false;
@@ -82,19 +82,19 @@ public final class Matrix4f {
 		return stringBuilder.toString();
 	}
 
-	public void writeToBuffer(FloatBuffer floatBuffer) {
-		this.writeToBuffer(floatBuffer, false);
+	public void writeToBuffer(FloatBuffer buffer) {
+		this.writeToBuffer(buffer, false);
 	}
 
-	public void writeToBuffer(FloatBuffer floatBuffer, boolean bl) {
-		if (bl) {
+	public void writeToBuffer(FloatBuffer buffer, boolean atBufferStart) {
+		if (atBufferStart) {
 			for (int i = 0; i < 4; i++) {
 				for (int j = 0; j < 4; j++) {
-					floatBuffer.put(j * 4 + i, this.components[i * 4 + j]);
+					buffer.put(j * 4 + i, this.components[i * 4 + j]);
 				}
 			}
 		} else {
-			floatBuffer.put(this.components);
+			buffer.put(this.components);
 		}
 	}
 
@@ -117,12 +117,12 @@ public final class Matrix4f {
 		this.components[15] = 1.0F;
 	}
 
-	public float get(int i, int j) {
-		return this.components[4 * j + i];
+	public float get(int row, int column) {
+		return this.components[4 * column + row];
 	}
 
-	public void set(int i, int j, float f) {
-		this.components[4 * j + i] = f;
+	public void set(int row, int column, float value) {
+		this.components[4 * column + row] = value;
 	}
 
 	public float determinantAndAdjugate() {
@@ -181,10 +181,10 @@ public final class Matrix4f {
 		}
 	}
 
-	private void transpose(int i, int j) {
-		float f = this.components[i + j * 4];
-		this.components[i + j * 4] = this.components[j + i * 4];
-		this.components[j + i * 4] = f;
+	private void transpose(int row, int column) {
+		float f = this.components[row + column * 4];
+		this.components[row + column * 4] = this.components[column + row * 4];
+		this.components[column + row * 4] = f;
 	}
 
 	public boolean invert() {
@@ -197,11 +197,11 @@ public final class Matrix4f {
 		}
 	}
 
-	private float minor(int i, int j, int k, int l) {
-		return this.get(i, k) * this.get(j, l) - this.get(i, l) * this.get(j, k);
+	private float minor(int row1, int row2, int column1, int column2) {
+		return this.get(row1, column1) * this.get(row2, column2) - this.get(row1, column2) * this.get(row2, column1);
 	}
 
-	public void multiply(Matrix4f matrix4f) {
+	public void multiply(Matrix4f matrix) {
 		float[] fs = Arrays.copyOf(this.components, 16);
 
 		for (int i = 0; i < 4; i++) {
@@ -209,7 +209,7 @@ public final class Matrix4f {
 				this.components[i + j * 4] = 0.0F;
 
 				for (int k = 0; k < 4; k++) {
-					this.components[i + j * 4] = this.components[i + j * 4] + fs[i + k * 4] * matrix4f.components[k + j * 4];
+					this.components[i + j * 4] = this.components[i + j * 4] + fs[i + k * 4] * matrix.components[k + j * 4];
 				}
 			}
 		}
@@ -219,40 +219,40 @@ public final class Matrix4f {
 		this.multiply(new Matrix4f(quaternion));
 	}
 
-	public void multiply(float f) {
+	public void multiply(float scalar) {
 		for (int i = 0; i < 16; i++) {
-			this.components[i] = this.components[i] * f;
+			this.components[i] = this.components[i] * scalar;
 		}
 	}
 
-	public static Matrix4f method_4929(double d, float f, float g, float h) {
-		float i = (float)(1.0 / Math.tan(d * (float) (Math.PI / 180.0) / 2.0));
+	public static Matrix4f method_4929(double fov, float aspectRatio, float f, float viewDistance) {
+		float g = (float)(1.0 / Math.tan(fov * (float) (Math.PI / 180.0) / 2.0));
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.set(0, 0, i / f);
-		matrix4f.set(1, 1, i);
-		matrix4f.set(2, 2, (h + g) / (g - h));
+		matrix4f.set(0, 0, g / aspectRatio);
+		matrix4f.set(1, 1, g);
+		matrix4f.set(2, 2, (viewDistance + f) / (f - viewDistance));
 		matrix4f.set(3, 2, -1.0F);
-		matrix4f.set(2, 3, 2.0F * h * g / (g - h));
+		matrix4f.set(2, 3, 2.0F * viewDistance * f / (f - viewDistance));
 		return matrix4f;
 	}
 
-	public static Matrix4f projectionMatrix(float f, float g, float h, float i) {
+	public static Matrix4f projectionMatrix(float width, float height, float nearPlane, float farPlane) {
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.set(0, 0, 2.0F / f);
-		matrix4f.set(1, 1, 2.0F / g);
-		float j = i - h;
-		matrix4f.set(2, 2, -2.0F / j);
+		matrix4f.set(0, 0, 2.0F / width);
+		matrix4f.set(1, 1, 2.0F / height);
+		float f = farPlane - nearPlane;
+		matrix4f.set(2, 2, -2.0F / f);
 		matrix4f.set(3, 3, 1.0F);
 		matrix4f.set(0, 3, -1.0F);
 		matrix4f.set(1, 3, -1.0F);
-		matrix4f.set(2, 3, -(i + h) / j);
+		matrix4f.set(2, 3, -(farPlane + nearPlane) / f);
 		return matrix4f;
 	}
 
-	public void addToLastColumn(Vector3f vector3f) {
-		this.set(0, 3, this.get(0, 3) + vector3f.getX());
-		this.set(1, 3, this.get(1, 3) + vector3f.getY());
-		this.set(2, 3, this.get(2, 3) + vector3f.getZ());
+	public void addToLastColumn(Vector3f vector) {
+		this.set(0, 3, this.get(0, 3) + vector.getX());
+		this.set(1, 3, this.get(1, 3) + vector.getY());
+		this.set(2, 3, this.get(2, 3) + vector.getZ());
 	}
 
 	public Matrix4f copy() {

@@ -37,7 +37,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		Camera camera = this.field_4634.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
@@ -47,14 +47,14 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < this.field_4640.size(); i++) {
 			BlockPos blockPos = (BlockPos)this.field_4640.get(i);
 			Float float_ = (Float)this.field_4635.get(i);
 			float g = float_ / 2.0F;
-			WorldRenderer.buildBoxOutline(
+			WorldRenderer.drawBox(
 				bufferBuilder,
 				(double)((float)blockPos.getX() + 0.5F - g) - d,
 				(double)((float)blockPos.getY() + 0.5F - g) - e,

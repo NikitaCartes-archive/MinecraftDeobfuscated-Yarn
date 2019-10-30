@@ -60,10 +60,10 @@ public class LootEntries {
 			return jsonObject;
 		}
 
-		private static LootEntry.Serializer<LootEntry> getSerializer(Class<?> class_) {
-			LootEntry.Serializer<?> serializer = (LootEntry.Serializer<?>)LootEntries.classSerializers.get(class_);
+		private static LootEntry.Serializer<LootEntry> getSerializer(Class<?> clazz) {
+			LootEntry.Serializer<?> serializer = (LootEntry.Serializer<?>)LootEntries.classSerializers.get(clazz);
 			if (serializer == null) {
-				throw new JsonParseException("Unknown item type: " + class_);
+				throw new JsonParseException("Unknown item type: " + clazz);
 			} else {
 				return (LootEntry.Serializer<LootEntry>)serializer;
 			}

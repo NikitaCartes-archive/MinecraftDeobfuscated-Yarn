@@ -15,9 +15,9 @@ import net.minecraft.world.WorldView;
 public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	private final CatEntity cat;
 
-	public CatSitOnBlockGoal(CatEntity catEntity, double d) {
-		super(catEntity, d, 8);
-		this.cat = catEntity;
+	public CatSitOnBlockGoal(CatEntity cat, double speed) {
+		super(cat, speed, 8);
+		this.cat = cat;
 	}
 
 	@Override
@@ -49,14 +49,14 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
-		if (!worldView.isAir(blockPos.up())) {
+	protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+		if (!worldView.isAir(pos.up())) {
 			return false;
 		} else {
-			BlockState blockState = worldView.getBlockState(blockPos);
+			BlockState blockState = worldView.getBlockState(pos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.CHEST) {
-				return ChestBlockEntity.getPlayersLookingInChestCount(worldView, blockPos) < 1;
+				return ChestBlockEntity.getPlayersLookingInChestCount(worldView, pos) < 1;
 			} else {
 				return block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT) ? true : block.matches(BlockTags.BEDS) && blockState.get(BedBlock.PART) != BedPart.HEAD;
 			}

@@ -38,96 +38,96 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 	private static final int TAIGA_HILLS_ID = Registry.BIOME.getRawId(Biomes.TAIGA_HILLS);
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, LayerSampler layerSampler, LayerSampler layerSampler2, int i, int j) {
-		int k = layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 1));
-		int l = layerSampler2.sample(this.transformX(i + 1), this.transformZ(j + 1));
-		if (k > 255) {
-			LOGGER.debug("old! {}", k);
+	public int sample(LayerRandomnessSource context, LayerSampler sampler1, LayerSampler sampler2, int x, int z) {
+		int i = sampler1.sample(this.transformX(x + 1), this.transformZ(z + 1));
+		int j = sampler2.sample(this.transformX(x + 1), this.transformZ(z + 1));
+		if (i > 255) {
+			LOGGER.debug("old! {}", i);
 		}
 
-		int m = (l - 2) % 29;
-		if (!BiomeLayers.isShallowOcean(k) && l >= 2 && m == 1) {
-			Biome biome = Registry.BIOME.get(k);
+		int k = (j - 2) % 29;
+		if (!BiomeLayers.isShallowOcean(i) && j >= 2 && k == 1) {
+			Biome biome = Registry.BIOME.get(i);
 			if (biome == null || !biome.hasParent()) {
 				Biome biome2 = Biome.getParentBiome(biome);
-				return biome2 == null ? k : Registry.BIOME.getRawId(biome2);
+				return biome2 == null ? i : Registry.BIOME.getRawId(biome2);
 			}
 		}
 
-		if (layerRandomnessSource.nextInt(3) == 0 || m == 0) {
-			int n = k;
-			if (k == DESERT_ID) {
-				n = DESERT_HILLS_ID;
-			} else if (k == FOREST_ID) {
-				n = WOODED_HILLS_ID;
-			} else if (k == BIRCH_FOREST_ID) {
-				n = BIRCH_FOREST_HILLS_ID;
-			} else if (k == DARK_FOREST_ID) {
-				n = PLAINS_ID;
-			} else if (k == TAIGA_ID) {
-				n = TAIGA_HILLS_ID;
-			} else if (k == GIANT_TREE_TAIGA_ID) {
-				n = GIANT_TREE_TAIGA_HILLS_ID;
-			} else if (k == SNOWY_TAIGA_ID) {
-				n = SNOWY_TAIGA_HILLS_ID;
-			} else if (k == PLAINS_ID) {
-				n = layerRandomnessSource.nextInt(3) == 0 ? WOODED_HILLS_ID : FOREST_ID;
-			} else if (k == SNOWY_TUNDRA_ID) {
-				n = SNOWY_MOUNTAINS_ID;
-			} else if (k == JUNGLE_ID) {
-				n = JUNGLE_HILLS_ID;
-			} else if (k == BAMBOO_JUNGLE_ID) {
-				n = BAMBOO_JUNGLE_HILLS_ID;
-			} else if (k == BiomeLayers.OCEAN_ID) {
-				n = BiomeLayers.DEEP_OCEAN_ID;
-			} else if (k == BiomeLayers.LUKEWARM_OCEAN_ID) {
-				n = BiomeLayers.DEEP_LUKEWARM_OCEAN_ID;
-			} else if (k == BiomeLayers.COLD_OCEAN_ID) {
-				n = BiomeLayers.DEEP_COLD_OCEAN_ID;
-			} else if (k == BiomeLayers.FROZEN_OCEAN_ID) {
-				n = BiomeLayers.DEEP_FROZEN_OCEAN_ID;
-			} else if (k == MOUNTAINS_ID) {
-				n = WOODED_MOUNTAINS_ID;
-			} else if (k == SAVANNA_ID) {
-				n = SAVANNA_PLATEAU_ID;
-			} else if (BiomeLayers.areSimilar(k, WOODED_BADLANDS_PLATEAU_ID)) {
-				n = BADLANDS_ID;
+		if (context.nextInt(3) == 0 || k == 0) {
+			int l = i;
+			if (i == DESERT_ID) {
+				l = DESERT_HILLS_ID;
+			} else if (i == FOREST_ID) {
+				l = WOODED_HILLS_ID;
+			} else if (i == BIRCH_FOREST_ID) {
+				l = BIRCH_FOREST_HILLS_ID;
+			} else if (i == DARK_FOREST_ID) {
+				l = PLAINS_ID;
+			} else if (i == TAIGA_ID) {
+				l = TAIGA_HILLS_ID;
+			} else if (i == GIANT_TREE_TAIGA_ID) {
+				l = GIANT_TREE_TAIGA_HILLS_ID;
+			} else if (i == SNOWY_TAIGA_ID) {
+				l = SNOWY_TAIGA_HILLS_ID;
+			} else if (i == PLAINS_ID) {
+				l = context.nextInt(3) == 0 ? WOODED_HILLS_ID : FOREST_ID;
+			} else if (i == SNOWY_TUNDRA_ID) {
+				l = SNOWY_MOUNTAINS_ID;
+			} else if (i == JUNGLE_ID) {
+				l = JUNGLE_HILLS_ID;
+			} else if (i == BAMBOO_JUNGLE_ID) {
+				l = BAMBOO_JUNGLE_HILLS_ID;
+			} else if (i == BiomeLayers.OCEAN_ID) {
+				l = BiomeLayers.DEEP_OCEAN_ID;
+			} else if (i == BiomeLayers.LUKEWARM_OCEAN_ID) {
+				l = BiomeLayers.DEEP_LUKEWARM_OCEAN_ID;
+			} else if (i == BiomeLayers.COLD_OCEAN_ID) {
+				l = BiomeLayers.DEEP_COLD_OCEAN_ID;
+			} else if (i == BiomeLayers.FROZEN_OCEAN_ID) {
+				l = BiomeLayers.DEEP_FROZEN_OCEAN_ID;
+			} else if (i == MOUNTAINS_ID) {
+				l = WOODED_MOUNTAINS_ID;
+			} else if (i == SAVANNA_ID) {
+				l = SAVANNA_PLATEAU_ID;
+			} else if (BiomeLayers.areSimilar(i, WOODED_BADLANDS_PLATEAU_ID)) {
+				l = BADLANDS_ID;
 			} else if ((
-					k == BiomeLayers.DEEP_OCEAN_ID || k == BiomeLayers.DEEP_LUKEWARM_OCEAN_ID || k == BiomeLayers.DEEP_COLD_OCEAN_ID || k == BiomeLayers.DEEP_FROZEN_OCEAN_ID
+					i == BiomeLayers.DEEP_OCEAN_ID || i == BiomeLayers.DEEP_LUKEWARM_OCEAN_ID || i == BiomeLayers.DEEP_COLD_OCEAN_ID || i == BiomeLayers.DEEP_FROZEN_OCEAN_ID
 				)
-				&& layerRandomnessSource.nextInt(3) == 0) {
-				n = layerRandomnessSource.nextInt(2) == 0 ? PLAINS_ID : FOREST_ID;
+				&& context.nextInt(3) == 0) {
+				l = context.nextInt(2) == 0 ? PLAINS_ID : FOREST_ID;
 			}
 
-			if (m == 0 && n != k) {
-				Biome biome2 = Biome.getParentBiome(Registry.BIOME.get(n));
-				n = biome2 == null ? k : Registry.BIOME.getRawId(biome2);
+			if (k == 0 && l != i) {
+				Biome biome2 = Biome.getParentBiome(Registry.BIOME.get(l));
+				l = biome2 == null ? i : Registry.BIOME.getRawId(biome2);
 			}
 
-			if (n != k) {
-				int o = 0;
-				if (BiomeLayers.areSimilar(layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 0)), k)) {
-					o++;
+			if (l != i) {
+				int m = 0;
+				if (BiomeLayers.areSimilar(sampler1.sample(this.transformX(x + 1), this.transformZ(z + 0)), i)) {
+					m++;
 				}
 
-				if (BiomeLayers.areSimilar(layerSampler.sample(this.transformX(i + 2), this.transformZ(j + 1)), k)) {
-					o++;
+				if (BiomeLayers.areSimilar(sampler1.sample(this.transformX(x + 2), this.transformZ(z + 1)), i)) {
+					m++;
 				}
 
-				if (BiomeLayers.areSimilar(layerSampler.sample(this.transformX(i + 0), this.transformZ(j + 1)), k)) {
-					o++;
+				if (BiomeLayers.areSimilar(sampler1.sample(this.transformX(x + 0), this.transformZ(z + 1)), i)) {
+					m++;
 				}
 
-				if (BiomeLayers.areSimilar(layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 2)), k)) {
-					o++;
+				if (BiomeLayers.areSimilar(sampler1.sample(this.transformX(x + 1), this.transformZ(z + 2)), i)) {
+					m++;
 				}
 
-				if (o >= 3) {
-					return n;
+				if (m >= 3) {
+					return l;
 				}
 			}
 		}
 
-		return k;
+		return i;
 	}
 }

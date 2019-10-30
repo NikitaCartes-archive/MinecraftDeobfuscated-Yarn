@@ -37,24 +37,17 @@ public class AdvancementTab extends DrawableHelper {
 	private float alpha;
 	private boolean initialized;
 
-	public AdvancementTab(
-		MinecraftClient minecraftClient,
-		AdvancementsScreen advancementsScreen,
-		AdvancementTabType advancementTabType,
-		int i,
-		Advancement advancement,
-		AdvancementDisplay advancementDisplay
-	) {
-		this.client = minecraftClient;
-		this.screen = advancementsScreen;
-		this.type = advancementTabType;
-		this.index = i;
-		this.root = advancement;
-		this.display = advancementDisplay;
-		this.icon = advancementDisplay.getIcon();
-		this.title = advancementDisplay.getTitle().asFormattedString();
-		this.rootWidget = new AdvancementWidget(this, minecraftClient, advancement, advancementDisplay);
-		this.addWidget(this.rootWidget, advancement);
+	public AdvancementTab(MinecraftClient client, AdvancementsScreen screen, AdvancementTabType type, int index, Advancement root, AdvancementDisplay display) {
+		this.client = client;
+		this.screen = screen;
+		this.type = type;
+		this.index = index;
+		this.root = root;
+		this.display = display;
+		this.icon = display.getIcon();
+		this.title = display.getTitle().asFormattedString();
+		this.rootWidget = new AdvancementWidget(this, client, root, display);
+		this.addWidget(this.rootWidget, root);
 	}
 
 	public Advancement getRoot() {
@@ -65,12 +58,12 @@ public class AdvancementTab extends DrawableHelper {
 		return this.title;
 	}
 
-	public void drawBackground(int i, int j, boolean bl) {
-		this.type.drawBackground(this, i, j, bl, this.index);
+	public void drawBackground(int x, int y, boolean selected) {
+		this.type.drawBackground(this, x, y, selected, this.index);
 	}
 
-	public void drawIcon(int i, int j, ItemRenderer itemRenderer) {
-		this.type.drawIcon(i, j, this.index, itemRenderer, this.icon);
+	public void drawIcon(int x, int y, ItemRenderer itemRenderer) {
+		this.type.drawIcon(x, y, this.index, itemRenderer, this.icon);
 	}
 
 	public void render() {
@@ -121,18 +114,18 @@ public class AdvancementTab extends DrawableHelper {
 		RenderSystem.popMatrix();
 	}
 
-	public void drawWidgetTooltip(int i, int j, int k, int l) {
+	public void drawWidgetTooltip(int mouseX, int mouseY, int x, int y) {
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef(0.0F, 0.0F, 200.0F);
 		fill(0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0F) << 24);
 		boolean bl = false;
-		int m = MathHelper.floor(this.originX);
-		int n = MathHelper.floor(this.originY);
-		if (i > 0 && i < 234 && j > 0 && j < 113) {
+		int i = MathHelper.floor(this.originX);
+		int j = MathHelper.floor(this.originY);
+		if (mouseX > 0 && mouseX < 234 && mouseY > 0 && mouseY < 113) {
 			for (AdvancementWidget advancementWidget : this.widgets.values()) {
-				if (advancementWidget.shouldRender(m, n, i, j)) {
+				if (advancementWidget.shouldRender(i, j, mouseX, mouseY)) {
 					bl = true;
-					advancementWidget.drawTooltip(m, n, this.alpha, k, l);
+					advancementWidget.drawTooltip(i, j, this.alpha, x, y);
 					break;
 				}
 			}
@@ -146,34 +139,34 @@ public class AdvancementTab extends DrawableHelper {
 		}
 	}
 
-	public boolean isClickOnTab(int i, int j, double d, double e) {
-		return this.type.isClickOnTab(i, j, this.index, d, e);
+	public boolean isClickOnTab(int screenX, int screenY, double mouseX, double mouseY) {
+		return this.type.isClickOnTab(screenX, screenY, this.index, mouseX, mouseY);
 	}
 
 	@Nullable
-	public static AdvancementTab create(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, Advancement advancement) {
-		if (advancement.getDisplay() == null) {
+	public static AdvancementTab create(MinecraftClient minecraft, AdvancementsScreen screen, int index, Advancement root) {
+		if (root.getDisplay() == null) {
 			return null;
 		} else {
 			for (AdvancementTabType advancementTabType : AdvancementTabType.values()) {
-				if (i < advancementTabType.getTabCount()) {
-					return new AdvancementTab(minecraftClient, advancementsScreen, advancementTabType, i, advancement, advancement.getDisplay());
+				if (index < advancementTabType.getTabCount()) {
+					return new AdvancementTab(minecraft, screen, advancementTabType, index, root, root.getDisplay());
 				}
 
-				i -= advancementTabType.getTabCount();
+				index -= advancementTabType.getTabCount();
 			}
 
 			return null;
 		}
 	}
 
-	public void move(double d, double e) {
+	public void move(double offsetX, double offsetY) {
 		if (this.maxPanX - this.minPanX > 234) {
-			this.originX = MathHelper.clamp(this.originX + d, (double)(-(this.maxPanX - 234)), 0.0);
+			this.originX = MathHelper.clamp(this.originX + offsetX, (double)(-(this.maxPanX - 234)), 0.0);
 		}
 
 		if (this.maxPanY - this.minPanY > 113) {
-			this.originY = MathHelper.clamp(this.originY + e, (double)(-(this.maxPanY - 113)), 0.0);
+			this.originY = MathHelper.clamp(this.originY + offsetY, (double)(-(this.maxPanY - 113)), 0.0);
 		}
 	}
 
@@ -184,19 +177,19 @@ public class AdvancementTab extends DrawableHelper {
 		}
 	}
 
-	private void addWidget(AdvancementWidget advancementWidget, Advancement advancement) {
-		this.widgets.put(advancement, advancementWidget);
-		int i = advancementWidget.getX();
+	private void addWidget(AdvancementWidget widget, Advancement advancement) {
+		this.widgets.put(advancement, widget);
+		int i = widget.getX();
 		int j = i + 28;
-		int k = advancementWidget.getY();
+		int k = widget.getY();
 		int l = k + 27;
 		this.minPanX = Math.min(this.minPanX, i);
 		this.maxPanX = Math.max(this.maxPanX, j);
 		this.minPanY = Math.min(this.minPanY, k);
 		this.maxPanY = Math.max(this.maxPanY, l);
 
-		for (AdvancementWidget advancementWidget2 : this.widgets.values()) {
-			advancementWidget2.addToTree();
+		for (AdvancementWidget advancementWidget : this.widgets.values()) {
+			advancementWidget.addToTree();
 		}
 	}
 

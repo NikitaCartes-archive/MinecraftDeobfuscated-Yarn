@@ -10,18 +10,18 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 
 public class ThornsEnchantment extends Enchantment {
-	public ThornsEnchantment(Enchantment.Weight weight, EquipmentSlot... equipmentSlots) {
-		super(weight, EnchantmentTarget.ARMOR_CHEST, equipmentSlots);
+	public ThornsEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+		super(weight, EnchantmentTarget.ARMOR_CHEST, slotTypes);
 	}
 
 	@Override
-	public int getMinimumPower(int i) {
-		return 10 + 20 * (i - 1);
+	public int getMinimumPower(int level) {
+		return 10 + 20 * (level - 1);
 	}
 
 	@Override
-	public int getMaximumPower(int i) {
-		return super.getMinimumPower(i) + 50;
+	public int getMaximumPower(int level) {
+		return super.getMinimumPower(level) + 50;
 	}
 
 	@Override
@@ -30,32 +30,32 @@ public class ThornsEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isAcceptableItem(ItemStack itemStack) {
-		return itemStack.getItem() instanceof ArmorItem ? true : super.isAcceptableItem(itemStack);
+	public boolean isAcceptableItem(ItemStack stack) {
+		return stack.getItem() instanceof ArmorItem ? true : super.isAcceptableItem(stack);
 	}
 
 	@Override
-	public void onUserDamaged(LivingEntity livingEntity, Entity entity, int i) {
-		Random random = livingEntity.getRandom();
-		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.THORNS, livingEntity);
-		if (shouldDamageAttacker(i, random)) {
-			if (entity != null) {
-				entity.damage(DamageSource.thorns(livingEntity), (float)getDamageAmount(i, random));
+	public void onUserDamaged(LivingEntity user, Entity attacker, int level) {
+		Random random = user.getRandom();
+		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.THORNS, user);
+		if (shouldDamageAttacker(level, random)) {
+			if (attacker != null) {
+				attacker.damage(DamageSource.thorns(user), (float)getDamageAmount(level, random));
 			}
 
 			if (entry != null) {
-				((ItemStack)entry.getValue()).damage(3, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
+				((ItemStack)entry.getValue()).damage(3, user, livingEntity -> livingEntity.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 			}
 		} else if (entry != null) {
-			((ItemStack)entry.getValue()).damage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
+			((ItemStack)entry.getValue()).damage(1, user, livingEntity -> livingEntity.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 		}
 	}
 
-	public static boolean shouldDamageAttacker(int i, Random random) {
-		return i <= 0 ? false : random.nextFloat() < 0.15F * (float)i;
+	public static boolean shouldDamageAttacker(int level, Random random) {
+		return level <= 0 ? false : random.nextFloat() < 0.15F * (float)level;
 	}
 
-	public static int getDamageAmount(int i, Random random) {
-		return i > 10 ? i - 10 : 1 + random.nextInt(4);
+	public static int getDamageAmount(int level, Random random) {
+		return level > 10 ? level - 10 : 1 + random.nextInt(4);
 	}
 }

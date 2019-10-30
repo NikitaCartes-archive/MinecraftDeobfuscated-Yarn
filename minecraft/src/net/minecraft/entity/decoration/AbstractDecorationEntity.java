@@ -33,8 +33,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 		super(entityType, world);
 	}
 
-	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world, BlockPos blockPos) {
-		this(entityType, world);
+	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> world, World world2, BlockPos blockPos) {
+		this(world, world2);
 		this.blockPos = blockPos;
 	}
 
@@ -129,8 +129,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public boolean handleAttack(Entity entity) {
-		return entity instanceof PlayerEntity ? this.damage(DamageSource.player((PlayerEntity)entity), 0.0F) : false;
+	public boolean handleAttack(Entity attacker) {
+		return attacker instanceof PlayerEntity ? this.damage(DamageSource.player((PlayerEntity)attacker), 0.0F) : false;
 	}
 
 	@Override
@@ -139,14 +139,14 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		if (this.isInvulnerableTo(damageSource)) {
+	public boolean damage(DamageSource source, float amount) {
+		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
 			if (!this.removed && !this.world.isClient) {
 				this.remove();
 				this.scheduleVelocityUpdate();
-				this.onBreak(damageSource.getAttacker());
+				this.onBreak(source.getAttacker());
 			}
 
 			return true;
@@ -154,34 +154,34 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d vec3d) {
-		if (!this.world.isClient && !this.removed && vec3d.lengthSquared() > 0.0) {
+	public void move(MovementType type, Vec3d movement) {
+		if (!this.world.isClient && !this.removed && movement.lengthSquared() > 0.0) {
 			this.remove();
 			this.onBreak(null);
 		}
 	}
 
 	@Override
-	public void addVelocity(double d, double e, double f) {
-		if (!this.world.isClient && !this.removed && d * d + e * e + f * f > 0.0) {
+	public void addVelocity(double deltaX, double deltaY, double deltaZ) {
+		if (!this.world.isClient && !this.removed && deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ > 0.0) {
 			this.remove();
 			this.onBreak(null);
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putByte("Facing", (byte)this.facing.getHorizontal());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		tag.putByte("Facing", (byte)this.facing.getHorizontal());
 		BlockPos blockPos = this.getDecorationBlockPos();
-		compoundTag.putInt("TileX", blockPos.getX());
-		compoundTag.putInt("TileY", blockPos.getY());
-		compoundTag.putInt("TileZ", blockPos.getZ());
+		tag.putInt("TileX", blockPos.getX());
+		tag.putInt("TileY", blockPos.getY());
+		tag.putInt("TileZ", blockPos.getZ());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.blockPos = new BlockPos(compoundTag.getInt("TileX"), compoundTag.getInt("TileY"), compoundTag.getInt("TileZ"));
-		this.facing = Direction.fromHorizontal(compoundTag.getByte("Facing"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		this.blockPos = new BlockPos(tag.getInt("TileX"), tag.getInt("TileY"), tag.getInt("TileZ"));
+		this.facing = Direction.fromHorizontal(tag.getByte("Facing"));
 	}
 
 	public abstract int getWidthPixels();
@@ -193,13 +193,13 @@ public abstract class AbstractDecorationEntity extends Entity {
 	public abstract void onPlace();
 
 	@Override
-	public ItemEntity dropStack(ItemStack itemStack, float f) {
+	public ItemEntity dropStack(ItemStack stack, float yOffset) {
 		ItemEntity itemEntity = new ItemEntity(
 			this.world,
 			this.getX() + (double)((float)this.facing.getOffsetX() * 0.15F),
-			this.getY() + (double)f,
+			this.getY() + (double)yOffset,
 			this.getZ() + (double)((float)this.facing.getOffsetZ() * 0.15F),
-			itemStack
+			stack
 		);
 		itemEntity.setToDefaultPickupDelay();
 		this.world.spawnEntity(itemEntity);
@@ -212,8 +212,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void setPosition(double d, double e, double f) {
-		this.blockPos = new BlockPos(d, e, f);
+	public void setPosition(double x, double y, double z) {
+		this.blockPos = new BlockPos(x, y, z);
 		this.method_6895();
 		this.velocityDirty = true;
 	}
@@ -223,9 +223,9 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public float applyRotation(BlockRotation blockRotation) {
+	public float applyRotation(BlockRotation rotation) {
 		if (this.facing.getAxis() != Direction.Axis.Y) {
-			switch (blockRotation) {
+			switch (rotation) {
 				case CLOCKWISE_180:
 					this.facing = this.facing.getOpposite();
 					break;
@@ -238,7 +238,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 		}
 
 		float f = MathHelper.wrapDegrees(this.yaw);
-		switch (blockRotation) {
+		switch (rotation) {
 			case CLOCKWISE_180:
 				return f + 180.0F;
 			case COUNTERCLOCKWISE_90:
@@ -251,12 +251,12 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public float applyMirror(BlockMirror blockMirror) {
-		return this.applyRotation(blockMirror.getRotation(this.facing));
+	public float applyMirror(BlockMirror mirror) {
+		return this.applyRotation(mirror.getRotation(this.facing));
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightningEntity) {
+	public void onStruckByLightning(LightningEntity lightning) {
 	}
 
 	@Override

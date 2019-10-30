@@ -21,9 +21,9 @@ public abstract class Dimension {
 	protected final float[] lightLevelToBrightness = new float[16];
 	private final float[] backgroundColor = new float[4];
 
-	public Dimension(World world, DimensionType dimensionType) {
+	public Dimension(World world, DimensionType type) {
 		this.world = world;
-		this.type = dimensionType;
+		this.type = type;
 		this.initializeLightLevelToBrightness();
 	}
 
@@ -36,24 +36,24 @@ public abstract class Dimension {
 		}
 	}
 
-	public int getMoonPhase(long l) {
-		return (int)(l / 24000L % 8L + 8L) % 8;
+	public int getMoonPhase(long time) {
+		return (int)(time / 24000L % 8L + 8L) % 8;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public float[] getBackgroundColor(float f, float g) {
-		float h = 0.4F;
-		float i = MathHelper.cos(f * (float) (Math.PI * 2)) - 0.0F;
-		float j = -0.0F;
-		if (i >= -0.4F && i <= 0.4F) {
-			float k = (i - -0.0F) / 0.4F * 0.5F + 0.5F;
-			float l = 1.0F - (1.0F - MathHelper.sin(k * (float) Math.PI)) * 0.99F;
-			l *= l;
-			this.backgroundColor[0] = k * 0.3F + 0.7F;
-			this.backgroundColor[1] = k * k * 0.7F + 0.2F;
-			this.backgroundColor[2] = k * k * 0.0F + 0.2F;
-			this.backgroundColor[3] = l;
+	public float[] getBackgroundColor(float skyAngle, float tickDelta) {
+		float f = 0.4F;
+		float g = MathHelper.cos(skyAngle * (float) (Math.PI * 2)) - 0.0F;
+		float h = -0.0F;
+		if (g >= -0.4F && g <= 0.4F) {
+			float i = (g - -0.0F) / 0.4F * 0.5F + 0.5F;
+			float j = 1.0F - (1.0F - MathHelper.sin(i * (float) Math.PI)) * 0.99F;
+			j *= j;
+			this.backgroundColor[0] = i * 0.3F + 0.7F;
+			this.backgroundColor[1] = i * i * 0.7F + 0.2F;
+			this.backgroundColor[2] = i * i * 0.0F + 0.2F;
+			this.backgroundColor[3] = j;
 			return this.backgroundColor;
 		} else {
 			return null;
@@ -109,22 +109,22 @@ public abstract class Dimension {
 	public abstract ChunkGenerator<?> createChunkGenerator();
 
 	@Nullable
-	public abstract BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl);
+	public abstract BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean checkMobSpawnValidity);
 
 	@Nullable
-	public abstract BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl);
+	public abstract BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity);
 
-	public abstract float getSkyAngle(long l, float f);
+	public abstract float getSkyAngle(long timeOfDay, float delta);
 
 	public abstract boolean hasVisibleSky();
 
 	@Environment(EnvType.CLIENT)
-	public abstract Vec3d getFogColor(float f, float g);
+	public abstract Vec3d getFogColor(float skyAngle, float tickDelta);
 
 	public abstract boolean canPlayersSleep();
 
 	@Environment(EnvType.CLIENT)
-	public abstract boolean shouldRenderFog(int i, int j);
+	public abstract boolean isFogThick(int x, int z);
 
 	public abstract DimensionType getType();
 }

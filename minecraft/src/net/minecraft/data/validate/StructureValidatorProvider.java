@@ -7,23 +7,23 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.structure.Structure;
 
-public class StructureValidatorProvider implements SnbtProvider.class_4460 {
+public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 	@Override
-	public CompoundTag method_21674(String string, CompoundTag compoundTag) {
-		return string.startsWith("data/minecraft/structures/") ? method_16878(method_16880(compoundTag)) : compoundTag;
+	public CompoundTag write(String name, CompoundTag nbt) {
+		return name.startsWith("data/minecraft/structures/") ? update(addDataVersion(nbt)) : nbt;
 	}
 
-	private static CompoundTag method_16880(CompoundTag compoundTag) {
-		if (!compoundTag.contains("DataVersion", 99)) {
-			compoundTag.putInt("DataVersion", 500);
+	private static CompoundTag addDataVersion(CompoundTag nbt) {
+		if (!nbt.contains("DataVersion", 99)) {
+			nbt.putInt("DataVersion", 500);
 		}
 
-		return compoundTag;
+		return nbt;
 	}
 
-	private static CompoundTag method_16878(CompoundTag compoundTag) {
+	private static CompoundTag update(CompoundTag nbt) {
 		Structure structure = new Structure();
-		structure.fromTag(NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+		structure.fromTag(NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
 		return structure.toTag(new CompoundTag());
 	}
 }

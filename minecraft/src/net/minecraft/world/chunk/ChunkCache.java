@@ -20,12 +20,12 @@ public class ChunkCache implements BlockView, CollisionView {
 	protected boolean empty;
 	protected final World world;
 
-	public ChunkCache(World world, BlockPos blockPos, BlockPos blockPos2) {
+	public ChunkCache(World world, BlockPos minPos, BlockPos maxPos) {
 		this.world = world;
-		this.minX = blockPos.getX() >> 4;
-		this.minZ = blockPos.getZ() >> 4;
-		int i = blockPos2.getX() >> 4;
-		int j = blockPos2.getZ() >> 4;
+		this.minX = minPos.getX() >> 4;
+		this.minZ = minPos.getZ() >> 4;
+		int i = maxPos.getX() >> 4;
+		int j = maxPos.getZ() >> 4;
 		this.chunks = new Chunk[i - this.minX + 1][j - this.minZ + 1];
 		this.empty = true;
 
@@ -35,10 +35,10 @@ public class ChunkCache implements BlockView, CollisionView {
 			}
 		}
 
-		for (int k = blockPos.getX() >> 4; k <= blockPos2.getX() >> 4; k++) {
-			for (int l = blockPos.getZ() >> 4; l <= blockPos2.getZ() >> 4; l++) {
+		for (int k = minPos.getX() >> 4; k <= maxPos.getX() >> 4; k++) {
+			for (int l = minPos.getZ() >> 4; l <= maxPos.getZ() >> 4; l++) {
 				Chunk chunk = this.chunks[k - this.minX][l - this.minZ];
-				if (chunk != null && !chunk.method_12228(blockPos.getY(), blockPos2.getY())) {
+				if (chunk != null && !chunk.method_12228(minPos.getY(), maxPos.getY())) {
 					this.empty = false;
 					return;
 				}
@@ -67,34 +67,34 @@ public class ChunkCache implements BlockView, CollisionView {
 	}
 
 	@Override
-	public BlockView getExistingChunk(int i, int j) {
-		return this.method_22353(i, j);
+	public BlockView getExistingChunk(int chunkX, int chunkZ) {
+		return this.method_22353(chunkX, chunkZ);
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos blockPos) {
-		Chunk chunk = this.method_22354(blockPos);
-		return chunk.getBlockEntity(blockPos);
+	public BlockEntity getBlockEntity(BlockPos pos) {
+		Chunk chunk = this.method_22354(pos);
+		return chunk.getBlockEntity(pos);
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos blockPos) {
-		if (World.isHeightInvalid(blockPos)) {
+	public BlockState getBlockState(BlockPos pos) {
+		if (World.isHeightInvalid(pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			Chunk chunk = this.method_22354(blockPos);
-			return chunk.getBlockState(blockPos);
+			Chunk chunk = this.method_22354(pos);
+			return chunk.getBlockState(pos);
 		}
 	}
 
 	@Override
-	public FluidState getFluidState(BlockPos blockPos) {
-		if (World.isHeightInvalid(blockPos)) {
+	public FluidState getFluidState(BlockPos pos) {
+		if (World.isHeightInvalid(pos)) {
 			return Fluids.EMPTY.getDefaultState();
 		} else {
-			Chunk chunk = this.method_22354(blockPos);
-			return chunk.getFluidState(blockPos);
+			Chunk chunk = this.method_22354(pos);
+			return chunk.getFluidState(pos);
 		}
 	}
 }

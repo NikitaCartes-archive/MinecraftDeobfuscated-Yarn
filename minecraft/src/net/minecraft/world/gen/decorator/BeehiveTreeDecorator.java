@@ -61,15 +61,15 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		return new Dynamic<>(
-				dynamicOps,
-				dynamicOps.createMap(
+				ops,
+				ops.createMap(
 					ImmutableMap.of(
-						dynamicOps.createString("type"),
-						dynamicOps.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()),
-						dynamicOps.createString("probability"),
-						dynamicOps.createFloat(this.field_21317)
+						ops.createString("type"),
+						ops.createString(Registry.TREE_DECORATOR_TYPE.getId(this.field_21319).toString()),
+						ops.createString("probability"),
+						ops.createFloat(this.field_21317)
 					)
 				)
 			)

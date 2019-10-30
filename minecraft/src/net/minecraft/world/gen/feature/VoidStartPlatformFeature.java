@@ -14,8 +14,8 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockPos field_19241 = new BlockPos(8, 3, 8);
 	private static final ChunkPos field_19242 = new ChunkPos(field_19241);
 
-	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	private static int method_20403(int i, int j, int k, int l) {

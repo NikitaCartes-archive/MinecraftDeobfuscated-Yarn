@@ -68,37 +68,37 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	private IntOpenHashSet piercedEntities;
 	private List<Entity> piercingKilledEntities;
 
-	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
-		super(entityType, world);
+	protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, World world) {
+		super(type, world);
 	}
 
-	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, double d, double e, double f, World world) {
-		this(entityType, world);
-		this.setPosition(d, e, f);
+	protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, double x, double y, double z, World world) {
+		this(type, world);
+		this.setPosition(x, y, z);
 	}
 
-	protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, LivingEntity livingEntity, World world) {
-		this(entityType, livingEntity.getX(), livingEntity.method_23320() - 0.1F, livingEntity.getZ(), world);
-		this.setOwner(livingEntity);
-		if (livingEntity instanceof PlayerEntity) {
+	protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, LivingEntity owner, World world) {
+		this(type, owner.getX(), owner.method_23320() - 0.1F, owner.getZ(), world);
+		this.setOwner(owner);
+		if (owner instanceof PlayerEntity) {
 			this.pickupType = ProjectileEntity.PickupPermission.ALLOWED;
 		}
 	}
 
-	public void setSound(SoundEvent soundEvent) {
-		this.sound = soundEvent;
+	public void setSound(SoundEvent sound) {
+		this.sound = sound;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		double e = this.getBoundingBox().getAverageSideLength() * 10.0;
-		if (Double.isNaN(e)) {
-			e = 1.0;
+	public boolean shouldRenderAtDistance(double distance) {
+		double d = this.getBoundingBox().getAverageSideLength() * 10.0;
+		if (Double.isNaN(d)) {
+			d = 1.0;
 		}
 
-		e *= 64.0 * getRenderDistanceMultiplier();
-		return d < e * e;
+		d *= 64.0 * getRenderDistanceMultiplier();
+		return distance < d * d;
 	}
 
 	@Override
@@ -108,24 +108,28 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		this.dataTracker.startTracking(PIERCE_LEVEL, (byte)0);
 	}
 
-	public void setProperties(Entity entity, float f, float g, float h, float i, float j) {
-		float k = -MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));
-		float l = -MathHelper.sin(f * (float) (Math.PI / 180.0));
-		float m = MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(f * (float) (Math.PI / 180.0));
-		this.setVelocity((double)k, (double)l, (double)m, i, j);
-		this.setVelocity(this.getVelocity().add(entity.getVelocity().x, entity.onGround ? 0.0 : entity.getVelocity().y, entity.getVelocity().z));
+	public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
+		float f = -MathHelper.sin(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
+		float g = -MathHelper.sin(pitch * (float) (Math.PI / 180.0));
+		float h = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
+		this.setVelocity((double)f, (double)g, (double)h, modifierZ, modifierXYZ);
+		this.setVelocity(this.getVelocity().add(user.getVelocity().x, user.onGround ? 0.0 : user.getVelocity().y, user.getVelocity().z));
 	}
 
 	@Override
-	public void setVelocity(double d, double e, double f, float g, float h) {
-		Vec3d vec3d = new Vec3d(d, e, f)
+	public void setVelocity(double x, double y, double z, float speed, float divergence) {
+		Vec3d vec3d = new Vec3d(x, y, z)
 			.normalize()
-			.add(this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h)
-			.multiply((double)g);
+			.add(
+				this.random.nextGaussian() * 0.0075F * (double)divergence,
+				this.random.nextGaussian() * 0.0075F * (double)divergence,
+				this.random.nextGaussian() * 0.0075F * (double)divergence
+			)
+			.multiply((double)speed);
 		this.setVelocity(vec3d);
-		float i = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)i) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 		this.life = 0;
@@ -133,19 +137,19 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
-		this.setPosition(d, e, f);
-		this.setRotation(g, h);
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+		this.setPosition(x, y, z);
+		this.setRotation(yaw, pitch);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setVelocityClient(double d, double e, double f) {
-		this.setVelocity(d, e, f);
+	public void setVelocityClient(double x, double y, double z) {
+		this.setVelocity(x, y, z);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float g = MathHelper.sqrt(d * d + f * f);
-			this.pitch = (float)(MathHelper.atan2(e, (double)g) * 180.0F / (float)Math.PI);
-			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
+			float f = MathHelper.sqrt(x * x + z * z);
+			this.pitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
+			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
 			this.prevPitch = this.pitch;
 			this.prevYaw = this.yaw;
 			this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
@@ -453,16 +457,16 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		return this.sound;
 	}
 
-	protected void onHit(LivingEntity livingEntity) {
+	protected void onHit(LivingEntity target) {
 	}
 
 	@Nullable
-	protected EntityHitResult getEntityCollision(Vec3d vec3d, Vec3d vec3d2) {
+	protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
 		return ProjectileUtil.getEntityCollision(
 			this.world,
 			this,
-			vec3d,
-			vec3d2,
+			currentPosition,
+			nextPosition,
 			this.getBoundingBox().stretch(this.getVelocity()).expand(1.0),
 			entity -> !entity.isSpectator()
 					&& entity.isAlive()
@@ -473,56 +477,56 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putShort("life", (short)this.life);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		tag.putShort("life", (short)this.life);
 		if (this.inBlockState != null) {
-			compoundTag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
+			tag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
 		}
 
-		compoundTag.putByte("shake", (byte)this.shake);
-		compoundTag.putBoolean("inGround", this.inGround);
-		compoundTag.putByte("pickup", (byte)this.pickupType.ordinal());
-		compoundTag.putDouble("damage", this.damage);
-		compoundTag.putBoolean("crit", this.isCritical());
-		compoundTag.putByte("PierceLevel", this.getPierceLevel());
+		tag.putByte("shake", (byte)this.shake);
+		tag.putBoolean("inGround", this.inGround);
+		tag.putByte("pickup", (byte)this.pickupType.ordinal());
+		tag.putDouble("damage", this.damage);
+		tag.putBoolean("crit", this.isCritical());
+		tag.putByte("PierceLevel", this.getPierceLevel());
 		if (this.ownerUuid != null) {
-			compoundTag.putUuid("OwnerUUID", this.ownerUuid);
+			tag.putUuid("OwnerUUID", this.ownerUuid);
 		}
 
-		compoundTag.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
-		compoundTag.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
+		tag.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
+		tag.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.life = compoundTag.getShort("life");
-		if (compoundTag.contains("inBlockState", 10)) {
-			this.inBlockState = NbtHelper.toBlockState(compoundTag.getCompound("inBlockState"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		this.life = tag.getShort("life");
+		if (tag.contains("inBlockState", 10)) {
+			this.inBlockState = NbtHelper.toBlockState(tag.getCompound("inBlockState"));
 		}
 
-		this.shake = compoundTag.getByte("shake") & 255;
-		this.inGround = compoundTag.getBoolean("inGround");
-		if (compoundTag.contains("damage", 99)) {
-			this.damage = compoundTag.getDouble("damage");
+		this.shake = tag.getByte("shake") & 255;
+		this.inGround = tag.getBoolean("inGround");
+		if (tag.contains("damage", 99)) {
+			this.damage = tag.getDouble("damage");
 		}
 
-		if (compoundTag.contains("pickup", 99)) {
-			this.pickupType = ProjectileEntity.PickupPermission.fromOrdinal(compoundTag.getByte("pickup"));
-		} else if (compoundTag.contains("player", 99)) {
-			this.pickupType = compoundTag.getBoolean("player") ? ProjectileEntity.PickupPermission.ALLOWED : ProjectileEntity.PickupPermission.DISALLOWED;
+		if (tag.contains("pickup", 99)) {
+			this.pickupType = ProjectileEntity.PickupPermission.fromOrdinal(tag.getByte("pickup"));
+		} else if (tag.contains("player", 99)) {
+			this.pickupType = tag.getBoolean("player") ? ProjectileEntity.PickupPermission.ALLOWED : ProjectileEntity.PickupPermission.DISALLOWED;
 		}
 
-		this.setCritical(compoundTag.getBoolean("crit"));
-		this.setPierceLevel(compoundTag.getByte("PierceLevel"));
-		if (compoundTag.containsUuid("OwnerUUID")) {
-			this.ownerUuid = compoundTag.getUuid("OwnerUUID");
+		this.setCritical(tag.getBoolean("crit"));
+		this.setPierceLevel(tag.getByte("PierceLevel"));
+		if (tag.containsUuid("OwnerUUID")) {
+			this.ownerUuid = tag.getUuid("OwnerUUID");
 		}
 
-		if (compoundTag.contains("SoundEvent", 8)) {
-			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOrEmpty(new Identifier(compoundTag.getString("SoundEvent"))).orElse(this.getHitSound());
+		if (tag.contains("SoundEvent", 8)) {
+			this.sound = (SoundEvent)Registry.SOUND_EVENT.getOrEmpty(new Identifier(tag.getString("SoundEvent"))).orElse(this.getHitSound());
 		}
 
-		this.setShotFromCrossbow(compoundTag.getBoolean("ShotFromCrossbow"));
+		this.setShotFromCrossbow(tag.getBoolean("ShotFromCrossbow"));
 	}
 
 	public void setOwner(@Nullable Entity entity) {
@@ -540,17 +544,17 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void onPlayerCollision(PlayerEntity playerEntity) {
+	public void onPlayerCollision(PlayerEntity player) {
 		if (!this.world.isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
 			boolean bl = this.pickupType == ProjectileEntity.PickupPermission.ALLOWED
-				|| this.pickupType == ProjectileEntity.PickupPermission.CREATIVE_ONLY && playerEntity.abilities.creativeMode
-				|| this.isNoClip() && this.getOwner().getUuid() == playerEntity.getUuid();
-			if (this.pickupType == ProjectileEntity.PickupPermission.ALLOWED && !playerEntity.inventory.insertStack(this.asItemStack())) {
+				|| this.pickupType == ProjectileEntity.PickupPermission.CREATIVE_ONLY && player.abilities.creativeMode
+				|| this.isNoClip() && this.getOwner().getUuid() == player.getUuid();
+			if (this.pickupType == ProjectileEntity.PickupPermission.ALLOWED && !player.inventory.insertStack(this.asItemStack())) {
 				bl = false;
 			}
 
 			if (bl) {
-				playerEntity.sendPickup(this, 1);
+				player.sendPickup(this, 1);
 				this.remove();
 			}
 		}
@@ -563,16 +567,16 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		return false;
 	}
 
-	public void setDamage(double d) {
-		this.damage = d;
+	public void setDamage(double damage) {
+		this.damage = damage;
 	}
 
 	public double getDamage() {
 		return this.damage;
 	}
 
-	public void setPunch(int i) {
-		this.punch = i;
+	public void setPunch(int punch) {
+		this.punch = punch;
 	}
 
 	@Override
@@ -581,24 +585,24 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.0F;
 	}
 
-	public void setCritical(boolean bl) {
-		this.setProjectileFlag(1, bl);
+	public void setCritical(boolean critical) {
+		this.setProjectileFlag(1, critical);
 	}
 
-	public void setPierceLevel(byte b) {
-		this.dataTracker.set(PIERCE_LEVEL, b);
+	public void setPierceLevel(byte level) {
+		this.dataTracker.set(PIERCE_LEVEL, level);
 	}
 
-	private void setProjectileFlag(int i, boolean bl) {
+	private void setProjectileFlag(int index, boolean flag) {
 		byte b = this.dataTracker.get(PROJECTILE_FLAGS);
-		if (bl) {
-			this.dataTracker.set(PROJECTILE_FLAGS, (byte)(b | i));
+		if (flag) {
+			this.dataTracker.set(PROJECTILE_FLAGS, (byte)(b | index));
 		} else {
-			this.dataTracker.set(PROJECTILE_FLAGS, (byte)(b & ~i));
+			this.dataTracker.set(PROJECTILE_FLAGS, (byte)(b & ~index));
 		}
 	}
 
@@ -616,10 +620,10 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		return this.dataTracker.get(PIERCE_LEVEL);
 	}
 
-	public void applyEnchantmentEffects(LivingEntity livingEntity, float f) {
+	public void applyEnchantmentEffects(LivingEntity livingEntity, float damageModifier) {
 		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.POWER, livingEntity);
 		int j = EnchantmentHelper.getEquipmentLevel(Enchantments.PUNCH, livingEntity);
-		this.setDamage((double)(f * 2.0F) + this.random.nextGaussian() * 0.25 + (double)((float)this.world.getDifficulty().getId() * 0.11F));
+		this.setDamage((double)(damageModifier * 2.0F) + this.random.nextGaussian() * 0.25 + (double)((float)this.world.getDifficulty().getId() * 0.11F));
 		if (i > 0) {
 			this.setDamage(this.getDamage() + (double)i * 0.5 + 0.5);
 		}
@@ -637,17 +641,17 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		return 0.6F;
 	}
 
-	public void setNoClip(boolean bl) {
-		this.noClip = bl;
-		this.setProjectileFlag(2, bl);
+	public void setNoClip(boolean noClip) {
+		this.noClip = noClip;
+		this.setProjectileFlag(2, noClip);
 	}
 
 	public boolean isNoClip() {
 		return !this.world.isClient ? this.noClip : (this.dataTracker.get(PROJECTILE_FLAGS) & 2) != 0;
 	}
 
-	public void setShotFromCrossbow(boolean bl) {
-		this.setProjectileFlag(4, bl);
+	public void setShotFromCrossbow(boolean shotFromCrossbow) {
+		this.setProjectileFlag(4, shotFromCrossbow);
 	}
 
 	@Override
@@ -661,12 +665,12 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		ALLOWED,
 		CREATIVE_ONLY;
 
-		public static ProjectileEntity.PickupPermission fromOrdinal(int i) {
-			if (i < 0 || i > values().length) {
-				i = 0;
+		public static ProjectileEntity.PickupPermission fromOrdinal(int ordinal) {
+			if (ordinal < 0 || ordinal > values().length) {
+				ordinal = 0;
 			}
 
-			return values()[i];
+			return values()[ordinal];
 		}
 	}
 }

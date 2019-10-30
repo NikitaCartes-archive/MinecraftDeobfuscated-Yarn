@@ -28,27 +28,27 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		super(entityType, world);
 	}
 
-	public LlamaSpitEntity(World world, LlamaEntity llamaEntity) {
+	public LlamaSpitEntity(World world, LlamaEntity owner) {
 		this(EntityType.LLAMA_SPIT, world);
-		this.owner = llamaEntity;
+		this.owner = owner;
 		this.setPosition(
-			llamaEntity.getX() - (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(llamaEntity.bodyYaw * (float) (Math.PI / 180.0)),
-			llamaEntity.method_23320() - 0.1F,
-			llamaEntity.getZ() + (double)(llamaEntity.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(llamaEntity.bodyYaw * (float) (Math.PI / 180.0))
+			owner.getX() - (double)(owner.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * (float) (Math.PI / 180.0)),
+			owner.method_23320() - 0.1F,
+			owner.getZ() + (double)(owner.getWidth() + 1.0F) * 0.5 * (double)MathHelper.cos(owner.bodyYaw * (float) (Math.PI / 180.0))
 		);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LlamaSpitEntity(World world, double d, double e, double f, double g, double h, double i) {
+	public LlamaSpitEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		this(EntityType.LLAMA_SPIT, world);
-		this.setPosition(d, e, f);
+		this.setPosition(x, y, z);
 
-		for (int j = 0; j < 7; j++) {
-			double k = 0.4 + 0.1 * (double)j;
-			world.addParticle(ParticleTypes.SPIT, d, e, f, g * k, h, i * k);
+		for (int i = 0; i < 7; i++) {
+			double d = 0.4 + 0.1 * (double)i;
+			world.addParticle(ParticleTypes.SPIT, x, y, z, velocityX * d, velocityY, velocityZ * d);
 		}
 
-		this.setVelocity(g, h, i);
+		this.setVelocity(velocityX, velocityY, velocityZ);
 	}
 
 	@Override
@@ -109,12 +109,12 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setVelocityClient(double d, double e, double f) {
-		this.setVelocity(d, e, f);
+	public void setVelocityClient(double x, double y, double z) {
+		this.setVelocity(x, y, z);
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float g = MathHelper.sqrt(d * d + f * f);
-			this.pitch = (float)(MathHelper.atan2(e, (double)g) * 180.0F / (float)Math.PI);
-			this.yaw = (float)(MathHelper.atan2(d, f) * 180.0F / (float)Math.PI);
+			float f = MathHelper.sqrt(x * x + z * z);
+			this.pitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
+			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
 			this.prevPitch = this.pitch;
 			this.prevYaw = this.yaw;
 			this.setPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
@@ -122,15 +122,19 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void setVelocity(double d, double e, double f, float g, float h) {
-		Vec3d vec3d = new Vec3d(d, e, f)
+	public void setVelocity(double x, double y, double z, float speed, float divergence) {
+		Vec3d vec3d = new Vec3d(x, y, z)
 			.normalize()
-			.add(this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h)
-			.multiply((double)g);
+			.add(
+				this.random.nextGaussian() * 0.0075F * (double)divergence,
+				this.random.nextGaussian() * 0.0075F * (double)divergence,
+				this.random.nextGaussian() * 0.0075F * (double)divergence
+			)
+			.multiply((double)speed);
 		this.setVelocity(vec3d);
-		float i = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.yaw = (float)(MathHelper.atan2(vec3d.x, f) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)i) * 180.0F / (float)Math.PI);
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.yaw = (float)(MathHelper.atan2(vec3d.x, z) * 180.0F / (float)Math.PI);
+		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
@@ -149,19 +153,19 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		if (compoundTag.contains("Owner", 10)) {
-			this.tag = compoundTag.getCompound("Owner");
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		if (tag.contains("Owner", 10)) {
+			this.tag = tag.getCompound("Owner");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void writeCustomDataToTag(CompoundTag tag) {
 		if (this.owner != null) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			CompoundTag compoundTag = new CompoundTag();
 			UUID uUID = this.owner.getUuid();
-			compoundTag2.putUuid("OwnerUUID", uUID);
-			compoundTag.put("Owner", compoundTag2);
+			compoundTag.putUuid("OwnerUUID", uUID);
+			tag.put("Owner", compoundTag);
 		}
 	}
 

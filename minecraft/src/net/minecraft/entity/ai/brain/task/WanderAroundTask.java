@@ -24,8 +24,8 @@ public class WanderAroundTask extends Task<MobEntity> {
 	private float field_18371;
 	private int field_18964;
 
-	public WanderAroundTask(int i) {
-		super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), i);
+	public WanderAroundTask(int runTime) {
+		super(ImmutableMap.of(MemoryModuleType.PATH, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_PRESENT), runTime);
 	}
 
 	protected boolean method_18978(ServerWorld serverWorld, MobEntity mobEntity) {

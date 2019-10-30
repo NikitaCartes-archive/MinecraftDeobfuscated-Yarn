@@ -30,8 +30,8 @@ public class FillCommand {
 	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("fill")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -128,27 +128,23 @@ public class FillCommand {
 	}
 
 	private static int execute(
-		ServerCommandSource serverCommandSource,
-		BlockBox blockBox,
-		BlockStateArgument blockStateArgument,
-		FillCommand.Mode mode,
-		@Nullable Predicate<CachedBlockPosition> predicate
+		ServerCommandSource source, BlockBox range, BlockStateArgument block, FillCommand.Mode mode, @Nullable Predicate<CachedBlockPosition> filter
 	) throws CommandSyntaxException {
-		int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
+		int i = range.getBlockCountX() * range.getBlockCountY() * range.getBlockCountZ();
 		if (i > 32768) {
 			throw TOOBIG_EXCEPTION.create(32768, i);
 		} else {
 			List<BlockPos> list = Lists.<BlockPos>newArrayList();
-			ServerWorld serverWorld = serverCommandSource.getWorld();
+			ServerWorld serverWorld = source.getWorld();
 			int j = 0;
 
-			for (BlockPos blockPos : BlockPos.iterate(blockBox.minX, blockBox.minY, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ)) {
-				if (predicate == null || predicate.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
-					BlockStateArgument blockStateArgument2 = mode.filter.filter(blockBox, blockPos, blockStateArgument, serverWorld);
-					if (blockStateArgument2 != null) {
+			for (BlockPos blockPos : BlockPos.iterate(range.minX, range.minY, range.minZ, range.maxX, range.maxY, range.maxZ)) {
+				if (filter == null || filter.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
+					BlockStateArgument blockStateArgument = mode.filter.filter(range, blockPos, block, serverWorld);
+					if (blockStateArgument != null) {
 						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 						Clearable.clear(blockEntity);
-						if (blockStateArgument2.setBlockState(serverWorld, blockPos, 2)) {
+						if (blockStateArgument.setBlockState(serverWorld, blockPos, 2)) {
 							list.add(blockPos.toImmutable());
 							j++;
 						}
@@ -157,14 +153,14 @@ public class FillCommand {
 			}
 
 			for (BlockPos blockPosx : list) {
-				Block block = serverWorld.getBlockState(blockPosx).getBlock();
-				serverWorld.updateNeighbors(blockPosx, block);
+				Block block2 = serverWorld.getBlockState(blockPosx).getBlock();
+				serverWorld.updateNeighbors(blockPosx, block2);
 			}
 
 			if (j == 0) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.fill.success", j), true);
+				source.sendFeedback(new TranslatableText("commands.fill.success", j), true);
 				return j;
 			}
 		}

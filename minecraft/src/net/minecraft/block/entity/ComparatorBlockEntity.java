@@ -26,7 +26,7 @@ public class ComparatorBlockEntity extends BlockEntity {
 		return this.outputSignal;
 	}
 
-	public void setOutputSignal(int i) {
-		this.outputSignal = i;
+	public void setOutputSignal(int outputSignal) {
+		this.outputSignal = outputSignal;
 	}
 }

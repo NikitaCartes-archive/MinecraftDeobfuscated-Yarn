@@ -13,12 +13,12 @@ public class RealmsNews extends ValueObject {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public String newsLink;
 
-	public static RealmsNews parse(String string) {
+	public static RealmsNews parse(String json) {
 		RealmsNews realmsNews = new RealmsNews();
 
 		try {
 			JsonParser jsonParser = new JsonParser();
-			JsonObject jsonObject = jsonParser.parse(string).getAsJsonObject();
+			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
 			realmsNews.newsLink = JsonUtils.getStringOr("newsLink", jsonObject, null);
 		} catch (Exception var4) {
 			LOGGER.error("Could not parse RealmsNews: " + var4.getMessage());

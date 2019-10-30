@@ -9,8 +9,8 @@ import com.mojang.datafixers.types.Type;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BlockEntityJukeboxFix extends ChoiceFix {
-	public BlockEntityJukeboxFix(Schema schema, boolean bl) {
-		super(schema, bl, "BlockEntityJukeboxFix", TypeReferences.BLOCK_ENTITY, "minecraft:jukebox");
+	public BlockEntityJukeboxFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "BlockEntityJukeboxFix", TypeReferences.BLOCK_ENTITY, "minecraft:jukebox");
 	}
 
 	@Override

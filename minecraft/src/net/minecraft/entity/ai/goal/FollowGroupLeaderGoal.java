@@ -9,13 +9,13 @@ public class FollowGroupLeaderGoal extends Goal {
 	private int moveDelay;
 	private int checkSurroundingDelay;
 
-	public FollowGroupLeaderGoal(SchoolingFishEntity schoolingFishEntity) {
-		this.fish = schoolingFishEntity;
-		this.checkSurroundingDelay = this.getSurroundingSearchDelay(schoolingFishEntity);
+	public FollowGroupLeaderGoal(SchoolingFishEntity fish) {
+		this.fish = fish;
+		this.checkSurroundingDelay = this.getSurroundingSearchDelay(fish);
 	}
 
-	protected int getSurroundingSearchDelay(SchoolingFishEntity schoolingFishEntity) {
-		return 200 + schoolingFishEntity.getRandom().nextInt(200) % 20;
+	protected int getSurroundingSearchDelay(SchoolingFishEntity fish) {
+		return 200 + fish.getRandom().nextInt(200) % 20;
 	}
 
 	@Override

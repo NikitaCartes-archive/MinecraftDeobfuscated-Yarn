@@ -19,31 +19,31 @@ public class PumpkinBlock extends GourdBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.SHEARS) {
 			if (!world.isClient) {
-				Direction direction = blockHitResult.getSide();
-				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? playerEntity.getHorizontalFacing().getOpposite() : direction;
-				world.playSound(null, blockPos, SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-				world.setBlockState(blockPos, Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
+				Direction direction = hit.getSide();
+				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player.getHorizontalFacing().getOpposite() : direction;
+				world.playSound(null, pos, SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				world.setBlockState(pos, Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
 				ItemEntity itemEntity = new ItemEntity(
 					world,
-					(double)blockPos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,
-					(double)blockPos.getY() + 0.1,
-					(double)blockPos.getZ() + 0.5 + (double)direction2.getOffsetZ() * 0.65,
+					(double)pos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,
+					(double)pos.getY() + 0.1,
+					(double)pos.getZ() + 0.5 + (double)direction2.getOffsetZ() * 0.65,
 					new ItemStack(Items.PUMPKIN_SEEDS, 4)
 				);
 				itemEntity.setVelocity(
 					0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02, 0.05, 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02
 				);
 				world.spawnEntity(itemEntity);
-				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
 			return ActionResult.SUCCESS;
 		} else {
-			return super.onUse(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.onUse(state, world, pos, player, hand, hit);
 		}
 	}
 

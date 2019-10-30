@@ -34,47 +34,42 @@ public class IglooGenerator {
 	);
 
 	public static void addPieces(
-		StructureManager structureManager,
-		BlockPos blockPos,
-		BlockRotation blockRotation,
-		List<StructurePiece> list,
-		Random random,
-		DefaultFeatureConfig defaultFeatureConfig
+		StructureManager manager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random, DefaultFeatureConfig defaultConfig
 	) {
 		if (random.nextDouble() < 0.5) {
 			int i = random.nextInt(8) + 4;
-			list.add(new IglooGenerator.Piece(structureManager, BOTTOM_TEMPLATE, blockPos, blockRotation, i * 3));
+			pieces.add(new IglooGenerator.Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
 
 			for (int j = 0; j < i - 1; j++) {
-				list.add(new IglooGenerator.Piece(structureManager, MIDDLE_TEMPLATE, blockPos, blockRotation, j * 3));
+				pieces.add(new IglooGenerator.Piece(manager, MIDDLE_TEMPLATE, pos, rotation, j * 3));
 			}
 		}
 
-		list.add(new IglooGenerator.Piece(structureManager, TOP_TEMPLATE, blockPos, blockRotation, 0));
+		pieces.add(new IglooGenerator.Piece(manager, TOP_TEMPLATE, pos, rotation, 0));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
 		private final Identifier template;
 		private final BlockRotation rotation;
 
-		public Piece(StructureManager structureManager, Identifier identifier, BlockPos blockPos, BlockRotation blockRotation, int i) {
+		public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, int yOffset) {
 			super(StructurePieceType.IGLU, 0);
 			this.template = identifier;
-			BlockPos blockPos2 = (BlockPos)IglooGenerator.field_14406.get(identifier);
-			this.pos = blockPos.add(blockPos2.getX(), blockPos2.getY() - i, blockPos2.getZ());
-			this.rotation = blockRotation;
-			this.initializeStructureData(structureManager);
+			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(identifier);
+			this.pos = pos.add(blockPos.getX(), blockPos.getY() - yOffset, blockPos.getZ());
+			this.rotation = rotation;
+			this.initializeStructureData(manager);
 		}
 
-		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.IGLU, compoundTag);
-			this.template = new Identifier(compoundTag.getString("Template"));
-			this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
-			this.initializeStructureData(structureManager);
+		public Piece(StructureManager manager, CompoundTag tag) {
+			super(StructurePieceType.IGLU, tag);
+			this.template = new Identifier(tag.getString("Template"));
+			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
+			this.initializeStructureData(manager);
 		}
 
-		private void initializeStructureData(StructureManager structureManager) {
-			Structure structure = structureManager.getStructureOrBlank(this.template);
+		private void initializeStructureData(StructureManager manager) {
+			Structure structure = manager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
 				.setMirrored(BlockMirror.NONE)
@@ -84,17 +79,17 @@ public class IglooGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag compoundTag) {
-			super.toNbt(compoundTag);
-			compoundTag.putString("Template", this.template.toString());
-			compoundTag.putString("Rot", this.rotation.name());
+		protected void toNbt(CompoundTag tag) {
+			super.toNbt(tag);
+			tag.putString("Template", this.template.toString());
+			tag.putString("Rot", this.rotation.name());
 		}
 
 		@Override
-		protected void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, BlockBox blockBox) {
-			if ("chest".equals(string)) {
-				iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
-				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos.method_10074());
+		protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+			if ("chest".equals(metadata)) {
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+				BlockEntity blockEntity = world.getBlockEntity(pos.method_10074());
 				if (blockEntity instanceof ChestBlockEntity) {
 					((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
 				}
@@ -102,7 +97,7 @@ public class IglooGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
 				.setMirrored(BlockMirror.NONE)
@@ -110,15 +105,15 @@ public class IglooGenerator {
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(this.template);
 			BlockPos blockPos2 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
-			int i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
+			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			BlockPos blockPos3 = this.pos;
 			this.pos = this.pos.add(0, i - 90 - 1, 0);
-			boolean bl = super.generate(iWorld, chunkGenerator, random, blockBox, chunkPos);
+			boolean bl = super.generate(world, chunkGenerator, random, blockBox, chunkPos);
 			if (this.template.equals(IglooGenerator.TOP_TEMPLATE)) {
 				BlockPos blockPos4 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3, 0, 5)));
-				BlockState blockState = iWorld.getBlockState(blockPos4.method_10074());
+				BlockState blockState = world.getBlockState(blockPos4.method_10074());
 				if (!blockState.isAir() && blockState.getBlock() != Blocks.LADDER) {
-					iWorld.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
+					world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
 				}
 			}
 

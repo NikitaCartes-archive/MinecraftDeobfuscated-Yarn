@@ -18,21 +18,21 @@ public class ProjectileAttackGoal extends Goal {
 	private final float maxShootRange;
 	private final float squaredMaxShootRange;
 
-	public ProjectileAttackGoal(RangedAttackMob rangedAttackMob, double d, int i, float f) {
-		this(rangedAttackMob, d, i, i, f);
+	public ProjectileAttackGoal(RangedAttackMob mob, double mobSpeed, int i, float maxShootRange) {
+		this(mob, mobSpeed, i, i, maxShootRange);
 	}
 
-	public ProjectileAttackGoal(RangedAttackMob rangedAttackMob, double d, int i, int j, float f) {
-		if (!(rangedAttackMob instanceof LivingEntity)) {
+	public ProjectileAttackGoal(RangedAttackMob mob, double mobSpeed, int i, int j, float maxShootRange) {
+		if (!(mob instanceof LivingEntity)) {
 			throw new IllegalArgumentException("ArrowAttackGoal requires Mob implements RangedAttackMob");
 		} else {
-			this.owner = rangedAttackMob;
-			this.mob = (MobEntity)rangedAttackMob;
-			this.mobSpeed = d;
+			this.owner = mob;
+			this.mob = (MobEntity)mob;
+			this.mobSpeed = mobSpeed;
 			this.field_6578 = i;
 			this.field_6577 = j;
-			this.maxShootRange = f;
-			this.squaredMaxShootRange = f * f;
+			this.maxShootRange = maxShootRange;
+			this.squaredMaxShootRange = maxShootRange * maxShootRange;
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 	}

@@ -33,7 +33,7 @@ public class OverlayTexture implements AutoCloseable {
 		RenderSystem.scalef(0.06666667F, 0.06666667F, 0.06666667F);
 		RenderSystem.matrixMode(5888);
 		this.texture.bindTexture();
-		nativeImage.method_22619(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
+		nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
 		RenderSystem.activeTexture(33984);
 	}
 
@@ -53,8 +53,8 @@ public class OverlayTexture implements AutoCloseable {
 		return bl ? 3 : 10;
 	}
 
-	public static int packUv(int i, int j) {
-		return i | j << 16;
+	public static int packUv(int u, int v) {
+		return u | v << 16;
 	}
 
 	public static int packUv(float f, boolean bl) {

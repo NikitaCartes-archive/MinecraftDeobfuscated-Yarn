@@ -18,8 +18,8 @@ import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,26 +33,26 @@ public class ConnectScreen extends Screen {
 	private Text status = new TranslatableText("connect.connecting");
 	private long field_19097 = -1L;
 
-	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, ServerInfo serverInfo) {
+	public ConnectScreen(Screen parent, MinecraftClient client, ServerInfo entry) {
 		super(NarratorManager.EMPTY);
-		this.minecraft = minecraftClient;
-		this.parent = screen;
-		ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
-		minecraftClient.disconnect();
-		minecraftClient.setCurrentServerEntry(serverInfo);
+		this.minecraft = client;
+		this.parent = parent;
+		ServerAddress serverAddress = ServerAddress.parse(entry.address);
+		client.disconnect();
+		client.setCurrentServerEntry(entry);
 		this.connect(serverAddress.getAddress(), serverAddress.getPort());
 	}
 
-	public ConnectScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
+	public ConnectScreen(Screen parent, MinecraftClient client, String address, int port) {
 		super(NarratorManager.EMPTY);
-		this.minecraft = minecraftClient;
-		this.parent = screen;
-		minecraftClient.disconnect();
-		this.connect(string, i);
+		this.minecraft = client;
+		this.parent = parent;
+		client.disconnect();
+		this.connect(address, port);
 	}
 
-	private void connect(String string, int i) {
-		LOGGER.info("Connecting to {}, {}", string, i);
+	private void connect(String address, int port) {
+		LOGGER.info("Connecting to {}, {}", address, port);
 		Thread thread = new Thread("Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()) {
 			public void run() {
 				InetAddress inetAddress = null;
@@ -62,15 +62,15 @@ public class ConnectScreen extends Screen {
 						return;
 					}
 
-					inetAddress = InetAddress.getByName(string);
-					ConnectScreen.this.connection = ClientConnection.connect(inetAddress, i, ConnectScreen.this.minecraft.options.shouldUseNativeTransport());
+					inetAddress = InetAddress.getByName(address);
+					ConnectScreen.this.connection = ClientConnection.connect(inetAddress, port, ConnectScreen.this.minecraft.options.shouldUseNativeTransport());
 					ConnectScreen.this.connection
 						.setPacketListener(
 							new ClientLoginNetworkHandler(
 								ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)
 							)
 						);
-					ConnectScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+					ConnectScreen.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
 					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.minecraft.getSession().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ConnectScreen.this.connectingCancelled) {
@@ -89,7 +89,7 @@ public class ConnectScreen extends Screen {
 					}
 
 					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var5);
-					String string = inetAddress == null ? var5.toString() : var5.toString().replaceAll(inetAddress + ":" + i, "");
+					String string = inetAddress == null ? var5.toString() : var5.toString().replaceAll(inetAddress + ":" + port, "");
 					ConnectScreen.this.minecraft
 						.execute(
 							() -> ConnectScreen.this.minecraft
@@ -102,8 +102,8 @@ public class ConnectScreen extends Screen {
 		thread.start();
 	}
 
-	private void setStatus(Text text) {
-		this.status = text;
+	private void setStatus(Text status) {
+		this.status = status;
 	}
 
 	@Override
@@ -135,15 +135,15 @@ public class ConnectScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		long l = SystemUtil.getMeasuringTimeMs();
+		long l = Util.getMeasuringTimeMs();
 		if (l - this.field_19097 > 2000L) {
 			this.field_19097 = l;
 			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 
 		this.drawCenteredString(this.font, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

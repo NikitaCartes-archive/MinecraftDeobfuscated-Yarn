@@ -20,7 +20,7 @@ import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.world.biome.Biomes;
 
 public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
@@ -70,7 +70,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 						.withEntry(
 							ItemEntry.builder(Items.POTION)
 								.setWeight(10)
-								.method_438(SetNbtLootFunction.builder(SystemUtil.consume(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
+								.method_438(SetNbtLootFunction.builder(Util.create(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
 						.withEntry(ItemEntry.builder(Items.STRING).setWeight(5))
 						.withEntry(ItemEntry.builder(Items.FISHING_ROD).setWeight(2).method_438(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))

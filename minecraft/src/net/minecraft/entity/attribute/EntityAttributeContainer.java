@@ -24,27 +24,27 @@ public class EntityAttributeContainer extends AbstractEntityAttributeContainer {
 	}
 
 	@Override
-	public EntityAttributeInstance register(EntityAttribute entityAttribute) {
-		EntityAttributeInstance entityAttributeInstance = super.register(entityAttribute);
-		if (entityAttribute instanceof ClampedEntityAttribute && ((ClampedEntityAttribute)entityAttribute).getName() != null) {
-			this.instancesByName.put(((ClampedEntityAttribute)entityAttribute).getName(), entityAttributeInstance);
+	public EntityAttributeInstance register(EntityAttribute attribute) {
+		EntityAttributeInstance entityAttributeInstance = super.register(attribute);
+		if (attribute instanceof ClampedEntityAttribute && ((ClampedEntityAttribute)attribute).getName() != null) {
+			this.instancesByName.put(((ClampedEntityAttribute)attribute).getName(), entityAttributeInstance);
 		}
 
 		return entityAttributeInstance;
 	}
 
 	@Override
-	protected EntityAttributeInstance createInstance(EntityAttribute entityAttribute) {
-		return new EntityAttributeInstanceImpl(this, entityAttribute);
+	protected EntityAttributeInstance createInstance(EntityAttribute attribute) {
+		return new EntityAttributeInstanceImpl(this, attribute);
 	}
 
 	@Override
-	public void add(EntityAttributeInstance entityAttributeInstance) {
-		if (entityAttributeInstance.getAttribute().isTracked()) {
-			this.trackedAttributes.add(entityAttributeInstance);
+	public void add(EntityAttributeInstance instance) {
+		if (instance.getAttribute().isTracked()) {
+			this.trackedAttributes.add(instance);
 		}
 
-		for (EntityAttribute entityAttribute : this.attributeHierarchy.get(entityAttributeInstance.getAttribute())) {
+		for (EntityAttribute entityAttribute : this.attributeHierarchy.get(instance.getAttribute())) {
 			EntityAttributeInstanceImpl entityAttributeInstanceImpl = this.method_6216(entityAttribute);
 			if (entityAttributeInstanceImpl != null) {
 				entityAttributeInstanceImpl.invalidateCache();

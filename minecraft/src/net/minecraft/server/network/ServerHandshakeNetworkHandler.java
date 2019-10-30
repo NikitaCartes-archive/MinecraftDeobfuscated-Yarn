@@ -46,7 +46,7 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	}
 
 	@Override
-	public void onDisconnected(Text text) {
+	public void onDisconnected(Text reason) {
 	}
 
 	@Override

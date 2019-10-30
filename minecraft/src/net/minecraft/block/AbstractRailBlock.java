@@ -18,17 +18,17 @@ public abstract class AbstractRailBlock extends Block {
 	protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	private final boolean allowCurves;
 
-	public static boolean isRail(World world, BlockPos blockPos) {
-		return isRail(world.getBlockState(blockPos));
+	public static boolean isRail(World world, BlockPos pos) {
+		return isRail(world.getBlockState(pos));
 	}
 
-	public static boolean isRail(BlockState blockState) {
-		return blockState.matches(BlockTags.RAILS);
+	public static boolean isRail(BlockState state) {
+		return state.matches(BlockTags.RAILS);
 	}
 
-	protected AbstractRailBlock(boolean bl, Block.Settings settings) {
+	protected AbstractRailBlock(boolean allowCurves, Block.Settings settings) {
 		super(settings);
-		this.allowCurves = bl;
+		this.allowCurves = allowCurves;
 	}
 
 	public boolean canMakeCurves() {
@@ -36,104 +36,104 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		RailShape railShape = blockState.getBlock() == this ? blockState.get(this.getShapeProperty()) : null;
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		RailShape railShape = state.getBlock() == this ? state.get(this.getShapeProperty()) : null;
 		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : STRAIGHT_SHAPE;
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		return topCoversMediumSquare(worldView, blockPos.method_10074());
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		return topCoversMediumSquare(world, pos.method_10074());
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState2.getBlock() != blockState.getBlock()) {
-			blockState = this.updateBlockState(world, blockPos, blockState, true);
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+		if (oldState.getBlock() != state.getBlock()) {
+			state = this.updateBlockState(world, pos, state, true);
 			if (this.allowCurves) {
-				blockState.neighborUpdate(world, blockPos, this, blockPos, bl);
+				state.neighborUpdate(world, pos, this, pos, moved);
 			}
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
 		if (!world.isClient) {
-			RailShape railShape = blockState.get(this.getShapeProperty());
-			boolean bl2 = false;
-			BlockPos blockPos3 = blockPos.method_10074();
-			if (!topCoversMediumSquare(world, blockPos3)) {
-				bl2 = true;
+			RailShape railShape = state.get(this.getShapeProperty());
+			boolean bl = false;
+			BlockPos blockPos = pos.method_10074();
+			if (!topCoversMediumSquare(world, blockPos)) {
+				bl = true;
 			}
 
-			BlockPos blockPos4 = blockPos.east();
-			if (railShape == RailShape.ASCENDING_EAST && !topCoversMediumSquare(world, blockPos4)) {
-				bl2 = true;
+			BlockPos blockPos2 = pos.east();
+			if (railShape == RailShape.ASCENDING_EAST && !topCoversMediumSquare(world, blockPos2)) {
+				bl = true;
 			} else {
-				BlockPos blockPos5 = blockPos.west();
-				if (railShape == RailShape.ASCENDING_WEST && !topCoversMediumSquare(world, blockPos5)) {
-					bl2 = true;
+				BlockPos blockPos3 = pos.west();
+				if (railShape == RailShape.ASCENDING_WEST && !topCoversMediumSquare(world, blockPos3)) {
+					bl = true;
 				} else {
-					BlockPos blockPos6 = blockPos.north();
-					if (railShape == RailShape.ASCENDING_NORTH && !topCoversMediumSquare(world, blockPos6)) {
-						bl2 = true;
+					BlockPos blockPos4 = pos.north();
+					if (railShape == RailShape.ASCENDING_NORTH && !topCoversMediumSquare(world, blockPos4)) {
+						bl = true;
 					} else {
-						BlockPos blockPos7 = blockPos.south();
-						if (railShape == RailShape.ASCENDING_SOUTH && !topCoversMediumSquare(world, blockPos7)) {
-							bl2 = true;
+						BlockPos blockPos5 = pos.south();
+						if (railShape == RailShape.ASCENDING_SOUTH && !topCoversMediumSquare(world, blockPos5)) {
+							bl = true;
 						}
 					}
 				}
 			}
 
-			if (bl2 && !world.isAir(blockPos)) {
-				if (!bl) {
-					dropStacks(blockState, world, blockPos);
+			if (bl && !world.isAir(pos)) {
+				if (!moved) {
+					dropStacks(state, world, pos);
 				}
 
-				world.removeBlock(blockPos, bl);
+				world.removeBlock(pos, moved);
 			} else {
-				this.updateBlockState(blockState, world, blockPos, block);
+				this.updateBlockState(state, world, pos, block);
 			}
 		}
 	}
 
-	protected void updateBlockState(BlockState blockState, World world, BlockPos blockPos, Block block) {
+	protected void updateBlockState(BlockState state, World world, BlockPos pos, Block neighbor) {
 	}
 
-	protected BlockState updateBlockState(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+	protected BlockState updateBlockState(World world, BlockPos pos, BlockState state, boolean forceUpdate) {
 		if (world.isClient) {
-			return blockState;
+			return state;
 		} else {
-			RailShape railShape = blockState.get(this.getShapeProperty());
-			return new RailPlacementHelper(world, blockPos, blockState).updateBlockState(world.isReceivingRedstonePower(blockPos), bl, railShape).getBlockState();
+			RailShape railShape = state.get(this.getShapeProperty());
+			return new RailPlacementHelper(world, pos, state).updateBlockState(world.isReceivingRedstonePower(pos), forceUpdate, railShape).getBlockState();
 		}
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
+	public PistonBehavior getPistonBehavior(BlockState state) {
 		return PistonBehavior.NORMAL;
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (!bl) {
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
-			if (((RailShape)blockState.get(this.getShapeProperty())).isAscending()) {
-				world.updateNeighborsAlways(blockPos.up(), this);
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!moved) {
+			super.onBlockRemoved(state, world, pos, newState, moved);
+			if (((RailShape)state.get(this.getShapeProperty())).isAscending()) {
+				world.updateNeighborsAlways(pos.up(), this);
 			}
 
 			if (this.allowCurves) {
-				world.updateNeighborsAlways(blockPos, this);
-				world.updateNeighborsAlways(blockPos.method_10074(), this);
+				world.updateNeighborsAlways(pos, this);
+				world.updateNeighborsAlways(pos.method_10074(), this);
 			}
 		}
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = super.getDefaultState();
-		Direction direction = itemPlacementContext.getPlayerFacing();
+		Direction direction = ctx.getPlayerFacing();
 		boolean bl = direction == Direction.EAST || direction == Direction.WEST;
 		return blockState.with(this.getShapeProperty(), bl ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH);
 	}

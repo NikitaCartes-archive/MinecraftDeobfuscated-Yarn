@@ -37,9 +37,9 @@ public class ItemStringReader {
 	private int cursor;
 	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
 
-	public ItemStringReader(StringReader stringReader, boolean bl) {
-		this.reader = stringReader;
-		this.allowTag = bl;
+	public ItemStringReader(StringReader reader, boolean allowTag) {
+		this.reader = reader;
+		this.allowTag = allowTag;
 	}
 
 	public Item getItem() {
@@ -116,7 +116,7 @@ public class ItemStringReader {
 		return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), suggestionsBuilder);
 	}
 
-	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder suggestionsBuilder) {
-		return (CompletableFuture<Suggestions>)this.suggestions.apply(suggestionsBuilder.createOffset(this.reader.getCursor()));
+	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder) {
+		return (CompletableFuture<Suggestions>)this.suggestions.apply(builder.createOffset(this.reader.getCursor()));
 	}
 }

@@ -19,33 +19,33 @@ public class SetTradeOffersPacket implements Packet<ClientPlayPacketListener> {
 	public SetTradeOffersPacket() {
 	}
 
-	public SetTradeOffersPacket(int i, TraderOfferList traderOfferList, int j, int k, boolean bl, boolean bl2) {
-		this.syncId = i;
-		this.recipes = traderOfferList;
-		this.levelProgress = j;
-		this.experience = k;
-		this.leveled = bl;
-		this.refreshable = bl2;
+	public SetTradeOffersPacket(int syncId, TraderOfferList recipes, int levelProgress, int experience, boolean leveled, boolean refreshable) {
+		this.syncId = syncId;
+		this.recipes = recipes;
+		this.levelProgress = levelProgress;
+		this.experience = experience;
+		this.leveled = leveled;
+		this.refreshable = refreshable;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.syncId = packetByteBuf.readVarInt();
-		this.recipes = TraderOfferList.fromPacket(packetByteBuf);
-		this.levelProgress = packetByteBuf.readVarInt();
-		this.experience = packetByteBuf.readVarInt();
-		this.leveled = packetByteBuf.readBoolean();
-		this.refreshable = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.syncId = buf.readVarInt();
+		this.recipes = TraderOfferList.fromPacket(buf);
+		this.levelProgress = buf.readVarInt();
+		this.experience = buf.readVarInt();
+		this.leveled = buf.readBoolean();
+		this.refreshable = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.syncId);
-		this.recipes.toPacket(packetByteBuf);
-		packetByteBuf.writeVarInt(this.levelProgress);
-		packetByteBuf.writeVarInt(this.experience);
-		packetByteBuf.writeBoolean(this.leveled);
-		packetByteBuf.writeBoolean(this.refreshable);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.syncId);
+		this.recipes.toPacket(buf);
+		buf.writeVarInt(this.levelProgress);
+		buf.writeVarInt(this.experience);
+		buf.writeBoolean(this.leveled);
+		buf.writeBoolean(this.refreshable);
 	}
 
 	public void method_17588(ClientPlayPacketListener clientPlayPacketListener) {

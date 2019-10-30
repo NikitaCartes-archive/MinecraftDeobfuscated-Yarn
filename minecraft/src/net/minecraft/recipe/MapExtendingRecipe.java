@@ -60,9 +60,9 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		}
 	}
 
-	private boolean matches(MapState mapState) {
-		if (mapState.icons != null) {
-			for (MapIcon mapIcon : mapState.icons.values()) {
+	private boolean matches(MapState state) {
+		if (state.icons != null) {
+			for (MapIcon mapIcon : state.icons.values()) {
 				if (mapIcon.getType() == MapIcon.Type.MANSION || mapIcon.getType() == MapIcon.Type.MONUMENT) {
 					return true;
 				}

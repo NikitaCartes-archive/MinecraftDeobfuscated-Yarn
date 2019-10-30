@@ -59,42 +59,42 @@ public class FishingBobberEntity extends Entity {
 	private final int luckOfTheSeaLevel;
 	private final int lureLevel;
 
-	private FishingBobberEntity(World world, PlayerEntity playerEntity, int i, int j) {
+	private FishingBobberEntity(World world, PlayerEntity owner, int lureLevel, int luckOfTheSeaLevel) {
 		super(EntityType.FISHING_BOBBER, world);
 		this.ignoreCameraFrustum = true;
-		this.owner = playerEntity;
+		this.owner = owner;
 		this.owner.fishHook = this;
-		this.luckOfTheSeaLevel = Math.max(0, i);
-		this.lureLevel = Math.max(0, j);
+		this.luckOfTheSeaLevel = Math.max(0, lureLevel);
+		this.lureLevel = Math.max(0, luckOfTheSeaLevel);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public FishingBobberEntity(World world, PlayerEntity playerEntity, double d, double e, double f) {
-		this(world, playerEntity, 0, 0);
-		this.setPosition(d, e, f);
+	public FishingBobberEntity(World world, PlayerEntity thrower, double x, double y, double z) {
+		this(world, thrower, 0, 0);
+		this.setPosition(x, y, z);
 		this.prevX = this.getX();
 		this.prevY = this.getY();
 		this.prevZ = this.getZ();
 	}
 
-	public FishingBobberEntity(PlayerEntity playerEntity, World world, int i, int j) {
-		this(world, playerEntity, i, j);
+	public FishingBobberEntity(PlayerEntity thrower, World world, int lureLevel, int luckOfTheSeaLevel) {
+		this(world, thrower, lureLevel, luckOfTheSeaLevel);
 		float f = this.owner.pitch;
 		float g = this.owner.yaw;
 		float h = MathHelper.cos(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
-		float k = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
-		float l = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
-		float m = MathHelper.sin(-f * (float) (Math.PI / 180.0));
-		double d = this.owner.getX() - (double)k * 0.3;
+		float i = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
+		float j = -MathHelper.cos(-f * (float) (Math.PI / 180.0));
+		float k = MathHelper.sin(-f * (float) (Math.PI / 180.0));
+		double d = this.owner.getX() - (double)i * 0.3;
 		double e = this.owner.method_23320();
-		double n = this.owner.getZ() - (double)h * 0.3;
-		this.setPositionAndAngles(d, e, n, g, f);
-		Vec3d vec3d = new Vec3d((double)(-k), (double)MathHelper.clamp(-(m / l), -5.0F, 5.0F), (double)(-h));
-		double o = vec3d.length();
+		double l = this.owner.getZ() - (double)h * 0.3;
+		this.setPositionAndAngles(d, e, l, g, f);
+		Vec3d vec3d = new Vec3d((double)(-i), (double)MathHelper.clamp(-(k / j), -5.0F, 5.0F), (double)(-h));
+		double m = vec3d.length();
 		vec3d = vec3d.multiply(
-			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045,
-			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045,
-			0.6 / o + 0.5 + this.random.nextGaussian() * 0.0045
+			0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045,
+			0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045,
+			0.6 / m + 0.5 + this.random.nextGaussian() * 0.0045
 		);
 		this.setVelocity(vec3d);
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
@@ -109,25 +109,25 @@ public class FishingBobberEntity extends Entity {
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (HOOK_ENTITY_ID.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (HOOK_ENTITY_ID.equals(data)) {
 			int i = this.getDataTracker().get(HOOK_ENTITY_ID);
 			this.hookedEntity = i > 0 ? this.world.getEntityById(i - 1) : null;
 		}
 
-		super.onTrackedDataSet(trackedData);
+		super.onTrackedDataSet(data);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		double e = 64.0;
-		return d < 4096.0;
+	public boolean shouldRenderAtDistance(double distance) {
+		double d = 64.0;
+		return distance < 4096.0;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void updateTrackedPositionAndAngles(double d, double e, double f, float g, float h, int i, boolean bl) {
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class FishingBobberEntity extends Entity {
 							this.hookedEntity = null;
 							this.state = FishingBobberEntity.State.FLYING;
 						} else {
-							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.method_23323(0.8), this.hookedEntity.getZ());
+							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getHeightAt(0.8), this.hookedEntity.getZ());
 						}
 					}
 
@@ -275,15 +275,15 @@ public class FishingBobberEntity extends Entity {
 		this.getDataTracker().set(HOOK_ENTITY_ID, this.hookedEntity.getEntityId() + 1);
 	}
 
-	private void tickFishingLogic(BlockPos blockPos) {
+	private void tickFishingLogic(BlockPos pos) {
 		ServerWorld serverWorld = (ServerWorld)this.world;
 		int i = 1;
-		BlockPos blockPos2 = blockPos.up();
-		if (this.random.nextFloat() < 0.25F && this.world.hasRain(blockPos2)) {
+		BlockPos blockPos = pos.up();
+		if (this.random.nextFloat() < 0.25F && this.world.hasRain(blockPos)) {
 			i++;
 		}
 
-		if (this.random.nextFloat() < 0.5F && !this.world.isSkyVisible(blockPos2)) {
+		if (this.random.nextFloat() < 0.5F && !this.world.isSkyVisible(blockPos)) {
 			i--;
 		}
 
@@ -363,33 +363,33 @@ public class FishingBobberEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
+	public void writeCustomDataToTag(CompoundTag tag) {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
+	public void readCustomDataFromTag(CompoundTag tag) {
 	}
 
-	public int use(ItemStack itemStack) {
+	public int use(ItemStack usedItem) {
 		if (!this.world.isClient && this.owner != null) {
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.pullHookedEntity();
-				Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
+				Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, Collections.emptyList());
 				this.world.sendEntityStatus(this, (byte)31);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 					.put(LootContextParameters.POSITION, new BlockPos(this))
-					.put(LootContextParameters.TOOL, itemStack)
+					.put(LootContextParameters.TOOL, usedItem)
 					.setRandom(this.random)
 					.setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());
 				LootTable lootTable = this.world.getServer().getLootManager().getSupplier(LootTables.FISHING_GAMEPLAY);
 				List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
-				Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, itemStack, this, list);
+				Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, list);
 
-				for (ItemStack itemStack2 : list) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack2);
+				for (ItemStack itemStack : list) {
+					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack);
 					double d = this.owner.getX() - this.getX();
 					double e = this.owner.getY() - this.getY();
 					double f = this.owner.getZ() - this.getZ();
@@ -399,7 +399,7 @@ public class FishingBobberEntity extends Entity {
 					this.owner
 						.world
 						.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.getX(), this.owner.getY() + 0.5, this.owner.getZ() + 0.5, this.random.nextInt(6) + 1));
-					if (itemStack2.getItem().isIn(ItemTags.FISHES)) {
+					if (itemStack.getItem().isIn(ItemTags.FISHES)) {
 						this.owner.increaseStat(Stats.FISH_CAUGHT, 1);
 					}
 				}
@@ -420,12 +420,12 @@ public class FishingBobberEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
+	public void handleStatus(byte status) {
+		if (status == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
 			this.pullHookedEntity();
 		}
 
-		super.handleStatus(b);
+		super.handleStatus(status);
 	}
 
 	protected void pullHookedEntity() {

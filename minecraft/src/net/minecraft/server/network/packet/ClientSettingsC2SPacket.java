@@ -21,33 +21,33 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClientSettingsC2SPacket(String string, int i, ChatVisibility chatVisibility, boolean bl, int j, Arm arm) {
-		this.language = string;
-		this.viewDistance = i;
+	public ClientSettingsC2SPacket(String language, int viewDistance, ChatVisibility chatVisibility, boolean chatColors, int modelBitMask, Arm mainArm) {
+		this.language = language;
+		this.viewDistance = viewDistance;
 		this.chatVisibility = chatVisibility;
-		this.chatColors = bl;
-		this.playerModelBitMask = j;
-		this.mainArm = arm;
+		this.chatColors = chatColors;
+		this.playerModelBitMask = modelBitMask;
+		this.mainArm = mainArm;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.language = packetByteBuf.readString(16);
-		this.viewDistance = packetByteBuf.readByte();
-		this.chatVisibility = packetByteBuf.readEnumConstant(ChatVisibility.class);
-		this.chatColors = packetByteBuf.readBoolean();
-		this.playerModelBitMask = packetByteBuf.readUnsignedByte();
-		this.mainArm = packetByteBuf.readEnumConstant(Arm.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.language = buf.readString(16);
+		this.viewDistance = buf.readByte();
+		this.chatVisibility = buf.readEnumConstant(ChatVisibility.class);
+		this.chatColors = buf.readBoolean();
+		this.playerModelBitMask = buf.readUnsignedByte();
+		this.mainArm = buf.readEnumConstant(Arm.class);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeString(this.language);
-		packetByteBuf.writeByte(this.viewDistance);
-		packetByteBuf.writeEnumConstant(this.chatVisibility);
-		packetByteBuf.writeBoolean(this.chatColors);
-		packetByteBuf.writeByte(this.playerModelBitMask);
-		packetByteBuf.writeEnumConstant(this.mainArm);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeString(this.language);
+		buf.writeByte(this.viewDistance);
+		buf.writeEnumConstant(this.chatVisibility);
+		buf.writeBoolean(this.chatColors);
+		buf.writeByte(this.playerModelBitMask);
+		buf.writeEnumConstant(this.mainArm);
 	}
 
 	public void method_12133(ServerPlayPacketListener serverPlayPacketListener) {

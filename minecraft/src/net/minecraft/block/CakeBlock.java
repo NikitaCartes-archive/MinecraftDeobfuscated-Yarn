@@ -36,15 +36,15 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return BITES_TO_SHAPE[blockState.get(BITES)];
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return BITES_TO_SHAPE[state.get(BITES)];
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
-			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (this.tryEat(world, blockPos, blockState, playerEntity) == ActionResult.SUCCESS) {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (this.tryEat(world, pos, state, player) == ActionResult.SUCCESS) {
 				return ActionResult.SUCCESS;
 			}
 
@@ -53,20 +53,20 @@ public class CakeBlock extends Block {
 			}
 		}
 
-		return this.tryEat(world, blockPos, blockState, playerEntity);
+		return this.tryEat(world, pos, state, player);
 	}
 
-	private ActionResult tryEat(IWorld iWorld, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		if (!playerEntity.canConsume(false)) {
+	private ActionResult tryEat(IWorld world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (!player.canConsume(false)) {
 			return ActionResult.PASS;
 		} else {
-			playerEntity.incrementStat(Stats.EAT_CAKE_SLICE);
-			playerEntity.getHungerManager().add(2, 0.1F);
-			int i = (Integer)blockState.get(BITES);
+			player.incrementStat(Stats.EAT_CAKE_SLICE);
+			player.getHungerManager().add(2, 0.1F);
+			int i = (Integer)state.get(BITES);
 			if (i < 6) {
-				iWorld.setBlockState(blockPos, blockState.with(BITES, Integer.valueOf(i + 1)), 3);
+				world.setBlockState(pos, state.with(BITES, Integer.valueOf(i + 1)), 3);
 			} else {
-				iWorld.removeBlock(blockPos, false);
+				world.removeBlock(pos, false);
 			}
 
 			return ActionResult.SUCCESS;
@@ -74,17 +74,15 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return facing == Direction.DOWN && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		return worldView.getBlockState(blockPos.method_10074()).getMaterial().isSolid();
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		return world.getBlockState(pos.method_10074()).getMaterial().isSolid();
 	}
 
 	@Override
@@ -93,17 +91,17 @@ public class CakeBlock extends Block {
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return (7 - (Integer)blockState.get(BITES)) * 2;
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		return (7 - (Integer)state.get(BITES)) * 2;
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

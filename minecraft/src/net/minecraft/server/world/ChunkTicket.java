@@ -8,11 +8,11 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 	private final T argument;
 	private final long location;
 
-	protected ChunkTicket(ChunkTicketType<T> chunkTicketType, int i, T object, long l) {
-		this.type = chunkTicketType;
-		this.level = i;
-		this.argument = object;
-		this.location = l;
+	protected ChunkTicket(ChunkTicketType<T> type, int level, T argument, long location) {
+		this.type = type;
+		this.level = level;
+		this.argument = argument;
+		this.location = location;
 	}
 
 	public int method_14285(ChunkTicket<?> chunkTicket) {
@@ -25,13 +25,13 @@ public final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 		}
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		} else if (!(object instanceof ChunkTicket)) {
+		} else if (!(obj instanceof ChunkTicket)) {
 			return false;
 		} else {
-			ChunkTicket<?> chunkTicket = (ChunkTicket<?>)object;
+			ChunkTicket<?> chunkTicket = (ChunkTicket<?>)obj;
 			return this.level == chunkTicket.level && Objects.equals(this.type, chunkTicket.type) && Objects.equals(this.argument, chunkTicket.argument);
 		}
 	}

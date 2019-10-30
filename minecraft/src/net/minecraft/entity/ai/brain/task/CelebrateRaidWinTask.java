@@ -21,8 +21,8 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	@Nullable
 	private Raid raid;
 
-	public CelebrateRaidWinTask(int i, int j) {
-		super(ImmutableMap.of(), i, j);
+	public CelebrateRaidWinTask(int minRunTime, int maxRunTime) {
+		super(ImmutableMap.of(), minRunTime, maxRunTime);
 	}
 
 	protected boolean method_19951(ServerWorld serverWorld, VillagerEntity villagerEntity) {
@@ -57,12 +57,12 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 		}
 	}
 
-	private ItemStack createFirework(DyeColor dyeColor, int i) {
+	private ItemStack createFirework(DyeColor color, int flight) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
 		ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
 		CompoundTag compoundTag = itemStack2.getOrCreateSubTag("Explosion");
 		List<Integer> list = Lists.<Integer>newArrayList();
-		list.add(dyeColor.getFireworkColor());
+		list.add(color.getFireworkColor());
 		compoundTag.putIntArray("Colors", list);
 		compoundTag.putByte("Type", (byte)FireworkItem.Type.BURST.getId());
 		CompoundTag compoundTag2 = itemStack.getOrCreateSubTag("Fireworks");
@@ -72,7 +72,7 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 			listTag.add(compoundTag3);
 		}
 
-		compoundTag2.putByte("Flight", (byte)i);
+		compoundTag2.putByte("Flight", (byte)flight);
 		if (!listTag.isEmpty()) {
 			compoundTag2.put("Explosions", listTag);
 		}

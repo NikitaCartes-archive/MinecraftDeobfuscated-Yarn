@@ -36,56 +36,54 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if (!playerEntity.abilities.allowModifyWorld) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		if (!player.abilities.allowModifyWorld) {
 			return ActionResult.PASS;
 		} else {
-			world.setBlockState(blockPos, blockState.cycle(DELAY), 3);
+			world.setBlockState(pos, state.cycle(DELAY), 3);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	protected int getUpdateDelayInternal(BlockState blockState) {
-		return (Integer)blockState.get(DELAY) * 2;
+	protected int getUpdateDelayInternal(BlockState state) {
+		return (Integer)state.get(DELAY) * 2;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = super.getPlacementState(itemPlacementContext);
-		return blockState.with(LOCKED, Boolean.valueOf(this.isLocked(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos(), blockState)));
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockState blockState = super.getPlacementState(ctx);
+		return blockState.with(LOCKED, Boolean.valueOf(this.isLocked(ctx.getWorld(), ctx.getBlockPos(), blockState)));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return !iWorld.isClient() && direction.getAxis() != ((Direction)blockState.get(FACING)).getAxis()
-			? blockState.with(LOCKED, Boolean.valueOf(this.isLocked(iWorld, blockPos, blockState)))
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return !world.isClient() && facing.getAxis() != ((Direction)state.get(FACING)).getAxis()
+			? state.with(LOCKED, Boolean.valueOf(this.isLocked(world, pos, state)))
+			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean isLocked(WorldView worldView, BlockPos blockPos, BlockState blockState) {
-		return this.getMaxInputLevelSides(worldView, blockPos, blockState) > 0;
+	public boolean isLocked(WorldView worldView, BlockPos pos, BlockState state) {
+		return this.getMaxInputLevelSides(worldView, pos, state) > 0;
 	}
 
 	@Override
-	protected boolean isValidInput(BlockState blockState) {
-		return isRedstoneGate(blockState);
+	protected boolean isValidInput(BlockState state) {
+		return isRedstoneGate(state);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(POWERED)) {
-			Direction direction = blockState.get(FACING);
-			double d = (double)((float)blockPos.getX() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
-			double e = (double)((float)blockPos.getY() + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2;
-			double f = (double)((float)blockPos.getZ() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+		if ((Boolean)state.get(POWERED)) {
+			Direction direction = state.get(FACING);
+			double d = (double)((float)pos.getX() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
+			double e = (double)((float)pos.getY() + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2;
+			double f = (double)((float)pos.getZ() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
 			float g = -5.0F;
 			if (random.nextBoolean()) {
-				g = (float)((Integer)blockState.get(DELAY) * 2 - 1);
+				g = (float)((Integer)state.get(DELAY) * 2 - 1);
 			}
 
 			g /= 16.0F;

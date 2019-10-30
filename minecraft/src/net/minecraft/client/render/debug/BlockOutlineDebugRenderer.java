@@ -25,7 +25,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		Camera camera = this.client.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
@@ -45,52 +45,52 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 
 				for (Box box : voxelShape.getBoundingBoxes()) {
 					Box box2 = box.offset(blockPos2).expand(0.002).offset(-d, -e, -f);
-					double g = box2.minX;
-					double h = box2.minY;
-					double i = box2.minZ;
-					double j = box2.maxX;
-					double k = box2.maxY;
-					double m = box2.maxZ;
-					float n = 1.0F;
+					double g = box2.x1;
+					double h = box2.y1;
+					double i = box2.z1;
+					double j = box2.x2;
+					double k = box2.y2;
+					double l = box2.z2;
+					float m = 1.0F;
+					float n = 0.0F;
 					float o = 0.0F;
-					float p = 0.0F;
-					float q = 0.5F;
+					float p = 0.5F;
 					if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.WEST)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						BufferBuilder bufferBuilder = tessellator.getBuffer();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
 					if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.SOUTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						BufferBuilder bufferBuilder = tessellator.getBuffer();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
 					if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.EAST)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						BufferBuilder bufferBuilder = tessellator.getBuffer();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
 					if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.NORTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						BufferBuilder bufferBuilder = tessellator.getBuffer();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
@@ -101,23 +101,23 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 
 					if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.DOWN)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						BufferBuilder bufferBuilder = tessellator.getBuffer();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
 					if (blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.UP)) {
 						Tessellator tessellator = Tessellator.getInstance();
-						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+						BufferBuilder bufferBuilder = tessellator.getBuffer();
 						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 				}

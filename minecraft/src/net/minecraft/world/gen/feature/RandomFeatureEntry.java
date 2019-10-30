@@ -35,8 +35,8 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 		);
 	}
 
-	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
-		return this.feature.generate(iWorld, chunkGenerator, random, blockPos);
+	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
+		return this.feature.generate(world, chunkGenerator, random, blockPos);
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {

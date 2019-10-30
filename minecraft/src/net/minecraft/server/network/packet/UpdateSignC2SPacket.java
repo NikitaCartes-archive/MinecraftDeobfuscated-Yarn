@@ -23,21 +23,21 @@ public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.pos = packetByteBuf.readBlockPos();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.pos = buf.readBlockPos();
 		this.text = new String[4];
 
 		for (int i = 0; i < 4; i++) {
-			this.text[i] = packetByteBuf.readString(384);
+			this.text[i] = buf.readString(384);
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeBlockPos(this.pos);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeBlockPos(this.pos);
 
 		for (int i = 0; i < 4; i++) {
-			packetByteBuf.writeString(this.text[i]);
+			buf.writeString(this.text[i]);
 		}
 	}
 

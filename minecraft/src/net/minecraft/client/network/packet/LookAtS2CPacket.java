@@ -24,18 +24,18 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 	public LookAtS2CPacket() {
 	}
 
-	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor entityAnchor, double d, double e, double f) {
+	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor entityAnchor, double targetX, double targetY, double targetZ) {
 		this.selfAnchor = entityAnchor;
-		this.targetX = d;
-		this.targetY = e;
-		this.targetZ = f;
+		this.targetX = targetX;
+		this.targetY = targetY;
+		this.targetZ = targetZ;
 	}
 
-	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor entityAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor2) {
-		this.selfAnchor = entityAnchor;
+	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor selfAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor targetAnchor) {
+		this.selfAnchor = selfAnchor;
 		this.entityId = entity.getEntityId();
-		this.targetAnchor = entityAnchor2;
-		Vec3d vec3d = entityAnchor2.positionAt(entity);
+		this.targetAnchor = targetAnchor;
+		Vec3d vec3d = targetAnchor.positionAt(entity);
 		this.targetX = vec3d.x;
 		this.targetY = vec3d.y;
 		this.targetZ = vec3d.z;
@@ -43,28 +43,28 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.selfAnchor = packetByteBuf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
-		this.targetX = packetByteBuf.readDouble();
-		this.targetY = packetByteBuf.readDouble();
-		this.targetZ = packetByteBuf.readDouble();
-		if (packetByteBuf.readBoolean()) {
+	public void read(PacketByteBuf buf) throws IOException {
+		this.selfAnchor = buf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
+		this.targetX = buf.readDouble();
+		this.targetY = buf.readDouble();
+		this.targetZ = buf.readDouble();
+		if (buf.readBoolean()) {
 			this.lookAtEntity = true;
-			this.entityId = packetByteBuf.readVarInt();
-			this.targetAnchor = packetByteBuf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
+			this.entityId = buf.readVarInt();
+			this.targetAnchor = buf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.selfAnchor);
-		packetByteBuf.writeDouble(this.targetX);
-		packetByteBuf.writeDouble(this.targetY);
-		packetByteBuf.writeDouble(this.targetZ);
-		packetByteBuf.writeBoolean(this.lookAtEntity);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.selfAnchor);
+		buf.writeDouble(this.targetX);
+		buf.writeDouble(this.targetY);
+		buf.writeDouble(this.targetZ);
+		buf.writeBoolean(this.lookAtEntity);
 		if (this.lookAtEntity) {
-			packetByteBuf.writeVarInt(this.entityId);
-			packetByteBuf.writeEnumConstant(this.targetAnchor);
+			buf.writeVarInt(this.entityId);
+			buf.writeEnumConstant(this.targetAnchor);
 		}
 	}
 

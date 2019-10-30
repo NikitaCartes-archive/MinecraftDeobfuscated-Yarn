@@ -3,9 +3,9 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,14 +19,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 	}
 
 	public void method_4034(
-		LightningEntity lightningEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		LightningEntity lightningEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		float[] fs = new float[8];
 		float[] gs = new float[8];
@@ -41,8 +34,8 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 			j += (float)(random.nextInt(11) - 5);
 		}
 
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLightning());
-		Matrix4f matrix4f = matrixStack.peek();
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
+		Matrix4f matrix4f = matrixStack.peekModel();
 
 		for (int l = 0; l < 4; l++) {
 			Random random2 = new Random(lightningEntity.seed);

@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EvilVillagerEntityModel;
@@ -22,7 +22,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 			new HeldItemFeatureRenderer<IllusionerEntity, EvilVillagerEntityModel<IllusionerEntity>>(this) {
 				public void method_17149(
 					MatrixStack matrixStack,
-					LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+					VertexConsumerProvider vertexConsumerProvider,
 					int i,
 					IllusionerEntity illusionerEntity,
 					float f,
@@ -34,7 +34,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 					float m
 				) {
 					if (illusionerEntity.isSpellcasting() || illusionerEntity.isAttacking()) {
-						super.method_17162(matrixStack, layeredVertexConsumerStorage, i, illusionerEntity, f, g, h, j, k, l, m);
+						super.method_17162(matrixStack, vertexConsumerProvider, i, illusionerEntity, f, g, h, j, k, l, m);
 					}
 				}
 			}
@@ -47,14 +47,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 	}
 
 	public void method_3991(
-		IllusionerEntity illusionerEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		IllusionerEntity illusionerEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		if (illusionerEntity.isInvisible()) {
 			Vec3d[] vec3ds = illusionerEntity.method_7065(h);
@@ -67,11 +60,11 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 					vec3ds[j].y + (double)MathHelper.cos((float)j + i * 0.75F) * 0.0125,
 					vec3ds[j].z + (double)MathHelper.cos((float)j + i * 0.7F) * 0.025
 				);
-				super.method_4072(illusionerEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+				super.method_4072(illusionerEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 				matrixStack.pop();
 			}
 		} else {
-			super.method_4072(illusionerEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+			super.method_4072(illusionerEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 		}
 	}
 

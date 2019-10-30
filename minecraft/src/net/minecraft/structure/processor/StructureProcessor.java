@@ -13,10 +13,10 @@ public abstract class StructureProcessor {
 	@Nullable
 	public abstract Structure.StructureBlockInfo process(
 		WorldView worldView,
-		BlockPos blockPos,
+		BlockPos pos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData placementData
 	);
 
 	protected abstract StructureProcessorType getType();

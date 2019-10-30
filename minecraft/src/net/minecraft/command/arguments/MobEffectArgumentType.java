@@ -37,8 +37,8 @@ public class MobEffectArgumentType implements ArgumentType<StatusEffect> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(Registry.MOB_EFFECT.getIds(), suggestionsBuilder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		return CommandSource.suggestIdentifiers(Registry.MOB_EFFECT.getIds(), builder);
 	}
 
 	@Override

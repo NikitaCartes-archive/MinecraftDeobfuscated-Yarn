@@ -21,12 +21,12 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 
 public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
-	private static final Map<VillagerProfession, Identifier> GIFTS = SystemUtil.consume(Maps.<VillagerProfession, Identifier>newHashMap(), hashMap -> {
+	private static final Map<VillagerProfession, Identifier> GIFTS = Util.create(Maps.<VillagerProfession, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
 		hashMap.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
 		hashMap.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY);
@@ -45,7 +45,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	private boolean done;
 	private long startTime;
 
-	public GiveGiftsToHeroTask(int i) {
+	public GiveGiftsToHeroTask(int delay) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.WALK_TARGET,
@@ -57,7 +57,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 				MemoryModuleType.NEAREST_VISIBLE_PLAYER,
 				MemoryModuleState.VALUE_PRESENT
 			),
-			i
+			delay
 		);
 	}
 
@@ -104,23 +104,23 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		villagerEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 	}
 
-	private void giveGifts(VillagerEntity villagerEntity, LivingEntity livingEntity) {
-		for (ItemStack itemStack : this.getGifts(villagerEntity)) {
-			LookTargetUtil.give(villagerEntity, itemStack, livingEntity);
+	private void giveGifts(VillagerEntity villager, LivingEntity recipient) {
+		for (ItemStack itemStack : this.getGifts(villager)) {
+			LookTargetUtil.give(villager, itemStack, recipient);
 		}
 	}
 
-	private List<ItemStack> getGifts(VillagerEntity villagerEntity) {
-		if (villagerEntity.isBaby()) {
+	private List<ItemStack> getGifts(VillagerEntity villager) {
+		if (villager.isBaby()) {
 			return ImmutableList.of(new ItemStack(Items.POPPY));
 		} else {
-			VillagerProfession villagerProfession = villagerEntity.getVillagerData().getProfession();
+			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
 			if (GIFTS.containsKey(villagerProfession)) {
-				LootTable lootTable = villagerEntity.world.getServer().getLootManager().getSupplier((Identifier)GIFTS.get(villagerProfession));
-				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villagerEntity.world)
-					.put(LootContextParameters.POSITION, new BlockPos(villagerEntity))
-					.put(LootContextParameters.THIS_ENTITY, villagerEntity)
-					.setRandom(villagerEntity.getRandom());
+				LootTable lootTable = villager.world.getServer().getLootManager().getSupplier((Identifier)GIFTS.get(villagerProfession));
+				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world)
+					.put(LootContextParameters.POSITION, new BlockPos(villager))
+					.put(LootContextParameters.THIS_ENTITY, villager)
+					.setRandom(villager.getRandom());
 				return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
 			} else {
 				return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
@@ -128,25 +128,25 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 		}
 	}
 
-	private boolean isNearestPlayerHero(VillagerEntity villagerEntity) {
-		return this.getNearestPlayerIfHero(villagerEntity).isPresent();
+	private boolean isNearestPlayerHero(VillagerEntity villager) {
+		return this.getNearestPlayerIfHero(villager).isPresent();
 	}
 
-	private Optional<PlayerEntity> getNearestPlayerIfHero(VillagerEntity villagerEntity) {
-		return villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER).filter(this::isHero);
+	private Optional<PlayerEntity> getNearestPlayerIfHero(VillagerEntity villager) {
+		return villager.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER).filter(this::isHero);
 	}
 
-	private boolean isHero(PlayerEntity playerEntity) {
-		return playerEntity.hasStatusEffect(StatusEffects.HERO_OF_THE_VILLAGE);
+	private boolean isHero(PlayerEntity player) {
+		return player.hasStatusEffect(StatusEffects.HERO_OF_THE_VILLAGE);
 	}
 
-	private boolean isCloseEnough(VillagerEntity villagerEntity, PlayerEntity playerEntity) {
-		BlockPos blockPos = new BlockPos(playerEntity);
-		BlockPos blockPos2 = new BlockPos(villagerEntity);
+	private boolean isCloseEnough(VillagerEntity villager, PlayerEntity player) {
+		BlockPos blockPos = new BlockPos(player);
+		BlockPos blockPos2 = new BlockPos(villager);
 		return blockPos2.isWithinDistance(blockPos, 5.0);
 	}
 
-	private static int getNextGiftDelay(ServerWorld serverWorld) {
-		return 600 + serverWorld.random.nextInt(6001);
+	private static int getNextGiftDelay(ServerWorld world) {
+		return 600 + world.random.nextInt(6001);
 	}
 }

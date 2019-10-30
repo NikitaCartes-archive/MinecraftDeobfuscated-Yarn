@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
 
 public class ItemBannerColorFix extends DataFix {
-	public ItemBannerColorFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemBannerColorFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

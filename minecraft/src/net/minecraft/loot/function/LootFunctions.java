@@ -20,56 +20,56 @@ import net.minecraft.util.JsonHelper;
 public class LootFunctions {
 	private static final Map<Identifier, LootFunction.Factory<?>> byId = Maps.<Identifier, LootFunction.Factory<?>>newHashMap();
 	private static final Map<Class<? extends LootFunction>, LootFunction.Factory<?>> byClass = Maps.<Class<? extends LootFunction>, LootFunction.Factory<?>>newHashMap();
-	public static final BiFunction<ItemStack, LootContext, ItemStack> NOOP = (itemStack, lootContext) -> itemStack;
+	public static final BiFunction<ItemStack, LootContext, ItemStack> NOOP = (stack, context) -> stack;
 
-	public static <T extends LootFunction> void register(LootFunction.Factory<? extends T> factory) {
-		Identifier identifier = factory.getId();
-		Class<T> class_ = (Class<T>)factory.getFunctionClass();
+	public static <T extends LootFunction> void register(LootFunction.Factory<? extends T> function) {
+		Identifier identifier = function.getId();
+		Class<T> class_ = (Class<T>)function.getFunctionClass();
 		if (byId.containsKey(identifier)) {
 			throw new IllegalArgumentException("Can't re-register item function name " + identifier);
 		} else if (byClass.containsKey(class_)) {
 			throw new IllegalArgumentException("Can't re-register item function class " + class_.getName());
 		} else {
-			byId.put(identifier, factory);
-			byClass.put(class_, factory);
+			byId.put(identifier, function);
+			byClass.put(class_, function);
 		}
 	}
 
-	public static LootFunction.Factory<?> get(Identifier identifier) {
-		LootFunction.Factory<?> factory = (LootFunction.Factory<?>)byId.get(identifier);
+	public static LootFunction.Factory<?> get(Identifier id) {
+		LootFunction.Factory<?> factory = (LootFunction.Factory<?>)byId.get(id);
 		if (factory == null) {
-			throw new IllegalArgumentException("Unknown loot item function '" + identifier + "'");
+			throw new IllegalArgumentException("Unknown loot item function '" + id + "'");
 		} else {
 			return factory;
 		}
 	}
 
-	public static <T extends LootFunction> LootFunction.Factory<T> getFactory(T lootFunction) {
-		LootFunction.Factory<T> factory = (LootFunction.Factory<T>)byClass.get(lootFunction.getClass());
+	public static <T extends LootFunction> LootFunction.Factory<T> getFactory(T function) {
+		LootFunction.Factory<T> factory = (LootFunction.Factory<T>)byClass.get(function.getClass());
 		if (factory == null) {
-			throw new IllegalArgumentException("Unknown loot item function " + lootFunction);
+			throw new IllegalArgumentException("Unknown loot item function " + function);
 		} else {
 			return factory;
 		}
 	}
 
-	public static BiFunction<ItemStack, LootContext, ItemStack> join(BiFunction<ItemStack, LootContext, ItemStack>[] biFunctions) {
-		switch (biFunctions.length) {
+	public static BiFunction<ItemStack, LootContext, ItemStack> join(BiFunction<ItemStack, LootContext, ItemStack>[] lootFunctions) {
+		switch (lootFunctions.length) {
 			case 0:
 				return NOOP;
 			case 1:
-				return biFunctions[0];
+				return lootFunctions[0];
 			case 2:
-				BiFunction<ItemStack, LootContext, ItemStack> biFunction = biFunctions[0];
-				BiFunction<ItemStack, LootContext, ItemStack> biFunction2 = biFunctions[1];
-				return (itemStack, lootContext) -> (ItemStack)biFunction2.apply(biFunction.apply(itemStack, lootContext), lootContext);
+				BiFunction<ItemStack, LootContext, ItemStack> biFunction = lootFunctions[0];
+				BiFunction<ItemStack, LootContext, ItemStack> biFunction2 = lootFunctions[1];
+				return (stack, context) -> (ItemStack)biFunction2.apply(biFunction.apply(stack, context), context);
 			default:
-				return (itemStack, lootContext) -> {
-					for (BiFunction<ItemStack, LootContext, ItemStack> biFunctionx : biFunctions) {
-						itemStack = (ItemStack)biFunctionx.apply(itemStack, lootContext);
+				return (stack, context) -> {
+					for (BiFunction<ItemStack, LootContext, ItemStack> biFunctionx : lootFunctions) {
+						stack = (ItemStack)biFunctionx.apply(stack, context);
 					}
 
-					return itemStack;
+					return stack;
 				};
 		}
 	}

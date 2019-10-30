@@ -25,21 +25,21 @@ public class VehicleMoveC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readFloat();
-		this.pitch = packetByteBuf.readFloat();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readFloat();
+		this.pitch = buf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeDouble(this.x);
-		packetByteBuf.writeDouble(this.y);
-		packetByteBuf.writeDouble(this.z);
-		packetByteBuf.writeFloat(this.yaw);
-		packetByteBuf.writeFloat(this.pitch);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeDouble(this.x);
+		buf.writeDouble(this.y);
+		buf.writeDouble(this.z);
+		buf.writeFloat(this.yaw);
+		buf.writeFloat(this.pitch);
 	}
 
 	public void method_12278(ServerPlayPacketListener serverPlayPacketListener) {

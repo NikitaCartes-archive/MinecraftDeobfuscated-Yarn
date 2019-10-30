@@ -29,7 +29,7 @@ import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
@@ -50,21 +50,21 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	@Nullable
 	private ClientResourcePackProfile serverContainer;
 
-	public ClientBuiltinResourcePackProvider(File file, ResourceIndex resourceIndex) {
-		this.serverPacksRoot = file;
-		this.index = resourceIndex;
-		this.pack = new DefaultClientResourcePack(resourceIndex);
+	public ClientBuiltinResourcePackProvider(File serverPacksRoot, ResourceIndex index) {
+		this.serverPacksRoot = serverPacksRoot;
+		this.index = index;
+		this.pack = new DefaultClientResourcePack(index);
 	}
 
 	@Override
-	public <T extends ResourcePackProfile> void register(Map<String, T> map, ResourcePackProfile.Factory<T> factory) {
+	public <T extends ResourcePackProfile> void register(Map<String, T> registry, ResourcePackProfile.Factory<T> factory) {
 		T resourcePackProfile = ResourcePackProfile.of("vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM);
 		if (resourcePackProfile != null) {
-			map.put("vanilla", resourcePackProfile);
+			registry.put("vanilla", resourcePackProfile);
 		}
 
 		if (this.serverContainer != null) {
-			map.put("server", this.serverContainer);
+			registry.put("server", this.serverContainer);
 		}
 
 		File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
@@ -76,7 +76,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 					}
 				}, factory, ResourcePackProfile.InsertionPosition.TOP);
 			if (resourcePackProfile2 != null) {
-				map.put("programer_art", resourcePackProfile2);
+				registry.put("programer_art", resourcePackProfile2);
 			}
 		}
 	}
@@ -113,13 +113,13 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 				ProgressScreen progressScreen = new ProgressScreen();
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.executeSync(() -> minecraftClient.openScreen(progressScreen));
+				minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
 				completableFuture = NetworkUtils.download(file, string, map, 52428800, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
 			this.downloadTask = completableFuture.thenCompose(
 					object -> !this.verifyFile(string4, file)
-							? SystemUtil.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"))
+							? Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"))
 							: this.loadServerPack(file)
 				)
 				.whenComplete((void_, throwable) -> {
@@ -162,14 +162,14 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	private boolean verifyFile(String string, File file) {
+	private boolean verifyFile(String expectedSha1, File rfile) {
 		try {
-			FileInputStream fileInputStream = new FileInputStream(file);
+			FileInputStream fileInputStream = new FileInputStream(rfile);
 			Throwable var5 = null;
 
-			String string2;
+			String string;
 			try {
-				string2 = DigestUtils.sha1Hex(fileInputStream);
+				string = DigestUtils.sha1Hex(fileInputStream);
 			} catch (Throwable var15) {
 				var5 = var15;
 				throw var15;
@@ -187,19 +187,19 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 				}
 			}
 
-			if (string.isEmpty()) {
-				LOGGER.info("Found file {} without verification hash", file);
+			if (expectedSha1.isEmpty()) {
+				LOGGER.info("Found file {} without verification hash", rfile);
 				return true;
 			}
 
-			if (string2.toLowerCase(Locale.ROOT).equals(string.toLowerCase(Locale.ROOT))) {
-				LOGGER.info("Found file {} matching requested hash {}", file, string);
+			if (string.toLowerCase(Locale.ROOT).equals(expectedSha1.toLowerCase(Locale.ROOT))) {
+				LOGGER.info("Found file {} matching requested hash {}", rfile, expectedSha1);
 				return true;
 			}
 
-			LOGGER.warn("File {} had wrong hash (expected {}, found {}).", file, string, string2);
+			LOGGER.warn("File {} had wrong hash (expected {}, found {}).", rfile, expectedSha1, string);
 		} catch (IOException var17) {
-			LOGGER.warn("File {} couldn't be hashed.", file, var17);
+			LOGGER.warn("File {} couldn't be hashed.", rfile, var17);
 		}
 
 		return false;
@@ -222,13 +222,13 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	public CompletableFuture<Void> loadServerPack(File file) {
+	public CompletableFuture<Void> loadServerPack(File packZip) {
 		PackResourceMetadata packResourceMetadata = null;
 		NativeImage nativeImage = null;
 		String string = null;
 
 		try {
-			ZipResourcePack zipResourcePack = new ZipResourcePack(file);
+			ZipResourcePack zipResourcePack = new ZipResourcePack(packZip);
 			Throwable var6 = null;
 
 			try {
@@ -280,13 +280,13 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		}
 
 		if (string != null) {
-			return SystemUtil.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
+			return Util.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", packZip, string)));
 		} else {
-			LOGGER.info("Applying server pack {}", file);
+			LOGGER.info("Applying server pack {}", packZip);
 			this.serverContainer = new ClientResourcePackProfile(
 				"server",
 				true,
-				() -> new ZipResourcePack(file),
+				() -> new ZipResourcePack(packZip),
 				new TranslatableText("resourcePack.server.name"),
 				packResourceMetadata.getDescription(),
 				ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),

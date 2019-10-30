@@ -25,12 +25,12 @@ public class CompassItem extends Item {
 
 			@Environment(EnvType.CLIENT)
 			@Override
-			public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
-				if (livingEntity == null && !itemStack.isInFrame()) {
+			public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
+				if (user == null && !stack.isInFrame()) {
 					return 0.0F;
 				} else {
-					boolean bl = livingEntity != null;
-					Entity entity = (Entity)(bl ? livingEntity : itemStack.getFrame());
+					boolean bl = user != null;
+					Entity entity = (Entity)(bl ? user : stack.getFrame());
 					if (world == null) {
 						world = entity.world;
 					}
@@ -54,12 +54,12 @@ public class CompassItem extends Item {
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double getAngle(World world, double d) {
+			private double getAngle(World world, double entityYaw) {
 				if (world.getTime() != this.lastTick) {
 					this.lastTick = world.getTime();
-					double e = d - this.angle;
-					e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
-					this.step += e * 0.1;
+					double d = entityYaw - this.angle;
+					d = MathHelper.floorMod(d + 0.5, 1.0) - 0.5;
+					this.step += d * 0.1;
 					this.step *= 0.8;
 					this.angle = MathHelper.floorMod(this.angle + this.step, 1.0);
 				}
@@ -68,13 +68,13 @@ public class CompassItem extends Item {
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double getYaw(ItemFrameEntity itemFrameEntity) {
-				return (double)MathHelper.wrapDegrees(180 + itemFrameEntity.getHorizontalFacing().getHorizontal() * 90);
+			private double getYaw(ItemFrameEntity entity) {
+				return (double)MathHelper.wrapDegrees(180 + entity.getHorizontalFacing().getHorizontal() * 90);
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double getAngleToSpawn(IWorld iWorld, Entity entity) {
-				BlockPos blockPos = iWorld.getSpawnPos();
+			private double getAngleToSpawn(IWorld world, Entity entity) {
+				BlockPos blockPos = world.getSpawnPos();
 				return Math.atan2((double)blockPos.getZ() - entity.getZ(), (double)blockPos.getX() - entity.getX());
 			}
 		});

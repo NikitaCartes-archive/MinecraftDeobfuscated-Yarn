@@ -73,7 +73,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_BLAZE_HURT;
 	}
 
@@ -145,7 +145,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean handleFallDamage(float f, float g) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
 		return false;
 	}
 
@@ -175,8 +175,8 @@ public class BlazeEntity extends HostileEntity {
 		private int field_7217;
 		private int field_19420;
 
-		public ShootFireballGoal(BlazeEntity blazeEntity) {
-			this.blaze = blazeEntity;
+		public ShootFireballGoal(BlazeEntity blaze) {
+			this.blaze = blaze;
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
@@ -223,7 +223,7 @@ public class BlazeEntity extends HostileEntity {
 					this.blaze.getMoveControl().moveTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), 1.0);
 				} else if (d < this.method_6995() * this.method_6995() && bl) {
 					double e = livingEntity.getX() - this.blaze.getX();
-					double f = livingEntity.method_23323(0.5) - this.blaze.method_23323(0.5);
+					double f = livingEntity.getHeightAt(0.5) - this.blaze.getHeightAt(0.5);
 					double g = livingEntity.getZ() - this.blaze.getZ();
 					if (this.field_7217 <= 0) {
 						this.field_7218++;
@@ -246,7 +246,7 @@ public class BlazeEntity extends HostileEntity {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
 									this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h
 								);
-								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.method_23323(0.5) + 0.5, smallFireballEntity.getZ());
+								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getHeightAt(0.5) + 0.5, smallFireballEntity.getZ());
 								this.blaze.world.spawnEntity(smallFireballEntity);
 							}
 						}

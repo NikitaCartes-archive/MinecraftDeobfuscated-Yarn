@@ -16,19 +16,19 @@ import net.minecraft.util.JsonHelper;
 public class SetNbtLootFunction extends ConditionalLootFunction {
 	private final CompoundTag tag;
 
-	private SetNbtLootFunction(LootCondition[] lootConditions, CompoundTag compoundTag) {
-		super(lootConditions);
-		this.tag = compoundTag;
+	private SetNbtLootFunction(LootCondition[] conditions, CompoundTag tag) {
+		super(conditions);
+		this.tag = tag;
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		itemStack.getOrCreateTag().copyFrom(this.tag);
-		return itemStack;
+	public ItemStack process(ItemStack stack, LootContext context) {
+		stack.getOrCreateTag().copyFrom(this.tag);
+		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(CompoundTag compoundTag) {
-		return builder(lootConditions -> new SetNbtLootFunction(lootConditions, compoundTag));
+	public static ConditionalLootFunction.Builder<?> builder(CompoundTag tag) {
+		return builder(conditions -> new SetNbtLootFunction(conditions, tag));
 	}
 
 	public static class Builder extends ConditionalLootFunction.Factory<SetNbtLootFunction> {

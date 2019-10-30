@@ -15,10 +15,10 @@ public class GuiUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	public GuiUpdateS2CPacket() {
 	}
 
-	public GuiUpdateS2CPacket(int i, int j, int k) {
-		this.id = i;
-		this.propertyId = j;
-		this.value = k;
+	public GuiUpdateS2CPacket(int window, int propertyId, int value) {
+		this.id = window;
+		this.propertyId = propertyId;
+		this.value = value;
 	}
 
 	public void method_11447(ClientPlayPacketListener clientPlayPacketListener) {
@@ -26,17 +26,17 @@ public class GuiUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readUnsignedByte();
-		this.propertyId = packetByteBuf.readShort();
-		this.value = packetByteBuf.readShort();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readUnsignedByte();
+		this.propertyId = buf.readShort();
+		this.value = buf.readShort();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.id);
-		packetByteBuf.writeShort(this.propertyId);
-		packetByteBuf.writeShort(this.value);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.id);
+		buf.writeShort(this.propertyId);
+		buf.writeShort(this.value);
 	}
 
 	@Environment(EnvType.CLIENT)

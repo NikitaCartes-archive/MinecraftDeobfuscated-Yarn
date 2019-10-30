@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelA;
 import net.minecraft.client.render.entity.model.TropicalFishEntityModelB;
@@ -14,13 +14,13 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 	private final TropicalFishEntityModelA<TropicalFishEntity> modelA = new TropicalFishEntityModelA<>(0.008F);
 	private final TropicalFishEntityModelB<TropicalFishEntity> modelB = new TropicalFishEntityModelB<>(0.008F);
 
-	public TropicalFishSomethingFeatureRenderer(FeatureRendererContext<TropicalFishEntity, EntityModel<TropicalFishEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public TropicalFishSomethingFeatureRenderer(FeatureRendererContext<TropicalFishEntity, EntityModel<TropicalFishEntity>> context) {
+		super(context);
 	}
 
 	public void method_4205(
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		TropicalFishEntity tropicalFishEntity,
 		float f,
@@ -38,7 +38,7 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 			entityModel,
 			tropicalFishEntity.getVarietyId(),
 			matrixStack,
-			layeredVertexConsumerStorage,
+			vertexConsumerProvider,
 			i,
 			tropicalFishEntity,
 			f,

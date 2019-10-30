@@ -15,9 +15,9 @@ public class AlternativeLootCondition implements LootCondition {
 	private final LootCondition[] terms;
 	private final Predicate<LootContext> predicate;
 
-	private AlternativeLootCondition(LootCondition[] lootConditions) {
-		this.terms = lootConditions;
-		this.predicate = LootConditions.joinOr(lootConditions);
+	private AlternativeLootCondition(LootCondition[] terms) {
+		this.terms = terms;
+		this.predicate = LootConditions.joinOr(terms);
 	}
 
 	public final boolean method_825(LootContext lootContext) {
@@ -25,30 +25,30 @@ public class AlternativeLootCondition implements LootCondition {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		LootCondition.super.check(lootTableReporter);
+	public void check(LootTableReporter reporter) {
+		LootCondition.super.check(reporter);
 
 		for (int i = 0; i < this.terms.length; i++) {
-			this.terms[i].check(lootTableReporter.makeChild(".term[" + i + "]"));
+			this.terms[i].check(reporter.makeChild(".term[" + i + "]"));
 		}
 	}
 
-	public static AlternativeLootCondition.Builder builder(LootCondition.Builder... builders) {
-		return new AlternativeLootCondition.Builder(builders);
+	public static AlternativeLootCondition.Builder builder(LootCondition.Builder... terms) {
+		return new AlternativeLootCondition.Builder(terms);
 	}
 
 	public static class Builder implements LootCondition.Builder {
 		private final List<LootCondition> terms = Lists.<LootCondition>newArrayList();
 
-		public Builder(LootCondition.Builder... builders) {
-			for (LootCondition.Builder builder : builders) {
+		public Builder(LootCondition.Builder... terms) {
+			for (LootCondition.Builder builder : terms) {
 				this.terms.add(builder.build());
 			}
 		}
 
 		@Override
-		public AlternativeLootCondition.Builder withCondition(LootCondition.Builder builder) {
-			this.terms.add(builder.build());
+		public AlternativeLootCondition.Builder withCondition(LootCondition.Builder condition) {
+			this.terms.add(condition.build());
 			return this;
 		}
 

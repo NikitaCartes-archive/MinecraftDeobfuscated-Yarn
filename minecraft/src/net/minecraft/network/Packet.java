@@ -5,11 +5,11 @@ import net.minecraft.network.listener.PacketListener;
 import net.minecraft.util.PacketByteBuf;
 
 public interface Packet<T extends PacketListener> {
-	void read(PacketByteBuf packetByteBuf) throws IOException;
+	void read(PacketByteBuf buf) throws IOException;
 
-	void write(PacketByteBuf packetByteBuf) throws IOException;
+	void write(PacketByteBuf buf) throws IOException;
 
-	void apply(T packetListener);
+	void apply(T listener);
 
 	default boolean isErrorFatal() {
 		return false;

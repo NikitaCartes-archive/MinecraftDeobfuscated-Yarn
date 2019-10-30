@@ -15,8 +15,8 @@ import net.minecraft.util.Identifier;
 public class MatchToolLootCondition implements LootCondition {
 	private final ItemPredicate predicate;
 
-	public MatchToolLootCondition(ItemPredicate itemPredicate) {
-		this.predicate = itemPredicate;
+	public MatchToolLootCondition(ItemPredicate predicate) {
+		this.predicate = predicate;
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class MatchToolLootCondition implements LootCondition {
 		return itemStack != null && this.predicate.test(itemStack);
 	}
 
-	public static LootCondition.Builder builder(ItemPredicate.Builder builder) {
-		return () -> new MatchToolLootCondition(builder.build());
+	public static LootCondition.Builder builder(ItemPredicate.Builder predicate) {
+		return () -> new MatchToolLootCondition(predicate.build());
 	}
 
 	public static class Factory extends LootCondition.Factory<MatchToolLootCondition> {

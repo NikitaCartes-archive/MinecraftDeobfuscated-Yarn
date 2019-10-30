@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public class LevelDataGeneratorOptionsFix extends DataFix {
-	static final Map<String, String> NUMERICAL_IDS_TO_BIOME_IDS = SystemUtil.consume(Maps.<String, String>newHashMap(), hashMap -> {
+	static final Map<String, String> NUMERICAL_IDS_TO_BIOME_IDS = Util.create(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("0", "minecraft:ocean");
 		hashMap.put("1", "minecraft:plains");
 		hashMap.put("2", "minecraft:desert");
@@ -103,8 +103,8 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 		hashMap.put("167", "minecraft:modified_badlands_plateau");
 	});
 
-	public LevelDataGeneratorOptionsFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public LevelDataGeneratorOptionsFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -128,30 +128,30 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 		});
 	}
 
-	private static <T> Dynamic<T> fixGeneratorOptions(String string, DynamicOps<T> dynamicOps) {
-		Iterator<String> iterator = Splitter.on(';').split(string).iterator();
-		String string2 = "minecraft:plains";
+	private static <T> Dynamic<T> fixGeneratorOptions(String generatorOptions, DynamicOps<T> ops) {
+		Iterator<String> iterator = Splitter.on(';').split(generatorOptions).iterator();
+		String string = "minecraft:plains";
 		Map<String, Map<String, String>> map = Maps.<String, Map<String, String>>newHashMap();
 		List<Pair<Integer, String>> list;
-		if (!string.isEmpty() && iterator.hasNext()) {
+		if (!generatorOptions.isEmpty() && iterator.hasNext()) {
 			list = parseFlatLayers((String)iterator.next());
 			if (!list.isEmpty()) {
 				if (iterator.hasNext()) {
-					string2 = (String)NUMERICAL_IDS_TO_BIOME_IDS.getOrDefault(iterator.next(), "minecraft:plains");
+					string = (String)NUMERICAL_IDS_TO_BIOME_IDS.getOrDefault(iterator.next(), "minecraft:plains");
 				}
 
 				if (iterator.hasNext()) {
 					String[] strings = ((String)iterator.next()).toLowerCase(Locale.ROOT).split(",");
 
-					for (String string3 : strings) {
-						String[] strings2 = string3.split("\\(", 2);
+					for (String string2 : strings) {
+						String[] strings2 = string2.split("\\(", 2);
 						if (!strings2[0].isEmpty()) {
 							map.put(strings2[0], Maps.newHashMap());
 							if (strings2.length > 1 && strings2[1].endsWith(")") && strings2[1].length() > 1) {
 								String[] strings3 = strings2[1].substring(0, strings2[1].length() - 1).split(" ");
 
-								for (String string4 : strings3) {
-									String[] strings4 = string4.split("=", 2);
+								for (String string3 : strings3) {
+									String[] strings4 = string3.split("=", 2);
 									if (strings4.length == 2) {
 										((Map)map.get(strings2[0])).put(strings4[0], strings4[1]);
 									}
@@ -171,30 +171,27 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 			map.put("village", Maps.newHashMap());
 		}
 
-		T object = dynamicOps.createList(
+		T object = ops.createList(
 			list.stream()
 				.map(
-					pair -> dynamicOps.createMap(
+					pair -> ops.createMap(
 							ImmutableMap.of(
-								dynamicOps.createString("height"),
-								dynamicOps.createInt((Integer)pair.getFirst()),
-								dynamicOps.createString("block"),
-								dynamicOps.createString((String)pair.getSecond())
+								ops.createString("height"), ops.createInt((Integer)pair.getFirst()), ops.createString("block"), ops.createString((String)pair.getSecond())
 							)
 						)
 				)
 		);
-		T object2 = dynamicOps.createMap(
+		T object2 = ops.createMap(
 			(Map<T, T>)map.entrySet()
 				.stream()
 				.map(
 					entry -> Pair.of(
-							dynamicOps.createString(((String)entry.getKey()).toLowerCase(Locale.ROOT)),
-							dynamicOps.createMap(
+							ops.createString(((String)entry.getKey()).toLowerCase(Locale.ROOT)),
+							ops.createMap(
 								(Map<T, T>)((Map)entry.getValue())
 									.entrySet()
 									.stream()
-									.map(entryx -> Pair.of(dynamicOps.createString((String)entryx.getKey()), dynamicOps.createString((String)entryx.getValue())))
+									.map(entryx -> Pair.of(ops.createString((String)entryx.getKey()), ops.createString((String)entryx.getValue())))
 									.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
 							)
 						)
@@ -202,23 +199,16 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
 		);
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
-				ImmutableMap.of(
-					dynamicOps.createString("layers"),
-					object,
-					dynamicOps.createString("biome"),
-					dynamicOps.createString(string2),
-					dynamicOps.createString("structures"),
-					object2
-				)
+			ops,
+			ops.createMap(
+				ImmutableMap.of(ops.createString("layers"), object, ops.createString("biome"), ops.createString(string), ops.createString("structures"), object2)
 			)
 		);
 	}
 
 	@Nullable
-	private static Pair<Integer, String> parseFlatLayer(String string) {
-		String[] strings = string.split("\\*", 2);
+	private static Pair<Integer, String> parseFlatLayer(String layer) {
+		String[] strings = layer.split("\\*", 2);
 		int i;
 		if (strings.length == 2) {
 			try {
@@ -230,16 +220,16 @@ public class LevelDataGeneratorOptionsFix extends DataFix {
 			i = 1;
 		}
 
-		String string2 = strings[strings.length - 1];
-		return Pair.of(i, string2);
+		String string = strings[strings.length - 1];
+		return Pair.of(i, string);
 	}
 
-	private static List<Pair<Integer, String>> parseFlatLayers(String string) {
+	private static List<Pair<Integer, String>> parseFlatLayers(String layers) {
 		List<Pair<Integer, String>> list = Lists.<Pair<Integer, String>>newArrayList();
-		String[] strings = string.split(",");
+		String[] strings = layers.split(",");
 
-		for (String string2 : strings) {
-			Pair<Integer, String> pair = parseFlatLayer(string2);
+		for (String string : strings) {
+			Pair<Integer, String> pair = parseFlatLayer(string);
 			if (pair == null) {
 				return Collections.emptyList();
 			}

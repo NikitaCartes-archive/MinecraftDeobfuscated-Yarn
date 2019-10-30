@@ -10,9 +10,9 @@ public class TrackOwnerAttackerGoal extends TrackTargetGoal {
 	private LivingEntity attacker;
 	private int lastAttackedTime;
 
-	public TrackOwnerAttackerGoal(TameableEntity tameableEntity) {
-		super(tameableEntity, false);
-		this.tameable = tameableEntity;
+	public TrackOwnerAttackerGoal(TameableEntity tameable) {
+		super(tameable, false);
+		this.tameable = tameable;
 		this.setControls(EnumSet.of(Goal.Control.TARGET));
 	}
 

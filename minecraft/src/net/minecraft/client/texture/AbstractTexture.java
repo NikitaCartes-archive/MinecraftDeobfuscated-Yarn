@@ -15,17 +15,17 @@ public abstract class AbstractTexture {
 	protected boolean bilinear;
 	protected boolean mipmap;
 
-	public void setFilter(boolean bl, boolean bl2) {
+	public void setFilter(boolean bilinear, boolean mipmap) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		this.bilinear = bl;
-		this.mipmap = bl2;
+		this.bilinear = bilinear;
+		this.mipmap = mipmap;
 		int i;
 		int j;
-		if (bl) {
-			i = bl2 ? 9987 : 9729;
+		if (bilinear) {
+			i = mipmap ? 9987 : 9729;
 			j = 9729;
 		} else {
-			i = bl2 ? 9986 : 9728;
+			i = mipmap ? 9986 : 9728;
 			j = 9728;
 		}
 

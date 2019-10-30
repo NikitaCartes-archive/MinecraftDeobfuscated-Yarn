@@ -11,8 +11,8 @@ import net.minecraft.util.Identifier;
 public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalCriterion.Conditions> {
 	private final Identifier id;
 
-	public LocationArrivalCriterion(Identifier identifier) {
-		this.id = identifier;
+	public LocationArrivalCriterion(Identifier id) {
+		this.id = id;
 	}
 
 	@Override
@@ -25,23 +25,20 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 		return new LocationArrivalCriterion.Conditions(this.id, locationPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity) {
-		this.test(
-			serverPlayerEntity.getAdvancementManager(),
-			conditions -> conditions.matches(serverPlayerEntity.getServerWorld(), serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ())
-		);
+	public void trigger(ServerPlayerEntity player) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player.getServerWorld(), player.getX(), player.getY(), player.getZ()));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final LocationPredicate location;
 
-		public Conditions(Identifier identifier, LocationPredicate locationPredicate) {
-			super(identifier);
-			this.location = locationPredicate;
+		public Conditions(Identifier id, LocationPredicate location) {
+			super(id);
+			this.location = location;
 		}
 
-		public static LocationArrivalCriterion.Conditions create(LocationPredicate locationPredicate) {
-			return new LocationArrivalCriterion.Conditions(Criterions.LOCATION.id, locationPredicate);
+		public static LocationArrivalCriterion.Conditions create(LocationPredicate location) {
+			return new LocationArrivalCriterion.Conditions(Criterions.LOCATION.id, location);
 		}
 
 		public static LocationArrivalCriterion.Conditions createSleptInBed() {
@@ -52,8 +49,8 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 			return new LocationArrivalCriterion.Conditions(Criterions.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
 		}
 
-		public boolean matches(ServerWorld serverWorld, double d, double e, double f) {
-			return this.location.test(serverWorld, d, e, f);
+		public boolean matches(ServerWorld world, double x, double y, double z) {
+			return this.location.test(world, x, y, z);
 		}
 
 		@Override

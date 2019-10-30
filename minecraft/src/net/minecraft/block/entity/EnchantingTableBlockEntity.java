@@ -111,8 +111,8 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 		return (Text)(this.customName != null ? this.customName : new TranslatableText("container.enchant"));
 	}
 
-	public void setCustomName(@Nullable Text text) {
-		this.customName = text;
+	public void setCustomName(@Nullable Text value) {
+		this.customName = value;
 	}
 
 	@Nullable

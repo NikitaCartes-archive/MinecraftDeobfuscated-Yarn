@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -16,13 +16,13 @@ public class BiomeLayerSampler {
 		this.sampler = layerFactory.make();
 	}
 
-	private Biome getBiome(int i) {
-		Biome biome = Registry.BIOME.get(i);
+	private Biome getBiome(int id) {
+		Biome biome = Registry.BIOME.get(id);
 		if (biome == null) {
 			if (SharedConstants.isDevelopment) {
-				throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Unknown biome id: " + i));
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Unknown biome id: " + id));
 			} else {
-				LOGGER.warn("Unknown biome id: ", i);
+				LOGGER.warn("Unknown biome id: ", id);
 				return Biomes.DEFAULT;
 			}
 		} else {
@@ -30,7 +30,7 @@ public class BiomeLayerSampler {
 		}
 	}
 
-	public Biome sample(int i, int j) {
-		return this.getBiome(this.sampler.sample(i, j));
+	public Biome sample(int x, int y) {
+		return this.getBiome(this.sampler.sample(x, y));
 	}
 }

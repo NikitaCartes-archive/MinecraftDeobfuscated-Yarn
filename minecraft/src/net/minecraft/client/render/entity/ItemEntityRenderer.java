@@ -3,8 +3,8 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -22,22 +22,22 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	private final ItemRenderer itemRenderer;
 	private final Random random = new Random();
 
-	public ItemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-		super(entityRenderDispatcher);
+	public ItemEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer) {
+		super(renderManager);
 		this.itemRenderer = itemRenderer;
 		this.field_4673 = 0.15F;
 		this.field_4672 = 0.75F;
 	}
 
-	private int getRenderedAmount(ItemStack itemStack) {
+	private int getRenderedAmount(ItemStack stack) {
 		int i = 1;
-		if (itemStack.getCount() > 48) {
+		if (stack.getCount() > 48) {
 			i = 5;
-		} else if (itemStack.getCount() > 32) {
+		} else if (stack.getCount() > 32) {
 			i = 4;
-		} else if (itemStack.getCount() > 16) {
+		} else if (stack.getCount() > 16) {
 			i = 3;
-		} else if (itemStack.getCount() > 1) {
+		} else if (stack.getCount() > 1) {
 			i = 2;
 		}
 
@@ -45,7 +45,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 	}
 
 	public void method_3996(
-		ItemEntity itemEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		ItemEntity itemEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		matrixStack.push();
 		ItemStack itemStack = itemEntity.getStack();
@@ -91,7 +91,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 					ModelTransformation.Type.GROUND,
 					false,
 					matrixStack,
-					layeredVertexConsumerStorage,
+					vertexConsumerProvider,
 					itemEntity.getLightmapCoordinates(),
 					OverlayTexture.DEFAULT_UV,
 					bakedModel
@@ -103,7 +103,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		}
 
 		matrixStack.pop();
-		super.render(itemEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.render(itemEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public Identifier method_3999(ItemEntity itemEntity) {

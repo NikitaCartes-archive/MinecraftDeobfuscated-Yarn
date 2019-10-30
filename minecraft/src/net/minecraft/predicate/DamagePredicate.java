@@ -27,30 +27,26 @@ public class DamagePredicate {
 	}
 
 	public DamagePredicate(
-		NumberRange.FloatRange floatRange,
-		NumberRange.FloatRange floatRange2,
-		EntityPredicate entityPredicate,
-		@Nullable Boolean boolean_,
-		DamageSourcePredicate damageSourcePredicate
+		NumberRange.FloatRange dealt, NumberRange.FloatRange taken, EntityPredicate sourceEntity, @Nullable Boolean blocked, DamageSourcePredicate type
 	) {
-		this.dealt = floatRange;
-		this.taken = floatRange2;
-		this.sourceEntity = entityPredicate;
-		this.blocked = boolean_;
-		this.type = damageSourcePredicate;
+		this.dealt = dealt;
+		this.taken = taken;
+		this.sourceEntity = sourceEntity;
+		this.blocked = blocked;
+		this.type = type;
 	}
 
-	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
+	public boolean test(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
 		if (this == ANY) {
 			return true;
-		} else if (!this.dealt.test(f)) {
+		} else if (!this.dealt.test(dealt)) {
 			return false;
-		} else if (!this.taken.test(g)) {
+		} else if (!this.taken.test(taken)) {
 			return false;
-		} else if (!this.sourceEntity.test(serverPlayerEntity, damageSource.getAttacker())) {
+		} else if (!this.sourceEntity.test(player, source.getAttacker())) {
 			return false;
 		} else {
-			return this.blocked != null && this.blocked != bl ? false : this.type.test(serverPlayerEntity, damageSource);
+			return this.blocked != null && this.blocked != blocked ? false : this.type.test(player, source);
 		}
 	}
 
@@ -96,8 +92,8 @@ public class DamagePredicate {
 			return new DamagePredicate.Builder();
 		}
 
-		public DamagePredicate.Builder blocked(Boolean boolean_) {
-			this.blocked = boolean_;
+		public DamagePredicate.Builder blocked(Boolean blocked) {
+			this.blocked = blocked;
 			return this;
 		}
 

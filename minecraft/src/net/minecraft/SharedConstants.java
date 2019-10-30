@@ -16,14 +16,14 @@ public class SharedConstants {
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
 	private static GameVersion gameVersion;
 
-	public static boolean isValidChar(char c) {
-		return c != 167 && c >= ' ' && c != 127;
+	public static boolean isValidChar(char chr) {
+		return chr != 167 && chr >= ' ' && chr != 127;
 	}
 
-	public static String stripInvalidChars(String string) {
+	public static String stripInvalidChars(String s) {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (char c : string.toCharArray()) {
+		for (char c : s.toCharArray()) {
 			if (isValidChar(c)) {
 				stringBuilder.append(c);
 			}
@@ -33,19 +33,19 @@ public class SharedConstants {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String stripSupplementaryChars(String string) {
+	public static String stripSupplementaryChars(String s) {
 		StringBuilder stringBuilder = new StringBuilder();
 		int i = 0;
 
-		while (i < string.length()) {
-			int j = string.codePointAt(i);
+		while (i < s.length()) {
+			int j = s.codePointAt(i);
 			if (!Character.isSupplementaryCodePoint(j)) {
 				stringBuilder.appendCodePoint(j);
 			} else {
 				stringBuilder.append('�');
 			}
 
-			i = string.offsetByCodePoints(i, 1);
+			i = s.offsetByCodePoints(i, 1);
 		}
 
 		return stringBuilder.toString();

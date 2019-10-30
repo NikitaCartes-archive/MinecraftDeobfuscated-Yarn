@@ -7,8 +7,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class LookAroundTask extends Task<MobEntity> {
-	public LookAroundTask(int i, int j) {
-		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT), i, j);
+	public LookAroundTask(int minRunTime, int maxRunTime) {
+		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT), minRunTime, maxRunTime);
 	}
 
 	protected boolean method_18967(ServerWorld serverWorld, MobEntity mobEntity, long l) {

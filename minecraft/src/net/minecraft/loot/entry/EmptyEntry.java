@@ -10,12 +10,12 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.util.Identifier;
 
 public class EmptyEntry extends LeafEntry {
-	private EmptyEntry(int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
+	private EmptyEntry(int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+		super(weight, quality, conditions, functions);
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
+	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
 	}
 
 	public static LeafEntry.Builder<?> Serializer() {

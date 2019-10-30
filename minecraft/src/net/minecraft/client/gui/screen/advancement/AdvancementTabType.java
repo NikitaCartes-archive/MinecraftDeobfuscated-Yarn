@@ -19,62 +19,62 @@ enum AdvancementTabType {
 	private final int height;
 	private final int tabCount;
 
-	private AdvancementTabType(int j, int k, int l, int m, int n) {
-		this.u = j;
-		this.v = k;
-		this.width = l;
-		this.height = m;
-		this.tabCount = n;
+	private AdvancementTabType(int u, int v, int width, int height, int tabCount) {
+		this.u = u;
+		this.v = v;
+		this.width = width;
+		this.height = height;
+		this.tabCount = tabCount;
 	}
 
 	public int getTabCount() {
 		return this.tabCount;
 	}
 
-	public void drawBackground(DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
-		int l = this.u;
-		if (k > 0) {
-			l += this.width;
+	public void drawBackground(DrawableHelper drawable, int x, int y, boolean selected, int index) {
+		int i = this.u;
+		if (index > 0) {
+			i += this.width;
 		}
 
-		if (k == this.tabCount - 1) {
-			l += this.width;
+		if (index == this.tabCount - 1) {
+			i += this.width;
 		}
 
-		int m = bl ? this.v + this.height : this.v;
-		drawableHelper.blit(i + this.getTabX(k), j + this.getTabY(k), l, m, this.width, this.height);
+		int j = selected ? this.v + this.height : this.v;
+		drawable.blit(x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
 	}
 
-	public void drawIcon(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {
-		int l = i + this.getTabX(k);
-		int m = j + this.getTabY(k);
+	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {
+		int i = x + this.getTabX(index);
+		int j = y + this.getTabY(index);
 		switch (this) {
 			case ABOVE:
-				l += 6;
-				m += 9;
+				i += 6;
+				j += 9;
 				break;
 			case BELOW:
-				l += 6;
-				m += 6;
+				i += 6;
+				j += 6;
 				break;
 			case LEFT:
-				l += 10;
-				m += 5;
+				i += 10;
+				j += 5;
 				break;
 			case RIGHT:
-				l += 6;
-				m += 5;
+				i += 6;
+				j += 5;
 		}
 
-		itemRenderer.renderGuiItem(null, itemStack, l, m);
+		itemRenderer.renderGuiItem(null, icon, i, j);
 	}
 
-	public int getTabX(int i) {
+	public int getTabX(int index) {
 		switch (this) {
 			case ABOVE:
-				return (this.width + 4) * i;
+				return (this.width + 4) * index;
 			case BELOW:
-				return (this.width + 4) * i;
+				return (this.width + 4) * index;
 			case LEFT:
 				return -this.width + 4;
 			case RIGHT:
@@ -84,24 +84,24 @@ enum AdvancementTabType {
 		}
 	}
 
-	public int getTabY(int i) {
+	public int getTabY(int index) {
 		switch (this) {
 			case ABOVE:
 				return -this.height + 4;
 			case BELOW:
 				return 136;
 			case LEFT:
-				return this.height * i;
+				return this.height * index;
 			case RIGHT:
-				return this.height * i;
+				return this.height * index;
 			default:
 				throw new UnsupportedOperationException("Don't know what this tab type is!" + this);
 		}
 	}
 
-	public boolean isClickOnTab(int i, int j, int k, double d, double e) {
-		int l = i + this.getTabX(k);
-		int m = j + this.getTabY(k);
-		return d > (double)l && d < (double)(l + this.width) && e > (double)m && e < (double)(m + this.height);
+	public boolean isClickOnTab(int screenX, int screenY, int index, double mouseX, double mouseY) {
+		int i = screenX + this.getTabX(index);
+		int j = screenY + this.getTabY(index);
+		return mouseX > (double)i && mouseX < (double)(i + this.width) && mouseY > (double)j && mouseY < (double)(j + this.height);
 	}
 }

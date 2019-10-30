@@ -13,18 +13,18 @@ public class ChunkLoadDistanceS2CPacket implements Packet<ClientPlayPacketListen
 	public ChunkLoadDistanceS2CPacket() {
 	}
 
-	public ChunkLoadDistanceS2CPacket(int i) {
-		this.distance = i;
+	public ChunkLoadDistanceS2CPacket(int distance) {
+		this.distance = distance;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.distance = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.distance = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.distance);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.distance);
 	}
 
 	public void method_20205(ClientPlayPacketListener clientPlayPacketListener) {

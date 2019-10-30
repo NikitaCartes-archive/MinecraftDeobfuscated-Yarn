@@ -20,13 +20,13 @@ public class AccessibilityScreen extends GameOptionsScreen {
 		Option.TEXT_BACKGROUND,
 		Option.CHAT_OPACITY,
 		Option.AUTO_JUMP,
-		Option.field_21330,
-		Option.field_21331
+		Option.SNEAK_TOGGLED,
+		Option.SPRINT_TOGGLED
 	};
 	private AbstractButtonWidget narratorButton;
 
-	public AccessibilityScreen(Screen screen, GameOptions gameOptions) {
-		super(screen, gameOptions, new TranslatableText("options.accessibility.title"));
+	public AccessibilityScreen(Screen parent, GameOptions gameOptions) {
+		super(parent, gameOptions, new TranslatableText("options.accessibility.title"));
 	}
 
 	@Override
@@ -53,10 +53,10 @@ public class AccessibilityScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	public void setNarratorMessage() {

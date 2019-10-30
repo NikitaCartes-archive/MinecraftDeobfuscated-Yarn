@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.util.SectionDistanceLevelPropagator;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -39,16 +39,16 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		this.pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker();
 	}
 
-	public void add(BlockPos blockPos, PointOfInterestType pointOfInterestType) {
-		this.getOrCreate(ChunkSectionPos.from(blockPos).asLong()).add(blockPos, pointOfInterestType);
+	public void add(BlockPos pos, PointOfInterestType type) {
+		this.getOrCreate(ChunkSectionPos.from(pos).asLong()).add(pos, type);
 	}
 
-	public void remove(BlockPos blockPos) {
-		this.getOrCreate(ChunkSectionPos.from(blockPos).asLong()).remove(blockPos);
+	public void remove(BlockPos pos) {
+		this.getOrCreate(ChunkSectionPos.from(pos).asLong()).remove(pos);
 	}
 
-	public long count(Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus) {
-		return this.get(predicate, blockPos, i, occupationStatus).count();
+	public long count(Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus occupationStatus) {
+		return this.get(typePredicate, pos, radius, occupationStatus).count();
 	}
 
 	public Stream<PointOfInterest> method_22383(
@@ -58,46 +58,58 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Stream<PointOfInterest> get(
-		Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
+		Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		int j = i * i;
-		return this.method_22383(predicate, blockPos, i, occupationStatus)
-			.filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j);
+		int i = radius * radius;
+		return this.method_22383(typePredicate, pos, radius, occupationStatus)
+			.filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(pos) <= (double)i);
 	}
 
-	public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, PointOfInterestStorage.OccupationStatus occupationStatus) {
-		return IntStream.range(0, 16).boxed().flatMap(integer -> this.get(predicate, ChunkSectionPos.from(chunkPos, integer).asLong(), occupationStatus));
+	public Stream<PointOfInterest> get(Predicate<PointOfInterestType> typePredicate, ChunkPos pos, PointOfInterestStorage.OccupationStatus occupationStatus) {
+		return IntStream.range(0, 16).boxed().flatMap(integer -> this.get(typePredicate, ChunkSectionPos.from(pos, integer).asLong(), occupationStatus));
 	}
 
-	private Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, long l, PointOfInterestStorage.OccupationStatus occupationStatus) {
-		return (Stream<PointOfInterest>)this.get(l).map(pointOfInterestSet -> pointOfInterestSet.get(predicate, occupationStatus)).orElseGet(Stream::empty);
+	private Stream<PointOfInterest> get(Predicate<PointOfInterestType> typePredicate, long pos, PointOfInterestStorage.OccupationStatus occupationStatus) {
+		return (Stream<PointOfInterest>)this.get(pos).map(pointOfInterestSet -> pointOfInterestSet.get(typePredicate, occupationStatus)).orElseGet(Stream::empty);
 	}
 
 	public Stream<BlockPos> getPositions(
-		Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
+		Predicate<PointOfInterestType> typePredicate,
+		Predicate<BlockPos> posPredicate,
+		BlockPos pos,
+		int radius,
+		PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return this.get(predicate, blockPos, i, occupationStatus).map(PointOfInterest::getPos).filter(predicate2);
+		return this.get(typePredicate, pos, radius, occupationStatus).map(PointOfInterest::getPos).filter(posPredicate);
 	}
 
 	public Optional<BlockPos> getPosition(
-		Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
+		Predicate<PointOfInterestType> typePredicate,
+		Predicate<BlockPos> posPredicate,
+		BlockPos pos,
+		int radius,
+		PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return this.getPositions(predicate, predicate2, blockPos, i, occupationStatus).findFirst();
+		return this.getPositions(typePredicate, posPredicate, pos, radius, occupationStatus).findFirst();
 	}
 
 	public Optional<BlockPos> getNearestPosition(
-		Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
+		Predicate<PointOfInterestType> typePredicate,
+		Predicate<BlockPos> blockPosPredicate,
+		BlockPos pos,
+		int radius,
+		PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return this.get(predicate, blockPos, i, occupationStatus)
+		return this.get(typePredicate, pos, radius, occupationStatus)
 			.map(PointOfInterest::getPos)
-			.sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)))
-			.filter(predicate2)
+			.sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)))
+			.filter(blockPosPredicate)
 			.findFirst();
 	}
 
-	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
-		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
-			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
+	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {
+		return this.get(typePredicate, pos, radius, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
+			.filter(pointOfInterest -> positionPredicate.test(pointOfInterest.getPos()))
 			.findFirst()
 			.map(pointOfInterest -> {
 				pointOfInterest.reserveTicket();
@@ -106,34 +118,34 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getPosition(
-		Predicate<PointOfInterestType> predicate,
-		Predicate<BlockPos> predicate2,
+		Predicate<PointOfInterestType> typePredicate,
+		Predicate<BlockPos> positionPredicate,
 		PointOfInterestStorage.OccupationStatus occupationStatus,
-		BlockPos blockPos,
-		int i,
+		BlockPos pos,
+		int radius,
 		Random random
 	) {
-		List<PointOfInterest> list = (List<PointOfInterest>)this.get(predicate, blockPos, i, occupationStatus).collect(Collectors.toList());
+		List<PointOfInterest> list = (List<PointOfInterest>)this.get(typePredicate, pos, radius, occupationStatus).collect(Collectors.toList());
 		Collections.shuffle(list, random);
-		return list.stream().filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos())).findFirst().map(PointOfInterest::getPos);
+		return list.stream().filter(pointOfInterest -> positionPredicate.test(pointOfInterest.getPos())).findFirst().map(PointOfInterest::getPos);
 	}
 
-	public boolean releaseTicket(BlockPos blockPos) {
-		return this.getOrCreate(ChunkSectionPos.from(blockPos).asLong()).releaseTicket(blockPos);
+	public boolean releaseTicket(BlockPos pos) {
+		return this.getOrCreate(ChunkSectionPos.from(pos).asLong()).releaseTicket(pos);
 	}
 
-	public boolean test(BlockPos blockPos, Predicate<PointOfInterestType> predicate) {
-		return (Boolean)this.get(ChunkSectionPos.from(blockPos).asLong()).map(pointOfInterestSet -> pointOfInterestSet.test(blockPos, predicate)).orElse(false);
+	public boolean test(BlockPos pos, Predicate<PointOfInterestType> predicate) {
+		return (Boolean)this.get(ChunkSectionPos.from(pos).asLong()).map(pointOfInterestSet -> pointOfInterestSet.test(pos, predicate)).orElse(false);
 	}
 
-	public Optional<PointOfInterestType> getType(BlockPos blockPos) {
-		PointOfInterestSet pointOfInterestSet = this.getOrCreate(ChunkSectionPos.from(blockPos).asLong());
-		return pointOfInterestSet.getType(blockPos);
+	public Optional<PointOfInterestType> getType(BlockPos pos) {
+		PointOfInterestSet pointOfInterestSet = this.getOrCreate(ChunkSectionPos.from(pos).asLong());
+		return pointOfInterestSet.getType(pos);
 	}
 
-	public int getDistanceFromNearestOccupied(ChunkSectionPos chunkSectionPos) {
+	public int getDistanceFromNearestOccupied(ChunkSectionPos pos) {
 		this.pointOfInterestDistanceTracker.update();
-		return this.pointOfInterestDistanceTracker.getLevel(chunkSectionPos.asLong());
+		return this.pointOfInterestDistanceTracker.getLevel(pos.asLong());
 	}
 
 	private boolean isOccupied(long l) {
@@ -153,19 +165,19 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	@Override
-	protected void onUpdate(long l) {
-		super.onUpdate(l);
-		this.pointOfInterestDistanceTracker.update(l, this.pointOfInterestDistanceTracker.getInitialLevel(l), false);
+	protected void onUpdate(long pos) {
+		super.onUpdate(pos);
+		this.pointOfInterestDistanceTracker.update(pos, this.pointOfInterestDistanceTracker.getInitialLevel(pos), false);
 	}
 
 	@Override
-	protected void onLoad(long l) {
-		this.pointOfInterestDistanceTracker.update(l, this.pointOfInterestDistanceTracker.getInitialLevel(l), false);
+	protected void onLoad(long pos) {
+		this.pointOfInterestDistanceTracker.update(pos, this.pointOfInterestDistanceTracker.getInitialLevel(pos), false);
 	}
 
 	public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, chunkSection.getYOffset() >> 4);
-		SystemUtil.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
+		Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
 				if (shouldScan(chunkSection)) {
 					this.scanAndPopulate(chunkSection, chunkSectionPos, biConsumer);
 				}
@@ -194,7 +206,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public void method_22439(WorldView worldView, BlockPos blockPos, int i) {
-		ChunkSectionPos.method_22446(new ChunkPos(blockPos), Math.floorDiv(i, 16))
+		ChunkSectionPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16))
 			.map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong())))
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::method_22444).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())
@@ -227,21 +239,21 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		}
 
 		@Override
-		protected int getInitialLevel(long l) {
-			return PointOfInterestStorage.this.isOccupied(l) ? 0 : 7;
+		protected int getInitialLevel(long id) {
+			return PointOfInterestStorage.this.isOccupied(id) ? 0 : 7;
 		}
 
 		@Override
-		protected int getLevel(long l) {
-			return this.distances.get(l);
+		protected int getLevel(long id) {
+			return this.distances.get(id);
 		}
 
 		@Override
-		protected void setLevel(long l, int i) {
-			if (i > 6) {
-				this.distances.remove(l);
+		protected void setLevel(long id, int level) {
+			if (level > 6) {
+				this.distances.remove(id);
 			} else {
-				this.distances.put(l, (byte)i);
+				this.distances.put(id, (byte)level);
 			}
 		}
 

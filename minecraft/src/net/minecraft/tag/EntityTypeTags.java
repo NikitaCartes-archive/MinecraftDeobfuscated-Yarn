@@ -12,8 +12,8 @@ public class EntityTypeTags {
 	public static final Tag<EntityType<?>> RAIDERS = register("raiders");
 	public static final Tag<EntityType<?>> BEEHIVE_INHABITORS = register("beehive_inhabitors");
 
-	public static void setContainer(TagContainer<EntityType<?>> tagContainer) {
-		container = tagContainer;
+	public static void setContainer(TagContainer<EntityType<?>> container) {
+		EntityTypeTags.container = container;
 		latestVersion++;
 	}
 
@@ -21,8 +21,8 @@ public class EntityTypeTags {
 		return container;
 	}
 
-	private static Tag<EntityType<?>> register(String string) {
-		return new EntityTypeTags.CachingTag(new Identifier(string));
+	private static Tag<EntityType<?>> register(String id) {
+		return new EntityTypeTags.CachingTag(new Identifier(id));
 	}
 
 	public static class CachingTag extends Tag<EntityType<?>> {

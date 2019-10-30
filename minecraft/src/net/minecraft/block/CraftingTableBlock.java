@@ -22,20 +22,20 @@ public class CraftingTableBlock extends Block {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-			playerEntity.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+			player.openContainer(state.createContainerProvider(world, pos));
+			player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new CraftingTableContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new CraftingTableContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 }

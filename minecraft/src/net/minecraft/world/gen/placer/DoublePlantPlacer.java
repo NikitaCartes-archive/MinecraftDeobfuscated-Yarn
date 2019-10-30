@@ -4,14 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
-import net.minecraft.class_4629;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 
-public class DoublePlantPlacer extends class_4629 {
+public class DoublePlantPlacer extends BlockPlacer {
 	public DoublePlantPlacer() {
 		super(BlockPlacerType.DOUBLE_PLANT_PLACER);
 	}
@@ -26,13 +25,8 @@ public class DoublePlantPlacer extends class_4629 {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(
-				dynamicOps,
-				dynamicOps.createMap(
-					ImmutableMap.of(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_PLACER_TYPE.getId(this.field_21222).toString()))
-				)
-			)
+	public <T> T serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("type"), ops.createString(Registry.BLOCK_PLACER_TYPE.getId(this.type).toString()))))
 			.getValue();
 	}
 }

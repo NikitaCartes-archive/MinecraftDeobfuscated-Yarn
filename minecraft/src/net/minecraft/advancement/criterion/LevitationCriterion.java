@@ -23,28 +23,26 @@ public class LevitationCriterion extends AbstractCriterion<LevitationCriterion.C
 		return new LevitationCriterion.Conditions(distancePredicate, intRange);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, vec3d, i));
+	public void trigger(ServerPlayerEntity player, Vec3d startPos, int duration) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, startPos, duration));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final DistancePredicate distance;
 		private final NumberRange.IntRange duration;
 
-		public Conditions(DistancePredicate distancePredicate, NumberRange.IntRange intRange) {
+		public Conditions(DistancePredicate distance, NumberRange.IntRange intRange) {
 			super(LevitationCriterion.ID);
-			this.distance = distancePredicate;
+			this.distance = distance;
 			this.duration = intRange;
 		}
 
-		public static LevitationCriterion.Conditions create(DistancePredicate distancePredicate) {
-			return new LevitationCriterion.Conditions(distancePredicate, NumberRange.IntRange.ANY);
+		public static LevitationCriterion.Conditions create(DistancePredicate distance) {
+			return new LevitationCriterion.Conditions(distance, NumberRange.IntRange.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ())
-				? false
-				: this.duration.test(i);
+		public boolean matches(ServerPlayerEntity player, Vec3d startPos, int duration) {
+			return !this.distance.test(startPos.x, startPos.y, startPos.z, player.getX(), player.getY(), player.getZ()) ? false : this.duration.test(duration);
 		}
 
 		@Override

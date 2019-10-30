@@ -14,8 +14,8 @@ public class Whitelist extends ServerConfigList<GameProfile, WhitelistEntry> {
 		return new WhitelistEntry(jsonObject);
 	}
 
-	public boolean isAllowed(GameProfile gameProfile) {
-		return this.contains(gameProfile);
+	public boolean isAllowed(GameProfile profile) {
+		return this.contains(profile);
 	}
 
 	@Override

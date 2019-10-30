@@ -9,9 +9,9 @@ import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -47,7 +47,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		double f,
 		float g,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		int j
 	) {
@@ -80,7 +80,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		matrixStack.push();
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		float k = 0.0625F;
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		this.verticalBar.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		this.topBar.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		if (bannerBlockEntity.isPreview()) {
@@ -95,7 +95,7 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		this.area.render(matrixStack, vertexConsumer, 0.0625F, i, j, sprite);
 		List<BannerPattern> list = bannerBlockEntity.getPatterns();
 		List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
-		VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+		VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
 		if (list == null) {
 			LOGGER.error("patterns are null");
 		} else if (list2 == null) {

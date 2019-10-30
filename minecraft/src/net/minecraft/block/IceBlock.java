@@ -21,46 +21,44 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void afterBreak(
-		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
-	) {
-		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
-		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
+	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
+		super.afterBreak(world, player, pos, state, blockEntity, stack);
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
 			if (world.dimension.doesWaterVaporize()) {
-				world.removeBlock(blockPos, false);
+				world.removeBlock(pos, false);
 				return;
 			}
 
-			Material material = world.getBlockState(blockPos.method_10074()).getMaterial();
+			Material material = world.getBlockState(pos.method_10074()).getMaterial();
 			if (material.blocksMovement() || material.isLiquid()) {
-				world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
+				world.setBlockState(pos, Blocks.WATER.getDefaultState());
 			}
 		}
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getOpacity(serverWorld, blockPos)) {
-			this.melt(blockState, serverWorld, blockPos);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (world.getLightLevel(LightType.BLOCK, pos) > 11 - state.getOpacity(world, pos)) {
+			this.melt(state, world, pos);
 		}
 	}
 
-	protected void melt(BlockState blockState, World world, BlockPos blockPos) {
+	protected void melt(BlockState state, World world, BlockPos pos) {
 		if (world.dimension.doesWaterVaporize()) {
-			world.removeBlock(blockPos, false);
+			world.removeBlock(pos, false);
 		} else {
-			world.setBlockState(blockPos, Blocks.WATER.getDefaultState());
-			world.updateNeighbor(blockPos, Blocks.WATER, blockPos);
+			world.setBlockState(pos, Blocks.WATER.getDefaultState());
+			world.updateNeighbor(pos, Blocks.WATER, pos);
 		}
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
+	public PistonBehavior getPistonBehavior(BlockState state) {
 		return PistonBehavior.NORMAL;
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return entityType == EntityType.POLAR_BEAR;
+	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+		return type == EntityType.POLAR_BEAR;
 	}
 }

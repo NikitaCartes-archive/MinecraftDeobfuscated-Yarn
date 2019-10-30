@@ -21,28 +21,28 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 		return new TameAnimalCriterion.Conditions(entityPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, animalEntity));
+	public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, entity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate entity;
 
-		public Conditions(EntityPredicate entityPredicate) {
+		public Conditions(EntityPredicate entity) {
 			super(TameAnimalCriterion.ID);
-			this.entity = entityPredicate;
+			this.entity = entity;
 		}
 
 		public static TameAnimalCriterion.Conditions any() {
 			return new TameAnimalCriterion.Conditions(EntityPredicate.ANY);
 		}
 
-		public static TameAnimalCriterion.Conditions create(EntityPredicate entityPredicate) {
-			return new TameAnimalCriterion.Conditions(entityPredicate);
+		public static TameAnimalCriterion.Conditions create(EntityPredicate entity) {
+			return new TameAnimalCriterion.Conditions(entity);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
-			return this.entity.test(serverPlayerEntity, animalEntity);
+		public boolean matches(ServerPlayerEntity player, AnimalEntity entity) {
+			return this.entity.test(player, entity);
 		}
 
 		@Override

@@ -8,24 +8,24 @@ public class GroupEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(EntryCombiner[] entryCombiners) {
-		switch (entryCombiners.length) {
+	protected EntryCombiner combine(EntryCombiner[] children) {
+		switch (children.length) {
 			case 0:
 				return ALWAYS_TRUE;
 			case 1:
-				return entryCombiners[0];
+				return children[0];
 			case 2:
-				EntryCombiner entryCombiner = entryCombiners[0];
-				EntryCombiner entryCombiner2 = entryCombiners[1];
-				return (lootContext, consumer) -> {
-					entryCombiner.expand(lootContext, consumer);
-					entryCombiner2.expand(lootContext, consumer);
+				EntryCombiner entryCombiner = children[0];
+				EntryCombiner entryCombiner2 = children[1];
+				return (context, lootChoiceExpander) -> {
+					entryCombiner.expand(context, lootChoiceExpander);
+					entryCombiner2.expand(context, lootChoiceExpander);
 					return true;
 				};
 			default:
-				return (lootContext, consumer) -> {
-					for (EntryCombiner entryCombinerx : entryCombiners) {
-						entryCombinerx.expand(lootContext, consumer);
+				return (context, lootChoiceExpander) -> {
+					for (EntryCombiner entryCombinerx : children) {
+						entryCombinerx.expand(context, lootChoiceExpander);
 					}
 
 					return true;

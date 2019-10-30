@@ -51,8 +51,8 @@ public class ItemTags {
 	public static final Tag<Item> ARROWS = register("arrows");
 	public static final Tag<Item> LECTERN_BOOKS = register("lectern_books");
 
-	public static void setContainer(TagContainer<Item> tagContainer) {
-		container = tagContainer;
+	public static void setContainer(TagContainer<Item> container) {
+		ItemTags.container = container;
 		latestVersion++;
 	}
 
@@ -60,8 +60,8 @@ public class ItemTags {
 		return container;
 	}
 
-	private static Tag<Item> register(String string) {
-		return new ItemTags.CachingTag(new Identifier(string));
+	private static Tag<Item> register(String id) {
+		return new ItemTags.CachingTag(new Identifier(id));
 	}
 
 	public static class CachingTag extends Tag<Item> {

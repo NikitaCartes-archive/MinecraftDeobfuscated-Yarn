@@ -52,7 +52,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		List<String> list = Lists.<String>newArrayList(ScoreboardCriterion.OBJECTIVES.keySet());
 
 		for (StatType<?> statType : Registry.STAT_TYPE) {
@@ -62,11 +62,11 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 			}
 		}
 
-		return CommandSource.suggestMatching(list, suggestionsBuilder);
+		return CommandSource.suggestMatching(list, builder);
 	}
 
-	public <T> String getStatName(StatType<T> statType, Object object) {
-		return Stat.getName(statType, (T)object);
+	public <T> String getStatName(StatType<T> stat, Object value) {
+		return Stat.getName(stat, (T)value);
 	}
 
 	@Override

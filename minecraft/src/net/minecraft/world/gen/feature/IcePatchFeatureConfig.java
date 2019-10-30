@@ -7,13 +7,13 @@ import com.mojang.datafixers.types.DynamicOps;
 public class IcePatchFeatureConfig implements FeatureConfig {
 	public final int radius;
 
-	public IcePatchFeatureConfig(int i) {
-		this.radius = i;
+	public IcePatchFeatureConfig(int radius) {
+		this.radius = radius;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("radius"), dynamicOps.createInt(this.radius))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("radius"), ops.createInt(this.radius))));
 	}
 
 	public static <T> IcePatchFeatureConfig deserialize(Dynamic<T> dynamic) {

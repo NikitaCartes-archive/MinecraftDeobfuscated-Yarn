@@ -38,7 +38,7 @@ public class Language {
 					this.translations.put(entry.getKey(), string);
 				}
 
-				this.timeLoaded = SystemUtil.getMeasuringTimeMs();
+				this.timeLoaded = Util.getMeasuringTimeMs();
 			} catch (Throwable var16) {
 				var2 = var16;
 				throw var16;
@@ -68,7 +68,7 @@ public class Language {
 	public static synchronized void load(Map<String, String> map) {
 		INSTANCE.translations.clear();
 		INSTANCE.translations.putAll(map);
-		INSTANCE.timeLoaded = SystemUtil.getMeasuringTimeMs();
+		INSTANCE.timeLoaded = Util.getMeasuringTimeMs();
 	}
 
 	public synchronized String translate(String string) {

@@ -18,15 +18,15 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
 public class BannerItem extends WallStandingBlockItem {
-	public BannerItem(Block block, Block block2, Item.Settings settings) {
-		super(block, block2, settings);
-		Validate.isInstanceOf(AbstractBannerBlock.class, block);
-		Validate.isInstanceOf(AbstractBannerBlock.class, block2);
+	public BannerItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
+		super(standingBlock, wallBlock, settings);
+		Validate.isInstanceOf(AbstractBannerBlock.class, standingBlock);
+		Validate.isInstanceOf(AbstractBannerBlock.class, wallBlock);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void appendBannerTooltip(ItemStack itemStack, List<Text> list) {
-		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+	public static void appendBannerTooltip(ItemStack stack, List<Text> tooltip) {
+		CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
 		if (compoundTag != null && compoundTag.contains("Patterns")) {
 			ListTag listTag = compoundTag.getList("Patterns", 10);
 
@@ -35,7 +35,7 @@ public class BannerItem extends WallStandingBlockItem {
 				DyeColor dyeColor = DyeColor.byId(compoundTag2.getInt("Color"));
 				BannerPattern bannerPattern = BannerPattern.byId(compoundTag2.getString("Pattern"));
 				if (bannerPattern != null) {
-					list.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).formatted(Formatting.GRAY));
+					tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).formatted(Formatting.GRAY));
 				}
 			}
 		}
@@ -47,7 +47,7 @@ public class BannerItem extends WallStandingBlockItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void appendTooltip(ItemStack itemStack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-		appendBannerTooltip(itemStack, list);
+	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+		appendBannerTooltip(stack, tooltip);
 	}
 }

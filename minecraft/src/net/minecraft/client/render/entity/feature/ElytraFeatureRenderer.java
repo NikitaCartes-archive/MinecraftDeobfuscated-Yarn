@@ -3,9 +3,9 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.model.ElytraEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -22,22 +22,12 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 	private static final Identifier SKIN = new Identifier("textures/entity/elytra.png");
 	private final ElytraEntityModel<T> elytra = new ElytraEntityModel<>();
 
-	public ElytraFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
-		super(featureRendererContext);
+	public ElytraFeatureRenderer(FeatureRendererContext<T, M> context) {
+		super(context);
 	}
 
 	public void method_17161(
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i,
-		T livingEntity,
-		float f,
-		float g,
-		float h,
-		float j,
-		float k,
-		float l,
-		float m
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m
 	) {
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
 		if (itemStack.getItem() == Items.ELYTRA) {
@@ -62,7 +52,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			this.getModel().copyStateTo(this.elytra);
 			this.elytra.method_17079(livingEntity, f, g, j, k, l, m);
 			VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
-				layeredVertexConsumerStorage, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint()
+				vertexConsumerProvider, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint()
 			);
 			this.elytra.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();

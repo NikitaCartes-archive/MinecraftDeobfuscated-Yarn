@@ -10,7 +10,7 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuCloseCallback;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -21,75 +21,75 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	private long lastInteractionTime;
 	private SpectatorMenu spectatorMenu;
 
-	public SpectatorHud(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public SpectatorHud(MinecraftClient client) {
+		this.client = client;
 	}
 
-	public void selectSlot(int i) {
-		this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
+	public void selectSlot(int slot) {
+		this.lastInteractionTime = Util.getMeasuringTimeMs();
 		if (this.spectatorMenu != null) {
-			this.spectatorMenu.useCommand(i);
+			this.spectatorMenu.useCommand(slot);
 		} else {
 			this.spectatorMenu = new SpectatorMenu(this);
 		}
 	}
 
 	private float getSpectatorMenuHeight() {
-		long l = this.lastInteractionTime - SystemUtil.getMeasuringTimeMs() + 5000L;
+		long l = this.lastInteractionTime - Util.getMeasuringTimeMs() + 5000L;
 		return MathHelper.clamp((float)l / 2000.0F, 0.0F, 1.0F);
 	}
 
-	public void render(float f) {
+	public void render(float tickDelta) {
 		if (this.spectatorMenu != null) {
-			float g = this.getSpectatorMenuHeight();
-			if (g <= 0.0F) {
+			float f = this.getSpectatorMenuHeight();
+			if (f <= 0.0F) {
 				this.spectatorMenu.close();
 			} else {
 				int i = this.client.getWindow().getScaledWidth() / 2;
 				int j = this.getBlitOffset();
 				this.setBlitOffset(-90);
-				int k = MathHelper.floor((float)this.client.getWindow().getScaledHeight() - 22.0F * g);
+				int k = MathHelper.floor((float)this.client.getWindow().getScaledHeight() - 22.0F * f);
 				SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
-				this.renderSpectatorMenu(g, i, k, spectatorMenuState);
+				this.renderSpectatorMenu(f, i, k, spectatorMenuState);
 				this.setBlitOffset(j);
 			}
 		}
 	}
 
-	protected void renderSpectatorMenu(float f, int i, int j, SpectatorMenuState spectatorMenuState) {
+	protected void renderSpectatorMenu(float height, int x, int i, SpectatorMenuState state) {
 		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, height);
 		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
-		this.blit(i - 91, j, 0, 0, 182, 22);
-		if (spectatorMenuState.getSelectedSlot() >= 0) {
-			this.blit(i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
+		this.blit(x - 91, i, 0, 0, 182, 22);
+		if (state.getSelectedSlot() >= 0) {
+			this.blit(x - 91 - 1 + state.getSelectedSlot() * 20, i - 1, 0, 22, 24, 22);
 		}
 
-		for (int k = 0; k < 9; k++) {
-			this.renderSpectatorCommand(k, this.client.getWindow().getScaledWidth() / 2 - 90 + k * 20 + 2, (float)(j + 3), f, spectatorMenuState.getCommand(k));
+		for (int j = 0; j < 9; j++) {
+			this.renderSpectatorCommand(j, this.client.getWindow().getScaledWidth() / 2 - 90 + j * 20 + 2, (float)(i + 3), height, state.getCommand(j));
 		}
 
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableBlend();
 	}
 
-	private void renderSpectatorCommand(int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
+	private void renderSpectatorCommand(int slot, int x, float y, float alpha, SpectatorMenuCommand command) {
 		this.client.getTextureManager().bindTexture(SPECTATOR_TEX);
-		if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
-			int k = (int)(g * 255.0F);
+		if (command != SpectatorMenu.BLANK_COMMAND) {
+			int i = (int)(alpha * 255.0F);
 			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)j, f, 0.0F);
-			float h = spectatorMenuCommand.isEnabled() ? 1.0F : 0.25F;
-			RenderSystem.color4f(h, h, h, g);
-			spectatorMenuCommand.renderIcon(h, k);
+			RenderSystem.translatef((float)x, y, 0.0F);
+			float f = command.isEnabled() ? 1.0F : 0.25F;
+			RenderSystem.color4f(f, f, f, alpha);
+			command.renderIcon(f, i);
 			RenderSystem.popMatrix();
-			String string = String.valueOf(this.client.options.keysHotbar[i].getLocalizedName());
-			if (k > 3 && spectatorMenuCommand.isEnabled()) {
+			String string = String.valueOf(this.client.options.keysHotbar[slot].getLocalizedName());
+			if (i > 3 && command.isEnabled()) {
 				this.client
 					.textRenderer
-					.drawWithShadow(string, (float)(j + 19 - 2 - this.client.textRenderer.getStringWidth(string)), f + 6.0F + 3.0F, 16777215 + (k << 24));
+					.drawWithShadow(string, (float)(x + 19 - 2 - this.client.textRenderer.getStringWidth(string)), y + 6.0F + 3.0F, 16777215 + (i << 24));
 			}
 		}
 	}
@@ -115,7 +115,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	}
 
 	@Override
-	public void close(SpectatorMenu spectatorMenu) {
+	public void close(SpectatorMenu menu) {
 		this.spectatorMenu = null;
 		this.lastInteractionTime = 0L;
 	}
@@ -124,21 +124,21 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		return this.spectatorMenu != null;
 	}
 
-	public void cycleSlot(double d) {
-		int i = this.spectatorMenu.getSelectedSlot() + (int)d;
+	public void cycleSlot(double offset) {
+		int i = this.spectatorMenu.getSelectedSlot() + (int)offset;
 
 		while (i >= 0 && i <= 8 && (this.spectatorMenu.getCommand(i) == SpectatorMenu.BLANK_COMMAND || !this.spectatorMenu.getCommand(i).isEnabled())) {
-			i = (int)((double)i + d);
+			i = (int)((double)i + offset);
 		}
 
 		if (i >= 0 && i <= 8) {
 			this.spectatorMenu.useCommand(i);
-			this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
+			this.lastInteractionTime = Util.getMeasuringTimeMs();
 		}
 	}
 
 	public void useSelectedCommand() {
-		this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
+		this.lastInteractionTime = Util.getMeasuringTimeMs();
 		if (this.isOpen()) {
 			int i = this.spectatorMenu.getSelectedSlot();
 			if (i != -1) {

@@ -1,5 +1,9 @@
 package net.minecraft.entity.passive;
 
+import com.google.common.collect.ImmutableList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -87,8 +91,8 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected int getNextAirUnderwater(int i) {
-		return i;
+	protected int getNextAirUnderwater(int air) {
+		return air;
 	}
 
 	@Override
@@ -132,40 +136,40 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean canTarget(EntityType<?> entityType) {
-		if (this.isPlayerCreated() && entityType == EntityType.PLAYER) {
+	public boolean canTarget(EntityType<?> type) {
+		if (this.isPlayerCreated() && type == EntityType.PLAYER) {
 			return false;
 		} else {
-			return entityType == EntityType.CREEPER ? false : super.canTarget(entityType);
+			return type == EntityType.CREEPER ? false : super.canTarget(type);
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("PlayerCreated", this.isPlayerCreated());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("PlayerCreated", this.isPlayerCreated());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setPlayerCreated(compoundTag.getBoolean("PlayerCreated"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
 	}
 
-	private float method_22328() {
+	private float getAttackDamage() {
 		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
 	}
 
 	@Override
-	public boolean tryAttack(Entity entity) {
+	public boolean tryAttack(Entity target) {
 		this.field_6762 = 10;
 		this.world.sendEntityStatus(this, (byte)4);
-		float f = this.method_22328();
+		float f = this.getAttackDamage();
 		float g = f > 0.0F ? f / 2.0F + (float)this.random.nextInt((int)f) : 0.0F;
-		boolean bl = entity.damage(DamageSource.mob(this), g);
+		boolean bl = target.damage(DamageSource.mob(this), g);
 		if (bl) {
-			entity.setVelocity(entity.getVelocity().add(0.0, 0.4F, 0.0));
-			this.dealDamage(this, entity);
+			target.setVelocity(target.getVelocity().add(0.0, 0.4F, 0.0));
+			this.dealDamage(this, target);
 		}
 
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
@@ -173,39 +177,32 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		IronGolemEntity.class_4621 lv = this.method_23347();
-		boolean bl = super.damage(damageSource, f);
-		if (bl && this.method_23347() != lv) {
+	public boolean damage(DamageSource source, float amount) {
+		IronGolemEntity.Crack crack = this.getCrack();
+		boolean bl = super.damage(source, amount);
+		if (bl && this.getCrack() != crack) {
 			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0F, 1.0F);
 		}
 
 		return bl;
 	}
 
-	public IronGolemEntity.class_4621 method_23347() {
-		float f = this.getHealth();
-		if (f < 25.0F) {
-			return IronGolemEntity.class_4621.HIGH;
-		} else if (f < 50.0F) {
-			return IronGolemEntity.class_4621.MEDIUM;
-		} else {
-			return f < 75.0F ? IronGolemEntity.class_4621.LOW : IronGolemEntity.class_4621.NONE;
-		}
+	public IronGolemEntity.Crack getCrack() {
+		return IronGolemEntity.Crack.from(this.getHealth() / this.getMaximumHealth());
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 4) {
+	public void handleStatus(byte status) {
+		if (status == 4) {
 			this.field_6762 = 10;
 			this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
-		} else if (b == 11) {
+		} else if (status == 11) {
 			this.field_6759 = 400;
-		} else if (b == 34) {
+		} else if (status == 34) {
 			this.field_6759 = 0;
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
@@ -225,7 +222,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_IRON_GOLEM_HURT;
 	}
 
@@ -235,8 +232,8 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	protected boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (item != Items.IRON_INGOT) {
 			return false;
@@ -248,7 +245,7 @@ public class IronGolemEntity extends GolemEntity {
 			} else {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
 				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
-				if (!playerEntity.abilities.creativeMode) {
+				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
 
@@ -258,7 +255,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
 	}
 
@@ -281,8 +278,8 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public void onDeath(DamageSource damageSource) {
-		super.onDeath(damageSource);
+	public void onDeath(DamageSource source) {
+		super.onDeath(source);
 	}
 
 	@Override
@@ -306,10 +303,29 @@ public class IronGolemEntity extends GolemEntity {
 		}
 	}
 
-	public static enum class_4621 {
-		NONE,
-		LOW,
-		MEDIUM,
-		HIGH;
+	public static enum Crack {
+		NONE(1.0F),
+		LOW(0.75F),
+		MEDIUM(0.5F),
+		HIGH(0.25F);
+
+		private static final List<IronGolemEntity.Crack> VALUES = (List<IronGolemEntity.Crack>)Stream.of(values())
+			.sorted(Comparator.comparingDouble(crack -> (double)crack.maxHealthFraction))
+			.collect(ImmutableList.toImmutableList());
+		private final float maxHealthFraction;
+
+		private Crack(float f) {
+			this.maxHealthFraction = f;
+		}
+
+		public static IronGolemEntity.Crack from(float healthFraction) {
+			for (IronGolemEntity.Crack crack : VALUES) {
+				if (healthFraction < crack.maxHealthFraction) {
+					return crack;
+				}
+			}
+
+			return NONE;
+		}
 	}
 }

@@ -16,25 +16,25 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public class Tag<T> {
 	private final Identifier id;
 	private final Set<T> values;
 	private final Collection<Tag.Entry<T>> entries;
 
-	public Tag(Identifier identifier) {
-		this.id = identifier;
+	public Tag(Identifier id) {
+		this.id = id;
 		this.values = Collections.emptySet();
 		this.entries = Collections.emptyList();
 	}
 
-	public Tag(Identifier identifier, Collection<Tag.Entry<T>> collection, boolean bl) {
-		this.id = identifier;
-		this.values = (Set<T>)(bl ? Sets.<T>newLinkedHashSet() : Sets.<T>newHashSet());
-		this.entries = collection;
+	public Tag(Identifier id, Collection<Tag.Entry<T>> entries, boolean ordered) {
+		this.id = id;
+		this.values = (Set<T>)(ordered ? Sets.<T>newLinkedHashSet() : Sets.<T>newHashSet());
+		this.entries = entries;
 
-		for (Tag.Entry<T> entry : collection) {
+		for (Tag.Entry<T> entry : entries) {
 			entry.build(this.values);
 		}
 	}
@@ -52,8 +52,8 @@ public class Tag<T> {
 		return jsonObject;
 	}
 
-	public boolean contains(T object) {
-		return this.values.contains(object);
+	public boolean contains(T entry) {
+		return this.values.contains(entry);
 	}
 
 	public Collection<T> values() {
@@ -214,7 +214,7 @@ public class Tag<T> {
 		@Override
 		public void build(Collection<T> collection) {
 			if (this.tag == null) {
-				throw (IllegalStateException)SystemUtil.throwOrPause((T)(new IllegalStateException("Cannot build unresolved tag entry")));
+				throw (IllegalStateException)Util.throwOrPause((T)(new IllegalStateException("Cannot build unresolved tag entry")));
 			} else {
 				collection.addAll(this.tag.values());
 			}

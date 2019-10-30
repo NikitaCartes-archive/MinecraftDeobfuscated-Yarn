@@ -10,9 +10,9 @@ public class IdentityListMerger implements DoubleListPair {
 	}
 
 	@Override
-	public boolean forAllOverlappingSections(DoubleListPair.SectionPairPredicate sectionPairPredicate) {
+	public boolean forAllOverlappingSections(DoubleListPair.SectionPairPredicate predicate) {
 		for (int i = 0; i <= this.merged.size(); i++) {
-			if (!sectionPairPredicate.merge(i, i, i)) {
+			if (!predicate.merge(i, i, i)) {
 				return false;
 			}
 		}

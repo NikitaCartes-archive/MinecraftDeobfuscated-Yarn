@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.text.TranslatableText;
 
 public class WeatherCommand {
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("weather")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -36,33 +36,33 @@ public class WeatherCommand {
 		);
 	}
 
-	private static int executeClear(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(i);
-		serverCommandSource.getWorld().getLevelProperties().setRainTime(0);
-		serverCommandSource.getWorld().getLevelProperties().setThunderTime(0);
-		serverCommandSource.getWorld().getLevelProperties().setRaining(false);
-		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.clear"), true);
-		return i;
+	private static int executeClear(ServerCommandSource source, int duration) {
+		source.getWorld().getLevelProperties().setClearWeatherTime(duration);
+		source.getWorld().getLevelProperties().setRainTime(0);
+		source.getWorld().getLevelProperties().setThunderTime(0);
+		source.getWorld().getLevelProperties().setRaining(false);
+		source.getWorld().getLevelProperties().setThundering(false);
+		source.sendFeedback(new TranslatableText("commands.weather.set.clear"), true);
+		return duration;
 	}
 
-	private static int executeRain(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
-		serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
-		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
-		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
-		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
-		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.rain"), true);
-		return i;
+	private static int executeRain(ServerCommandSource source, int duration) {
+		source.getWorld().getLevelProperties().setClearWeatherTime(0);
+		source.getWorld().getLevelProperties().setRainTime(duration);
+		source.getWorld().getLevelProperties().setThunderTime(duration);
+		source.getWorld().getLevelProperties().setRaining(true);
+		source.getWorld().getLevelProperties().setThundering(false);
+		source.sendFeedback(new TranslatableText("commands.weather.set.rain"), true);
+		return duration;
 	}
 
-	private static int executeThunder(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
-		serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
-		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
-		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
-		serverCommandSource.getWorld().getLevelProperties().setThundering(true);
-		serverCommandSource.sendFeedback(new TranslatableText("commands.weather.set.thunder"), true);
-		return i;
+	private static int executeThunder(ServerCommandSource source, int duration) {
+		source.getWorld().getLevelProperties().setClearWeatherTime(0);
+		source.getWorld().getLevelProperties().setRainTime(duration);
+		source.getWorld().getLevelProperties().setThunderTime(duration);
+		source.getWorld().getLevelProperties().setRaining(true);
+		source.getWorld().getLevelProperties().setThundering(true);
+		source.sendFeedback(new TranslatableText("commands.weather.set.thunder"), true);
+		return duration;
 	}
 }

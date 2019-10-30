@@ -36,11 +36,11 @@ public class CreditsScreen extends Screen {
 	private int creditsHeight;
 	private float speed = 0.5F;
 
-	public CreditsScreen(boolean bl, Runnable runnable) {
+	public CreditsScreen(boolean endCredits, Runnable finishAction) {
 		super(NarratorManager.EMPTY);
-		this.endCredits = bl;
-		this.finishAction = runnable;
-		if (!bl) {
+		this.endCredits = endCredits;
+		this.finishAction = finishAction;
+		if (!endCredits) {
 			this.speed = 0.75F;
 		}
 	}
@@ -123,91 +123,91 @@ public class CreditsScreen extends Screen {
 		}
 	}
 
-	private void renderBackground(int i, int j, float f) {
+	private void renderBackground(int mouseX, int mouseY, float tickDelta) {
 		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
-		int k = this.width;
-		float g = -this.time * 0.5F * this.speed;
-		float h = (float)this.height - this.time * 0.5F * this.speed;
-		float l = 0.015625F;
-		float m = this.time * 0.02F;
-		float n = (float)(this.creditsHeight + this.height + this.height + 24) / this.speed;
-		float o = (n - 20.0F - this.time) * 0.005F;
-		if (o < m) {
-			m = o;
+		int i = this.width;
+		float f = -this.time * 0.5F * this.speed;
+		float g = (float)this.height - this.time * 0.5F * this.speed;
+		float h = 0.015625F;
+		float j = this.time * 0.02F;
+		float k = (float)(this.creditsHeight + this.height + this.height + 24) / this.speed;
+		float l = (k - 20.0F - this.time) * 0.005F;
+		if (l < j) {
+			j = l;
 		}
 
-		if (m > 1.0F) {
-			m = 1.0F;
+		if (j > 1.0F) {
+			j = 1.0F;
 		}
 
-		m *= m;
-		m = m * 96.0F / 255.0F;
+		j *= j;
+		j = j * 96.0F / 255.0F;
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getBlitOffset()).texture(0.0F, g * 0.015625F).color(m, m, m, 1.0F).next();
-		bufferBuilder.vertex((double)k, (double)this.height, (double)this.getBlitOffset()).texture((float)k * 0.015625F, g * 0.015625F).color(m, m, m, 1.0F).next();
-		bufferBuilder.vertex((double)k, 0.0, (double)this.getBlitOffset()).texture((float)k * 0.015625F, h * 0.015625F).color(m, m, m, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, h * 0.015625F).color(m, m, m, 1.0F).next();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getBlitOffset()).texture(0.0F, f * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex((double)i, (double)this.height, (double)this.getBlitOffset()).texture((float)i * 0.015625F, f * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex((double)i, 0.0, (double)this.getBlitOffset()).texture((float)i * 0.015625F, g * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, g * 0.015625F).color(j, j, j, 1.0F).next();
 		tessellator.draw();
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
-		this.renderBackground(i, j, f);
-		int k = 274;
-		int l = this.width / 2 - 137;
-		int m = this.height + 50;
-		this.time += f;
-		float g = -this.time * this.speed;
+	public void render(int mouseX, int mouseY, float delta) {
+		this.renderBackground(mouseX, mouseY, delta);
+		int i = 274;
+		int j = this.width / 2 - 137;
+		int k = this.height + 50;
+		this.time += delta;
+		float f = -this.time * this.speed;
 		RenderSystem.pushMatrix();
-		RenderSystem.translatef(0.0F, g, 0.0F);
+		RenderSystem.translatef(0.0F, f, 0.0F);
 		this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableAlphaTest();
-		this.blit(l, m, 0, 0, 155, 44);
-		this.blit(l + 155, m, 0, 45, 155, 44);
+		this.blit(j, k, 0, 0, 155, 44);
+		this.blit(j + 155, k, 0, 45, 155, 44);
 		this.minecraft.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-		blit(l + 88, m + 37, 0.0F, 0.0F, 98, 14, 128, 16);
+		blit(j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128, 16);
 		RenderSystem.disableAlphaTest();
-		int n = m + 100;
+		int l = k + 100;
 
-		for (int o = 0; o < this.credits.size(); o++) {
-			if (o == this.credits.size() - 1) {
-				float h = (float)n + g - (float)(this.height / 2 - 6);
-				if (h < 0.0F) {
-					RenderSystem.translatef(0.0F, -h, 0.0F);
+		for (int m = 0; m < this.credits.size(); m++) {
+			if (m == this.credits.size() - 1) {
+				float g = (float)l + f - (float)(this.height / 2 - 6);
+				if (g < 0.0F) {
+					RenderSystem.translatef(0.0F, -g, 0.0F);
 				}
 			}
 
-			if ((float)n + g + 12.0F + 8.0F > 0.0F && (float)n + g < (float)this.height) {
-				String string = (String)this.credits.get(o);
+			if ((float)l + f + 12.0F + 8.0F > 0.0F && (float)l + f < (float)this.height) {
+				String string = (String)this.credits.get(m);
 				if (string.startsWith("[C]")) {
-					this.font.drawWithShadow(string.substring(3), (float)(l + (274 - this.font.getStringWidth(string.substring(3))) / 2), (float)n, 16777215);
+					this.font.drawWithShadow(string.substring(3), (float)(j + (274 - this.font.getStringWidth(string.substring(3))) / 2), (float)l, 16777215);
 				} else {
-					this.font.random.setSeed((long)((float)((long)o * 4238972211L) + this.time / 4.0F));
-					this.font.drawWithShadow(string, (float)l, (float)n, 16777215);
+					this.font.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0F));
+					this.font.drawWithShadow(string, (float)j, (float)l, 16777215);
 				}
 			}
 
-			n += 12;
+			l += 12;
 		}
 
 		RenderSystem.popMatrix();
 		this.minecraft.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR);
-		int o = this.width;
-		int p = this.height;
+		int m = this.width;
+		int n = this.height;
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-		bufferBuilder.vertex(0.0, (double)p, (double)this.getBlitOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)o, (double)p, (double)this.getBlitOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)o, 0.0, (double)this.getBlitOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+		bufferBuilder.vertex(0.0, (double)n, (double)this.getBlitOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)m, (double)n, (double)this.getBlitOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)m, 0.0, (double)this.getBlitOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		RenderSystem.disableBlend();
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 }

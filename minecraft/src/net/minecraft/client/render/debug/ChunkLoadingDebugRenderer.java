@@ -16,7 +16,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
@@ -27,36 +27,36 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 	private double lastUpdateTime = Double.MIN_VALUE;
 	private final int field_4511 = 12;
 	@Nullable
-	private ChunkLoadingDebugRenderer.class_4605 field_20998;
+	private ChunkLoadingDebugRenderer.ChunkLoadingStatus loadingData;
 
 	public ChunkLoadingDebugRenderer(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
 	}
 
 	@Override
-	public void method_23109(long l) {
-		double d = (double)SystemUtil.getMeasuringTimeNano();
+	public void render(long limitTime) {
+		double d = (double)Util.getMeasuringTimeNano();
 		if (d - this.lastUpdateTime > 3.0E9) {
 			this.lastUpdateTime = d;
 			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
-				this.field_20998 = new ChunkLoadingDebugRenderer.class_4605(integratedServer);
+				this.loadingData = new ChunkLoadingDebugRenderer.ChunkLoadingStatus(integratedServer);
 			} else {
-				this.field_20998 = null;
+				this.loadingData = null;
 			}
 		}
 
-		if (this.field_20998 != null) {
+		if (this.loadingData != null) {
 			RenderSystem.disableFog();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.lineWidth(2.0F);
 			RenderSystem.disableTexture();
 			RenderSystem.depthMask(false);
-			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.field_20998.field_21001.getNow(null);
+			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.loadingData.serverStates.getNow(null);
 			double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
 
-			for (Entry<ChunkPos, String> entry : this.field_20998.field_21000.entrySet()) {
+			for (Entry<ChunkPos, String> entry : this.loadingData.clientStates.entrySet()) {
 				ChunkPos chunkPos = (ChunkPos)entry.getKey();
 				String string = (String)entry.getValue();
 				if (map != null) {
@@ -67,7 +67,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				int i = 0;
 
 				for (String string2 : strings) {
-					DebugRenderer.method_23106(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
+					DebugRenderer.drawString(string2, (double)((chunkPos.x << 4) + 8), e + (double)i, (double)((chunkPos.z << 4) + 8), -1, 0.15F);
 					i -= 2;
 				}
 			}
@@ -80,11 +80,11 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	final class class_4605 {
-		private final Map<ChunkPos, String> field_21000;
-		private final CompletableFuture<Map<ChunkPos, String>> field_21001;
+	final class ChunkLoadingStatus {
+		private final Map<ChunkPos, String> clientStates;
+		private final CompletableFuture<Map<ChunkPos, String>> serverStates;
 
-		private class_4605(IntegratedServer integratedServer) {
+		private ChunkLoadingStatus(IntegratedServer integratedServer) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
 			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.world.dimension.getType();
 			ServerWorld serverWorld;
@@ -117,8 +117,8 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 				}
 			}
 
-			this.field_21000 = builder.build();
-			this.field_21001 = integratedServer.supply(() -> {
+			this.clientStates = builder.build();
+			this.serverStates = integratedServer.submit(() -> {
 				Builder<ChunkPos, String> builderx = ImmutableMap.builder();
 				ServerChunkManager serverChunkManager = serverWorld.method_14178();
 

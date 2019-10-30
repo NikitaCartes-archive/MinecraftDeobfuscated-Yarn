@@ -19,8 +19,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class PillagerOutpostFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
-	public PillagerOutpostFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public PillagerOutpostFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
@@ -39,21 +39,21 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<DefaultFeature
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-		if (i == chunkPos.x && j == chunkPos.z) {
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
+		if (chunkZ == chunkPos.x && i == chunkPos.z) {
+			int j = chunkZ >> 4;
 			int k = i >> 4;
-			int l = j >> 4;
-			random.setSeed((long)(k ^ l << 4) ^ chunkGenerator.getSeed());
+			random.setSeed((long)(j ^ k << 4) ^ chunkGenerator.getSeed());
 			random.nextInt();
 			if (random.nextInt(5) != 0) {
 				return false;
 			}
 
 			if (chunkGenerator.hasStructure(biome, this)) {
-				for (int m = i - 10; m <= i + 10; m++) {
-					for (int n = j - 10; n <= j + 10; n++) {
-						if (Feature.VILLAGE.shouldStartAt(biomeAccess, chunkGenerator, random, m, n, biomeAccess.getBiome(new BlockPos((m << 4) + 9, 0, (n << 4) + 9)))) {
+				for (int l = chunkZ - 10; l <= chunkZ + 10; l++) {
+					for (int m = i - 10; m <= i + 10; m++) {
+						if (Feature.VILLAGE.shouldStartAt(biomeAccess, chunkGenerator, random, l, m, biomeAccess.getBiome(new BlockPos((l << 4) + 9, 0, (m << 4) + 9)))) {
 							return false;
 						}
 					}
@@ -77,13 +77,13 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<DefaultFeature
 	}
 
 	public static class Start extends VillageStructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			BlockPos blockPos = new BlockPos(x * 16, 90, z * 16);
 			PillagerOutpostGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random);
 			this.setBoundingBoxFromChildren();
 		}

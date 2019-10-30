@@ -30,17 +30,17 @@ public class ShortTag extends AbstractNumberTag {
 	};
 	private final short value;
 
-	private ShortTag(short s) {
-		this.value = s;
+	private ShortTag(short value) {
+		this.value = value;
 	}
 
-	public static ShortTag of(short s) {
-		return s >= -128 && s <= 1024 ? ShortTag.Cache.VALUES[s + 128] : new ShortTag(s);
+	public static ShortTag of(short value) {
+		return value >= -128 && value <= 1024 ? ShortTag.Cache.VALUES[value + 128] : new ShortTag(value);
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeShort(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeShort(this.value);
 	}
 
 	@Override
@@ -62,8 +62,8 @@ public class ShortTag extends AbstractNumberTag {
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof ShortTag && this.value == ((ShortTag)object).value;
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof ShortTag && this.value == ((ShortTag)o).value;
 	}
 
 	public int hashCode() {
@@ -71,7 +71,7 @@ public class ShortTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("s").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

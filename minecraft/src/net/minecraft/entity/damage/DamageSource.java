@@ -45,46 +45,46 @@ public class DamageSource {
 	private boolean explosive;
 	public final String name;
 
-	public static DamageSource sting(LivingEntity livingEntity) {
-		return new EntityDamageSource("sting", livingEntity);
+	public static DamageSource sting(LivingEntity attacker) {
+		return new EntityDamageSource("sting", attacker);
 	}
 
-	public static DamageSource mob(LivingEntity livingEntity) {
-		return new EntityDamageSource("mob", livingEntity);
+	public static DamageSource mob(LivingEntity attacker) {
+		return new EntityDamageSource("mob", attacker);
 	}
 
-	public static DamageSource mobProjectile(Entity entity, LivingEntity livingEntity) {
-		return new ProjectileDamageSource("mob", entity, livingEntity);
+	public static DamageSource mobProjectile(Entity projectile, LivingEntity attacker) {
+		return new ProjectileDamageSource("mob", projectile, attacker);
 	}
 
-	public static DamageSource player(PlayerEntity playerEntity) {
-		return new EntityDamageSource("player", playerEntity);
+	public static DamageSource player(PlayerEntity attacker) {
+		return new EntityDamageSource("player", attacker);
 	}
 
-	public static DamageSource arrow(ProjectileEntity projectileEntity, @Nullable Entity entity) {
-		return new ProjectileDamageSource("arrow", projectileEntity, entity).setProjectile();
+	public static DamageSource arrow(ProjectileEntity projectile, @Nullable Entity attacker) {
+		return new ProjectileDamageSource("arrow", projectile, attacker).setProjectile();
 	}
 
 	public static DamageSource trident(Entity entity, @Nullable Entity entity2) {
 		return new ProjectileDamageSource("trident", entity, entity2).setProjectile();
 	}
 
-	public static DamageSource explosiveProjectile(ExplosiveProjectileEntity explosiveProjectileEntity, @Nullable Entity entity) {
-		return entity == null
-			? new ProjectileDamageSource("onFire", explosiveProjectileEntity, explosiveProjectileEntity).setFire().setProjectile()
-			: new ProjectileDamageSource("fireball", explosiveProjectileEntity, entity).setFire().setProjectile();
+	public static DamageSource explosiveProjectile(ExplosiveProjectileEntity projectile, @Nullable Entity attacker) {
+		return attacker == null
+			? new ProjectileDamageSource("onFire", projectile, projectile).setFire().setProjectile()
+			: new ProjectileDamageSource("fireball", projectile, attacker).setFire().setProjectile();
 	}
 
-	public static DamageSource thrownProjectile(Entity entity, @Nullable Entity entity2) {
-		return new ProjectileDamageSource("thrown", entity, entity2).setProjectile();
+	public static DamageSource thrownProjectile(Entity projectile, @Nullable Entity attacker) {
+		return new ProjectileDamageSource("thrown", projectile, attacker).setProjectile();
 	}
 
-	public static DamageSource magic(Entity entity, @Nullable Entity entity2) {
-		return new ProjectileDamageSource("indirectMagic", entity, entity2).setBypassesArmor().setUsesMagic();
+	public static DamageSource magic(Entity magic, @Nullable Entity attacker) {
+		return new ProjectileDamageSource("indirectMagic", magic, attacker).setBypassesArmor().setUsesMagic();
 	}
 
-	public static DamageSource thorns(Entity entity) {
-		return new EntityDamageSource("thorns", entity).method_5550().setUsesMagic();
+	public static DamageSource thorns(Entity attacker) {
+		return new EntityDamageSource("thorns", attacker).method_5550().setUsesMagic();
 	}
 
 	public static DamageSource explosion(@Nullable Explosion explosion) {
@@ -93,9 +93,9 @@ public class DamageSource {
 			: new DamageSource("explosion").setScaledWithDifficulty().setExplosive();
 	}
 
-	public static DamageSource explosion(@Nullable LivingEntity livingEntity) {
-		return livingEntity != null
-			? new EntityDamageSource("explosion.player", livingEntity).setScaledWithDifficulty().setExplosive()
+	public static DamageSource explosion(@Nullable LivingEntity attacker) {
+		return attacker != null
+			? new EntityDamageSource("explosion.player", attacker).setScaledWithDifficulty().setExplosive()
 			: new DamageSource("explosion").setScaledWithDifficulty().setExplosive();
 	}
 
@@ -137,8 +137,8 @@ public class DamageSource {
 		return this.unblockable;
 	}
 
-	protected DamageSource(String string) {
-		this.name = string;
+	protected DamageSource(String name) {
+		this.name = name;
 	}
 
 	@Nullable

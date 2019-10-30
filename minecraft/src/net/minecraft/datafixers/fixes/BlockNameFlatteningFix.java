@@ -12,8 +12,8 @@ import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
 
 public class BlockNameFlatteningFix extends DataFix {
-	public BlockNameFlatteningFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BlockNameFlatteningFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

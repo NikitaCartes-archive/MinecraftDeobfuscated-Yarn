@@ -40,8 +40,8 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void setPosition(double d, double e, double f) {
-		super.setPosition((double)MathHelper.floor(d) + 0.5, (double)MathHelper.floor(e) + 0.5, (double)MathHelper.floor(f) + 0.5);
+	public void setPosition(double x, double y, double z) {
+		super.setPosition((double)MathHelper.floor(x) + 0.5, (double)MathHelper.floor(y) + 0.5, (double)MathHelper.floor(z) + 0.5);
 	}
 
 	@Override
@@ -64,14 +64,14 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	protected float getEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return -0.0625F;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		return d < 1024.0;
+	public boolean shouldRenderAtDistance(double distance) {
+		return distance < 1024.0;
 	}
 
 	@Override
@@ -80,15 +80,15 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
+	public void writeCustomDataToTag(CompoundTag tag) {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
+	public void readCustomDataFromTag(CompoundTag tag) {
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
+	public boolean interact(PlayerEntity player, Hand hand) {
 		if (this.world.isClient) {
 			return true;
 		} else {
@@ -100,7 +100,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 				);
 
 			for (MobEntity mobEntity : list) {
-				if (mobEntity.getHoldingEntity() == playerEntity) {
+				if (mobEntity.getHoldingEntity() == player) {
 					mobEntity.attachLeash(this, true);
 					bl = true;
 				}
@@ -108,7 +108,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 			if (!bl) {
 				this.remove();
-				if (playerEntity.abilities.creativeMode) {
+				if (player.abilities.creativeMode) {
 					for (MobEntity mobEntityx : list) {
 						if (mobEntityx.isLeashed() && mobEntityx.getHoldingEntity() == this) {
 							mobEntityx.detachLeash(true, false);
@@ -126,20 +126,20 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.FENCES);
 	}
 
-	public static LeadKnotEntity getOrCreate(World world, BlockPos blockPos) {
-		int i = blockPos.getX();
-		int j = blockPos.getY();
-		int k = blockPos.getZ();
+	public static LeadKnotEntity getOrCreate(World world, BlockPos pos) {
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
 
 		for (LeadKnotEntity leadKnotEntity : world.getNonSpectatingEntities(
 			LeadKnotEntity.class, new Box((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)
 		)) {
-			if (leadKnotEntity.getDecorationBlockPos().equals(blockPos)) {
+			if (leadKnotEntity.getDecorationBlockPos().equals(pos)) {
 				return leadKnotEntity;
 			}
 		}
 
-		LeadKnotEntity leadKnotEntity2 = new LeadKnotEntity(world, blockPos);
+		LeadKnotEntity leadKnotEntity2 = new LeadKnotEntity(world, pos);
 		world.spawnEntity(leadKnotEntity2);
 		leadKnotEntity2.onPlace();
 		return leadKnotEntity2;

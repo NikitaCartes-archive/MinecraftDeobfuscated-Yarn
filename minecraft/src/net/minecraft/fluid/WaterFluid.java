@@ -82,9 +82,9 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	protected void beforeBreakingBlock(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? iWorld.getBlockEntity(blockPos) : null;
-		Block.dropStacks(blockState, iWorld.getWorld(), blockPos, blockEntity);
+	protected void beforeBreakingBlock(IWorld world, BlockPos pos, BlockState state) {
+		BlockEntity blockEntity = state.getBlock().hasBlockEntity() ? world.getBlockEntity(pos) : null;
+		Block.dropStacks(state, world.getWorld(), pos, blockEntity);
 	}
 
 	@Override

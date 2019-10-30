@@ -20,17 +20,17 @@ public class PistonHandler {
 	private final List<BlockPos> brokenBlocks = Lists.<BlockPos>newArrayList();
 	private final Direction field_12248;
 
-	public PistonHandler(World world, BlockPos blockPos, Direction direction, boolean bl) {
+	public PistonHandler(World world, BlockPos pos, Direction dir, boolean bl) {
 		this.world = world;
-		this.posFrom = blockPos;
-		this.field_12248 = direction;
+		this.posFrom = pos;
+		this.field_12248 = dir;
 		this.field_12247 = bl;
 		if (bl) {
-			this.direction = direction;
-			this.posTo = blockPos.offset(direction);
+			this.direction = dir;
+			this.posTo = pos.offset(dir);
 		} else {
-			this.direction = direction.getOpposite();
-			this.posTo = blockPos.method_10079(direction, 2);
+			this.direction = dir.getOpposite();
+			this.posTo = pos.method_10079(dir, 2);
 		}
 	}
 

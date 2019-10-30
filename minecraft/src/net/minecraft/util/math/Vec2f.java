@@ -12,12 +12,12 @@ public class Vec2f {
 	public final float x;
 	public final float y;
 
-	public Vec2f(float f, float g) {
-		this.x = f;
-		this.y = g;
+	public Vec2f(float x, float y) {
+		this.x = x;
+		this.y = y;
 	}
 
-	public boolean equals(Vec2f vec2f) {
-		return this.x == vec2f.x && this.y == vec2f.y;
+	public boolean equals(Vec2f other) {
+		return this.x == other.x && this.y == other.y;
 	}
 }

@@ -15,8 +15,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class PointOfInterestReorganizationFix extends DataFix {
-	public PointOfInterestReorganizationFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public PointOfInterestReorganizationFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -29,20 +29,20 @@ public class PointOfInterestReorganizationFix extends DataFix {
 		}
 	}
 
-	private static <T> Dynamic<T> reorganize(Dynamic<T> dynamic) {
+	private static <T> Dynamic<T> reorganize(Dynamic<T> tag) {
 		Map<Dynamic<T>, Dynamic<T>> map = Maps.<Dynamic<T>, Dynamic<T>>newHashMap();
 
 		for (int i = 0; i < 16; i++) {
 			String string = String.valueOf(i);
-			Optional<Dynamic<T>> optional = dynamic.get(string).get();
+			Optional<Dynamic<T>> optional = tag.get(string).get();
 			if (optional.isPresent()) {
-				Dynamic<T> dynamic2 = (Dynamic<T>)optional.get();
-				Dynamic<T> dynamic3 = dynamic.createMap(ImmutableMap.of(dynamic.createString("Records"), dynamic2));
-				map.put(dynamic.createInt(i), dynamic3);
-				dynamic = dynamic.remove(string);
+				Dynamic<T> dynamic = (Dynamic<T>)optional.get();
+				Dynamic<T> dynamic2 = tag.createMap(ImmutableMap.of(tag.createString("Records"), dynamic));
+				map.put(tag.createInt(i), dynamic2);
+				tag = tag.remove(string);
 			}
 		}
 
-		return dynamic.set("Sections", dynamic.createMap(map));
+		return tag.set("Sections", tag.createMap(map));
 	}
 }

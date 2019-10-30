@@ -77,7 +77,7 @@ public class ArgumentTypes {
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
 		register("time", TimeArgumentType.class, new ConstantArgumentSerializer(TimeArgumentType::time));
 		if (SharedConstants.isDevelopment) {
-			register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer(TestFunctionArgumentType::method_22371));
+			register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer(TestFunctionArgumentType::testFunction));
 			register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer(TestClassArgumentType::method_22370));
 		}
 	}

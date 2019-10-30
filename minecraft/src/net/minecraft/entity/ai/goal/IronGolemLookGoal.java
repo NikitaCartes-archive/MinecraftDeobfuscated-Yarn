@@ -11,8 +11,8 @@ public class IronGolemLookGoal extends Goal {
 	private VillagerEntity targetVillager;
 	private int lookCountdown;
 
-	public IronGolemLookGoal(IronGolemEntity ironGolemEntity) {
-		this.golem = ironGolemEntity;
+	public IronGolemLookGoal(IronGolemEntity golem) {
+		this.golem = golem;
 		this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 	}
 

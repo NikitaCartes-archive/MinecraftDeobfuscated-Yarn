@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -53,8 +53,8 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	private boolean isDoubleClicking;
 	private ItemStack quickMovingStack = ItemStack.EMPTY;
 
-	public AbstractContainerScreen(T container, PlayerInventory playerInventory, Text text) {
-		super(text);
+	public AbstractContainerScreen(T container, PlayerInventory playerInventory, Text name) {
+		super(name);
 		this.container = container;
 		this.playerInventory = playerInventory;
 		this.cancelNextRelease = true;
@@ -68,47 +68,47 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
-		int k = this.left;
-		int l = this.top;
-		this.drawBackground(f, i, j);
+	public void render(int mouseX, int mouseY, float delta) {
+		int i = this.left;
+		int j = this.top;
+		this.drawBackground(delta, mouseX, mouseY);
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableDepthTest();
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 		RenderSystem.pushMatrix();
-		RenderSystem.translatef((float)k, (float)l, 0.0F);
+		RenderSystem.translatef((float)i, (float)j, 0.0F);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableRescaleNormal();
 		this.focusedSlot = null;
-		int m = 240;
-		int n = 240;
+		int k = 240;
+		int l = 240;
 		RenderSystem.glMultiTexCoord2f(33986, 240.0F, 240.0F);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		for (int o = 0; o < this.container.slotList.size(); o++) {
-			Slot slot = (Slot)this.container.slotList.get(o);
+		for (int m = 0; m < this.container.slotList.size(); m++) {
+			Slot slot = (Slot)this.container.slotList.get(m);
 			if (slot.doDrawHoveringEffect()) {
 				this.drawSlot(slot);
 			}
 
-			if (this.isPointOverSlot(slot, (double)i, (double)j) && slot.doDrawHoveringEffect()) {
+			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.doDrawHoveringEffect()) {
 				this.focusedSlot = slot;
 				RenderSystem.disableDepthTest();
-				int p = slot.xPosition;
-				int q = slot.yPosition;
+				int n = slot.xPosition;
+				int o = slot.yPosition;
 				RenderSystem.colorMask(true, true, true, false);
-				this.fillGradient(p, q, p + 16, q + 16, -2130706433, -2130706433);
+				this.fillGradient(n, o, n + 16, o + 16, -2130706433, -2130706433);
 				RenderSystem.colorMask(true, true, true, true);
 				RenderSystem.enableDepthTest();
 			}
 		}
 
-		this.drawForeground(i, j);
+		this.drawForeground(mouseX, mouseY);
 		PlayerInventory playerInventory = this.minecraft.player.inventory;
 		ItemStack itemStack = this.touchDragStack.isEmpty() ? playerInventory.getCursorStack() : this.touchDragStack;
 		if (!itemStack.isEmpty()) {
-			int p = 8;
-			int q = this.touchDragStack.isEmpty() ? 8 : 16;
+			int n = 8;
+			int o = this.touchDragStack.isEmpty() ? 8 : 16;
 			String string = null;
 			if (!this.touchDragStack.isEmpty() && this.touchIsRightClickDrag) {
 				itemStack = itemStack.copy();
@@ -121,47 +121,47 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 				}
 			}
 
-			this.drawItem(itemStack, i - k - 8, j - l - q, string);
+			this.drawItem(itemStack, mouseX - i - 8, mouseY - j - o, string);
 		}
 
 		if (!this.touchDropReturningStack.isEmpty()) {
-			float g = (float)(SystemUtil.getMeasuringTimeMs() - this.touchDropTime) / 100.0F;
-			if (g >= 1.0F) {
-				g = 1.0F;
+			float f = (float)(Util.getMeasuringTimeMs() - this.touchDropTime) / 100.0F;
+			if (f >= 1.0F) {
+				f = 1.0F;
 				this.touchDropReturningStack = ItemStack.EMPTY;
 			}
 
-			int q = this.touchDropOriginSlot.xPosition - this.touchDropX;
-			int r = this.touchDropOriginSlot.yPosition - this.touchDropY;
-			int s = this.touchDropX + (int)((float)q * g);
-			int t = this.touchDropY + (int)((float)r * g);
-			this.drawItem(this.touchDropReturningStack, s, t, null);
+			int o = this.touchDropOriginSlot.xPosition - this.touchDropX;
+			int p = this.touchDropOriginSlot.yPosition - this.touchDropY;
+			int q = this.touchDropX + (int)((float)o * f);
+			int r = this.touchDropY + (int)((float)p * f);
+			this.drawItem(this.touchDropReturningStack, q, r, null);
 		}
 
 		RenderSystem.popMatrix();
 		RenderSystem.enableDepthTest();
 	}
 
-	protected void drawMouseoverTooltip(int i, int j) {
+	protected void drawMouseoverTooltip(int mouseX, int mouseY) {
 		if (this.minecraft.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
-			this.renderTooltip(this.focusedSlot.getStack(), i, j);
+			this.renderTooltip(this.focusedSlot.getStack(), mouseX, mouseY);
 		}
 	}
 
-	private void drawItem(ItemStack itemStack, int i, int j, String string) {
+	private void drawItem(ItemStack stack, int xPosition, int yPosition, String amountText) {
 		RenderSystem.translatef(0.0F, 0.0F, 32.0F);
 		this.setBlitOffset(200);
 		this.itemRenderer.zOffset = 200.0F;
-		this.itemRenderer.renderGuiItem(itemStack, i, j);
-		this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i, j - (this.touchDragStack.isEmpty() ? 0 : 8), string);
+		this.itemRenderer.renderGuiItem(stack, xPosition, yPosition);
+		this.itemRenderer.renderGuiItemOverlay(this.font, stack, xPosition, yPosition - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
 		this.setBlitOffset(0);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
-	protected void drawForeground(int i, int j) {
+	protected void drawForeground(int mouseX, int mouseY) {
 	}
 
-	protected abstract void drawBackground(float f, int i, int j);
+	protected abstract void drawBackground(float delta, int mouseX, int mouseY);
 
 	private void drawSlot(Slot slot) {
 		int i = slot.xPosition;
@@ -244,10 +244,10 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		}
 	}
 
-	private Slot getSlotAt(double d, double e) {
+	private Slot getSlotAt(double xPosition, double yPosition) {
 		for (int i = 0; i < this.container.slotList.size(); i++) {
 			Slot slot = (Slot)this.container.slotList.get(i);
-			if (this.isPointOverSlot(slot, d, e) && slot.doDrawHoveringEffect()) {
+			if (this.isPointOverSlot(slot, xPosition, yPosition) && slot.doDrawHoveringEffect()) {
 				return slot;
 			}
 		}
@@ -256,26 +256,26 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (super.mouseClicked(d, e, i)) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (super.mouseClicked(mouseX, mouseY, button)) {
 			return true;
 		} else {
-			boolean bl = this.minecraft.options.keyPickItem.matchesMouse(i);
-			Slot slot = this.getSlotAt(d, e);
-			long l = SystemUtil.getMeasuringTimeMs();
-			this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == i;
+			boolean bl = this.minecraft.options.keyPickItem.matchesMouse(button);
+			Slot slot = this.getSlotAt(mouseX, mouseY);
+			long l = Util.getMeasuringTimeMs();
+			this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
 			this.cancelNextRelease = false;
-			if (i == 0 || i == 1 || bl) {
-				int j = this.left;
-				int k = this.top;
-				boolean bl2 = this.isClickOutsideBounds(d, e, j, k, i);
-				int m = -1;
+			if (button == 0 || button == 1 || bl) {
+				int i = this.left;
+				int j = this.top;
+				boolean bl2 = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
+				int k = -1;
 				if (slot != null) {
-					m = slot.id;
+					k = slot.id;
 				}
 
 				if (bl2) {
-					m = -999;
+					k = -999;
 				}
 
 				if (this.minecraft.options.touchscreen && bl2 && this.minecraft.player.inventory.getCursorStack().isEmpty()) {
@@ -283,21 +283,21 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 					return true;
 				}
 
-				if (m != -1) {
+				if (k != -1) {
 					if (this.minecraft.options.touchscreen) {
 						if (slot != null && slot.hasStack()) {
 							this.touchDragSlotStart = slot;
 							this.touchDragStack = ItemStack.EMPTY;
-							this.touchIsRightClickDrag = i == 1;
+							this.touchIsRightClickDrag = button == 1;
 						} else {
 							this.touchDragSlotStart = null;
 						}
 					} else if (!this.isCursorDragging) {
 						if (this.minecraft.player.inventory.getCursorStack().isEmpty()) {
-							if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
-								this.onMouseClick(slot, m, i, SlotActionType.CLONE);
+							if (this.minecraft.options.keyPickItem.matchesMouse(button)) {
+								this.onMouseClick(slot, k, button, SlotActionType.CLONE);
 							} else {
-								boolean bl3 = m != -999
+								boolean bl3 = k != -999
 									&& (
 										InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340)
 											|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344)
@@ -306,23 +306,23 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 								if (bl3) {
 									this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
 									slotActionType = SlotActionType.QUICK_MOVE;
-								} else if (m == -999) {
+								} else if (k == -999) {
 									slotActionType = SlotActionType.THROW;
 								}
 
-								this.onMouseClick(slot, m, i, slotActionType);
+								this.onMouseClick(slot, k, button, slotActionType);
 							}
 
 							this.cancelNextRelease = true;
 						} else {
 							this.isCursorDragging = true;
-							this.heldButtonCode = i;
+							this.heldButtonCode = button;
 							this.cursorDragSlots.clear();
-							if (i == 0) {
+							if (button == 0) {
 								this.heldButtonType = 0;
-							} else if (i == 1) {
+							} else if (button == 1) {
 								this.heldButtonType = 1;
-							} else if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
+							} else if (this.minecraft.options.keyPickItem.matchesMouse(button)) {
 								this.heldButtonType = 2;
 							}
 						}
@@ -332,27 +332,27 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 
 			this.lastClickedSlot = slot;
 			this.lastButtonClickTime = l;
-			this.lastClickedButton = i;
+			this.lastClickedButton = button;
 			return true;
 		}
 	}
 
-	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		return d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+	protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
+		return mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.containerWidth) || mouseY >= (double)(top + this.containerHeight);
 	}
 
 	@Override
-	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		Slot slot = this.getSlotAt(d, e);
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		Slot slot = this.getSlotAt(mouseX, mouseY);
 		ItemStack itemStack = this.minecraft.player.inventory.getCursorStack();
 		if (this.touchDragSlotStart != null && this.minecraft.options.touchscreen) {
-			if (i == 0 || i == 1) {
+			if (button == 0 || button == 1) {
 				if (this.touchDragStack.isEmpty()) {
 					if (slot != this.touchDragSlotStart && !this.touchDragSlotStart.getStack().isEmpty()) {
 						this.touchDragStack = this.touchDragSlotStart.getStack().copy();
 					}
 				} else if (this.touchDragStack.getCount() > 1 && slot != null && Container.canInsertItemIntoSlot(slot, this.touchDragStack, false)) {
-					long l = SystemUtil.getMeasuringTimeMs();
+					long l = Util.getMeasuringTimeMs();
 					if (this.touchHoveredSlot == slot) {
 						if (l - this.touchDropTimer > 500L) {
 							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.PICKUP);
@@ -382,21 +382,21 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	@Override
-	public boolean mouseReleased(double d, double e, int i) {
-		Slot slot = this.getSlotAt(d, e);
-		int j = this.left;
-		int k = this.top;
-		boolean bl = this.isClickOutsideBounds(d, e, j, k, i);
-		int l = -1;
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		Slot slot = this.getSlotAt(mouseX, mouseY);
+		int i = this.left;
+		int j = this.top;
+		boolean bl = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
+		int k = -1;
 		if (slot != null) {
-			l = slot.id;
+			k = slot.id;
 		}
 
 		if (bl) {
-			l = -999;
+			k = -999;
 		}
 
-		if (this.isDoubleClicking && slot != null && i == 0 && this.container.canInsertIntoSlot(ItemStack.EMPTY, slot)) {
+		if (this.isDoubleClicking && slot != null && button == 0 && this.container.canInsertIntoSlot(ItemStack.EMPTY, slot)) {
 			if (hasShiftDown()) {
 				if (!this.quickMovingStack.isEmpty()) {
 					for (Slot slot2 : this.container.slotList) {
@@ -405,18 +405,18 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 							&& slot2.hasStack()
 							&& slot2.inventory == slot.inventory
 							&& Container.canInsertItemIntoSlot(slot2, this.quickMovingStack, true)) {
-							this.onMouseClick(slot2, slot2.id, i, SlotActionType.QUICK_MOVE);
+							this.onMouseClick(slot2, slot2.id, button, SlotActionType.QUICK_MOVE);
 						}
 					}
 				}
 			} else {
-				this.onMouseClick(slot, l, i, SlotActionType.PICKUP_ALL);
+				this.onMouseClick(slot, k, button, SlotActionType.PICKUP_ALL);
 			}
 
 			this.isDoubleClicking = false;
 			this.lastButtonClickTime = 0L;
 		} else {
-			if (this.isCursorDragging && this.heldButtonCode != i) {
+			if (this.isCursorDragging && this.heldButtonCode != button) {
 				this.isCursorDragging = false;
 				this.cursorDragSlots.clear();
 				this.cancelNextRelease = true;
@@ -429,31 +429,31 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 			}
 
 			if (this.touchDragSlotStart != null && this.minecraft.options.touchscreen) {
-				if (i == 0 || i == 1) {
+				if (button == 0 || button == 1) {
 					if (this.touchDragStack.isEmpty() && slot != this.touchDragSlotStart) {
 						this.touchDragStack = this.touchDragSlotStart.getStack();
 					}
 
 					boolean bl2 = Container.canInsertItemIntoSlot(slot, this.touchDragStack, false);
-					if (l != -1 && !this.touchDragStack.isEmpty() && bl2) {
-						this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.PICKUP);
-						this.onMouseClick(slot, l, 0, SlotActionType.PICKUP);
+					if (k != -1 && !this.touchDragStack.isEmpty() && bl2) {
+						this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, button, SlotActionType.PICKUP);
+						this.onMouseClick(slot, k, 0, SlotActionType.PICKUP);
 						if (this.minecraft.player.inventory.getCursorStack().isEmpty()) {
 							this.touchDropReturningStack = ItemStack.EMPTY;
 						} else {
-							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, i, SlotActionType.PICKUP);
-							this.touchDropX = MathHelper.floor(d - (double)j);
-							this.touchDropY = MathHelper.floor(e - (double)k);
+							this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, button, SlotActionType.PICKUP);
+							this.touchDropX = MathHelper.floor(mouseX - (double)i);
+							this.touchDropY = MathHelper.floor(mouseY - (double)j);
 							this.touchDropOriginSlot = this.touchDragSlotStart;
 							this.touchDropReturningStack = this.touchDragStack;
-							this.touchDropTime = SystemUtil.getMeasuringTimeMs();
+							this.touchDropTime = Util.getMeasuringTimeMs();
 						}
 					} else if (!this.touchDragStack.isEmpty()) {
-						this.touchDropX = MathHelper.floor(d - (double)j);
-						this.touchDropY = MathHelper.floor(e - (double)k);
+						this.touchDropX = MathHelper.floor(mouseX - (double)i);
+						this.touchDropY = MathHelper.floor(mouseY - (double)j);
 						this.touchDropOriginSlot = this.touchDragSlotStart;
 						this.touchDropReturningStack = this.touchDragStack;
-						this.touchDropTime = SystemUtil.getMeasuringTimeMs();
+						this.touchDropTime = Util.getMeasuringTimeMs();
 					}
 
 					this.touchDragStack = ItemStack.EMPTY;
@@ -468,10 +468,10 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 
 				this.onMouseClick(null, -999, Container.packClickData(2, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 			} else if (!this.minecraft.player.inventory.getCursorStack().isEmpty()) {
-				if (this.minecraft.options.keyPickItem.matchesMouse(i)) {
-					this.onMouseClick(slot, l, i, SlotActionType.CLONE);
+				if (this.minecraft.options.keyPickItem.matchesMouse(button)) {
+					this.onMouseClick(slot, k, button, SlotActionType.CLONE);
 				} else {
-					boolean bl2 = l != -999
+					boolean bl2 = k != -999
 						&& (
 							InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340)
 								|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344)
@@ -480,7 +480,7 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 						this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
 					}
 
-					this.onMouseClick(slot, l, i, bl2 ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP);
+					this.onMouseClick(slot, k, button, bl2 ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP);
 				}
 			}
 		}
@@ -493,24 +493,27 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		return true;
 	}
 
-	private boolean isPointOverSlot(Slot slot, double d, double e) {
-		return this.isPointWithinBounds(slot.xPosition, slot.yPosition, 16, 16, d, e);
+	private boolean isPointOverSlot(Slot slot, double pointX, double pointY) {
+		return this.isPointWithinBounds(slot.xPosition, slot.yPosition, 16, 16, pointX, pointY);
 	}
 
-	protected boolean isPointWithinBounds(int i, int j, int k, int l, double d, double e) {
-		int m = this.left;
-		int n = this.top;
-		d -= (double)m;
-		e -= (double)n;
-		return d >= (double)(i - 1) && d < (double)(i + k + 1) && e >= (double)(j - 1) && e < (double)(j + l + 1);
+	protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
+		int i = this.left;
+		int j = this.top;
+		pointX -= (double)i;
+		pointY -= (double)j;
+		return pointX >= (double)(xPosition - 1)
+			&& pointX < (double)(xPosition + width + 1)
+			&& pointY >= (double)(yPosition - 1)
+			&& pointY < (double)(yPosition + height + 1);
 	}
 
-	protected void onMouseClick(Slot slot, int i, int j, SlotActionType slotActionType) {
+	protected void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType) {
 		if (slot != null) {
-			i = slot.id;
+			invSlot = slot.id;
 		}
 
-		this.minecraft.interactionManager.clickSlot(this.container.syncId, i, j, slotActionType, this.minecraft.player);
+		this.minecraft.interactionManager.clickSlot(this.container.syncId, invSlot, button, slotActionType, this.minecraft.player);
 	}
 
 	@Override
@@ -519,19 +522,19 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (super.keyPressed(i, j, k)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else {
-			if (i == 256 || this.minecraft.options.keyInventory.matchesKey(i, j)) {
+			if (keyCode == 256 || this.minecraft.options.keyInventory.matchesKey(keyCode, scanCode)) {
 				this.minecraft.player.closeContainer();
 			}
 
-			this.handleHotbarKeyPressed(i, j);
+			this.handleHotbarKeyPressed(keyCode, scanCode);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
-				if (this.minecraft.options.keyPickItem.matchesKey(i, j)) {
+				if (this.minecraft.options.keyPickItem.matchesKey(keyCode, scanCode)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.CLONE);
-				} else if (this.minecraft.options.keyDrop.matchesKey(i, j)) {
+				} else if (this.minecraft.options.keyDrop.matchesKey(keyCode, scanCode)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, hasControlDown() ? 1 : 0, SlotActionType.THROW);
 				}
 			}
@@ -540,11 +543,11 @@ public abstract class AbstractContainerScreen<T extends Container> extends Scree
 		}
 	}
 
-	protected boolean handleHotbarKeyPressed(int i, int j) {
+	protected boolean handleHotbarKeyPressed(int keyCode, int scanCode) {
 		if (this.minecraft.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null) {
-			for (int k = 0; k < 9; k++) {
-				if (this.minecraft.options.keysHotbar[k].matchesKey(i, j)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, k, SlotActionType.SWAP);
+			for (int i = 0; i < 9; i++) {
+				if (this.minecraft.options.keysHotbar[i].matchesKey(keyCode, scanCode)) {
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);
 					return true;
 				}
 			}

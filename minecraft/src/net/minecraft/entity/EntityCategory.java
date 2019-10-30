@@ -18,11 +18,11 @@ public enum EntityCategory {
 	private final boolean animal;
 	private final String name;
 
-	private EntityCategory(String string2, int j, boolean bl, boolean bl2) {
-		this.name = string2;
-		this.spawnCap = j;
-		this.peaceful = bl;
-		this.animal = bl2;
+	private EntityCategory(String name, int spawnCap, boolean peaceful, boolean animal) {
+		this.name = name;
+		this.spawnCap = spawnCap;
+		this.peaceful = peaceful;
+		this.animal = animal;
 	}
 
 	public String getName() {

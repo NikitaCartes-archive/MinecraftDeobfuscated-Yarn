@@ -7,15 +7,15 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends EntityEyesFeatureRenderer<T, EndermanEntityModel<T>> {
+public class EndermanEyesFeatureRenderer<T extends LivingEntity> extends EyesFeatureRenderer<T, EndermanEntityModel<T>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/enderman/enderman_eyes.png");
 
-	public EndermanEyesFeatureRenderer(FeatureRendererContext<T, EndermanEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	public EndermanEyesFeatureRenderer(FeatureRendererContext<T, EndermanEntityModel<T>> context) {
+		super(context);
 	}
 
 	@Override
-	public Identifier getTexture() {
+	public Identifier getEyesTexture() {
 		return SKIN;
 	}
 }

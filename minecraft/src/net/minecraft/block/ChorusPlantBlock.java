@@ -27,17 +27,17 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.withConnectionProperties(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.withConnectionProperties(ctx.getWorld(), ctx.getBlockPos());
 	}
 
-	public BlockState withConnectionProperties(BlockView blockView, BlockPos blockPos) {
-		Block block = blockView.getBlockState(blockPos.method_10074()).getBlock();
-		Block block2 = blockView.getBlockState(blockPos.up()).getBlock();
-		Block block3 = blockView.getBlockState(blockPos.north()).getBlock();
-		Block block4 = blockView.getBlockState(blockPos.east()).getBlock();
-		Block block5 = blockView.getBlockState(blockPos.south()).getBlock();
-		Block block6 = blockView.getBlockState(blockPos.west()).getBlock();
+	public BlockState withConnectionProperties(BlockView view, BlockPos pos) {
+		Block block = view.getBlockState(pos.method_10074()).getBlock();
+		Block block2 = view.getBlockState(pos.up()).getBlock();
+		Block block3 = view.getBlockState(pos.north()).getBlock();
+		Block block4 = view.getBlockState(pos.east()).getBlock();
+		Block block5 = view.getBlockState(pos.south()).getBlock();
+		Block block6 = view.getBlockState(pos.west()).getBlock();
 		return this.getDefaultState()
 			.with(DOWN, Boolean.valueOf(block == this || block == Blocks.CHORUS_FLOWER || block == Blocks.END_STONE))
 			.with(UP, Boolean.valueOf(block2 == this || block2 == Blocks.CHORUS_FLOWER))
@@ -48,47 +48,45 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if (!state.canPlaceAt(world, pos)) {
+			world.getBlockTickScheduler().schedule(pos, this, 1);
+			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 		} else {
-			Block block = blockState2.getBlock();
-			boolean bl = block == this || block == Blocks.CHORUS_FLOWER || direction == Direction.DOWN && block == Blocks.END_STONE;
-			return blockState.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(bl));
+			Block block = neighborState.getBlock();
+			boolean bl = block == this || block == Blocks.CHORUS_FLOWER || facing == Direction.DOWN && block == Blocks.END_STONE;
+			return state.with((Property)FACING_PROPERTIES.get(facing), Boolean.valueOf(bl));
 		}
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-			serverWorld.breakBlock(blockPos, true);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (!state.canPlaceAt(world, pos)) {
+			world.breakBlock(pos, true);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
-		boolean bl = !worldView.getBlockState(blockPos.up()).isAir() && !blockState2.isAir();
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos.method_10074());
+		boolean bl = !world.getBlockState(pos.up()).isAir() && !blockState.isAir();
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.offset(direction);
-			Block block = worldView.getBlockState(blockPos2).getBlock();
+			BlockPos blockPos = pos.offset(direction);
+			Block block = world.getBlockState(blockPos).getBlock();
 			if (block == this) {
 				if (bl) {
 					return false;
 				}
 
-				Block block2 = worldView.getBlockState(blockPos2.method_10074()).getBlock();
+				Block block2 = world.getBlockState(blockPos.method_10074()).getBlock();
 				if (block2 == this || block2 == Blocks.END_STONE) {
 					return true;
 				}
 			}
 		}
 
-		Block block3 = blockState2.getBlock();
+		Block block3 = blockState.getBlock();
 		return block3 == this || block3 == Blocks.END_STONE;
 	}
 
@@ -98,7 +96,7 @@ public class ChorusPlantBlock extends ConnectedPlantBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

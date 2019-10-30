@@ -401,8 +401,8 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 		"minecraft:wooden_sword"
 	);
 
-	public ItemInstanceTheFlatteningFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemInstanceTheFlatteningFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -436,10 +436,10 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 	}
 
 	@Nullable
-	public static String getItem(@Nullable String string, int i) {
-		if (ORIGINAL_ITEM_NAMES.contains(string)) {
-			String string2 = (String)FLATTENING_MAP.get(string + '.' + i);
-			return string2 == null ? (String)FLATTENING_MAP.get(string + ".0") : string2;
+	public static String getItem(@Nullable String originalName, int damage) {
+		if (ORIGINAL_ITEM_NAMES.contains(originalName)) {
+			String string = (String)FLATTENING_MAP.get(originalName + '.' + damage);
+			return string == null ? (String)FLATTENING_MAP.get(originalName + ".0") : string;
 		} else {
 			return null;
 		}

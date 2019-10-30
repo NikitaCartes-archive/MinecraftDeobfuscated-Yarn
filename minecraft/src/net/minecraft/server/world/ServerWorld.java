@@ -90,9 +90,9 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -167,48 +167,48 @@ public class ServerWorld extends World {
 	private final WanderingTraderManager wanderingTraderManager;
 
 	public ServerWorld(
-		MinecraftServer minecraftServer,
-		Executor executor,
+		MinecraftServer server,
+		Executor workerExecutor,
 		WorldSaveHandler worldSaveHandler,
-		LevelProperties levelProperties,
+		LevelProperties properties,
 		DimensionType dimensionType,
 		Profiler profiler,
 		WorldGenerationProgressListener worldGenerationProgressListener
 	) {
 		super(
-			levelProperties,
+			properties,
 			dimensionType,
 			(world, dimension) -> new ServerChunkManager(
 					(ServerWorld)world,
 					worldSaveHandler.getWorldDir(),
 					worldSaveHandler.getDataFixer(),
 					worldSaveHandler.getStructureManager(),
-					executor,
+					workerExecutor,
 					dimension.createChunkGenerator(),
-					minecraftServer.getPlayerManager().getViewDistance(),
+					server.getPlayerManager().getViewDistance(),
 					worldGenerationProgressListener,
-					() -> minecraftServer.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()
+					() -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()
 				),
 			profiler,
 			false
 		);
 		this.worldSaveHandler = worldSaveHandler;
-		this.server = minecraftServer;
+		this.server = server;
 		this.portalForcer = new PortalForcer(this);
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
-		this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
+		this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
 		this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
-		if (!minecraftServer.isSinglePlayer()) {
-			this.getLevelProperties().setGameMode(minecraftServer.getDefaultGameMode());
+		if (!server.isSinglePlayer()) {
+			this.getLevelProperties().setGameMode(server.getDefaultGameMode());
 		}
 
 		this.wanderingTraderManager = this.dimension.getType() == DimensionType.OVERWORLD ? new WanderingTraderManager(this) : null;
 	}
 
 	@Override
-	public Biome getGeneratorStoredBiome(int i, int j, int k) {
-		return this.method_14178().getChunkGenerator().getBiomeSource().getStoredBiome(i, j, k);
+	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+		return this.method_14178().getChunkGenerator().getBiomeSource().getStoredBiome(biomeX, biomeY, biomeZ);
 	}
 
 	public void tick(BooleanSupplier booleanSupplier) {
@@ -414,15 +414,15 @@ public class ServerWorld extends World {
 			.forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false));
 	}
 
-	public void tickChunk(WorldChunk worldChunk, int i) {
-		ChunkPos chunkPos = worldChunk.getPos();
+	public void tickChunk(WorldChunk chunk, int randomTickSpeed) {
+		ChunkPos chunkPos = chunk.getPos();
 		boolean bl = this.isRaining();
-		int j = chunkPos.getStartX();
-		int k = chunkPos.getStartZ();
+		int i = chunkPos.getStartX();
+		int j = chunkPos.getStartZ();
 		Profiler profiler = this.getProfiler();
 		profiler.push("thunder");
 		if (bl && this.isThundering() && this.random.nextInt(100000) == 0) {
-			BlockPos blockPos = this.method_18210(this.getRandomPosInChunk(j, 0, k, 15));
+			BlockPos blockPos = this.method_18210(this.getRandomPosInChunk(i, 0, j, 15));
 			if (this.hasRain(blockPos)) {
 				LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
 				boolean bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
@@ -440,7 +440,7 @@ public class ServerWorld extends World {
 
 		profiler.swap("iceandsnow");
 		if (this.random.nextInt(16) == 0) {
-			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(j, 0, k, 15));
+			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
 			BlockPos blockPos2 = blockPos.method_10074();
 			Biome biome = this.getBiome(blockPos);
 			if (biome.canSetSnow(this, blockPos2)) {
@@ -457,15 +457,15 @@ public class ServerWorld extends World {
 		}
 
 		profiler.swap("tickBlocks");
-		if (i > 0) {
-			for (ChunkSection chunkSection : worldChunk.getSectionArray()) {
+		if (randomTickSpeed > 0) {
+			for (ChunkSection chunkSection : chunk.getSectionArray()) {
 				if (chunkSection != WorldChunk.EMPTY_SECTION && chunkSection.hasRandomTicks()) {
-					int l = chunkSection.getYOffset();
+					int k = chunkSection.getYOffset();
 
-					for (int m = 0; m < i; m++) {
-						BlockPos blockPos3 = this.getRandomPosInChunk(j, l, k, 15);
+					for (int l = 0; l < randomTickSpeed; l++) {
+						BlockPos blockPos3 = this.getRandomPosInChunk(i, k, j, 15);
 						profiler.push("randomTick");
-						BlockState blockState = chunkSection.getBlockState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
+						BlockState blockState = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - k, blockPos3.getZ() - j);
 						if (blockState.hasRandomTicks()) {
 							blockState.randomTick(this, blockPos3, this.random);
 						}
@@ -484,20 +484,20 @@ public class ServerWorld extends World {
 		profiler.pop();
 	}
 
-	protected BlockPos method_18210(BlockPos blockPos) {
-		BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos);
-		Box box = new Box(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
+	protected BlockPos method_18210(BlockPos pos) {
+		BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
+		Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getHeight(), blockPos.getZ())).expand(3.0);
 		List<LivingEntity> list = this.getEntities(
 			LivingEntity.class, box, livingEntity -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos())
 		);
 		if (!list.isEmpty()) {
 			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
 		} else {
-			if (blockPos2.getY() == -1) {
-				blockPos2 = blockPos2.up(2);
+			if (blockPos.getY() == -1) {
+				blockPos = blockPos.up(2);
 			}
 
-			return blockPos2;
+			return blockPos;
 		}
 	}
 
@@ -561,17 +561,17 @@ public class ServerWorld extends World {
 		this.idleTimeout = 0;
 	}
 
-	private void tickFluid(ScheduledTick<Fluid> scheduledTick) {
-		FluidState fluidState = this.getFluidState(scheduledTick.pos);
-		if (fluidState.getFluid() == scheduledTick.getObject()) {
-			fluidState.onScheduledTick(this, scheduledTick.pos);
+	private void tickFluid(ScheduledTick<Fluid> tick) {
+		FluidState fluidState = this.getFluidState(tick.pos);
+		if (fluidState.getFluid() == tick.getObject()) {
+			fluidState.onScheduledTick(this, tick.pos);
 		}
 	}
 
-	private void tickBlock(ScheduledTick<Block> scheduledTick) {
-		BlockState blockState = this.getBlockState(scheduledTick.pos);
-		if (blockState.getBlock() == scheduledTick.getObject()) {
-			blockState.scheduledTick(this, scheduledTick.pos, this.random);
+	private void tickBlock(ScheduledTick<Block> tick) {
+		BlockState blockState = this.getBlockState(tick.pos);
+		if (blockState.getBlock() == tick.getObject()) {
+			blockState.scheduledTick(this, tick.pos, this.random);
 		}
 	}
 
@@ -638,8 +638,8 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public boolean canPlayerModifyAt(PlayerEntity playerEntity, BlockPos blockPos) {
-		return !this.server.isSpawnProtected(this, blockPos, playerEntity) && this.getWorldBorder().contains(blockPos);
+	public boolean canPlayerModifyAt(PlayerEntity player, BlockPos pos) {
+		return !this.server.isSpawnProtected(this, pos, player) && this.getWorldBorder().contains(pos);
 	}
 
 	public void init(LevelInfo levelInfo) {
@@ -716,9 +716,9 @@ public class ServerWorld extends World {
 		return this.dimension.getForcedSpawnPoint();
 	}
 
-	public void save(@Nullable ProgressListener progressListener, boolean bl, boolean bl2) throws SessionLockException {
+	public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) throws SessionLockException {
 		ServerChunkManager serverChunkManager = this.method_14178();
-		if (!bl2) {
+		if (!bl) {
 			if (progressListener != null) {
 				progressListener.method_15412(new TranslatableText("menu.savingLevel"));
 			}
@@ -728,7 +728,7 @@ public class ServerWorld extends World {
 				progressListener.method_15414(new TranslatableText("menu.savingChunks"));
 			}
 
-			serverChunkManager.save(bl);
+			serverChunkManager.save(flush);
 		}
 	}
 
@@ -838,22 +838,22 @@ public class ServerWorld extends World {
 		this.addPlayer(serverPlayerEntity);
 	}
 
-	private void addPlayer(ServerPlayerEntity serverPlayerEntity) {
-		Entity entity = (Entity)this.entitiesByUuid.get(serverPlayerEntity.getUuid());
+	private void addPlayer(ServerPlayerEntity player) {
+		Entity entity = (Entity)this.entitiesByUuid.get(player.getUuid());
 		if (entity != null) {
-			LOGGER.warn("Force-added player with duplicate UUID {}", serverPlayerEntity.getUuid().toString());
+			LOGGER.warn("Force-added player with duplicate UUID {}", player.getUuid().toString());
 			entity.detach();
 			this.removePlayer((ServerPlayerEntity)entity);
 		}
 
-		this.players.add(serverPlayerEntity);
+		this.players.add(player);
 		this.updatePlayersSleeping();
-		Chunk chunk = this.getChunk(MathHelper.floor(serverPlayerEntity.getX() / 16.0), MathHelper.floor(serverPlayerEntity.getZ() / 16.0), ChunkStatus.FULL, true);
+		Chunk chunk = this.getChunk(MathHelper.floor(player.getX() / 16.0), MathHelper.floor(player.getZ() / 16.0), ChunkStatus.FULL, true);
 		if (chunk instanceof WorldChunk) {
-			chunk.addEntity(serverPlayerEntity);
+			chunk.addEntity(player);
 		}
 
-		this.loadEntityUnchecked(serverPlayerEntity);
+		this.loadEntityUnchecked(player);
 	}
 
 	private boolean addEntity(Entity entity) {
@@ -893,16 +893,16 @@ public class ServerWorld extends World {
 		}
 	}
 
-	public void unloadEntities(WorldChunk worldChunk) {
-		this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
-		TypeFilterableList[] var2 = worldChunk.getEntitySectionArray();
+	public void unloadEntities(WorldChunk chunk) {
+		this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
+		TypeFilterableList[] var2 = chunk.getEntitySectionArray();
 		int var3 = var2.length;
 
 		for (int var4 = 0; var4 < var3; var4++) {
 			for (Entity entity : var2[var4]) {
 				if (!(entity instanceof ServerPlayerEntity)) {
 					if (this.ticking) {
-						throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
+						throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
 					}
 
 					this.entitiesById.remove(entity.getEntityId());
@@ -953,7 +953,7 @@ public class ServerWorld extends World {
 
 	public void removeEntity(Entity entity) {
 		if (this.ticking) {
-			throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
+			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
 		} else {
 			this.removeEntityFromChunk(entity);
 			this.entitiesById.remove(entity.getEntityId());
@@ -968,9 +968,9 @@ public class ServerWorld extends World {
 		}
 	}
 
-	public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
-		serverPlayerEntity.remove();
-		this.removeEntity(serverPlayerEntity);
+	public void removePlayer(ServerPlayerEntity player) {
+		player.remove();
+		this.removeEntity(player);
 		this.updatePlayersSleeping();
 	}
 
@@ -990,30 +990,32 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void setBlockBreakingInfo(int i, BlockPos blockPos, int j) {
+	public void setBlockBreakingInfo(int entityId, BlockPos pos, int progress) {
 		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
-			if (serverPlayerEntity != null && serverPlayerEntity.world == this && serverPlayerEntity.getEntityId() != i) {
-				double d = (double)blockPos.getX() - serverPlayerEntity.getX();
-				double e = (double)blockPos.getY() - serverPlayerEntity.getY();
-				double f = (double)blockPos.getZ() - serverPlayerEntity.getZ();
+			if (serverPlayerEntity != null && serverPlayerEntity.world == this && serverPlayerEntity.getEntityId() != entityId) {
+				double d = (double)pos.getX() - serverPlayerEntity.getX();
+				double e = (double)pos.getY() - serverPlayerEntity.getY();
+				double f = (double)pos.getZ() - serverPlayerEntity.getZ();
 				if (d * d + e * e + f * f < 1024.0) {
-					serverPlayerEntity.networkHandler.sendPacket(new BlockBreakingProgressS2CPacket(i, blockPos, j));
+					serverPlayerEntity.networkHandler.sendPacket(new BlockBreakingProgressS2CPacket(entityId, pos, progress));
 				}
 			}
 		}
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h) {
+	public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				playerEntity, d, e, f, g > 1.0F ? (double)(16.0F * g) : 16.0, this.dimension.getType(), new PlaySoundS2CPacket(soundEvent, soundCategory, d, e, f, g, h)
+				player, x, y, z, volume > 1.0F ? (double)(16.0F * volume) : 16.0, this.dimension.getType(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch)
 			);
 	}
 
 	@Override
-	public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+	public void playSoundFromEntity(
+		@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch
+	) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
@@ -1021,29 +1023,29 @@ public class ServerWorld extends World {
 				entity.getX(),
 				entity.getY(),
 				entity.getZ(),
-				f > 1.0F ? (double)(16.0F * f) : 16.0,
+				volume > 1.0F ? (double)(16.0F * volume) : 16.0,
 				this.dimension.getType(),
-				new PlaySoundFromEntityS2CPacket(soundEvent, soundCategory, entity, f, g)
+				new PlaySoundFromEntityS2CPacket(soundEvent, soundCategory, entity, volume, pitch)
 			);
 	}
 
 	@Override
-	public void playGlobalEvent(int i, BlockPos blockPos, int j) {
-		this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(i, blockPos, j, true));
+	public void playGlobalEvent(int type, BlockPos pos, int data) {
+		this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(type, pos, data, true));
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				playerEntity,
+				player,
 				(double)blockPos.getX(),
 				(double)blockPos.getY(),
 				(double)blockPos.getZ(),
 				64.0,
 				this.dimension.getType(),
-				new WorldEventS2CPacket(i, blockPos, j, false)
+				new WorldEventS2CPacket(eventId, blockPos, data, false)
 			);
 	}
 
@@ -1062,8 +1064,8 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void sendEntityStatus(Entity entity, byte b) {
-		this.method_14178().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, b));
+	public void sendEntityStatus(Entity entity, byte status) {
+		this.method_14178().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, status));
 	}
 
 	public ServerChunkManager method_14178() {
@@ -1072,9 +1074,16 @@ public class ServerWorld extends World {
 
 	@Override
 	public Explosion createExplosion(
-		@Nullable Entity entity, @Nullable DamageSource damageSource, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType
+		@Nullable Entity entity,
+		@Nullable DamageSource damageSource,
+		double x,
+		double y,
+		double z,
+		float power,
+		boolean createFire,
+		Explosion.DestructionType destructionType
 	) {
-		Explosion explosion = new Explosion(this, entity, d, e, f, g, bl, destructionType);
+		Explosion explosion = new Explosion(this, entity, x, y, z, power, createFire, destructionType);
 		if (damageSource != null) {
 			explosion.setDamageSource(damageSource);
 		}
@@ -1086,9 +1095,9 @@ public class ServerWorld extends World {
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0) {
+			if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
 				serverPlayerEntity.networkHandler
-					.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
+					.sendPacket(new ExplosionS2CPacket(x, y, z, power, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
 			}
 		}
 
@@ -1096,8 +1105,8 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void addBlockAction(BlockPos blockPos, Block block, int i, int j) {
-		this.pendingBlockActions.add(new BlockAction(blockPos, block, i, j));
+	public void addBlockAction(BlockPos pos, Block block, int type, int data) {
+		this.pendingBlockActions.add(new BlockAction(pos, block, type, data));
 	}
 
 	private void sendBlockActions() {
@@ -1148,34 +1157,38 @@ public class ServerWorld extends World {
 		return this.worldSaveHandler.getStructureManager();
 	}
 
-	public <T extends ParticleEffect> int spawnParticles(T particleEffect, double d, double e, double f, int i, double g, double h, double j, double k) {
-		ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particleEffect, false, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
-		int l = 0;
+	public <T extends ParticleEffect> int spawnParticles(
+		T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed
+	) {
+		ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(
+			particle, false, (float)x, (float)y, (float)z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count
+		);
+		int i = 0;
 
-		for (int m = 0; m < this.players.size(); m++) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(m);
-			if (this.sendToPlayerIfNearby(serverPlayerEntity, false, d, e, f, particleS2CPacket)) {
-				l++;
+		for (int j = 0; j < this.players.size(); j++) {
+			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(j);
+			if (this.sendToPlayerIfNearby(serverPlayerEntity, false, x, y, z, particleS2CPacket)) {
+				i++;
 			}
 		}
 
-		return l;
+		return i;
 	}
 
 	public <T extends ParticleEffect> boolean spawnParticles(
-		ServerPlayerEntity serverPlayerEntity, T particleEffect, boolean bl, double d, double e, double f, int i, double g, double h, double j, double k
+		ServerPlayerEntity viewer, T particle, boolean force, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed
 	) {
-		Packet<?> packet = new ParticleS2CPacket(particleEffect, bl, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
-		return this.sendToPlayerIfNearby(serverPlayerEntity, bl, d, e, f, packet);
+		Packet<?> packet = new ParticleS2CPacket(particle, force, (float)x, (float)y, (float)z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
+		return this.sendToPlayerIfNearby(viewer, force, x, y, z, packet);
 	}
 
-	private boolean sendToPlayerIfNearby(ServerPlayerEntity serverPlayerEntity, boolean bl, double d, double e, double f, Packet<?> packet) {
-		if (serverPlayerEntity.getServerWorld() != this) {
+	private boolean sendToPlayerIfNearby(ServerPlayerEntity player, boolean force, double x, double y, double z, Packet<?> packet) {
+		if (player.getServerWorld() != this) {
 			return false;
 		} else {
-			BlockPos blockPos = serverPlayerEntity.getBlockPos();
-			if (blockPos.isWithinDistance(new Vec3d(d, e, f), bl ? 512.0 : 32.0)) {
-				serverPlayerEntity.networkHandler.sendPacket(packet);
+			BlockPos blockPos = player.getBlockPos();
+			if (blockPos.isWithinDistance(new Vec3d(x, y, z), force ? 512.0 : 32.0)) {
+				player.networkHandler.sendPacket(packet);
 				return true;
 			} else {
 				return false;
@@ -1185,8 +1198,8 @@ public class ServerWorld extends World {
 
 	@Nullable
 	@Override
-	public Entity getEntityById(int i) {
-		return this.entitiesById.get(i);
+	public Entity getEntityById(int id) {
+		return this.entitiesById.get(id);
 	}
 
 	@Nullable
@@ -1210,9 +1223,9 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void setTime(long l) {
-		super.setTime(l);
-		this.properties.getScheduledEvents().processEvents(this.server, l);
+	public void setTime(long time) {
+		super.setTime(time);
+		this.properties.getScheduledEvents().processEvents(this.server, time);
 	}
 
 	@Override
@@ -1234,8 +1247,8 @@ public class ServerWorld extends World {
 
 	@Nullable
 	@Override
-	public MapState getMapState(String string) {
-		return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().get(() -> new MapState(string), string);
+	public MapState getMapState(String id) {
+		return this.getServer().getWorld(DimensionType.OVERWORLD).getPersistentStateManager().get(() -> new MapState(id), id);
 	}
 
 	@Override
@@ -1253,11 +1266,11 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void setSpawnPos(BlockPos blockPos) {
+	public void setSpawnPos(BlockPos pos) {
 		ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
-		super.setSpawnPos(blockPos);
+		super.setSpawnPos(pos);
 		this.method_14178().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
-		this.method_14178().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
+		this.method_14178().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
 	}
 
 	public LongSet getForcedChunks() {
@@ -1265,26 +1278,26 @@ public class ServerWorld extends World {
 		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
 	}
 
-	public boolean setChunkForced(int i, int j, boolean bl) {
+	public boolean setChunkForced(int x, int z, boolean forced) {
 		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::new, "chunks");
-		ChunkPos chunkPos = new ChunkPos(i, j);
+		ChunkPos chunkPos = new ChunkPos(x, z);
 		long l = chunkPos.toLong();
-		boolean bl2;
-		if (bl) {
-			bl2 = forcedChunkState.getChunks().add(l);
-			if (bl2) {
-				this.method_8497(i, j);
+		boolean bl;
+		if (forced) {
+			bl = forcedChunkState.getChunks().add(l);
+			if (bl) {
+				this.method_8497(x, z);
 			}
 		} else {
-			bl2 = forcedChunkState.getChunks().remove(l);
+			bl = forcedChunkState.getChunks().remove(l);
 		}
 
-		forcedChunkState.setDirty(bl2);
-		if (bl2) {
-			this.method_14178().setChunkForced(chunkPos, bl);
+		forcedChunkState.setDirty(bl);
+		if (bl) {
+			this.method_14178().setChunkForced(chunkPos, forced);
 		}
 
-		return bl2;
+		return bl;
 	}
 
 	@Override
@@ -1293,18 +1306,18 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void onBlockChanged(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-		Optional<PointOfInterestType> optional = PointOfInterestType.from(blockState);
-		Optional<PointOfInterestType> optional2 = PointOfInterestType.from(blockState2);
+	public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock) {
+		Optional<PointOfInterestType> optional = PointOfInterestType.from(oldBlock);
+		Optional<PointOfInterestType> optional2 = PointOfInterestType.from(newBlock);
 		if (!Objects.equals(optional, optional2)) {
-			BlockPos blockPos2 = blockPos.toImmutable();
+			BlockPos blockPos = pos.toImmutable();
 			optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-					this.getPointOfInterestStorage().remove(blockPos2);
-					DebugRendererInfoManager.method_19777(this, blockPos2);
+					this.getPointOfInterestStorage().remove(blockPos);
+					DebugRendererInfoManager.method_19777(this, blockPos);
 				}));
 			optional2.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-					this.getPointOfInterestStorage().add(blockPos2, pointOfInterestType);
-					DebugRendererInfoManager.method_19776(this, blockPos2);
+					this.getPointOfInterestStorage().add(blockPos, pointOfInterestType);
+					DebugRendererInfoManager.method_19776(this, blockPos);
 				}));
 		}
 	}
@@ -1313,20 +1326,20 @@ public class ServerWorld extends World {
 		return this.method_14178().getPointOfInterestStorage();
 	}
 
-	public boolean isNearOccupiedPointOfInterest(BlockPos blockPos) {
-		return this.isNearOccupiedPointOfInterest(blockPos, 1);
+	public boolean isNearOccupiedPointOfInterest(BlockPos pos) {
+		return this.isNearOccupiedPointOfInterest(pos, 1);
 	}
 
 	public boolean isNearOccupiedPointOfInterest(ChunkSectionPos chunkSectionPos) {
 		return this.isNearOccupiedPointOfInterest(chunkSectionPos.getCenterPos());
 	}
 
-	public boolean isNearOccupiedPointOfInterest(BlockPos blockPos, int i) {
-		return i > 6 ? false : this.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)) <= i;
+	public boolean isNearOccupiedPointOfInterest(BlockPos pos, int maxDistance) {
+		return maxDistance > 6 ? false : this.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(pos)) <= maxDistance;
 	}
 
-	public int getOccupiedPointOfInterestDistance(ChunkSectionPos chunkSectionPos) {
-		return this.getPointOfInterestStorage().getDistanceFromNearestOccupied(chunkSectionPos);
+	public int getOccupiedPointOfInterestDistance(ChunkSectionPos pos) {
+		return this.getPointOfInterestStorage().getDistanceFromNearestOccupied(pos);
 	}
 
 	public RaidManager getRaidManager() {
@@ -1334,16 +1347,16 @@ public class ServerWorld extends World {
 	}
 
 	@Nullable
-	public Raid getRaidAt(BlockPos blockPos) {
-		return this.raidManager.getRaidAt(blockPos, 9216);
+	public Raid getRaidAt(BlockPos pos) {
+		return this.raidManager.getRaidAt(pos, 9216);
 	}
 
-	public boolean hasRaidAt(BlockPos blockPos) {
-		return this.getRaidAt(blockPos) != null;
+	public boolean hasRaidAt(BlockPos pos) {
+		return this.getRaidAt(pos) != null;
 	}
 
-	public void handleInteraction(EntityInteraction entityInteraction, Entity entity, InteractionObserver interactionObserver) {
-		interactionObserver.onInteractionWith(entityInteraction, entity);
+	public void handleInteraction(EntityInteraction interaction, Entity entity, InteractionObserver observer) {
+		observer.onInteractionWith(interaction, entity);
 	}
 
 	public void method_21625(Path path) throws IOException {

@@ -22,7 +22,7 @@ public final class ClientDummyContainerProvider implements NameableContainerProv
 	}
 
 	@Override
-	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return this.containerProvider.createMenu(i, playerInventory, playerEntity);
+	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+		return this.containerProvider.createMenu(syncId, playerInventory, playerEntity);
 	}
 }

@@ -33,10 +33,10 @@ public class AdvancementRewards {
 	private final Identifier[] recipes;
 	private final CommandFunction.LazyContainer function;
 
-	public AdvancementRewards(int i, Identifier[] identifiers, Identifier[] identifiers2, CommandFunction.LazyContainer lazyContainer) {
-		this.experience = i;
-		this.loot = identifiers;
-		this.recipes = identifiers2;
+	public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, CommandFunction.LazyContainer lazyContainer) {
+		this.experience = experience;
+		this.loot = loot;
+		this.recipes = recipes;
 		this.function = lazyContainer;
 	}
 
@@ -146,21 +146,21 @@ public class AdvancementRewards {
 		@Nullable
 		private Identifier function;
 
-		public static AdvancementRewards.Builder experience(int i) {
-			return new AdvancementRewards.Builder().setExperience(i);
+		public static AdvancementRewards.Builder experience(int experience) {
+			return new AdvancementRewards.Builder().setExperience(experience);
 		}
 
-		public AdvancementRewards.Builder setExperience(int i) {
-			this.experience += i;
+		public AdvancementRewards.Builder setExperience(int experience) {
+			this.experience += experience;
 			return this;
 		}
 
-		public static AdvancementRewards.Builder recipe(Identifier identifier) {
-			return new AdvancementRewards.Builder().addRecipe(identifier);
+		public static AdvancementRewards.Builder recipe(Identifier recipe) {
+			return new AdvancementRewards.Builder().addRecipe(recipe);
 		}
 
-		public AdvancementRewards.Builder addRecipe(Identifier identifier) {
-			this.recipes.add(identifier);
+		public AdvancementRewards.Builder addRecipe(Identifier recipe) {
+			this.recipes.add(recipe);
 			return this;
 		}
 

@@ -34,7 +34,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 
 	protected abstract boolean isFilteringCraftable();
 
-	protected abstract void setFilteringCraftable(boolean bl);
+	protected abstract void setFilteringCraftable(boolean filteringCraftable);
 
 	@Override
 	public boolean isOpen() {
@@ -44,16 +44,16 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	protected abstract boolean isGuiOpen();
 
 	@Override
-	protected void setOpen(boolean bl) {
-		this.setGuiOpen(bl);
-		if (!bl) {
+	protected void setOpen(boolean opened) {
+		this.setGuiOpen(opened);
+		if (!opened) {
 			this.recipesArea.hideAlternates();
 		}
 
 		this.sendBookDataPacket();
 	}
 
-	protected abstract void setGuiOpen(boolean bl);
+	protected abstract void setGuiOpen(boolean opened);
 
 	@Override
 	protected void setBookButtonTexture() {
@@ -76,12 +76,12 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	}
 
 	@Override
-	public void showGhostRecipe(Recipe<?> recipe, List<Slot> list) {
+	public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
 		ItemStack itemStack = recipe.getOutput();
 		this.ghostSlots.setRecipe(recipe);
-		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)list.get(2)).xPosition, ((Slot)list.get(2)).yPosition);
+		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(2)).xPosition, ((Slot)slots.get(2)).yPosition);
 		DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
-		this.outputSlot = (Slot)list.get(1);
+		this.outputSlot = (Slot)slots.get(1);
 		if (this.fuels == null) {
 			this.fuels = this.getAllowedFuels();
 		}
@@ -97,7 +97,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 
 			Ingredient ingredient = (Ingredient)iterator.next();
 			if (!ingredient.isEmpty()) {
-				Slot slot = (Slot)list.get(i);
+				Slot slot = (Slot)slots.get(i);
 				this.ghostSlots.addSlot(ingredient, slot.xPosition, slot.yPosition);
 			}
 		}
@@ -106,19 +106,19 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	protected abstract Set<Item> getAllowedFuels();
 
 	@Override
-	public void drawGhostSlots(int i, int j, boolean bl, float f) {
-		super.drawGhostSlots(i, j, bl, f);
+	public void drawGhostSlots(int left, int top, boolean bl, float lastFrameDuration) {
+		super.drawGhostSlots(left, top, bl, lastFrameDuration);
 		if (this.outputSlot != null) {
 			if (!Screen.hasControlDown()) {
-				this.frameTime += f;
+				this.frameTime += lastFrameDuration;
 			}
 
-			int k = this.outputSlot.xPosition + i;
-			int l = this.outputSlot.yPosition + j;
-			DrawableHelper.fill(k, l, k + 16, l + 16, 822018048);
-			this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), k, l);
+			int i = this.outputSlot.xPosition + left;
+			int j = this.outputSlot.yPosition + top;
+			DrawableHelper.fill(i, j, i + 16, j + 16, 822018048);
+			this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), i, j);
 			RenderSystem.depthFunc(516);
-			DrawableHelper.fill(k, l, k + 16, l + 16, 822083583);
+			DrawableHelper.fill(i, j, i + 16, j + 16, 822083583);
 			RenderSystem.depthFunc(515);
 		}
 	}

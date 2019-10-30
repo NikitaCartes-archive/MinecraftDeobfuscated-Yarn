@@ -23,7 +23,7 @@ public class ContainerLock {
 		}
 	}
 
-	public static ContainerLock deserialize(CompoundTag compoundTag) {
-		return compoundTag.contains("Lock", 8) ? new ContainerLock(compoundTag.getString("Lock")) : NONE;
+	public static ContainerLock deserialize(CompoundTag tag) {
+		return tag.contains("Lock", 8) ? new ContainerLock(tag.getString("Lock")) : NONE;
 	}
 }

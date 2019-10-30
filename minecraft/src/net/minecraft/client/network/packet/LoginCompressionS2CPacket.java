@@ -13,18 +13,18 @@ public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListen
 	public LoginCompressionS2CPacket() {
 	}
 
-	public LoginCompressionS2CPacket(int i) {
-		this.compressionThreshold = i;
+	public LoginCompressionS2CPacket(int compressionThreshold) {
+		this.compressionThreshold = compressionThreshold;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.compressionThreshold = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.compressionThreshold = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.compressionThreshold);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.compressionThreshold);
 	}
 
 	public void method_12633(ClientLoginPacketListener clientLoginPacketListener) {

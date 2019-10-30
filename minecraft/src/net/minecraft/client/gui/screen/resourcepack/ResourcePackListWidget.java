@@ -25,12 +25,12 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 	protected final MinecraftClient client;
 	private final Text title;
 
-	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, Text text) {
-		super(minecraftClient, i, j, 32, j - 55 + 4, 36);
-		this.client = minecraftClient;
+	public ResourcePackListWidget(MinecraftClient client, int width, int height, Text title) {
+		super(client, width, height, 32, height - 55 + 4, 36);
+		this.client = client;
 		this.centerListVertically = false;
 		this.setRenderHeader(true, (int)(9.0F * 1.5F));
-		this.title = text;
+		this.title = title;
 	}
 
 	@Override
@@ -56,9 +56,9 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		return this.right - 6;
 	}
 
-	public void add(ResourcePackListWidget.ResourcePackEntry resourcePackEntry) {
-		this.addEntry(resourcePackEntry);
-		resourcePackEntry.resourcePackList = this;
+	public void add(ResourcePackListWidget.ResourcePackEntry entry) {
+		this.addEntry(entry);
+		entry.resourcePackList = this;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -68,18 +68,16 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		protected final ResourcePackOptionsScreen screen;
 		private final ClientResourcePackProfile pack;
 
-		public ResourcePackEntry(
-			ResourcePackListWidget resourcePackListWidget, ResourcePackOptionsScreen resourcePackOptionsScreen, ClientResourcePackProfile clientResourcePackProfile
-		) {
-			this.screen = resourcePackOptionsScreen;
+		public ResourcePackEntry(ResourcePackListWidget listWidget, ResourcePackOptionsScreen screen, ClientResourcePackProfile pack) {
+			this.screen = screen;
 			this.client = MinecraftClient.getInstance();
-			this.pack = clientResourcePackProfile;
-			this.resourcePackList = resourcePackListWidget;
+			this.pack = pack;
+			this.resourcePackList = listWidget;
 		}
 
-		public void enable(SelectedResourcePackListWidget selectedResourcePackListWidget) {
-			this.getPack().getInitialPosition().insert(selectedResourcePackListWidget.children(), this, ResourcePackListWidget.ResourcePackEntry::getPack, true);
-			this.resourcePackList = selectedResourcePackListWidget;
+		public void enable(SelectedResourcePackListWidget list) {
+			this.getPack().getInitialPosition().insert(list.children(), this, ResourcePackListWidget.ResourcePackEntry::getPack, true);
+			this.resourcePackList = list;
 		}
 
 		protected void drawIcon() {
@@ -197,10 +195,10 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 		}
 
 		@Override
-		public boolean mouseClicked(double d, double e, int i) {
-			double f = d - (double)this.resourcePackList.getRowLeft();
-			double g = e - (double)this.resourcePackList.getRowTop(this.resourcePackList.children().indexOf(this));
-			if (this.isMoveable() && f <= 32.0) {
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			double d = mouseX - (double)this.resourcePackList.getRowLeft();
+			double e = mouseY - (double)this.resourcePackList.getRowTop(this.resourcePackList.children().indexOf(this));
+			if (this.isMoveable() && d <= 32.0) {
 				if (this.isSelectable()) {
 					this.getScreen().markDirty();
 					ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
@@ -219,25 +217,25 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 					return true;
 				}
 
-				if (f < 16.0 && this.isRemovable()) {
+				if (d < 16.0 && this.isRemovable()) {
 					this.getScreen().disable(this);
 					return true;
 				}
 
-				if (f > 16.0 && g < 16.0 && this.canMoveUp()) {
+				if (d > 16.0 && e < 16.0 && this.canMoveUp()) {
 					List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
-					int j = list.indexOf(this);
+					int i = list.indexOf(this);
 					list.remove(this);
-					list.add(j - 1, this);
+					list.add(i - 1, this);
 					this.getScreen().markDirty();
 					return true;
 				}
 
-				if (f > 16.0 && g > 16.0 && this.canMoveDown()) {
+				if (d > 16.0 && e > 16.0 && this.canMoveDown()) {
 					List<ResourcePackListWidget.ResourcePackEntry> list = this.resourcePackList.children();
-					int j = list.indexOf(this);
+					int i = list.indexOf(this);
 					list.remove(this);
-					list.add(j + 1, this);
+					list.add(i + 1, this);
 					this.getScreen().markDirty();
 					return true;
 				}

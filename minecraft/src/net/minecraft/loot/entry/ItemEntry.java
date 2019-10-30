@@ -17,18 +17,18 @@ import net.minecraft.util.registry.Registry;
 public class ItemEntry extends LeafEntry {
 	private final Item item;
 
-	private ItemEntry(Item item, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
+	private ItemEntry(Item item, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+		super(weight, quality, conditions, functions);
 		this.item = item;
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		consumer.accept(new ItemStack(this.item));
+	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+		itemDropper.accept(new ItemStack(this.item));
 	}
 
-	public static LeafEntry.Builder<?> builder(ItemConvertible itemConvertible) {
-		return builder((i, j, lootConditions, lootFunctions) -> new ItemEntry(itemConvertible.asItem(), i, j, lootConditions, lootFunctions));
+	public static LeafEntry.Builder<?> builder(ItemConvertible itemProvider) {
+		return builder((weight, quality, conditions, functions) -> new ItemEntry(itemProvider.asItem(), weight, quality, conditions, functions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {

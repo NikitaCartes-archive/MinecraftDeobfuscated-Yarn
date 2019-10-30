@@ -4,43 +4,43 @@ public enum AddDeepOceanLayer implements CrossSamplingLayer {
 	INSTANCE;
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
-		if (BiomeLayers.isShallowOcean(m)) {
-			int n = 0;
-			if (BiomeLayers.isShallowOcean(i)) {
-				n++;
+	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
+		if (BiomeLayers.isShallowOcean(center)) {
+			int i = 0;
+			if (BiomeLayers.isShallowOcean(n)) {
+				i++;
 			}
 
-			if (BiomeLayers.isShallowOcean(j)) {
-				n++;
+			if (BiomeLayers.isShallowOcean(e)) {
+				i++;
 			}
 
-			if (BiomeLayers.isShallowOcean(l)) {
-				n++;
+			if (BiomeLayers.isShallowOcean(w)) {
+				i++;
 			}
 
-			if (BiomeLayers.isShallowOcean(k)) {
-				n++;
+			if (BiomeLayers.isShallowOcean(s)) {
+				i++;
 			}
 
-			if (n > 3) {
-				if (m == BiomeLayers.WARM_OCEAN_ID) {
+			if (i > 3) {
+				if (center == BiomeLayers.WARM_OCEAN_ID) {
 					return BiomeLayers.DEEP_WARM_OCEAN_ID;
 				}
 
-				if (m == BiomeLayers.LUKEWARM_OCEAN_ID) {
+				if (center == BiomeLayers.LUKEWARM_OCEAN_ID) {
 					return BiomeLayers.DEEP_LUKEWARM_OCEAN_ID;
 				}
 
-				if (m == BiomeLayers.OCEAN_ID) {
+				if (center == BiomeLayers.OCEAN_ID) {
 					return BiomeLayers.DEEP_OCEAN_ID;
 				}
 
-				if (m == BiomeLayers.COLD_OCEAN_ID) {
+				if (center == BiomeLayers.COLD_OCEAN_ID) {
 					return BiomeLayers.DEEP_COLD_OCEAN_ID;
 				}
 
-				if (m == BiomeLayers.FROZEN_OCEAN_ID) {
+				if (center == BiomeLayers.FROZEN_OCEAN_ID) {
 					return BiomeLayers.DEEP_FROZEN_OCEAN_ID;
 				}
 
@@ -48,6 +48,6 @@ public enum AddDeepOceanLayer implements CrossSamplingLayer {
 			}
 		}
 
-		return m;
+		return center;
 	}
 }

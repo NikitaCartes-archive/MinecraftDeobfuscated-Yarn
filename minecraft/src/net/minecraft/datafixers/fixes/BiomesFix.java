@@ -68,8 +68,8 @@ public class BiomesFix extends DataFix {
 		.put("minecraft:frozen_deep_ocean", "minecraft:deep_frozen_ocean")
 		.build();
 
-	public BiomesFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BiomesFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

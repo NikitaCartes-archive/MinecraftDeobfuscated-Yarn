@@ -15,7 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -27,11 +27,11 @@ public class MultipartBakedModel implements BakedModel {
 	protected final Sprite sprite;
 	protected final ModelTransformation transformations;
 	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
-	private final Map<BlockState, BitSet> field_5431 = new Object2ObjectOpenCustomHashMap<>(SystemUtil.identityHashStrategy());
+	private final Map<BlockState, BitSet> field_5431 = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
 
-	public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> list) {
-		this.components = list;
-		BakedModel bakedModel = (BakedModel)((Pair)list.iterator().next()).getRight();
+	public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> components) {
+		this.components = components;
+		BakedModel bakedModel = (BakedModel)((Pair)components.iterator().next()).getRight();
 		this.ambientOcclusion = bakedModel.useAmbientOcclusion();
 		this.depthGui = bakedModel.hasDepthInGui();
 		this.sprite = bakedModel.getSprite();
@@ -40,22 +40,22 @@ public class MultipartBakedModel implements BakedModel {
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
-		if (blockState == null) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+		if (state == null) {
 			return Collections.emptyList();
 		} else {
-			BitSet bitSet = (BitSet)this.field_5431.get(blockState);
+			BitSet bitSet = (BitSet)this.field_5431.get(state);
 			if (bitSet == null) {
 				bitSet = new BitSet();
 
 				for (int i = 0; i < this.components.size(); i++) {
 					Pair<Predicate<BlockState>, BakedModel> pair = (Pair<Predicate<BlockState>, BakedModel>)this.components.get(i);
-					if (pair.getLeft().test(blockState)) {
+					if (pair.getLeft().test(state)) {
 						bitSet.set(i);
 					}
 				}
 
-				this.field_5431.put(blockState, bitSet);
+				this.field_5431.put(state, bitSet);
 			}
 
 			List<BakedQuad> list = Lists.<BakedQuad>newArrayList();
@@ -63,7 +63,7 @@ public class MultipartBakedModel implements BakedModel {
 
 			for (int j = 0; j < bitSet.length(); j++) {
 				if (bitSet.get(j)) {
-					list.addAll(((BakedModel)((Pair)this.components.get(j)).getRight()).getQuads(blockState, direction, new Random(l)));
+					list.addAll(((BakedModel)((Pair)this.components.get(j)).getRight()).getQuads(state, face, new Random(l)));
 				}
 			}
 
@@ -105,8 +105,8 @@ public class MultipartBakedModel implements BakedModel {
 	public static class Builder {
 		private final List<Pair<Predicate<BlockState>, BakedModel>> components = Lists.<Pair<Predicate<BlockState>, BakedModel>>newArrayList();
 
-		public void addComponent(Predicate<BlockState> predicate, BakedModel bakedModel) {
-			this.components.add(Pair.of(predicate, bakedModel));
+		public void addComponent(Predicate<BlockState> predicate, BakedModel model) {
+			this.components.add(Pair.of(predicate, model));
 		}
 
 		public BakedModel build() {

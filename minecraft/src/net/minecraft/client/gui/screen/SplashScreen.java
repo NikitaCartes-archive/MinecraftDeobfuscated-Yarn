@@ -13,7 +13,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadMonitor;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -34,62 +34,62 @@ public class SplashScreen extends Overlay {
 		this.field_18219 = bl;
 	}
 
-	public static void init(MinecraftClient minecraftClient) {
-		minecraftClient.getTextureManager().registerTexture(LOGO, new SplashScreen.LogoTexture());
+	public static void init(MinecraftClient client) {
+		client.getTextureManager().registerTexture(LOGO, new SplashScreen.LogoTexture());
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
-		int k = this.client.getWindow().getScaledWidth();
-		int l = this.client.getWindow().getScaledHeight();
-		long m = SystemUtil.getMeasuringTimeMs();
+	public void render(int mouseX, int mouseY, float delta) {
+		int i = this.client.getWindow().getScaledWidth();
+		int j = this.client.getWindow().getScaledHeight();
+		long l = Util.getMeasuringTimeMs();
 		if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
-			this.field_18220 = m;
+			this.field_18220 = l;
 		}
 
-		float g = this.field_17771 > -1L ? (float)(m - this.field_17771) / 1000.0F : -1.0F;
-		float h = this.field_18220 > -1L ? (float)(m - this.field_18220) / 500.0F : -1.0F;
-		float o;
-		if (g >= 1.0F) {
+		float f = this.field_17771 > -1L ? (float)(l - this.field_17771) / 1000.0F : -1.0F;
+		float g = this.field_18220 > -1L ? (float)(l - this.field_18220) / 500.0F : -1.0F;
+		float h;
+		if (f >= 1.0F) {
 			if (this.client.currentScreen != null) {
-				this.client.currentScreen.render(0, 0, f);
+				this.client.currentScreen.render(0, 0, delta);
 			}
 
-			int n = MathHelper.ceil((1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F)) * 255.0F);
-			fill(0, 0, k, l, 16777215 | n << 24);
-			o = 1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F);
+			int k = MathHelper.ceil((1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F)) * 255.0F);
+			fill(0, 0, i, j, 16777215 | k << 24);
+			h = 1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F);
 		} else if (this.field_18219) {
-			if (this.client.currentScreen != null && h < 1.0F) {
-				this.client.currentScreen.render(i, j, f);
+			if (this.client.currentScreen != null && g < 1.0F) {
+				this.client.currentScreen.render(mouseX, mouseY, delta);
 			}
 
-			int n = MathHelper.ceil(MathHelper.clamp((double)h, 0.15, 1.0) * 255.0);
-			fill(0, 0, k, l, 16777215 | n << 24);
-			o = MathHelper.clamp(h, 0.0F, 1.0F);
+			int k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
+			fill(0, 0, i, j, 16777215 | k << 24);
+			h = MathHelper.clamp(g, 0.0F, 1.0F);
 		} else {
-			fill(0, 0, k, l, -1);
-			o = 1.0F;
+			fill(0, 0, i, j, -1);
+			h = 1.0F;
 		}
 
-		int n = (this.client.getWindow().getScaledWidth() - 256) / 2;
-		int p = (this.client.getWindow().getScaledHeight() - 256) / 2;
+		int k = (this.client.getWindow().getScaledWidth() - 256) / 2;
+		int m = (this.client.getWindow().getScaledHeight() - 256) / 2;
 		this.client.getTextureManager().bindTexture(LOGO);
 		RenderSystem.enableBlend();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, o);
-		this.blit(n, p, 0, 0, 256, 256);
-		float q = this.reloadMonitor.getProgress();
-		this.field_17770 = MathHelper.clamp(this.field_17770 * 0.95F + q * 0.050000012F, 0.0F, 1.0F);
-		if (g < 1.0F) {
-			this.renderProgressBar(k / 2 - 150, l / 4 * 3, k / 2 + 150, l / 4 * 3 + 10, 1.0F - MathHelper.clamp(g, 0.0F, 1.0F));
+		RenderSystem.color4f(1.0F, 1.0F, 1.0F, h);
+		this.blit(k, m, 0, 0, 256, 256);
+		float n = this.reloadMonitor.getProgress();
+		this.field_17770 = MathHelper.clamp(this.field_17770 * 0.95F + n * 0.050000012F, 0.0F, 1.0F);
+		if (f < 1.0F) {
+			this.renderProgressBar(i / 2 - 150, j / 4 * 3, i / 2 + 150, j / 4 * 3 + 10, 1.0F - MathHelper.clamp(f, 0.0F, 1.0F));
 		}
 
-		if (g >= 2.0F) {
+		if (f >= 2.0F) {
 			this.client.setOverlay(null);
 		}
 
-		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0F)) {
+		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || g >= 2.0F)) {
 			this.reloadMonitor.throwExceptions();
-			this.field_17771 = SystemUtil.getMeasuringTimeMs();
+			this.field_17771 = Util.getMeasuringTimeMs();
 			this.field_18218.run();
 			if (this.client.currentScreen != null) {
 				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
@@ -97,19 +97,25 @@ public class SplashScreen extends Overlay {
 		}
 	}
 
-	private void renderProgressBar(int i, int j, int k, int l, float f) {
-		int m = MathHelper.ceil((float)(k - i - 1) * this.field_17770);
-		fill(i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0F - f) * 255.0F) << 16 | Math.round((1.0F - f) * 255.0F) << 8 | Math.round((1.0F - f) * 255.0F));
-		fill(i, j, k, l, -1);
+	private void renderProgressBar(int minX, int minY, int maxX, int maxY, float progress) {
+		int i = MathHelper.ceil((float)(maxX - minX - 1) * this.field_17770);
 		fill(
-			i + 1,
-			j + 1,
-			i + m,
-			l - 1,
+			minX - 1,
+			minY - 1,
+			maxX + 1,
+			maxY + 1,
+			0xFF000000 | Math.round((1.0F - progress) * 255.0F) << 16 | Math.round((1.0F - progress) * 255.0F) << 8 | Math.round((1.0F - progress) * 255.0F)
+		);
+		fill(minX, minY, maxX, maxY, -1);
+		fill(
+			minX + 1,
+			minY + 1,
+			minX + i,
+			maxY - 1,
 			0xFF000000
-				| (int)MathHelper.lerp(1.0F - f, 226.0F, 255.0F) << 16
-				| (int)MathHelper.lerp(1.0F - f, 40.0F, 255.0F) << 8
-				| (int)MathHelper.lerp(1.0F - f, 55.0F, 255.0F)
+				| (int)MathHelper.lerp(1.0F - progress, 226.0F, 255.0F) << 16
+				| (int)MathHelper.lerp(1.0F - progress, 40.0F, 255.0F) << 8
+				| (int)MathHelper.lerp(1.0F - progress, 55.0F, 255.0F)
 		);
 	}
 

@@ -14,16 +14,16 @@ public class VillagerNamer {
 		"Fox", "Tail", "Jaw", "Whisper", "Twig", "Root", "Finder", "Nose", "Brow", "Blade", "Fry", "Seek", "Tooth", "Foot", "Leaf", "Stone", "Fall", "Face", "Tongue"
 	};
 
-	public static String name(UUID uUID) {
-		Random random = randomFromUuid(uUID);
+	public static String name(UUID uuid) {
+		Random random = randomFromUuid(uuid);
 		return getRandom(random, PREFIX) + getRandom(random, SUFFIX);
 	}
 
-	private static String getRandom(Random random, String[] strings) {
-		return strings[random.nextInt(strings.length)];
+	private static String getRandom(Random random, String[] options) {
+		return options[random.nextInt(options.length)];
 	}
 
-	private static Random randomFromUuid(UUID uUID) {
-		return new Random((long)(uUID.hashCode() >> 2));
+	private static Random randomFromUuid(UUID uuid) {
+		return new Random((long)(uuid.hashCode() >> 2));
 	}
 }

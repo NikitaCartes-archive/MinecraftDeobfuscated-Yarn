@@ -8,18 +8,18 @@ public class SequenceEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(EntryCombiner[] entryCombiners) {
-		switch (entryCombiners.length) {
+	protected EntryCombiner combine(EntryCombiner[] children) {
+		switch (children.length) {
 			case 0:
 				return ALWAYS_TRUE;
 			case 1:
-				return entryCombiners[0];
+				return children[0];
 			case 2:
-				return entryCombiners[0].and(entryCombiners[1]);
+				return children[0].and(children[1]);
 			default:
-				return (lootContext, consumer) -> {
-					for (EntryCombiner entryCombiner : entryCombiners) {
-						if (!entryCombiner.expand(lootContext, consumer)) {
+				return (context, lootChoiceExpander) -> {
+					for (EntryCombiner entryCombiner : children) {
+						if (!entryCombiner.expand(context, lootChoiceExpander)) {
 							return false;
 						}
 					}

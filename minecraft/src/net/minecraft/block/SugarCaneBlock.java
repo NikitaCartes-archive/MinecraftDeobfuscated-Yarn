@@ -25,47 +25,45 @@ public class SugarCaneBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return SHAPE;
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-			serverWorld.breakBlock(blockPos, true);
-		} else if (serverWorld.isAir(blockPos.up())) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (!state.canPlaceAt(world, pos)) {
+			world.breakBlock(pos, true);
+		} else if (world.isAir(pos.up())) {
 			int i = 1;
 
-			while (serverWorld.getBlockState(blockPos.down(i)).getBlock() == this) {
+			while (world.getBlockState(pos.down(i)).getBlock() == this) {
 				i++;
 			}
 
 			if (i < 3) {
-				int j = (Integer)blockState.get(AGE);
+				int j = (Integer)state.get(AGE);
 				if (j == 15) {
-					serverWorld.setBlockState(blockPos.up(), this.getDefaultState());
-					serverWorld.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(0)), 4);
+					world.setBlockState(pos.up(), this.getDefaultState());
+					world.setBlockState(pos, state.with(AGE, Integer.valueOf(0)), 4);
 				} else {
-					serverWorld.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(j + 1)), 4);
+					world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), 4);
 				}
 			}
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if (!state.canPlaceAt(world, pos)) {
+			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		Block block = worldView.getBlockState(blockPos.method_10074()).getBlock();
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		Block block = world.getBlockState(pos.method_10074()).getBlock();
 		if (block == this) {
 			return true;
 		} else {
@@ -75,12 +73,12 @@ public class SugarCaneBlock extends Block {
 				|| block == Blocks.PODZOL
 				|| block == Blocks.SAND
 				|| block == Blocks.RED_SAND) {
-				BlockPos blockPos2 = blockPos.method_10074();
+				BlockPos blockPos = pos.method_10074();
 
 				for (Direction direction : Direction.Type.HORIZONTAL) {
-					BlockState blockState2 = worldView.getBlockState(blockPos2.offset(direction));
-					FluidState fluidState = worldView.getFluidState(blockPos2.offset(direction));
-					if (fluidState.matches(FluidTags.WATER) || blockState2.getBlock() == Blocks.FROSTED_ICE) {
+					BlockState blockState = world.getBlockState(blockPos.offset(direction));
+					FluidState fluidState = world.getFluidState(blockPos.offset(direction));
+					if (fluidState.matches(FluidTags.WATER) || blockState.getBlock() == Blocks.FROSTED_ICE) {
 						return true;
 					}
 				}

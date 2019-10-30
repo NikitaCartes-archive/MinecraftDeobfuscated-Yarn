@@ -12,10 +12,10 @@ public class ChoiceTypesFix extends DataFix {
 	private final String name;
 	private final TypeReference types;
 
-	public ChoiceTypesFix(Schema schema, String string, TypeReference typeReference) {
-		super(schema, true);
-		this.name = string;
-		this.types = typeReference;
+	public ChoiceTypesFix(Schema outputSchema, String name, TypeReference types) {
+		super(outputSchema, true);
+		this.name = name;
+		this.types = types;
 	}
 
 	@Override
@@ -25,11 +25,11 @@ public class ChoiceTypesFix extends DataFix {
 		return this.method_15476(this.name, taggedChoiceType, taggedChoiceType2);
 	}
 
-	protected final <K> TypeRewriteRule method_15476(String string, TaggedChoiceType<K> taggedChoiceType, TaggedChoiceType<?> taggedChoiceType2) {
+	protected final <K> TypeRewriteRule method_15476(String name, TaggedChoiceType<K> taggedChoiceType, TaggedChoiceType<?> taggedChoiceType2) {
 		if (taggedChoiceType.getKeyType() != taggedChoiceType2.getKeyType()) {
 			throw new IllegalStateException("Could not inject: key type is not the same");
 		} else {
-			return this.fixTypeEverywhere(string, taggedChoiceType, (Type<Pair<K, ?>>)taggedChoiceType2, dynamicOps -> pair -> {
+			return this.fixTypeEverywhere(name, taggedChoiceType, (Type<Pair<K, ?>>)taggedChoiceType2, dynamicOps -> pair -> {
 					if (!((TaggedChoiceType<Object>)taggedChoiceType2).hasType(pair.getFirst())) {
 						throw new IllegalArgumentException(String.format("Unknown type %s in %s ", pair.getFirst(), this.types));
 					} else {

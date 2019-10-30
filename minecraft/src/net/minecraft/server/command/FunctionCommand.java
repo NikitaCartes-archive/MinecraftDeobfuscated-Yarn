@@ -15,8 +15,8 @@ public class FunctionCommand {
 		return CommandSource.suggestIdentifiers(commandFunctionManager.getFunctions().keySet(), suggestionsBuilder);
 	};
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("function")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -27,17 +27,17 @@ public class FunctionCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<CommandFunction> collection) {
+	private static int execute(ServerCommandSource source, Collection<CommandFunction> functions) {
 		int i = 0;
 
-		for (CommandFunction commandFunction : collection) {
-			i += serverCommandSource.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, serverCommandSource.withSilent().withMaxLevel(2));
+		for (CommandFunction commandFunction : functions) {
+			i += source.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, source.withSilent().withMaxLevel(2));
 		}
 
-		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.function.success.single", i, ((CommandFunction)collection.iterator().next()).getId()), true);
+		if (functions.size() == 1) {
+			source.sendFeedback(new TranslatableText("commands.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId()), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.function.success.multiple", i, collection.size()), true);
+			source.sendFeedback(new TranslatableText("commands.function.success.multiple", i, functions.size()), true);
 		}
 
 		return i;

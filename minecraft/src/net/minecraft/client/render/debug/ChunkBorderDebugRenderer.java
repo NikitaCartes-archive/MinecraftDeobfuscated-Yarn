@@ -13,18 +13,18 @@ import net.minecraft.client.render.VertexFormats;
 public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 
-	public ChunkBorderDebugRenderer(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public ChunkBorderDebugRenderer(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		RenderSystem.shadeModel(7425);
 		RenderSystem.enableAlphaTest();
 		RenderSystem.defaultAlphaFunc();
 		Camera camera = this.client.gameRenderer.getCamera();
 		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
@@ -38,11 +38,11 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
 		for (int k = -16; k <= 32; k += 16) {
-			for (int m = -16; m <= 32; m += 16) {
-				bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(1.0F, 0.0F, 0.0F, 0.0F).next();
-				bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-				bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-				bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(1.0F, 0.0F, 0.0F, 0.0F).next();
+			for (int l = -16; l <= 32; l += 16) {
+				bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.0F).next();
+				bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+				bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+				bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(1.0F, 0.0F, 0.0F, 0.0F).next();
 			}
 		}
 
@@ -69,14 +69,14 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		for (int k = 0; k <= 256; k += 2) {
-			double n = (double)k - e;
-			bufferBuilder.vertex(i, n, j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
-			bufferBuilder.vertex(i, n, j).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(i, n, j + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(i + 16.0, n, j + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(i + 16.0, n, j).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(i, n, j).color(1.0F, 1.0F, 0.0F, 1.0F).next();
-			bufferBuilder.vertex(i, n, j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
+			double m = (double)k - e;
+			bufferBuilder.vertex(i, m, j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
+			bufferBuilder.vertex(i, m, j).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(i, m, j + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(i + 16.0, m, j + 16.0).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(i + 16.0, m, j).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(i, m, j).color(1.0F, 1.0F, 0.0F, 1.0F).next();
+			bufferBuilder.vertex(i, m, j).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 		}
 
 		tessellator.draw();
@@ -84,23 +84,23 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
 		for (int k = 0; k <= 16; k += 16) {
-			for (int m = 0; m <= 16; m += 16) {
-				bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(0.25F, 0.25F, 1.0F, 0.0F).next();
-				bufferBuilder.vertex(i + (double)k, g, j + (double)m).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-				bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-				bufferBuilder.vertex(i + (double)k, h, j + (double)m).color(0.25F, 0.25F, 1.0F, 0.0F).next();
+			for (int l = 0; l <= 16; l += 16) {
+				bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(0.25F, 0.25F, 1.0F, 0.0F).next();
+				bufferBuilder.vertex(i + (double)k, g, j + (double)l).color(0.25F, 0.25F, 1.0F, 1.0F).next();
+				bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(0.25F, 0.25F, 1.0F, 1.0F).next();
+				bufferBuilder.vertex(i + (double)k, h, j + (double)l).color(0.25F, 0.25F, 1.0F, 0.0F).next();
 			}
 		}
 
 		for (int k = 0; k <= 256; k += 16) {
-			double n = (double)k - e;
-			bufferBuilder.vertex(i, n, j).color(0.25F, 0.25F, 1.0F, 0.0F).next();
-			bufferBuilder.vertex(i, n, j).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			bufferBuilder.vertex(i, n, j + 16.0).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			bufferBuilder.vertex(i + 16.0, n, j + 16.0).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			bufferBuilder.vertex(i + 16.0, n, j).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			bufferBuilder.vertex(i, n, j).color(0.25F, 0.25F, 1.0F, 1.0F).next();
-			bufferBuilder.vertex(i, n, j).color(0.25F, 0.25F, 1.0F, 0.0F).next();
+			double m = (double)k - e;
+			bufferBuilder.vertex(i, m, j).color(0.25F, 0.25F, 1.0F, 0.0F).next();
+			bufferBuilder.vertex(i, m, j).color(0.25F, 0.25F, 1.0F, 1.0F).next();
+			bufferBuilder.vertex(i, m, j + 16.0).color(0.25F, 0.25F, 1.0F, 1.0F).next();
+			bufferBuilder.vertex(i + 16.0, m, j + 16.0).color(0.25F, 0.25F, 1.0F, 1.0F).next();
+			bufferBuilder.vertex(i + 16.0, m, j).color(0.25F, 0.25F, 1.0F, 1.0F).next();
+			bufferBuilder.vertex(i, m, j).color(0.25F, 0.25F, 1.0F, 1.0F).next();
+			bufferBuilder.vertex(i, m, j).color(0.25F, 0.25F, 1.0F, 0.0F).next();
 		}
 
 		tessellator.draw();

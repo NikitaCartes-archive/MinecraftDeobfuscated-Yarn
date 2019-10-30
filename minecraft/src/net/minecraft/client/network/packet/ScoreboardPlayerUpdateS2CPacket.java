@@ -20,35 +20,35 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	public ScoreboardPlayerUpdateS2CPacket() {
 	}
 
-	public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode updateMode, @Nullable String string, String string2, int i) {
-		if (updateMode != ServerScoreboard.UpdateMode.REMOVE && string == null) {
+	public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode updateMode, @Nullable String objectiveName, String playerName, int score) {
+		if (updateMode != ServerScoreboard.UpdateMode.REMOVE && objectiveName == null) {
 			throw new IllegalArgumentException("Need an objective name");
 		} else {
-			this.playerName = string2;
-			this.objectiveName = string;
-			this.score = i;
+			this.playerName = playerName;
+			this.objectiveName = objectiveName;
+			this.score = score;
 			this.mode = updateMode;
 		}
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.playerName = packetByteBuf.readString(40);
-		this.mode = packetByteBuf.readEnumConstant(ServerScoreboard.UpdateMode.class);
-		String string = packetByteBuf.readString(16);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.playerName = buf.readString(40);
+		this.mode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
+		String string = buf.readString(16);
 		this.objectiveName = Objects.equals(string, "") ? null : string;
 		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
-			this.score = packetByteBuf.readVarInt();
+			this.score = buf.readVarInt();
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeString(this.playerName);
-		packetByteBuf.writeEnumConstant(this.mode);
-		packetByteBuf.writeString(this.objectiveName == null ? "" : this.objectiveName);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeString(this.playerName);
+		buf.writeEnumConstant(this.mode);
+		buf.writeString(this.objectiveName == null ? "" : this.objectiveName);
 		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
-			packetByteBuf.writeVarInt(this.score);
+			buf.writeVarInt(this.score);
 		}
 	}
 

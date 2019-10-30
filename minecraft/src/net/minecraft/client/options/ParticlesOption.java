@@ -18,9 +18,9 @@ public enum ParticlesOption {
 	private final int id;
 	private final String translationKey;
 
-	private ParticlesOption(int j, String string2) {
-		this.id = j;
-		this.translationKey = string2;
+	private ParticlesOption(int id, String translationKey) {
+		this.id = id;
+		this.translationKey = translationKey;
 	}
 
 	public String getTranslationKey() {
@@ -31,7 +31,7 @@ public enum ParticlesOption {
 		return this.id;
 	}
 
-	public static ParticlesOption byId(int i) {
-		return VALUES[MathHelper.floorMod(i, VALUES.length)];
+	public static ParticlesOption byId(int id) {
+		return VALUES[MathHelper.floorMod(id, VALUES.length)];
 	}
 }

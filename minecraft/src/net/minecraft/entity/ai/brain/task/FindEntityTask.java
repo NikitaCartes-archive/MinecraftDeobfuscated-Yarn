@@ -22,7 +22,13 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 	private final MemoryModuleType<T> targetModule;
 
 	public FindEntityTask(
-		EntityType<? extends T> entityType, int i, Predicate<E> predicate, Predicate<T> predicate2, MemoryModuleType<T> memoryModuleType, float f, int j
+		EntityType<? extends T> entityType,
+		int maxDistance,
+		Predicate<E> shouldRunPredicate,
+		Predicate<T> predicate,
+		MemoryModuleType<T> targetModule,
+		float speed,
+		int completionRange
 	) {
 		super(
 			ImmutableMap.of(
@@ -30,50 +36,50 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 				MemoryModuleState.REGISTERED,
 				MemoryModuleType.WALK_TARGET,
 				MemoryModuleState.VALUE_ABSENT,
-				memoryModuleType,
+				targetModule,
 				MemoryModuleState.VALUE_ABSENT,
 				MemoryModuleType.VISIBLE_MOBS,
 				MemoryModuleState.VALUE_PRESENT
 			)
 		);
 		this.entityType = entityType;
-		this.speed = f;
-		this.maxSquaredDistance = i * i;
-		this.completionRange = j;
-		this.predicate = predicate2;
-		this.shouldRunPredicate = predicate;
-		this.targetModule = memoryModuleType;
+		this.speed = speed;
+		this.maxSquaredDistance = maxDistance * maxDistance;
+		this.completionRange = completionRange;
+		this.predicate = predicate;
+		this.shouldRunPredicate = shouldRunPredicate;
+		this.targetModule = targetModule;
 	}
 
 	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> create(
-		EntityType<? extends T> entityType, int i, MemoryModuleType<T> memoryModuleType, float f, int j
+		EntityType<? extends T> entityType, int maxDistance, MemoryModuleType<T> targetModule, float speed, int completionRange
 	) {
-		return new FindEntityTask<>(entityType, i, livingEntity -> true, livingEntity -> true, memoryModuleType, f, j);
+		return new FindEntityTask<>(entityType, maxDistance, livingEntity -> true, livingEntity -> true, targetModule, speed, completionRange);
 	}
 
 	@Override
-	protected boolean shouldRun(ServerWorld serverWorld, E livingEntity) {
-		return this.shouldRunPredicate.test(livingEntity)
-			&& ((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
+	protected boolean shouldRun(ServerWorld world, E entity) {
+		return this.shouldRunPredicate.test(entity)
+			&& ((List)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get())
 				.stream()
-				.anyMatch(livingEntityx -> this.entityType.equals(livingEntityx.getType()) && this.predicate.test(livingEntityx));
+				.anyMatch(livingEntity -> this.entityType.equals(livingEntity.getType()) && this.predicate.test(livingEntity));
 	}
 
 	@Override
-	protected void run(ServerWorld serverWorld, E livingEntity, long l) {
-		Brain<?> brain = livingEntity.getBrain();
+	protected void run(ServerWorld world, E entity, long time) {
+		Brain<?> brain = entity.getBrain();
 		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
 			.ifPresent(
 				list -> list.stream()
-						.filter(livingEntityxx -> this.entityType.equals(livingEntityxx.getType()))
-						.map(livingEntityxx -> livingEntityxx)
-						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.maxSquaredDistance)
+						.filter(livingEntityx -> this.entityType.equals(livingEntityx.getType()))
+						.map(livingEntityx -> livingEntityx)
+						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxSquaredDistance)
 						.filter(this.predicate)
 						.findFirst()
-						.ifPresent(livingEntityxx -> {
-							brain.putMemory(this.targetModule, (T)livingEntityxx);
-							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityxx));
-							brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntityxx), this.speed, this.completionRange));
+						.ifPresent(livingEntityx -> {
+							brain.putMemory(this.targetModule, (T)livingEntityx);
+							brain.putMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(livingEntityx));
+							brain.putMemory(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityPosWrapper(livingEntityx), this.speed, this.completionRange));
 						})
 			);
 	}

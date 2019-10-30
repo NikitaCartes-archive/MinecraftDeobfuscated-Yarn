@@ -14,11 +14,11 @@ public class HoldInHandsGoal<T extends MobEntity> extends Goal {
 	private final Predicate<? super T> condition;
 	private final SoundEvent sound;
 
-	public HoldInHandsGoal(T mobEntity, ItemStack itemStack, @Nullable SoundEvent soundEvent, Predicate<? super T> predicate) {
-		this.actor = mobEntity;
-		this.item = itemStack;
-		this.sound = soundEvent;
-		this.condition = predicate;
+	public HoldInHandsGoal(T actor, ItemStack item, @Nullable SoundEvent sound, Predicate<? super T> condition) {
+		this.actor = actor;
+		this.item = item;
+		this.sound = sound;
+		this.condition = condition;
 	}
 
 	@Override

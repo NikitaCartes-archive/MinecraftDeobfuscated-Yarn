@@ -9,12 +9,12 @@ public enum NoiseToRiverLayer implements CrossSamplingLayer {
 	public static final int RIVER_ID = Registry.BIOME.getRawId(Biomes.RIVER);
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j, int k, int l, int m) {
-		int n = isValidForRiver(m);
-		return n == isValidForRiver(l) && n == isValidForRiver(i) && n == isValidForRiver(j) && n == isValidForRiver(k) ? -1 : RIVER_ID;
+	public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
+		int i = isValidForRiver(center);
+		return i == isValidForRiver(w) && i == isValidForRiver(n) && i == isValidForRiver(e) && i == isValidForRiver(s) ? -1 : RIVER_ID;
 	}
 
-	private static int isValidForRiver(int i) {
-		return i >= 2 ? 2 + (i & 1) : i;
+	private static int isValidForRiver(int value) {
+		return value >= 2 ? 2 + (value & 1) : value;
 	}
 }

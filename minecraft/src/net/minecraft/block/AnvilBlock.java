@@ -42,62 +42,62 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().rotateYClockwise());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().rotateYClockwise());
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+			player.openContainer(state.createContainerProvider(world, pos));
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider createContainerProvider(BlockState state, World world, BlockPos pos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, blockPos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		Direction direction = blockState.get(FACING);
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		Direction direction = state.get(FACING);
 		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 	}
 
 	@Override
-	protected void configureFallingBlockEntity(FallingBlockEntity fallingBlockEntity) {
-		fallingBlockEntity.setHurtEntities(true);
+	protected void configureFallingBlockEntity(FallingBlockEntity entity) {
+		entity.setHurtEntities(true);
 	}
 
 	@Override
-	public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-		world.playLevelEvent(1031, blockPos, 0);
+	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
+		world.playLevelEvent(1031, pos, 0);
 	}
 
 	@Override
-	public void onDestroyedOnLanding(World world, BlockPos blockPos) {
-		world.playLevelEvent(1029, blockPos, 0);
+	public void onDestroyedOnLanding(World world, BlockPos pos) {
+		world.playLevelEvent(1029, pos, 0);
 	}
 
 	@Nullable
-	public static BlockState getLandingState(BlockState blockState) {
-		Block block = blockState.getBlock();
+	public static BlockState getLandingState(BlockState fallingState) {
+		Block block = fallingState.getBlock();
 		if (block == Blocks.ANVIL) {
-			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, blockState.get(FACING));
+			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING));
 		} else {
-			return block == Blocks.CHIPPED_ANVIL ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, blockState.get(FACING)) : null;
+			return block == Blocks.CHIPPED_ANVIL ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
 		}
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

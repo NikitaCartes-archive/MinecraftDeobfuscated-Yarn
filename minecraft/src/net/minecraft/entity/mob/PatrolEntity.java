@@ -26,8 +26,8 @@ public abstract class PatrolEntity extends HostileEntity {
 	private boolean patrolLeader;
 	private boolean patrolling;
 
-	protected PatrolEntity(EntityType<? extends PatrolEntity> entityType, World world) {
-		super(entityType, world);
+	protected PatrolEntity(EntityType<? extends PatrolEntity> type, World world) {
+		super(type, world);
 	}
 
 	@Override
@@ -37,25 +37,25 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.patrolTarget != null) {
-			compoundTag.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
+			tag.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
 		}
 
-		compoundTag.putBoolean("PatrolLeader", this.patrolLeader);
-		compoundTag.putBoolean("Patrolling", this.patrolling);
+		tag.putBoolean("PatrolLeader", this.patrolLeader);
+		tag.putBoolean("Patrolling", this.patrolling);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.contains("PatrolTarget")) {
-			this.patrolTarget = NbtHelper.toBlockPos(compoundTag.getCompound("PatrolTarget"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("PatrolTarget")) {
+			this.patrolTarget = NbtHelper.toBlockPos(tag.getCompound("PatrolTarget"));
 		}
 
-		this.patrolLeader = compoundTag.getBoolean("PatrolLeader");
-		this.patrolling = compoundTag.getBoolean("Patrolling");
+		this.patrolLeader = tag.getBoolean("PatrolLeader");
+		this.patrolling = tag.getBoolean("Patrolling");
 	}
 
 	@Override
@@ -69,9 +69,7 @@ public abstract class PatrolEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		if (spawnType != SpawnType.PATROL && spawnType != SpawnType.EVENT && spawnType != SpawnType.STRUCTURE && this.random.nextFloat() < 0.06F && this.canLead()) {
 			this.patrolLeader = true;
 		}
@@ -85,20 +83,20 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.patrolling = true;
 		}
 
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
-	public static boolean canSpawn(EntityType<? extends PatrolEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return iWorld.getLightLevel(LightType.BLOCK, blockPos) > 8 ? false : canSpawnIgnoreLightLevel(entityType, iWorld, spawnType, blockPos, random);
+	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		return world.getLightLevel(LightType.BLOCK, pos) > 8 ? false : canSpawnIgnoreLightLevel(type, world, spawnType, pos, random);
 	}
 
 	@Override
-	public boolean canImmediatelyDespawn(double d) {
-		return !this.patrolling || d > 16384.0;
+	public boolean canImmediatelyDespawn(double distanceSquared) {
+		return !this.patrolling || distanceSquared > 16384.0;
 	}
 
-	public void setPatrolTarget(BlockPos blockPos) {
-		this.patrolTarget = blockPos;
+	public void setPatrolTarget(BlockPos targetPos) {
+		this.patrolTarget = targetPos;
 		this.patrolling = true;
 	}
 
@@ -110,8 +108,8 @@ public abstract class PatrolEntity extends HostileEntity {
 		return this.patrolTarget != null;
 	}
 
-	public void setPatrolLeader(boolean bl) {
-		this.patrolLeader = bl;
+	public void setPatrolLeader(boolean patrolLeader) {
+		this.patrolLeader = patrolLeader;
 		this.patrolling = true;
 	}
 
@@ -142,10 +140,10 @@ public abstract class PatrolEntity extends HostileEntity {
 		private final double fellowSpeed;
 		private long field_20701;
 
-		public PatrolGoal(T patrolEntity, double d, double e) {
-			this.actor = patrolEntity;
-			this.leaderSpeed = d;
-			this.fellowSpeed = e;
+		public PatrolGoal(T actor, double leaderSpeed, double fellowSpeed) {
+			this.actor = actor;
+			this.leaderSpeed = leaderSpeed;
+			this.fellowSpeed = fellowSpeed;
 			this.field_20701 = -1L;
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}

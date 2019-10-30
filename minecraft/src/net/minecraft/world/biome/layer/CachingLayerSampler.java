@@ -8,29 +8,29 @@ public final class CachingLayerSampler implements LayerSampler {
 	private final Long2IntLinkedOpenHashMap cache;
 	private final int cacheCapacity;
 
-	public CachingLayerSampler(Long2IntLinkedOpenHashMap long2IntLinkedOpenHashMap, int i, LayerOperator layerOperator) {
-		this.cache = long2IntLinkedOpenHashMap;
-		this.cacheCapacity = i;
-		this.operator = layerOperator;
+	public CachingLayerSampler(Long2IntLinkedOpenHashMap cache, int cacheCapacity, LayerOperator operator) {
+		this.cache = cache;
+		this.cacheCapacity = cacheCapacity;
+		this.operator = operator;
 	}
 
 	@Override
-	public int sample(int i, int j) {
-		long l = ChunkPos.toLong(i, j);
+	public int sample(int x, int z) {
+		long l = ChunkPos.toLong(x, z);
 		synchronized (this.cache) {
-			int k = this.cache.get(l);
-			if (k != Integer.MIN_VALUE) {
-				return k;
+			int i = this.cache.get(l);
+			if (i != Integer.MIN_VALUE) {
+				return i;
 			} else {
-				int m = this.operator.apply(i, j);
-				this.cache.put(l, m);
+				int j = this.operator.apply(x, z);
+				this.cache.put(l, j);
 				if (this.cache.size() > this.cacheCapacity) {
-					for (int n = 0; n < this.cacheCapacity / 16; n++) {
+					for (int k = 0; k < this.cacheCapacity / 16; k++) {
 						this.cache.removeFirstInt();
 					}
 				}
 
-				return m;
+				return j;
 			}
 		}
 	}

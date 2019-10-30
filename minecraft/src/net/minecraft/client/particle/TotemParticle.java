@@ -7,11 +7,11 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class TotemParticle extends AnimatedParticle {
-	private TotemParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
-		super(world, d, e, f, spriteProvider, -0.05F);
-		this.velocityX = g;
-		this.velocityY = h;
-		this.velocityZ = i;
+	private TotemParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+		super(world, x, y, z, spriteProvider, -0.05F);
+		this.velocityX = velocityX;
+		this.velocityY = velocityY;
+		this.velocityZ = velocityZ;
 		this.scale *= 0.75F;
 		this.maxAge = 60 + this.random.nextInt(12);
 		this.setSpriteForAge(spriteProvider);

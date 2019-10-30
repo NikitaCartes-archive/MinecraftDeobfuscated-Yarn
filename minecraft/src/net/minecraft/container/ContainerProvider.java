@@ -7,5 +7,5 @@ import net.minecraft.entity.player.PlayerInventory;
 @FunctionalInterface
 public interface ContainerProvider {
 	@Nullable
-	Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity);
+	Container createMenu(int syncId, PlayerInventory inv, PlayerEntity player);
 }

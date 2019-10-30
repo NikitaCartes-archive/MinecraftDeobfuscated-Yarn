@@ -19,15 +19,15 @@ public class WeightedBakedModel implements BakedModel {
 	private final List<WeightedBakedModel.ModelEntry> models;
 	private final BakedModel defaultModel;
 
-	public WeightedBakedModel(List<WeightedBakedModel.ModelEntry> list) {
-		this.models = list;
-		this.totalWeight = WeightedPicker.getWeightSum(list);
-		this.defaultModel = ((WeightedBakedModel.ModelEntry)list.get(0)).model;
+	public WeightedBakedModel(List<WeightedBakedModel.ModelEntry> models) {
+		this.models = models;
+		this.totalWeight = WeightedPicker.getWeightSum(models);
+		this.defaultModel = ((WeightedBakedModel.ModelEntry)models.get(0)).model;
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
-		return WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).model.getQuads(blockState, direction, random);
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+		return WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).model.getQuads(state, face, random);
 	}
 
 	@Override
@@ -64,9 +64,9 @@ public class WeightedBakedModel implements BakedModel {
 	public static class Builder {
 		private final List<WeightedBakedModel.ModelEntry> models = Lists.<WeightedBakedModel.ModelEntry>newArrayList();
 
-		public WeightedBakedModel.Builder add(@Nullable BakedModel bakedModel, int i) {
-			if (bakedModel != null) {
-				this.models.add(new WeightedBakedModel.ModelEntry(bakedModel, i));
+		public WeightedBakedModel.Builder add(@Nullable BakedModel model, int weight) {
+			if (model != null) {
+				this.models.add(new WeightedBakedModel.ModelEntry(model, weight));
 			}
 
 			return this;
@@ -86,9 +86,9 @@ public class WeightedBakedModel implements BakedModel {
 	static class ModelEntry extends WeightedPicker.Entry {
 		protected final BakedModel model;
 
-		public ModelEntry(BakedModel bakedModel, int i) {
-			super(i);
-			this.model = bakedModel;
+		public ModelEntry(BakedModel model, int weight) {
+			super(weight);
+			this.model = model;
 		}
 	}
 }

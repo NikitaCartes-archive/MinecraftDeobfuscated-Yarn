@@ -26,8 +26,8 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 		return new ColumnPosArgumentType();
 	}
 
-	public static ColumnPos getColumnPos(CommandContext<ServerCommandSource> commandContext, String string) {
-		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
+	public static ColumnPos getColumnPos(CommandContext<ServerCommandSource> context, String name) {
+		BlockPos blockPos = context.<PosArgument>getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
 		return new ColumnPos(blockPos.getX(), blockPos.getZ());
 	}
 
@@ -49,19 +49,19 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		if (!(commandContext.getSource() instanceof CommandSource)) {
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		if (!(context.getSource() instanceof CommandSource)) {
 			return Suggestions.empty();
 		} else {
-			String string = suggestionsBuilder.getRemaining();
+			String string = builder.getRemaining();
 			Collection<CommandSource.RelativePosition> collection;
 			if (!string.isEmpty() && string.charAt(0) == '^') {
 				collection = Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL);
 			} else {
-				collection = ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
+				collection = ((CommandSource)context.getSource()).getBlockPositionSuggestions();
 			}
 
-			return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9703));
+			return CommandSource.suggestColumnPositions(string, collection, builder, CommandManager.getCommandValidator(this::method_9703));
 		}
 	}
 

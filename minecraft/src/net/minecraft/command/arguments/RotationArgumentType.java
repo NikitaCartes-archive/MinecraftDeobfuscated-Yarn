@@ -20,8 +20,8 @@ public class RotationArgumentType implements ArgumentType<PosArgument> {
 		return new RotationArgumentType();
 	}
 
-	public static PosArgument getRotation(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, PosArgument.class);
+	public static PosArgument getRotation(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, PosArgument.class);
 	}
 
 	public PosArgument method_9718(StringReader stringReader) throws CommandSyntaxException {

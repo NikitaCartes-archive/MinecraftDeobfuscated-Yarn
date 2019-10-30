@@ -30,8 +30,8 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
-			statePredicate.check(block.getStateFactory(), string -> {
-				throw new JsonSyntaxException("Block " + block + " has no property " + string + ":");
+			statePredicate.check(block.getStateFactory(), name -> {
+				throw new JsonSyntaxException("Block " + block + " has no property " + name + ":");
 			});
 		}
 
@@ -41,18 +41,18 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 	}
 
 	@Nullable
-	private static Block getBlock(JsonObject jsonObject) {
-		if (jsonObject.has("block")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
+	private static Block getBlock(JsonObject obj) {
+		if (obj.has("block")) {
+			Identifier identifier = new Identifier(JsonHelper.getString(obj, "block"));
 			return (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
 		} else {
 			return null;
 		}
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
-		BlockState blockState = serverPlayerEntity.getServerWorld().getBlockState(blockPos);
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack));
+	public void trigger(ServerPlayerEntity player, BlockPos blockPos, ItemStack stack) {
+		BlockState blockState = player.getServerWorld().getBlockState(blockPos);
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(blockState, blockPos, player.getServerWorld(), stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -61,25 +61,25 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		private final LocationPredicate location;
 		private final ItemPredicate item;
 
-		public Conditions(@Nullable Block block, StatePredicate statePredicate, LocationPredicate locationPredicate, ItemPredicate itemPredicate) {
+		public Conditions(@Nullable Block block, StatePredicate state, LocationPredicate location, ItemPredicate item) {
 			super(PlacedBlockCriterion.ID);
 			this.block = block;
-			this.state = statePredicate;
-			this.location = locationPredicate;
-			this.item = itemPredicate;
+			this.state = state;
+			this.location = location;
+			this.item = item;
 		}
 
 		public static PlacedBlockCriterion.Conditions block(Block block) {
 			return new PlacedBlockCriterion.Conditions(block, StatePredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
 		}
 
-		public boolean matches(BlockState blockState, BlockPos blockPos, ServerWorld serverWorld, ItemStack itemStack) {
-			if (this.block != null && blockState.getBlock() != this.block) {
+		public boolean matches(BlockState state, BlockPos pos, ServerWorld world, ItemStack stack) {
+			if (this.block != null && state.getBlock() != this.block) {
 				return false;
-			} else if (!this.state.test(blockState)) {
+			} else if (!this.state.test(state)) {
 				return false;
 			} else {
-				return !this.location.test(serverWorld, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ()) ? false : this.item.test(itemStack);
+				return !this.location.test(world, (float)pos.getX(), (float)pos.getY(), (float)pos.getZ()) ? false : this.item.test(stack);
 			}
 		}
 

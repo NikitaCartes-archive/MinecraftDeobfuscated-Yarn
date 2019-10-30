@@ -9,59 +9,59 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class TextRenderingUtils {
-	static List<String> lineBreak(String string) {
-		return Arrays.asList(string.split("\\n"));
+	static List<String> lineBreak(String text) {
+		return Arrays.asList(text.split("\\n"));
 	}
 
-	public static List<TextRenderingUtils.Line> decompose(String string, TextRenderingUtils.LineSegment... lineSegments) {
-		return decompose(string, Arrays.asList(lineSegments));
+	public static List<TextRenderingUtils.Line> decompose(String text, TextRenderingUtils.LineSegment... links) {
+		return decompose(text, Arrays.asList(links));
 	}
 
-	private static List<TextRenderingUtils.Line> decompose(String string, List<TextRenderingUtils.LineSegment> list) {
-		List<String> list2 = lineBreak(string);
-		return insertLinks(list2, list);
+	private static List<TextRenderingUtils.Line> decompose(String text, List<TextRenderingUtils.LineSegment> links) {
+		List<String> list = lineBreak(text);
+		return insertLinks(list, links);
 	}
 
-	private static List<TextRenderingUtils.Line> insertLinks(List<String> list, List<TextRenderingUtils.LineSegment> list2) {
+	private static List<TextRenderingUtils.Line> insertLinks(List<String> lines, List<TextRenderingUtils.LineSegment> links) {
 		int i = 0;
-		List<TextRenderingUtils.Line> list3 = Lists.<TextRenderingUtils.Line>newArrayList();
+		List<TextRenderingUtils.Line> list = Lists.<TextRenderingUtils.Line>newArrayList();
 
-		for (String string : list) {
-			List<TextRenderingUtils.LineSegment> list4 = Lists.<TextRenderingUtils.LineSegment>newArrayList();
+		for (String string : lines) {
+			List<TextRenderingUtils.LineSegment> list2 = Lists.<TextRenderingUtils.LineSegment>newArrayList();
 
 			for (String string2 : split(string, "%link")) {
 				if (string2.equals("%link")) {
-					list4.add(list2.get(i++));
+					list2.add(links.get(i++));
 				} else {
-					list4.add(TextRenderingUtils.LineSegment.text(string2));
+					list2.add(TextRenderingUtils.LineSegment.text(string2));
 				}
 			}
 
-			list3.add(new TextRenderingUtils.Line(list4));
+			list.add(new TextRenderingUtils.Line(list2));
 		}
 
-		return list3;
+		return list;
 	}
 
-	public static List<String> split(String string, String string2) {
-		if (string2.isEmpty()) {
+	public static List<String> split(String line, String delimiter) {
+		if (delimiter.isEmpty()) {
 			throw new IllegalArgumentException("Delimiter cannot be the empty string");
 		} else {
 			List<String> list = Lists.<String>newArrayList();
 			int i = 0;
 
 			int j;
-			while ((j = string.indexOf(string2, i)) != -1) {
+			while ((j = line.indexOf(delimiter, i)) != -1) {
 				if (j > i) {
-					list.add(string.substring(i, j));
+					list.add(line.substring(i, j));
 				}
 
-				list.add(string2);
-				i = j + string2.length();
+				list.add(delimiter);
+				i = j + delimiter.length();
 			}
 
-			if (i < string.length()) {
-				list.add(string.substring(i));
+			if (i < line.length()) {
+				list.add(line.substring(i));
 			}
 
 			return list;
@@ -72,19 +72,19 @@ public class TextRenderingUtils {
 	public static class Line {
 		public final List<TextRenderingUtils.LineSegment> segments;
 
-		Line(List<TextRenderingUtils.LineSegment> list) {
-			this.segments = list;
+		Line(List<TextRenderingUtils.LineSegment> segments) {
+			this.segments = segments;
 		}
 
 		public String toString() {
 			return "Line{segments=" + this.segments + '}';
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				TextRenderingUtils.Line line = (TextRenderingUtils.Line)object;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				TextRenderingUtils.Line line = (TextRenderingUtils.Line)o;
 				return Objects.equals(this.segments, line.segments);
 			} else {
 				return false;
@@ -102,23 +102,23 @@ public class TextRenderingUtils {
 		final String linkTitle;
 		final String linkUrl;
 
-		private LineSegment(String string) {
-			this.fullText = string;
+		private LineSegment(String fullText) {
+			this.fullText = fullText;
 			this.linkTitle = null;
 			this.linkUrl = null;
 		}
 
-		private LineSegment(String string, String string2, String string3) {
-			this.fullText = string;
-			this.linkTitle = string2;
-			this.linkUrl = string3;
+		private LineSegment(String fullText, String linkTitle, String linkUrl) {
+			this.fullText = fullText;
+			this.linkTitle = linkTitle;
+			this.linkUrl = linkUrl;
 		}
 
-		public boolean equals(Object object) {
-			if (this == object) {
+		public boolean equals(Object o) {
+			if (this == o) {
 				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				TextRenderingUtils.LineSegment lineSegment = (TextRenderingUtils.LineSegment)object;
+			} else if (o != null && this.getClass() == o.getClass()) {
+				TextRenderingUtils.LineSegment lineSegment = (TextRenderingUtils.LineSegment)o;
 				return Objects.equals(this.fullText, lineSegment.fullText)
 					&& Objects.equals(this.linkTitle, lineSegment.linkTitle)
 					&& Objects.equals(this.linkUrl, lineSegment.linkUrl);
@@ -151,12 +151,12 @@ public class TextRenderingUtils {
 			}
 		}
 
-		public static TextRenderingUtils.LineSegment link(String string, String string2) {
-			return new TextRenderingUtils.LineSegment(null, string, string2);
+		public static TextRenderingUtils.LineSegment link(String linkTitle, String linkUrl) {
+			return new TextRenderingUtils.LineSegment(null, linkTitle, linkUrl);
 		}
 
-		static TextRenderingUtils.LineSegment text(String string) {
-			return new TextRenderingUtils.LineSegment(string);
+		static TextRenderingUtils.LineSegment text(String fullText) {
+			return new TextRenderingUtils.LineSegment(fullText);
 		}
 	}
 }

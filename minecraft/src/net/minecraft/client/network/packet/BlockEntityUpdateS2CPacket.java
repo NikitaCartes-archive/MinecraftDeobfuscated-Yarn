@@ -17,24 +17,24 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	public BlockEntityUpdateS2CPacket() {
 	}
 
-	public BlockEntityUpdateS2CPacket(BlockPos blockPos, int i, CompoundTag compoundTag) {
-		this.pos = blockPos;
-		this.blockEntityType = i;
-		this.tag = compoundTag;
+	public BlockEntityUpdateS2CPacket(BlockPos pos, int blockEntityType, CompoundTag tag) {
+		this.pos = pos;
+		this.blockEntityType = blockEntityType;
+		this.tag = tag;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.pos = packetByteBuf.readBlockPos();
-		this.blockEntityType = packetByteBuf.readUnsignedByte();
-		this.tag = packetByteBuf.readCompoundTag();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.pos = buf.readBlockPos();
+		this.blockEntityType = buf.readUnsignedByte();
+		this.tag = buf.readCompoundTag();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeByte((byte)this.blockEntityType);
-		packetByteBuf.writeCompoundTag(this.tag);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeBlockPos(this.pos);
+		buf.writeByte((byte)this.blockEntityType);
+		buf.writeCompoundTag(this.tag);
 	}
 
 	public void method_11292(ClientPlayPacketListener clientPlayPacketListener) {

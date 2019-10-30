@@ -152,16 +152,16 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		return this.sounds.keySet();
 	}
 
-	public void playNextTick(TickableSoundInstance tickableSoundInstance) {
-		this.soundSystem.playNextTick(tickableSoundInstance);
+	public void playNextTick(TickableSoundInstance sound) {
+		this.soundSystem.playNextTick(sound);
 	}
 
-	public void play(SoundInstance soundInstance) {
-		this.soundSystem.play(soundInstance);
+	public void play(SoundInstance sound) {
+		this.soundSystem.play(sound);
 	}
 
-	public void play(SoundInstance soundInstance, int i) {
-		this.soundSystem.play(soundInstance, i);
+	public void play(SoundInstance sound, int delay) {
+		this.soundSystem.play(sound, delay);
 	}
 
 	public void updateListenerPosition(Camera camera) {
@@ -188,12 +188,12 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		this.soundSystem.resumeAll();
 	}
 
-	public void updateSoundVolume(SoundCategory soundCategory, float f) {
-		if (soundCategory == SoundCategory.MASTER && f <= 0.0F) {
+	public void updateSoundVolume(SoundCategory category, float volume) {
+		if (category == SoundCategory.MASTER && volume <= 0.0F) {
 			this.stopAll();
 		}
 
-		this.soundSystem.updateSoundVolume(soundCategory, f);
+		this.soundSystem.updateSoundVolume(category, volume);
 	}
 
 	public void stop(SoundInstance soundInstance) {
@@ -227,24 +227,24 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		protected SoundList() {
 		}
 
-		private void register(Identifier identifier, SoundEntry soundEntry, ResourceManager resourceManager) {
-			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.loadedSounds.get(identifier);
+		private void register(Identifier id, SoundEntry entry, ResourceManager resourceManager) {
+			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.loadedSounds.get(id);
 			boolean bl = weightedSoundSet == null;
-			if (bl || soundEntry.canReplace()) {
+			if (bl || entry.canReplace()) {
 				if (!bl) {
-					SoundManager.LOGGER.debug("Replaced sound event location {}", identifier);
+					SoundManager.LOGGER.debug("Replaced sound event location {}", id);
 				}
 
-				weightedSoundSet = new WeightedSoundSet(identifier, soundEntry.getSubtitle());
-				this.loadedSounds.put(identifier, weightedSoundSet);
+				weightedSoundSet = new WeightedSoundSet(id, entry.getSubtitle());
+				this.loadedSounds.put(id, weightedSoundSet);
 			}
 
-			for (final Sound sound : soundEntry.getSounds()) {
-				final Identifier identifier2 = sound.getIdentifier();
+			for (final Sound sound : entry.getSounds()) {
+				final Identifier identifier = sound.getIdentifier();
 				SoundContainer<Sound> soundContainer;
 				switch (sound.getRegistrationType()) {
 					case FILE:
-						if (!SoundManager.isSoundResourcePresent(sound, identifier, resourceManager)) {
+						if (!SoundManager.isSoundResourcePresent(sound, id, resourceManager)) {
 							continue;
 						}
 
@@ -254,12 +254,12 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 						soundContainer = new SoundContainer<Sound>() {
 							@Override
 							public int getWeight() {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier);
 								return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
 							}
 
 							public Sound method_4883() {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier);
 								if (weightedSoundSet == null) {
 									return SoundManager.MISSING_SOUND;
 								} else {
@@ -279,7 +279,7 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 
 							@Override
 							public void preload(SoundSystem soundSystem) {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier);
 								if (weightedSoundSet != null) {
 									weightedSoundSet.preload(soundSystem);
 								}

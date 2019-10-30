@@ -136,10 +136,10 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 		return compoundTag;
 	}
 
-	private CompoundTag saveInitialChunkData(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		Inventories.toTag(compoundTag, this.itemsBeingCooked, true);
-		return compoundTag;
+	private CompoundTag saveInitialChunkData(CompoundTag tag) {
+		super.toTag(tag);
+		Inventories.toTag(tag, this.itemsBeingCooked, true);
+		return tag;
 	}
 
 	@Nullable
@@ -153,19 +153,19 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 		return this.saveInitialChunkData(new CompoundTag());
 	}
 
-	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack itemStack) {
+	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
 		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
 			? Optional.empty()
-			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(itemStack), this.world);
+			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(item), this.world);
 	}
 
-	public boolean addItem(ItemStack itemStack, int i) {
-		for (int j = 0; j < this.itemsBeingCooked.size(); j++) {
-			ItemStack itemStack2 = this.itemsBeingCooked.get(j);
-			if (itemStack2.isEmpty()) {
-				this.cookingTotalTimes[j] = i;
-				this.cookingTimes[j] = 0;
-				this.itemsBeingCooked.set(j, itemStack.split(1));
+	public boolean addItem(ItemStack item, int integer) {
+		for (int i = 0; i < this.itemsBeingCooked.size(); i++) {
+			ItemStack itemStack = this.itemsBeingCooked.get(i);
+			if (itemStack.isEmpty()) {
+				this.cookingTotalTimes[i] = integer;
+				this.cookingTimes[i] = 0;
+				this.itemsBeingCooked.set(i, item.split(1));
 				this.updateListeners();
 				return true;
 			}

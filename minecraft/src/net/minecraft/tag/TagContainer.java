@@ -27,7 +27,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,21 +42,21 @@ public class TagContainer<T> {
 	private final boolean ordered;
 	private final String entryType;
 
-	public TagContainer(Function<Identifier, Optional<T>> function, String string, boolean bl, String string2) {
-		this.getter = function;
-		this.dataType = string;
-		this.ordered = bl;
-		this.entryType = string2;
+	public TagContainer(Function<Identifier, Optional<T>> getter, String dataType, boolean ordered, String entryType) {
+		this.getter = getter;
+		this.dataType = dataType;
+		this.ordered = ordered;
+		this.entryType = entryType;
 	}
 
 	@Nullable
-	public Tag<T> get(Identifier identifier) {
-		return (Tag<T>)this.entries.get(identifier);
+	public Tag<T> get(Identifier id) {
+		return (Tag<T>)this.entries.get(id);
 	}
 
-	public Tag<T> getOrCreate(Identifier identifier) {
-		Tag<T> tag = (Tag<T>)this.entries.get(identifier);
-		return tag == null ? new Tag<>(identifier) : tag;
+	public Tag<T> getOrCreate(Identifier id) {
+		Tag<T> tag = (Tag<T>)this.entries.get(id);
+		return tag == null ? new Tag<>(id) : tag;
 	}
 
 	public Collection<Identifier> getKeys() {
@@ -76,17 +76,17 @@ public class TagContainer<T> {
 		return list;
 	}
 
-	public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager resourceManager, Executor executor) {
+	public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager manager, Executor executor) {
 		return CompletableFuture.supplyAsync(
 			() -> {
 				Map<Identifier, Tag.Builder<T>> map = Maps.<Identifier, Tag.Builder<T>>newHashMap();
 
-				for (Identifier identifier : resourceManager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
+				for (Identifier identifier : manager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
 					String string = identifier.getPath();
 					Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
 
 					try {
-						for (Resource resource : resourceManager.getAllResources(identifier)) {
+						for (Resource resource : manager.getAllResources(identifier)) {
 							try {
 								InputStream inputStream = resource.getInputStream();
 								Throwable var10 = null;
@@ -106,7 +106,7 @@ public class TagContainer<T> {
 												resource.getResourcePackName()
 											);
 										} else {
-											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> SystemUtil.consume(Tag.Builder.create(), builder -> builder.ordered(this.ordered))))
+											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Util.create(Tag.Builder.create(), builder -> builder.ordered(this.ordered))))
 												.fromJson(this.getter, jsonObject);
 										}
 									} catch (Throwable var53) {
@@ -158,26 +158,26 @@ public class TagContainer<T> {
 		);
 	}
 
-	public void applyReload(Map<Identifier, Tag.Builder<T>> map) {
-		Map<Identifier, Tag<T>> map2 = Maps.<Identifier, Tag<T>>newHashMap();
+	public void applyReload(Map<Identifier, Tag.Builder<T>> preparedBuilders) {
+		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
 
-		while (!map.isEmpty()) {
+		while (!preparedBuilders.isEmpty()) {
 			boolean bl = false;
-			Iterator<Entry<Identifier, Tag.Builder<T>>> iterator = map.entrySet().iterator();
+			Iterator<Entry<Identifier, Tag.Builder<T>>> iterator = preparedBuilders.entrySet().iterator();
 
 			while (iterator.hasNext()) {
 				Entry<Identifier, Tag.Builder<T>> entry = (Entry<Identifier, Tag.Builder<T>>)iterator.next();
 				Tag.Builder<T> builder = (Tag.Builder<T>)entry.getValue();
-				if (builder.applyTagGetter(map2::get)) {
+				if (builder.applyTagGetter(map::get)) {
 					bl = true;
 					Identifier identifier = (Identifier)entry.getKey();
-					map2.put(identifier, builder.build(identifier));
+					map.put(identifier, builder.build(identifier));
 					iterator.remove();
 				}
 			}
 
 			if (!bl) {
-				map.forEach(
+				preparedBuilders.forEach(
 					(identifierx, builderx) -> LOGGER.error(
 							"Couldn't load {} tag {} as it either references another tag that doesn't exist, or ultimately references itself", this.entryType, identifierx
 						)
@@ -186,14 +186,14 @@ public class TagContainer<T> {
 			}
 		}
 
-		map.forEach((identifierx, builderx) -> {
-			Tag var10000 = (Tag)map2.put(identifierx, builderx.build(identifierx));
+		preparedBuilders.forEach((identifierx, builderx) -> {
+			Tag var10000 = (Tag)map.put(identifierx, builderx.build(identifierx));
 		});
-		this.setEntries(map2);
+		this.setEntries(map);
 	}
 
-	protected void setEntries(Map<Identifier, Tag<T>> map) {
-		this.entries = ImmutableMap.copyOf(map);
+	protected void setEntries(Map<Identifier, Tag<T>> entries) {
+		this.entries = ImmutableMap.copyOf(entries);
 	}
 
 	public Map<Identifier, Tag<T>> getEntries() {

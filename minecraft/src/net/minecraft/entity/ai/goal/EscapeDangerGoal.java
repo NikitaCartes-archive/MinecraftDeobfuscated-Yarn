@@ -17,9 +17,9 @@ public class EscapeDangerGoal extends Goal {
 	protected double targetY;
 	protected double targetZ;
 
-	public EscapeDangerGoal(MobEntityWithAi mobEntityWithAi, double d) {
-		this.mob = mobEntityWithAi;
-		this.speed = d;
+	public EscapeDangerGoal(MobEntityWithAi mob, double speed) {
+		this.mob = mob;
+		this.speed = speed;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
@@ -65,21 +65,21 @@ public class EscapeDangerGoal extends Goal {
 	}
 
 	@Nullable
-	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int i, int j) {
+	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX, int rangeY) {
 		BlockPos blockPos = new BlockPos(entity);
-		int k = blockPos.getX();
-		int l = blockPos.getY();
-		int m = blockPos.getZ();
-		float f = (float)(i * i * j * 2);
+		int i = blockPos.getX();
+		int j = blockPos.getY();
+		int k = blockPos.getZ();
+		float f = (float)(rangeX * rangeX * rangeY * 2);
 		BlockPos blockPos2 = null;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int n = k - i; n <= k + i; n++) {
-			for (int o = l - j; o <= l + j; o++) {
-				for (int p = m - i; p <= m + i; p++) {
-					mutable.set(n, o, p);
+		for (int l = i - rangeX; l <= i + rangeX; l++) {
+			for (int m = j - rangeY; m <= j + rangeY; m++) {
+				for (int n = k - rangeX; n <= k + rangeX; n++) {
+					mutable.set(l, m, n);
 					if (blockView.getFluidState(mutable).matches(FluidTags.WATER)) {
-						float g = (float)((n - k) * (n - k) + (o - l) * (o - l) + (p - m) * (p - m));
+						float g = (float)((l - i) * (l - i) + (m - j) * (m - j) + (n - k) * (n - k));
 						if (g < f) {
 							f = g;
 							blockPos2 = new BlockPos(mutable);

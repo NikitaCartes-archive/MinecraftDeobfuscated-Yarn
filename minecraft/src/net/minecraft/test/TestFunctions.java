@@ -17,8 +17,8 @@ public class TestFunctions {
 	private static final Set<String> testClasses = Sets.<String>newHashSet();
 	private static final Map<String, Consumer<ServerWorld>> WORLD_SETTERS = Maps.<String, Consumer<ServerWorld>>newHashMap();
 
-	public static Collection<TestFunction> getTestFunctions(String string) {
-		return (Collection<TestFunction>)TEST_FUNCTIONS.stream().filter(testFunction -> isInClass(testFunction, string)).collect(Collectors.toList());
+	public static Collection<TestFunction> getTestFunctions(String testClass) {
+		return (Collection<TestFunction>)TEST_FUNCTIONS.stream().filter(testFunction -> isInClass(testFunction, testClass)).collect(Collectors.toList());
 	}
 
 	public static Collection<TestFunction> getTestFunctions() {
@@ -29,29 +29,29 @@ public class TestFunctions {
 		return testClasses;
 	}
 
-	public static boolean testClassExists(String string) {
-		return testClasses.contains(string);
+	public static boolean testClassExists(String testClass) {
+		return testClasses.contains(testClass);
 	}
 
 	@Nullable
-	public static Consumer<ServerWorld> getWorldSetter(String string) {
-		return (Consumer<ServerWorld>)WORLD_SETTERS.get(string);
+	public static Consumer<ServerWorld> getWorldSetter(String batchId) {
+		return (Consumer<ServerWorld>)WORLD_SETTERS.get(batchId);
 	}
 
-	public static Optional<TestFunction> getTestFunction(String string) {
-		return getTestFunctions().stream().filter(testFunction -> testFunction.getStructurePath().equalsIgnoreCase(string)).findFirst();
+	public static Optional<TestFunction> getTestFunction(String structurePath) {
+		return getTestFunctions().stream().filter(testFunction -> testFunction.getStructurePath().equalsIgnoreCase(structurePath)).findFirst();
 	}
 
-	public static TestFunction getTestFunctionOrThrow(String string) {
-		Optional<TestFunction> optional = getTestFunction(string);
+	public static TestFunction getTestFunctionOrThrow(String structurePath) {
+		Optional<TestFunction> optional = getTestFunction(structurePath);
 		if (!optional.isPresent()) {
-			throw new IllegalArgumentException("Can't find the test function for " + string);
+			throw new IllegalArgumentException("Can't find the test function for " + structurePath);
 		} else {
 			return (TestFunction)optional.get();
 		}
 	}
 
-	private static boolean isInClass(TestFunction testFunction, String string) {
-		return testFunction.getStructurePath().toLowerCase().startsWith(string.toLowerCase() + ".");
+	private static boolean isInClass(TestFunction testFunction, String testClass) {
+		return testFunction.getStructurePath().toLowerCase().startsWith(testClass.toLowerCase() + ".");
 	}
 }

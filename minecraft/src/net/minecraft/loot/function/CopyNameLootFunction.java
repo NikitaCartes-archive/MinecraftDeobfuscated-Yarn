@@ -17,8 +17,8 @@ import net.minecraft.util.Nameable;
 public class CopyNameLootFunction extends ConditionalLootFunction {
 	private final CopyNameLootFunction.Source source;
 
-	private CopyNameLootFunction(LootCondition[] lootConditions, CopyNameLootFunction.Source source) {
-		super(lootConditions);
+	private CopyNameLootFunction(LootCondition[] conditions, CopyNameLootFunction.Source source) {
+		super(conditions);
 		this.source = source;
 	}
 
@@ -28,20 +28,20 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Object object = lootContext.get(this.source.parameter);
+	public ItemStack process(ItemStack stack, LootContext context) {
+		Object object = context.get(this.source.parameter);
 		if (object instanceof Nameable) {
 			Nameable nameable = (Nameable)object;
 			if (nameable.hasCustomName()) {
-				itemStack.setCustomName(nameable.getDisplayName());
+				stack.setCustomName(nameable.getDisplayName());
 			}
 		}
 
-		return itemStack;
+		return stack;
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(CopyNameLootFunction.Source source) {
-		return builder(lootConditions -> new CopyNameLootFunction(lootConditions, source));
+		return builder(conditions -> new CopyNameLootFunction(conditions, source));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<CopyNameLootFunction> {
@@ -69,19 +69,19 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		public final String name;
 		public final LootContextParameter<?> parameter;
 
-		private Source(String string2, LootContextParameter<?> lootContextParameter) {
-			this.name = string2;
-			this.parameter = lootContextParameter;
+		private Source(String name, LootContextParameter<?> parameter) {
+			this.name = name;
+			this.parameter = parameter;
 		}
 
-		public static CopyNameLootFunction.Source get(String string) {
+		public static CopyNameLootFunction.Source get(String name) {
 			for (CopyNameLootFunction.Source source : values()) {
-				if (source.name.equals(string)) {
+				if (source.name.equals(name)) {
 					return source;
 				}
 			}
 
-			throw new IllegalArgumentException("Invalid name source " + string);
+			throw new IllegalArgumentException("Invalid name source " + name);
 		}
 	}
 }

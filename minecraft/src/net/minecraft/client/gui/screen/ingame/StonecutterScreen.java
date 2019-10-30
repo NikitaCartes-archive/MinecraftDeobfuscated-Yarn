@@ -28,32 +28,32 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
-		super.render(i, j, f);
-		this.drawMouseoverTooltip(i, j);
+	public void render(int mouseX, int mouseY, float delta) {
+		super.render(mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawForeground(int i, int j) {
+	protected void drawForeground(int mouseX, int mouseY) {
 		this.font.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
 		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 94), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(float f, int i, int j) {
+	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		this.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		int k = this.left;
-		int l = this.top;
-		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
-		int m = (int)(41.0F * this.scrollAmount);
-		this.blit(k + 119, l + 15 + m, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
-		int n = this.left + 52;
-		int o = this.top + 14;
-		int p = this.scrollOffset + 12;
-		this.method_17952(i, j, n, o, p);
-		this.method_17951(n, o, p);
+		int i = this.left;
+		int j = this.top;
+		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
+		int k = (int)(41.0F * this.scrollAmount);
+		this.blit(i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
+		int l = this.left + 52;
+		int m = this.top + 14;
+		int n = this.scrollOffset + 12;
+		this.method_17952(mouseX, mouseY, l, m, n);
+		this.method_17951(l, m, n);
 	}
 
 	private void method_17952(int i, int j, int k, int l, int m) {
@@ -86,53 +86,53 @@ public class StonecutterScreen extends AbstractContainerScreen<StonecutterContai
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		this.mouseClicked = false;
 		if (this.canCraft) {
-			int j = this.left + 52;
-			int k = this.top + 14;
-			int l = this.scrollOffset + 12;
+			int i = this.left + 52;
+			int j = this.top + 14;
+			int k = this.scrollOffset + 12;
 
-			for (int m = this.scrollOffset; m < l; m++) {
-				int n = m - this.scrollOffset;
-				double f = d - (double)(j + n % 4 * 16);
-				double g = e - (double)(k + n / 4 * 18);
-				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.minecraft.player, m)) {
+			for (int l = this.scrollOffset; l < k; l++) {
+				int m = l - this.scrollOffset;
+				double d = mouseX - (double)(i + m % 4 * 16);
+				double e = mouseY - (double)(j + m / 4 * 18);
+				if (d >= 0.0 && e >= 0.0 && d < 16.0 && e < 18.0 && this.container.onButtonClick(this.minecraft.player, l)) {
 					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_STONECUTTER_SELECT_RECIPE, 1.0F));
-					this.minecraft.interactionManager.clickButton(this.container.syncId, m);
+					this.minecraft.interactionManager.clickButton(this.container.syncId, l);
 					return true;
 				}
 			}
 
-			j = this.left + 119;
-			k = this.top + 9;
-			if (d >= (double)j && d < (double)(j + 12) && e >= (double)k && e < (double)(k + 54)) {
+			i = this.left + 119;
+			j = this.top + 9;
+			if (mouseX >= (double)i && mouseX < (double)(i + 12) && mouseY >= (double)j && mouseY < (double)(j + 54)) {
 				this.mouseClicked = true;
 			}
 		}
 
-		return super.mouseClicked(d, e, i);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
-	public boolean mouseDragged(double d, double e, int i, double f, double g) {
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
 		if (this.mouseClicked && this.shouldScroll()) {
-			int j = this.top + 14;
-			int k = j + 54;
-			this.scrollAmount = ((float)e - (float)j - 7.5F) / ((float)(k - j) - 15.0F);
+			int i = this.top + 14;
+			int j = i + 54;
+			this.scrollAmount = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
 			this.scrollAmount = MathHelper.clamp(this.scrollAmount, 0.0F, 1.0F);
 			this.scrollOffset = (int)((double)(this.scrollAmount * (float)this.getMaxScroll()) + 0.5) * 4;
 			return true;
 		} else {
-			return super.mouseDragged(d, e, i, f, g);
+			return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 		}
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double f) {
+	public boolean mouseScrolled(double d, double e, double amount) {
 		if (this.shouldScroll()) {
 			int i = this.getMaxScroll();
-			this.scrollAmount = (float)((double)this.scrollAmount - f / (double)i);
+			this.scrollAmount = (float)((double)this.scrollAmount - amount / (double)i);
 			this.scrollAmount = MathHelper.clamp(this.scrollAmount, 0.0F, 1.0F);
 			this.scrollOffset = (int)((double)(this.scrollAmount * (float)i) + 0.5) * 4;
 		}

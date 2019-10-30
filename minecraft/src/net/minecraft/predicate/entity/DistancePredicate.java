@@ -19,25 +19,21 @@ public class DistancePredicate {
 	private final NumberRange.FloatRange absolute;
 
 	public DistancePredicate(
-		NumberRange.FloatRange floatRange,
-		NumberRange.FloatRange floatRange2,
-		NumberRange.FloatRange floatRange3,
-		NumberRange.FloatRange floatRange4,
-		NumberRange.FloatRange floatRange5
+		NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange floatRange
 	) {
-		this.x = floatRange;
-		this.y = floatRange2;
-		this.z = floatRange3;
-		this.horizontal = floatRange4;
-		this.absolute = floatRange5;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.horizontal = horizontal;
+		this.absolute = floatRange;
 	}
 
-	public static DistancePredicate horizontal(NumberRange.FloatRange floatRange) {
-		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, floatRange, NumberRange.FloatRange.ANY);
+	public static DistancePredicate horizontal(NumberRange.FloatRange horizontal) {
+		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, horizontal, NumberRange.FloatRange.ANY);
 	}
 
-	public static DistancePredicate y(NumberRange.FloatRange floatRange) {
-		return new DistancePredicate(NumberRange.FloatRange.ANY, floatRange, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY);
+	public static DistancePredicate y(NumberRange.FloatRange y) {
+		return new DistancePredicate(NumberRange.FloatRange.ANY, y, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY);
 	}
 
 	public boolean test(double d, double e, double f, double g, double h, double i) {
@@ -51,9 +47,9 @@ public class DistancePredicate {
 		}
 	}
 
-	public static DistancePredicate deserialize(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "distance");
+	public static DistancePredicate deserialize(@Nullable JsonElement el) {
+		if (el != null && !el.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(el, "distance");
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("x"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("y"));
 			NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject.get("z"));

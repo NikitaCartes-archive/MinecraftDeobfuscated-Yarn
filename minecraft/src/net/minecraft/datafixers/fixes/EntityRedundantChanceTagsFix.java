@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
 
 public class EntityRedundantChanceTagsFix extends DataFix {
-	public EntityRedundantChanceTagsFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityRedundantChanceTagsFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

@@ -16,8 +16,8 @@ public class RecipeCommand {
 	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.recipe.give.failed"));
 	private static final SimpleCommandExceptionType TAKE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.recipe.take.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("recipe")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -77,44 +77,44 @@ public class RecipeCommand {
 		);
 	}
 
-	private static int executeGive(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe<?>> collection2) throws CommandSyntaxException {
+	private static int executeGive(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Collection<Recipe<?>> recipes) throws CommandSyntaxException {
 		int i = 0;
 
-		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			i += serverPlayerEntity.unlockRecipes(collection2);
+		for (ServerPlayerEntity serverPlayerEntity : targets) {
+			i += serverPlayerEntity.unlockRecipes(recipes);
 		}
 
 		if (i == 0) {
 			throw GIVE_FAILED_EXCEPTION.create();
 		} else {
-			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.recipe.give.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+			if (targets.size() == 1) {
+				source.sendFeedback(
+					new TranslatableText("commands.recipe.give.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.recipe.give.success.multiple", collection2.size(), collection.size()), true);
+				source.sendFeedback(new TranslatableText("commands.recipe.give.success.multiple", recipes.size(), targets.size()), true);
 			}
 
 			return i;
 		}
 	}
 
-	private static int executeTake(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe<?>> collection2) throws CommandSyntaxException {
+	private static int executeTake(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Collection<Recipe<?>> recipes) throws CommandSyntaxException {
 		int i = 0;
 
-		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			i += serverPlayerEntity.lockRecipes(collection2);
+		for (ServerPlayerEntity serverPlayerEntity : targets) {
+			i += serverPlayerEntity.lockRecipes(recipes);
 		}
 
 		if (i == 0) {
 			throw TAKE_FAILED_EXCEPTION.create();
 		} else {
-			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.recipe.take.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+			if (targets.size() == 1) {
+				source.sendFeedback(
+					new TranslatableText("commands.recipe.take.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.recipe.take.success.multiple", collection2.size(), collection.size()), true);
+				source.sendFeedback(new TranslatableText("commands.recipe.take.success.multiple", recipes.size(), targets.size()), true);
 			}
 
 			return i;

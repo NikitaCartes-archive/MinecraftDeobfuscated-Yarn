@@ -21,9 +21,9 @@ public class HungerManager {
 		this.foodSaturationLevel = 5.0F;
 	}
 
-	public void add(int i, float f) {
-		this.foodLevel = Math.min(i + this.foodLevel, 20);
-		this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)i * f * 2.0F, (float)this.foodLevel);
+	public void add(int food, float f) {
+		this.foodLevel = Math.min(food + this.foodLevel, 20);
+		this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)food * f * 2.0F, (float)this.foodLevel);
 	}
 
 	public void eat(Item item, ItemStack itemStack) {
@@ -99,20 +99,20 @@ public class HungerManager {
 		return this.foodLevel < 20;
 	}
 
-	public void addExhaustion(float f) {
-		this.exhaustion = Math.min(this.exhaustion + f, 40.0F);
+	public void addExhaustion(float exhaustion) {
+		this.exhaustion = Math.min(this.exhaustion + exhaustion, 40.0F);
 	}
 
 	public float getSaturationLevel() {
 		return this.foodSaturationLevel;
 	}
 
-	public void setFoodLevel(int i) {
-		this.foodLevel = i;
+	public void setFoodLevel(int foodLevel) {
+		this.foodLevel = foodLevel;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setSaturationLevelClient(float f) {
-		this.foodSaturationLevel = f;
+	public void setSaturationLevelClient(float saturationLevel) {
+		this.foodSaturationLevel = saturationLevel;
 	}
 }

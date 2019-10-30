@@ -16,13 +16,13 @@ public class RenameItemC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.itemName = packetByteBuf.readString(32767);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.itemName = buf.readString(32767);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeString(this.itemName);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeString(this.itemName);
 	}
 
 	public void method_12408(ServerPlayPacketListener serverPlayPacketListener) {

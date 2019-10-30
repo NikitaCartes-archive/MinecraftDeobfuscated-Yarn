@@ -35,8 +35,8 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		return new InventoryChangedCriterion.Conditions(intRange, intRange2, intRange3, itemPredicates);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(playerInventory));
+	public void trigger(ServerPlayerEntity player, PlayerInventory inventory) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(inventory));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -45,25 +45,25 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		private final NumberRange.IntRange empty;
 		private final ItemPredicate[] items;
 
-		public Conditions(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, NumberRange.IntRange intRange3, ItemPredicate[] itemPredicates) {
+		public Conditions(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, NumberRange.IntRange intRange3, ItemPredicate[] items) {
 			super(InventoryChangedCriterion.ID);
 			this.occupied = intRange;
 			this.full = intRange2;
 			this.empty = intRange3;
-			this.items = itemPredicates;
+			this.items = items;
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemPredicate... itemPredicates) {
-			return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
+		public static InventoryChangedCriterion.Conditions items(ItemPredicate... items) {
+			return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, items);
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemConvertible... itemConvertibles) {
-			ItemPredicate[] itemPredicates = new ItemPredicate[itemConvertibles.length];
+		public static InventoryChangedCriterion.Conditions items(ItemConvertible... items) {
+			ItemPredicate[] itemPredicates = new ItemPredicate[items.length];
 
-			for (int i = 0; i < itemConvertibles.length; i++) {
+			for (int i = 0; i < items.length; i++) {
 				itemPredicates[i] = new ItemPredicate(
 					null,
-					itemConvertibles[i].asItem(),
+					items[i].asItem(),
 					NumberRange.IntRange.ANY,
 					NumberRange.IntRange.ANY,
 					EnchantmentPredicate.ARRAY_OF_ANY,
@@ -100,14 +100,14 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 			return jsonObject;
 		}
 
-		public boolean matches(PlayerInventory playerInventory) {
+		public boolean matches(PlayerInventory inventory) {
 			int i = 0;
 			int j = 0;
 			int k = 0;
 			List<ItemPredicate> list = Lists.<ItemPredicate>newArrayList(this.items);
 
-			for (int l = 0; l < playerInventory.getInvSize(); l++) {
-				ItemStack itemStack = playerInventory.getInvStack(l);
+			for (int l = 0; l < inventory.getInvSize(); l++) {
+				ItemStack itemStack = inventory.getInvStack(l);
 				if (itemStack.isEmpty()) {
 					j++;
 				} else {

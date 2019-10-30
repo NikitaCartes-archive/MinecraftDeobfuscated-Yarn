@@ -52,11 +52,11 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 		}
 	}
 
-	public static boolean canGenerateLargeTree(BlockState blockState, BlockView blockView, BlockPos blockPos, int i, int j) {
-		Block block = blockState.getBlock();
-		return block == blockView.getBlockState(blockPos.add(i, 0, j)).getBlock()
-			&& block == blockView.getBlockState(blockPos.add(i + 1, 0, j)).getBlock()
-			&& block == blockView.getBlockState(blockPos.add(i, 0, j + 1)).getBlock()
-			&& block == blockView.getBlockState(blockPos.add(i + 1, 0, j + 1)).getBlock();
+	public static boolean canGenerateLargeTree(BlockState state, BlockView world, BlockPos pos, int x, int z) {
+		Block block = state.getBlock();
+		return block == world.getBlockState(pos.add(x, 0, z)).getBlock()
+			&& block == world.getBlockState(pos.add(x + 1, 0, z)).getBlock()
+			&& block == world.getBlockState(pos.add(x, 0, z + 1)).getBlock()
+			&& block == world.getBlockState(pos.add(x + 1, 0, z + 1)).getBlock();
 	}
 }

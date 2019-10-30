@@ -1,11 +1,11 @@
 package net.minecraft.world.biome.layer;
 
 public interface SouthEastSamplingLayer extends ParentedLayer, NorthWestCoordinateTransformer {
-	int sample(LayerRandomnessSource layerRandomnessSource, int i);
+	int sample(LayerRandomnessSource context, int se);
 
 	@Override
-	default int sample(LayerSampleContext<?> layerSampleContext, LayerSampler layerSampler, int i, int j) {
-		int k = layerSampler.sample(this.transformX(i + 1), this.transformZ(j + 1));
-		return this.sample(layerSampleContext, k);
+	default int sample(LayerSampleContext<?> context, LayerSampler parent, int x, int z) {
+		int i = parent.sample(this.transformX(x + 1), this.transformZ(z + 1));
+		return this.sample(context, i);
 	}
 }

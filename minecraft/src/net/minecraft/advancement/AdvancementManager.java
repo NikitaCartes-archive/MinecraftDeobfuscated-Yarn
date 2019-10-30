@@ -135,15 +135,15 @@ public class AdvancementManager {
 	}
 
 	public interface Listener {
-		void onRootAdded(Advancement advancement);
+		void onRootAdded(Advancement root);
 
 		@Environment(EnvType.CLIENT)
-		void onRootRemoved(Advancement advancement);
+		void onRootRemoved(Advancement root);
 
-		void onDependentAdded(Advancement advancement);
+		void onDependentAdded(Advancement dependent);
 
 		@Environment(EnvType.CLIENT)
-		void onDependentRemoved(Advancement advancement);
+		void onDependentRemoved(Advancement dependent);
 
 		@Environment(EnvType.CLIENT)
 		void onClear();

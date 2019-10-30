@@ -39,11 +39,11 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	private Activity defaultActivity = Activity.IDLE;
 	private long activityStartTime = -9999L;
 
-	public <T> Brain(Collection<MemoryModuleType<?>> collection, Collection<SensorType<? extends Sensor<? super E>>> collection2, Dynamic<T> dynamic) {
+	public <T> Brain(Collection<MemoryModuleType<?>> collection, Collection<SensorType<? extends Sensor<? super E>>> sensors, Dynamic<T> dynamic) {
 		collection.forEach(memoryModuleType -> {
 			Optional var10000 = (Optional)this.memories.put(memoryModuleType, Optional.empty());
 		});
-		collection2.forEach(sensorType -> {
+		sensors.forEach(sensorType -> {
 			Sensor var10000 = (Sensor)this.sensors.put(sensorType, sensorType.create());
 		});
 		this.sensors.values().forEach(sensor -> {
@@ -69,16 +69,16 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.setMemory(memoryModuleType, Optional.empty());
 	}
 
-	public <U> void putMemory(MemoryModuleType<U> memoryModuleType, @Nullable U object) {
-		this.setMemory(memoryModuleType, Optional.ofNullable(object));
+	public <U> void putMemory(MemoryModuleType<U> memoryModuleType, @Nullable U value) {
+		this.setMemory(memoryModuleType, Optional.ofNullable(value));
 	}
 
-	public <U> void setMemory(MemoryModuleType<U> memoryModuleType, Optional<U> optional) {
+	public <U> void setMemory(MemoryModuleType<U> memoryModuleType, Optional<U> value) {
 		if (this.memories.containsKey(memoryModuleType)) {
-			if (optional.isPresent() && this.isEmptyCollection(optional.get())) {
+			if (value.isPresent() && this.isEmptyCollection(value.get())) {
 				this.forget(memoryModuleType);
 			} else {
-				this.memories.put(memoryModuleType, optional);
+				this.memories.put(memoryModuleType, value);
 			}
 		}
 	}
@@ -87,13 +87,13 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		return (Optional<U>)this.memories.get(memoryModuleType);
 	}
 
-	public boolean isMemoryInState(MemoryModuleType<?> memoryModuleType, MemoryModuleState memoryModuleState) {
+	public boolean isMemoryInState(MemoryModuleType<?> memoryModuleType, MemoryModuleState state) {
 		Optional<?> optional = (Optional<?>)this.memories.get(memoryModuleType);
 		return optional == null
 			? false
-			: memoryModuleState == MemoryModuleState.REGISTERED
-				|| memoryModuleState == MemoryModuleState.VALUE_PRESENT && optional.isPresent()
-				|| memoryModuleState == MemoryModuleState.VALUE_ABSENT && !optional.isPresent();
+			: state == MemoryModuleState.REGISTERED
+				|| state == MemoryModuleState.VALUE_PRESENT && optional.isPresent()
+				|| state == MemoryModuleState.VALUE_ABSENT && !optional.isPresent();
 	}
 
 	public Schedule getSchedule() {
@@ -120,10 +120,10 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.possibleActivities.add(bl ? activity : this.defaultActivity);
 	}
 
-	public void refreshActivities(long l, long m) {
-		if (m - this.activityStartTime > 20L) {
-			this.activityStartTime = m;
-			Activity activity = this.getSchedule().getActivityForTime((int)(l % 24000L));
+	public void refreshActivities(long timeOfDay, long time) {
+		if (time - this.activityStartTime > 20L) {
+			this.activityStartTime = time;
+			Activity activity = this.getSchedule().getActivityForTime((int)(timeOfDay % 24000L));
 			if (!this.possibleActivities.contains(activity)) {
 				this.resetPossibleActivities(activity);
 			}
@@ -173,21 +173,21 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
-		T object = dynamicOps.createMap(
+	public <T> T serialize(DynamicOps<T> ops) {
+		T object = ops.createMap(
 			(Map<T, T>)this.memories
 				.entrySet()
 				.stream()
 				.filter(entry -> ((MemoryModuleType)entry.getKey()).getFactory().isPresent() && ((Optional)entry.getValue()).isPresent())
 				.map(
 					entry -> Pair.of(
-							dynamicOps.createString(Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)entry.getKey()).toString()),
-							((DynamicSerializable)((Optional)entry.getValue()).get()).serialize(dynamicOps)
+							ops.createString(Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)entry.getKey()).toString()),
+							((DynamicSerializable)((Optional)entry.getValue()).get()).serialize(ops)
 						)
 				)
 				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
 		);
-		return dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("memories"), object));
+		return ops.createMap(ImmutableMap.of(ops.createString("memories"), object));
 	}
 
 	private void updateSensors(ServerWorld serverWorld, E livingEntity) {
@@ -220,7 +220,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		});
 	}
 
-	private boolean isEmptyCollection(Object object) {
-		return object instanceof Collection && ((Collection)object).isEmpty();
+	private boolean isEmptyCollection(Object value) {
+		return value instanceof Collection && ((Collection)value).isEmpty();
 	}
 }

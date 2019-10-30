@@ -38,10 +38,10 @@ import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionHandler;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
@@ -195,7 +195,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			return false;
 		} else {
 			this.setPlayerManager(new DedicatedPlayerManager(this));
-			long l = SystemUtil.getMeasuringTimeNano();
+			long l = Util.getMeasuringTimeNano();
 			String string = serverPropertiesHandler.levelSeed;
 			String string2 = serverPropertiesHandler.generatorSettings;
 			long m = new Random().nextLong();
@@ -224,7 +224,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			}
 
 			this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
-			long o = SystemUtil.getMeasuringTimeNano() - l;
+			long o = Util.getMeasuringTimeNano() - l;
 			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
 			LOGGER.info("Done ({})! For help, type \"help\"", string3);
 			if (serverPropertiesHandler.announcePlayerAchievements != null) {
@@ -419,7 +419,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean openToLan(GameMode gameMode, boolean bl, int i) {
+	public boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port) {
 		return false;
 	}
 
@@ -463,9 +463,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public void setPlayerIdleTimeout(int i) {
-		super.setPlayerIdleTimeout(i);
-		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.playerIdleTimeout.set(i));
+	public void setPlayerIdleTimeout(int playerIdleTimeout) {
+		super.setPlayerIdleTimeout(playerIdleTimeout);
+		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.playerIdleTimeout.set(playerIdleTimeout));
 	}
 
 	@Override
@@ -566,7 +566,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public String executeRconCommand(String string) {
 		this.rconCommandOutput.clear();
-		this.executeSync(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
+		this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
 		return this.rconCommandOutput.asString();
 	}
 
@@ -577,11 +577,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		SystemUtil.shutdownServerWorkerExecutor();
+		Util.shutdownServerWorkerExecutor();
 	}
 
 	@Override
-	public boolean isOwner(GameProfile gameProfile) {
+	public boolean isOwner(GameProfile profile) {
 		return false;
 	}
 }

@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 public interface EntityAttribute {
 	String getId();
 
-	double clamp(double d);
+	double clamp(double value);
 
 	double getDefaultValue();
 

@@ -18,10 +18,10 @@ public class GlShader {
 	private final int shaderRef;
 	private int refCount;
 
-	private GlShader(GlShader.Type type, int i, String string) {
-		this.shaderType = type;
-		this.shaderRef = i;
-		this.name = string;
+	private GlShader(GlShader.Type shaderType, int shaderRef, String name) {
+		this.shaderType = shaderType;
+		this.shaderRef = shaderRef;
+		this.name = name;
 	}
 
 	public void attachTo(GlProgram glProgram) {
@@ -43,21 +43,21 @@ public class GlShader {
 		return this.name;
 	}
 
-	public static GlShader createFromResource(GlShader.Type type, String string, InputStream inputStream) throws IOException {
+	public static GlShader createFromResource(GlShader.Type type, String name, InputStream sourceCode) throws IOException {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		String string2 = TextureUtil.readResourceAsString(inputStream);
-		if (string2 == null) {
+		String string = TextureUtil.readResourceAsString(sourceCode);
+		if (string == null) {
 			throw new IOException("Could not load program " + type.getName());
 		} else {
 			int i = GlStateManager.createShader(type.getGlType());
-			GlStateManager.shaderSource(i, string2);
+			GlStateManager.shaderSource(i, string);
 			GlStateManager.compileShader(i);
 			if (GlStateManager.getShader(i, 35713) == 0) {
-				String string3 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
-				throw new IOException("Couldn't compile " + type.getName() + " program: " + string3);
+				String string2 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
+				throw new IOException("Couldn't compile " + type.getName() + " program: " + string2);
 			} else {
-				GlShader glShader = new GlShader(type, i, string);
-				type.getLoadedShaders().put(string, glShader);
+				GlShader glShader = new GlShader(type, i, name);
+				type.getLoadedShaders().put(name, glShader);
 				return glShader;
 			}
 		}

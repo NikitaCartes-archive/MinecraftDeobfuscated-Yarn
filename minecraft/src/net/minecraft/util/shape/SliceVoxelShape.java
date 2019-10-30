@@ -8,21 +8,21 @@ public class SliceVoxelShape extends VoxelShape {
 	private final Direction.Axis axis;
 	private static final DoubleList POINTS = new FractionalDoubleList(1);
 
-	public SliceVoxelShape(VoxelShape voxelShape, Direction.Axis axis, int i) {
-		super(createVoxelSet(voxelShape.voxels, axis, i));
-		this.shape = voxelShape;
+	public SliceVoxelShape(VoxelShape shape, Direction.Axis axis, int voxelIndex) {
+		super(createVoxelSet(shape.voxels, axis, voxelIndex));
+		this.shape = shape;
 		this.axis = axis;
 	}
 
-	private static VoxelSet createVoxelSet(VoxelSet voxelSet, Direction.Axis axis, int i) {
+	private static VoxelSet createVoxelSet(VoxelSet voxels, Direction.Axis axis, int i) {
 		return new CroppedVoxelSet(
-			voxelSet,
+			voxels,
 			axis.choose(i, 0, 0),
 			axis.choose(0, i, 0),
 			axis.choose(0, 0, i),
-			axis.choose(i + 1, voxelSet.xSize, voxelSet.xSize),
-			axis.choose(voxelSet.ySize, i + 1, voxelSet.ySize),
-			axis.choose(voxelSet.zSize, voxelSet.zSize, i + 1)
+			axis.choose(i + 1, voxels.xSize, voxels.xSize),
+			axis.choose(voxels.ySize, i + 1, voxels.ySize),
+			axis.choose(voxels.zSize, voxels.zSize, i + 1)
 		);
 	}
 

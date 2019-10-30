@@ -19,8 +19,8 @@ import net.minecraft.util.registry.Registry;
 public class ParticleCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.particle.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("particle")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -138,32 +138,24 @@ public class ParticleCommand {
 	}
 
 	private static int execute(
-		ServerCommandSource serverCommandSource,
-		ParticleEffect particleEffect,
-		Vec3d vec3d,
-		Vec3d vec3d2,
-		float f,
-		int i,
-		boolean bl,
-		Collection<ServerPlayerEntity> collection
+		ServerCommandSource source, ParticleEffect parameters, Vec3d pos, Vec3d delta, float speed, int count, boolean force, Collection<ServerPlayerEntity> viewers
 	) throws CommandSyntaxException {
-		int j = 0;
+		int i = 0;
 
-		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			if (serverCommandSource.getWorld()
-				.spawnParticles(serverPlayerEntity, particleEffect, bl, vec3d.x, vec3d.y, vec3d.z, i, vec3d2.x, vec3d2.y, vec3d2.z, (double)f)) {
-				j++;
+		for (ServerPlayerEntity serverPlayerEntity : viewers) {
+			if (source.getWorld().spawnParticles(serverPlayerEntity, parameters, force, pos.x, pos.y, pos.z, count, delta.x, delta.y, delta.z, (double)speed)) {
+				i++;
 			}
 		}
 
-		if (j == 0) {
+		if (i == 0) {
 			throw FAILED_EXCPETION.create();
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableText("commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)particleEffect.getType()).toString()),
+			source.sendFeedback(
+				new TranslatableText("commands.particle.success", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleEffect>)parameters.getType()).toString()),
 				true
 			);
-			return j;
+			return i;
 		}
 	}
 }

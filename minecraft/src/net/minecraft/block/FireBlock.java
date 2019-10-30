@@ -17,7 +17,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -41,7 +41,7 @@ public class FireBlock extends Block {
 		.entrySet()
 		.stream()
 		.filter(entry -> entry.getKey() != Direction.DOWN)
-		.collect(SystemUtil.toMap());
+		.collect(Util.toMap());
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
 
@@ -60,35 +60,31 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return this.canPlaceAt(blockState, iWorld, blockPos)
-			? this.getStateForPosition(iWorld, blockPos).with(AGE, blockState.get(AGE))
-			: Blocks.AIR.getDefaultState();
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return this.canPlaceAt(state, world, pos) ? this.getStateForPosition(world, pos).with(AGE, state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getStateForPosition(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.getStateForPosition(ctx.getWorld(), ctx.getBlockPos());
 	}
 
-	public BlockState getStateForPosition(BlockView blockView, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.method_10074();
-		BlockState blockState = blockView.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.UP)) {
+	public BlockState getStateForPosition(BlockView world, BlockPos pos) {
+		BlockPos blockPos = pos.method_10074();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
 			BlockState blockState2 = this.getDefaultState();
 
 			for (Direction direction : Direction.values()) {
 				BooleanProperty booleanProperty = (BooleanProperty)DIRECTION_PROPERTIES.get(direction);
 				if (booleanProperty != null) {
-					blockState2 = blockState2.with(booleanProperty, Boolean.valueOf(this.isFlammable(blockView.getBlockState(blockPos.offset(direction)))));
+					blockState2 = blockState2.with(booleanProperty, Boolean.valueOf(this.isFlammable(world.getBlockState(pos.offset(direction)))));
 				}
 			}
 
@@ -99,9 +95,9 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.method_10074();
-		return worldView.getBlockState(blockPos2).isSideSolidFullSquare(worldView, blockPos2, Direction.UP) || this.areBlocksAroundFlammable(worldView, blockPos);
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		BlockPos blockPos = pos.method_10074();
+		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || this.areBlocksAroundFlammable(world, pos);
 	}
 
 	@Override
@@ -110,49 +106,49 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (serverWorld.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
-			if (!blockState.canPlaceAt(serverWorld, blockPos)) {
-				serverWorld.removeBlock(blockPos, false);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+			if (!state.canPlaceAt(world, pos)) {
+				world.removeBlock(pos, false);
 			}
 
-			Block block = serverWorld.getBlockState(blockPos.method_10074()).getBlock();
-			boolean bl = serverWorld.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
-			int i = (Integer)blockState.get(AGE);
-			if (!bl && serverWorld.isRaining() && this.isRainingAround(serverWorld, blockPos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
-				serverWorld.removeBlock(blockPos, false);
+			Block block = world.getBlockState(pos.method_10074()).getBlock();
+			boolean bl = world.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
+			int i = (Integer)state.get(AGE);
+			if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
+				world.removeBlock(pos, false);
 			} else {
 				int j = Math.min(15, i + random.nextInt(3) / 2);
 				if (i != j) {
-					blockState = blockState.with(AGE, Integer.valueOf(j));
-					serverWorld.setBlockState(blockPos, blockState, 4);
+					state = state.with(AGE, Integer.valueOf(j));
+					world.setBlockState(pos, state, 4);
 				}
 
 				if (!bl) {
-					serverWorld.method_14196().schedule(blockPos, this, this.getTickRate(serverWorld) + random.nextInt(10));
-					if (!this.areBlocksAroundFlammable(serverWorld, blockPos)) {
-						BlockPos blockPos2 = blockPos.method_10074();
-						if (!serverWorld.getBlockState(blockPos2).isSideSolidFullSquare(serverWorld, blockPos2, Direction.UP) || i > 3) {
-							serverWorld.removeBlock(blockPos, false);
+					world.method_14196().schedule(pos, this, this.getTickRate(world) + random.nextInt(10));
+					if (!this.areBlocksAroundFlammable(world, pos)) {
+						BlockPos blockPos = pos.method_10074();
+						if (!world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || i > 3) {
+							world.removeBlock(pos, false);
 						}
 
 						return;
 					}
 
-					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(serverWorld.getBlockState(blockPos.method_10074()))) {
-						serverWorld.removeBlock(blockPos, false);
+					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(world.getBlockState(pos.method_10074()))) {
+						world.removeBlock(pos, false);
 						return;
 					}
 				}
 
-				boolean bl2 = serverWorld.hasHighHumidity(blockPos);
+				boolean bl2 = world.hasHighHumidity(pos);
 				int k = bl2 ? -50 : 0;
-				this.trySpreadingFire(serverWorld, blockPos.east(), 300 + k, random, i);
-				this.trySpreadingFire(serverWorld, blockPos.west(), 300 + k, random, i);
-				this.trySpreadingFire(serverWorld, blockPos.method_10074(), 250 + k, random, i);
-				this.trySpreadingFire(serverWorld, blockPos.up(), 250 + k, random, i);
-				this.trySpreadingFire(serverWorld, blockPos.north(), 300 + k, random, i);
-				this.trySpreadingFire(serverWorld, blockPos.south(), 300 + k, random, i);
+				this.trySpreadingFire(world, pos.east(), 300 + k, random, i);
+				this.trySpreadingFire(world, pos.west(), 300 + k, random, i);
+				this.trySpreadingFire(world, pos.method_10074(), 250 + k, random, i);
+				this.trySpreadingFire(world, pos.up(), 250 + k, random, i);
+				this.trySpreadingFire(world, pos.north(), 300 + k, random, i);
+				this.trySpreadingFire(world, pos.south(), 300 + k, random, i);
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 				for (int l = -1; l <= 1; l++) {
@@ -164,17 +160,17 @@ public class FireBlock extends Block {
 									o += (n - 1) * 100;
 								}
 
-								mutable.set(blockPos).setOffset(l, n, m);
-								int p = this.getBurnChance(serverWorld, mutable);
+								mutable.set(pos).setOffset(l, n, m);
+								int p = this.getBurnChance(world, mutable);
 								if (p > 0) {
-									int q = (p + 40 + serverWorld.getDifficulty().getId() * 7) / (i + 30);
+									int q = (p + 40 + world.getDifficulty().getId() * 7) / (i + 30);
 									if (bl2) {
 										q /= 2;
 									}
 
-									if (q > 0 && random.nextInt(o) <= q && (!serverWorld.isRaining() || !this.isRainingAround(serverWorld, mutable))) {
+									if (q > 0 && random.nextInt(o) <= q && (!world.isRaining() || !this.isRainingAround(world, mutable))) {
 										int r = Math.min(15, i + random.nextInt(5) / 4);
-										serverWorld.setBlockState(mutable, this.getStateForPosition(serverWorld, mutable).with(AGE, Integer.valueOf(r)), 3);
+										world.setBlockState(mutable, this.getStateForPosition(world, mutable).with(AGE, Integer.valueOf(r)), 3);
 									}
 								}
 							}
@@ -185,43 +181,39 @@ public class FireBlock extends Block {
 		}
 	}
 
-	protected boolean isRainingAround(World world, BlockPos blockPos) {
-		return world.hasRain(blockPos)
-			|| world.hasRain(blockPos.west())
-			|| world.hasRain(blockPos.east())
-			|| world.hasRain(blockPos.north())
-			|| world.hasRain(blockPos.south());
+	protected boolean isRainingAround(World world, BlockPos pos) {
+		return world.hasRain(pos) || world.hasRain(pos.west()) || world.hasRain(pos.east()) || world.hasRain(pos.north()) || world.hasRain(pos.south());
 	}
 
-	private int getSpreadChance(BlockState blockState) {
-		return blockState.contains(Properties.WATERLOGGED) && blockState.get(Properties.WATERLOGGED) ? 0 : this.spreadChances.getInt(blockState.getBlock());
+	private int getSpreadChance(BlockState state) {
+		return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? 0 : this.spreadChances.getInt(state.getBlock());
 	}
 
-	private int getBurnChance(BlockState blockState) {
-		return blockState.contains(Properties.WATERLOGGED) && blockState.get(Properties.WATERLOGGED) ? 0 : this.burnChances.getInt(blockState.getBlock());
+	private int getBurnChance(BlockState state) {
+		return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? 0 : this.burnChances.getInt(state.getBlock());
 	}
 
-	private void trySpreadingFire(World world, BlockPos blockPos, int i, Random random, int j) {
-		int k = this.getSpreadChance(world.getBlockState(blockPos));
-		if (random.nextInt(i) < k) {
-			BlockState blockState = world.getBlockState(blockPos);
-			if (random.nextInt(j + 10) < 5 && !world.hasRain(blockPos)) {
-				int l = Math.min(j + random.nextInt(5) / 4, 15);
-				world.setBlockState(blockPos, this.getStateForPosition(world, blockPos).with(AGE, Integer.valueOf(l)), 3);
+	private void trySpreadingFire(World world, BlockPos pos, int spreadFactor, Random rand, int currentAge) {
+		int i = this.getSpreadChance(world.getBlockState(pos));
+		if (rand.nextInt(spreadFactor) < i) {
+			BlockState blockState = world.getBlockState(pos);
+			if (rand.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
+				int j = Math.min(currentAge + rand.nextInt(5) / 4, 15);
+				world.setBlockState(pos, this.getStateForPosition(world, pos).with(AGE, Integer.valueOf(j)), 3);
 			} else {
-				world.removeBlock(blockPos, false);
+				world.removeBlock(pos, false);
 			}
 
 			Block block = blockState.getBlock();
 			if (block instanceof TntBlock) {
-				TntBlock.primeTnt(world, blockPos);
+				TntBlock.primeTnt(world, pos);
 			}
 		}
 	}
 
-	private boolean areBlocksAroundFlammable(BlockView blockView, BlockPos blockPos) {
+	private boolean areBlocksAroundFlammable(BlockView world, BlockPos pos) {
 		for (Direction direction : Direction.values()) {
-			if (this.isFlammable(blockView.getBlockState(blockPos.offset(direction)))) {
+			if (this.isFlammable(world.getBlockState(pos.offset(direction)))) {
 				return true;
 			}
 		}
@@ -229,14 +221,14 @@ public class FireBlock extends Block {
 		return false;
 	}
 
-	private int getBurnChance(WorldView worldView, BlockPos blockPos) {
-		if (!worldView.isAir(blockPos)) {
+	private int getBurnChance(WorldView worldView, BlockPos pos) {
+		if (!worldView.isAir(pos)) {
 			return 0;
 		} else {
 			int i = 0;
 
 			for (Direction direction : Direction.values()) {
-				BlockState blockState = worldView.getBlockState(blockPos.offset(direction));
+				BlockState blockState = worldView.getBlockState(pos.offset(direction));
 				i = Math.max(this.getBurnChance(blockState), i);
 			}
 
@@ -249,14 +241,14 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState2.getBlock() != blockState.getBlock()) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+		if (oldState.getBlock() != state.getBlock()) {
 			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
-				|| !((PortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, blockPos)) {
-				if (!blockState.canPlaceAt(world, blockPos)) {
-					world.removeBlock(blockPos, false);
+				|| !((PortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
+				if (!state.canPlaceAt(world, pos)) {
+					world.removeBlock(pos, false);
 				} else {
-					world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + world.random.nextInt(10));
+					world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + world.random.nextInt(10));
 				}
 			}
 		}
@@ -264,12 +256,12 @@ public class FireBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(24) == 0) {
 			world.playSound(
-				(double)((float)blockPos.getX() + 0.5F),
-				(double)((float)blockPos.getY() + 0.5F),
-				(double)((float)blockPos.getZ() + 0.5F),
+				(double)((float)pos.getX() + 0.5F),
+				(double)((float)pos.getY() + 0.5F),
+				(double)((float)pos.getZ() + 0.5F),
 				SoundEvents.BLOCK_FIRE_AMBIENT,
 				SoundCategory.BLOCKS,
 				1.0F + random.nextFloat(),
@@ -278,58 +270,58 @@ public class FireBlock extends Block {
 			);
 		}
 
-		BlockPos blockPos2 = blockPos.method_10074();
-		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState2) && !blockState2.isSideSolidFullSquare(world, blockPos2, Direction.UP)) {
-			if (this.isFlammable(world.getBlockState(blockPos.west()))) {
+		BlockPos blockPos = pos.method_10074();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (!this.isFlammable(blockState) && !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
+			if (this.isFlammable(world.getBlockState(pos.west()))) {
 				for (int i = 0; i < 2; i++) {
-					double d = (double)blockPos.getX() + random.nextDouble() * 0.1F;
-					double e = (double)blockPos.getY() + random.nextDouble();
-					double f = (double)blockPos.getZ() + random.nextDouble();
+					double d = (double)pos.getX() + random.nextDouble() * 0.1F;
+					double e = (double)pos.getY() + random.nextDouble();
+					double f = (double)pos.getZ() + random.nextDouble();
 					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
-			if (this.isFlammable(world.getBlockState(blockPos.east()))) {
+			if (this.isFlammable(world.getBlockState(pos.east()))) {
 				for (int i = 0; i < 2; i++) {
-					double d = (double)(blockPos.getX() + 1) - random.nextDouble() * 0.1F;
-					double e = (double)blockPos.getY() + random.nextDouble();
-					double f = (double)blockPos.getZ() + random.nextDouble();
+					double d = (double)(pos.getX() + 1) - random.nextDouble() * 0.1F;
+					double e = (double)pos.getY() + random.nextDouble();
+					double f = (double)pos.getZ() + random.nextDouble();
 					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
-			if (this.isFlammable(world.getBlockState(blockPos.north()))) {
+			if (this.isFlammable(world.getBlockState(pos.north()))) {
 				for (int i = 0; i < 2; i++) {
-					double d = (double)blockPos.getX() + random.nextDouble();
-					double e = (double)blockPos.getY() + random.nextDouble();
-					double f = (double)blockPos.getZ() + random.nextDouble() * 0.1F;
+					double d = (double)pos.getX() + random.nextDouble();
+					double e = (double)pos.getY() + random.nextDouble();
+					double f = (double)pos.getZ() + random.nextDouble() * 0.1F;
 					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
-			if (this.isFlammable(world.getBlockState(blockPos.south()))) {
+			if (this.isFlammable(world.getBlockState(pos.south()))) {
 				for (int i = 0; i < 2; i++) {
-					double d = (double)blockPos.getX() + random.nextDouble();
-					double e = (double)blockPos.getY() + random.nextDouble();
-					double f = (double)(blockPos.getZ() + 1) - random.nextDouble() * 0.1F;
+					double d = (double)pos.getX() + random.nextDouble();
+					double e = (double)pos.getY() + random.nextDouble();
+					double f = (double)(pos.getZ() + 1) - random.nextDouble() * 0.1F;
 					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 
-			if (this.isFlammable(world.getBlockState(blockPos.up()))) {
+			if (this.isFlammable(world.getBlockState(pos.up()))) {
 				for (int i = 0; i < 2; i++) {
-					double d = (double)blockPos.getX() + random.nextDouble();
-					double e = (double)(blockPos.getY() + 1) - random.nextDouble() * 0.1F;
-					double f = (double)blockPos.getZ() + random.nextDouble();
+					double d = (double)pos.getX() + random.nextDouble();
+					double e = (double)(pos.getY() + 1) - random.nextDouble() * 0.1F;
+					double f = (double)pos.getZ() + random.nextDouble();
 					world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 		} else {
 			for (int i = 0; i < 3; i++) {
-				double d = (double)blockPos.getX() + random.nextDouble();
-				double e = (double)blockPos.getY() + random.nextDouble() * 0.5 + 0.5;
-				double f = (double)blockPos.getZ() + random.nextDouble();
+				double d = (double)pos.getX() + random.nextDouble();
+				double e = (double)pos.getY() + random.nextDouble() * 0.5 + 0.5;
+				double f = (double)pos.getZ() + random.nextDouble();
 				world.addParticle(ParticleTypes.LARGE_SMOKE, d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
@@ -340,9 +332,9 @@ public class FireBlock extends Block {
 		builder.add(AGE, NORTH, EAST, SOUTH, WEST, UP);
 	}
 
-	public void registerFlammableBlock(Block block, int i, int j) {
-		this.burnChances.put(block, i);
-		this.spreadChances.put(block, j);
+	public void registerFlammableBlock(Block block, int burnChance, int spreadChance) {
+		this.burnChances.put(block, burnChance);
+		this.spreadChances.put(block, spreadChance);
 	}
 
 	public static void registerDefaultFlammables() {

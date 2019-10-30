@@ -103,12 +103,12 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<NopeDecoratorConfig> END_GATEWAY = register("end_gateway", new EndGatewayDecorator(NopeDecoratorConfig::deserialize));
 	private final Function<Dynamic<?>, ? extends DC> configDeserializer;
 
-	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String string, G decorator) {
-		return Registry.register(Registry.DECORATOR, string, decorator);
+	private static <T extends DecoratorConfig, G extends Decorator<T>> G register(String registryName, G decorator) {
+		return Registry.register(Registry.DECORATOR, registryName, decorator);
 	}
 
-	public Decorator(Function<Dynamic<?>, ? extends DC> function) {
-		this.configDeserializer = function;
+	public Decorator(Function<Dynamic<?>, ? extends DC> configDeserializer) {
+		this.configDeserializer = configDeserializer;
 	}
 
 	public DC deserialize(Dynamic<?> dynamic) {
@@ -120,24 +120,22 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	}
 
 	protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(
-		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		IWorld world,
+		ChunkGenerator<? extends ChunkGeneratorConfig> generator,
 		Random random,
-		BlockPos blockPos,
+		BlockPos pos,
 		DC decoratorConfig,
 		ConfiguredFeature<FC, F> configuredFeature
 	) {
 		AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-		this.getPositions(iWorld, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
-			boolean bl = configuredFeature.generate(iWorld, chunkGenerator, random, blockPosx);
+		this.getPositions(world, generator, random, decoratorConfig, pos).forEach(blockPos -> {
+			boolean bl = configuredFeature.generate(world, generator, random, blockPos);
 			atomicBoolean.set(atomicBoolean.get() || bl);
 		});
 		return atomicBoolean.get();
 	}
 
-	public abstract Stream<BlockPos> getPositions(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
-	);
+	public abstract Stream<BlockPos> getPositions(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, DC config, BlockPos pos);
 
 	public String toString() {
 		return this.getClass().getSimpleName() + "@" + Integer.toHexString(this.hashCode());

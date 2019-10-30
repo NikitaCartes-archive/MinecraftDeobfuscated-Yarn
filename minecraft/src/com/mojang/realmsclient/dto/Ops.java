@@ -12,12 +12,12 @@ import net.fabricmc.api.Environment;
 public class Ops extends ValueObject {
 	public Set<String> ops = Sets.<String>newHashSet();
 
-	public static Ops parse(String string) {
+	public static Ops parse(String json) {
 		Ops ops = new Ops();
 		JsonParser jsonParser = new JsonParser();
 
 		try {
-			JsonElement jsonElement = jsonParser.parse(string);
+			JsonElement jsonElement = jsonParser.parse(json);
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			JsonElement jsonElement2 = jsonObject.get("ops");
 			if (jsonElement2.isJsonArray()) {

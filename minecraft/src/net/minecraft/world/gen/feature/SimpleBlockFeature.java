@@ -9,8 +9,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
-	public SimpleBlockFeature(Function<Dynamic<?>, ? extends SimpleBlockFeatureConfig> function) {
-		super(function);
+	public SimpleBlockFeature(Function<Dynamic<?>, ? extends SimpleBlockFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	public boolean method_13929(

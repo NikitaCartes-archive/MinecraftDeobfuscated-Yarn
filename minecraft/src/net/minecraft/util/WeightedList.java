@@ -31,30 +31,30 @@ public class WeightedList<U> {
 			}));
 	}
 
-	public <T> T method_23330(DynamicOps<T> dynamicOps, Function<U, Dynamic<T>> function) {
-		return dynamicOps.createList(
-			this.method_23338()
+	public <T> T serialize(DynamicOps<T> ops, Function<U, Dynamic<T>> entrySerializer) {
+		return ops.createList(
+			this.streamEntries()
 				.map(
-					entry -> dynamicOps.createMap(
+					entry -> ops.createMap(
 							ImmutableMap.<T, T>builder()
-								.put(dynamicOps.createString("data"), (T)((Dynamic)function.apply(entry.getElement())).getValue())
-								.put(dynamicOps.createString("weight"), dynamicOps.createInt(entry.method_23341()))
+								.put(ops.createString("data"), (T)((Dynamic)entrySerializer.apply(entry.getElement())).getValue())
+								.put(ops.createString("weight"), ops.createInt(entry.getWeight()))
 								.build()
 						)
 				)
 		);
 	}
 
-	public WeightedList<U> add(U object, int i) {
-		this.entries.add(new WeightedList.Entry(object, i));
+	public WeightedList<U> add(U item, int weight) {
+		this.entries.add(new WeightedList.Entry(item, weight));
 		return this;
 	}
 
 	public WeightedList<U> shuffle() {
-		return this.method_23333(this.random);
+		return this.shuffle(this.random);
 	}
 
-	public WeightedList<U> method_23333(Random random) {
+	public WeightedList<U> shuffle(Random random) {
 		this.entries.forEach(entry -> entry.setShuffledOrder(random.nextFloat()));
 		this.entries.sort(Comparator.comparingDouble(object -> ((WeightedList.Entry)object).getShuffledOrder()));
 		return this;
@@ -64,12 +64,12 @@ public class WeightedList<U> {
 		return this.entries.stream().map(WeightedList.Entry::getElement);
 	}
 
-	public Stream<WeightedList<U>.Entry<? extends U>> method_23338() {
+	public Stream<WeightedList<U>.Entry<? extends U>> streamEntries() {
 		return this.entries.stream();
 	}
 
 	public U pickRandom(Random random) {
-		return (U)this.method_23333(random).stream().findFirst().orElseThrow(RuntimeException::new);
+		return (U)this.shuffle(random).stream().findFirst().orElseThrow(RuntimeException::new);
 	}
 
 	public String toString() {
@@ -77,33 +77,33 @@ public class WeightedList<U> {
 	}
 
 	public class Entry<T> {
-		private final T field_18400;
+		private final T item;
 		private final int weight;
 		private double shuffledOrder;
 
-		private Entry(T object, int i) {
-			this.weight = i;
-			this.field_18400 = object;
+		private Entry(T item, int weight) {
+			this.weight = weight;
+			this.item = item;
 		}
 
 		private double getShuffledOrder() {
 			return this.shuffledOrder;
 		}
 
-		private void setShuffledOrder(float f) {
-			this.shuffledOrder = -Math.pow((double)f, (double)(1.0F / (float)this.weight));
+		private void setShuffledOrder(float random) {
+			this.shuffledOrder = -Math.pow((double)random, (double)(1.0F / (float)this.weight));
 		}
 
 		public T getElement() {
-			return this.field_18400;
+			return this.item;
 		}
 
-		public int method_23341() {
+		public int getWeight() {
 			return this.weight;
 		}
 
 		public String toString() {
-			return "" + this.weight + ":" + this.field_18400;
+			return "" + this.weight + ":" + this.item;
 		}
 	}
 }

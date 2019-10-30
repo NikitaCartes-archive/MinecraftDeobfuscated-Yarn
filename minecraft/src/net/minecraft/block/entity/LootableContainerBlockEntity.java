@@ -27,10 +27,10 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		super(blockEntityType);
 	}
 
-	public static void setLootTable(BlockView blockView, Random random, BlockPos blockPos, Identifier identifier) {
-		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+	public static void setLootTable(BlockView world, Random random, BlockPos pos, Identifier id) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof LootableContainerBlockEntity) {
-			((LootableContainerBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
+			((LootableContainerBlockEntity)blockEntity).setLootTable(id, random.nextLong());
 		}
 	}
 
@@ -72,21 +72,21 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		}
 	}
 
-	public void setLootTable(Identifier identifier, long l) {
-		this.lootTableId = identifier;
-		this.lootTableSeed = l;
+	public void setLootTable(Identifier id, long seed) {
+		this.lootTableId = id;
+		this.lootTableSeed = seed;
 	}
 
 	@Override
-	public ItemStack getInvStack(int i) {
+	public ItemStack getInvStack(int slot) {
 		this.checkLootInteraction(null);
-		return this.getInvStackList().get(i);
+		return this.getInvStackList().get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
+	public ItemStack takeInvStack(int slot, int amount) {
 		this.checkLootInteraction(null);
-		ItemStack itemStack = Inventories.splitStack(this.getInvStackList(), i, j);
+		ItemStack itemStack = Inventories.splitStack(this.getInvStackList(), slot, amount);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -95,27 +95,27 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public ItemStack removeInvStack(int i) {
+	public ItemStack removeInvStack(int slot) {
 		this.checkLootInteraction(null);
-		return Inventories.removeStack(this.getInvStackList(), i);
+		return Inventories.removeStack(this.getInvStackList(), slot);
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
+	public void setInvStack(int slot, ItemStack stack) {
 		this.checkLootInteraction(null);
-		this.getInvStackList().set(i, itemStack);
-		if (itemStack.getCount() > this.getInvMaxStackAmount()) {
-			itemStack.setCount(this.getInvMaxStackAmount());
+		this.getInvStackList().set(slot, stack);
+		if (stack.getCount() > this.getInvMaxStackAmount()) {
+			stack.setCount(this.getInvMaxStackAmount());
 		}
 
 		this.markDirty();
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+	public boolean canPlayerUseInv(PlayerEntity player) {
 		return this.world.getBlockEntity(this.pos) != this
 			? false
-			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+			: !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
 	}
 
 	@Override
@@ -125,19 +125,19 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	protected abstract DefaultedList<ItemStack> getInvStackList();
 
-	protected abstract void setInvStackList(DefaultedList<ItemStack> defaultedList);
+	protected abstract void setInvStackList(DefaultedList<ItemStack> list);
 
 	@Override
-	public boolean checkUnlocked(PlayerEntity playerEntity) {
-		return super.checkUnlocked(playerEntity) && (this.lootTableId == null || !playerEntity.isSpectator());
+	public boolean checkUnlocked(PlayerEntity player) {
+		return super.checkUnlocked(player) && (this.lootTableId == null || !player.isSpectator());
 	}
 
 	@Nullable
 	@Override
-	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		if (this.checkUnlocked(playerEntity)) {
 			this.checkLootInteraction(playerInventory.player);
-			return this.createContainer(i, playerInventory);
+			return this.createContainer(syncId, playerInventory);
 		} else {
 			return null;
 		}

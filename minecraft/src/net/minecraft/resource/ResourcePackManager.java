@@ -52,9 +52,9 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 		});
 	}
 
-	public void setEnabledProfiles(Collection<T> collection) {
+	public void setEnabledProfiles(Collection<T> enabled) {
 		this.enabled.clear();
-		this.enabled.addAll(collection);
+		this.enabled.addAll(enabled);
 
 		for (T resourcePackProfile : this.profiles.values()) {
 			if (resourcePackProfile.isAlwaysEnabled() && !this.enabled.contains(resourcePackProfile)) {
@@ -78,12 +78,12 @@ public class ResourcePackManager<T extends ResourcePackProfile> implements AutoC
 	}
 
 	@Nullable
-	public T getProfile(String string) {
-		return (T)this.profiles.get(string);
+	public T getProfile(String name) {
+		return (T)this.profiles.get(name);
 	}
 
-	public void registerProvider(ResourcePackProvider resourcePackProvider) {
-		this.providers.add(resourcePackProvider);
+	public void registerProvider(ResourcePackProvider provider) {
+		this.providers.add(provider);
 	}
 
 	public void close() {

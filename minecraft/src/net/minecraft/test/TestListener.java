@@ -1,7 +1,7 @@
 package net.minecraft.test;
 
 public interface TestListener {
-	void onStarted(GameTest gameTest);
+	void onStarted(GameTest test);
 
-	void onFailed(GameTest gameTest);
+	void onFailed(GameTest test);
 }

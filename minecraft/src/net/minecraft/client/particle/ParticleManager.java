@@ -71,7 +71,7 @@ public class ParticleManager implements ResourceReloadListener {
 	private final Random random = new Random();
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
-	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> field_18300 = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
+	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> spriteAwareFactories = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
 	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture("textures/particle");
 
 	public ParticleManager(World world, TextureManager textureManager) {
@@ -140,67 +140,67 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.UNDERWATER, WaterSuspendParticle.UnderwaterFactory::new);
 		this.registerFactory(ParticleTypes.SPLASH, WaterSplashParticle.SplashFactory::new);
 		this.registerFactory(ParticleTypes.WITCH, SpellParticle.WitchFactory::new);
-		this.registerFactory(ParticleTypes.DRIPPING_HONEY, BlockLeakParticle.class_4500::new);
-		this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.class_4499::new);
-		this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.class_4501::new);
-		this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.class_4502::new);
+		this.registerFactory(ParticleTypes.DRIPPING_HONEY, BlockLeakParticle.DrippingHoneyFactory::new);
+		this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.FallingHoneyFactory::new);
+		this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.LandingHoneyFactory::new);
+		this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.FallingNectarFactory::new);
 	}
 
-	private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, ParticleFactory<T> particleFactory) {
-		this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), particleFactory);
+	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
+		this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), factory);
 	}
 
-	private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, ParticleManager.class_4091<T> arg) {
+	private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, ParticleManager.SpriteAwareFactory<T> spriteAwareFactory) {
 		ParticleManager.SimpleSpriteProvider simpleSpriteProvider = new ParticleManager.SimpleSpriteProvider();
-		this.field_18300.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
-		this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), arg.create(simpleSpriteProvider));
+		this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
+		this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), spriteAwareFactory.create(simpleSpriteProvider));
 	}
 
 	@Override
 	public CompletableFuture<Void> reload(
 		ResourceReloadListener.Synchronizer synchronizer,
-		ResourceManager resourceManager,
-		Profiler profiler,
-		Profiler profiler2,
-		Executor executor,
-		Executor executor2
+		ResourceManager manager,
+		Profiler prepareProfiler,
+		Profiler applyProfiler,
+		Executor prepareExecutor,
+		Executor applyExecutor
 	) {
 		Map<Identifier, List<Identifier>> map = Maps.<Identifier, List<Identifier>>newConcurrentMap();
 		CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])Registry.PARTICLE_TYPE
 			.getIds()
 			.stream()
-			.map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(resourceManager, identifier, map), executor))
+			.map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(manager, identifier, map), prepareExecutor))
 			.toArray(CompletableFuture[]::new);
 		return CompletableFuture.allOf(completableFutures)
 			.thenApplyAsync(void_ -> {
-				profiler.startTick();
-				profiler.push("stitching");
+				prepareProfiler.startTick();
+				prepareProfiler.push("stitching");
 				Set<Identifier> set = (Set<Identifier>)map.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-				SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(resourceManager, set, profiler);
-				profiler.pop();
-				profiler.endTick();
+				SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(manager, set, prepareProfiler);
+				prepareProfiler.pop();
+				prepareProfiler.endTick();
 				return data;
-			}, executor)
+			}, prepareExecutor)
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(
 				data -> {
-					profiler2.startTick();
-					profiler2.push("upload");
+					applyProfiler.startTick();
+					applyProfiler.push("upload");
 					this.particleAtlasTexture.upload(data);
-					profiler2.swap("bindSpriteSets");
+					applyProfiler.swap("bindSpriteSets");
 					Sprite sprite = this.particleAtlasTexture.getSprite(MissingSprite.getMissingSpriteId());
 					map.forEach(
 						(identifier, list) -> {
 							ImmutableList<Sprite> immutableList = list.isEmpty()
 								? ImmutableList.of(sprite)
 								: (ImmutableList)list.stream().map(this.particleAtlasTexture::getSprite).collect(ImmutableList.toImmutableList());
-							((ParticleManager.SimpleSpriteProvider)this.field_18300.get(identifier)).setSprites(immutableList);
+							((ParticleManager.SimpleSpriteProvider)this.spriteAwareFactories.get(identifier)).setSprites(immutableList);
 						}
 					);
-					profiler2.pop();
-					profiler2.endTick();
+					applyProfiler.pop();
+					applyProfiler.endTick();
 				},
-				executor2
+				applyExecutor
 			);
 	}
 
@@ -208,11 +208,11 @@ public class ParticleManager implements ResourceReloadListener {
 		this.particleAtlasTexture.clear();
 	}
 
-	private void loadTextureList(ResourceManager resourceManager, Identifier identifier, Map<Identifier, List<Identifier>> map) {
-		Identifier identifier2 = new Identifier(identifier.getNamespace(), "particles/" + identifier.getPath() + ".json");
+	private void loadTextureList(ResourceManager resourceManager, Identifier id, Map<Identifier, List<Identifier>> result) {
+		Identifier identifier = new Identifier(id.getNamespace(), "particles/" + id.getPath() + ".json");
 
 		try {
-			Resource resource = resourceManager.getResource(identifier2);
+			Resource resource = resourceManager.getResource(identifier);
 			Throwable var6 = null;
 
 			try {
@@ -222,17 +222,17 @@ public class ParticleManager implements ResourceReloadListener {
 				try {
 					ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
 					List<Identifier> list = particleTextureData.getTextureList();
-					boolean bl = this.field_18300.containsKey(identifier);
+					boolean bl = this.spriteAwareFactories.containsKey(id);
 					if (list == null) {
 						if (bl) {
-							throw new IllegalStateException("Missing texture list for particle " + identifier);
+							throw new IllegalStateException("Missing texture list for particle " + id);
 						}
 					} else {
 						if (!bl) {
-							throw new IllegalStateException("Redundant texture list for particle " + identifier);
+							throw new IllegalStateException("Redundant texture list for particle " + id);
 						}
 
-						map.put(identifier, list);
+						result.put(id, list);
 					}
 				} catch (Throwable var35) {
 					var8 = var35;
@@ -267,21 +267,21 @@ public class ParticleManager implements ResourceReloadListener {
 				}
 			}
 		} catch (IOException var39) {
-			throw new IllegalStateException("Failed to load description for particle " + identifier, var39);
+			throw new IllegalStateException("Failed to load description for particle " + id, var39);
 		}
 	}
 
-	public void addEmitter(Entity entity, ParticleEffect particleEffect) {
-		this.newEmitterParticles.add(new EmitterParticle(this.world, entity, particleEffect));
+	public void addEmitter(Entity entity, ParticleEffect parameters) {
+		this.newEmitterParticles.add(new EmitterParticle(this.world, entity, parameters));
 	}
 
-	public void addEmitter(Entity entity, ParticleEffect particleEffect, int i) {
-		this.newEmitterParticles.add(new EmitterParticle(this.world, entity, particleEffect, i));
+	public void addEmitter(Entity entity, ParticleEffect parameters, int maxAge) {
+		this.newEmitterParticles.add(new EmitterParticle(this.world, entity, parameters, maxAge));
 	}
 
 	@Nullable
-	public Particle addParticle(ParticleEffect particleEffect, double d, double e, double f, double g, double h, double i) {
-		Particle particle = this.createParticle(particleEffect, d, e, f, g, h, i);
+	public Particle addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+		Particle particle = this.createParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
 		if (particle != null) {
 			this.addParticle(particle);
 			return particle;
@@ -291,10 +291,10 @@ public class ParticleManager implements ResourceReloadListener {
 	}
 
 	@Nullable
-	private <T extends ParticleEffect> Particle createParticle(T particleEffect, double d, double e, double f, double g, double h, double i) {
+	private <T extends ParticleEffect> Particle createParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		ParticleFactory<T> particleFactory = (ParticleFactory<T>)this.factories
-			.get(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleEffect>)particleEffect.getType()));
-		return particleFactory == null ? null : particleFactory.createParticle(particleEffect, this.world, d, e, f, g, h, i);
+			.get(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleEffect>)parameters.getType()));
+		return particleFactory == null ? null : particleFactory.createParticle(parameters, this.world, x, y, z, velocityX, velocityY, velocityZ);
 	}
 
 	public void addParticle(Particle particle) {
@@ -354,12 +354,12 @@ public class ParticleManager implements ResourceReloadListener {
 		}
 	}
 
-	public void renderParticles(Camera camera, float f) {
-		float g = MathHelper.cos(camera.getYaw() * (float) (Math.PI / 180.0));
-		float h = MathHelper.sin(camera.getYaw() * (float) (Math.PI / 180.0));
-		float i = -h * MathHelper.sin(camera.getPitch() * (float) (Math.PI / 180.0));
-		float j = g * MathHelper.sin(camera.getPitch() * (float) (Math.PI / 180.0));
-		float k = MathHelper.cos(camera.getPitch() * (float) (Math.PI / 180.0));
+	public void renderParticles(Camera camera, float tickDelta) {
+		float f = MathHelper.cos(camera.getYaw() * (float) (Math.PI / 180.0));
+		float g = MathHelper.sin(camera.getYaw() * (float) (Math.PI / 180.0));
+		float h = -g * MathHelper.sin(camera.getPitch() * (float) (Math.PI / 180.0));
+		float i = f * MathHelper.sin(camera.getPitch() * (float) (Math.PI / 180.0));
+		float j = MathHelper.cos(camera.getPitch() * (float) (Math.PI / 180.0));
 		Particle.cameraX = camera.getPos().x;
 		Particle.cameraY = camera.getPos().y;
 		Particle.cameraZ = camera.getPos().z;
@@ -369,12 +369,12 @@ public class ParticleManager implements ResourceReloadListener {
 			if (iterable != null) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+				BufferBuilder bufferBuilder = tessellator.getBuffer();
 				particleTextureSheet.begin(bufferBuilder, this.textureManager);
 
 				for (Particle particle : iterable) {
 					try {
-						particle.buildGeometry(bufferBuilder, camera, f, g, k, h, i, j);
+						particle.buildGeometry(bufferBuilder, camera, tickDelta, f, j, g, h, i);
 					} catch (Throwable var18) {
 						CrashReport crashReport = CrashReport.create(var18, "Rendering Particle");
 						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
@@ -399,9 +399,9 @@ public class ParticleManager implements ResourceReloadListener {
 		this.newEmitterParticles.clear();
 	}
 
-	public void addBlockBreakParticles(BlockPos blockPos, BlockState blockState) {
-		if (!blockState.isAir()) {
-			VoxelShape voxelShape = blockState.getOutlineShape(this.world, blockPos);
+	public void addBlockBreakParticles(BlockPos pos, BlockState state) {
+		if (!state.isAir()) {
+			VoxelShape voxelShape = state.getOutlineShape(this.world, pos);
 			double d = 0.25;
 			voxelShape.forEachBox(
 				(dx, e, f, g, h, i) -> {
@@ -422,10 +422,8 @@ public class ParticleManager implements ResourceReloadListener {
 								double w = t * k + e;
 								double x = u * l + f;
 								this.addParticle(
-									new BlockCrackParticle(
-											this.world, (double)blockPos.getX() + v, (double)blockPos.getY() + w, (double)blockPos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, blockState
-										)
-										.setBlockPos(blockPos)
+									new BlockCrackParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state)
+										.setBlockPos(pos)
 								);
 							}
 						}
@@ -443,31 +441,31 @@ public class ParticleManager implements ResourceReloadListener {
 			int k = blockPos.getZ();
 			float f = 0.1F;
 			Box box = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
-			double d = (double)i + this.random.nextDouble() * (box.maxX - box.minX - 0.2F) + 0.1F + box.minX;
-			double e = (double)j + this.random.nextDouble() * (box.maxY - box.minY - 0.2F) + 0.1F + box.minY;
-			double g = (double)k + this.random.nextDouble() * (box.maxZ - box.minZ - 0.2F) + 0.1F + box.minZ;
+			double d = (double)i + this.random.nextDouble() * (box.x2 - box.x1 - 0.2F) + 0.1F + box.x1;
+			double e = (double)j + this.random.nextDouble() * (box.y2 - box.y1 - 0.2F) + 0.1F + box.y1;
+			double g = (double)k + this.random.nextDouble() * (box.z2 - box.z1 - 0.2F) + 0.1F + box.z1;
 			if (direction == Direction.DOWN) {
-				e = (double)j + box.minY - 0.1F;
+				e = (double)j + box.y1 - 0.1F;
 			}
 
 			if (direction == Direction.UP) {
-				e = (double)j + box.maxY + 0.1F;
+				e = (double)j + box.y2 + 0.1F;
 			}
 
 			if (direction == Direction.NORTH) {
-				g = (double)k + box.minZ - 0.1F;
+				g = (double)k + box.z1 - 0.1F;
 			}
 
 			if (direction == Direction.SOUTH) {
-				g = (double)k + box.maxZ + 0.1F;
+				g = (double)k + box.z2 + 0.1F;
 			}
 
 			if (direction == Direction.WEST) {
-				d = (double)i + box.minX - 0.1F;
+				d = (double)i + box.x1 - 0.1F;
 			}
 
 			if (direction == Direction.EAST) {
-				d = (double)i + box.maxX + 0.1F;
+				d = (double)i + box.x2 + 0.1F;
 			}
 
 			this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2F).scale(0.6F));
@@ -495,14 +493,14 @@ public class ParticleManager implements ResourceReloadListener {
 			return (Sprite)this.sprites.get(random.nextInt(this.sprites.size()));
 		}
 
-		public void setSprites(List<Sprite> list) {
-			this.sprites = ImmutableList.copyOf(list);
+		public void setSprites(List<Sprite> sprites) {
+			this.sprites = ImmutableList.copyOf(sprites);
 		}
 	}
 
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
-	interface class_4091<T extends ParticleEffect> {
+	interface SpriteAwareFactory<T extends ParticleEffect> {
 		ParticleFactory<T> create(SpriteProvider spriteProvider);
 	}
 }

@@ -35,61 +35,59 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public int getLuminance(BlockState blockState) {
-		return this.isDry(blockState) ? 0 : super.getLuminance(blockState) + 3 * (Integer)blockState.get(PICKLES);
+	public int getLuminance(BlockState state) {
+		return this.isDry(state) ? 0 : super.getLuminance(state) + 3 * (Integer)state.get(PICKLES);
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
 		if (blockState.getBlock() == this) {
 			return blockState.with(PICKLES, Integer.valueOf(Math.min(4, (Integer)blockState.get(PICKLES) + 1)));
 		} else {
-			FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+			FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 			boolean bl = fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;
-			return super.getPlacementState(itemPlacementContext).with(WATERLOGGED, Boolean.valueOf(bl));
+			return super.getPlacementState(ctx).with(WATERLOGGED, Boolean.valueOf(bl));
 		}
 	}
 
-	private boolean isDry(BlockState blockState) {
-		return !(Boolean)blockState.get(WATERLOGGED);
+	private boolean isDry(BlockState state) {
+		return !(Boolean)state.get(WATERLOGGED);
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP).isEmpty();
+	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+		return !floor.getCollisionShape(view, pos).getFace(Direction.UP).isEmpty();
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.method_10074();
-		return this.canPlantOnTop(worldView.getBlockState(blockPos2), worldView, blockPos2);
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		BlockPos blockPos = pos.method_10074();
+		return this.canPlantOnTop(world.getBlockState(blockPos), world, blockPos);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (!blockState.canPlaceAt(iWorld, blockPos)) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if (!state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			if ((Boolean)blockState.get(WATERLOGGED)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+			if ((Boolean)state.get(WATERLOGGED)) {
+				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 		}
 	}
 
 	@Override
-	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		return itemPlacementContext.getStack().getItem() == this.asItem() && blockState.get(PICKLES) < 4 ? true : super.canReplace(blockState, itemPlacementContext);
+	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+		return ctx.getStack().getItem() == this.asItem() && state.get(PICKLES) < 4 ? true : super.canReplace(state, ctx);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		switch (blockState.get(PICKLES)) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		switch (state.get(PICKLES)) {
 			case 1:
 			default:
 				return ONE_PICKLE_SHAPE;
@@ -103,8 +101,8 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
+	public FluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
 	@Override
@@ -113,35 +111,35 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
 		return true;
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld serverWorld, Random random, BlockPos blockPos, BlockState blockState) {
-		if (!this.isDry(blockState) && serverWorld.getBlockState(blockPos.method_10074()).matches(BlockTags.CORAL_BLOCKS)) {
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+		if (!this.isDry(state) && world.getBlockState(pos.method_10074()).matches(BlockTags.CORAL_BLOCKS)) {
 			int i = 5;
 			int j = 1;
 			int k = 2;
 			int l = 0;
-			int m = blockPos.getX() - 2;
+			int m = pos.getX() - 2;
 			int n = 0;
 
 			for (int o = 0; o < 5; o++) {
 				for (int p = 0; p < j; p++) {
-					int q = 2 + blockPos.getY() - 1;
+					int q = 2 + pos.getY() - 1;
 
 					for (int r = q - 2; r < q; r++) {
-						BlockPos blockPos2 = new BlockPos(m + o, r, blockPos.getZ() - n + p);
-						if (blockPos2 != blockPos && random.nextInt(6) == 0 && serverWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
-							BlockState blockState2 = serverWorld.getBlockState(blockPos2.method_10074());
-							if (blockState2.matches(BlockTags.CORAL_BLOCKS)) {
-								serverWorld.setBlockState(blockPos2, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
+						BlockPos blockPos = new BlockPos(m + o, r, pos.getZ() - n + p);
+						if (blockPos != pos && random.nextInt(6) == 0 && world.getBlockState(blockPos).getBlock() == Blocks.WATER) {
+							BlockState blockState = world.getBlockState(blockPos.method_10074());
+							if (blockState.matches(BlockTags.CORAL_BLOCKS)) {
+								world.setBlockState(blockPos, Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, Integer.valueOf(random.nextInt(4) + 1)), 3);
 							}
 						}
 					}
@@ -158,7 +156,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 				l++;
 			}
 
-			serverWorld.setBlockState(blockPos, blockState.with(PICKLES, Integer.valueOf(4)), 2);
+			world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), 2);
 		}
 	}
 }

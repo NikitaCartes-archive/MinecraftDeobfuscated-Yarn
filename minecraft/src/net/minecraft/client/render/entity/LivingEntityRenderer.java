@@ -6,10 +6,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -47,9 +47,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return this.model;
 	}
 
-	public void method_4054(
-		T livingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
-	) {
+	public void method_4054(T livingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
 		matrixStack.push();
 		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, h);
 		this.model.isRiding = livingEntity.hasVehicle();
@@ -114,20 +112,18 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		this.model.setAngles(livingEntity, p, o, lx, k, m, 0.0625F);
 		if (bl || bl2) {
 			Identifier identifier = this.getTexture(livingEntity);
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(
-				bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : this.model.getLayer(identifier)
-			);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : this.model.getLayer(identifier));
 			this.model.render(matrixStack, vertexConsumer, q, method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0F, 1.0F, 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {
 			for (FeatureRenderer<T, M> featureRenderer : this.features) {
-				featureRenderer.render(matrixStack, layeredVertexConsumerStorage, q, livingEntity, p, o, h, lx, k, m, 0.0625F);
+				featureRenderer.render(matrixStack, vertexConsumerProvider, q, livingEntity, p, o, h, lx, k, m, 0.0625F);
 			}
 		}
 
 		matrixStack.pop();
-		super.render(livingEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.render(livingEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public static int method_23622(LivingEntity livingEntity, float f) {
@@ -153,45 +149,45 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected void setupTransforms(T livingEntity, MatrixStack matrixStack, float f, float g, float h) {
-		EntityPose entityPose = livingEntity.getPose();
+	protected void setupTransforms(T entity, MatrixStack matrixStack, float f, float g, float h) {
+		EntityPose entityPose = entity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - g));
 		}
 
-		if (livingEntity.deathTime > 0) {
-			float i = ((float)livingEntity.deathTime + h - 1.0F) / 20.0F * 1.6F;
+		if (entity.deathTime > 0) {
+			float i = ((float)entity.deathTime + h - 1.0F) / 20.0F * 1.6F;
 			i = MathHelper.sqrt(i);
 			if (i > 1.0F) {
 				i = 1.0F;
 			}
 
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(i * this.getLyingAngle(livingEntity)));
-		} else if (livingEntity.isUsingRiptide()) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F - livingEntity.pitch));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)livingEntity.age + h) * -75.0F));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(i * this.getLyingAngle(entity)));
+		} else if (entity.isUsingRiptide()) {
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0F - entity.pitch));
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(((float)entity.age + h) * -75.0F));
 		} else if (entityPose == EntityPose.SLEEPING) {
-			Direction direction = livingEntity.getSleepingDirection();
+			Direction direction = entity.getSleepingDirection();
 			float j = direction != null ? getYaw(direction) : g;
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(j));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(livingEntity)));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(this.getLyingAngle(entity)));
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(270.0F));
-		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
-			String string = Formatting.strip(livingEntity.getName().getString());
+		} else if (entity.hasCustomName() || entity instanceof PlayerEntity) {
+			String string = Formatting.strip(entity.getName().getString());
 			if (("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
-				matrixStack.translate(0.0, (double)(livingEntity.getHeight() + 0.1F), 0.0);
+				&& (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
+				matrixStack.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
 				matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0F));
 			}
 		}
 	}
 
-	protected float getHandSwingProgress(T livingEntity, float f) {
-		return livingEntity.getHandSwingProgress(f);
+	protected float getHandSwingProgress(T entity, float tickDelta) {
+		return entity.getHandSwingProgress(tickDelta);
 	}
 
-	protected float getAge(T livingEntity, float f) {
-		return (float)livingEntity.age + f;
+	protected float getAge(T entity, float tickDelta) {
+		return (float)entity.age + tickDelta;
 	}
 
 	protected float getLyingAngle(T livingEntity) {
@@ -202,7 +198,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 0.0F;
 	}
 
-	protected void scale(T livingEntity, MatrixStack matrixStack, float f) {
+	protected void scale(T entity, MatrixStack matrixStack, float f) {
 	}
 
 	protected boolean method_4055(T livingEntity) {

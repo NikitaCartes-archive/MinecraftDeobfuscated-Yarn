@@ -11,8 +11,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class HeightmapRenamingFix extends DataFix {
-	public HeightmapRenamingFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public HeightmapRenamingFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -24,39 +24,39 @@ public class HeightmapRenamingFix extends DataFix {
 		);
 	}
 
-	private Dynamic<?> renameHeightmapTags(Dynamic<?> dynamic) {
-		Optional<? extends Dynamic<?>> optional = dynamic.get("Heightmaps").get();
+	private Dynamic<?> renameHeightmapTags(Dynamic<?> tag) {
+		Optional<? extends Dynamic<?>> optional = tag.get("Heightmaps").get();
 		if (!optional.isPresent()) {
-			return dynamic;
+			return tag;
 		} else {
-			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
-			Optional<? extends Dynamic<?>> optional2 = dynamic2.get("LIQUID").get();
+			Dynamic<?> dynamic = (Dynamic<?>)optional.get();
+			Optional<? extends Dynamic<?>> optional2 = dynamic.get("LIQUID").get();
 			if (optional2.isPresent()) {
-				dynamic2 = dynamic2.remove("LIQUID");
-				dynamic2 = dynamic2.set("WORLD_SURFACE_WG", (Dynamic<?>)optional2.get());
+				dynamic = dynamic.remove("LIQUID");
+				dynamic = dynamic.set("WORLD_SURFACE_WG", (Dynamic<?>)optional2.get());
 			}
 
-			Optional<? extends Dynamic<?>> optional3 = dynamic2.get("SOLID").get();
+			Optional<? extends Dynamic<?>> optional3 = dynamic.get("SOLID").get();
 			if (optional3.isPresent()) {
-				dynamic2 = dynamic2.remove("SOLID");
-				dynamic2 = dynamic2.set("OCEAN_FLOOR_WG", (Dynamic<?>)optional3.get());
-				dynamic2 = dynamic2.set("OCEAN_FLOOR", (Dynamic<?>)optional3.get());
+				dynamic = dynamic.remove("SOLID");
+				dynamic = dynamic.set("OCEAN_FLOOR_WG", (Dynamic<?>)optional3.get());
+				dynamic = dynamic.set("OCEAN_FLOOR", (Dynamic<?>)optional3.get());
 			}
 
-			Optional<? extends Dynamic<?>> optional4 = dynamic2.get("LIGHT").get();
+			Optional<? extends Dynamic<?>> optional4 = dynamic.get("LIGHT").get();
 			if (optional4.isPresent()) {
-				dynamic2 = dynamic2.remove("LIGHT");
-				dynamic2 = dynamic2.set("LIGHT_BLOCKING", (Dynamic<?>)optional4.get());
+				dynamic = dynamic.remove("LIGHT");
+				dynamic = dynamic.set("LIGHT_BLOCKING", (Dynamic<?>)optional4.get());
 			}
 
-			Optional<? extends Dynamic<?>> optional5 = dynamic2.get("RAIN").get();
+			Optional<? extends Dynamic<?>> optional5 = dynamic.get("RAIN").get();
 			if (optional5.isPresent()) {
-				dynamic2 = dynamic2.remove("RAIN");
-				dynamic2 = dynamic2.set("MOTION_BLOCKING", (Dynamic<?>)optional5.get());
-				dynamic2 = dynamic2.set("MOTION_BLOCKING_NO_LEAVES", (Dynamic<?>)optional5.get());
+				dynamic = dynamic.remove("RAIN");
+				dynamic = dynamic.set("MOTION_BLOCKING", (Dynamic<?>)optional5.get());
+				dynamic = dynamic.set("MOTION_BLOCKING_NO_LEAVES", (Dynamic<?>)optional5.get());
 			}
 
-			return dynamic.set("Heightmaps", dynamic2);
+			return tag.set("Heightmaps", dynamic);
 		}
 	}
 }

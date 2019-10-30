@@ -83,12 +83,10 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		this.setAir(this.getMaxAir());
 		this.pitch = 0.0F;
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	@Override
@@ -97,11 +95,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected void tickWaterBreathingAir(int i) {
+	protected void tickWaterBreathingAir(int air) {
 	}
 
-	public void setTreasurePos(BlockPos blockPos) {
-		this.dataTracker.set(TREASURE_POS, blockPos);
+	public void setTreasurePos(BlockPos treasurePos) {
+		this.dataTracker.set(TREASURE_POS, treasurePos);
 	}
 
 	public BlockPos getTreasurePos() {
@@ -112,16 +110,16 @@ public class DolphinEntity extends WaterCreatureEntity {
 		return this.dataTracker.get(HAS_FISH);
 	}
 
-	public void setHasFish(boolean bl) {
-		this.dataTracker.set(HAS_FISH, bl);
+	public void setHasFish(boolean hasFish) {
+		this.dataTracker.set(HAS_FISH, hasFish);
 	}
 
 	public int getMoistness() {
 		return this.dataTracker.get(MOISTNESS);
 	}
 
-	public void setMoistness(int i) {
-		this.dataTracker.set(MOISTNESS, i);
+	public void setMoistness(int moistness) {
+		this.dataTracker.set(MOISTNESS, moistness);
 	}
 
 	@Override
@@ -133,24 +131,24 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("TreasurePosX", this.getTreasurePos().getX());
-		compoundTag.putInt("TreasurePosY", this.getTreasurePos().getY());
-		compoundTag.putInt("TreasurePosZ", this.getTreasurePos().getZ());
-		compoundTag.putBoolean("GotFish", this.hasFish());
-		compoundTag.putInt("Moistness", this.getMoistness());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("TreasurePosX", this.getTreasurePos().getX());
+		tag.putInt("TreasurePosY", this.getTreasurePos().getY());
+		tag.putInt("TreasurePosZ", this.getTreasurePos().getZ());
+		tag.putBoolean("GotFish", this.hasFish());
+		tag.putInt("Moistness", this.getMoistness());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		int i = compoundTag.getInt("TreasurePosX");
-		int j = compoundTag.getInt("TreasurePosY");
-		int k = compoundTag.getInt("TreasurePosZ");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		int i = tag.getInt("TreasurePosX");
+		int j = tag.getInt("TreasurePosY");
+		int k = tag.getInt("TreasurePosZ");
 		this.setTreasurePos(new BlockPos(i, j, k));
-		super.readCustomDataFromTag(compoundTag);
-		this.setHasFish(compoundTag.getBoolean("GotFish"));
-		this.setMoistness(compoundTag.getInt("Moistness"));
+		super.readCustomDataFromTag(tag);
+		this.setHasFish(tag.getBoolean("GotFish"));
+		this.setMoistness(tag.getInt("Moistness"));
 	}
 
 	@Override
@@ -185,10 +183,10 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean tryAttack(Entity entity) {
-		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
+	public boolean tryAttack(Entity target) {
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
-			this.dealDamage(this, entity);
+			this.dealDamage(this, target);
 			this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
 		}
 
@@ -201,12 +199,12 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	protected int getNextAirOnLand(int i) {
+	protected int getNextAirOnLand(int air) {
 		return this.getMaxAir();
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.3F;
 	}
 
@@ -226,20 +224,20 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean canPickUp(ItemStack itemStack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canPickUp(itemStack);
+	public boolean canPickUp(ItemStack stack) {
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canPickUp(stack);
 	}
 
 	@Override
-	protected void loot(ItemEntity itemEntity) {
+	protected void loot(ItemEntity item) {
 		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
-			ItemStack itemStack = itemEntity.getStack();
+			ItemStack itemStack = item.getStack();
 			if (this.canPickupItem(itemStack)) {
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 				this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
-				this.sendPickup(itemEntity, itemStack.getCount());
-				itemEntity.remove();
+				this.sendPickup(item, itemStack.getCount());
+				item.remove();
 			}
 		}
 	}
@@ -300,52 +298,52 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 38) {
+	public void handleStatus(byte status) {
+		if (status == 38) {
 			this.spawnParticlesAround(ParticleTypes.HAPPY_VILLAGER);
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void spawnParticlesAround(ParticleEffect particleEffect) {
+	private void spawnParticlesAround(ParticleEffect parameters) {
 		for (int i = 0; i < 7; i++) {
 			double d = this.random.nextGaussian() * 0.01;
 			double e = this.random.nextGaussian() * 0.01;
 			double f = this.random.nextGaussian() * 0.01;
-			this.world.addParticle(particleEffect, this.method_23322(1.0), this.method_23319() + 0.2, this.method_23325(1.0), d, e, f);
+			this.world.addParticle(parameters, this.method_23322(1.0), this.method_23319() + 0.2, this.method_23325(1.0), d, e, f);
 		}
 	}
 
 	@Override
-	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	protected boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		if (!itemStack.isEmpty() && itemStack.getItem().isIn(ItemTags.FISHES)) {
 			if (!this.world.isClient) {
 				this.playSound(SoundEvents.ENTITY_DOLPHIN_EAT, 1.0F, 1.0F);
 			}
 
 			this.setHasFish(true);
-			if (!playerEntity.abilities.creativeMode) {
+			if (!player.abilities.creativeMode) {
 				itemStack.decrement(1);
 			}
 
 			return true;
 		} else {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		}
 	}
 
-	public static boolean canSpawn(EntityType<DolphinEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return blockPos.getY() > 45
-			&& blockPos.getY() < iWorld.getSeaLevel()
-			&& (iWorld.getBiome(blockPos) != Biomes.OCEAN || iWorld.getBiome(blockPos) != Biomes.DEEP_OCEAN)
-			&& iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
+	public static boolean canSpawn(EntityType<DolphinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		return pos.getY() > 45
+			&& pos.getY() < world.getSeaLevel()
+			&& (world.getBiome(pos) != Biomes.OCEAN || world.getBiome(pos) != Biomes.DEEP_OCEAN)
+			&& world.getFluidState(pos).matches(FluidTags.WATER);
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_DOLPHIN_HURT;
 	}
 
@@ -377,21 +375,21 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void travel(Vec3d vec3d) {
+	public void travel(Vec3d movementInput) {
 		if (this.canMoveVoluntarily() && this.isInsideWater()) {
-			this.updateVelocity(this.getMovementSpeed(), vec3d);
+			this.updateVelocity(this.getMovementSpeed(), movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (this.getTarget() == null) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.travel(vec3d);
+			super.travel(movementInput);
 		}
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
+	public boolean canBeLeashedBy(PlayerEntity player) {
 		return true;
 	}
 
@@ -448,8 +446,8 @@ public class DolphinEntity extends WaterCreatureEntity {
 		private final DolphinEntity dolphin;
 		private boolean field_6753;
 
-		LeadToNearbyTreasureGoal(DolphinEntity dolphinEntity) {
-			this.dolphin = dolphinEntity;
+		LeadToNearbyTreasureGoal(DolphinEntity dolphin) {
+			this.dolphin = dolphin;
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
@@ -588,10 +586,10 @@ public class DolphinEntity extends WaterCreatureEntity {
 			}
 		}
 
-		private void spitOutItem(ItemStack itemStack) {
-			if (!itemStack.isEmpty()) {
+		private void spitOutItem(ItemStack stack) {
+			if (!stack.isEmpty()) {
 				double d = DolphinEntity.this.method_23320() - 0.3F;
-				ItemEntity itemEntity = new ItemEntity(DolphinEntity.this.world, DolphinEntity.this.getX(), d, DolphinEntity.this.getZ(), itemStack);
+				ItemEntity itemEntity = new ItemEntity(DolphinEntity.this.world, DolphinEntity.this.getX(), d, DolphinEntity.this.getZ(), stack);
 				itemEntity.setPickupDelay(40);
 				itemEntity.setThrower(DolphinEntity.this.getUuid());
 				float f = 0.3F;
@@ -618,9 +616,9 @@ public class DolphinEntity extends WaterCreatureEntity {
 		private final double speed;
 		private PlayerEntity closestPlayer;
 
-		SwimWithPlayerGoal(DolphinEntity dolphinEntity, double d) {
-			this.dolphin = dolphinEntity;
-			this.speed = d;
+		SwimWithPlayerGoal(DolphinEntity dolphin, double speed) {
+			this.dolphin = dolphin;
+			this.speed = speed;
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 

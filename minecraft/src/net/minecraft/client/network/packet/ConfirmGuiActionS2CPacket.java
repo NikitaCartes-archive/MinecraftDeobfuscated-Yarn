@@ -15,10 +15,10 @@ public class ConfirmGuiActionS2CPacket implements Packet<ClientPlayPacketListene
 	public ConfirmGuiActionS2CPacket() {
 	}
 
-	public ConfirmGuiActionS2CPacket(int i, short s, boolean bl) {
-		this.id = i;
-		this.actionId = s;
-		this.accepted = bl;
+	public ConfirmGuiActionS2CPacket(int id, short actionId, boolean accepted) {
+		this.id = id;
+		this.actionId = actionId;
+		this.accepted = accepted;
 	}
 
 	public void method_11424(ClientPlayPacketListener clientPlayPacketListener) {
@@ -26,17 +26,17 @@ public class ConfirmGuiActionS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readUnsignedByte();
-		this.actionId = packetByteBuf.readShort();
-		this.accepted = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readUnsignedByte();
+		this.actionId = buf.readShort();
+		this.accepted = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.id);
-		packetByteBuf.writeShort(this.actionId);
-		packetByteBuf.writeBoolean(this.accepted);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.id);
+		buf.writeShort(this.actionId);
+		buf.writeBoolean(this.accepted);
 	}
 
 	@Environment(EnvType.CLIENT)

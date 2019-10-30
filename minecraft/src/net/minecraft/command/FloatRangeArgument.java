@@ -29,33 +29,33 @@ public class FloatRangeArgument {
 		return this.max;
 	}
 
-	public static FloatRangeArgument parse(StringReader stringReader, boolean bl, Function<Float, Float> function) throws CommandSyntaxException {
-		if (!stringReader.canRead()) {
-			throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
+	public static FloatRangeArgument parse(StringReader reader, boolean allowFloats, Function<Float, Float> transform) throws CommandSyntaxException {
+		if (!reader.canRead()) {
+			throw NumberRange.EXCEPTION_EMPTY.createWithContext(reader);
 		} else {
-			int i = stringReader.getCursor();
-			Float float_ = mapFloat(parseFloat(stringReader, bl), function);
+			int i = reader.getCursor();
+			Float float_ = mapFloat(parseFloat(reader, allowFloats), transform);
 			Float float2;
-			if (stringReader.canRead(2) && stringReader.peek() == '.' && stringReader.peek(1) == '.') {
-				stringReader.skip();
-				stringReader.skip();
-				float2 = mapFloat(parseFloat(stringReader, bl), function);
+			if (reader.canRead(2) && reader.peek() == '.' && reader.peek(1) == '.') {
+				reader.skip();
+				reader.skip();
+				float2 = mapFloat(parseFloat(reader, allowFloats), transform);
 				if (float_ == null && float2 == null) {
-					stringReader.setCursor(i);
-					throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
+					reader.setCursor(i);
+					throw NumberRange.EXCEPTION_EMPTY.createWithContext(reader);
 				}
 			} else {
-				if (!bl && stringReader.canRead() && stringReader.peek() == '.') {
-					stringReader.setCursor(i);
-					throw ONLY_INTS_EXCEPTION.createWithContext(stringReader);
+				if (!allowFloats && reader.canRead() && reader.peek() == '.') {
+					reader.setCursor(i);
+					throw ONLY_INTS_EXCEPTION.createWithContext(reader);
 				}
 
 				float2 = float_;
 			}
 
 			if (float_ == null && float2 == null) {
-				stringReader.setCursor(i);
-				throw NumberRange.EXCEPTION_EMPTY.createWithContext(stringReader);
+				reader.setCursor(i);
+				throw NumberRange.EXCEPTION_EMPTY.createWithContext(reader);
 			} else {
 				return new FloatRangeArgument(float_, float2);
 			}
@@ -63,33 +63,33 @@ public class FloatRangeArgument {
 	}
 
 	@Nullable
-	private static Float parseFloat(StringReader stringReader, boolean bl) throws CommandSyntaxException {
-		int i = stringReader.getCursor();
+	private static Float parseFloat(StringReader reader, boolean allowFloats) throws CommandSyntaxException {
+		int i = reader.getCursor();
 
-		while (stringReader.canRead() && peekDigit(stringReader, bl)) {
-			stringReader.skip();
+		while (reader.canRead() && peekDigit(reader, allowFloats)) {
+			reader.skip();
 		}
 
-		String string = stringReader.getString().substring(i, stringReader.getCursor());
+		String string = reader.getString().substring(i, reader.getCursor());
 		if (string.isEmpty()) {
 			return null;
 		} else {
 			try {
 				return Float.parseFloat(string);
 			} catch (NumberFormatException var5) {
-				if (bl) {
-					throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidDouble().createWithContext(stringReader, string);
+				if (allowFloats) {
+					throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidDouble().createWithContext(reader, string);
 				} else {
-					throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().createWithContext(stringReader, string);
+					throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().createWithContext(reader, string);
 				}
 			}
 		}
 	}
 
-	private static boolean peekDigit(StringReader stringReader, boolean bl) {
-		char c = stringReader.peek();
+	private static boolean peekDigit(StringReader reader, boolean allowFloats) {
+		char c = reader.peek();
 		if ((c < '0' || c > '9') && c != '-') {
-			return bl && c == '.' ? !stringReader.canRead(2) || stringReader.peek(1) != '.' : false;
+			return allowFloats && c == '.' ? !reader.canRead(2) || reader.peek(1) != '.' : false;
 		} else {
 			return true;
 		}

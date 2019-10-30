@@ -29,29 +29,29 @@ public class NetherWartBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return AGE_TO_SHAPE[blockState.get(AGE)];
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return AGE_TO_SHAPE[state.get(AGE)];
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.getBlock() == Blocks.SOUL_SAND;
+	protected boolean canPlantOnTop(BlockState floor, BlockView view, BlockPos pos) {
+		return floor.getBlock() == Blocks.SOUL_SAND;
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		int i = (Integer)blockState.get(AGE);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
-			blockState = blockState.with(AGE, Integer.valueOf(i + 1));
-			serverWorld.setBlockState(blockPos, blockState, 2);
+			state = state.with(AGE, Integer.valueOf(i + 1));
+			world.setBlockState(pos, state, 2);
 		}
 
-		super.scheduledTick(blockState, serverWorld, blockPos, random);
+		super.scheduledTick(state, world, pos, random);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(Items.NETHER_WART);
 	}
 

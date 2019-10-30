@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -73,16 +72,16 @@ public class TurtleEntity extends AnimalEntity {
 		this.stepHeight = 1.0F;
 	}
 
-	public void setHomePos(BlockPos blockPos) {
-		this.dataTracker.set(HOME_POS, blockPos);
+	public void setHomePos(BlockPos pos) {
+		this.dataTracker.set(HOME_POS, pos);
 	}
 
 	private BlockPos getHomePos() {
 		return this.dataTracker.get(HOME_POS);
 	}
 
-	private void setTravelPos(BlockPos blockPos) {
-		this.dataTracker.set(TRAVEL_POS, blockPos);
+	private void setTravelPos(BlockPos pos) {
+		this.dataTracker.set(TRAVEL_POS, pos);
 	}
 
 	private BlockPos getTravelPos() {
@@ -93,33 +92,33 @@ public class TurtleEntity extends AnimalEntity {
 		return this.dataTracker.get(HAS_EGG);
 	}
 
-	private void setHasEgg(boolean bl) {
-		this.dataTracker.set(HAS_EGG, bl);
+	private void setHasEgg(boolean hasEgg) {
+		this.dataTracker.set(HAS_EGG, hasEgg);
 	}
 
 	public boolean isDiggingSand() {
 		return this.dataTracker.get(DIGGING_SAND);
 	}
 
-	private void setDiggingSand(boolean bl) {
-		this.sandDiggingCounter = bl ? 1 : 0;
-		this.dataTracker.set(DIGGING_SAND, bl);
+	private void setDiggingSand(boolean diggingSand) {
+		this.sandDiggingCounter = diggingSand ? 1 : 0;
+		this.dataTracker.set(DIGGING_SAND, diggingSand);
 	}
 
 	private boolean isLandBound() {
 		return this.dataTracker.get(LAND_BOUND);
 	}
 
-	private void setLandBound(boolean bl) {
-		this.dataTracker.set(LAND_BOUND, bl);
+	private void setLandBound(boolean landBound) {
+		this.dataTracker.set(LAND_BOUND, landBound);
 	}
 
 	private boolean isActivelyTravelling() {
 		return this.dataTracker.get(ACTIVELY_TRAVELLING);
 	}
 
-	private void setActivelyTravelling(boolean bl) {
-		this.dataTracker.set(ACTIVELY_TRAVELLING, bl);
+	private void setActivelyTravelling(boolean travelling) {
+		this.dataTracker.set(ACTIVELY_TRAVELLING, travelling);
 	}
 
 	@Override
@@ -134,45 +133,43 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("HomePosX", this.getHomePos().getX());
-		compoundTag.putInt("HomePosY", this.getHomePos().getY());
-		compoundTag.putInt("HomePosZ", this.getHomePos().getZ());
-		compoundTag.putBoolean("HasEgg", this.hasEgg());
-		compoundTag.putInt("TravelPosX", this.getTravelPos().getX());
-		compoundTag.putInt("TravelPosY", this.getTravelPos().getY());
-		compoundTag.putInt("TravelPosZ", this.getTravelPos().getZ());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("HomePosX", this.getHomePos().getX());
+		tag.putInt("HomePosY", this.getHomePos().getY());
+		tag.putInt("HomePosZ", this.getHomePos().getZ());
+		tag.putBoolean("HasEgg", this.hasEgg());
+		tag.putInt("TravelPosX", this.getTravelPos().getX());
+		tag.putInt("TravelPosY", this.getTravelPos().getY());
+		tag.putInt("TravelPosZ", this.getTravelPos().getZ());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		int i = compoundTag.getInt("HomePosX");
-		int j = compoundTag.getInt("HomePosY");
-		int k = compoundTag.getInt("HomePosZ");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		int i = tag.getInt("HomePosX");
+		int j = tag.getInt("HomePosY");
+		int k = tag.getInt("HomePosZ");
 		this.setHomePos(new BlockPos(i, j, k));
-		super.readCustomDataFromTag(compoundTag);
-		this.setHasEgg(compoundTag.getBoolean("HasEgg"));
-		int l = compoundTag.getInt("TravelPosX");
-		int m = compoundTag.getInt("TravelPosY");
-		int n = compoundTag.getInt("TravelPosZ");
+		super.readCustomDataFromTag(tag);
+		this.setHasEgg(tag.getBoolean("HasEgg"));
+		int l = tag.getInt("TravelPosX");
+		int m = tag.getInt("TravelPosY");
+		int n = tag.getInt("TravelPosZ");
 		this.setTravelPos(new BlockPos(l, m, n));
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public net.minecraft.entity.EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.setHomePos(new BlockPos(this));
 		this.setTravelPos(BlockPos.ORIGIN);
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
-	public static boolean canSpawn(EntityType<TurtleEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		return blockPos.getY() < iWorld.getSeaLevel() + 4
-			&& iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND
-			&& iWorld.getBaseLightLevel(blockPos, 0) > 8;
+	public static boolean canSpawn(EntityType<TurtleEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		return pos.getY() < world.getSeaLevel() + 4 && world.getBlockState(pos.method_10074()).getBlock() == Blocks.SAND && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
@@ -222,8 +219,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playSwimSound(float f) {
-		super.playSwimSound(f * 1.5F);
+	protected void playSwimSound(float volume) {
+		super.playSwimSound(volume * 1.5F);
 	}
 
 	@Override
@@ -233,7 +230,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return this.isBaby() ? SoundEvents.ENTITY_TURTLE_HURT_BABY : SoundEvents.ENTITY_TURTLE_HURT;
 	}
 
@@ -244,7 +241,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		SoundEvent soundEvent = this.isBaby() ? SoundEvents.ENTITY_TURTLE_SHAMBLE_BABY : SoundEvents.ENTITY_TURTLE_SHAMBLE;
 		this.playSound(soundEvent, 0.15F, 1.0F);
 	}
@@ -271,21 +268,21 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(PassiveEntity mate) {
 		return EntityType.TURTLE.create(this.world);
 	}
 
 	@Override
-	public boolean isBreedingItem(ItemStack itemStack) {
-		return itemStack.getItem() == Blocks.SEAGRASS.asItem();
+	public boolean isBreedingItem(ItemStack stack) {
+		return stack.getItem() == Blocks.SEAGRASS.asItem();
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, WorldView worldView) {
-		if (!this.isLandBound() && worldView.getFluidState(blockPos).matches(FluidTags.WATER)) {
+	public float getPathfindingFavor(BlockPos pos, WorldView worldView) {
+		if (!this.isLandBound() && worldView.getFluidState(pos).matches(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return worldView.getBlockState(blockPos.method_10074()).getBlock() == Blocks.SAND ? 10.0F : worldView.getBrightness(blockPos) - 0.5F;
+			return worldView.getBlockState(pos.method_10074()).getBlock() == Blocks.SAND ? 10.0F : worldView.getBrightness(pos) - 0.5F;
 		}
 	}
 
@@ -309,26 +306,26 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void travel(Vec3d vec3d) {
+	public void travel(Vec3d movementInput) {
 		if (this.canMoveVoluntarily() && this.isInsideWater()) {
-			this.updateVelocity(0.1F, vec3d);
+			this.updateVelocity(0.1F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
 			if (this.getTarget() == null && (!this.isLandBound() || !this.getHomePos().isWithinDistance(this.getPos(), 20.0))) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.travel(vec3d);
+			super.travel(movementInput);
 		}
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
+	public boolean canBeLeashedBy(PlayerEntity player) {
 		return false;
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightningEntity) {
+	public void onStruckByLightning(LightningEntity lightning) {
 		this.damage(DamageSource.LIGHTNING_BOLT, Float.MAX_VALUE);
 	}
 
@@ -340,10 +337,10 @@ public class TurtleEntity extends AnimalEntity {
 		private int cooldown;
 		private final Set<Item> attractiveItems;
 
-		ApproachFoodHoldingPlayerGoal(TurtleEntity turtleEntity, double d, Item item) {
-			this.turtle = turtleEntity;
-			this.speed = d;
-			this.attractiveItems = Sets.<Item>newHashSet(item);
+		ApproachFoodHoldingPlayerGoal(TurtleEntity turtle, double speed, Item attractiveItem) {
+			this.turtle = turtle;
+			this.speed = speed;
+			this.attractiveItems = Sets.<Item>newHashSet(attractiveItem);
 			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
 		}
 
@@ -360,8 +357,8 @@ public class TurtleEntity extends AnimalEntity {
 			}
 		}
 
-		private boolean isAttractive(ItemStack itemStack) {
-			return this.attractiveItems.contains(itemStack.getItem());
+		private boolean isAttractive(ItemStack stack) {
+			return this.attractiveItems.contains(stack.getItem());
 		}
 
 		@Override
@@ -393,9 +390,9 @@ public class TurtleEntity extends AnimalEntity {
 		private boolean noPath;
 		private int homeReachingTryTicks;
 
-		GoHomeGoal(TurtleEntity turtleEntity, double d) {
-			this.turtle = turtleEntity;
-			this.speed = d;
+		GoHomeGoal(TurtleEntity turtle, double speed) {
+			this.turtle = turtle;
+			this.speed = speed;
 		}
 
 		@Override
@@ -458,9 +455,9 @@ public class TurtleEntity extends AnimalEntity {
 	static class LayEggGoal extends MoveToTargetPosGoal {
 		private final TurtleEntity turtle;
 
-		LayEggGoal(TurtleEntity turtleEntity, double d) {
-			super(turtleEntity, d, 16);
-			this.turtle = turtleEntity;
+		LayEggGoal(TurtleEntity turtle, double speed) {
+			super(turtle, speed, 16);
+			this.turtle = turtle;
 		}
 
 		@Override
@@ -498,11 +495,11 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
-			if (!worldView.isAir(blockPos.up())) {
+		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+			if (!worldView.isAir(pos.up())) {
 				return false;
 			} else {
-				Block block = worldView.getBlockState(blockPos).getBlock();
+				Block block = worldView.getBlockState(pos).getBlock();
 				return block == Blocks.SAND;
 			}
 		}
@@ -511,9 +508,9 @@ public class TurtleEntity extends AnimalEntity {
 	static class MateGoal extends AnimalMateGoal {
 		private final TurtleEntity turtle;
 
-		MateGoal(TurtleEntity turtleEntity, double d) {
-			super(turtleEntity, d);
-			this.turtle = turtleEntity;
+		MateGoal(TurtleEntity turtle, double speed) {
+			super(turtle, speed);
+			this.turtle = turtle;
 		}
 
 		@Override
@@ -548,9 +545,9 @@ public class TurtleEntity extends AnimalEntity {
 		private final double speed;
 		private boolean noPath;
 
-		TravelGoal(TurtleEntity turtleEntity, double d) {
-			this.turtle = turtleEntity;
-			this.speed = d;
+		TravelGoal(TurtleEntity turtle, double speed) {
+			this.turtle = turtle;
+			this.speed = speed;
 		}
 
 		@Override
@@ -616,8 +613,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	static class TurtleEscapeDangerGoal extends EscapeDangerGoal {
-		TurtleEscapeDangerGoal(TurtleEntity turtleEntity, double d) {
-			super(turtleEntity, d);
+		TurtleEscapeDangerGoal(TurtleEntity turtle, double speed) {
+			super(turtle, speed);
 		}
 
 		@Override
@@ -641,9 +638,9 @@ public class TurtleEntity extends AnimalEntity {
 	static class TurtleMoveControl extends MoveControl {
 		private final TurtleEntity turtle;
 
-		TurtleMoveControl(TurtleEntity turtleEntity) {
-			super(turtleEntity);
-			this.turtle = turtleEntity;
+		TurtleMoveControl(TurtleEntity turtle) {
+			super(turtle);
+			this.turtle = turtle;
 		}
 
 		private void updateVelocity() {
@@ -683,8 +680,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	static class TurtleSwimNavigation extends SwimNavigation {
-		TurtleSwimNavigation(TurtleEntity turtleEntity, World world) {
-			super(turtleEntity, world);
+		TurtleSwimNavigation(TurtleEntity owner, World world) {
+			super(owner, world);
 		}
 
 		@Override
@@ -699,24 +696,24 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		public boolean isValidPosition(BlockPos blockPos) {
+		public boolean isValidPosition(BlockPos pos) {
 			if (this.entity instanceof TurtleEntity) {
 				TurtleEntity turtleEntity = (TurtleEntity)this.entity;
 				if (turtleEntity.isActivelyTravelling()) {
-					return this.world.getBlockState(blockPos).getBlock() == Blocks.WATER;
+					return this.world.getBlockState(pos).getBlock() == Blocks.WATER;
 				}
 			}
 
-			return !this.world.getBlockState(blockPos.method_10074()).isAir();
+			return !this.world.getBlockState(pos.method_10074()).isAir();
 		}
 	}
 
 	static class WanderInWaterGoal extends MoveToTargetPosGoal {
 		private final TurtleEntity turtle;
 
-		private WanderInWaterGoal(TurtleEntity turtleEntity, double d) {
-			super(turtleEntity, turtleEntity.isBaby() ? 2.0 : d, 24);
-			this.turtle = turtleEntity;
+		private WanderInWaterGoal(TurtleEntity turtle, double speed) {
+			super(turtle, turtle.isBaby() ? 2.0 : speed, 24);
+			this.turtle = turtle;
 			this.lowestY = -1;
 		}
 
@@ -740,8 +737,8 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
-			Block block = worldView.getBlockState(blockPos).getBlock();
+		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+			Block block = worldView.getBlockState(pos).getBlock();
 			return block == Blocks.WATER;
 		}
 	}
@@ -749,9 +746,9 @@ public class TurtleEntity extends AnimalEntity {
 	static class WanderOnLandGoal extends WanderAroundGoal {
 		private final TurtleEntity turtle;
 
-		private WanderOnLandGoal(TurtleEntity turtleEntity, double d, int i) {
-			super(turtleEntity, d, i);
-			this.turtle = turtleEntity;
+		private WanderOnLandGoal(TurtleEntity turtle, double speed, int chance) {
+			super(turtle, speed, chance);
+			this.turtle = turtle;
 		}
 
 		@Override

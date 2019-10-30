@@ -25,13 +25,13 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected boolean field_18935;
 	protected boolean looping;
 
-	protected AbstractSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory) {
-		this(soundEvent.getId(), soundCategory);
+	protected AbstractSoundInstance(SoundEvent sound, SoundCategory category) {
+		this(sound.getId(), category);
 	}
 
-	protected AbstractSoundInstance(Identifier identifier, SoundCategory soundCategory) {
-		this.id = identifier;
-		this.category = soundCategory;
+	protected AbstractSoundInstance(Identifier soundId, SoundCategory category) {
+		this.id = soundId;
+		this.category = category;
 	}
 
 	@Override

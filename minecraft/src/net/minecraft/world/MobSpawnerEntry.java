@@ -17,9 +17,9 @@ public class MobSpawnerEntry extends WeightedPicker.Entry {
 		this(compoundTag.contains("Weight", 99) ? compoundTag.getInt("Weight") : 1, compoundTag.getCompound("Entity"));
 	}
 
-	public MobSpawnerEntry(int i, CompoundTag compoundTag) {
-		super(i);
-		this.entityTag = compoundTag;
+	public MobSpawnerEntry(int weight, CompoundTag entityTag) {
+		super(weight);
+		this.entityTag = entityTag;
 	}
 
 	public CompoundTag serialize() {

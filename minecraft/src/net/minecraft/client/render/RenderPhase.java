@@ -11,7 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RenderPhase {
@@ -146,10 +146,10 @@ public class RenderPhase {
 	);
 	protected static final RenderPhase.LineWidth FULL_LINEWIDTH = new RenderPhase.LineWidth(1.0F);
 
-	public RenderPhase(String string, Runnable runnable, Runnable runnable2) {
-		this.name = string;
-		this.beginAction = runnable;
-		this.endAction = runnable2;
+	public RenderPhase(String name, Runnable beginAction, Runnable endAction) {
+		this.name = name;
+		this.beginAction = beginAction;
+		this.endAction = endAction;
 	}
 
 	public void startDrawing() {
@@ -175,16 +175,16 @@ public class RenderPhase {
 		return this.name.hashCode();
 	}
 
-	private static void setupGlintTexturing(float f) {
+	private static void setupGlintTexturing(float scale) {
 		RenderSystem.matrixMode(5890);
 		RenderSystem.pushMatrix();
 		RenderSystem.loadIdentity();
-		long l = SystemUtil.getMeasuringTimeMs() * 8L;
-		float g = (float)(l % 110000L) / 110000.0F;
-		float h = (float)(l % 30000L) / 30000.0F;
-		RenderSystem.translatef(-g, h, 0.0F);
+		long l = Util.getMeasuringTimeMs() * 8L;
+		float f = (float)(l % 110000L) / 110000.0F;
+		float g = (float)(l % 30000L) / 30000.0F;
+		RenderSystem.translatef(-f, g, 0.0F);
 		RenderSystem.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
-		RenderSystem.scalef(f, f, f);
+		RenderSystem.scalef(scale, scale, scale);
 		RenderSystem.matrixMode(5888);
 	}
 
@@ -192,11 +192,11 @@ public class RenderPhase {
 	public static class Alpha extends RenderPhase {
 		private final float alpha;
 
-		public Alpha(float f) {
+		public Alpha(float alpha) {
 			super("alpha", () -> {
-				if (f > 0.0F) {
+				if (alpha > 0.0F) {
 					RenderSystem.enableAlphaTest();
-					RenderSystem.alphaFunc(516, f);
+					RenderSystem.alphaFunc(516, alpha);
 				} else {
 					RenderSystem.disableAlphaTest();
 				}
@@ -204,7 +204,7 @@ public class RenderPhase {
 				RenderSystem.disableAlphaTest();
 				RenderSystem.defaultAlphaFunc();
 			});
-			this.alpha = f;
+			this.alpha = alpha;
 		}
 
 		@Override
@@ -226,16 +226,16 @@ public class RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	public static class Cull extends RenderPhase.Toggleable {
-		public Cull(boolean bl) {
+		public Cull(boolean culling) {
 			super("cull", () -> {
-				if (bl) {
+				if (culling) {
 					RenderSystem.enableCull();
 				}
 			}, () -> {
-				if (bl) {
+				if (culling) {
 					RenderSystem.disableCull();
 				}
-			}, bl);
+			}, culling);
 		}
 	}
 
@@ -243,19 +243,19 @@ public class RenderPhase {
 	public static class DepthTest extends RenderPhase {
 		private final int func;
 
-		public DepthTest(int i) {
+		public DepthTest(int func) {
 			super("depth_test", () -> {
-				if (i != 519) {
+				if (func != 519) {
 					RenderSystem.enableDepthTest();
-					RenderSystem.depthFunc(i);
+					RenderSystem.depthFunc(func);
 				}
 			}, () -> {
-				if (i != 519) {
+				if (func != 519) {
 					RenderSystem.disableDepthTest();
 					RenderSystem.depthFunc(515);
 				}
 			});
-			this.func = i;
+			this.func = func;
 		}
 
 		@Override
@@ -278,16 +278,16 @@ public class RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	public static class DiffuseLighting extends RenderPhase.Toggleable {
-		public DiffuseLighting(boolean bl) {
+		public DiffuseLighting(boolean guiLighting) {
 			super("diffuse_lighting", () -> {
-				if (bl) {
+				if (guiLighting) {
 					GuiLighting.enable();
 				}
 			}, () -> {
-				if (bl) {
+				if (guiLighting) {
 					GuiLighting.disable();
 				}
-			}, bl);
+			}, guiLighting);
 		}
 	}
 
@@ -307,16 +307,16 @@ public class RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	public static class Lightmap extends RenderPhase.Toggleable {
-		public Lightmap(boolean bl) {
+		public Lightmap(boolean lightmap) {
 			super("lightmap", () -> {
-				if (bl) {
+				if (lightmap) {
 					MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().enable();
 				}
 			}, () -> {
-				if (bl) {
+				if (lightmap) {
 					MinecraftClient.getInstance().gameRenderer.getLightmapTextureManager().disable();
 				}
-			}, bl);
+			}, lightmap);
 		}
 	}
 
@@ -324,17 +324,17 @@ public class RenderPhase {
 	public static class LineWidth extends RenderPhase {
 		private final float width;
 
-		public LineWidth(float f) {
+		public LineWidth(float width) {
 			super("alpha", () -> {
-				if (f != 1.0F) {
-					RenderSystem.lineWidth(f);
+				if (width != 1.0F) {
+					RenderSystem.lineWidth(width);
 				}
 			}, () -> {
-				if (f != 1.0F) {
+				if (width != 1.0F) {
 					RenderSystem.lineWidth(1.0F);
 				}
 			});
-			this.width = f;
+			this.width = width;
 		}
 
 		@Override
@@ -359,20 +359,20 @@ public class RenderPhase {
 		private final float x;
 		private final float y;
 
-		public OffsetTexturing(float f, float g) {
+		public OffsetTexturing(float x, float y) {
 			super("offset_texturing", () -> {
 				RenderSystem.matrixMode(5890);
 				RenderSystem.pushMatrix();
 				RenderSystem.loadIdentity();
-				RenderSystem.translatef(f, g, 0.0F);
+				RenderSystem.translatef(x, y, 0.0F);
 				RenderSystem.matrixMode(5888);
 			}, () -> {
 				RenderSystem.matrixMode(5890);
 				RenderSystem.popMatrix();
 				RenderSystem.matrixMode(5888);
 			});
-			this.x = f;
-			this.y = g;
+			this.x = x;
+			this.y = y;
 		}
 
 		@Override
@@ -395,16 +395,16 @@ public class RenderPhase {
 
 	@Environment(EnvType.CLIENT)
 	public static class Overlay extends RenderPhase.Toggleable {
-		public Overlay(boolean bl) {
+		public Overlay(boolean overlayColor) {
 			super("overlay", () -> {
-				if (bl) {
+				if (overlayColor) {
 					MinecraftClient.getInstance().gameRenderer.method_22975().setupOverlayColor();
 				}
 			}, () -> {
-				if (bl) {
+				if (overlayColor) {
 					MinecraftClient.getInstance().gameRenderer.method_22975().teardownOverlayColor();
 				}
-			}, bl);
+			}, overlayColor);
 		}
 	}
 
@@ -412,16 +412,16 @@ public class RenderPhase {
 	public static final class PortalTexturing extends RenderPhase.Texturing {
 		private final int layer;
 
-		public PortalTexturing(int i) {
+		public PortalTexturing(int layer) {
 			super("portal_texturing", () -> {
 				RenderSystem.matrixMode(5890);
 				RenderSystem.pushMatrix();
 				RenderSystem.loadIdentity();
 				RenderSystem.translatef(0.5F, 0.5F, 0.0F);
 				RenderSystem.scalef(0.5F, 0.5F, 1.0F);
-				RenderSystem.translatef(17.0F / (float)i, (2.0F + (float)i / 1.5F) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
-				RenderSystem.rotatef(((float)(i * i) * 4321.0F + (float)i * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
-				RenderSystem.scalef(4.5F - (float)i / 4.0F, 4.5F - (float)i / 4.0F, 1.0F);
+				RenderSystem.translatef(17.0F / (float)layer, (2.0F + (float)layer / 1.5F) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
+				RenderSystem.rotatef(((float)(layer * layer) * 4321.0F + (float)layer * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
+				RenderSystem.scalef(4.5F - (float)layer / 4.0F, 4.5F - (float)layer / 4.0F, 1.0F);
 				RenderSystem.mulTextureByProjModelView();
 				RenderSystem.matrixMode(5888);
 				RenderSystem.setupEndPortalTexGen();
@@ -431,7 +431,7 @@ public class RenderPhase {
 				RenderSystem.matrixMode(5888);
 				RenderSystem.clearTexGen();
 			});
-			this.layer = i;
+			this.layer = layer;
 		}
 
 		@Override
@@ -456,9 +456,9 @@ public class RenderPhase {
 	public static class ShadeModel extends RenderPhase {
 		private final boolean smooth;
 
-		public ShadeModel(boolean bl) {
-			super("shade_model", () -> RenderSystem.shadeModel(bl ? 7425 : 7424), () -> RenderSystem.shadeModel(7424));
-			this.smooth = bl;
+		public ShadeModel(boolean smooth) {
+			super("shade_model", () -> RenderSystem.shadeModel(smooth ? 7425 : 7424), () -> RenderSystem.shadeModel(7424));
+			this.smooth = smooth;
 		}
 
 		@Override
@@ -492,17 +492,17 @@ public class RenderPhase {
 		private final boolean bilinear;
 		private final boolean mipmap;
 
-		public Texture(Identifier identifier, boolean bl, boolean bl2) {
+		public Texture(Identifier id, boolean bilinear, boolean mipmap) {
 			super("texture", () -> {
 				RenderSystem.enableTexture();
 				TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-				textureManager.bindTexture(identifier);
-				textureManager.getTexture(identifier).setFilter(bl, bl2);
+				textureManager.bindTexture(id);
+				textureManager.getTexture(id).setFilter(bilinear, mipmap);
 			}, () -> {
 			});
-			this.id = Optional.of(identifier);
-			this.bilinear = bl;
-			this.mipmap = bl2;
+			this.id = Optional.of(id);
+			this.bilinear = bilinear;
+			this.mipmap = mipmap;
 		}
 
 		public Texture() {
@@ -580,26 +580,26 @@ public class RenderPhase {
 		private final boolean color;
 		private final boolean depth;
 
-		public WriteMaskState(boolean bl, boolean bl2) {
+		public WriteMaskState(boolean color, boolean depth) {
 			super("write_mask_state", () -> {
-				if (!bl2) {
-					RenderSystem.depthMask(bl2);
+				if (!depth) {
+					RenderSystem.depthMask(depth);
 				}
 
-				if (!bl) {
-					RenderSystem.colorMask(bl, bl, bl, bl);
+				if (!color) {
+					RenderSystem.colorMask(color, color, color, color);
 				}
 			}, () -> {
-				if (!bl2) {
+				if (!depth) {
 					RenderSystem.depthMask(true);
 				}
 
-				if (!bl) {
+				if (!color) {
 					RenderSystem.colorMask(true, true, true, true);
 				}
 			});
-			this.color = bl;
-			this.depth = bl2;
+			this.color = color;
+			this.depth = depth;
 		}
 
 		@Override

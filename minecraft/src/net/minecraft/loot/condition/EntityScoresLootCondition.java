@@ -23,9 +23,9 @@ public class EntityScoresLootCondition implements LootCondition {
 	private final Map<String, UniformLootTableRange> scores;
 	private final LootContext.EntityTarget target;
 
-	private EntityScoresLootCondition(Map<String, UniformLootTableRange> map, LootContext.EntityTarget entityTarget) {
-		this.scores = ImmutableMap.copyOf(map);
-		this.target = entityTarget;
+	private EntityScoresLootCondition(Map<String, UniformLootTableRange> scores, LootContext.EntityTarget target) {
+		this.scores = ImmutableMap.copyOf(scores);
+		this.target = target;
 	}
 
 	@Override
@@ -50,15 +50,15 @@ public class EntityScoresLootCondition implements LootCondition {
 		}
 	}
 
-	protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String string, UniformLootTableRange uniformLootTableRange) {
-		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
+	protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String objective, UniformLootTableRange scoreRange) {
+		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
 		if (scoreboardObjective == null) {
 			return false;
 		} else {
-			String string2 = entity.getEntityName();
-			return !scoreboard.playerHasObjective(string2, scoreboardObjective)
+			String string = entity.getEntityName();
+			return !scoreboard.playerHasObjective(string, scoreboardObjective)
 				? false
-				: uniformLootTableRange.contains(scoreboard.getPlayerScore(string2, scoreboardObjective).getScore());
+				: scoreRange.contains(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
 		}
 	}
 

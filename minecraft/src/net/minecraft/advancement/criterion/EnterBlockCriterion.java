@@ -25,8 +25,8 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
-			statePredicate.check(block.getStateFactory(), string -> {
-				throw new JsonSyntaxException("Block " + block + " has no property " + string);
+			statePredicate.check(block.getStateFactory(), name -> {
+				throw new JsonSyntaxException("Block " + block + " has no property " + name);
 			});
 		}
 
@@ -34,27 +34,27 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	@Nullable
-	private static Block getBlock(JsonObject jsonObject) {
-		if (jsonObject.has("block")) {
-			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
+	private static Block getBlock(JsonObject obj) {
+		if (obj.has("block")) {
+			Identifier identifier = new Identifier(JsonHelper.getString(obj, "block"));
 			return (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
 		} else {
 			return null;
 		}
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(blockState));
+	public void trigger(ServerPlayerEntity player, BlockState state) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(state));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Block block;
 		private final StatePredicate state;
 
-		public Conditions(@Nullable Block block, StatePredicate statePredicate) {
+		public Conditions(@Nullable Block block, StatePredicate state) {
 			super(EnterBlockCriterion.ID);
 			this.block = block;
-			this.state = statePredicate;
+			this.state = state;
 		}
 
 		public static EnterBlockCriterion.Conditions block(Block block) {
@@ -72,8 +72,8 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 			return jsonObject;
 		}
 
-		public boolean matches(BlockState blockState) {
-			return this.block != null && blockState.getBlock() != this.block ? false : this.state.test(blockState);
+		public boolean matches(BlockState state) {
+			return this.block != null && state.getBlock() != this.block ? false : this.state.test(state);
 		}
 	}
 }

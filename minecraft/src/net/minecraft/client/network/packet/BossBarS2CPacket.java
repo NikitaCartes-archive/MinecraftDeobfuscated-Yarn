@@ -24,8 +24,8 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	public BossBarS2CPacket() {
 	}
 
-	public BossBarS2CPacket(BossBarS2CPacket.Type type, BossBar bossBar) {
-		this.type = type;
+	public BossBarS2CPacket(BossBarS2CPacket.Type action, BossBar bossBar) {
+		this.type = action;
 		this.uuid = bossBar.getUuid();
 		this.name = bossBar.getName();
 		this.percent = bossBar.getPercent();
@@ -37,31 +37,31 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.uuid = packetByteBuf.readUuid();
-		this.type = packetByteBuf.readEnumConstant(BossBarS2CPacket.Type.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.uuid = buf.readUuid();
+		this.type = buf.readEnumConstant(BossBarS2CPacket.Type.class);
 		switch (this.type) {
 			case ADD:
-				this.name = packetByteBuf.readText();
-				this.percent = packetByteBuf.readFloat();
-				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
-				this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
-				this.setFlagBitfield(packetByteBuf.readUnsignedByte());
+				this.name = buf.readText();
+				this.percent = buf.readFloat();
+				this.color = buf.readEnumConstant(BossBar.Color.class);
+				this.overlay = buf.readEnumConstant(BossBar.Style.class);
+				this.setFlagBitfield(buf.readUnsignedByte());
 			case REMOVE:
 			default:
 				break;
 			case UPDATE_PCT:
-				this.percent = packetByteBuf.readFloat();
+				this.percent = buf.readFloat();
 				break;
 			case UPDATE_NAME:
-				this.name = packetByteBuf.readText();
+				this.name = buf.readText();
 				break;
 			case UPDATE_STYLE:
-				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
-				this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
+				this.color = buf.readEnumConstant(BossBar.Color.class);
+				this.overlay = buf.readEnumConstant(BossBar.Style.class);
 				break;
 			case UPDATE_PROPERTIES:
-				this.setFlagBitfield(packetByteBuf.readUnsignedByte());
+				this.setFlagBitfield(buf.readUnsignedByte());
 		}
 	}
 
@@ -72,31 +72,31 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeUuid(this.uuid);
-		packetByteBuf.writeEnumConstant(this.type);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeUuid(this.uuid);
+		buf.writeEnumConstant(this.type);
 		switch (this.type) {
 			case ADD:
-				packetByteBuf.writeText(this.name);
-				packetByteBuf.writeFloat(this.percent);
-				packetByteBuf.writeEnumConstant(this.color);
-				packetByteBuf.writeEnumConstant(this.overlay);
-				packetByteBuf.writeByte(this.getFlagBitfield());
+				buf.writeText(this.name);
+				buf.writeFloat(this.percent);
+				buf.writeEnumConstant(this.color);
+				buf.writeEnumConstant(this.overlay);
+				buf.writeByte(this.getFlagBitfield());
 			case REMOVE:
 			default:
 				break;
 			case UPDATE_PCT:
-				packetByteBuf.writeFloat(this.percent);
+				buf.writeFloat(this.percent);
 				break;
 			case UPDATE_NAME:
-				packetByteBuf.writeText(this.name);
+				buf.writeText(this.name);
 				break;
 			case UPDATE_STYLE:
-				packetByteBuf.writeEnumConstant(this.color);
-				packetByteBuf.writeEnumConstant(this.overlay);
+				buf.writeEnumConstant(this.color);
+				buf.writeEnumConstant(this.overlay);
 				break;
 			case UPDATE_PROPERTIES:
-				packetByteBuf.writeByte(this.getFlagBitfield());
+				buf.writeByte(this.getFlagBitfield());
 		}
 	}
 

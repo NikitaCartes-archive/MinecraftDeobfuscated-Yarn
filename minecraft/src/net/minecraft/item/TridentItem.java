@@ -28,39 +28,38 @@ public class TridentItem extends Item {
 	public TridentItem(Item.Settings settings) {
 		super(settings);
 		this.addPropertyGetter(
-			new Identifier("throwing"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			new Identifier("throwing"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 	}
 
 	@Override
-	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		return !playerEntity.isCreative();
+	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+		return !miner.isCreative();
 	}
 
 	@Override
-	public UseAction getUseAction(ItemStack itemStack) {
+	public UseAction getUseAction(ItemStack stack) {
 		return UseAction.SPEAR;
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack itemStack) {
+	public int getMaxUseTime(ItemStack stack) {
 		return 72000;
 	}
 
 	@Override
-	public void onStoppedUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
-		if (livingEntity instanceof PlayerEntity) {
-			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-			int j = this.getMaxUseTime(itemStack) - i;
-			if (j >= 10) {
-				int k = EnchantmentHelper.getRiptide(itemStack);
-				if (k <= 0 || playerEntity.isInsideWaterOrRain()) {
+	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+		if (user instanceof PlayerEntity) {
+			PlayerEntity playerEntity = (PlayerEntity)user;
+			int i = this.getMaxUseTime(stack) - remainingUseTicks;
+			if (i >= 10) {
+				int j = EnchantmentHelper.getRiptide(stack);
+				if (j <= 0 || playerEntity.isInsideWaterOrRain()) {
 					if (!world.isClient) {
-						itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(livingEntity.getActiveHand()));
-						if (k == 0) {
-							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, itemStack);
-							tridentEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)k * 0.5F, 1.0F);
+						stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(user.getActiveHand()));
+						if (j == 0) {
+							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, stack);
+							tridentEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)j * 0.5F, 1.0F);
 							if (playerEntity.abilities.creativeMode) {
 								tridentEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
 							}
@@ -68,34 +67,34 @@ public class TridentItem extends Item {
 							world.spawnEntity(tridentEntity);
 							world.playSoundFromEntity(null, tridentEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
 							if (!playerEntity.abilities.creativeMode) {
-								playerEntity.inventory.removeOne(itemStack);
+								playerEntity.inventory.removeOne(stack);
 							}
 						}
 					}
 
 					playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-					if (k > 0) {
+					if (j > 0) {
 						float f = playerEntity.yaw;
 						float g = playerEntity.pitch;
 						float h = -MathHelper.sin(f * (float) (Math.PI / 180.0)) * MathHelper.cos(g * (float) (Math.PI / 180.0));
-						float l = -MathHelper.sin(g * (float) (Math.PI / 180.0));
-						float m = MathHelper.cos(f * (float) (Math.PI / 180.0)) * MathHelper.cos(g * (float) (Math.PI / 180.0));
-						float n = MathHelper.sqrt(h * h + l * l + m * m);
-						float o = 3.0F * ((1.0F + (float)k) / 4.0F);
-						h *= o / n;
-						l *= o / n;
-						m *= o / n;
-						playerEntity.addVelocity((double)h, (double)l, (double)m);
+						float k = -MathHelper.sin(g * (float) (Math.PI / 180.0));
+						float l = MathHelper.cos(f * (float) (Math.PI / 180.0)) * MathHelper.cos(g * (float) (Math.PI / 180.0));
+						float m = MathHelper.sqrt(h * h + k * k + l * l);
+						float n = 3.0F * ((1.0F + (float)j) / 4.0F);
+						h *= n / m;
+						k *= n / m;
+						l *= n / m;
+						playerEntity.addVelocity((double)h, (double)k, (double)l);
 						playerEntity.method_6018(20);
 						if (playerEntity.onGround) {
-							float p = 1.1999999F;
+							float o = 1.1999999F;
 							playerEntity.move(MovementType.SELF, new Vec3d(0.0, 1.1999999F, 0.0));
 						}
 
 						SoundEvent soundEvent;
-						if (k >= 3) {
+						if (j >= 3) {
 							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_3;
-						} else if (k == 2) {
+						} else if (j == 2) {
 							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_2;
 						} else {
 							soundEvent = SoundEvents.ITEM_TRIDENT_RIPTIDE_1;
@@ -109,37 +108,37 @@ public class TridentItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+		ItemStack itemStack = user.getStackInHand(hand);
 		if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
 			return TypedActionResult.fail(itemStack);
-		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
+		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !user.isInsideWaterOrRain()) {
 			return TypedActionResult.fail(itemStack);
 		} else {
-			playerEntity.setCurrentHand(hand);
-			return TypedActionResult.successWithoutSwing(itemStack);
+			user.setCurrentHand(hand);
+			return TypedActionResult.consume(itemStack);
 		}
 	}
 
 	@Override
-	public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.damage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 
 	@Override
-	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
-		if ((double)blockState.getHardness(world, blockPos) != 0.0) {
-			itemStack.damage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
+		if ((double)state.getHardness(world, pos) != 0.0) {
+			stack.damage(2, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		return true;
 	}
 
 	@Override
-	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
-		if (equipmentSlot == EquipmentSlot.MAINHAND) {
+	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
+		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
+		if (slot == EquipmentSlot.MAINHAND) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(),
 				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Tool modifier", 8.0, EntityAttributeModifier.Operation.ADDITION)

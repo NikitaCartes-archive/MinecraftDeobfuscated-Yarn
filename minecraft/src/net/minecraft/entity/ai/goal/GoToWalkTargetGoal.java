@@ -12,9 +12,9 @@ public class GoToWalkTargetGoal extends Goal {
 	private double z;
 	private final double speed;
 
-	public GoToWalkTargetGoal(MobEntityWithAi mobEntityWithAi, double d) {
-		this.mob = mobEntityWithAi;
-		this.speed = d;
+	public GoToWalkTargetGoal(MobEntityWithAi mob, double speed) {
+		this.mob = mob;
+		this.speed = speed;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 

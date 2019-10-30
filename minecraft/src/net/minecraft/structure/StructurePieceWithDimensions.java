@@ -14,16 +14,16 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 	protected final int depth;
 	protected int hPos = -1;
 
-	protected StructurePieceWithDimensions(StructurePieceType structurePieceType, Random random, int i, int j, int k, int l, int m, int n) {
-		super(structurePieceType, 0);
-		this.width = l;
-		this.height = m;
-		this.depth = n;
+	protected StructurePieceWithDimensions(StructurePieceType type, Random random, int x, int y, int z, int width, int height, int depth) {
+		super(type, 0);
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
 		this.setOrientation(Direction.Type.HORIZONTAL.random(random));
 		if (this.getFacing().getAxis() == Direction.Axis.Z) {
-			this.boundingBox = new BlockBox(i, j, k, i + l - 1, j + m - 1, k + n - 1);
+			this.boundingBox = new BlockBox(x, y, z, x + width - 1, y + height - 1, z + depth - 1);
 		} else {
-			this.boundingBox = new BlockBox(i, j, k, i + n - 1, j + m - 1, k + l - 1);
+			this.boundingBox = new BlockBox(x, y, z, x + depth - 1, y + height - 1, z + width - 1);
 		}
 	}
 
@@ -36,14 +36,14 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 	}
 
 	@Override
-	protected void toNbt(CompoundTag compoundTag) {
-		compoundTag.putInt("Width", this.width);
-		compoundTag.putInt("Height", this.height);
-		compoundTag.putInt("Depth", this.depth);
-		compoundTag.putInt("HPos", this.hPos);
+	protected void toNbt(CompoundTag tag) {
+		tag.putInt("Width", this.width);
+		tag.putInt("Height", this.height);
+		tag.putInt("Depth", this.depth);
+		tag.putInt("HPos", this.hPos);
 	}
 
-	protected boolean method_14839(IWorld iWorld, BlockBox blockBox, int i) {
+	protected boolean method_14839(IWorld world, BlockBox boundingBox, int i) {
 		if (this.hPos >= 0) {
 			return true;
 		} else {
@@ -54,8 +54,8 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 			for (int l = this.boundingBox.minZ; l <= this.boundingBox.maxZ; l++) {
 				for (int m = this.boundingBox.minX; m <= this.boundingBox.maxX; m++) {
 					mutable.set(m, 64, l);
-					if (blockBox.contains(mutable)) {
-						j += iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
+					if (boundingBox.contains(mutable)) {
+						j += world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
 						k++;
 					}
 				}

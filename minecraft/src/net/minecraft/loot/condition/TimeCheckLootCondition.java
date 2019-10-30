@@ -15,9 +15,9 @@ public class TimeCheckLootCondition implements LootCondition {
 	private final Long period;
 	private final UniformLootTableRange value;
 
-	private TimeCheckLootCondition(@Nullable Long long_, UniformLootTableRange uniformLootTableRange) {
-		this.period = long_;
-		this.value = uniformLootTableRange;
+	private TimeCheckLootCondition(@Nullable Long period, UniformLootTableRange value) {
+		this.period = period;
+		this.value = value;
 	}
 
 	public boolean method_22587(LootContext lootContext) {
@@ -41,7 +41,7 @@ public class TimeCheckLootCondition implements LootCondition {
 		}
 
 		public TimeCheckLootCondition method_22590(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			Long long_ = jsonObject.has("period") ? JsonHelper.method_22449(jsonObject, "period") : null;
+			Long long_ = jsonObject.has("period") ? JsonHelper.getLong(jsonObject, "period") : null;
 			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, UniformLootTableRange.class);
 			return new TimeCheckLootCondition(long_, uniformLootTableRange);
 		}

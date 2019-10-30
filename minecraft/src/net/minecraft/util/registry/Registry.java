@@ -122,29 +122,29 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<Schedule> SCHEDULE = create("schedule", () -> Schedule.EMPTY);
 	public static final Registry<Activity> ACTIVITY = create("activity", () -> Activity.IDLE);
 
-	private static <T> Registry<T> create(String string, Supplier<T> supplier) {
-		return putDefaultEntry(string, new SimpleRegistry<>(), supplier);
+	private static <T> Registry<T> create(String id, Supplier<T> supplier) {
+		return putDefaultEntry(id, new SimpleRegistry<>(), supplier);
 	}
 
-	private static <T> DefaultedRegistry<T> create(String string, String string2, Supplier<T> supplier) {
-		return putDefaultEntry(string, new DefaultedRegistry<>(string2), supplier);
+	private static <T> DefaultedRegistry<T> create(String string, String string2, Supplier<T> defaultEntry) {
+		return putDefaultEntry(string, new DefaultedRegistry<>(string2), defaultEntry);
 	}
 
-	private static <T, R extends MutableRegistry<T>> R putDefaultEntry(String string, R mutableRegistry, Supplier<T> supplier) {
-		Identifier identifier = new Identifier(string);
+	private static <T, R extends MutableRegistry<T>> R putDefaultEntry(String id, R mutableRegistry, Supplier<T> supplier) {
+		Identifier identifier = new Identifier(id);
 		DEFAULT_ENTRIES.put(identifier, supplier);
 		return REGISTRIES.add(identifier, mutableRegistry);
 	}
 
 	@Nullable
-	public abstract Identifier getId(T object);
+	public abstract Identifier getId(T entry);
 
-	public abstract int getRawId(@Nullable T object);
+	public abstract int getRawId(@Nullable T entry);
 
 	@Nullable
-	public abstract T get(@Nullable Identifier identifier);
+	public abstract T get(@Nullable Identifier id);
 
-	public abstract Optional<T> getOrEmpty(@Nullable Identifier identifier);
+	public abstract Optional<T> getOrEmpty(@Nullable Identifier id);
 
 	public abstract Set<Identifier> getIds();
 
@@ -156,18 +156,18 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract boolean containsId(Identifier identifier);
+	public abstract boolean containsId(Identifier id);
 
-	public static <T> T register(Registry<? super T> registry, String string, T object) {
-		return register(registry, new Identifier(string), object);
+	public static <T> T register(Registry<? super T> registry, String id, T entry) {
+		return register(registry, new Identifier(id), entry);
 	}
 
-	public static <T> T register(Registry<? super T> registry, Identifier identifier, T object) {
-		return ((MutableRegistry)registry).add(identifier, object);
+	public static <T> T register(Registry<? super T> registry, Identifier id, T entry) {
+		return ((MutableRegistry)registry).add(id, entry);
 	}
 
-	public static <T> T register(Registry<? super T> registry, int i, String string, T object) {
-		return ((MutableRegistry)registry).set(i, new Identifier(string), object);
+	public static <T> T register(Registry<? super T> registry, int rawId, String id, T entry) {
+		return ((MutableRegistry)registry).set(rawId, new Identifier(id), entry);
 	}
 
 	static {

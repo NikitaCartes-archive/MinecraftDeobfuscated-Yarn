@@ -28,8 +28,8 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 
 	@Nullable
 	@Override
-	public K get(int i) {
-		return i >= 0 && i < this.idToValues.length ? this.idToValues[i] : null;
+	public K get(int index) {
+		return index >= 0 && index < this.idToValues.length ? this.idToValues[index] : null;
 	}
 
 	private int getIdFromIndex(int i) {
@@ -89,7 +89,7 @@ public class Int2ObjectBiMap<K> implements IndexedIterable<K> {
 	}
 
 	private int getIdealIndex(@Nullable K object) {
-		return (MathHelper.method_15354(System.identityHashCode(object)) & 2147483647) % this.values.length;
+		return (MathHelper.idealHash(System.identityHashCode(object)) & 2147483647) % this.values.length;
 	}
 
 	private int findIndex(@Nullable K object, int i) {

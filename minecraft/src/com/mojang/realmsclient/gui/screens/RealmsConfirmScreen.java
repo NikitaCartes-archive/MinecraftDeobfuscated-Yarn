@@ -17,10 +17,10 @@ public class RealmsConfirmScreen extends RealmsScreen {
 	protected int id;
 	private int delayTicker;
 
-	public RealmsConfirmScreen(RealmsScreen realmsScreen, String string, String string2, int i) {
-		this.parent = realmsScreen;
-		this.title1 = string;
-		this.title2 = string2;
+	public RealmsConfirmScreen(RealmsScreen parent, String title1, String title2, int i) {
+		this.parent = parent;
+		this.title1 = title1;
+		this.title2 = title2;
 		this.id = i;
 		this.yesButton = getLocalizedString("gui.yes");
 		this.noButton = getLocalizedString("gui.no");
@@ -43,11 +43,11 @@ public class RealmsConfirmScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int xm, int ym, float a) {
 		this.renderBackground();
 		this.drawCenteredString(this.title1, this.width() / 2, RealmsConstants.row(3), 16777215);
 		this.drawCenteredString(this.title2, this.width() / 2, RealmsConstants.row(5), 16777215);
-		super.render(i, j, f);
+		super.render(xm, ym, a);
 	}
 
 	@Override

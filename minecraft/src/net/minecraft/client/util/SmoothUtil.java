@@ -10,18 +10,18 @@ public class SmoothUtil {
 	private double smoothedSum;
 	private double movementLatency;
 
-	public double smooth(double d, double e) {
-		this.actualSum += d;
-		double f = this.actualSum - this.smoothedSum;
-		double g = MathHelper.lerp(0.5, this.movementLatency, f);
-		double h = Math.signum(f);
-		if (h * f > h * this.movementLatency) {
-			f = g;
+	public double smooth(double original, double smoother) {
+		this.actualSum += original;
+		double d = this.actualSum - this.smoothedSum;
+		double e = MathHelper.lerp(0.5, this.movementLatency, d);
+		double f = Math.signum(d);
+		if (f * d > f * this.movementLatency) {
+			d = e;
 		}
 
-		this.movementLatency = g;
-		this.smoothedSum += f * e;
-		return f * e;
+		this.movementLatency = e;
+		this.smoothedSum += d * smoother;
+		return d * smoother;
 	}
 
 	public void clear() {

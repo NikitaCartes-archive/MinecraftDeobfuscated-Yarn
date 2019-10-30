@@ -69,8 +69,8 @@ public class RecipeFix extends DataFix {
 		.put("minecraft:yellow_stained_hardened_clay", "minecraft:yellow_terracotta")
 		.build();
 
-	public RecipeFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public RecipeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

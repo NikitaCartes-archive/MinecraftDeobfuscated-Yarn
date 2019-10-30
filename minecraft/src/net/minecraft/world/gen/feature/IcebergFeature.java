@@ -15,8 +15,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IcebergFeature extends Feature<BushFeatureConfig> {
-	public IcebergFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> function) {
-		super(function);
+	public IcebergFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	public boolean method_13423(

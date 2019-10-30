@@ -22,83 +22,83 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	public WorldBorderS2CPacket() {
 	}
 
-	public WorldBorderS2CPacket(WorldBorder worldBorder, WorldBorderS2CPacket.Type type) {
+	public WorldBorderS2CPacket(WorldBorder border, WorldBorderS2CPacket.Type type) {
 		this.type = type;
-		this.centerX = worldBorder.getCenterX();
-		this.centerZ = worldBorder.getCenterZ();
-		this.oldSize = worldBorder.getSize();
-		this.size = worldBorder.getTargetSize();
-		this.interpolationDuration = worldBorder.getTargetRemainingTime();
-		this.portalTeleportPosLimit = worldBorder.getMaxWorldBorderRadius();
-		this.warningBlocks = worldBorder.getWarningBlocks();
-		this.warningTime = worldBorder.getWarningTime();
+		this.centerX = border.getCenterX();
+		this.centerZ = border.getCenterZ();
+		this.oldSize = border.getSize();
+		this.size = border.getTargetSize();
+		this.interpolationDuration = border.getTargetRemainingTime();
+		this.portalTeleportPosLimit = border.getMaxWorldBorderRadius();
+		this.warningBlocks = border.getWarningBlocks();
+		this.warningTime = border.getWarningTime();
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.type = packetByteBuf.readEnumConstant(WorldBorderS2CPacket.Type.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.type = buf.readEnumConstant(WorldBorderS2CPacket.Type.class);
 		switch (this.type) {
 			case SET_SIZE:
-				this.size = packetByteBuf.readDouble();
+				this.size = buf.readDouble();
 				break;
 			case LERP_SIZE:
-				this.oldSize = packetByteBuf.readDouble();
-				this.size = packetByteBuf.readDouble();
-				this.interpolationDuration = packetByteBuf.readVarLong();
+				this.oldSize = buf.readDouble();
+				this.size = buf.readDouble();
+				this.interpolationDuration = buf.readVarLong();
 				break;
 			case SET_CENTER:
-				this.centerX = packetByteBuf.readDouble();
-				this.centerZ = packetByteBuf.readDouble();
+				this.centerX = buf.readDouble();
+				this.centerZ = buf.readDouble();
 				break;
 			case SET_WARNING_BLOCKS:
-				this.warningBlocks = packetByteBuf.readVarInt();
+				this.warningBlocks = buf.readVarInt();
 				break;
 			case SET_WARNING_TIME:
-				this.warningTime = packetByteBuf.readVarInt();
+				this.warningTime = buf.readVarInt();
 				break;
 			case INITIALIZE:
-				this.centerX = packetByteBuf.readDouble();
-				this.centerZ = packetByteBuf.readDouble();
-				this.oldSize = packetByteBuf.readDouble();
-				this.size = packetByteBuf.readDouble();
-				this.interpolationDuration = packetByteBuf.readVarLong();
-				this.portalTeleportPosLimit = packetByteBuf.readVarInt();
-				this.warningBlocks = packetByteBuf.readVarInt();
-				this.warningTime = packetByteBuf.readVarInt();
+				this.centerX = buf.readDouble();
+				this.centerZ = buf.readDouble();
+				this.oldSize = buf.readDouble();
+				this.size = buf.readDouble();
+				this.interpolationDuration = buf.readVarLong();
+				this.portalTeleportPosLimit = buf.readVarInt();
+				this.warningBlocks = buf.readVarInt();
+				this.warningTime = buf.readVarInt();
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.type);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.type);
 		switch (this.type) {
 			case SET_SIZE:
-				packetByteBuf.writeDouble(this.size);
+				buf.writeDouble(this.size);
 				break;
 			case LERP_SIZE:
-				packetByteBuf.writeDouble(this.oldSize);
-				packetByteBuf.writeDouble(this.size);
-				packetByteBuf.writeVarLong(this.interpolationDuration);
+				buf.writeDouble(this.oldSize);
+				buf.writeDouble(this.size);
+				buf.writeVarLong(this.interpolationDuration);
 				break;
 			case SET_CENTER:
-				packetByteBuf.writeDouble(this.centerX);
-				packetByteBuf.writeDouble(this.centerZ);
+				buf.writeDouble(this.centerX);
+				buf.writeDouble(this.centerZ);
 				break;
 			case SET_WARNING_BLOCKS:
-				packetByteBuf.writeVarInt(this.warningBlocks);
+				buf.writeVarInt(this.warningBlocks);
 				break;
 			case SET_WARNING_TIME:
-				packetByteBuf.writeVarInt(this.warningTime);
+				buf.writeVarInt(this.warningTime);
 				break;
 			case INITIALIZE:
-				packetByteBuf.writeDouble(this.centerX);
-				packetByteBuf.writeDouble(this.centerZ);
-				packetByteBuf.writeDouble(this.oldSize);
-				packetByteBuf.writeDouble(this.size);
-				packetByteBuf.writeVarLong(this.interpolationDuration);
-				packetByteBuf.writeVarInt(this.portalTeleportPosLimit);
-				packetByteBuf.writeVarInt(this.warningBlocks);
-				packetByteBuf.writeVarInt(this.warningTime);
+				buf.writeDouble(this.centerX);
+				buf.writeDouble(this.centerZ);
+				buf.writeDouble(this.oldSize);
+				buf.writeDouble(this.size);
+				buf.writeVarLong(this.interpolationDuration);
+				buf.writeVarInt(this.portalTeleportPosLimit);
+				buf.writeVarInt(this.warningBlocks);
+				buf.writeVarInt(this.warningTime);
 		}
 	}
 

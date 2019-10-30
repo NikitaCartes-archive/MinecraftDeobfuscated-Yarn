@@ -39,10 +39,10 @@ public class AddServerScreen extends Screen {
 		}
 	};
 
-	public AddServerScreen(BooleanConsumer booleanConsumer, ServerInfo serverInfo) {
+	public AddServerScreen(BooleanConsumer callback, ServerInfo server) {
 		super(new TranslatableText("addServer.title"));
-		this.callback = booleanConsumer;
-		this.server = serverInfo;
+		this.callback = callback;
+		this.server = server;
 	}
 
 	@Override
@@ -89,15 +89,15 @@ public class AddServerScreen extends Screen {
 	}
 
 	@Override
-	public void resize(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient client, int width, int height) {
 		String string = this.addressField.getText();
 		String string2 = this.serverNameField.getText();
-		this.init(minecraftClient, i, j);
+		this.init(client, width, height);
 		this.addressField.setText(string);
 		this.serverNameField.setText(string2);
 	}
 
-	private void onClose(String string) {
+	private void onClose(String text) {
 		this.onClose();
 	}
 
@@ -120,13 +120,13 @@ public class AddServerScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 17, 16777215);
 		this.drawString(this.font, I18n.translate("addServer.enterName"), this.width / 2 - 100, 53, 10526880);
 		this.drawString(this.font, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 94, 10526880);
-		this.serverNameField.render(i, j, f);
-		this.addressField.render(i, j, f);
-		super.render(i, j, f);
+		this.serverNameField.render(mouseX, mouseY, delta);
+		this.addressField.render(mouseX, mouseY, delta);
+		super.render(mouseX, mouseY, delta);
 	}
 }

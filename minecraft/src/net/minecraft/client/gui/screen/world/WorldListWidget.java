@@ -36,7 +36,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -58,29 +58,29 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	private List<LevelSummary> levels;
 
 	public WorldListWidget(
-		SelectWorldScreen selectWorldScreen,
-		MinecraftClient minecraftClient,
-		int i,
-		int j,
-		int k,
-		int l,
-		int m,
-		Supplier<String> supplier,
-		@Nullable WorldListWidget worldListWidget
+		SelectWorldScreen parent,
+		MinecraftClient client,
+		int width,
+		int height,
+		int top,
+		int bottom,
+		int itemHeight,
+		Supplier<String> searchFilter,
+		@Nullable WorldListWidget list
 	) {
-		super(minecraftClient, i, j, k, l, m);
-		this.parent = selectWorldScreen;
-		if (worldListWidget != null) {
-			this.levels = worldListWidget.levels;
+		super(client, width, height, top, bottom, itemHeight);
+		this.parent = parent;
+		if (list != null) {
+			this.levels = list.levels;
 		}
 
-		this.filter(supplier, false);
+		this.filter(searchFilter, false);
 	}
 
-	public void filter(Supplier<String> supplier, boolean bl) {
+	public void filter(Supplier<String> filter, boolean load) {
 		this.clearEntries();
 		LevelStorage levelStorage = this.minecraft.getLevelStorage();
-		if (this.levels == null || bl) {
+		if (this.levels == null || load) {
 			try {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
@@ -92,7 +92,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			Collections.sort(this.levels);
 		}
 
-		String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
+		String string = ((String)filter.get()).toLowerCase(Locale.ROOT);
 
 		for (LevelSummary levelSummary : this.levels) {
 			if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
@@ -163,12 +163,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final NativeImageBackedTexture icon;
 		private long time;
 
-		public Entry(WorldListWidget worldListWidget2, LevelSummary levelSummary, LevelStorage levelStorage) {
-			this.screen = worldListWidget2.getParent();
-			this.level = levelSummary;
+		public Entry(WorldListWidget levelList, LevelSummary level, LevelStorage levelStorage) {
+			this.screen = levelList.getParent();
+			this.level = level;
 			this.client = MinecraftClient.getInstance();
-			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(levelSummary.getName()) + "/icon");
-			this.iconFile = levelStorage.resolveFile(levelSummary.getName(), "icon.png");
+			this.iconLocation = new Identifier("worlds/" + Hashing.sha1().hashUnencodedChars(level.getName()) + "/icon");
+			this.iconFile = levelStorage.resolveFile(level.getName(), "icon.png");
 			if (!this.iconFile.isFile()) {
 				this.iconFile = null;
 			}
@@ -259,17 +259,17 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public boolean mouseClicked(double d, double e, int i) {
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			WorldListWidget.this.method_20157(this);
 			this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
-			if (d - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
+			if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
 				this.play();
 				return true;
-			} else if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
+			} else if (Util.getMeasuringTimeMs() - this.time < 250L) {
 				this.play();
 				return true;
 			} else {
-				this.time = SystemUtil.getMeasuringTimeMs();
+				this.time = Util.getMeasuringTimeMs();
 				return false;
 			}
 		}

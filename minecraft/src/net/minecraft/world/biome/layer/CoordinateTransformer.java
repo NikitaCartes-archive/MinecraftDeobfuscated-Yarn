@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.layer;
 
 public interface CoordinateTransformer {
-	int transformX(int i);
+	int transformX(int x);
 
-	int transformZ(int i);
+	int transformZ(int y);
 }

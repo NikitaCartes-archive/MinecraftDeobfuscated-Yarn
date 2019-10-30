@@ -23,9 +23,9 @@ public class BlockDataObject implements DataCommandObject {
 	private static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.block.invalid"));
 	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType() {
 			@Override
-			public DataCommandObject getObject(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-				BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(commandContext, string + "Pos");
-				BlockEntity blockEntity = ((ServerCommandSource)commandContext.getSource()).getWorld().getBlockEntity(blockPos);
+			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+				BlockPos blockPos = BlockPosArgumentType.getLoadedBlockPos(context, string + "Pos");
+				BlockEntity blockEntity = ((ServerCommandSource)context.getSource()).getWorld().getBlockEntity(blockPos);
 				if (blockEntity == null) {
 					throw BlockDataObject.INVALID_BLOCK_EXCEPTION.create();
 				} else {
@@ -35,29 +35,28 @@ public class BlockDataObject implements DataCommandObject {
 
 			@Override
 			public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(
-				ArgumentBuilder<ServerCommandSource, ?> argumentBuilder,
-				Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function
+				ArgumentBuilder<ServerCommandSource, ?> argument, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> argumentAdder
 			) {
-				return argumentBuilder.then(
+				return argument.then(
 					CommandManager.literal("block")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(CommandManager.argument(string + "Pos", BlockPosArgumentType.blockPos())))
+						.then((ArgumentBuilder<ServerCommandSource, ?>)argumentAdder.apply(CommandManager.argument(string + "Pos", BlockPosArgumentType.blockPos())))
 				);
 			}
 		};
 	private final BlockEntity blockEntity;
 	private final BlockPos pos;
 
-	public BlockDataObject(BlockEntity blockEntity, BlockPos blockPos) {
+	public BlockDataObject(BlockEntity blockEntity, BlockPos pos) {
 		this.blockEntity = blockEntity;
-		this.pos = blockPos;
+		this.pos = pos;
 	}
 
 	@Override
-	public void setTag(CompoundTag compoundTag) {
-		compoundTag.putInt("x", this.pos.getX());
-		compoundTag.putInt("y", this.pos.getY());
-		compoundTag.putInt("z", this.pos.getZ());
-		this.blockEntity.fromTag(compoundTag);
+	public void setTag(CompoundTag tag) {
+		tag.putInt("x", this.pos.getX());
+		tag.putInt("y", this.pos.getY());
+		tag.putInt("z", this.pos.getZ());
+		this.blockEntity.fromTag(tag);
 		this.blockEntity.markDirty();
 		BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
 		this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, 3);
@@ -79,7 +78,9 @@ public class BlockDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
-		return new TranslatableText("commands.data.block.get", nbtPath, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i);
+	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result) {
+		return new TranslatableText(
+			"commands.data.block.get", nbtPath, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", scale), result
+		);
 	}
 }

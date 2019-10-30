@@ -15,14 +15,14 @@ public abstract class FlowerFeature<U extends FeatureConfig> extends Feature<U> 
 	}
 
 	@Override
-	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, U featureConfig) {
-		BlockState blockState = this.getFlowerToPlace(random, blockPos, featureConfig);
+	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, U config) {
+		BlockState blockState = this.getFlowerToPlace(random, pos, config);
 		int i = 0;
 
-		for (int j = 0; j < this.method_23370(featureConfig); j++) {
-			BlockPos blockPos2 = this.method_23371(random, blockPos, featureConfig);
-			if (iWorld.isAir(blockPos2) && blockPos2.getY() < 255 && blockState.canPlaceAt(iWorld, blockPos2) && this.method_23369(iWorld, blockPos2, featureConfig)) {
-				iWorld.setBlockState(blockPos2, blockState, 2);
+		for (int j = 0; j < this.method_23370(config); j++) {
+			BlockPos blockPos = this.method_23371(random, pos, config);
+			if (world.isAir(blockPos) && blockPos.getY() < 255 && blockState.canPlaceAt(world, blockPos) && this.method_23369(world, blockPos, config)) {
+				world.setBlockState(blockPos, blockState, 2);
 				i++;
 			}
 		}

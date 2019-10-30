@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
-		public void sendStatus(int i) {
-			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, i, 0);
+		public void sendStatus(int status) {
+			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, status, 0);
 		}
 
 		@Override
@@ -29,8 +29,8 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		@Override
-		public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
-			super.setSpawnEntry(mobSpawnerEntry);
+		public void setSpawnEntry(MobSpawnerEntry spawnEntry) {
+			super.setSpawnEntry(spawnEntry);
 			if (this.getWorld() != null) {
 				BlockState blockState = this.getWorld().getBlockState(this.getPos());
 				this.getWorld().updateListeners(MobSpawnerBlockEntity.this.pos, blockState, blockState, 4);

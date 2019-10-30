@@ -37,10 +37,10 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
-		switch (blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
+		switch (env) {
 			case LAND:
-				return (Integer)blockState.get(LAYERS) < 5;
+				return (Integer)world.get(LAYERS) < 5;
 			case WATER:
 				return false;
 			case AIR:
@@ -51,66 +51,61 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return LAYERS_TO_SHAPE[blockState.get(LAYERS)];
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return LAYERS_TO_SHAPE[state.get(LAYERS)];
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return LAYERS_TO_SHAPE[blockState.get(LAYERS) - 1];
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return LAYERS_TO_SHAPE[state.get(LAYERS) - 1];
 	}
 
 	@Override
-	public boolean hasSidedTransparency(BlockState blockState) {
+	public boolean hasSidedTransparency(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, WorldView worldView, BlockPos blockPos) {
-		BlockState blockState2 = worldView.getBlockState(blockPos.method_10074());
-		Block block = blockState2.getBlock();
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos.method_10074());
+		Block block = blockState.getBlock();
 		return block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER
-			? Block.isFaceFullSquare(blockState2.getOutlineShape(worldView, blockPos.method_10074()), Direction.UP)
-				|| block == this && (Integer)blockState2.get(LAYERS) == 8
+			? Block.isFaceFullSquare(blockState.getOutlineShape(world, pos.method_10074()), Direction.UP) || block == this && (Integer)blockState.get(LAYERS) == 8
 			: false;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		if (serverWorld.getLightLevel(LightType.BLOCK, blockPos) > 11) {
-			dropStacks(blockState, serverWorld, blockPos);
-			serverWorld.removeBlock(blockPos, false);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (world.getLightLevel(LightType.BLOCK, pos) > 11) {
+			dropStacks(state, world, pos);
+			world.removeBlock(pos, false);
 		}
 	}
 
 	@Override
-	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
-		int i = (Integer)blockState.get(LAYERS);
-		if (itemPlacementContext.getStack().getItem() != this.asItem() || i >= 8) {
+	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+		int i = (Integer)state.get(LAYERS);
+		if (ctx.getStack().getItem() != this.asItem() || i >= 8) {
 			return i == 1;
 		} else {
-			return itemPlacementContext.canReplaceExisting() ? itemPlacementContext.getSide() == Direction.UP : true;
+			return ctx.canReplaceExisting() ? ctx.getSide() == Direction.UP : true;
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
 		if (blockState.getBlock() == this) {
 			int i = (Integer)blockState.get(LAYERS);
 			return blockState.with(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
 		} else {
-			return super.getPlacementState(itemPlacementContext);
+			return super.getPlacementState(ctx);
 		}
 	}
 

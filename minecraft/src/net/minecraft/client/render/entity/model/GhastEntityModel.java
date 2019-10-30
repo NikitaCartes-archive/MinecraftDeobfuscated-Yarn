@@ -38,9 +38,9 @@ public class GhastEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		for (int l = 0; l < this.field_3372.length; l++) {
-			this.field_3372[l].pitch = 0.2F * MathHelper.sin(h * 0.3F + (float)l) + 0.4F;
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		for (int i = 0; i < this.field_3372.length; i++) {
+			this.field_3372[i].pitch = 0.2F * MathHelper.sin(age * 0.3F + (float)i) + 0.4F;
 		}
 	}
 

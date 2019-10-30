@@ -37,7 +37,7 @@ import net.minecraft.server.network.packet.QueryRequestC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -49,13 +49,13 @@ public class MultiplayerServerListPinger {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-	public void add(ServerInfo serverInfo) throws UnknownHostException {
-		ServerAddress serverAddress = ServerAddress.parse(serverInfo.address);
+	public void add(ServerInfo entry) throws UnknownHostException {
+		ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		final ClientConnection clientConnection = ClientConnection.connect(InetAddress.getByName(serverAddress.getAddress()), serverAddress.getPort(), false);
 		this.clientConnections.add(clientConnection);
-		serverInfo.label = I18n.translate("multiplayer.status.pinging");
-		serverInfo.ping = -1L;
-		serverInfo.playerListSummary = null;
+		entry.label = I18n.translate("multiplayer.status.pinging");
+		entry.ping = -1L;
+		entry.playerListSummary = null;
 		clientConnection.setPacketListener(
 			new ClientQueryPacketListener() {
 				private boolean sentQuery;
@@ -70,21 +70,21 @@ public class MultiplayerServerListPinger {
 						this.received = true;
 						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
 						if (serverMetadata.getDescription() != null) {
-							serverInfo.label = serverMetadata.getDescription().asFormattedString();
+							entry.label = serverMetadata.getDescription().asFormattedString();
 						} else {
-							serverInfo.label = "";
+							entry.label = "";
 						}
 
 						if (serverMetadata.getVersion() != null) {
-							serverInfo.version = serverMetadata.getVersion().getGameVersion();
-							serverInfo.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
+							entry.version = serverMetadata.getVersion().getGameVersion();
+							entry.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
 						} else {
-							serverInfo.version = I18n.translate("multiplayer.status.old");
-							serverInfo.protocolVersion = 0;
+							entry.version = I18n.translate("multiplayer.status.old");
+							entry.protocolVersion = 0;
 						}
 
 						if (serverMetadata.getPlayers() != null) {
-							serverInfo.playerCountLabel = Formatting.GRAY
+							entry.playerCountLabel = Formatting.GRAY
 								+ ""
 								+ serverMetadata.getPlayers().getOnlinePlayerCount()
 								+ ""
@@ -113,24 +113,24 @@ public class MultiplayerServerListPinger {
 									);
 								}
 
-								serverInfo.playerListSummary = stringBuilder.toString();
+								entry.playerListSummary = stringBuilder.toString();
 							}
 						} else {
-							serverInfo.playerCountLabel = Formatting.DARK_GRAY + I18n.translate("multiplayer.status.unknown");
+							entry.playerCountLabel = Formatting.DARK_GRAY + I18n.translate("multiplayer.status.unknown");
 						}
 
 						if (serverMetadata.getFavicon() != null) {
 							String string = serverMetadata.getFavicon();
 							if (string.startsWith("data:image/png;base64,")) {
-								serverInfo.setIcon(string.substring("data:image/png;base64,".length()));
+								entry.setIcon(string.substring("data:image/png;base64,".length()));
 							} else {
 								MultiplayerServerListPinger.LOGGER.error("Invalid server icon (unknown format)");
 							}
 						} else {
-							serverInfo.setIcon(null);
+							entry.setIcon(null);
 						}
 
-						this.startTime = SystemUtil.getMeasuringTimeMs();
+						this.startTime = Util.getMeasuringTimeMs();
 						clientConnection.send(new QueryPingC2SPacket(this.startTime));
 						this.sentQuery = true;
 					}
@@ -139,18 +139,18 @@ public class MultiplayerServerListPinger {
 				@Override
 				public void onPong(QueryPongS2CPacket queryPongS2CPacket) {
 					long l = this.startTime;
-					long m = SystemUtil.getMeasuringTimeMs();
-					serverInfo.ping = m - l;
+					long m = Util.getMeasuringTimeMs();
+					entry.ping = m - l;
 					clientConnection.disconnect(new TranslatableText("multiplayer.status.finished"));
 				}
 
 				@Override
-				public void onDisconnected(Text text) {
+				public void onDisconnected(Text reason) {
 					if (!this.sentQuery) {
-						MultiplayerServerListPinger.LOGGER.error("Can't ping {}: {}", serverInfo.address, text.getString());
-						serverInfo.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
-						serverInfo.playerCountLabel = "";
-						MultiplayerServerListPinger.this.ping(serverInfo);
+						MultiplayerServerListPinger.LOGGER.error("Can't ping {}: {}", entry.address, reason.getString());
+						entry.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
+						entry.playerCountLabel = "";
+						MultiplayerServerListPinger.this.ping(entry);
 					}
 				}
 

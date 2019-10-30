@@ -10,8 +10,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BlockEntityCustomNameToComponentFix extends DataFix {
-	public BlockEntityCustomNameToComponentFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BlockEntityCustomNameToComponentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

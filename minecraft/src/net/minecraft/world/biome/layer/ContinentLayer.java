@@ -4,11 +4,11 @@ public enum ContinentLayer implements InitLayer {
 	INSTANCE;
 
 	@Override
-	public int sample(LayerRandomnessSource layerRandomnessSource, int i, int j) {
-		if (i == 0 && j == 0) {
+	public int sample(LayerRandomnessSource context, int x, int y) {
+		if (x == 0 && y == 0) {
 			return 1;
 		} else {
-			return layerRandomnessSource.nextInt(10) == 0 ? 1 : BiomeLayers.OCEAN_ID;
+			return context.nextInt(10) == 0 ? 1 : BiomeLayers.OCEAN_ID;
 		}
 	}
 }

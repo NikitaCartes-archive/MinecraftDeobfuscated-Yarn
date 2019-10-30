@@ -26,12 +26,12 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
+	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
 		if (!entity.isFireImmune() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
 			entity.damage(DamageSource.HOT_FLOOR, 1.0F);
 		}
 
-		super.onSteppedOn(world, blockPos, entity);
+		super.onSteppedOn(world, pos, entity);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -41,35 +41,28 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		BubbleColumnBlock.update(serverWorld, blockPos.up(), true);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		BubbleColumnBlock.update(world, pos.up(), true);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (direction == Direction.UP && blockState2.getBlock() == Blocks.WATER) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+		if (facing == Direction.UP && neighborState.getBlock() == Blocks.WATER) {
+			world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
-	public void randomTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		BlockPos blockPos2 = blockPos.up();
-		if (serverWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
-			serverWorld.playSound(
-				null,
-				blockPos,
-				SoundEvents.BLOCK_FIRE_EXTINGUISH,
-				SoundCategory.BLOCKS,
-				0.5F,
-				2.6F + (serverWorld.random.nextFloat() - serverWorld.random.nextFloat()) * 0.8F
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		BlockPos blockPos = pos.up();
+		if (world.getFluidState(pos).matches(FluidTags.WATER)) {
+			world.playSound(
+				null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 			);
-			serverWorld.spawnParticles(
-				ParticleTypes.LARGE_SMOKE, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0
+			world.spawnParticles(
+				ParticleTypes.LARGE_SMOKE, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.25, (double)blockPos.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0
 			);
 		}
 	}
@@ -80,17 +73,17 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+		world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-		return entityType.isFireImmune();
+	public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+		return type.isFireImmune();
 	}
 
 	@Override
-	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean shouldPostProcess(BlockState state, BlockView view, BlockPos pos) {
 		return true;
 	}
 }

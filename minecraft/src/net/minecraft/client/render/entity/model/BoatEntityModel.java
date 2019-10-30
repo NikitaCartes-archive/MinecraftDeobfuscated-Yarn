@@ -72,23 +72,23 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 		return this.bottom;
 	}
 
-	protected ModelPart makePaddle(boolean bl) {
-		ModelPart modelPart = new ModelPart(this, 62, bl ? 0 : 20).setTextureSize(128, 64);
+	protected ModelPart makePaddle(boolean isLeft) {
+		ModelPart modelPart = new ModelPart(this, 62, isLeft ? 0 : 20).setTextureSize(128, 64);
 		int i = 20;
 		int j = 7;
 		int k = 6;
 		float f = -5.0F;
 		modelPart.addCuboid(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F);
-		modelPart.addCuboid(bl ? -1.001F : 0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F);
+		modelPart.addCuboid(isLeft ? -1.001F : 0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F);
 		return modelPart;
 	}
 
-	protected void renderPaddle(BoatEntity boatEntity, int i, float f, float g) {
-		float h = boatEntity.interpolatePaddlePhase(i, g);
-		ModelPart modelPart = this.paddles[i];
-		modelPart.pitch = (float)MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-h) + 1.0F) / 2.0F));
-		modelPart.yaw = (float)MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-h + 1.0F) + 1.0F) / 2.0F));
-		if (i == 1) {
+	protected void renderPaddle(BoatEntity boat, int paddle, float scale, float partialTick) {
+		float f = boat.interpolatePaddlePhase(paddle, partialTick);
+		ModelPart modelPart = this.paddles[paddle];
+		modelPart.pitch = (float)MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-f) + 1.0F) / 2.0F));
+		modelPart.yaw = (float)MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F));
+		if (paddle == 1) {
 			modelPart.yaw = (float) Math.PI - modelPart.yaw;
 		}
 	}

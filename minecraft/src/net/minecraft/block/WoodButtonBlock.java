@@ -9,7 +9,7 @@ public class WoodButtonBlock extends AbstractButtonBlock {
 	}
 
 	@Override
-	protected SoundEvent getClickSound(boolean bl) {
-		return bl ? SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON : SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF;
+	protected SoundEvent getClickSound(boolean powered) {
+		return powered ? SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON : SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF;
 	}
 }

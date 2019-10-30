@@ -11,7 +11,7 @@ public interface StructureProcessorType extends DynamicDeserializer<StructurePro
 	StructureProcessorType RULE = register("rule", RuleStructureProcessor::new);
 	StructureProcessorType NOP = register("nop", dynamic -> NopStructureProcessor.INSTANCE);
 
-	static StructureProcessorType register(String string, StructureProcessorType structureProcessorType) {
-		return Registry.register(Registry.STRUCTURE_PROCESSOR, string, structureProcessorType);
+	static StructureProcessorType register(String id, StructureProcessorType processor) {
+		return Registry.register(Registry.STRUCTURE_PROCESSOR, id, processor);
 	}
 }

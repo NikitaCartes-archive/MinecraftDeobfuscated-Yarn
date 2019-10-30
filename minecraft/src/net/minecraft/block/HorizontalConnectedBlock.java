@@ -10,7 +10,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -27,27 +27,27 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 		.entrySet()
 		.stream()
 		.filter(entry -> ((Direction)entry.getKey()).getAxis().isHorizontal())
-		.collect(SystemUtil.toMap());
+		.collect(Util.toMap());
 	protected final VoxelShape[] collisionShapes;
 	protected final VoxelShape[] boundingShapes;
 	private final Object2IntMap<BlockState> SHAPE_INDEX_CACHE = new Object2IntOpenHashMap<>();
 
-	protected HorizontalConnectedBlock(float f, float g, float h, float i, float j, Block.Settings settings) {
+	protected HorizontalConnectedBlock(float radius1, float radius2, float boundingHeight1, float boundingHeight2, float collisionHeight, Block.Settings settings) {
 		super(settings);
-		this.collisionShapes = this.createShapes(f, g, j, 0.0F, j);
-		this.boundingShapes = this.createShapes(f, g, h, 0.0F, i);
+		this.collisionShapes = this.createShapes(radius1, radius2, collisionHeight, 0.0F, collisionHeight);
+		this.boundingShapes = this.createShapes(radius1, radius2, boundingHeight1, 0.0F, boundingHeight2);
 	}
 
-	protected VoxelShape[] createShapes(float f, float g, float h, float i, float j) {
-		float k = 8.0F - f;
-		float l = 8.0F + f;
-		float m = 8.0F - g;
-		float n = 8.0F + g;
-		VoxelShape voxelShape = Block.createCuboidShape((double)k, 0.0, (double)k, (double)l, (double)h, (double)l);
-		VoxelShape voxelShape2 = Block.createCuboidShape((double)m, (double)i, 0.0, (double)n, (double)j, (double)n);
-		VoxelShape voxelShape3 = Block.createCuboidShape((double)m, (double)i, (double)m, (double)n, (double)j, 16.0);
-		VoxelShape voxelShape4 = Block.createCuboidShape(0.0, (double)i, (double)m, (double)n, (double)j, (double)n);
-		VoxelShape voxelShape5 = Block.createCuboidShape((double)m, (double)i, (double)m, 16.0, (double)j, (double)n);
+	protected VoxelShape[] createShapes(float radius1, float radius2, float height1, float offset2, float height2) {
+		float f = 8.0F - radius1;
+		float g = 8.0F + radius1;
+		float h = 8.0F - radius2;
+		float i = 8.0F + radius2;
+		VoxelShape voxelShape = Block.createCuboidShape((double)f, 0.0, (double)f, (double)g, (double)height1, (double)g);
+		VoxelShape voxelShape2 = Block.createCuboidShape((double)h, (double)offset2, 0.0, (double)i, (double)height2, (double)i);
+		VoxelShape voxelShape3 = Block.createCuboidShape((double)h, (double)offset2, (double)h, (double)i, (double)height2, 16.0);
+		VoxelShape voxelShape4 = Block.createCuboidShape(0.0, (double)offset2, (double)h, (double)i, (double)height2, (double)i);
+		VoxelShape voxelShape5 = Block.createCuboidShape((double)h, (double)offset2, (double)h, 16.0, (double)height2, (double)i);
 		VoxelShape voxelShape6 = VoxelShapes.union(voxelShape2, voxelShape5);
 		VoxelShape voxelShape7 = VoxelShapes.union(voxelShape3, voxelShape4);
 		VoxelShape[] voxelShapes = new VoxelShape[]{
@@ -69,48 +69,48 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 			VoxelShapes.union(voxelShape7, voxelShape6)
 		};
 
-		for (int o = 0; o < 16; o++) {
-			voxelShapes[o] = VoxelShapes.union(voxelShape, voxelShapes[o]);
+		for (int j = 0; j < 16; j++) {
+			voxelShapes[j] = VoxelShapes.union(voxelShape, voxelShapes[j]);
 		}
 
 		return voxelShapes;
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !(Boolean)blockState.get(WATERLOGGED);
+	public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
+		return !(Boolean)state.get(WATERLOGGED);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return this.boundingShapes[this.getShapeIndex(blockState)];
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return this.boundingShapes[this.getShapeIndex(state)];
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-		return this.collisionShapes[this.getShapeIndex(blockState)];
+	public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+		return this.collisionShapes[this.getShapeIndex(state)];
 	}
 
-	private static int getDirectionMask(Direction direction) {
-		return 1 << direction.getHorizontal();
+	private static int getDirectionMask(Direction dir) {
+		return 1 << dir.getHorizontal();
 	}
 
-	protected int getShapeIndex(BlockState blockState) {
-		return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(blockState, blockStatex -> {
+	protected int getShapeIndex(BlockState state) {
+		return this.SHAPE_INDEX_CACHE.computeIntIfAbsent(state, blockState -> {
 			int i = 0;
-			if ((Boolean)blockStatex.get(NORTH)) {
+			if ((Boolean)blockState.get(NORTH)) {
 				i |= getDirectionMask(Direction.NORTH);
 			}
 
-			if ((Boolean)blockStatex.get(EAST)) {
+			if ((Boolean)blockState.get(EAST)) {
 				i |= getDirectionMask(Direction.EAST);
 			}
 
-			if ((Boolean)blockStatex.get(SOUTH)) {
+			if ((Boolean)blockState.get(SOUTH)) {
 				i |= getDirectionMask(Direction.SOUTH);
 			}
 
-			if ((Boolean)blockStatex.get(WEST)) {
+			if ((Boolean)blockState.get(WEST)) {
 				i |= getDirectionMask(Direction.WEST);
 			}
 
@@ -119,38 +119,38 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
+	public FluidState getFluidState(BlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		switch (blockRotation) {
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		switch (rotation) {
 			case CLOCKWISE_180:
-				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
+				return state.with(NORTH, state.get(SOUTH)).with(EAST, state.get(WEST)).with(SOUTH, state.get(NORTH)).with(WEST, state.get(EAST));
 			case COUNTERCLOCKWISE_90:
-				return blockState.with(NORTH, blockState.get(EAST)).with(EAST, blockState.get(SOUTH)).with(SOUTH, blockState.get(WEST)).with(WEST, blockState.get(NORTH));
+				return state.with(NORTH, state.get(EAST)).with(EAST, state.get(SOUTH)).with(SOUTH, state.get(WEST)).with(WEST, state.get(NORTH));
 			case CLOCKWISE_90:
-				return blockState.with(NORTH, blockState.get(WEST)).with(EAST, blockState.get(NORTH)).with(SOUTH, blockState.get(EAST)).with(WEST, blockState.get(SOUTH));
+				return state.with(NORTH, state.get(WEST)).with(EAST, state.get(NORTH)).with(SOUTH, state.get(EAST)).with(WEST, state.get(SOUTH));
 			default:
-				return blockState;
+				return state;
 		}
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		switch (blockMirror) {
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		switch (mirror) {
 			case LEFT_RIGHT:
-				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
+				return state.with(NORTH, state.get(SOUTH)).with(SOUTH, state.get(NORTH));
 			case FRONT_BACK:
-				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
+				return state.with(EAST, state.get(WEST)).with(WEST, state.get(EAST));
 			default:
-				return super.mirror(blockState, blockMirror);
+				return super.mirror(state, mirror);
 		}
 	}
 }

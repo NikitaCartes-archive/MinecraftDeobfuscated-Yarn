@@ -28,8 +28,8 @@ public class ScheduleCommand {
 			commandContext.getSource().getWorld().getLevelProperties().getScheduledEvents().method_22592(), suggestionsBuilder
 		);
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("schedule")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -83,11 +83,11 @@ public class ScheduleCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Either<CommandFunction, Tag<CommandFunction>> either, int i, boolean bl) throws CommandSyntaxException {
-		if (i == 0) {
+	private static int execute(ServerCommandSource serverCommandSource, Either<CommandFunction, Tag<CommandFunction>> either, int time, boolean bl) throws CommandSyntaxException {
+		if (time == 0) {
 			throw SAME_TICK_EXCEPTION.create();
 		} else {
-			long l = serverCommandSource.getWorld().getTime() + (long)i;
+			long l = serverCommandSource.getWorld().getTime() + (long)time;
 			Timer<MinecraftServer> timer = serverCommandSource.getWorld().getLevelProperties().getScheduledEvents();
 			either.ifLeft(commandFunction -> {
 				Identifier identifier = commandFunction.getId();
@@ -97,7 +97,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
-				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, time, l), true);
 			}).ifRight(tag -> {
 				Identifier identifier = tag.getId();
 				String string = "#" + identifier.toString();
@@ -106,7 +106,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
-				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, time, l), true);
 			});
 			return (int)Math.floorMod(l, 2147483647L);
 		}

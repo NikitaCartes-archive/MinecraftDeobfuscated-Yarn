@@ -21,8 +21,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
-	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
@@ -44,16 +44,16 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
-		if (i == chunkPos.x && j == chunkPos.z) {
-			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 16)) {
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
+		if (chunkZ == chunkPos.x && i == chunkPos.z) {
+			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkZ * 16 + 9, chunkGenerator.getSeaLevel(), i * 16 + 9, 16)) {
 				if (!chunkGenerator.hasStructure(biome2, this)) {
 					return false;
 				}
 			}
 
-			for (Biome biome3 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 29)) {
+			for (Biome biome3 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkZ * 16 + 9, chunkGenerator.getSeaLevel(), i * 16 + 9, 29)) {
 				if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
 					return false;
 				}
@@ -88,32 +88,32 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	public static class Start extends StructureStart {
 		private boolean field_13717;
 
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			this.method_16588(i, j);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			this.method_16588(x, z);
 		}
 
-		private void method_16588(int i, int j) {
-			int k = i * 16 - 29;
-			int l = j * 16 - 29;
+		private void method_16588(int chunkX, int chunkZ) {
+			int i = chunkX * 16 - 29;
+			int j = chunkZ * 16 - 29;
 			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
-			this.children.add(new OceanMonumentGenerator.Base(this.random, k, l, direction));
+			this.children.add(new OceanMonumentGenerator.Base(this.random, i, j, direction));
 			this.setBoundingBoxFromChildren();
 			this.field_13717 = true;
 		}
 
 		@Override
-		public void generateStructure(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+		public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
 			if (!this.field_13717) {
 				this.children.clear();
 				this.method_16588(this.getChunkX(), this.getChunkZ());
 			}
 
-			super.generateStructure(iWorld, chunkGenerator, random, blockBox, chunkPos);
+			super.generateStructure(world, chunkGenerator, random, blockBox, chunkPos);
 		}
 	}
 }

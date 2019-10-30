@@ -18,24 +18,24 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public CraftRequestC2SPacket(int i, Recipe<?> recipe, boolean bl) {
-		this.syncId = i;
+	public CraftRequestC2SPacket(int syncId, Recipe<?> recipe, boolean bl) {
+		this.syncId = syncId;
 		this.recipe = recipe.getId();
 		this.craftAll = bl;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.syncId = packetByteBuf.readByte();
-		this.recipe = packetByteBuf.readIdentifier();
-		this.craftAll = packetByteBuf.readBoolean();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.syncId = buf.readByte();
+		this.recipe = buf.readIdentifier();
+		this.craftAll = buf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.syncId);
-		packetByteBuf.writeIdentifier(this.recipe);
-		packetByteBuf.writeBoolean(this.craftAll);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.syncId);
+		buf.writeIdentifier(this.recipe);
+		buf.writeBoolean(this.craftAll);
 	}
 
 	public void method_12317(ServerPlayPacketListener serverPlayPacketListener) {

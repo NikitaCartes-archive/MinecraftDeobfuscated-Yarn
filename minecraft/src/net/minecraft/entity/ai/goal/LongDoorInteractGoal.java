@@ -6,9 +6,9 @@ public class LongDoorInteractGoal extends DoorInteractGoal {
 	private final boolean field_19004;
 	private int ticksLeft;
 
-	public LongDoorInteractGoal(MobEntity mobEntity, boolean bl) {
-		super(mobEntity);
-		this.mob = mobEntity;
+	public LongDoorInteractGoal(MobEntity mob, boolean bl) {
+		super(mob);
+		this.mob = mob;
 		this.field_19004 = bl;
 	}
 

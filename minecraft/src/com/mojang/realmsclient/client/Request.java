@@ -19,18 +19,18 @@ public abstract class Request<T extends Request<T>> {
 	private boolean connected;
 	protected String url;
 
-	public Request(String string, int i, int j) {
+	public Request(String url, int connectTimeout, int readTimeout) {
 		try {
-			this.url = string;
+			this.url = url;
 			Proxy proxy = RealmsClientConfig.getProxy();
 			if (proxy != null) {
-				this.connection = (HttpURLConnection)new URL(string).openConnection(proxy);
+				this.connection = (HttpURLConnection)new URL(url).openConnection(proxy);
 			} else {
-				this.connection = (HttpURLConnection)new URL(string).openConnection();
+				this.connection = (HttpURLConnection)new URL(url).openConnection();
 			}
 
-			this.connection.setConnectTimeout(i);
-			this.connection.setReadTimeout(j);
+			this.connection.setConnectTimeout(connectTimeout);
+			this.connection.setReadTimeout(readTimeout);
 		} catch (MalformedURLException var5) {
 			throw new RealmsHttpException(var5.getMessage(), var5);
 		} catch (IOException var6) {
@@ -38,16 +38,16 @@ public abstract class Request<T extends Request<T>> {
 		}
 	}
 
-	public void cookie(String string, String string2) {
-		cookie(this.connection, string, string2);
+	public void cookie(String key, String value) {
+		cookie(this.connection, key, value);
 	}
 
-	public static void cookie(HttpURLConnection httpURLConnection, String string, String string2) {
-		String string3 = httpURLConnection.getRequestProperty("Cookie");
-		if (string3 == null) {
-			httpURLConnection.setRequestProperty("Cookie", string + "=" + string2);
+	public static void cookie(HttpURLConnection connection, String key, String value) {
+		String string = connection.getRequestProperty("Cookie");
+		if (string == null) {
+			connection.setRequestProperty("Cookie", key + "=" + value);
 		} else {
-			httpURLConnection.setRequestProperty("Cookie", string3 + ";" + string + "=" + string2);
+			connection.setRequestProperty("Cookie", string + ";" + key + "=" + value);
 		}
 	}
 
@@ -55,8 +55,8 @@ public abstract class Request<T extends Request<T>> {
 		return getRetryAfterHeader(this.connection);
 	}
 
-	public static int getRetryAfterHeader(HttpURLConnection httpURLConnection) {
-		String string = httpURLConnection.getHeaderField("Retry-After");
+	public static int getRetryAfterHeader(HttpURLConnection connection) {
+		String string = connection.getHeaderField("Retry-After");
 
 		try {
 			return Integer.valueOf(string);
@@ -91,11 +91,11 @@ public abstract class Request<T extends Request<T>> {
 		}
 	}
 
-	private String read(InputStream inputStream) throws IOException {
-		if (inputStream == null) {
+	private String read(InputStream in) throws IOException {
+		if (in == null) {
 			return "";
 		} else {
-			InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+			InputStreamReader inputStreamReader = new InputStreamReader(in, "UTF-8");
 			StringBuilder stringBuilder = new StringBuilder();
 
 			for (int i = inputStreamReader.read(); i != -1; i = inputStreamReader.read()) {
@@ -151,41 +151,41 @@ public abstract class Request<T extends Request<T>> {
 
 	protected abstract T doConnect();
 
-	public static Request<?> get(String string) {
-		return new Request.Get(string, 5000, 60000);
+	public static Request<?> get(String url) {
+		return new Request.Get(url, 5000, 60000);
 	}
 
-	public static Request<?> get(String string, int i, int j) {
-		return new Request.Get(string, i, j);
+	public static Request<?> get(String url, int connectTimeoutMillis, int readTimeoutMillis) {
+		return new Request.Get(url, connectTimeoutMillis, readTimeoutMillis);
 	}
 
-	public static Request<?> post(String string, String string2) {
-		return new Request.Post(string, string2, 5000, 60000);
+	public static Request<?> post(String uri, String content) {
+		return new Request.Post(uri, content, 5000, 60000);
 	}
 
-	public static Request<?> post(String string, String string2, int i, int j) {
-		return new Request.Post(string, string2, i, j);
+	public static Request<?> post(String uri, String content, int connectTimeoutMillis, int readTimeoutMillis) {
+		return new Request.Post(uri, content, connectTimeoutMillis, readTimeoutMillis);
 	}
 
-	public static Request<?> delete(String string) {
-		return new Request.Delete(string, 5000, 60000);
+	public static Request<?> delete(String url) {
+		return new Request.Delete(url, 5000, 60000);
 	}
 
-	public static Request<?> put(String string, String string2) {
-		return new Request.Put(string, string2, 5000, 60000);
+	public static Request<?> put(String url, String content) {
+		return new Request.Put(url, content, 5000, 60000);
 	}
 
-	public static Request<?> put(String string, String string2, int i, int j) {
-		return new Request.Put(string, string2, i, j);
+	public static Request<?> put(String url, String content, int connectTimeoutMillis, int readTimeoutMillis) {
+		return new Request.Put(url, content, connectTimeoutMillis, readTimeoutMillis);
 	}
 
-	public String getHeader(String string) {
-		return getHeader(this.connection, string);
+	public String getHeader(String header) {
+		return getHeader(this.connection, header);
 	}
 
-	public static String getHeader(HttpURLConnection httpURLConnection, String string) {
+	public static String getHeader(HttpURLConnection connection, String header) {
 		try {
-			return httpURLConnection.getHeaderField(string);
+			return connection.getHeaderField(header);
 		} catch (Exception var3) {
 			return "";
 		}
@@ -193,8 +193,8 @@ public abstract class Request<T extends Request<T>> {
 
 	@Environment(EnvType.CLIENT)
 	public static class Delete extends Request<Request.Delete> {
-		public Delete(String string, int i, int j) {
-			super(string, i, j);
+		public Delete(String uri, int connectTimeout, int readTimeout) {
+			super(uri, connectTimeout, readTimeout);
 		}
 
 		public Request.Delete method_21057() {
@@ -211,8 +211,8 @@ public abstract class Request<T extends Request<T>> {
 
 	@Environment(EnvType.CLIENT)
 	public static class Get extends Request<Request.Get> {
-		public Get(String string, int i, int j) {
-			super(string, i, j);
+		public Get(String uri, int connectTimeout, int readTimeout) {
+			super(uri, connectTimeout, readTimeout);
 		}
 
 		public Request.Get method_21058() {
@@ -232,9 +232,9 @@ public abstract class Request<T extends Request<T>> {
 	public static class Post extends Request<Request.Post> {
 		private final String content;
 
-		public Post(String string, String string2, int i, int j) {
-			super(string, i, j);
-			this.content = string2;
+		public Post(String uri, String content, int connectTimeout, int readTimeout) {
+			super(uri, connectTimeout, readTimeout);
+			this.content = content;
 		}
 
 		public Request.Post method_21059() {
@@ -263,9 +263,9 @@ public abstract class Request<T extends Request<T>> {
 	public static class Put extends Request<Request.Put> {
 		private final String content;
 
-		public Put(String string, String string2, int i, int j) {
-			super(string, i, j);
-			this.content = string2;
+		public Put(String uri, String content, int connectTimeout, int readTimeout) {
+			super(uri, connectTimeout, readTimeout);
+			this.content = content;
 		}
 
 		public Request.Put method_21060() {

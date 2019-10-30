@@ -17,9 +17,9 @@ public enum ChatVisibility {
 	private final int id;
 	private final String key;
 
-	private ChatVisibility(int j, String string2) {
-		this.id = j;
-		this.key = string2;
+	private ChatVisibility(int id, String key) {
+		this.id = id;
+		this.key = key;
 	}
 
 	public int getId() {

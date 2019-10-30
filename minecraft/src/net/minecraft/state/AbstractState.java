@@ -26,8 +26,8 @@ public abstract class AbstractState<O, S> implements State<S> {
 			}
 		}
 
-		private <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> comparable) {
-			return property.name((T)comparable);
+		private <T extends Comparable<T>> String nameValue(Property<T> property, Comparable<?> value) {
+			return property.name((T)value);
 		}
 	};
 	protected final O owner;
@@ -35,26 +35,26 @@ public abstract class AbstractState<O, S> implements State<S> {
 	private final int hashCode;
 	private Table<Property<?>, Comparable<?>, S> withTable;
 
-	protected AbstractState(O object, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
-		this.owner = object;
-		this.entries = immutableMap;
-		this.hashCode = immutableMap.hashCode();
+	protected AbstractState(O owner, ImmutableMap<Property<?>, Comparable<?>> entries) {
+		this.owner = owner;
+		this.entries = entries;
+		this.hashCode = entries.hashCode();
 	}
 
 	public <T extends Comparable<T>> S cycle(Property<T> property) {
 		return this.with(property, getNext(property.getValues(), this.get(property)));
 	}
 
-	protected static <T> T getNext(Collection<T> collection, T object) {
-		Iterator<T> iterator = collection.iterator();
+	protected static <T> T getNext(Collection<T> values, T value) {
+		Iterator<T> iterator = values.iterator();
 
 		while (iterator.hasNext()) {
-			if (iterator.next().equals(object)) {
+			if (iterator.next().equals(value)) {
 				if (iterator.hasNext()) {
 					return (T)iterator.next();
 				}
 
-				return (T)collection.iterator().next();
+				return (T)values.iterator().next();
 			}
 		}
 
@@ -92,23 +92,23 @@ public abstract class AbstractState<O, S> implements State<S> {
 	}
 
 	@Override
-	public <T extends Comparable<T>, V extends T> S with(Property<T> property, V comparable) {
-		Comparable<?> comparable2 = this.entries.get(property);
-		if (comparable2 == null) {
+	public <T extends Comparable<T>, V extends T> S with(Property<T> property, V value) {
+		Comparable<?> comparable = this.entries.get(property);
+		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.owner);
-		} else if (comparable2 == comparable) {
+		} else if (comparable == value) {
 			return (S)this;
 		} else {
-			S object = this.withTable.get(property, comparable);
+			S object = this.withTable.get(property, value);
 			if (object == null) {
-				throw new IllegalArgumentException("Cannot set property " + property + " to " + comparable + " on " + this.owner + ", it is not an allowed value");
+				throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on " + this.owner + ", it is not an allowed value");
 			} else {
 				return object;
 			}
 		}
 	}
 
-	public void createWithTable(Map<Map<Property<?>, Comparable<?>>, S> map) {
+	public void createWithTable(Map<Map<Property<?>, Comparable<?>>, S> states) {
 		if (this.withTable != null) {
 			throw new IllegalStateException();
 		} else {
@@ -119,7 +119,7 @@ public abstract class AbstractState<O, S> implements State<S> {
 
 				for (Comparable<?> comparable : property.getValues()) {
 					if (comparable != entry.getValue()) {
-						table.put(property, comparable, (S)map.get(this.toMapWith(property, comparable)));
+						table.put(property, comparable, (S)states.get(this.toMapWith(property, comparable)));
 					}
 				}
 			}
@@ -128,9 +128,9 @@ public abstract class AbstractState<O, S> implements State<S> {
 		}
 	}
 
-	private Map<Property<?>, Comparable<?>> toMapWith(Property<?> property, Comparable<?> comparable) {
+	private Map<Property<?>, Comparable<?>> toMapWith(Property<?> property, Comparable<?> value) {
 		Map<Property<?>, Comparable<?>> map = Maps.<Property<?>, Comparable<?>>newHashMap(this.entries);
-		map.put(property, comparable);
+		map.put(property, value);
 		return map;
 	}
 
@@ -139,8 +139,8 @@ public abstract class AbstractState<O, S> implements State<S> {
 		return this.entries;
 	}
 
-	public boolean equals(Object object) {
-		return this == object;
+	public boolean equals(Object o) {
+		return this == o;
 	}
 
 	public int hashCode() {

@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.SheepEntityModel;
 import net.minecraft.client.render.entity.model.SheepWoolEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -15,13 +15,13 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 	private static final Identifier SKIN = new Identifier("textures/entity/sheep/sheep_fur.png");
 	private final SheepWoolEntityModel<SheepEntity> model = new SheepWoolEntityModel<>();
 
-	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public SheepWoolFeatureRenderer(FeatureRendererContext<SheepEntity, SheepEntityModel<SheepEntity>> context) {
+		super(context);
 	}
 
 	public void method_4198(
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+		VertexConsumerProvider vertexConsumerProvider,
 		int i,
 		SheepEntity sheepEntity,
 		float f,
@@ -55,7 +55,7 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 				v = hs[2];
 			}
 
-			render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
+			render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, sheepEntity, f, g, j, k, l, m, h, t, u, v);
 		}
 	}
 }

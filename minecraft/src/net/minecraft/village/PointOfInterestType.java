@@ -15,7 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class PointOfInterestType {
@@ -110,19 +110,19 @@ public class PointOfInterestType {
 		return this.id;
 	}
 
-	private static PointOfInterestType register(String string, Set<BlockState> set, int i, int j) {
-		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, j)));
+	private static PointOfInterestType register(String id, Set<BlockState> set, int i, int j) {
+		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(id), new PointOfInterestType(id, set, i, j)));
 	}
 
-	private static PointOfInterestType register(String string, Set<BlockState> set, int i, Predicate<PointOfInterestType> predicate, int j) {
-		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, predicate, j)));
+	private static PointOfInterestType register(String id, Set<BlockState> set, int i, Predicate<PointOfInterestType> predicate, int j) {
+		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(id), new PointOfInterestType(id, set, i, predicate, j)));
 	}
 
 	private static PointOfInterestType setup(PointOfInterestType pointOfInterestType) {
 		pointOfInterestType.workStationStates.forEach(blockState -> {
 			PointOfInterestType pointOfInterestType2 = (PointOfInterestType)BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put(blockState, pointOfInterestType);
 			if (pointOfInterestType2 != null) {
-				throw (IllegalStateException)SystemUtil.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
 			}
 		});
 		return pointOfInterestType;

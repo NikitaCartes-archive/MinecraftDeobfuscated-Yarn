@@ -21,13 +21,13 @@ public class UpdateDifficultyC2SPacket implements Packet<ServerPlayPacketListene
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.difficulty = Difficulty.byOrdinal(packetByteBuf.readUnsignedByte());
+	public void read(PacketByteBuf buf) throws IOException {
+		this.difficulty = Difficulty.byOrdinal(buf.readUnsignedByte());
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.difficulty.getId());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.difficulty.getId());
 	}
 
 	public Difficulty getDifficulty() {

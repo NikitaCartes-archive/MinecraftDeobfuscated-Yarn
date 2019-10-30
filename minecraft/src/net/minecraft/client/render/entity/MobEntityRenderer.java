@@ -3,10 +3,10 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,8 +17,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
-	public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
-		super(entityRenderDispatcher, entityModel, f);
+	public MobEntityRenderer(EntityRenderDispatcher renderManager, M model, float f) {
+		super(renderManager, model, f);
 	}
 
 	protected boolean method_4071(T mobEntity) {
@@ -34,17 +34,15 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		}
 	}
 
-	public void method_4072(
-		T mobEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage
-	) {
-		super.method_4054(mobEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+	public void method_4072(T mobEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+		super.method_4054(mobEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 		Entity entity = mobEntity.getHoldingEntity();
 		if (entity != null) {
-			method_4073(mobEntity, h, matrixStack, layeredVertexConsumerStorage, entity);
+			method_4073(mobEntity, h, matrixStack, vertexConsumerProvider, entity);
 		}
 	}
 
-	public static void method_4073(MobEntity mobEntity, float f, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity) {
+	public static void method_4073(MobEntity mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
 		matrixStack.push();
 		double d = (double)(MathHelper.lerp(f * 0.5F, entity.yaw, entity.prevYaw) * (float) (Math.PI / 180.0));
 		double e = (double)(MathHelper.lerp(f * 0.5F, entity.pitch, entity.prevPitch) * (float) (Math.PI / 180.0));
@@ -74,8 +72,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float s = (float)(l - p);
 		float t = (float)(m - q);
 		float u = 0.025F;
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLeash());
-		Matrix4f matrix4f = matrixStack.peek();
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLeash());
+		Matrix4f matrix4f = matrixStack.peekModel();
 		float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025F / 2.0F;
 		float w = t * v;
 		float x = r * v;

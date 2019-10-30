@@ -36,7 +36,7 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text getPageUnchecked(int i) {
+		public Text getPageUnchecked(int index) {
 			return new LiteralText("");
 		}
 	};
@@ -49,31 +49,31 @@ public class BookScreen extends Screen {
 	private PageTurnWidget previousPageButton;
 	private final boolean pageTurnSound;
 
-	public BookScreen(BookScreen.Contents contents) {
-		this(contents, true);
+	public BookScreen(BookScreen.Contents pageProvider) {
+		this(pageProvider, true);
 	}
 
 	public BookScreen() {
 		this(EMPTY_PROVIDER, false);
 	}
 
-	private BookScreen(BookScreen.Contents contents, boolean bl) {
+	private BookScreen(BookScreen.Contents contents, boolean playPageTurnSound) {
 		super(NarratorManager.EMPTY);
 		this.contents = contents;
-		this.pageTurnSound = bl;
+		this.pageTurnSound = playPageTurnSound;
 	}
 
-	public void setPageProvider(BookScreen.Contents contents) {
-		this.contents = contents;
-		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, contents.getPageCount());
+	public void setPageProvider(BookScreen.Contents pageProvider) {
+		this.contents = pageProvider;
+		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, pageProvider.getPageCount());
 		this.updatePageButtons();
 		this.cachedPageIndex = -1;
 	}
 
-	public boolean setPage(int i) {
-		int j = MathHelper.clamp(i, 0, this.contents.getPageCount() - 1);
-		if (j != this.pageIndex) {
-			this.pageIndex = j;
+	public boolean setPage(int index) {
+		int i = MathHelper.clamp(index, 0, this.contents.getPageCount() - 1);
+		if (i != this.pageIndex) {
+			this.pageIndex = i;
 			this.updatePageButtons();
 			this.cachedPageIndex = -1;
 			return true;
@@ -82,8 +82,8 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	protected boolean jumpToPage(int i) {
-		return this.setPage(i);
+	protected boolean jumpToPage(int page) {
+		return this.setPage(page);
 	}
 
 	@Override
@@ -130,11 +130,11 @@ public class BookScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (super.keyPressed(i, j, k)) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else {
-			switch (i) {
+			switch (keyCode) {
 				case 266:
 					this.previousPageButton.onPress();
 					return true;
@@ -148,13 +148,13 @@ public class BookScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
-		int k = (this.width - 192) / 2;
-		int l = 2;
-		this.blit(k, 2, 0, 0, 192, 192);
+		int i = (this.width - 192) / 2;
+		int j = 2;
+		this.blit(i, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
 			Text text = this.contents.getPage(this.pageIndex);
@@ -162,21 +162,21 @@ public class BookScreen extends Screen {
 		}
 
 		this.cachedPageIndex = this.pageIndex;
-		int m = this.getStringWidth(string);
-		this.font.draw(string, (float)(k - m + 192 - 44), 18.0F, 0);
-		int n = Math.min(128 / 9, this.cachedPage.size());
+		int k = this.getStringWidth(string);
+		this.font.draw(string, (float)(i - k + 192 - 44), 18.0F, 0);
+		int l = Math.min(128 / 9, this.cachedPage.size());
 
-		for (int o = 0; o < n; o++) {
-			Text text2 = (Text)this.cachedPage.get(o);
-			this.font.draw(text2.asFormattedString(), (float)(k + 36), (float)(32 + o * 9), 0);
+		for (int m = 0; m < l; m++) {
+			Text text2 = (Text)this.cachedPage.get(m);
+			this.font.draw(text2.asFormattedString(), (float)(i + 36), (float)(32 + m * 9), 0);
 		}
 
-		Text text3 = this.getTextAt((double)i, (double)j);
+		Text text3 = this.getTextAt((double)mouseX, (double)mouseY);
 		if (text3 != null) {
-			this.renderComponentHoverEffect(text3, i, j);
+			this.renderComponentHoverEffect(text3, mouseX, mouseY);
 		}
 
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	private int getStringWidth(String string) {
@@ -184,15 +184,15 @@ public class BookScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (i == 0) {
-			Text text = this.getTextAt(d, e);
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (button == 0) {
+			Text text = this.getTextAt(mouseX, mouseY);
 			if (text != null && this.handleComponentClicked(text)) {
 				return true;
 			}
 		}
 
-		return super.mouseClicked(d, e, i);
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Override
@@ -220,12 +220,12 @@ public class BookScreen extends Screen {
 	}
 
 	@Nullable
-	public Text getTextAt(double d, double e) {
+	public Text getTextAt(double x, double y) {
 		if (this.cachedPage == null) {
 			return null;
 		} else {
-			int i = MathHelper.floor(d - (double)((this.width - 192) / 2) - 36.0);
-			int j = MathHelper.floor(e - 2.0 - 30.0);
+			int i = MathHelper.floor(x - (double)((this.width - 192) / 2) - 36.0);
+			int j = MathHelper.floor(y - 2.0 - 30.0);
 			if (i >= 0 && j >= 0) {
 				int k = Math.min(128 / 9, this.cachedPage.size());
 				if (i <= 114 && j < 9 * k + k) {
@@ -254,8 +254,8 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	public static List<String> readPages(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.getList("pages", 8).method_10612();
+	public static List<String> readPages(CompoundTag tag) {
+		ListTag listTag = tag.getList("pages", 8).method_10612();
 		Builder<String> builder = ImmutableList.builder();
 
 		for (int i = 0; i < listTag.size(); i++) {
@@ -269,18 +269,18 @@ public class BookScreen extends Screen {
 	public interface Contents {
 		int getPageCount();
 
-		Text getPageUnchecked(int i);
+		Text getPageUnchecked(int index);
 
-		default Text getPage(int i) {
-			return (Text)(i >= 0 && i < this.getPageCount() ? this.getPageUnchecked(i) : new LiteralText(""));
+		default Text getPage(int index) {
+			return (Text)(index >= 0 && index < this.getPageCount() ? this.getPageUnchecked(index) : new LiteralText(""));
 		}
 
-		static BookScreen.Contents create(ItemStack itemStack) {
-			Item item = itemStack.getItem();
+		static BookScreen.Contents create(ItemStack stack) {
+			Item item = stack.getItem();
 			if (item == Items.WRITTEN_BOOK) {
-				return new BookScreen.WrittenBookContents(itemStack);
+				return new BookScreen.WrittenBookContents(stack);
 			} else {
-				return (BookScreen.Contents)(item == Items.WRITABLE_BOOK ? new BookScreen.WritableBookContents(itemStack) : BookScreen.EMPTY_PROVIDER);
+				return (BookScreen.Contents)(item == Items.WRITABLE_BOOK ? new BookScreen.WritableBookContents(stack) : BookScreen.EMPTY_PROVIDER);
 			}
 		}
 	}
@@ -289,12 +289,12 @@ public class BookScreen extends Screen {
 	public static class WritableBookContents implements BookScreen.Contents {
 		private final List<String> pages;
 
-		public WritableBookContents(ItemStack itemStack) {
-			this.pages = getPages(itemStack);
+		public WritableBookContents(ItemStack stack) {
+			this.pages = getPages(stack);
 		}
 
-		private static List<String> getPages(ItemStack itemStack) {
-			CompoundTag compoundTag = itemStack.getTag();
+		private static List<String> getPages(ItemStack stack) {
+			CompoundTag compoundTag = stack.getTag();
 			return (List<String>)(compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of());
 		}
 
@@ -304,8 +304,8 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text getPageUnchecked(int i) {
-			return new LiteralText((String)this.pages.get(i));
+		public Text getPageUnchecked(int index) {
+			return new LiteralText((String)this.pages.get(index));
 		}
 	}
 
@@ -313,12 +313,12 @@ public class BookScreen extends Screen {
 	public static class WrittenBookContents implements BookScreen.Contents {
 		private final List<String> pages;
 
-		public WrittenBookContents(ItemStack itemStack) {
-			this.pages = getPages(itemStack);
+		public WrittenBookContents(ItemStack stack) {
+			this.pages = getPages(stack);
 		}
 
-		private static List<String> getPages(ItemStack itemStack) {
-			CompoundTag compoundTag = itemStack.getTag();
+		private static List<String> getPages(ItemStack stack) {
+			CompoundTag compoundTag = stack.getTag();
 			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
 				? BookScreen.readPages(compoundTag)
 				: ImmutableList.of(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED).asFormattedString()));
@@ -330,8 +330,8 @@ public class BookScreen extends Screen {
 		}
 
 		@Override
-		public Text getPageUnchecked(int i) {
-			String string = (String)this.pages.get(i);
+		public Text getPageUnchecked(int index) {
+			String string = (String)this.pages.get(index);
 
 			try {
 				Text text = Text.Serializer.fromJson(string);

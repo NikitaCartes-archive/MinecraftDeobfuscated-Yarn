@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -52,12 +51,12 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public PassiveEntity createChild(PassiveEntity passiveEntity) {
+	public PassiveEntity createChild(PassiveEntity mate) {
 		return EntityType.POLAR_BEAR.create(this.world);
 	}
 
 	@Override
-	public boolean isBreedingItem(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack stack) {
 		return false;
 	}
 
@@ -86,11 +85,11 @@ public class PolarBearEntity extends AnimalEntity {
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
 	}
 
-	public static boolean canSpawn(EntityType<PolarBearEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-		Biome biome = iWorld.getBiome(blockPos);
+	public static boolean canSpawn(EntityType<PolarBearEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+		Biome biome = world.getBiome(pos);
 		return biome != Biomes.FROZEN_OCEAN && biome != Biomes.DEEP_FROZEN_OCEAN
-			? isValidNaturalSpawn(entityType, iWorld, spawnType, blockPos, random)
-			: iWorld.getBaseLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.method_10074()).getBlock() == Blocks.ICE;
+			? isValidNaturalSpawn(type, world, spawnType, pos, random)
+			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.method_10074()).getBlock() == Blocks.ICE;
 	}
 
 	@Override
@@ -99,7 +98,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_POLAR_BEAR_HURT;
 	}
 
@@ -109,7 +108,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_POLAR_BEAR_STEP, 0.15F, 1.0F);
 	}
 
@@ -148,21 +147,21 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose pose) {
 		if (this.warningAnimationProgress > 0.0F) {
 			float f = this.warningAnimationProgress / 6.0F;
 			float g = 1.0F + f;
-			return super.getDimensions(entityPose).scaled(1.0F, g);
+			return super.getDimensions(pose).scaled(1.0F, g);
 		} else {
-			return super.getDimensions(entityPose);
+			return super.getDimensions(pose);
 		}
 	}
 
 	@Override
-	public boolean tryAttack(Entity entity) {
-		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
+	public boolean tryAttack(Entity target) {
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
-			this.dealDamage(this, entity);
+			this.dealDamage(this, target);
 		}
 
 		return bl;
@@ -172,13 +171,13 @@ public class PolarBearEntity extends AnimalEntity {
 		return this.dataTracker.get(WARNING);
 	}
 
-	public void setWarning(boolean bl) {
-		this.dataTracker.set(WARNING, bl);
+	public void setWarning(boolean warning) {
+		this.dataTracker.set(WARNING, warning);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getWarningAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.lastWarningAnimationProgress, this.warningAnimationProgress) / 6.0F;
+	public float getWarningAnimationProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastWarningAnimationProgress, this.warningAnimationProgress) / 6.0F;
 	}
 
 	@Override
@@ -187,15 +186,15 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public net.minecraft.entity.EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.class_4697();
-			((PassiveEntity.class_4697)entityData).method_22433(1.0F);
+			entityData = new PassiveEntity.EntityData();
+			((PassiveEntity.EntityData)entityData).setBabyChance(1.0F);
 		}
 
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
@@ -204,13 +203,13 @@ public class PolarBearEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected void attack(LivingEntity livingEntity, double d) {
-			double e = this.getSquaredMaxAttackDistance(livingEntity);
-			if (d <= e && this.ticksUntilAttack <= 0) {
+		protected void attack(LivingEntity target, double squaredDistance) {
+			double d = this.getSquaredMaxAttackDistance(target);
+			if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
 				this.ticksUntilAttack = 20;
-				this.mob.tryAttack(livingEntity);
+				this.mob.tryAttack(target);
 				PolarBearEntity.this.setWarning(false);
-			} else if (d <= e * 2.0) {
+			} else if (squaredDistance <= d * 2.0) {
 				if (this.ticksUntilAttack <= 0) {
 					PolarBearEntity.this.setWarning(false);
 					this.ticksUntilAttack = 20;
@@ -233,8 +232,8 @@ public class PolarBearEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
-			return (double)(4.0F + livingEntity.getWidth());
+		protected double getSquaredMaxAttackDistance(LivingEntity entity) {
+			return (double)(4.0F + entity.getWidth());
 		}
 	}
 
@@ -293,9 +292,9 @@ public class PolarBearEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
-			if (mobEntity instanceof PolarBearEntity && !mobEntity.isBaby()) {
-				super.setMobEntityTarget(mobEntity, livingEntity);
+		protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
+			if (mob instanceof PolarBearEntity && !mob.isBaby()) {
+				super.setMobEntityTarget(mob, target);
 			}
 		}
 	}

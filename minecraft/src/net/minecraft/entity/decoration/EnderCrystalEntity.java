@@ -63,22 +63,22 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void writeCustomDataToTag(CompoundTag tag) {
 		if (this.getBeamTarget() != null) {
-			compoundTag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
+			tag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
 
-		compoundTag.putBoolean("ShowBottom", this.getShowBottom());
+		tag.putBoolean("ShowBottom", this.getShowBottom());
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		if (compoundTag.contains("BeamTarget", 10)) {
-			this.setBeamTarget(NbtHelper.toBlockPos(compoundTag.getCompound("BeamTarget")));
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		if (tag.contains("BeamTarget", 10)) {
+			this.setBeamTarget(NbtHelper.toBlockPos(tag.getCompound("BeamTarget")));
 		}
 
-		if (compoundTag.contains("ShowBottom", 1)) {
-			this.setShowBottom(compoundTag.getBoolean("ShowBottom"));
+		if (tag.contains("ShowBottom", 1)) {
+			this.setShowBottom(tag.getBoolean("ShowBottom"));
 		}
 	}
 
@@ -88,19 +88,19 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource damageSource, float f) {
-		if (this.isInvulnerableTo(damageSource)) {
+	public boolean damage(DamageSource source, float amount) {
+		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (damageSource.getAttacker() instanceof EnderDragonEntity) {
+		} else if (source.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
 			if (!this.removed && !this.world.isClient) {
 				this.remove();
-				if (!damageSource.isExplosive()) {
+				if (!source.isExplosive()) {
 					this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0F, Explosion.DestructionType.DESTROY);
 				}
 
-				this.crystalDestroyed(damageSource);
+				this.crystalDestroyed(source);
 			}
 
 			return true;
@@ -113,12 +113,12 @@ public class EnderCrystalEntity extends Entity {
 		super.kill();
 	}
 
-	private void crystalDestroyed(DamageSource damageSource) {
+	private void crystalDestroyed(DamageSource source) {
 		if (this.world.dimension instanceof TheEndDimension) {
 			TheEndDimension theEndDimension = (TheEndDimension)this.world.dimension;
 			EnderDragonFight enderDragonFight = theEndDimension.method_12513();
 			if (enderDragonFight != null) {
-				enderDragonFight.crystalDestroyed(this, damageSource);
+				enderDragonFight.crystalDestroyed(this, source);
 			}
 		}
 	}
@@ -142,8 +142,8 @@ public class EnderCrystalEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
-		return super.shouldRenderAtDistance(d) || this.getBeamTarget() != null;
+	public boolean shouldRenderAtDistance(double distance) {
+		return super.shouldRenderAtDistance(distance) || this.getBeamTarget() != null;
 	}
 
 	@Override

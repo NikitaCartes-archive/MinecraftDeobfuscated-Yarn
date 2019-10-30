@@ -11,13 +11,13 @@ public interface Inventory extends Clearable {
 
 	boolean isInvEmpty();
 
-	ItemStack getInvStack(int i);
+	ItemStack getInvStack(int slot);
 
-	ItemStack takeInvStack(int i, int j);
+	ItemStack takeInvStack(int slot, int amount);
 
-	ItemStack removeInvStack(int i);
+	ItemStack removeInvStack(int slot);
 
-	void setInvStack(int i, ItemStack itemStack);
+	void setInvStack(int slot, ItemStack stack);
 
 	default int getInvMaxStackAmount() {
 		return 64;
@@ -25,15 +25,15 @@ public interface Inventory extends Clearable {
 
 	void markDirty();
 
-	boolean canPlayerUseInv(PlayerEntity playerEntity);
+	boolean canPlayerUseInv(PlayerEntity player);
 
-	default void onInvOpen(PlayerEntity playerEntity) {
+	default void onInvOpen(PlayerEntity player) {
 	}
 
-	default void onInvClose(PlayerEntity playerEntity) {
+	default void onInvClose(PlayerEntity player) {
 	}
 
-	default boolean isValidInvStack(int i, ItemStack itemStack) {
+	default boolean isValidInvStack(int slot, ItemStack stack) {
 		return true;
 	}
 
@@ -50,10 +50,10 @@ public interface Inventory extends Clearable {
 		return i;
 	}
 
-	default boolean containsAnyInInv(Set<Item> set) {
+	default boolean containsAnyInInv(Set<Item> items) {
 		for (int i = 0; i < this.getInvSize(); i++) {
 			ItemStack itemStack = this.getInvStack(i);
-			if (set.contains(itemStack.getItem()) && itemStack.getCount() > 0) {
+			if (items.contains(itemStack.getItem()) && itemStack.getCount() > 0) {
 				return true;
 			}
 		}

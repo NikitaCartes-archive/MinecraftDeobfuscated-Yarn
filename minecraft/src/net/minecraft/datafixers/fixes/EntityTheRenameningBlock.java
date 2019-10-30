@@ -43,16 +43,16 @@ public class EntityTheRenameningBlock extends EntityRenameFix {
 		.put("minecraft:vindication_illager_spawn_egg", "minecraft:vindicator_spawn_egg")
 		.build();
 
-	public EntityTheRenameningBlock(Schema schema, boolean bl) {
-		super("EntityTheRenameningBlock", schema, bl);
+	public EntityTheRenameningBlock(Schema outputSchema, boolean changesType) {
+		super("EntityTheRenameningBlock", outputSchema, changesType);
 	}
 
 	@Override
-	protected String rename(String string) {
-		if (string.startsWith("minecraft:bred_")) {
-			string = "minecraft:" + string.substring("minecraft:bred_".length());
+	protected String rename(String oldName) {
+		if (oldName.startsWith("minecraft:bred_")) {
+			oldName = "minecraft:" + oldName.substring("minecraft:bred_".length());
 		}
 
-		return (String)ENTITIES.getOrDefault(string, string);
+		return (String)ENTITIES.getOrDefault(oldName, oldName);
 	}
 }

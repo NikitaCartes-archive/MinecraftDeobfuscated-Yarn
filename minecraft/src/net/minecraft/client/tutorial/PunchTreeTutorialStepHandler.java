@@ -64,8 +64,8 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onBlockAttacked(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, float f) {
-		boolean bl = blockState.matches(BlockTags.LOGS);
+	public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
+		boolean bl = state.matches(BlockTags.LOGS);
 		if (bl && f > 0.0F) {
 			if (this.field_5637 != null) {
 				this.field_5637.setProgress(f);
@@ -82,8 +82,8 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	@Override
-	public void onSlotUpdate(ItemStack itemStack) {
-		if (ItemTags.LOGS.contains(itemStack.getItem())) {
+	public void onSlotUpdate(ItemStack stack) {
+		if (ItemTags.LOGS.contains(stack.getItem())) {
 			this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 		}
 	}

@@ -14,14 +14,14 @@ import net.minecraft.state.StateManager;
 public class OrMultipartModelSelector implements MultipartModelSelector {
 	private final Iterable<? extends MultipartModelSelector> selectors;
 
-	public OrMultipartModelSelector(Iterable<? extends MultipartModelSelector> iterable) {
-		this.selectors = iterable;
+	public OrMultipartModelSelector(Iterable<? extends MultipartModelSelector> selectors) {
+		this.selectors = selectors;
 	}
 
 	@Override
-	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
+	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory) {
 		List<Predicate<BlockState>> list = (List<Predicate<BlockState>>)Streams.stream(this.selectors)
-			.map(multipartModelSelector -> multipartModelSelector.getPredicate(stateManager))
+			.map(multipartModelSelector -> multipartModelSelector.getPredicate(stateFactory))
 			.collect(Collectors.toList());
 		return blockState -> list.stream().anyMatch(predicate -> predicate.test(blockState));
 	}

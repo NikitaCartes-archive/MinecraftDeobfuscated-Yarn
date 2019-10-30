@@ -53,10 +53,10 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		return i;
 	}
 
-	public int addToFirstFreeSlot(ItemStack itemStack) {
+	public int addToFirstFreeSlot(ItemStack stack) {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			if (this.inventory.get(i).isEmpty()) {
-				this.setInvStack(i, itemStack);
+				this.setInvStack(i, stack);
 				return i;
 			}
 		}
@@ -94,8 +94,8 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-		this.inventory = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> list) {
+		this.inventory = list;
 	}
 
 	@Override

@@ -22,14 +22,14 @@ public abstract class EntityModel<T extends Entity> extends Model {
 		super(function);
 	}
 
-	public abstract void setAngles(T entity, float f, float g, float h, float i, float j, float k);
+	public abstract void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale);
 
-	public void animateModel(T entity, float f, float g, float h) {
+	public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
 	}
 
-	public void copyStateTo(EntityModel<T> entityModel) {
-		entityModel.handSwingProgress = this.handSwingProgress;
-		entityModel.isRiding = this.isRiding;
-		entityModel.isChild = this.isChild;
+	public void copyStateTo(EntityModel<T> copy) {
+		copy.handSwingProgress = this.handSwingProgress;
+		copy.isRiding = this.isRiding;
+		copy.isChild = this.isChild;
 	}
 }

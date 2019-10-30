@@ -22,8 +22,8 @@ public class MinecraftClientGame implements RunningGame {
 	private final Launcher launcher;
 	private SessionEventListener listener = SessionEventListener.NONE;
 
-	public MinecraftClientGame(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public MinecraftClientGame(MinecraftClient client) {
+		this.client = client;
 		this.launcher = Bridge.getLauncher();
 		if (this.launcher != null) {
 			this.launcher.registerGame(this);
@@ -64,8 +64,8 @@ public class MinecraftClientGame implements RunningGame {
 	}
 
 	@Override
-	public void setSessionEventListener(SessionEventListener sessionEventListener) {
-		this.listener = sessionEventListener;
+	public void setSessionEventListener(SessionEventListener listener) {
+		this.listener = listener;
 	}
 
 	public void onStartGameSession() {
@@ -83,11 +83,11 @@ public class MinecraftClientGame implements RunningGame {
 		private final int averageTime;
 		private final int sampleCount;
 
-		public PerformanceMetricsImpl(int i, int j, int k, int l) {
-			this.minTime = i;
-			this.maxTime = j;
-			this.averageTime = k;
-			this.sampleCount = l;
+		public PerformanceMetricsImpl(int minTime, int maxTime, int averageTime, int sampleCount) {
+			this.minTime = minTime;
+			this.maxTime = maxTime;
+			this.averageTime = averageTime;
+			this.sampleCount = sampleCount;
 		}
 
 		@Override

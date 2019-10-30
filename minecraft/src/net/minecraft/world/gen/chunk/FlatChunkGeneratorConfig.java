@@ -21,7 +21,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -93,7 +93,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private static final ConfiguredFeature<?, ?> PILLAGER_OUTPOST = Feature.PILLAGER_OUTPOST
 		.configure(FeatureConfig.DEFAULT)
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
-	public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(
+	public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.create(
 		Maps.<ConfiguredFeature<?, ?>, GenerationStep.Feature>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
 			hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
@@ -113,7 +113,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(PILLAGER_OUTPOST, GenerationStep.Feature.SURFACE_STRUCTURES);
 		}
 	);
-	public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(
+	public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = Util.create(
 		Maps.<String, ConfiguredFeature<?, ?>[]>newHashMap(), hashMap -> {
 			hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
 			hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
@@ -128,7 +128,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
 		}
 	);
-	public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(
+	public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.create(
 		Maps.<ConfiguredFeature<?, ?>, FeatureConfig>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 			hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));
@@ -258,22 +258,22 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private static FlatChunkGeneratorLayer parseLayerString(String string, int i) {
+	private static FlatChunkGeneratorLayer parseLayerString(String string, int startY) {
 		String[] strings = string.split("\\*", 2);
-		int j;
+		int i;
 		if (strings.length == 2) {
 			try {
-				j = Math.max(Integer.parseInt(strings[0]), 0);
+				i = Math.max(Integer.parseInt(strings[0]), 0);
 			} catch (NumberFormatException var9) {
 				LOGGER.error("Error while parsing flat world string => {}", var9.getMessage());
 				return null;
 			}
 		} else {
-			j = 1;
+			i = 1;
 		}
 
-		int k = Math.min(i + j, 256);
-		int l = k - i;
+		int j = Math.min(startY + i, 256);
+		int k = j - startY;
 
 		Block block;
 		try {
@@ -287,8 +287,8 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			LOGGER.error("Error while parsing flat world string => Unknown block, {}", strings[strings.length - 1]);
 			return null;
 		} else {
-			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(l, block);
-			flatChunkGeneratorLayer.setStartY(i);
+			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(k, block);
+			flatChunkGeneratorLayer.setStartY(startY);
 			return flatChunkGeneratorLayer;
 		}
 	}
@@ -431,46 +431,46 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void addStructure(String string) {
+	private void addStructure(String id) {
 		Map<String, String> map = Maps.<String, String>newHashMap();
-		this.structures.put(string, map);
+		this.structures.put(id, map);
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void setStructureOption(String string, String string2, String string3) {
-		((Map)this.structures.get(string)).put(string2, string3);
-		if ("village".equals(string) && "distance".equals(string2)) {
-			this.villageDistance = MathHelper.parseInt(string3, this.villageDistance, 9);
+	private void setStructureOption(String structure, String key, String value) {
+		((Map)this.structures.get(structure)).put(key, value);
+		if ("village".equals(structure) && "distance".equals(key)) {
+			this.villageDistance = MathHelper.parseInt(value, this.villageDistance, 9);
 		}
 
-		if ("biome_1".equals(string) && "distance".equals(string2)) {
-			this.templeDistance = MathHelper.parseInt(string3, this.templeDistance, 9);
+		if ("biome_1".equals(structure) && "distance".equals(key)) {
+			this.templeDistance = MathHelper.parseInt(value, this.templeDistance, 9);
 		}
 
-		if ("stronghold".equals(string)) {
-			if ("distance".equals(string2)) {
-				this.strongholdDistance = MathHelper.parseInt(string3, this.strongholdDistance, 1);
-			} else if ("count".equals(string2)) {
-				this.strongholdCount = MathHelper.parseInt(string3, this.strongholdCount, 1);
-			} else if ("spread".equals(string2)) {
-				this.strongholdSpread = MathHelper.parseInt(string3, this.strongholdSpread, 1);
+		if ("stronghold".equals(structure)) {
+			if ("distance".equals(key)) {
+				this.strongholdDistance = MathHelper.parseInt(value, this.strongholdDistance, 1);
+			} else if ("count".equals(key)) {
+				this.strongholdCount = MathHelper.parseInt(value, this.strongholdCount, 1);
+			} else if ("spread".equals(key)) {
+				this.strongholdSpread = MathHelper.parseInt(value, this.strongholdSpread, 1);
 			}
 		}
 
-		if ("oceanmonument".equals(string)) {
-			if ("separation".equals(string2)) {
-				this.oceanMonumentSeparation = MathHelper.parseInt(string3, this.oceanMonumentSeparation, 1);
-			} else if ("spacing".equals(string2)) {
-				this.oceanMonumentSpacing = MathHelper.parseInt(string3, this.oceanMonumentSpacing, 1);
+		if ("oceanmonument".equals(structure)) {
+			if ("separation".equals(key)) {
+				this.oceanMonumentSeparation = MathHelper.parseInt(value, this.oceanMonumentSeparation, 1);
+			} else if ("spacing".equals(key)) {
+				this.oceanMonumentSpacing = MathHelper.parseInt(value, this.oceanMonumentSpacing, 1);
 			}
 		}
 
-		if ("endcity".equals(string) && "distance".equals(string2)) {
-			this.endCityDistance = MathHelper.parseInt(string3, this.endCityDistance, 1);
+		if ("endcity".equals(structure) && "distance".equals(key)) {
+			this.endCityDistance = MathHelper.parseInt(value, this.endCityDistance, 1);
 		}
 
-		if ("mansion".equals(string) && "distance".equals(string2)) {
-			this.mansionDistance = MathHelper.parseInt(string3, this.mansionDistance, 1);
+		if ("mansion".equals(structure) && "distance".equals(key)) {
+			this.mansionDistance = MathHelper.parseInt(value, this.mansionDistance, 1);
 		}
 	}
 
@@ -493,7 +493,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		return this.layerBlocks;
 	}
 
-	public void removeLayerBlock(int i) {
-		this.layerBlocks[i] = null;
+	public void removeLayerBlock(int layer) {
+		this.layerBlocks[layer] = null;
 	}
 }

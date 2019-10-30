@@ -17,15 +17,15 @@ public class NoticeScreen extends Screen {
 	protected final String buttonString;
 	private int field_2347;
 
-	public NoticeScreen(Runnable runnable, Text text, Text text2) {
-		this(runnable, text, text2, "gui.back");
+	public NoticeScreen(Runnable actionHandler, Text title, Text notice) {
+		this(actionHandler, title, notice, "gui.back");
 	}
 
-	public NoticeScreen(Runnable runnable, Text text, Text text2, String string) {
-		super(text);
-		this.actionHandler = runnable;
-		this.notice = text2;
-		this.buttonString = I18n.translate(string);
+	public NoticeScreen(Runnable actionHandler, Text title, Text notice, String buttonString) {
+		super(title);
+		this.actionHandler = actionHandler;
+		this.notice = notice;
+		this.buttonString = I18n.translate(buttonString);
 	}
 
 	@Override
@@ -37,17 +37,17 @@ public class NoticeScreen extends Screen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 16777215);
-		int k = 90;
+		int i = 90;
 
 		for (String string : this.noticeLines) {
-			this.drawCenteredString(this.font, string, this.width / 2, k, 16777215);
-			k += 9;
+			this.drawCenteredString(this.font, string, this.width / 2, i, 16777215);
+			i += 9;
 		}
 
-		super.render(i, j, f);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	@Override

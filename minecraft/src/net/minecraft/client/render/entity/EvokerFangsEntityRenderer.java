@@ -2,9 +2,9 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -21,33 +21,27 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 	}
 
 	public void method_3962(
-		EvokerFangsEntity evokerFangsEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		EvokerFangsEntity model, double x, double y, double d, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
-		float i = evokerFangsEntity.getAnimationProgress(h);
-		if (i != 0.0F) {
-			float j = 2.0F;
-			if (i > 0.9F) {
-				j = (float)((double)j * ((1.0 - (double)i) / 0.1F));
+		float h = model.getAnimationProgress(g);
+		if (h != 0.0F) {
+			float i = 2.0F;
+			if (h > 0.9F) {
+				i = (float)((double)i * ((1.0 - (double)h) / 0.1F));
 			}
 
 			matrixStack.push();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F - evokerFangsEntity.yaw));
-			matrixStack.scale(-j, -j, j);
-			float k = 0.03125F;
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0F - model.yaw));
+			matrixStack.scale(-i, -i, i);
+			float j = 0.03125F;
 			matrixStack.translate(0.0, -0.626F, 0.0);
-			int l = evokerFangsEntity.getLightmapCoordinates();
-			this.model.setAngles(evokerFangsEntity, i, 0.0F, 0.0F, evokerFangsEntity.yaw, evokerFangsEntity.pitch, 0.03125F);
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(SKIN));
-			this.model.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
+			matrixStack.scale(0.5F, 0.5F, 0.5F);
+			int k = model.getLightmapCoordinates();
+			this.model.setAngles(model, h, 0.0F, 0.0F, model.yaw, model.pitch, 0.03125F);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
+			this.model.render(matrixStack, vertexConsumer, k, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
-			super.render(evokerFangsEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+			super.render(model, x, y, d, f, g, matrixStack, vertexConsumerProvider);
 		}
 	}
 

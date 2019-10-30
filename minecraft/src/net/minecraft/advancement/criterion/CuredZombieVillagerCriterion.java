@@ -23,26 +23,26 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 		return new CuredZombieVillagerCriterion.Conditions(entityPredicate, entityPredicate2);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, zombieEntity, villagerEntity));
+	public void trigger(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, zombie, villager));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate zombie;
 		private final EntityPredicate villager;
 
-		public Conditions(EntityPredicate entityPredicate, EntityPredicate entityPredicate2) {
+		public Conditions(EntityPredicate zombie, EntityPredicate villager) {
 			super(CuredZombieVillagerCriterion.ID);
-			this.zombie = entityPredicate;
-			this.villager = entityPredicate2;
+			this.zombie = zombie;
+			this.villager = villager;
 		}
 
 		public static CuredZombieVillagerCriterion.Conditions any() {
 			return new CuredZombieVillagerCriterion.Conditions(EntityPredicate.ANY, EntityPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-			return !this.zombie.test(serverPlayerEntity, zombieEntity) ? false : this.villager.test(serverPlayerEntity, villagerEntity);
+		public boolean matches(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
+			return !this.zombie.test(player, zombie) ? false : this.villager.test(player, villager);
 		}
 
 		@Override

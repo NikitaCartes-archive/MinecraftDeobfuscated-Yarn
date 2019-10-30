@@ -14,27 +14,27 @@ public class DifficultyCommand {
 		object -> new TranslatableText("commands.difficulty.failure", object)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("difficulty");
 
 		for (Difficulty difficulty : Difficulty.values()) {
 			literalArgumentBuilder.then(CommandManager.literal(difficulty.getName()).executes(commandContext -> execute(commandContext.getSource(), difficulty)));
 		}
 
-		commandDispatcher.register(literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).executes(commandContext -> {
+		dispatcher.register(literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).executes(commandContext -> {
 			Difficulty difficultyx = commandContext.getSource().getWorld().getDifficulty();
 			commandContext.getSource().sendFeedback(new TranslatableText("commands.difficulty.query", difficultyx.getTranslatableName()), false);
 			return difficultyx.getId();
 		}));
 	}
 
-	public static int execute(ServerCommandSource serverCommandSource, Difficulty difficulty) throws CommandSyntaxException {
-		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
+	public static int execute(ServerCommandSource source, Difficulty difficulty) throws CommandSyntaxException {
+		MinecraftServer minecraftServer = source.getMinecraftServer();
 		if (minecraftServer.getWorld(DimensionType.OVERWORLD).getDifficulty() == difficulty) {
 			throw FAILURE_EXCEPTION.create(difficulty.getName());
 		} else {
 			minecraftServer.setDifficulty(difficulty, true);
-			serverCommandSource.sendFeedback(new TranslatableText("commands.difficulty.success", difficulty.getTranslatableName()), true);
+			source.sendFeedback(new TranslatableText("commands.difficulty.success", difficulty.getTranslatableName()), true);
 			return 0;
 		}
 	}

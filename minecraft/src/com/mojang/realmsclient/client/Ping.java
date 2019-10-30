@@ -27,14 +27,14 @@ public class Ping {
 		return list;
 	}
 
-	private static int ping(String string) {
+	private static int ping(String host) {
 		int i = 700;
 		long l = 0L;
 		Socket socket = null;
 
 		for (int j = 0; j < 5; j++) {
 			try {
-				SocketAddress socketAddress = new InetSocketAddress(string, 80);
+				SocketAddress socketAddress = new InetSocketAddress(host, 80);
 				socket = new Socket();
 				long m = now();
 				socket.connect(socketAddress, 700);
@@ -80,9 +80,9 @@ public class Ping {
 		private final String name;
 		private final String endpoint;
 
-		private Region(String string2, String string3) {
-			this.name = string2;
-			this.endpoint = string3;
+		private Region(String name, String endpoint) {
+			this.name = name;
+			this.endpoint = endpoint;
 		}
 	}
 }

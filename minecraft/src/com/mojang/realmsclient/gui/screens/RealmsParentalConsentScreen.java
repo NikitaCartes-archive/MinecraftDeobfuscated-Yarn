@@ -13,8 +13,8 @@ import net.minecraft.realms.RealmsScreen;
 public class RealmsParentalConsentScreen extends RealmsScreen {
 	private final RealmsScreen nextScreen;
 
-	public RealmsParentalConsentScreen(RealmsScreen realmsScreen) {
-		this.nextScreen = realmsScreen;
+	public RealmsParentalConsentScreen(RealmsScreen nextScreen) {
+		this.nextScreen = nextScreen;
 	}
 
 	@Override
@@ -51,21 +51,21 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		return super.mouseClicked(d, e, i);
+	public boolean mouseClicked(double x, double y, int buttonNum) {
+		return super.mouseClicked(x, y, buttonNum);
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int xm, int ym, float a) {
 		this.renderBackground();
 		List<String> list = this.getLocalizedStringWithLineWidth("mco.account.privacyinfo", (int)Math.round((double)this.width() * 0.9));
-		int k = 15;
+		int i = 15;
 
 		for (String string : list) {
-			this.drawCenteredString(string, this.width() / 2, k, 16777215);
-			k += 15;
+			this.drawCenteredString(string, this.width() / 2, i, 16777215);
+			i += 15;
 		}
 
-		super.render(i, j, f);
+		super.render(xm, ym, a);
 	}
 }

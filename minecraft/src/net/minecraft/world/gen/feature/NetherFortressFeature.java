@@ -24,22 +24,22 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
 	);
 
-	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+		int j = chunkZ >> 4;
 		int k = i >> 4;
-		int l = j >> 4;
-		random.setSeed((long)(k ^ l << 4) ^ chunkGenerator.getSeed());
+		random.setSeed((long)(j ^ k << 4) ^ chunkGenerator.getSeed());
 		random.nextInt();
 		if (random.nextInt(3) != 0) {
 			return false;
-		} else if (i != (k << 4) + 4 + random.nextInt(8)) {
+		} else if (chunkZ != (j << 4) + 4 + random.nextInt(8)) {
 			return false;
 		} else {
-			return j != (l << 4) + 4 + random.nextInt(8) ? false : chunkGenerator.hasStructure(biome, this);
+			return i != (k << 4) + 4 + random.nextInt(8) ? false : chunkGenerator.hasStructure(biome, this);
 		}
 	}
 
@@ -64,20 +64,20 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (i << 4) + 2, (j << 4) + 2);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
 			this.children.add(start);
 			start.method_14918(start, this.children, this.random);
 			List<StructurePiece> list = start.field_14505;
 
 			while (!list.isEmpty()) {
-				int k = this.random.nextInt(list.size());
-				StructurePiece structurePiece = (StructurePiece)list.remove(k);
+				int i = this.random.nextInt(list.size());
+				StructurePiece structurePiece = (StructurePiece)list.remove(i);
 				structurePiece.method_14918(start, this.children, this.random);
 			}
 

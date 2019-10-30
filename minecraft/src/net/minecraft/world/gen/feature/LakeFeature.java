@@ -18,8 +18,8 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class LakeFeature extends Feature<BushFeatureConfig> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-	public LakeFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> function) {
-		super(function);
+	public LakeFeature(Function<Dynamic<?>, ? extends BushFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	public boolean method_13471(

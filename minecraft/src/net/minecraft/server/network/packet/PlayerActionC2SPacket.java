@@ -25,17 +25,17 @@ public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.action = packetByteBuf.readEnumConstant(PlayerActionC2SPacket.Action.class);
-		this.pos = packetByteBuf.readBlockPos();
-		this.direction = Direction.byId(packetByteBuf.readUnsignedByte());
+	public void read(PacketByteBuf buf) throws IOException {
+		this.action = buf.readEnumConstant(PlayerActionC2SPacket.Action.class);
+		this.pos = buf.readBlockPos();
+		this.direction = Direction.byId(buf.readUnsignedByte());
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.action);
-		packetByteBuf.writeBlockPos(this.pos);
-		packetByteBuf.writeByte(this.direction.getId());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.action);
+		buf.writeBlockPos(this.pos);
+		buf.writeByte(this.direction.getId());
 	}
 
 	public void method_12361(ServerPlayPacketListener serverPlayPacketListener) {

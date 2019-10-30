@@ -33,12 +33,12 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	private Identifier lootTableId;
 	private long lootSeed;
 
-	protected StorageMinecartEntity(EntityType<?> entityType, World world) {
-		super(entityType, world);
+	protected StorageMinecartEntity(EntityType<?> type, World world) {
+		super(type, world);
 	}
 
-	protected StorageMinecartEntity(EntityType<?> entityType, double d, double e, double f, World world) {
-		super(entityType, world, d, e, f);
+	protected StorageMinecartEntity(EntityType<?> type, double x, double y, double z, World world) {
+		super(type, world, x, y, z);
 	}
 
 	@Override
@@ -61,42 +61,42 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public ItemStack getInvStack(int i) {
+	public ItemStack getInvStack(int slot) {
 		this.method_7563(null);
-		return this.inventory.get(i);
+		return this.inventory.get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
+	public ItemStack takeInvStack(int slot, int amount) {
 		this.method_7563(null);
-		return Inventories.splitStack(this.inventory, i, j);
+		return Inventories.splitStack(this.inventory, slot, amount);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int i) {
+	public ItemStack removeInvStack(int slot) {
 		this.method_7563(null);
-		ItemStack itemStack = this.inventory.get(i);
+		ItemStack itemStack = this.inventory.get(slot);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.inventory.set(i, ItemStack.EMPTY);
+			this.inventory.set(slot, ItemStack.EMPTY);
 			return itemStack;
 		}
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
+	public void setInvStack(int slot, ItemStack stack) {
 		this.method_7563(null);
-		this.inventory.set(i, itemStack);
-		if (!itemStack.isEmpty() && itemStack.getCount() > this.getInvMaxStackAmount()) {
-			itemStack.setCount(this.getInvMaxStackAmount());
+		this.inventory.set(slot, stack);
+		if (!stack.isEmpty() && stack.getCount() > this.getInvMaxStackAmount()) {
+			stack.setCount(this.getInvMaxStackAmount());
 		}
 	}
 
 	@Override
-	public boolean equip(int i, ItemStack itemStack) {
-		if (i >= 0 && i < this.getInvSize()) {
-			this.setInvStack(i, itemStack);
+	public boolean equip(int slot, ItemStack item) {
+		if (slot >= 0 && slot < this.getInvSize()) {
+			this.setInvStack(slot, item);
 			return true;
 		} else {
 			return false;
@@ -108,15 +108,15 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.removed ? false : !(playerEntity.squaredDistanceTo(this) > 64.0);
+	public boolean canPlayerUseInv(PlayerEntity player) {
+		return this.removed ? false : !(player.squaredDistanceTo(this) > 64.0);
 	}
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType dimensionType) {
+	public Entity changeDimension(DimensionType newDimension) {
 		this.field_7733 = false;
-		return super.changeDimension(dimensionType);
+		return super.changeDimension(newDimension);
 	}
 
 	@Override
@@ -129,33 +129,33 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	protected void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		if (this.lootTableId != null) {
-			compoundTag.putString("LootTable", this.lootTableId.toString());
+			tag.putString("LootTable", this.lootTableId.toString());
 			if (this.lootSeed != 0L) {
-				compoundTag.putLong("LootTableSeed", this.lootSeed);
+				tag.putLong("LootTableSeed", this.lootSeed);
 			}
 		} else {
-			Inventories.toTag(compoundTag, this.inventory);
+			Inventories.toTag(tag, this.inventory);
 		}
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	protected void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (compoundTag.contains("LootTable", 8)) {
-			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
-			this.lootSeed = compoundTag.getLong("LootTableSeed");
+		if (tag.contains("LootTable", 8)) {
+			this.lootTableId = new Identifier(tag.getString("LootTable"));
+			this.lootSeed = tag.getLong("LootTableSeed");
 		} else {
-			Inventories.fromTag(compoundTag, this.inventory);
+			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		playerEntity.openContainer(this);
+	public boolean interact(PlayerEntity player, Hand hand) {
+		player.openContainer(this);
 		return true;
 	}
 
@@ -191,21 +191,21 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		this.inventory.clear();
 	}
 
-	public void setLootTable(Identifier identifier, long l) {
-		this.lootTableId = identifier;
+	public void setLootTable(Identifier id, long l) {
+		this.lootTableId = id;
 		this.lootSeed = l;
 	}
 
 	@Nullable
 	@Override
-	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		if (this.lootTableId != null && playerEntity.isSpectator()) {
 			return null;
 		} else {
 			this.method_7563(playerInventory.player);
-			return this.getContainer(i, playerInventory);
+			return this.getContainer(syncId, playerInventory);
 		}
 	}
 
-	protected abstract Container getContainer(int i, PlayerInventory playerInventory);
+	protected abstract Container getContainer(int syncId, PlayerInventory playerInventory);
 }

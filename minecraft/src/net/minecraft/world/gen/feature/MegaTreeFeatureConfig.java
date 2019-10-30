@@ -8,7 +8,7 @@ import java.util.List;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.stateprovider.StateProvider;
 
-public class MegaTreeFeatureConfig extends AbstractTreeFeatureConfig {
+public class MegaTreeFeatureConfig extends TreeFeatureConfig {
 	public final int field_21233;
 
 	protected MegaTreeFeatureConfig(StateProvider stateProvider, StateProvider stateProvider2, List<TreeDecorator> list, int i, int j) {
@@ -17,44 +17,42 @@ public class MegaTreeFeatureConfig extends AbstractTreeFeatureConfig {
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		Dynamic<T> dynamic = new Dynamic<>(
-			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("height_interval"), dynamicOps.createInt(this.field_21233)))
-		);
-		return dynamic.merge(super.serialize(dynamicOps));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		Dynamic<T> dynamic = new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("height_interval"), ops.createInt(this.field_21233))));
+		return dynamic.merge(super.serialize(ops));
 	}
 
 	public static <T> MegaTreeFeatureConfig method_23408(Dynamic<T> dynamic) {
-		AbstractTreeFeatureConfig abstractTreeFeatureConfig = AbstractTreeFeatureConfig.deserialize(dynamic);
+		TreeFeatureConfig treeFeatureConfig = TreeFeatureConfig.deserialize(dynamic);
 		return new MegaTreeFeatureConfig(
-			abstractTreeFeatureConfig.trunkProvider,
-			abstractTreeFeatureConfig.leavesProvider,
-			abstractTreeFeatureConfig.decorators,
-			abstractTreeFeatureConfig.baseHeight,
+			treeFeatureConfig.trunkProvider,
+			treeFeatureConfig.leavesProvider,
+			treeFeatureConfig.decorators,
+			treeFeatureConfig.baseHeight,
 			dynamic.get("height_interval").asInt(0)
 		);
 	}
 
-	public static class class_4637 extends AbstractTreeFeatureConfig.Builder {
+	public static class Builder extends TreeFeatureConfig.Builder {
 		private List<TreeDecorator> field_21234 = ImmutableList.of();
 		private int field_21235;
 		private int field_21236;
 
-		public class_4637(StateProvider stateProvider, StateProvider stateProvider2) {
+		public Builder(StateProvider stateProvider, StateProvider stateProvider2) {
 			super(stateProvider, stateProvider2);
 		}
 
-		public MegaTreeFeatureConfig.class_4637 method_23411(List<TreeDecorator> list) {
+		public MegaTreeFeatureConfig.Builder method_23411(List<TreeDecorator> list) {
 			this.field_21234 = list;
 			return this;
 		}
 
-		public MegaTreeFeatureConfig.class_4637 method_23410(int i) {
+		public MegaTreeFeatureConfig.Builder method_23410(int i) {
 			this.field_21235 = i;
 			return this;
 		}
 
-		public MegaTreeFeatureConfig.class_4637 method_23412(int i) {
+		public MegaTreeFeatureConfig.Builder method_23412(int i) {
 			this.field_21236 = i;
 			return this;
 		}

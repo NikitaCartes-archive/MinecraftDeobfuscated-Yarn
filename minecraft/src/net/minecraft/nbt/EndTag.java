@@ -34,7 +34,7 @@ public class EndTag implements Tag {
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
+	public void write(DataOutput output) throws IOException {
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class EndTag implements Tag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		return new LiteralText("");
 	}
 }

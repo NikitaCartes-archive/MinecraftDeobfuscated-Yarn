@@ -76,8 +76,8 @@ public class EntitySelectorOptions {
 		object -> new TranslatableText("argument.entity.options.type.invalid", object)
 	);
 
-	private static void putOption(String string, EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
-		options.put(string, new EntitySelectorOptions.SelectorOption(selectorHandler, predicate, text));
+	private static void putOption(String id, EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
+		options.put(id, new EntitySelectorOptions.SelectorOption(handler, condition, description));
 	}
 
 	public static void register() {
@@ -496,12 +496,16 @@ public class EntitySelectorOptions {
 								return false;
 							} else {
 								ServerWorld serverWorld = (ServerWorld)entity.world;
-								LootCondition lootCondition = serverWorld.getServer().getPredicateManager().get(identifier, LootCondition.ALWAYS_FALSE);
-								LootContext lootContext = new LootContext.Builder(serverWorld)
-									.put(LootContextParameters.THIS_ENTITY, entity)
-									.put(LootContextParameters.POSITION, new BlockPos(entity))
-									.build(LootContextTypes.SELECTOR);
-								return bl ^ lootCondition.test(lootContext);
+								LootCondition lootCondition = serverWorld.getServer().getPredicateManager().get(identifier);
+								if (lootCondition == null) {
+									return false;
+								} else {
+									LootContext lootContext = new LootContext.Builder(serverWorld)
+										.put(LootContextParameters.THIS_ENTITY, entity)
+										.put(LootContextParameters.POSITION, new BlockPos(entity))
+										.build(LootContextTypes.SELECTOR);
+									return bl ^ lootCondition.test(lootContext);
+								}
 							}
 						}
 					);
@@ -512,33 +516,32 @@ public class EntitySelectorOptions {
 		}
 	}
 
-	public static EntitySelectorOptions.SelectorHandler getHandler(EntitySelectorReader entitySelectorReader, String string, int i) throws CommandSyntaxException {
-		EntitySelectorOptions.SelectorOption selectorOption = (EntitySelectorOptions.SelectorOption)options.get(string);
+	public static EntitySelectorOptions.SelectorHandler getHandler(EntitySelectorReader reader, String option, int restoreCursor) throws CommandSyntaxException {
+		EntitySelectorOptions.SelectorOption selectorOption = (EntitySelectorOptions.SelectorOption)options.get(option);
 		if (selectorOption != null) {
-			if (selectorOption.condition.test(entitySelectorReader)) {
+			if (selectorOption.condition.test(reader)) {
 				return selectorOption.handler;
 			} else {
-				throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
+				throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(reader.getReader(), option);
 			}
 		} else {
-			entitySelectorReader.getReader().setCursor(i);
-			throw UNKNOWN_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
+			reader.getReader().setCursor(restoreCursor);
+			throw UNKNOWN_OPTION_EXCEPTION.createWithContext(reader.getReader(), option);
 		}
 	}
 
-	public static void suggestOptions(EntitySelectorReader entitySelectorReader, SuggestionsBuilder suggestionsBuilder) {
-		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
+	public static void suggestOptions(EntitySelectorReader reader, SuggestionsBuilder suggestionBuilder) {
+		String string = suggestionBuilder.getRemaining().toLowerCase(Locale.ROOT);
 
 		for (Entry<String, EntitySelectorOptions.SelectorOption> entry : options.entrySet()) {
-			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).condition.test(entitySelectorReader)
-				&& ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)) {
-				suggestionsBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
+			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).condition.test(reader) && ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)) {
+				suggestionBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
 			}
 		}
 	}
 
 	public interface SelectorHandler {
-		void handle(EntitySelectorReader entitySelectorReader) throws CommandSyntaxException;
+		void handle(EntitySelectorReader reader) throws CommandSyntaxException;
 	}
 
 	static class SelectorOption {
@@ -546,10 +549,10 @@ public class EntitySelectorOptions {
 		public final Predicate<EntitySelectorReader> condition;
 		public final Text description;
 
-		private SelectorOption(EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, Text text) {
-			this.handler = selectorHandler;
-			this.condition = predicate;
-			this.description = text;
+		private SelectorOption(EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
+			this.handler = handler;
+			this.condition = condition;
+			this.description = description;
 		}
 	}
 }

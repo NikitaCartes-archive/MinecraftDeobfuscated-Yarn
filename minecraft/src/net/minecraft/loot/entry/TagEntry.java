@@ -20,26 +20,26 @@ public class TagEntry extends LeafEntry {
 	private final Tag<Item> name;
 	private final boolean expand;
 
-	private TagEntry(Tag<Item> tag, boolean bl, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
-		this.name = tag;
-		this.expand = bl;
+	private TagEntry(Tag<Item> name, boolean expand, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+		super(weight, quality, conditions, functions);
+		this.name = name;
+		this.expand = expand;
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		this.name.values().forEach(item -> consumer.accept(new ItemStack(item)));
+	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+		this.name.values().forEach(item -> itemDropper.accept(new ItemStack(item)));
 	}
 
-	private boolean grow(LootContext lootContext, Consumer<LootChoice> consumer) {
-		if (!this.test(lootContext)) {
+	private boolean grow(LootContext context, Consumer<LootChoice> lootChoiceExpander) {
+		if (!this.test(context)) {
 			return false;
 		} else {
 			for (final Item item : this.name.values()) {
-				consumer.accept(new LeafEntry.Choice() {
+				lootChoiceExpander.accept(new LeafEntry.Choice() {
 					@Override
-					public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-						consumer.accept(new ItemStack(item));
+					public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+						itemDropper.accept(new ItemStack(item));
 					}
 				});
 			}
@@ -53,8 +53,8 @@ public class TagEntry extends LeafEntry {
 		return this.expand ? this.grow(lootContext, consumer) : super.expand(lootContext, consumer);
 	}
 
-	public static LeafEntry.Builder<?> builder(Tag<Item> tag) {
-		return builder((i, j, lootConditions, lootFunctions) -> new TagEntry(tag, true, i, j, lootConditions, lootFunctions));
+	public static LeafEntry.Builder<?> builder(Tag<Item> name) {
+		return builder((weight, quality, conditions, functions) -> new TagEntry(name, true, weight, quality, conditions, functions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<TagEntry> {

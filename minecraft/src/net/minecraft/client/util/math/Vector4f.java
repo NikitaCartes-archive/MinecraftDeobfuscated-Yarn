@@ -14,22 +14,22 @@ public class Vector4f {
 	public Vector4f() {
 	}
 
-	public Vector4f(float f, float g, float h, float i) {
-		this.x = f;
-		this.y = g;
-		this.z = h;
-		this.w = i;
+	public Vector4f(float x, float y, float z, float w) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
 	}
 
 	public Vector4f(Vector3f vector3f) {
 		this(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			Vector4f vector4f = (Vector4f)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			Vector4f vector4f = (Vector4f)o;
 			if (Float.compare(vector4f.x, this.x) != 0) {
 				return false;
 			} else if (Float.compare(vector4f.y, this.y) != 0) {
@@ -61,14 +61,14 @@ public class Vector4f {
 		return this.z;
 	}
 
-	public void multiplyXyz(Vector3f vector3f) {
-		this.x = this.x * vector3f.getX();
-		this.y = this.y * vector3f.getY();
-		this.z = this.z * vector3f.getZ();
+	public void multiplyXyz(Vector3f other) {
+		this.x = this.x * other.getX();
+		this.y = this.y * other.getY();
+		this.z = this.z * other.getZ();
 	}
 
-	public float dotProduct(Vector4f vector4f) {
-		return this.x * vector4f.x + this.y * vector4f.y + this.z * vector4f.z + this.w * vector4f.w;
+	public float dotProduct(Vector4f other) {
+		return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;
 	}
 
 	public boolean normalize() {
@@ -85,19 +85,19 @@ public class Vector4f {
 		}
 	}
 
-	public void multiply(Matrix4f matrix4f) {
+	public void multiply(Matrix4f matrix) {
 		float f = this.x;
 		float g = this.y;
 		float h = this.z;
 		float i = this.w;
-		this.x = calculateProductRow(0, matrix4f, f, g, h, i);
-		this.y = calculateProductRow(1, matrix4f, f, g, h, i);
-		this.z = calculateProductRow(2, matrix4f, f, g, h, i);
-		this.w = calculateProductRow(3, matrix4f, f, g, h, i);
+		this.x = calculateProductRow(0, matrix, f, g, h, i);
+		this.y = calculateProductRow(1, matrix, f, g, h, i);
+		this.z = calculateProductRow(2, matrix, f, g, h, i);
+		this.w = calculateProductRow(3, matrix, f, g, h, i);
 	}
 
-	private static float calculateProductRow(int i, Matrix4f matrix4f, float f, float g, float h, float j) {
-		return matrix4f.get(i, 0) * f + matrix4f.get(i, 1) * g + matrix4f.get(i, 2) * h + matrix4f.get(i, 3) * j;
+	private static float calculateProductRow(int row, Matrix4f matrix, float x, float y, float z, float w) {
+		return matrix.get(row, 0) * x + matrix.get(row, 1) * y + matrix.get(row, 2) * z + matrix.get(row, 3) * w;
 	}
 
 	public void normalizeProjectiveCoordinates() {

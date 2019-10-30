@@ -7,8 +7,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class CampfireSmokeParticle extends SpriteBillboardParticle {
-	private CampfireSmokeParticle(World world, double d, double e, double f, double g, double h, double i, boolean bl) {
-		super(world, d, e, f);
+	private CampfireSmokeParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, boolean bl) {
+		super(world, x, y, z);
 		this.scale(3.0F);
 		this.setBoundingBoxSpacing(0.25F, 0.25F);
 		if (bl) {
@@ -18,9 +18,9 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 		}
 
 		this.gravityStrength = 3.0E-6F;
-		this.velocityX = g;
-		this.velocityY = h + (double)(this.random.nextFloat() / 500.0F);
-		this.velocityZ = i;
+		this.velocityX = velocityX;
+		this.velocityY = velocityY + (double)(this.random.nextFloat() / 500.0F);
+		this.velocityZ = velocityZ;
 	}
 
 	@Override

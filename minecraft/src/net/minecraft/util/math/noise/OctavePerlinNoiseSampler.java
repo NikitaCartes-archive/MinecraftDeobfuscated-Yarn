@@ -60,33 +60,33 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 		}
 	}
 
-	public double sample(double d, double e, double f) {
-		return this.sample(d, e, f, 0.0, 0.0, false);
+	public double sample(double x, double y, double z) {
+		return this.sample(x, y, z, 0.0, 0.0, false);
 	}
 
-	public double sample(double d, double e, double f, double g, double h, boolean bl) {
-		double i = 0.0;
-		double j = this.field_20660;
-		double k = this.field_20659;
+	public double sample(double x, double y, double z, double d, double e, boolean bl) {
+		double f = 0.0;
+		double g = this.field_20660;
+		double h = this.field_20659;
 
 		for (PerlinNoiseSampler perlinNoiseSampler : this.octaveSamplers) {
 			if (perlinNoiseSampler != null) {
-				i += perlinNoiseSampler.sample(
-						maintainPrecision(d * j), bl ? -perlinNoiseSampler.originY : maintainPrecision(e * j), maintainPrecision(f * j), g * j, h * j
+				f += perlinNoiseSampler.sample(
+						maintainPrecision(x * g), bl ? -perlinNoiseSampler.originY : maintainPrecision(y * g), maintainPrecision(z * g), d * g, e * g
 					)
-					* k;
+					* h;
 			}
 
-			j /= 2.0;
-			k *= 2.0;
+			g /= 2.0;
+			h *= 2.0;
 		}
 
-		return i;
+		return f;
 	}
 
 	@Nullable
-	public PerlinNoiseSampler getOctave(int i) {
-		return this.octaveSamplers[i];
+	public PerlinNoiseSampler getOctave(int octave) {
+		return this.octaveSamplers[octave];
 	}
 
 	public static double maintainPrecision(double d) {
@@ -94,7 +94,7 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 	}
 
 	@Override
-	public double sample(double d, double e, double f, double g) {
-		return this.sample(d, e, 0.0, f, g, false);
+	public double sample(double x, double y, double d, double e) {
+		return this.sample(x, y, 0.0, d, e, false);
 	}
 }

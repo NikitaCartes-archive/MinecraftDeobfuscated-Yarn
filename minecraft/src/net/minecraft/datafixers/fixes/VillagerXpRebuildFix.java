@@ -16,8 +16,8 @@ import net.minecraft.util.math.MathHelper;
 public class VillagerXpRebuildFix extends DataFix {
 	private static final int[] LEVEL_TO_XP = new int[]{0, 10, 50, 100, 150};
 
-	public static int levelToXp(int i) {
-		return LEVEL_TO_XP[MathHelper.clamp(i - 1, 0, LEVEL_TO_XP.length - 1)];
+	public static int levelToXp(int level) {
+		return LEVEL_TO_XP[MathHelper.clamp(level - 1, 0, LEVEL_TO_XP.length - 1)];
 	}
 
 	public VillagerXpRebuildFix(Schema schema, boolean bl) {

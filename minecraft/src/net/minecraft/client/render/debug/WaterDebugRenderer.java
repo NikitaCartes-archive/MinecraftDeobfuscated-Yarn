@@ -15,12 +15,12 @@ import net.minecraft.world.WorldView;
 public class WaterDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 
-	public WaterDebugRenderer(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public WaterDebugRenderer(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override
-	public void method_23109(long l) {
+	public void render(long limitTime) {
 		Camera camera = this.client.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
@@ -37,7 +37,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 			FluidState fluidState = worldView.getFluidState(blockPos2);
 			if (fluidState.matches(FluidTags.WATER)) {
 				double g = (double)((float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2));
-				DebugRenderer.method_23102(
+				DebugRenderer.drawBox(
 					new Box(
 							(double)((float)blockPos2.getX() + 0.01F),
 							(double)((float)blockPos2.getY() + 0.01F),
@@ -58,7 +58,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 		for (BlockPos blockPos2x : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = worldView.getFluidState(blockPos2x);
 			if (fluidState.matches(FluidTags.WATER)) {
-				DebugRenderer.method_23105(
+				DebugRenderer.drawString(
 					String.valueOf(fluidState.getLevel()),
 					(double)blockPos2x.getX() + 0.5,
 					(double)((float)blockPos2x.getY() + fluidState.getHeight(worldView, blockPos2x)),

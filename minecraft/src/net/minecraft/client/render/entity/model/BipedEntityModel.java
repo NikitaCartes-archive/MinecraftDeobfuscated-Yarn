@@ -29,8 +29,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	public float field_3396;
 	private float itemUsedTime;
 
-	public BipedEntityModel(float f) {
-		this(RenderLayer::getEntityCutoutNoCull, f, 0.0F, 64, 32);
+	public BipedEntityModel(float scale) {
+		this(RenderLayer::getEntityCutoutNoCull, scale, 0.0F, 64, 32);
 	}
 
 	protected BipedEntityModel(float f, float g, int i, int j) {
@@ -310,17 +310,17 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		this.headwear.copyPositionAndRotation(this.head);
 	}
 
-	protected float lerpAngle(float f, float g, float h) {
-		float i = (g - f) % (float) (Math.PI * 2);
-		if (i < (float) -Math.PI) {
-			i += (float) (Math.PI * 2);
+	protected float lerpAngle(float from, float to, float position) {
+		float f = (to - from) % (float) (Math.PI * 2);
+		if (f < (float) -Math.PI) {
+			f += (float) (Math.PI * 2);
 		}
 
-		if (i >= (float) Math.PI) {
-			i -= (float) (Math.PI * 2);
+		if (f >= (float) Math.PI) {
+			f -= (float) (Math.PI * 2);
 		}
 
-		return f + h * i;
+		return from + position * f;
 	}
 
 	private float method_2807(float f) {
@@ -334,19 +334,19 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		bipedEntityModel.isSneaking = this.isSneaking;
 	}
 
-	public void setVisible(boolean bl) {
-		this.head.visible = bl;
-		this.headwear.visible = bl;
-		this.body.visible = bl;
-		this.rightArm.visible = bl;
-		this.leftArm.visible = bl;
-		this.rightLeg.visible = bl;
-		this.leftLeg.visible = bl;
+	public void setVisible(boolean visible) {
+		this.head.visible = visible;
+		this.headwear.visible = visible;
+		this.body.visible = visible;
+		this.rightArm.visible = visible;
+		this.leftArm.visible = visible;
+		this.rightLeg.visible = visible;
+		this.leftLeg.visible = visible;
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
-		this.getArm(arm).rotate(matrixStack, f);
+	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
+		this.getArm(arm).rotate(matrixStack, angle);
 	}
 
 	protected ModelPart getArm(Arm arm) {
@@ -358,9 +358,9 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		return this.head;
 	}
 
-	protected Arm getPreferredArm(T livingEntity) {
-		Arm arm = livingEntity.getMainArm();
-		return livingEntity.preferredHand == Hand.MAIN_HAND ? arm : arm.getOpposite();
+	protected Arm getPreferredArm(T entity) {
+		Arm arm = entity.getMainArm();
+		return entity.preferredHand == Hand.MAIN_HAND ? arm : arm.getOpposite();
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -18,9 +18,9 @@ public class GoToVillageGoal extends Goal {
 	@Nullable
 	private BlockPos targetPosition;
 
-	public GoToVillageGoal(MobEntityWithAi mobEntityWithAi, int i) {
-		this.mob = mobEntityWithAi;
-		this.searchRange = i;
+	public GoToVillageGoal(MobEntityWithAi mob, int searchRange) {
+		this.mob = mob;
+		this.searchRange = searchRange;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 

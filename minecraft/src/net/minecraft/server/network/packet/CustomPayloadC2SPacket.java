@@ -17,26 +17,26 @@ public class CustomPayloadC2SPacket implements Packet<ServerPlayPacketListener> 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public CustomPayloadC2SPacket(Identifier identifier, PacketByteBuf packetByteBuf) {
-		this.channel = identifier;
+	public CustomPayloadC2SPacket(Identifier channel, PacketByteBuf packetByteBuf) {
+		this.channel = channel;
 		this.data = packetByteBuf;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.channel = packetByteBuf.readIdentifier();
-		int i = packetByteBuf.readableBytes();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.channel = buf.readIdentifier();
+		int i = buf.readableBytes();
 		if (i >= 0 && i <= 32767) {
-			this.data = new PacketByteBuf(packetByteBuf.readBytes(i));
+			this.data = new PacketByteBuf(buf.readBytes(i));
 		} else {
 			throw new IOException("Payload may not be larger than 32767 bytes");
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeIdentifier(this.channel);
-		packetByteBuf.writeBytes(this.data);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeIdentifier(this.channel);
+		buf.writeBytes(this.data);
 	}
 
 	public void method_12199(ServerPlayPacketListener serverPlayPacketListener) {

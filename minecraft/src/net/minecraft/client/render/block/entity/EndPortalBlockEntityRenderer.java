@@ -4,9 +4,9 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.EndPortalBlockEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -23,25 +23,17 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> extend
 	}
 
 	public void method_3591(
-		T endPortalBlockEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage,
-		int i,
-		int j
+		T endPortalBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j
 	) {
 		RANDOM.setSeed(31100L);
 		double h = d * d + e * e + f * f;
 		int k = this.method_3592(h);
 		float l = this.method_3594();
-		Matrix4f matrix4f = matrixStack.peek();
-		this.method_23084(endPortalBlockEntity, l, 0.15F, matrix4f, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEndPortal(1)));
+		Matrix4f matrix4f = matrixStack.peekModel();
+		this.method_23084(endPortalBlockEntity, l, 0.15F, matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(1)));
 
 		for (int m = 1; m < k; m++) {
-			this.method_23084(endPortalBlockEntity, l, 2.0F / (float)(18 - m), matrix4f, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEndPortal(m + 1)));
+			this.method_23084(endPortalBlockEntity, l, 2.0F / (float)(18 - m), matrix4f, vertexConsumerProvider.getBuffer(RenderLayer.getEndPortal(m + 1)));
 		}
 	}
 

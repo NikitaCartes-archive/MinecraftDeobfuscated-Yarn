@@ -19,18 +19,18 @@ public class ThrownEggEntity extends ThrownItemEntity {
 		super(entityType, world);
 	}
 
-	public ThrownEggEntity(World world, LivingEntity livingEntity) {
-		super(EntityType.EGG, livingEntity, world);
+	public ThrownEggEntity(World world, LivingEntity thrower) {
+		super(EntityType.EGG, thrower, world);
 	}
 
-	public ThrownEggEntity(World world, double d, double e, double f) {
-		super(EntityType.EGG, d, e, f, world);
+	public ThrownEggEntity(World world, double x, double y, double z) {
+		super(EntityType.EGG, x, y, z, world);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 3) {
+	public void handleStatus(byte status) {
+		if (status == 3) {
 			double d = 0.08;
 
 			for (int i = 0; i < 8; i++) {

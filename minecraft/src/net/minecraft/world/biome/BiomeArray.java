@@ -15,47 +15,47 @@ public class BiomeArray implements BiomeAccess.Storage {
 	public static final int VERTICAL_BIT_MASK = (1 << VERTICAL_SECTION_COUNT) - 1;
 	private final Biome[] data;
 
-	public BiomeArray(Biome[] biomes) {
-		this.data = biomes;
+	public BiomeArray(Biome[] data) {
+		this.data = data;
 	}
 
 	private BiomeArray() {
 		this(new Biome[DEFAULT_LENGTH]);
 	}
 
-	public BiomeArray(PacketByteBuf packetByteBuf) {
+	public BiomeArray(PacketByteBuf buf) {
 		this();
 
 		for (int i = 0; i < this.data.length; i++) {
-			this.data[i] = Registry.BIOME.get(packetByteBuf.readInt());
+			this.data[i] = Registry.BIOME.get(buf.readInt());
 		}
 	}
 
-	public BiomeArray(ChunkPos chunkPos, BiomeSource biomeSource) {
+	public BiomeArray(ChunkPos pos, BiomeSource source) {
 		this();
-		int i = chunkPos.getStartX() >> 2;
-		int j = chunkPos.getStartZ() >> 2;
+		int i = pos.getStartX() >> 2;
+		int j = pos.getStartZ() >> 2;
 
 		for (int k = 0; k < this.data.length; k++) {
 			int l = k & HORIZONTAL_BIT_MASK;
 			int m = k >> HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT & VERTICAL_BIT_MASK;
 			int n = k >> HORIZONTAL_SECTION_COUNT & HORIZONTAL_BIT_MASK;
-			this.data[k] = biomeSource.getStoredBiome(i + l, m, j + n);
+			this.data[k] = source.getStoredBiome(i + l, m, j + n);
 		}
 	}
 
-	public BiomeArray(ChunkPos chunkPos, BiomeSource biomeSource, @Nullable int[] is) {
+	public BiomeArray(ChunkPos pos, BiomeSource source, @Nullable int[] rawIds) {
 		this();
-		int i = chunkPos.getStartX() >> 2;
-		int j = chunkPos.getStartZ() >> 2;
-		if (is != null) {
-			for (int k = 0; k < is.length; k++) {
-				this.data[k] = Registry.BIOME.get(is[k]);
+		int i = pos.getStartX() >> 2;
+		int j = pos.getStartZ() >> 2;
+		if (rawIds != null) {
+			for (int k = 0; k < rawIds.length; k++) {
+				this.data[k] = Registry.BIOME.get(rawIds[k]);
 				if (this.data[k] == null) {
 					int l = k & HORIZONTAL_BIT_MASK;
 					int m = k >> HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT & VERTICAL_BIT_MASK;
 					int n = k >> HORIZONTAL_SECTION_COUNT & HORIZONTAL_BIT_MASK;
-					this.data[k] = biomeSource.getStoredBiome(i + l, m, j + n);
+					this.data[k] = source.getStoredBiome(i + l, m, j + n);
 				}
 			}
 		} else {
@@ -63,7 +63,7 @@ public class BiomeArray implements BiomeAccess.Storage {
 				int l = kx & HORIZONTAL_BIT_MASK;
 				int m = kx >> HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT & VERTICAL_BIT_MASK;
 				int n = kx >> HORIZONTAL_SECTION_COUNT & HORIZONTAL_BIT_MASK;
-				this.data[kx] = biomeSource.getStoredBiome(i + l, m, j + n);
+				this.data[kx] = source.getStoredBiome(i + l, m, j + n);
 			}
 		}
 	}
@@ -78,9 +78,9 @@ public class BiomeArray implements BiomeAccess.Storage {
 		return is;
 	}
 
-	public void toPacket(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf buf) {
 		for (Biome biome : this.data) {
-			packetByteBuf.writeInt(Registry.BIOME.getRawId(biome));
+			buf.writeInt(Registry.BIOME.getRawId(biome));
 		}
 	}
 
@@ -89,10 +89,10 @@ public class BiomeArray implements BiomeAccess.Storage {
 	}
 
 	@Override
-	public Biome getStoredBiome(int i, int j, int k) {
-		int l = i & HORIZONTAL_BIT_MASK;
-		int m = MathHelper.clamp(j, 0, VERTICAL_BIT_MASK);
-		int n = k & HORIZONTAL_BIT_MASK;
-		return this.data[m << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT | n << HORIZONTAL_SECTION_COUNT | l];
+	public Biome getStoredBiome(int biomeX, int biomeY, int biomeZ) {
+		int i = biomeX & HORIZONTAL_BIT_MASK;
+		int j = MathHelper.clamp(biomeY, 0, VERTICAL_BIT_MASK);
+		int k = biomeZ & HORIZONTAL_BIT_MASK;
+		return this.data[j << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT | k << HORIZONTAL_SECTION_COUNT | i];
 	}
 }

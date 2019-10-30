@@ -75,11 +75,11 @@ public class StrayEntityModel<T extends MobEntity & RangedAttackMob> extends Bip
 	}
 
 	@Override
-	public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
-		float g = arm == Arm.RIGHT ? 1.0F : -1.0F;
+	public void setArmAngle(float angle, Arm arm, MatrixStack matrixStack) {
+		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		ModelPart modelPart = this.getArm(arm);
-		modelPart.pivotX += g;
-		modelPart.rotate(matrixStack, f);
-		modelPart.pivotX -= g;
+		modelPart.pivotX += f;
+		modelPart.rotate(matrixStack, angle);
+		modelPart.pivotX -= f;
 	}
 }

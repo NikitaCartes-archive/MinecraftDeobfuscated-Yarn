@@ -14,9 +14,9 @@ public class LocationCheckLootCondition implements LootCondition {
 	private final LocationPredicate predicate;
 	private final BlockPos offset;
 
-	public LocationCheckLootCondition(LocationPredicate locationPredicate, BlockPos blockPos) {
-		this.predicate = locationPredicate;
-		this.offset = blockPos;
+	public LocationCheckLootCondition(LocationPredicate predicate, BlockPos offset) {
+		this.predicate = predicate;
+		this.offset = offset;
 	}
 
 	public boolean method_881(LootContext lootContext) {
@@ -31,8 +31,8 @@ public class LocationCheckLootCondition implements LootCondition {
 				);
 	}
 
-	public static LootCondition.Builder builder(LocationPredicate.Builder builder) {
-		return () -> new LocationCheckLootCondition(builder.build(), BlockPos.ORIGIN);
+	public static LootCondition.Builder builder(LocationPredicate.Builder predicateBuilder) {
+		return () -> new LocationCheckLootCondition(predicateBuilder.build(), BlockPos.ORIGIN);
 	}
 
 	public static class Factory extends LootCondition.Factory<LocationCheckLootCondition> {

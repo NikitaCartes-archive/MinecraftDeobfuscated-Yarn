@@ -11,24 +11,24 @@ import net.minecraft.world.level.UnmodifiableLevelProperties;
 
 public class SecondaryServerWorld extends ServerWorld {
 	public SecondaryServerWorld(
-		ServerWorld serverWorld,
-		MinecraftServer minecraftServer,
-		Executor executor,
+		ServerWorld world,
+		MinecraftServer server,
+		Executor workerExecutor,
 		WorldSaveHandler worldSaveHandler,
 		DimensionType dimensionType,
 		Profiler profiler,
 		WorldGenerationProgressListener worldGenerationProgressListener
 	) {
 		super(
-			minecraftServer,
-			executor,
+			server,
+			workerExecutor,
 			worldSaveHandler,
-			new UnmodifiableLevelProperties(serverWorld.getLevelProperties()),
+			new UnmodifiableLevelProperties(world.getLevelProperties()),
 			dimensionType,
 			profiler,
 			worldGenerationProgressListener
 		);
-		serverWorld.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
+		world.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
 	}
 
 	@Override

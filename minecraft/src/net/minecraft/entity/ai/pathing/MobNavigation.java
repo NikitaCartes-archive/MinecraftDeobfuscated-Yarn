@@ -13,8 +13,8 @@ import net.minecraft.world.World;
 public class MobNavigation extends EntityNavigation {
 	private boolean avoidSunlight;
 
-	public MobNavigation(MobEntity mobEntity, World world) {
-		super(mobEntity, world);
+	public MobNavigation(MobEntity entity, World world) {
+		super(entity, world);
 	}
 
 	@Override
@@ -35,41 +35,41 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	public Path findPathTo(BlockPos blockPos, int i) {
-		if (this.world.getBlockState(blockPos).isAir()) {
-			BlockPos blockPos2 = blockPos.method_10074();
+	public Path findPathTo(BlockPos target, int distance) {
+		if (this.world.getBlockState(target).isAir()) {
+			BlockPos blockPos = target.method_10074();
 
-			while (blockPos2.getY() > 0 && this.world.getBlockState(blockPos2).isAir()) {
-				blockPos2 = blockPos2.method_10074();
+			while (blockPos.getY() > 0 && this.world.getBlockState(blockPos).isAir()) {
+				blockPos = blockPos.method_10074();
 			}
 
-			if (blockPos2.getY() > 0) {
-				return super.findPathTo(blockPos2.up(), i);
+			if (blockPos.getY() > 0) {
+				return super.findPathTo(blockPos.up(), distance);
 			}
 
-			while (blockPos2.getY() < this.world.getHeight() && this.world.getBlockState(blockPos2).isAir()) {
-				blockPos2 = blockPos2.up();
+			while (blockPos.getY() < this.world.getHeight() && this.world.getBlockState(blockPos).isAir()) {
+				blockPos = blockPos.up();
 			}
 
-			blockPos = blockPos2;
+			target = blockPos;
 		}
 
-		if (!this.world.getBlockState(blockPos).getMaterial().isSolid()) {
-			return super.findPathTo(blockPos, i);
+		if (!this.world.getBlockState(target).getMaterial().isSolid()) {
+			return super.findPathTo(target, distance);
 		} else {
-			BlockPos blockPos2 = blockPos.up();
+			BlockPos blockPos = target.up();
 
-			while (blockPos2.getY() < this.world.getHeight() && this.world.getBlockState(blockPos2).getMaterial().isSolid()) {
-				blockPos2 = blockPos2.up();
+			while (blockPos.getY() < this.world.getHeight() && this.world.getBlockState(blockPos).getMaterial().isSolid()) {
+				blockPos = blockPos.up();
 			}
 
-			return super.findPathTo(blockPos2, i);
+			return super.findPathTo(blockPos, distance);
 		}
 	}
 
 	@Override
-	public Path findPathTo(Entity entity, int i) {
-		return this.findPathTo(new BlockPos(entity), i);
+	public Path findPathTo(Entity entity, int distance) {
+		return this.findPathTo(new BlockPos(entity), distance);
 	}
 
 	private int method_6362() {
@@ -110,11 +110,11 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k) {
-		int l = MathHelper.floor(vec3d.x);
-		int m = MathHelper.floor(vec3d.z);
-		double d = vec3d2.x - vec3d.x;
-		double e = vec3d2.z - vec3d.z;
+	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ) {
+		int i = MathHelper.floor(origin.x);
+		int j = MathHelper.floor(origin.z);
+		double d = target.x - origin.x;
+		double e = target.z - origin.z;
 		double f = d * d + e * e;
 		if (f < 1.0E-8) {
 			return false;
@@ -122,46 +122,46 @@ public class MobNavigation extends EntityNavigation {
 			double g = 1.0 / Math.sqrt(f);
 			d *= g;
 			e *= g;
-			i += 2;
-			k += 2;
-			if (!this.method_6364(l, MathHelper.floor(vec3d.y), m, i, j, k, vec3d, d, e)) {
+			sizeX += 2;
+			sizeZ += 2;
+			if (!this.method_6364(i, MathHelper.floor(origin.y), j, sizeX, sizeY, sizeZ, origin, d, e)) {
 				return false;
 			} else {
-				i -= 2;
-				k -= 2;
+				sizeX -= 2;
+				sizeZ -= 2;
 				double h = 1.0 / Math.abs(d);
-				double n = 1.0 / Math.abs(e);
-				double o = (double)l - vec3d.x;
-				double p = (double)m - vec3d.z;
+				double k = 1.0 / Math.abs(e);
+				double l = (double)i - origin.x;
+				double m = (double)j - origin.z;
 				if (d >= 0.0) {
-					o++;
+					l++;
 				}
 
 				if (e >= 0.0) {
-					p++;
+					m++;
 				}
 
-				o /= d;
-				p /= e;
-				int q = d < 0.0 ? -1 : 1;
-				int r = e < 0.0 ? -1 : 1;
-				int s = MathHelper.floor(vec3d2.x);
-				int t = MathHelper.floor(vec3d2.z);
-				int u = s - l;
-				int v = t - m;
+				l /= d;
+				m /= e;
+				int n = d < 0.0 ? -1 : 1;
+				int o = e < 0.0 ? -1 : 1;
+				int p = MathHelper.floor(target.x);
+				int q = MathHelper.floor(target.z);
+				int r = p - i;
+				int s = q - j;
 
-				while (u * q > 0 || v * r > 0) {
-					if (o < p) {
-						o += h;
-						l += q;
-						u = s - l;
+				while (r * n > 0 || s * o > 0) {
+					if (l < m) {
+						l += h;
+						i += n;
+						r = p - i;
 					} else {
-						p += n;
-						m += r;
-						v = t - m;
+						m += k;
+						j += o;
+						s = q - j;
 					}
 
-					if (!this.method_6364(l, MathHelper.floor(vec3d.y), m, i, j, k, vec3d, d, e)) {
+					if (!this.method_6364(i, MathHelper.floor(origin.y), j, sizeX, sizeY, sizeZ, origin, d, e)) {
 						return false;
 					}
 				}
@@ -232,7 +232,7 @@ public class MobNavigation extends EntityNavigation {
 		return this.nodeMaker.canEnterOpenDoors();
 	}
 
-	public void setAvoidSunlight(boolean bl) {
-		this.avoidSunlight = bl;
+	public void setAvoidSunlight(boolean avoidSunlight) {
+		this.avoidSunlight = avoidSunlight;
 	}
 }

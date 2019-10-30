@@ -18,10 +18,10 @@ public class SwordItem extends ToolItem {
 	private final float attackDamage;
 	private final float attackSpeed;
 
-	public SwordItem(ToolMaterial toolMaterial, int i, float f, Item.Settings settings) {
-		super(toolMaterial, settings);
-		this.attackSpeed = f;
-		this.attackDamage = (float)i + toolMaterial.getAttackDamage();
+	public SwordItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
+		super(material, settings);
+		this.attackSpeed = attackSpeed;
+		this.attackDamage = (float)attackDamage + material.getAttackDamage();
 	}
 
 	public float getAttackDamage() {
@@ -29,21 +29,21 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean canMine(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		return !playerEntity.isCreative();
+	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+		return !miner.isCreative();
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack itemStack, BlockState blockState) {
-		Block block = blockState.getBlock();
+	public float getMiningSpeed(ItemStack stack, BlockState state) {
+		Block block = state.getBlock();
 		if (block == Blocks.COBWEB) {
 			return 15.0F;
 		} else {
-			Material material = blockState.getMaterial();
+			Material material = state.getMaterial();
 			return material != Material.PLANT
 					&& material != Material.REPLACEABLE_PLANT
 					&& material != Material.UNUSED_PLANT
-					&& !blockState.matches(BlockTags.LEAVES)
+					&& !state.matches(BlockTags.LEAVES)
 					&& material != Material.PUMPKIN
 				? 1.0F
 				: 1.5F;
@@ -51,29 +51,29 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.damage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		return true;
 	}
 
 	@Override
-	public boolean postMine(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
-		if (blockState.getHardness(world, blockPos) != 0.0F) {
-			itemStack.damage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
+		if (state.getHardness(world, pos) != 0.0F) {
+			stack.damage(2, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		return true;
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState blockState) {
-		return blockState.getBlock() == Blocks.COBWEB;
+	public boolean isEffectiveOn(BlockState state) {
+		return state.getBlock() == Blocks.COBWEB;
 	}
 
 	@Override
-	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
-		if (equipmentSlot == EquipmentSlot.MAINHAND) {
+	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
+		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
+		if (slot == EquipmentSlot.MAINHAND) {
 			multimap.put(
 				EntityAttributes.ATTACK_DAMAGE.getId(),
 				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)

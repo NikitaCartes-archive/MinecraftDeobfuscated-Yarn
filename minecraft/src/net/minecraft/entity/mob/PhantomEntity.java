@@ -91,17 +91,17 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return entityDimensions.height * 0.35F;
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return dimensions.height * 0.35F;
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (SIZE.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (SIZE.equals(data)) {
 			this.onSizeChanged();
 		}
 
-		super.onTrackedDataSet(trackedData);
+		super.onTrackedDataSet(data);
 	}
 
 	@Override
@@ -152,36 +152,34 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
-	) {
+	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		this.field_7312 = new BlockPos(this).up(5);
 		this.setPhantomSize(0);
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		if (compoundTag.contains("AX")) {
-			this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		if (tag.contains("AX")) {
+			this.field_7312 = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
 		}
 
-		this.setPhantomSize(compoundTag.getInt("Size"));
+		this.setPhantomSize(tag.getInt("Size"));
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("AX", this.field_7312.getX());
-		compoundTag.putInt("AY", this.field_7312.getY());
-		compoundTag.putInt("AZ", this.field_7312.getZ());
-		compoundTag.putInt("Size", this.getPhantomSize());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("AX", this.field_7312.getX());
+		tag.putInt("AY", this.field_7312.getY());
+		tag.putInt("AZ", this.field_7312.getZ());
+		tag.putInt("Size", this.getPhantomSize());
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean shouldRenderAtDistance(double d) {
+	public boolean shouldRenderAtDistance(double distance) {
 		return true;
 	}
 
@@ -196,7 +194,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_PHANTOM_HURT;
 	}
 
@@ -216,14 +214,14 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean canTarget(EntityType<?> entityType) {
+	public boolean canTarget(EntityType<?> type) {
 		return true;
 	}
 
 	@Override
-	public EntityDimensions getDimensions(EntityPose entityPose) {
+	public EntityDimensions getDimensions(EntityPose pose) {
 		int i = this.getPhantomSize();
-		EntityDimensions entityDimensions = super.getDimensions(entityPose);
+		EntityDimensions entityDimensions = super.getDimensions(pose);
 		float f = (entityDimensions.width + 0.2F * (float)i) / entityDimensions.width;
 		return entityDimensions.scaled(f);
 	}
@@ -372,8 +370,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	class PhantomMoveControl extends MoveControl {
 		private float field_7331 = 0.1F;
 
-		public PhantomMoveControl(MobEntity mobEntity) {
-			super(mobEntity);
+		public PhantomMoveControl(MobEntity owner) {
+			super(owner);
 		}
 
 		@Override
@@ -521,7 +519,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			PhantomEntity.this.field_7314 = new Vec3d(livingEntity.getX(), livingEntity.method_23323(0.5), livingEntity.getZ());
+			PhantomEntity.this.field_7314 = new Vec3d(livingEntity.getX(), livingEntity.getHeightAt(0.5), livingEntity.getZ());
 			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
 				PhantomEntity.this.tryAttack(livingEntity);
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;

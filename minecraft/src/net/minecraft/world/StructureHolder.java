@@ -7,15 +7,15 @@ import net.minecraft.structure.StructureStart;
 
 public interface StructureHolder {
 	@Nullable
-	StructureStart getStructureStart(String string);
+	StructureStart getStructureStart(String structure);
 
-	void setStructureStart(String string, StructureStart structureStart);
+	void setStructureStart(String structure, StructureStart start);
 
-	LongSet getStructureReferences(String string);
+	LongSet getStructureReferences(String structure);
 
-	void addStructureReference(String string, long l);
+	void addStructureReference(String structure, long reference);
 
 	Map<String, LongSet> getStructureReferences();
 
-	void setStructureReferences(Map<String, LongSet> map);
+	void setStructureReferences(Map<String, LongSet> structureReferences);
 }

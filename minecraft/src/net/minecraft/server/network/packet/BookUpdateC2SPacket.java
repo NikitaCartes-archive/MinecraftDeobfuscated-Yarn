@@ -18,24 +18,24 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public BookUpdateC2SPacket(ItemStack itemStack, boolean bl, Hand hand) {
-		this.book = itemStack.copy();
-		this.signed = bl;
+	public BookUpdateC2SPacket(ItemStack book, boolean signed, Hand hand) {
+		this.book = book.copy();
+		this.signed = signed;
 		this.hand = hand;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.book = packetByteBuf.readItemStack();
-		this.signed = packetByteBuf.readBoolean();
-		this.hand = packetByteBuf.readEnumConstant(Hand.class);
+	public void read(PacketByteBuf buf) throws IOException {
+		this.book = buf.readItemStack();
+		this.signed = buf.readBoolean();
+		this.hand = buf.readEnumConstant(Hand.class);
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeItemStack(this.book);
-		packetByteBuf.writeBoolean(this.signed);
-		packetByteBuf.writeEnumConstant(this.hand);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeItemStack(this.book);
+		buf.writeBoolean(this.signed);
+		buf.writeEnumConstant(this.hand);
 	}
 
 	public void method_12236(ServerPlayPacketListener serverPlayPacketListener) {

@@ -12,8 +12,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
-	public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> function) {
-		super(function);
+	public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	public boolean method_16709(
@@ -39,15 +39,15 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 		}
 	}
 
-	private boolean canPlacePileBlock(IWorld iWorld, BlockPos blockPos, Random random) {
-		BlockPos blockPos2 = blockPos.method_10074();
-		BlockState blockState = iWorld.getBlockState(blockPos2);
-		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.isSideSolidFullSquare(iWorld, blockPos2, Direction.UP);
+	private boolean canPlacePileBlock(IWorld world, BlockPos pos, Random random) {
+		BlockPos blockPos = pos.method_10074();
+		BlockState blockState = world.getBlockState(blockPos);
+		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 
-	private void addPileBlock(IWorld iWorld, BlockPos blockPos, Random random, BlockPileFeatureConfig blockPileFeatureConfig) {
-		if (iWorld.isAir(blockPos) && this.canPlacePileBlock(iWorld, blockPos, random)) {
-			iWorld.setBlockState(blockPos, blockPileFeatureConfig.field_21229.getBlockState(random, blockPos), 4);
+	private void addPileBlock(IWorld world, BlockPos pos, Random random, BlockPileFeatureConfig blockPileFeatureConfig) {
+		if (world.isAir(pos) && this.canPlacePileBlock(world, pos, random)) {
+			world.setBlockState(pos, blockPileFeatureConfig.field_21229.getBlockState(random, pos), 4);
 		}
 	}
 }

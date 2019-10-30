@@ -8,44 +8,44 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class JsonUtils {
-	public static String getStringOr(String string, JsonObject jsonObject, String string2) {
-		JsonElement jsonElement = jsonObject.get(string);
+	public static String getStringOr(String key, JsonObject node, String defaultValue) {
+		JsonElement jsonElement = node.get(key);
 		if (jsonElement != null) {
-			return jsonElement.isJsonNull() ? string2 : jsonElement.getAsString();
+			return jsonElement.isJsonNull() ? defaultValue : jsonElement.getAsString();
 		} else {
-			return string2;
+			return defaultValue;
 		}
 	}
 
-	public static int getIntOr(String string, JsonObject jsonObject, int i) {
-		JsonElement jsonElement = jsonObject.get(string);
+	public static int getIntOr(String key, JsonObject node, int defaultValue) {
+		JsonElement jsonElement = node.get(key);
 		if (jsonElement != null) {
-			return jsonElement.isJsonNull() ? i : jsonElement.getAsInt();
+			return jsonElement.isJsonNull() ? defaultValue : jsonElement.getAsInt();
 		} else {
-			return i;
+			return defaultValue;
 		}
 	}
 
-	public static long getLongOr(String string, JsonObject jsonObject, long l) {
-		JsonElement jsonElement = jsonObject.get(string);
+	public static long getLongOr(String key, JsonObject node, long defaultValue) {
+		JsonElement jsonElement = node.get(key);
 		if (jsonElement != null) {
-			return jsonElement.isJsonNull() ? l : jsonElement.getAsLong();
+			return jsonElement.isJsonNull() ? defaultValue : jsonElement.getAsLong();
 		} else {
-			return l;
+			return defaultValue;
 		}
 	}
 
-	public static boolean getBooleanOr(String string, JsonObject jsonObject, boolean bl) {
-		JsonElement jsonElement = jsonObject.get(string);
+	public static boolean getBooleanOr(String key, JsonObject node, boolean defaultValue) {
+		JsonElement jsonElement = node.get(key);
 		if (jsonElement != null) {
-			return jsonElement.isJsonNull() ? bl : jsonElement.getAsBoolean();
+			return jsonElement.isJsonNull() ? defaultValue : jsonElement.getAsBoolean();
 		} else {
-			return bl;
+			return defaultValue;
 		}
 	}
 
-	public static Date getDateOr(String string, JsonObject jsonObject) {
-		JsonElement jsonElement = jsonObject.get(string);
+	public static Date getDateOr(String key, JsonObject node) {
+		JsonElement jsonElement = node.get(key);
 		return jsonElement != null ? new Date(Long.parseLong(jsonElement.getAsString())) : new Date();
 	}
 }

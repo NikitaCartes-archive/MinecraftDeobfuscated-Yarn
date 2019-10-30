@@ -8,8 +8,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixers.TypeReferences;
 
 public class OptionsAddTextBackgroundFix extends DataFix {
-	public OptionsAddTextBackgroundFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsAddTextBackgroundFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -29,9 +29,9 @@ public class OptionsAddTextBackgroundFix extends DataFix {
 		);
 	}
 
-	private double convertToTextBackgroundOpacity(String string) {
+	private double convertToTextBackgroundOpacity(String chatOpacity) {
 		try {
-			double d = 0.9 * Double.parseDouble(string) + 0.1;
+			double d = 0.9 * Double.parseDouble(chatOpacity) + 0.1;
 			return d / 2.0;
 		} catch (NumberFormatException var4) {
 			return 0.5;

@@ -7,10 +7,10 @@ public interface EntityInteraction {
 	EntityInteraction VILLAGER_KILLED = create("villager_killed");
 	EntityInteraction TRADE = create("trade");
 
-	static EntityInteraction create(String string) {
+	static EntityInteraction create(String key) {
 		return new EntityInteraction() {
 			public String toString() {
-				return string;
+				return key;
 			}
 		};
 	}

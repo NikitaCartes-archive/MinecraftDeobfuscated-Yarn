@@ -23,8 +23,8 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		return new ChangedDimensionCriterion.Conditions(dimensionType, dimensionType2);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, DimensionType dimensionType, DimensionType dimensionType2) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(dimensionType, dimensionType2));
+	public void trigger(ServerPlayerEntity player, DimensionType from, DimensionType to) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(from, to));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -33,18 +33,18 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		@Nullable
 		private final DimensionType to;
 
-		public Conditions(@Nullable DimensionType dimensionType, @Nullable DimensionType dimensionType2) {
+		public Conditions(@Nullable DimensionType from, @Nullable DimensionType to) {
 			super(ChangedDimensionCriterion.ID);
-			this.from = dimensionType;
-			this.to = dimensionType2;
+			this.from = from;
+			this.to = to;
 		}
 
-		public static ChangedDimensionCriterion.Conditions to(DimensionType dimensionType) {
-			return new ChangedDimensionCriterion.Conditions(null, dimensionType);
+		public static ChangedDimensionCriterion.Conditions to(DimensionType to) {
+			return new ChangedDimensionCriterion.Conditions(null, to);
 		}
 
-		public boolean matches(DimensionType dimensionType, DimensionType dimensionType2) {
-			return this.from != null && this.from != dimensionType ? false : this.to == null || this.to == dimensionType2;
+		public boolean matches(DimensionType from, DimensionType to) {
+			return this.from != null && this.from != from ? false : this.to == null || this.to == to;
 		}
 
 		@Override

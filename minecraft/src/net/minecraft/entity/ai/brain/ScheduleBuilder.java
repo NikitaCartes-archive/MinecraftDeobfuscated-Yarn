@@ -13,8 +13,8 @@ public class ScheduleBuilder {
 		this.schedule = schedule;
 	}
 
-	public ScheduleBuilder withActivity(int i, Activity activity) {
-		this.activities.add(new ScheduleBuilder.ActivityEntry(i, activity));
+	public ScheduleBuilder withActivity(int startTime, Activity activity) {
+		this.activities.add(new ScheduleBuilder.ActivityEntry(startTime, activity));
 		return this;
 	}
 
@@ -32,8 +32,8 @@ public class ScheduleBuilder {
 		private final int startTime;
 		private final Activity activity;
 
-		public ActivityEntry(int i, Activity activity) {
-			this.startTime = i;
+		public ActivityEntry(int startTime, Activity activity) {
+			this.startTime = startTime;
 			this.activity = activity;
 		}
 

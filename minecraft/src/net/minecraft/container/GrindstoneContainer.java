@@ -30,33 +30,33 @@ public class GrindstoneContainer extends Container {
 	};
 	private final BlockContext context;
 
-	public GrindstoneContainer(int i, PlayerInventory playerInventory) {
-		this(i, playerInventory, BlockContext.EMPTY);
+	public GrindstoneContainer(int syncId, PlayerInventory playerInventory) {
+		this(syncId, playerInventory, BlockContext.EMPTY);
 	}
 
-	public GrindstoneContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
-		super(ContainerType.GRINDSTONE, i);
+	public GrindstoneContainer(int syncId, PlayerInventory playerInventory, BlockContext blockContext) {
+		super(ContainerType.GRINDSTONE, syncId);
 		this.context = blockContext;
 		this.addSlot(new Slot(this.craftingInventory, 0, 49, 19) {
 			@Override
-			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.isDamageable() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
+			public boolean canInsert(ItemStack stack) {
+				return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.craftingInventory, 1, 49, 40) {
 			@Override
-			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.isDamageable() || itemStack.getItem() == Items.ENCHANTED_BOOK || itemStack.hasEnchantments();
+			public boolean canInsert(ItemStack stack) {
+				return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
 			}
 		});
 		this.addSlot(new Slot(this.resultInventory, 2, 129, 34) {
 			@Override
-			public boolean canInsert(ItemStack itemStack) {
+			public boolean canInsert(ItemStack stack) {
 				return false;
 			}
 
 			@Override
-			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
 				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					int i = this.getExperience(world);
 
@@ -70,7 +70,7 @@ public class GrindstoneContainer extends Container {
 				}));
 				GrindstoneContainer.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
 				GrindstoneContainer.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);
-				return itemStack;
+				return stack;
 			}
 
 			private int getExperience(World world) {
@@ -85,9 +85,9 @@ public class GrindstoneContainer extends Container {
 				}
 			}
 
-			private int getExperience(ItemStack itemStack) {
+			private int getExperience(ItemStack stack) {
 				int i = 0;
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack);
+				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
 
 				for (Entry<Enchantment, Integer> entry : map.entrySet()) {
 					Enchantment enchantment = (Enchantment)entry.getKey();
@@ -101,14 +101,14 @@ public class GrindstoneContainer extends Container {
 			}
 		});
 
-		for (int j = 0; j < 3; j++) {
-			for (int k = 0; k < 9; k++) {
-				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 9; j++) {
+				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
-		for (int j = 0; j < 9; j++) {
-			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+		for (int i = 0; i < 9; i++) {
+			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
 		}
 	}
 
@@ -173,85 +173,85 @@ public class GrindstoneContainer extends Container {
 		this.sendContentUpdates();
 	}
 
-	private ItemStack transferEnchantments(ItemStack itemStack, ItemStack itemStack2) {
-		ItemStack itemStack3 = itemStack.copy();
-		Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack2);
+	private ItemStack transferEnchantments(ItemStack target, ItemStack source) {
+		ItemStack itemStack = target.copy();
+		Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(source);
 
 		for (Entry<Enchantment, Integer> entry : map.entrySet()) {
 			Enchantment enchantment = (Enchantment)entry.getKey();
-			if (!enchantment.isCursed() || EnchantmentHelper.getLevel(enchantment, itemStack3) == 0) {
-				itemStack3.addEnchantment(enchantment, (Integer)entry.getValue());
+			if (!enchantment.isCursed() || EnchantmentHelper.getLevel(enchantment, itemStack) == 0) {
+				itemStack.addEnchantment(enchantment, (Integer)entry.getValue());
 			}
 		}
 
-		return itemStack3;
+		return itemStack;
 	}
 
-	private ItemStack grind(ItemStack itemStack, int i, int j) {
-		ItemStack itemStack2 = itemStack.copy();
-		itemStack2.removeSubTag("Enchantments");
-		itemStack2.removeSubTag("StoredEnchantments");
-		if (i > 0) {
-			itemStack2.setDamage(i);
+	private ItemStack grind(ItemStack item, int damage, int amount) {
+		ItemStack itemStack = item.copy();
+		itemStack.removeSubTag("Enchantments");
+		itemStack.removeSubTag("StoredEnchantments");
+		if (damage > 0) {
+			itemStack.setDamage(damage);
 		} else {
-			itemStack2.removeSubTag("Damage");
+			itemStack.removeSubTag("Damage");
 		}
 
-		itemStack2.setCount(j);
-		Map<Enchantment, Integer> map = (Map<Enchantment, Integer>)EnchantmentHelper.getEnchantments(itemStack)
+		itemStack.setCount(amount);
+		Map<Enchantment, Integer> map = (Map<Enchantment, Integer>)EnchantmentHelper.getEnchantments(item)
 			.entrySet()
 			.stream()
 			.filter(entry -> ((Enchantment)entry.getKey()).isCursed())
 			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-		EnchantmentHelper.set(map, itemStack2);
-		itemStack2.setRepairCost(0);
-		if (itemStack2.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
-			itemStack2 = new ItemStack(Items.BOOK);
-			if (itemStack.hasCustomName()) {
-				itemStack2.setCustomName(itemStack.getName());
+		EnchantmentHelper.set(map, itemStack);
+		itemStack.setRepairCost(0);
+		if (itemStack.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
+			itemStack = new ItemStack(Items.BOOK);
+			if (item.hasCustomName()) {
+				itemStack.setCustomName(item.getName());
 			}
 		}
 
-		for (int k = 0; k < map.size(); k++) {
-			itemStack2.setRepairCost(AnvilContainer.getNextCost(itemStack2.getRepairCost()));
+		for (int i = 0; i < map.size(); i++) {
+			itemStack.setRepairCost(AnvilContainer.getNextCost(itemStack.getRepairCost()));
 		}
 
-		return itemStack2;
+		return itemStack;
 	}
 
 	@Override
-	public void close(PlayerEntity playerEntity) {
-		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory)));
+	public void close(PlayerEntity player) {
+		super.close(player);
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, world, this.craftingInventory)));
 	}
 
 	@Override
-	public boolean canUse(PlayerEntity playerEntity) {
-		return canUse(this.context, playerEntity, Blocks.GRINDSTONE);
+	public boolean canUse(PlayerEntity player) {
+		return canUse(this.context, player, Blocks.GRINDSTONE);
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slotList.get(i);
+		Slot slot = (Slot)this.slotList.get(invSlot);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			ItemStack itemStack3 = this.craftingInventory.getInvStack(0);
 			ItemStack itemStack4 = this.craftingInventory.getInvStack(1);
-			if (i == 2) {
+			if (invSlot == 2) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (i != 0 && i != 1) {
+			} else if (invSlot != 0 && invSlot != 1) {
 				if (!itemStack3.isEmpty() && !itemStack4.isEmpty()) {
-					if (i >= 3 && i < 30) {
+					if (invSlot >= 3 && invSlot < 30) {
 						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;
 						}
-					} else if (i >= 30 && i < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
+					} else if (invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (!this.insertItem(itemStack2, 0, 2, false)) {
@@ -271,7 +271,7 @@ public class GrindstoneContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(playerEntity, itemStack2);
+			slot.onTakeItem(player, itemStack2);
 		}
 
 		return itemStack;

@@ -63,7 +63,7 @@ public class SoundEngine {
 		} else {
 			this.contextPointer = ALC10.alcCreateContext(this.devicePointer, (IntBuffer)null);
 			ALC10.alcMakeContextCurrent(this.contextPointer);
-			int i = this.method_20297();
+			int i = this.getMonoSourceCount();
 			int j = MathHelper.clamp((int)MathHelper.sqrt((float)i), 2, 8);
 			int k = MathHelper.clamp(i - j, 8, 255);
 			this.streamingSources = new SoundEngine.SourceSetImpl(k);
@@ -84,7 +84,7 @@ public class SoundEngine {
 		}
 	}
 
-	private int method_20297() {
+	private int getMonoSourceCount() {
 		int var8;
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			int i = ALC10.alcGetInteger(this.devicePointer, 4098);
@@ -146,8 +146,8 @@ public class SoundEngine {
 	}
 
 	@Nullable
-	public Source createSource(SoundEngine.RunMode runMode) {
-		return (runMode == SoundEngine.RunMode.STREAMING ? this.staticSources : this.streamingSources).createSource();
+	public Source createSource(SoundEngine.RunMode mode) {
+		return (mode == SoundEngine.RunMode.STREAMING ? this.staticSources : this.streamingSources).createSource();
 	}
 
 	public void release(Source source) {
@@ -191,8 +191,8 @@ public class SoundEngine {
 		private final int maxSourceCount;
 		private final Set<Source> sources = Sets.newIdentityHashSet();
 
-		public SourceSetImpl(int i) {
-			this.maxSourceCount = i;
+		public SourceSetImpl(int maxSourceCount) {
+			this.maxSourceCount = maxSourceCount;
 		}
 
 		@Nullable

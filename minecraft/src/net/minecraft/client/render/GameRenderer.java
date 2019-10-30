@@ -37,7 +37,7 @@ import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -49,6 +49,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,7 +63,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private float viewDistance;
 	public final FirstPersonRenderer firstPersonRenderer;
 	private final MapRenderer mapRenderer;
-	private final LayeredBufferBuilderStorage layeredBufferBuilderStorage;
+	private final BufferBuilderStorage buffers;
 	private int ticks;
 	private float movementFovMultiplier;
 	private float lastMovementFovMultiplier;
@@ -71,13 +72,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private boolean renderHand = true;
 	private boolean blockOutlineEnabled = true;
 	private long lastWorldIconUpdate;
-	private long lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
+	private long lastWindowFocusedTime = Util.getMeasuringTimeMs();
 	private final LightmapTextureManager lightmapTextureManager;
 	private final OverlayTexture overlayTexture = new OverlayTexture();
 	private boolean renderingPanorama;
-	private float field_4005 = 1.0F;
-	private float field_3988;
-	private float field_4004;
+	private float zoom = 1.0F;
+	private float zoomX;
+	private float zoomY;
 	@Nullable
 	private ItemStack floatingItem;
 	private int floatingItemTimeLeft;
@@ -116,13 +117,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	private boolean shadersEnabled;
 	private final Camera camera = new Camera();
 
-	public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager, LayeredBufferBuilderStorage layeredBufferBuilderStorage) {
-		this.client = minecraftClient;
+	public GameRenderer(MinecraftClient client, ResourceManager resourceManager, BufferBuilderStorage bufferBuilderStorage) {
+		this.client = client;
 		this.resourceContainer = resourceManager;
-		this.firstPersonRenderer = minecraftClient.getFirstPersonRenderer();
-		this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
-		this.lightmapTextureManager = new LightmapTextureManager(this, minecraftClient);
-		this.layeredBufferBuilderStorage = layeredBufferBuilderStorage;
+		this.firstPersonRenderer = client.getFirstPersonRenderer();
+		this.mapRenderer = new MapRenderer(client.getTextureManager());
+		this.lightmapTextureManager = new LightmapTextureManager(this, client);
+		this.buffers = bufferBuilderStorage;
 		this.shader = null;
 	}
 
@@ -182,7 +183,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 	}
 
 	@Override
-	public void apply(ResourceManager resourceManager) {
+	public void apply(ResourceManager manager) {
 		if (this.shader != null) {
 			this.shader.close();
 		}
@@ -237,15 +238,15 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.client.worldRenderer.onResized(i, j);
 	}
 
-	public void updateTargetedEntity(float f) {
+	public void updateTargetedEntity(float tickDelta) {
 		Entity entity = this.client.getCameraEntity();
 		if (entity != null) {
 			if (this.client.world != null) {
 				this.client.getProfiler().push("pick");
 				this.client.targetedEntity = null;
 				double d = (double)this.client.interactionManager.getReachDistance();
-				this.client.hitResult = entity.rayTrace(d, f, false);
-				net.minecraft.util.math.Vec3d vec3d = entity.getCameraPosVec(f);
+				this.client.crosshairTarget = entity.rayTrace(d, tickDelta, false);
+				Vec3d vec3d = entity.getCameraPosVec(tickDelta);
 				boolean bl = false;
 				int i = 3;
 				double e = d;
@@ -261,23 +262,23 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				}
 
 				e *= e;
-				if (this.client.hitResult != null) {
-					e = this.client.hitResult.getPos().squaredDistanceTo(vec3d);
+				if (this.client.crosshairTarget != null) {
+					e = this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d);
 				}
 
-				net.minecraft.util.math.Vec3d vec3d2 = entity.getRotationVec(1.0F);
-				net.minecraft.util.math.Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
-				float g = 1.0F;
+				Vec3d vec3d2 = entity.getRotationVec(1.0F);
+				Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
+				float f = 1.0F;
 				Box box = entity.getBoundingBox().stretch(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
 				EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, box, entityx -> !entityx.isSpectator() && entityx.collides(), e);
 				if (entityHitResult != null) {
 					Entity entity2 = entityHitResult.getEntity();
-					net.minecraft.util.math.Vec3d vec3d4 = entityHitResult.getPos();
-					double h = vec3d.squaredDistanceTo(vec3d4);
-					if (bl && h > 9.0) {
-						this.client.hitResult = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
-					} else if (h < e || this.client.hitResult == null) {
-						this.client.hitResult = entityHitResult;
+					Vec3d vec3d4 = entityHitResult.getPos();
+					double g = vec3d.squaredDistanceTo(vec3d4);
+					if (bl && g > 9.0) {
+						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
+					} else if (g < e || this.client.crosshairTarget == null) {
+						this.client.crosshairTarget = entityHitResult;
 						if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
 							this.client.targetedEntity = entity2;
 						}
@@ -307,19 +308,19 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	private double getFov(Camera camera, float f, boolean bl) {
+	private double getFov(Camera camera, float tickDelta, boolean changingFov) {
 		if (this.renderingPanorama) {
 			return 90.0;
 		} else {
 			double d = 70.0;
-			if (bl) {
+			if (changingFov) {
 				d = this.client.options.fov;
-				d *= (double)MathHelper.lerp(f, this.lastMovementFovMultiplier, this.movementFovMultiplier);
+				d *= (double)MathHelper.lerp(tickDelta, this.lastMovementFovMultiplier, this.movementFovMultiplier);
 			}
 
 			if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).getHealth() <= 0.0F) {
-				float g = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + f, 20.0F);
-				d /= (double)((1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F);
+				float f = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + tickDelta, 20.0F);
+				d /= (double)((1.0F - 500.0F / (f + 500.0F)) * 2.0F + 1.0F);
 			}
 
 			FluidState fluidState = camera.getSubmergedFluidState();
@@ -367,8 +368,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 	private void renderHand(MatrixStack matrixStack, Camera camera, float f) {
 		if (!this.renderingPanorama) {
-			this.method_22709(camera, f, false, false, 2.0F);
-			matrixStack.peek().loadIdentity();
+			this.method_22709(this.method_22973(camera, f, false));
+			matrixStack.peekModel().loadIdentity();
 			matrixStack.push();
 			this.bobViewWhenHurt(matrixStack, f);
 			if (this.client.options.bobView) {
@@ -381,7 +382,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				&& !this.client.options.hudHidden
 				&& this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
 				this.lightmapTextureManager.enable();
-				this.firstPersonRenderer.method_22976(f, matrixStack, this.layeredBufferBuilderStorage.getGeneralDrawer());
+				this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers());
 				this.lightmapTextureManager.disable();
 			}
 
@@ -397,31 +398,31 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	public void method_22709(Camera camera, float f, boolean bl, boolean bl2, float g) {
+	public void method_22709(Matrix4f matrix4f) {
 		RenderSystem.matrixMode(5889);
 		RenderSystem.loadIdentity();
-		RenderSystem.multMatrix(this.method_22973(camera, f, bl, bl2, g));
+		RenderSystem.multMatrix(matrix4f);
 		RenderSystem.matrixMode(5888);
 	}
 
-	public Matrix4f method_22973(Camera camera, float f, boolean bl, boolean bl2, float g) {
+	public Matrix4f method_22973(Camera camera, float f, boolean bl) {
 		MatrixStack matrixStack = new MatrixStack();
-		matrixStack.peek().loadIdentity();
-		if (bl2 && this.field_4005 != 1.0F) {
-			matrixStack.translate((double)this.field_3988, (double)(-this.field_4004), 0.0);
-			matrixStack.scale(this.field_4005, this.field_4005, 1.0F);
+		matrixStack.peekModel().loadIdentity();
+		if (this.zoom != 1.0F) {
+			matrixStack.translate((double)this.zoomX, (double)(-this.zoomY), 0.0);
+			matrixStack.scale(this.zoom, this.zoom, 1.0F);
 		}
 
-		matrixStack.peek()
+		matrixStack.peekModel()
 			.multiply(
 				Matrix4f.method_4929(
 					this.getFov(camera, f, bl),
 					(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
 					0.05F,
-					this.viewDistance * g
+					this.viewDistance * 4.0F
 				)
 			);
-		return matrixStack.peek();
+		return matrixStack.peekModel();
 	}
 
 	public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -429,15 +430,15 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - f) * (float) Math.PI * 0.2F) * 0.3F;
 	}
 
-	public void render(float f, long l, boolean bl) {
+	public void render(float tickDelta, long startTime, boolean tick) {
 		if (!this.client.isWindowFocused()
 			&& this.client.options.pauseOnLostFocus
 			&& (!this.client.options.touchscreen || !this.client.mouse.wasRightButtonClicked())) {
-			if (SystemUtil.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
+			if (Util.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
 				this.client.openPauseMenu(false);
 			}
 		} else {
-			this.lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
+			this.lastWindowFocusedTime = Util.getMeasuringTimeMs();
 		}
 
 		if (!this.client.skipGameRender) {
@@ -446,15 +447,15 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			int k = this.client.options.maxFps;
 			MatrixStack matrixStack = new MatrixStack();
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
-			if (bl && this.client.world != null) {
+			if (tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
-				int m = Math.min(MinecraftClient.getCurrentFps(), k);
-				m = Math.max(m, 60);
-				long n = SystemUtil.getMeasuringTimeNano() - l;
-				long o = Math.max((long)(1000000000 / m / 4) - n, 0L);
-				this.renderWorld(f, SystemUtil.getMeasuringTimeNano() + o, matrixStack);
-				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < SystemUtil.getMeasuringTimeMs() - 1000L) {
-					this.lastWorldIconUpdate = SystemUtil.getMeasuringTimeMs();
+				int l = Math.min(MinecraftClient.getCurrentFps(), k);
+				l = Math.max(l, 60);
+				long m = Util.getMeasuringTimeNano() - startTime;
+				long n = Math.max((long)(1000000000 / l / 4) - m, 0L);
+				this.renderWorld(tickDelta, Util.getMeasuringTimeNano() + n, matrixStack);
+				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
+					this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
 					if (!this.client.getServer().hasIconFile()) {
 						this.updateWorldIcon();
 					}
@@ -470,7 +471,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					RenderSystem.matrixMode(5890);
 					RenderSystem.pushMatrix();
 					RenderSystem.loadIdentity();
-					this.shader.render(f);
+					this.shader.render(tickDelta);
 					RenderSystem.popMatrix();
 				}
 
@@ -487,13 +488,13 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			RenderSystem.matrixMode(5888);
 			RenderSystem.loadIdentity();
 			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
-			GuiLighting.enableForItems(matrixStack.peek());
-			if (bl && this.client.world != null) {
+			GuiLighting.enableForItems(matrixStack.peekModel());
+			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
 					RenderSystem.defaultAlphaFunc();
-					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), f);
-					this.client.inGameHud.render(f);
+					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickDelta);
+					this.client.inGameHud.render(tickDelta);
 					RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 				}
 
@@ -576,7 +577,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			boolean bl = entity instanceof PlayerEntity && !this.client.options.hudHidden;
 			if (bl && !((PlayerEntity)entity).abilities.allowModifyWorld) {
 				ItemStack itemStack = ((LivingEntity)entity).getMainHandStack();
-				HitResult hitResult = this.client.hitResult;
+				HitResult hitResult = this.client.crosshairTarget;
 				if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 					BlockState blockState = this.client.world.getBlockState(blockPos);
@@ -597,38 +598,39 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	public void renderWorld(float f, long l, MatrixStack matrixStack) {
-		this.lightmapTextureManager.update(f);
+	public void renderWorld(float tickDelta, long limitTime, MatrixStack matrix) {
+		this.lightmapTextureManager.update(tickDelta);
 		if (this.client.getCameraEntity() == null) {
 			this.client.setCameraEntity(this.client.player);
 		}
 
-		this.updateTargetedEntity(f);
+		this.updateTargetedEntity(tickDelta);
 		this.client.getProfiler().push("center");
 		boolean bl = this.shouldRenderBlockOutline();
 		this.client.getProfiler().swap("camera");
 		Camera camera = this.camera;
 		this.viewDistance = (float)(this.client.options.viewDistance * 16);
-		this.method_22709(camera, f, true, true, MathHelper.SQUARE_ROOT_OF_TWO);
-		this.bobViewWhenHurt(matrixStack, f);
+		Matrix4f matrix4f = this.method_22973(camera, tickDelta, true);
+		this.method_22709(matrix4f);
+		this.bobViewWhenHurt(matrix, tickDelta);
 		if (this.client.options.bobView) {
-			this.bobView(matrixStack, f);
+			this.bobView(matrix, tickDelta);
 		}
 
-		float g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
-		if (g > 0.0F) {
+		float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
+		if (f > 0.0F) {
 			int i = 20;
 			if (this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
 				i = 7;
 			}
 
-			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
-			h *= h;
+			float g = 5.0F / (f * f + 5.0F) - f * 0.04F;
+			g *= g;
 			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
-			matrixStack.multiply(vector3f.getRotationQuaternion(((float)this.ticks + f) * (float)i));
-			matrixStack.scale(1.0F / h, 1.0F, 1.0F);
-			float j = -((float)this.ticks + f) * (float)i;
-			matrixStack.multiply(vector3f.getRotationQuaternion(j));
+			matrix.multiply(vector3f.getRotationQuaternion(((float)this.ticks + tickDelta) * (float)i));
+			matrix.scale(1.0F / g, 1.0F, 1.0F);
+			float h = -((float)this.ticks + tickDelta) * (float)i;
+			matrix.multiply(vector3f.getRotationQuaternion(h));
 		}
 
 		camera.update(
@@ -636,15 +638,15 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			(Entity)(this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity()),
 			this.client.options.perspective > 0,
 			this.client.options.perspective == 2,
-			f
+			tickDelta
 		);
-		matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0F));
-		this.client.worldRenderer.render(matrixStack, f, l, bl, camera, this, this.lightmapTextureManager);
+		matrix.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
+		matrix.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0F));
+		this.client.worldRenderer.render(matrix, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
 			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-			this.renderHand(matrixStack, camera, f);
+			this.renderHand(matrix, camera, tickDelta);
 		}
 
 		this.client.getProfiler().pop();
@@ -660,23 +662,23 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		return this.mapRenderer;
 	}
 
-	public void showFloatingItem(ItemStack itemStack) {
-		this.floatingItem = itemStack;
+	public void showFloatingItem(ItemStack floatingItem) {
+		this.floatingItem = floatingItem;
 		this.floatingItemTimeLeft = 40;
 		this.floatingItemWidth = this.random.nextFloat() * 2.0F - 1.0F;
 		this.floatingItemHeight = this.random.nextFloat() * 2.0F - 1.0F;
 	}
 
-	private void renderFloatingItem(int i, int j, float f) {
+	private void renderFloatingItem(int scaledWidth, int scaledHeight, float tickDelta) {
 		if (this.floatingItem != null && this.floatingItemTimeLeft > 0) {
-			int k = 40 - this.floatingItemTimeLeft;
-			float g = ((float)k + f) / 40.0F;
-			float h = g * g;
-			float l = g * h;
-			float m = 10.25F * l * h - 24.95F * h * h + 25.5F * l - 13.8F * h + 4.0F * g;
-			float n = m * (float) Math.PI;
-			float o = this.floatingItemWidth * (float)(i / 4);
-			float p = this.floatingItemHeight * (float)(j / 4);
+			int i = 40 - this.floatingItemTimeLeft;
+			float f = ((float)i + tickDelta) / 40.0F;
+			float g = f * f;
+			float h = f * g;
+			float j = 10.25F * h * g - 24.95F * g * g + 25.5F * h - 13.8F * g + 4.0F * f;
+			float k = j * (float) Math.PI;
+			float l = this.floatingItemWidth * (float)(scaledWidth / 4);
+			float m = this.floatingItemHeight * (float)(scaledHeight / 4);
 			RenderSystem.enableAlphaTest();
 			RenderSystem.pushMatrix();
 			RenderSystem.pushLightingAttributes();
@@ -685,17 +687,19 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.push();
 			matrixStack.translate(
-				(double)((float)(i / 2) + o * MathHelper.abs(MathHelper.sin(n * 2.0F))), (double)((float)(j / 2) + p * MathHelper.abs(MathHelper.sin(n * 2.0F))), -50.0
+				(double)((float)(scaledWidth / 2) + l * MathHelper.abs(MathHelper.sin(k * 2.0F))),
+				(double)((float)(scaledHeight / 2) + m * MathHelper.abs(MathHelper.sin(k * 2.0F))),
+				-50.0
 			);
-			float q = 50.0F + 175.0F * MathHelper.sin(n);
-			matrixStack.scale(q, -q, q);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0F * MathHelper.abs(MathHelper.sin(n))));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F * MathHelper.cos(g * 8.0F)));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0F * MathHelper.cos(g * 8.0F)));
-			LayeredVertexConsumerStorage.Drawer drawer = this.layeredBufferBuilderStorage.getGeneralDrawer();
-			this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, drawer);
+			float n = 50.0F + 175.0F * MathHelper.sin(k);
+			matrixStack.scale(n, -n, n);
+			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0F * MathHelper.abs(MathHelper.sin(k))));
+			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
+			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
+			this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
 			matrixStack.pop();
-			drawer.draw();
+			immediate.draw();
 			RenderSystem.popAttributes();
 			RenderSystem.popMatrix();
 			RenderSystem.enableCull();
@@ -703,8 +707,8 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		}
 	}
 
-	public float getSkyDarkness(float f) {
-		return MathHelper.lerp(f, this.lastSkyDarkness, this.skyDarkness);
+	public float getSkyDarkness(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastSkyDarkness, this.skyDarkness);
 	}
 
 	public float getViewDistance() {

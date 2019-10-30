@@ -146,8 +146,8 @@ public class ItemPotionFix extends DataFix {
 		strings[127] = null;
 	});
 
-	public ItemPotionFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemPotionFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

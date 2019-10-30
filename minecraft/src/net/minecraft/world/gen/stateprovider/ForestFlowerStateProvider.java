@@ -31,20 +31,20 @@ public class ForestFlowerStateProvider extends StateProvider {
 		super(StateProviderType.FOREST_FLOWER_PROVIDER);
 	}
 
-	public <T> ForestFlowerStateProvider(Dynamic<T> dynamic) {
+	public <T> ForestFlowerStateProvider(Dynamic<T> configDeserializer) {
 		this();
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos blockPos) {
-		double d = MathHelper.clamp((1.0 + Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 48.0, (double)blockPos.getZ() / 48.0, false)) / 2.0, 0.0, 0.9999);
+	public BlockState getBlockState(Random random, BlockPos pos) {
+		double d = MathHelper.clamp((1.0 + Biome.FOLIAGE_NOISE.sample((double)pos.getX() / 48.0, (double)pos.getZ() / 48.0, false)) / 2.0, 0.0, 0.9999);
 		return flowers[(int)(d * (double)flowers.length)];
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()));
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build())).getValue();
+		builder.put(ops.createString("type"), ops.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()));
+		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 }

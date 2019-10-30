@@ -21,8 +21,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 		return new ConstructBeaconCriterion.Conditions(intRange);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(beaconBlockEntity));
+	public void trigger(ServerPlayerEntity player, BeaconBlockEntity beacon) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(beacon));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -37,8 +37,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 			return new ConstructBeaconCriterion.Conditions(intRange);
 		}
 
-		public boolean matches(BeaconBlockEntity beaconBlockEntity) {
-			return this.level.test(beaconBlockEntity.getLevel());
+		public boolean matches(BeaconBlockEntity beacon) {
+			return this.level.test(beacon.getLevel());
 		}
 
 		@Override

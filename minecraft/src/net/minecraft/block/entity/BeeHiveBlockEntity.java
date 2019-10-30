@@ -99,16 +99,16 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 		return list;
 	}
 
-	public void tryEnterHive(Entity entity, boolean bl) {
-		this.tryEnterHive(entity, bl, 0);
+	public void tryEnterHive(Entity entity, boolean hasNectar) {
+		this.tryEnterHive(entity, hasNectar, 0);
 	}
 
-	public void tryEnterHive(Entity entity, boolean bl, int i) {
+	public void tryEnterHive(Entity entity, boolean hasNectar, int ticksInHive) {
 		if (this.bees.size() < 3) {
 			entity.removeAllPassengers();
 			CompoundTag compoundTag = new CompoundTag();
 			entity.saveToTag(compoundTag);
-			this.bees.add(new BeeHiveBlockEntity.Bee(compoundTag, i, bl ? 2400 : 600));
+			this.bees.add(new BeeHiveBlockEntity.Bee(compoundTag, ticksInHive, hasNectar ? 2400 : 600));
 			if (this.world != null) {
 				if (entity instanceof BeeEntity) {
 					BeeEntity beeEntity = (BeeEntity)entity;
@@ -298,11 +298,11 @@ public class BeeHiveBlockEntity extends BlockEntity implements Tickable {
 		private int ticksInHive;
 		private final int minOccupationTIcks;
 
-		private Bee(CompoundTag compoundTag, int i, int j) {
-			compoundTag.removeUuid("UUID");
-			this.entityData = compoundTag;
-			this.ticksInHive = i;
-			this.minOccupationTIcks = j;
+		private Bee(CompoundTag entityData, int ticksInHive, int minOccupationTicks) {
+			entityData.removeUuid("UUID");
+			this.entityData = entityData;
+			this.ticksInHive = ticksInHive;
+			this.minOccupationTIcks = minOccupationTicks;
 		}
 	}
 

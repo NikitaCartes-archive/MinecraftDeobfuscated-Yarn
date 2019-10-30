@@ -3,10 +3,10 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -35,7 +35,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 		float g,
 		float h,
 		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		VertexConsumerProvider vertexConsumerProvider
 	) {
 		PlayerEntity playerEntity = fishingBobberEntity.getOwner();
 		if (playerEntity != null) {
@@ -48,34 +48,34 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0F - this.renderManager.cameraYaw));
 			float l = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
 			matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
-			Matrix4f matrix4f = matrixStack.peek();
-			VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutout(SKIN));
+			Matrix4f matrix4f = matrixStack.peekModel();
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SKIN));
 			int m = fishingBobberEntity.getLightmapCoordinates();
 			vertexConsumer.vertex(matrix4f, -0.5F, -0.5F, 0.0F)
 				.color(255, 255, 255, 255)
 				.texture(0.0F, 1.0F)
-				.defaultOverlay(OverlayTexture.DEFAULT_UV)
+				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(m)
 				.normal(0.0F, 1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, 0.5F, -0.5F, 0.0F)
 				.color(255, 255, 255, 255)
 				.texture(1.0F, 1.0F)
-				.defaultOverlay(OverlayTexture.DEFAULT_UV)
+				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(m)
 				.normal(0.0F, 1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, 0.5F, 0.5F, 0.0F)
 				.color(255, 255, 255, 255)
 				.texture(1.0F, 0.0F)
-				.defaultOverlay(OverlayTexture.DEFAULT_UV)
+				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(m)
 				.normal(0.0F, 1.0F, 0.0F)
 				.next();
 			vertexConsumer.vertex(matrix4f, -0.5F, 0.5F, 0.0F)
 				.color(255, 255, 255, 255)
 				.texture(0.0F, 0.0F)
-				.defaultOverlay(OverlayTexture.DEFAULT_UV)
+				.overlay(OverlayTexture.DEFAULT_UV)
 				.light(m)
 				.normal(0.0F, 1.0F, 0.0F)
 				.next();
@@ -122,8 +122,8 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			float ac = (float)(v - z);
 			float ad = (float)(w - aa) + y;
 			float ae = (float)(x - ab);
-			VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines());
-			Matrix4f matrix4f2 = matrixStack.peek();
+			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
+			Matrix4f matrix4f2 = matrixStack.peekModel();
 			int af = 16;
 
 			for (int ag = 0; ag < 16; ag++) {
@@ -132,7 +132,7 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			}
 
 			matrixStack.pop();
-			super.render(fishingBobberEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+			super.render(fishingBobberEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 		}
 	}
 

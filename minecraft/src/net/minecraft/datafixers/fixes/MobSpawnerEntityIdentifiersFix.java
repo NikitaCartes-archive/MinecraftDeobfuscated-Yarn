@@ -14,45 +14,36 @@ import java.util.stream.Stream;
 import net.minecraft.datafixers.TypeReferences;
 
 public class MobSpawnerEntityIdentifiersFix extends DataFix {
-	public MobSpawnerEntityIdentifiersFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public MobSpawnerEntityIdentifiersFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private Dynamic<?> fixSpawner(Dynamic<?> dynamic) {
-		if (!"MobSpawner".equals(dynamic.get("id").asString(""))) {
-			return dynamic;
+	private Dynamic<?> fixSpawner(Dynamic<?> tag) {
+		if (!"MobSpawner".equals(tag.get("id").asString(""))) {
+			return tag;
 		} else {
-			Optional<String> optional = dynamic.get("EntityId").asString();
+			Optional<String> optional = tag.get("EntityId").asString();
 			if (optional.isPresent()) {
-				Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamic.get("SpawnData").get(), dynamic.emptyMap());
-				dynamic2 = dynamic2.set("id", dynamic2.createString(((String)optional.get()).isEmpty() ? "Pig" : (String)optional.get()));
-				dynamic = dynamic.set("SpawnData", dynamic2);
-				dynamic = dynamic.remove("EntityId");
+				Dynamic<?> dynamic = DataFixUtils.orElse(tag.get("SpawnData").get(), tag.emptyMap());
+				dynamic = dynamic.set("id", dynamic.createString(((String)optional.get()).isEmpty() ? "Pig" : (String)optional.get()));
+				tag = tag.set("SpawnData", dynamic);
+				tag = tag.remove("EntityId");
 			}
 
-			Optional<? extends Stream<? extends Dynamic<?>>> optional2 = dynamic.get("SpawnPotentials").asStreamOpt();
+			Optional<? extends Stream<? extends Dynamic<?>>> optional2 = tag.get("SpawnPotentials").asStreamOpt();
 			if (optional2.isPresent()) {
-				dynamic = dynamic.set(
-					"SpawnPotentials",
-					dynamic.createList(
-						((Stream)optional2.get())
-							.map(
-								dynamicx -> {
-									Optional<String> optionalx = dynamicx.get("Type").asString();
-									if (optionalx.isPresent()) {
-										Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamicx.get("Properties").get(), dynamicx.emptyMap())
-											.set("id", dynamicx.createString((String)optionalx.get()));
-										return dynamicx.set("Entity", dynamic2).remove("Type").remove("Properties");
-									} else {
-										return dynamicx;
-									}
-								}
-							)
-					)
-				);
+				tag = tag.set("SpawnPotentials", tag.createList(((Stream)optional2.get()).map(dynamic -> {
+					Optional<String> optionalx = dynamic.get("Type").asString();
+					if (optionalx.isPresent()) {
+						Dynamic<?> dynamic2 = DataFixUtils.orElse(dynamic.get("Properties").get(), dynamic.emptyMap()).set("id", dynamic.createString((String)optionalx.get()));
+						return dynamic.set("Entity", dynamic2).remove("Type").remove("Properties");
+					} else {
+						return dynamic;
+					}
+				})));
 			}
 
-			return dynamic;
+			return tag;
 		}
 	}
 

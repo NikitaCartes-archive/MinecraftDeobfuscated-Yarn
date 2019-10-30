@@ -13,8 +13,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class TargetFinder {
 	@Nullable
-	public static Vec3d findTarget(MobEntityWithAi mobEntityWithAi, int i, int j) {
-		return findTarget(mobEntityWithAi, i, j, null);
+	public static Vec3d findTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance) {
+		return findTarget(mob, maxHorizontalDistance, maxVerticalDistance, null);
 	}
 
 	@Nullable
@@ -37,37 +37,37 @@ public class TargetFinder {
 	}
 
 	@Nullable
-	public static Vec3d findGroundTarget(MobEntityWithAi mobEntityWithAi, int i, int j) {
-		return findGroundTarget(mobEntityWithAi, i, j, mobEntityWithAi::getPathfindingFavor);
+	public static Vec3d findGroundTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance) {
+		return findGroundTarget(mob, maxHorizontalDistance, maxVerticalDistance, mob::getPathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d findGroundTarget(MobEntityWithAi mobEntityWithAi, int i, int j, ToDoubleFunction<BlockPos> toDoubleFunction) {
-		return method_21758(mobEntityWithAi, i, j, null, false, 0.0, toDoubleFunction);
+	public static Vec3d findGroundTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, ToDoubleFunction<BlockPos> pathfindingFavor) {
+		return method_21758(mob, maxHorizontalDistance, maxVerticalDistance, null, false, 0.0, pathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
-		return findTarget(mobEntityWithAi, i, j, vec3d2);
+	public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
+		Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
+		return findTarget(mob, maxHorizontalDistance, maxVerticalDistance, vec3d);
 	}
 
 	@Nullable
-	public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
-		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
-		return method_21758(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::getPathfindingFavor);
+	public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos, double maxAngleDifference) {
+		Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
+		return method_21758(mob, maxHorizontalDistance, maxVerticalDistance, vec3d, true, maxAngleDifference, mob::getPathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d findGroundTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-		Vec3d vec3d2 = mobEntityWithAi.getPos().subtract(vec3d);
-		return method_21758(mobEntityWithAi, i, j, vec3d2, false, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
+	public static Vec3d findGroundTargetAwayFrom(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
+		Vec3d vec3d = mob.getPos().subtract(pos);
+		return method_21758(mob, maxHorizontalDistance, maxVerticalDistance, vec3d, false, (float) (Math.PI / 2), mob::getPathfindingFavor);
 	}
 
 	@Nullable
-	public static Vec3d findTargetAwayFrom(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
-		Vec3d vec3d2 = mobEntityWithAi.getPos().subtract(vec3d);
-		return findTarget(mobEntityWithAi, i, j, vec3d2);
+	public static Vec3d findTargetAwayFrom(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
+		Vec3d vec3d = mob.getPos().subtract(pos);
+		return findTarget(mob, maxHorizontalDistance, maxVerticalDistance, vec3d);
 	}
 
 	@Nullable
@@ -76,8 +76,8 @@ public class TargetFinder {
 	}
 
 	@Nullable
-	private static Vec3d findTarget(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d) {
-		return method_21758(mobEntityWithAi, i, j, vec3d, true, (float) (Math.PI / 2), mobEntityWithAi::getPathfindingFavor);
+	private static Vec3d findTarget(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, @Nullable Vec3d direction) {
+		return method_21758(mob, maxHorizontalDistance, maxVerticalDistance, direction, true, (float) (Math.PI / 2), mob::getPathfindingFavor);
 	}
 
 	@Nullable
@@ -91,73 +91,73 @@ public class TargetFinder {
 
 	@Nullable
 	private static Vec3d findTarget(
-		MobEntityWithAi mobEntityWithAi,
+		MobEntityWithAi mob,
+		int maxHorizontalDistance,
+		int maxVerticalDistance,
 		int i,
+		@Nullable Vec3d direction,
+		boolean anywhere,
+		double maxAngleDifference,
+		ToDoubleFunction<BlockPos> favorProvider,
+		boolean bl,
+		Predicate<BlockPos> predicate,
 		int j,
 		int k,
-		@Nullable Vec3d vec3d,
-		boolean bl,
-		double d,
-		ToDoubleFunction<BlockPos> toDoubleFunction,
-		boolean bl2,
-		Predicate<BlockPos> predicate,
-		int l,
-		int m,
-		boolean bl3
+		boolean bl2
 	) {
-		EntityNavigation entityNavigation = mobEntityWithAi.getNavigation();
-		Random random = mobEntityWithAi.getRandom();
-		boolean bl4;
-		if (mobEntityWithAi.hasPositionTarget()) {
-			bl4 = mobEntityWithAi.getPositionTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getPositionTargetRange() + (float)i) + 1.0);
+		EntityNavigation entityNavigation = mob.getNavigation();
+		Random random = mob.getRandom();
+		boolean bl3;
+		if (mob.hasPositionTarget()) {
+			bl3 = mob.getPositionTarget().isWithinDistance(mob.getPos(), (double)(mob.getPositionTargetRange() + (float)maxHorizontalDistance) + 1.0);
 		} else {
-			bl4 = false;
+			bl3 = false;
 		}
 
-		boolean bl5 = false;
-		double e = Double.NEGATIVE_INFINITY;
-		BlockPos blockPos = new BlockPos(mobEntityWithAi);
+		boolean bl4 = false;
+		double d = Double.NEGATIVE_INFINITY;
+		BlockPos blockPos = new BlockPos(mob);
 
-		for (int n = 0; n < 10; n++) {
-			BlockPos blockPos2 = method_6374(random, i, j, k, vec3d, d);
+		for (int l = 0; l < 10; l++) {
+			BlockPos blockPos2 = method_6374(random, maxHorizontalDistance, maxVerticalDistance, i, direction, maxAngleDifference);
 			if (blockPos2 != null) {
-				int o = blockPos2.getX();
-				int p = blockPos2.getY();
-				int q = blockPos2.getZ();
-				if (mobEntityWithAi.hasPositionTarget() && i > 1) {
-					BlockPos blockPos3 = mobEntityWithAi.getPositionTarget();
-					if (mobEntityWithAi.getX() > (double)blockPos3.getX()) {
-						o -= random.nextInt(i / 2);
+				int m = blockPos2.getX();
+				int n = blockPos2.getY();
+				int o = blockPos2.getZ();
+				if (mob.hasPositionTarget() && maxHorizontalDistance > 1) {
+					BlockPos blockPos3 = mob.getPositionTarget();
+					if (mob.getX() > (double)blockPos3.getX()) {
+						m -= random.nextInt(maxHorizontalDistance / 2);
 					} else {
-						o += random.nextInt(i / 2);
+						m += random.nextInt(maxHorizontalDistance / 2);
 					}
 
-					if (mobEntityWithAi.getZ() > (double)blockPos3.getZ()) {
-						q -= random.nextInt(i / 2);
+					if (mob.getZ() > (double)blockPos3.getZ()) {
+						o -= random.nextInt(maxHorizontalDistance / 2);
 					} else {
-						q += random.nextInt(i / 2);
+						o += random.nextInt(maxHorizontalDistance / 2);
 					}
 				}
 
-				BlockPos blockPos3x = new BlockPos((double)o + mobEntityWithAi.getX(), (double)p + mobEntityWithAi.getY(), (double)q + mobEntityWithAi.getZ());
-				if ((!bl4 || mobEntityWithAi.isInWalkTargetRange(blockPos3x)) && (!bl3 || entityNavigation.isValidPosition(blockPos3x))) {
-					if (bl2) {
-						blockPos3x = method_21761(blockPos3x, random.nextInt(l + 1) + m, mobEntityWithAi.world.getHeight(), predicate);
+				BlockPos blockPos3x = new BlockPos((double)m + mob.getX(), (double)n + mob.getY(), (double)o + mob.getZ());
+				if ((!bl3 || mob.isInWalkTargetRange(blockPos3x)) && (!bl2 || entityNavigation.isValidPosition(blockPos3x))) {
+					if (bl) {
+						blockPos3x = method_21761(blockPos3x, random.nextInt(j + 1) + k, mob.world.getHeight(), predicate);
 					}
 
-					if (bl || !isWater(blockPos3x, mobEntityWithAi)) {
-						double f = toDoubleFunction.applyAsDouble(blockPos3x);
-						if (f > e) {
-							e = f;
+					if (anywhere || !isWater(blockPos3x, mob)) {
+						double e = favorProvider.applyAsDouble(blockPos3x);
+						if (e > d) {
+							d = e;
 							blockPos = blockPos3x;
-							bl5 = true;
+							bl4 = true;
 						}
 					}
 				}
 			}
 		}
 
-		return bl5 ? new Vec3d(blockPos) : null;
+		return bl4 ? new Vec3d(blockPos) : null;
 	}
 
 	@Nullable
@@ -209,7 +209,7 @@ public class TargetFinder {
 		}
 	}
 
-	private static boolean isWater(BlockPos blockPos, MobEntityWithAi mobEntityWithAi) {
-		return mobEntityWithAi.world.getFluidState(blockPos).matches(FluidTags.WATER);
+	private static boolean isWater(BlockPos pos, MobEntityWithAi mob) {
+		return mob.world.getFluidState(pos).matches(FluidTags.WATER);
 	}
 }

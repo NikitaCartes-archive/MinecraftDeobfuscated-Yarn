@@ -4,64 +4,64 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType {
 	INSTANCE;
 
 	@Override
-	public Biome getBiome(long l, int i, int j, int k, BiomeAccess.Storage storage) {
-		int m = i - 2;
-		int n = j - 2;
-		int o = k - 2;
-		int p = m >> 2;
-		int q = n >> 2;
-		int r = o >> 2;
-		double d = (double)(m & 3) / 4.0;
-		double e = (double)(n & 3) / 4.0;
-		double f = (double)(o & 3) / 4.0;
+	public Biome getBiome(long seed, int x, int y, int z, BiomeAccess.Storage storage) {
+		int i = x - 2;
+		int j = y - 2;
+		int k = z - 2;
+		int l = i >> 2;
+		int m = j >> 2;
+		int n = k >> 2;
+		double d = (double)(i & 3) / 4.0;
+		double e = (double)(j & 3) / 4.0;
+		double f = (double)(k & 3) / 4.0;
 		double[] ds = new double[8];
 
-		for (int s = 0; s < 8; s++) {
-			boolean bl = (s & 4) == 0;
-			boolean bl2 = (s & 2) == 0;
-			boolean bl3 = (s & 1) == 0;
-			int t = bl ? p : p + 1;
-			int u = bl2 ? q : q + 1;
-			int v = bl3 ? r : r + 1;
+		for (int o = 0; o < 8; o++) {
+			boolean bl = (o & 4) == 0;
+			boolean bl2 = (o & 2) == 0;
+			boolean bl3 = (o & 1) == 0;
+			int p = bl ? l : l + 1;
+			int q = bl2 ? m : m + 1;
+			int r = bl3 ? n : n + 1;
 			double g = bl ? d : 1.0 - d;
 			double h = bl2 ? e : 1.0 - e;
-			double w = bl3 ? f : 1.0 - f;
-			ds[s] = calcChance(l, t, u, v, g, h, w);
+			double s = bl3 ? f : 1.0 - f;
+			ds[o] = calcChance(seed, p, q, r, g, h, s);
 		}
 
-		int s = 0;
-		double x = ds[0];
+		int o = 0;
+		double t = ds[0];
 
-		for (int y = 1; y < 8; y++) {
-			if (x > ds[y]) {
-				s = y;
-				x = ds[y];
+		for (int u = 1; u < 8; u++) {
+			if (t > ds[u]) {
+				o = u;
+				t = ds[u];
 			}
 		}
 
-		int yx = (s & 4) == 0 ? p : p + 1;
-		int t = (s & 2) == 0 ? q : q + 1;
-		int u = (s & 1) == 0 ? r : r + 1;
-		return storage.getStoredBiome(yx, t, u);
+		int ux = (o & 4) == 0 ? l : l + 1;
+		int p = (o & 2) == 0 ? m : m + 1;
+		int q = (o & 1) == 0 ? n : n + 1;
+		return storage.getStoredBiome(ux, p, q);
 	}
 
-	private static double calcChance(long l, int i, int j, int k, double d, double e, double f) {
-		long m = SeedMixer.mixSeed(l, (long)i);
-		m = SeedMixer.mixSeed(m, (long)j);
-		m = SeedMixer.mixSeed(m, (long)k);
-		m = SeedMixer.mixSeed(m, (long)i);
-		m = SeedMixer.mixSeed(m, (long)j);
-		m = SeedMixer.mixSeed(m, (long)k);
-		double g = distribute(m);
-		m = SeedMixer.mixSeed(m, l);
-		double h = distribute(m);
-		m = SeedMixer.mixSeed(m, l);
-		double n = distribute(m);
-		return sqr(f + n) + sqr(e + h) + sqr(d + g);
+	private static double calcChance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
+		long l = SeedMixer.mixSeed(seed, (long)x);
+		l = SeedMixer.mixSeed(l, (long)y);
+		l = SeedMixer.mixSeed(l, (long)z);
+		l = SeedMixer.mixSeed(l, (long)x);
+		l = SeedMixer.mixSeed(l, (long)y);
+		l = SeedMixer.mixSeed(l, (long)z);
+		double d = distribute(l);
+		l = SeedMixer.mixSeed(l, seed);
+		double e = distribute(l);
+		l = SeedMixer.mixSeed(l, seed);
+		double f = distribute(l);
+		return sqr(zFraction + f) + sqr(yFraction + e) + sqr(xFraction + d);
 	}
 
-	private static double distribute(long l) {
-		double d = (double)((int)Math.floorMod(l >> 24, 1024L)) / 1024.0;
+	private static double distribute(long seed) {
+		double d = (double)((int)Math.floorMod(seed >> 24, 1024L)) / 1024.0;
 		return (d - 0.5) * 0.9;
 	}
 

@@ -39,25 +39,25 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView view) {
 		CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity();
 		commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
 		return commandBlockBlockEntity;
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-				boolean bl2 = world.isReceivingRedstonePower(blockPos);
-				boolean bl3 = commandBlockBlockEntity.isPowered();
-				commandBlockBlockEntity.setPowered(bl2);
-				if (!bl3 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
-					if (bl2) {
+				boolean bl = world.isReceivingRedstonePower(pos);
+				boolean bl2 = commandBlockBlockEntity.isPowered();
+				commandBlockBlockEntity.setPowered(bl);
+				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+					if (bl) {
 						commandBlockBlockEntity.updateConditionMet();
-						world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+						world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
 					}
 				}
 			}
@@ -65,8 +65,8 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void scheduledTick(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
-		BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof CommandBlockBlockEntity) {
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
@@ -76,34 +76,34 @@ public class CommandBlock extends BlockWithEntity {
 			if (type == CommandBlockBlockEntity.Type.AUTO) {
 				commandBlockBlockEntity.updateConditionMet();
 				if (bl2) {
-					this.execute(blockState, serverWorld, blockPos, commandBlockExecutor, bl);
+					this.execute(state, world, pos, commandBlockExecutor, bl);
 				} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
 					commandBlockExecutor.setSuccessCount(0);
 				}
 
 				if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-					serverWorld.method_14196().schedule(blockPos, this, this.getTickRate(serverWorld));
+					world.method_14196().schedule(pos, this, this.getTickRate(world));
 				}
 			} else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
 				if (bl2) {
-					this.execute(blockState, serverWorld, blockPos, commandBlockExecutor, bl);
+					this.execute(state, world, pos, commandBlockExecutor, bl);
 				} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
 					commandBlockExecutor.setSuccessCount(0);
 				}
 			}
 
-			serverWorld.updateHorizontalAdjacent(blockPos, this);
+			world.updateHorizontalAdjacent(pos, this);
 		}
 	}
 
-	private void execute(BlockState blockState, World world, BlockPos blockPos, CommandBlockExecutor commandBlockExecutor, boolean bl) {
-		if (bl) {
-			commandBlockExecutor.execute(world);
+	private void execute(BlockState state, World world, BlockPos pos, CommandBlockExecutor executor, boolean hasCommand) {
+		if (hasCommand) {
+			executor.execute(world);
 		} else {
-			commandBlockExecutor.setSuccessCount(0);
+			executor.setSuccessCount(0);
 		}
 
-		executeCommandChain(world, blockPos, blockState.get(FACING));
+		executeCommandChain(world, pos, state.get(FACING));
 	}
 
 	@Override
@@ -112,10 +112,10 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
-		if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
-			playerEntity.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
+		if (blockEntity instanceof CommandBlockBlockEntity && player.isCreativeLevelTwoOp()) {
+			player.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
 			return ActionResult.SUCCESS;
 		} else {
 			return ActionResult.PASS;
@@ -123,19 +123,19 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		return blockEntity instanceof CommandBlockBlockEntity ? ((CommandBlockBlockEntity)blockEntity).getCommandExecutor().getSuccessCount() : 0;
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof CommandBlockBlockEntity) {
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
@@ -150,7 +150,7 @@ public class CommandBlock extends BlockWithEntity {
 				}
 
 				if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
-					boolean bl = world.isReceivingRedstonePower(blockPos);
+					boolean bl = world.isReceivingRedstonePower(pos);
 					commandBlockBlockEntity.setPowered(bl);
 				}
 			}
@@ -158,18 +158,18 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
-		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
+	public BlockState rotate(BlockState state, BlockRotation rotation) {
+		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
-		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState state, BlockMirror mirror) {
+		return state.rotate(mirror.getRotation(state.get(FACING)));
 	}
 
 	@Override
@@ -178,17 +178,17 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerLookDirection().getOpposite());
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.getDefaultState().with(FACING, ctx.getPlayerLookDirection().getOpposite());
 	}
 
-	private static void executeCommandChain(World world, BlockPos blockPos, Direction direction) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+	private static void executeCommandChain(World world, BlockPos pos, Direction facing) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
 		GameRules gameRules = world.getGameRules();
 		int i = gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
 
 		while (i-- > 0) {
-			mutable.setOffset(direction);
+			mutable.setOffset(facing);
 			BlockState blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
 			if (block != Blocks.CHAIN_COMMAND_BLOCK) {
@@ -218,7 +218,7 @@ public class CommandBlock extends BlockWithEntity {
 				}
 			}
 
-			direction = blockState.get(FACING);
+			facing = blockState.get(FACING);
 		}
 
 		if (i <= 0) {

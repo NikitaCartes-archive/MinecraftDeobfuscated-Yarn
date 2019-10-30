@@ -31,10 +31,10 @@ public class RecipeResultCollection {
 		}
 	}
 
-	public void computeCraftables(RecipeFinder recipeFinder, int i, int j, RecipeBook recipeBook) {
-		for (int k = 0; k < this.recipes.size(); k++) {
-			Recipe<?> recipe = (Recipe<?>)this.recipes.get(k);
-			boolean bl = recipe.fits(i, j) && recipeBook.contains(recipe);
+	public void computeCraftables(RecipeFinder recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
+		for (int i = 0; i < this.recipes.size(); i++) {
+			Recipe<?> recipe = (Recipe<?>)this.recipes.get(i);
+			boolean bl = recipe.fits(gridWidth, gridHeight) && recipeBook.contains(recipe);
 			if (bl) {
 				this.fittingRecipes.add(recipe);
 			} else {
@@ -65,9 +65,9 @@ public class RecipeResultCollection {
 		return this.recipes;
 	}
 
-	public List<Recipe<?>> getResults(boolean bl) {
+	public List<Recipe<?>> getResults(boolean craftableOnly) {
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
-		Set<Recipe<?>> set = bl ? this.craftableRecipes : this.fittingRecipes;
+		Set<Recipe<?>> set = craftableOnly ? this.craftableRecipes : this.fittingRecipes;
 
 		for (Recipe<?> recipe : this.recipes) {
 			if (set.contains(recipe)) {
@@ -78,11 +78,11 @@ public class RecipeResultCollection {
 		return list;
 	}
 
-	public List<Recipe<?>> getRecipes(boolean bl) {
+	public List<Recipe<?>> getRecipes(boolean craftable) {
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
 		for (Recipe<?> recipe : this.recipes) {
-			if (this.fittingRecipes.contains(recipe) && this.craftableRecipes.contains(recipe) == bl) {
+			if (this.fittingRecipes.contains(recipe) && this.craftableRecipes.contains(recipe) == craftable) {
 				list.add(recipe);
 			}
 		}

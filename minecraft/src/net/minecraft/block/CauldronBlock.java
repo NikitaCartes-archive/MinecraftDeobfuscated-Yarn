@@ -50,95 +50,95 @@ public class CauldronBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
 		return OUTLINE_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public VoxelShape getRayTraceShape(BlockState state, BlockView view, BlockPos pos) {
 		return RAY_TRACE_SHAPE;
 	}
 
 	@Override
-	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		int i = (Integer)blockState.get(LEVEL);
-		float f = (float)blockPos.getY() + (6.0F + (float)(3 * i)) / 16.0F;
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		int i = (Integer)state.get(LEVEL);
+		float f = (float)pos.getY() + (6.0F + (float)(3 * i)) / 16.0F;
 		if (!world.isClient && entity.isOnFire() && i > 0 && entity.getY() <= (double)f) {
 			entity.extinguish();
-			this.setLevel(world, blockPos, blockState, i - 1);
+			this.setLevel(world, pos, state, i - 1);
 		}
 	}
 
 	@Override
-	public ActionResult onUse(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isEmpty()) {
 			return ActionResult.PASS;
 		} else {
-			int i = (Integer)blockState.get(LEVEL);
+			int i = (Integer)state.get(LEVEL);
 			Item item = itemStack.getItem();
 			if (item == Items.WATER_BUCKET) {
 				if (i < 3 && !world.isClient) {
-					if (!playerEntity.abilities.creativeMode) {
-						playerEntity.setStackInHand(hand, new ItemStack(Items.BUCKET));
+					if (!player.abilities.creativeMode) {
+						player.setStackInHand(hand, new ItemStack(Items.BUCKET));
 					}
 
-					playerEntity.incrementStat(Stats.FILL_CAULDRON);
-					this.setLevel(world, blockPos, blockState, 3);
-					world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					player.incrementStat(Stats.FILL_CAULDRON);
+					this.setLevel(world, pos, state, 3);
+					world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
 				return ActionResult.SUCCESS;
 			} else if (item == Items.BUCKET) {
 				if (i == 3 && !world.isClient) {
-					if (!playerEntity.abilities.creativeMode) {
+					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
-							playerEntity.setStackInHand(hand, new ItemStack(Items.WATER_BUCKET));
-						} else if (!playerEntity.inventory.insertStack(new ItemStack(Items.WATER_BUCKET))) {
-							playerEntity.dropItem(new ItemStack(Items.WATER_BUCKET), false);
+							player.setStackInHand(hand, new ItemStack(Items.WATER_BUCKET));
+						} else if (!player.inventory.insertStack(new ItemStack(Items.WATER_BUCKET))) {
+							player.dropItem(new ItemStack(Items.WATER_BUCKET), false);
 						}
 					}
 
-					playerEntity.incrementStat(Stats.USE_CAULDRON);
-					this.setLevel(world, blockPos, blockState, 0);
-					world.playSound(null, blockPos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					player.incrementStat(Stats.USE_CAULDRON);
+					this.setLevel(world, pos, state, 0);
+					world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
 				return ActionResult.SUCCESS;
 			} else if (item == Items.GLASS_BOTTLE) {
 				if (i > 0 && !world.isClient) {
-					if (!playerEntity.abilities.creativeMode) {
+					if (!player.abilities.creativeMode) {
 						ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER);
-						playerEntity.incrementStat(Stats.USE_CAULDRON);
+						player.incrementStat(Stats.USE_CAULDRON);
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
-							playerEntity.setStackInHand(hand, itemStack2);
-						} else if (!playerEntity.inventory.insertStack(itemStack2)) {
-							playerEntity.dropItem(itemStack2, false);
-						} else if (playerEntity instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
+							player.setStackInHand(hand, itemStack2);
+						} else if (!player.inventory.insertStack(itemStack2)) {
+							player.dropItem(itemStack2, false);
+						} else if (player instanceof ServerPlayerEntity) {
+							((ServerPlayerEntity)player).openContainer(player.playerContainer);
 						}
 					}
 
-					world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					this.setLevel(world, blockPos, blockState, i - 1);
+					world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					this.setLevel(world, pos, state, i - 1);
 				}
 
 				return ActionResult.SUCCESS;
 			} else if (item == Items.POTION && PotionUtil.getPotion(itemStack) == Potions.WATER) {
 				if (i < 3 && !world.isClient) {
-					if (!playerEntity.abilities.creativeMode) {
+					if (!player.abilities.creativeMode) {
 						ItemStack itemStack2 = new ItemStack(Items.GLASS_BOTTLE);
-						playerEntity.incrementStat(Stats.USE_CAULDRON);
-						playerEntity.setStackInHand(hand, itemStack2);
-						if (playerEntity instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
+						player.incrementStat(Stats.USE_CAULDRON);
+						player.setStackInHand(hand, itemStack2);
+						if (player instanceof ServerPlayerEntity) {
+							((ServerPlayerEntity)player).openContainer(player.playerContainer);
 						}
 					}
 
-					world.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					this.setLevel(world, blockPos, blockState, i + 1);
+					world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
+					this.setLevel(world, pos, state, i + 1);
 				}
 
 				return ActionResult.SUCCESS;
@@ -147,8 +147,8 @@ public class CauldronBlock extends Block {
 					DyeableItem dyeableItem = (DyeableItem)item;
 					if (dyeableItem.hasColor(itemStack) && !world.isClient) {
 						dyeableItem.removeColor(itemStack);
-						this.setLevel(world, blockPos, blockState, i - 1);
-						playerEntity.incrementStat(Stats.CLEAN_ARMOR);
+						this.setLevel(world, pos, state, i - 1);
+						player.incrementStat(Stats.CLEAN_ARMOR);
 						return ActionResult.SUCCESS;
 					}
 				}
@@ -158,18 +158,18 @@ public class CauldronBlock extends Block {
 						ItemStack itemStack2 = itemStack.copy();
 						itemStack2.setCount(1);
 						BannerBlockEntity.loadFromItemStack(itemStack2);
-						playerEntity.incrementStat(Stats.CLEAN_BANNER);
-						if (!playerEntity.abilities.creativeMode) {
+						player.incrementStat(Stats.CLEAN_BANNER);
+						if (!player.abilities.creativeMode) {
 							itemStack.decrement(1);
-							this.setLevel(world, blockPos, blockState, i - 1);
+							this.setLevel(world, pos, state, i - 1);
 						}
 
 						if (itemStack.isEmpty()) {
-							playerEntity.setStackInHand(hand, itemStack2);
-						} else if (!playerEntity.inventory.insertStack(itemStack2)) {
-							playerEntity.dropItem(itemStack2, false);
-						} else if (playerEntity instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
+							player.setStackInHand(hand, itemStack2);
+						} else if (!player.inventory.insertStack(itemStack2)) {
+							player.dropItem(itemStack2, false);
+						} else if (player instanceof ServerPlayerEntity) {
+							((ServerPlayerEntity)player).openContainer(player.playerContainer);
 						}
 					}
 
@@ -182,9 +182,9 @@ public class CauldronBlock extends Block {
 							itemStack3.setTag(itemStack.getTag().method_10553());
 						}
 
-						playerEntity.setStackInHand(hand, itemStack3);
-						this.setLevel(world, blockPos, blockState, i - 1);
-						playerEntity.incrementStat(Stats.CLEAN_SHULKER_BOX);
+						player.setStackInHand(hand, itemStack3);
+						this.setLevel(world, pos, state, i - 1);
+						player.incrementStat(Stats.CLEAN_SHULKER_BOX);
 						return ActionResult.SUCCESS;
 					} else {
 						return ActionResult.CONSUME;
@@ -196,32 +196,32 @@ public class CauldronBlock extends Block {
 		}
 	}
 
-	public void setLevel(World world, BlockPos blockPos, BlockState blockState, int i) {
-		world.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf(MathHelper.clamp(i, 0, 3))), 2);
-		world.updateHorizontalAdjacent(blockPos, this);
+	public void setLevel(World world, BlockPos pos, BlockState state, int level) {
+		world.setBlockState(pos, state.with(LEVEL, Integer.valueOf(MathHelper.clamp(level, 0, 3))), 2);
+		world.updateHorizontalAdjacent(pos, this);
 	}
 
 	@Override
-	public void rainTick(World world, BlockPos blockPos) {
+	public void rainTick(World world, BlockPos pos) {
 		if (world.random.nextInt(20) == 1) {
-			float f = world.getBiome(blockPos).getTemperature(blockPos);
+			float f = world.getBiome(pos).getTemperature(pos);
 			if (!(f < 0.15F)) {
-				BlockState blockState = world.getBlockState(blockPos);
+				BlockState blockState = world.getBlockState(pos);
 				if ((Integer)blockState.get(LEVEL) < 3) {
-					world.setBlockState(blockPos, blockState.cycle(LEVEL), 2);
+					world.setBlockState(pos, blockState.cycle(LEVEL), 2);
 				}
 			}
 		}
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean hasComparatorOutput(BlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return (Integer)blockState.get(LEVEL);
+	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+		return (Integer)state.get(LEVEL);
 	}
 
 	@Override
@@ -230,7 +230,7 @@ public class CauldronBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env) {
 		return false;
 	}
 }

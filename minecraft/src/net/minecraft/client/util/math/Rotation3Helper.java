@@ -5,7 +5,7 @@ import java.util.EnumMap;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class Rotation3Helper {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final EnumMap<Direction, Rotation3> DIRECTION_ROTATIONS = SystemUtil.consume(Maps.newEnumMap(Direction.class), enumMap -> {
+	public static final EnumMap<Direction, Rotation3> DIRECTION_ROTATIONS = Util.create(Maps.newEnumMap(Direction.class), enumMap -> {
 		enumMap.put(Direction.SOUTH, Rotation3.identity());
 		enumMap.put(Direction.EAST, new Rotation3(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), 90.0F, true), null, null));
 		enumMap.put(Direction.WEST, new Rotation3(null, new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), -90.0F, true), null, null));
@@ -22,7 +22,7 @@ public class Rotation3Helper {
 		enumMap.put(Direction.UP, new Rotation3(null, new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), -90.0F, true), null, null));
 		enumMap.put(Direction.DOWN, new Rotation3(null, new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), 90.0F, true), null, null));
 	});
-	public static final EnumMap<Direction, Rotation3> INVERSED_DIRECTION_ROTATIONS = SystemUtil.consume(Maps.newEnumMap(Direction.class), enumMap -> {
+	public static final EnumMap<Direction, Rotation3> INVERSED_DIRECTION_ROTATIONS = Util.create(Maps.newEnumMap(Direction.class), enumMap -> {
 		for (Direction direction : Direction.values()) {
 			enumMap.put(direction, ((Rotation3)DIRECTION_ROTATIONS.get(direction)).invert());
 		}

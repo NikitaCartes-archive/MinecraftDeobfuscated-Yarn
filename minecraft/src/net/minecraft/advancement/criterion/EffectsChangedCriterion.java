@@ -21,24 +21,24 @@ public class EffectsChangedCriterion extends AbstractCriterion<EffectsChangedCri
 		return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity));
+	public void trigger(ServerPlayerEntity player) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityEffectPredicate effects;
 
-		public Conditions(EntityEffectPredicate entityEffectPredicate) {
+		public Conditions(EntityEffectPredicate effects) {
 			super(EffectsChangedCriterion.ID);
-			this.effects = entityEffectPredicate;
+			this.effects = effects;
 		}
 
-		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate entityEffectPredicate) {
-			return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
+		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate effects) {
+			return new EffectsChangedCriterion.Conditions(effects);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity) {
-			return this.effects.test((LivingEntity)serverPlayerEntity);
+		public boolean matches(ServerPlayerEntity player) {
+			return this.effects.test((LivingEntity)player);
 		}
 
 		@Override

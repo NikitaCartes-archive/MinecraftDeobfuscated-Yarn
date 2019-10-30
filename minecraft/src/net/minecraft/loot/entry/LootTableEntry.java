@@ -16,15 +16,15 @@ import net.minecraft.util.JsonHelper;
 public class LootTableEntry extends LeafEntry {
 	private final Identifier id;
 
-	private LootTableEntry(Identifier identifier, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-		super(i, j, lootConditions, lootFunctions);
-		this.id = identifier;
+	private LootTableEntry(Identifier id, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+		super(weight, quality, conditions, functions);
+		this.id = id;
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		LootTable lootTable = lootContext.getSupplier(this.id);
-		lootTable.drop(lootContext, consumer);
+	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+		LootTable lootTable = context.getSupplier(this.id);
+		lootTable.drop(context, itemDropper);
 	}
 
 	@Override
@@ -42,8 +42,8 @@ public class LootTableEntry extends LeafEntry {
 		}
 	}
 
-	public static LeafEntry.Builder<?> builder(Identifier identifier) {
-		return builder((i, j, lootConditions, lootFunctions) -> new LootTableEntry(identifier, i, j, lootConditions, lootFunctions));
+	public static LeafEntry.Builder<?> builder(Identifier id) {
+		return builder((weight, quality, conditions, functions) -> new LootTableEntry(id, weight, quality, conditions, functions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<LootTableEntry> {

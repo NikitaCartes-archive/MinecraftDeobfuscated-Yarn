@@ -32,8 +32,8 @@ public class ReplaceItemCommand {
 		(object, object2) -> new TranslatableText("commands.replaceitem.entity.failed", object, object2)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("replaceitem")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -101,33 +101,31 @@ public class ReplaceItemCommand {
 		);
 	}
 
-	private static int executeBlock(ServerCommandSource serverCommandSource, BlockPos blockPos, int i, ItemStack itemStack) throws CommandSyntaxException {
-		BlockEntity blockEntity = serverCommandSource.getWorld().getBlockEntity(blockPos);
+	private static int executeBlock(ServerCommandSource source, BlockPos pos, int slot, ItemStack item) throws CommandSyntaxException {
+		BlockEntity blockEntity = source.getWorld().getBlockEntity(pos);
 		if (!(blockEntity instanceof Inventory)) {
 			throw BLOCK_FAILED_EXCEPTION.create();
 		} else {
 			Inventory inventory = (Inventory)blockEntity;
-			if (i >= 0 && i < inventory.getInvSize()) {
-				inventory.setInvStack(i, itemStack);
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.replaceitem.block.success", blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack.toHoverableText()), true
-				);
+			if (slot >= 0 && slot < inventory.getInvSize()) {
+				inventory.setInvStack(slot, item);
+				source.sendFeedback(new TranslatableText("commands.replaceitem.block.success", pos.getX(), pos.getY(), pos.getZ(), item.toHoverableText()), true);
 				return 1;
 			} else {
-				throw SLOT_INAPPLICABLE_EXCEPTION.create(i);
+				throw SLOT_INAPPLICABLE_EXCEPTION.create(slot);
 			}
 		}
 	}
 
-	private static int executeEntity(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, int i, ItemStack itemStack) throws CommandSyntaxException {
-		List<Entity> list = Lists.<Entity>newArrayListWithCapacity(collection.size());
+	private static int executeEntity(ServerCommandSource source, Collection<? extends Entity> targets, int slot, ItemStack item) throws CommandSyntaxException {
+		List<Entity> list = Lists.<Entity>newArrayListWithCapacity(targets.size());
 
-		for (Entity entity : collection) {
+		for (Entity entity : targets) {
 			if (entity instanceof ServerPlayerEntity) {
 				((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
 			}
 
-			if (entity.equip(i, itemStack.copy())) {
+			if (entity.equip(slot, item.copy())) {
 				list.add(entity);
 				if (entity instanceof ServerPlayerEntity) {
 					((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
@@ -136,14 +134,14 @@ public class ReplaceItemCommand {
 		}
 
 		if (list.isEmpty()) {
-			throw ENTITY_FAILED_EXCEPTION.create(itemStack.toHoverableText(), i);
+			throw ENTITY_FAILED_EXCEPTION.create(item.toHoverableText(), slot);
 		} else {
 			if (list.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), itemStack.toHoverableText()), true
+				source.sendFeedback(
+					new TranslatableText("commands.replaceitem.entity.success.single", ((Entity)list.iterator().next()).getDisplayName(), item.toHoverableText()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.replaceitem.entity.success.multiple", list.size(), itemStack.toHoverableText()), true);
+				source.sendFeedback(new TranslatableText("commands.replaceitem.entity.success.multiple", list.size(), item.toHoverableText()), true);
 			}
 
 			return list.size();

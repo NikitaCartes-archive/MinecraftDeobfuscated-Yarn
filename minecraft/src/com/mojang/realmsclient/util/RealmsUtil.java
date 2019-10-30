@@ -34,29 +34,29 @@ public class RealmsUtil {
 			}
 		});
 
-	public static String uuidToName(String string) throws Exception {
-		GameProfile gameProfile = gameProfileCache.get(string);
+	public static String uuidToName(String uuid) throws Exception {
+		GameProfile gameProfile = gameProfileCache.get(uuid);
 		return gameProfile.getName();
 	}
 
-	public static Map<Type, MinecraftProfileTexture> getTextures(String string) {
+	public static Map<Type, MinecraftProfileTexture> getTextures(String uuid) {
 		try {
-			GameProfile gameProfile = gameProfileCache.get(string);
+			GameProfile gameProfile = gameProfileCache.get(uuid);
 			return sessionService.getTextures(gameProfile, false);
 		} catch (Exception var2) {
 			return Maps.<Type, MinecraftProfileTexture>newHashMap();
 		}
 	}
 
-	public static void browseTo(String string) {
-		Realms.openUri(string);
+	public static void browseTo(String uri) {
+		Realms.openUri(uri);
 	}
 
-	public static String convertToAgePresentation(Long long_) {
-		if (long_ < 0L) {
+	public static String convertToAgePresentation(Long timeDiff) {
+		if (timeDiff < 0L) {
 			return "right now";
 		} else {
-			long l = long_ / 1000L;
+			long l = timeDiff / 1000L;
 			if (l < 60L) {
 				return (l == 1L ? "1 second" : l + " seconds") + " ago";
 			} else if (l < 3600L) {

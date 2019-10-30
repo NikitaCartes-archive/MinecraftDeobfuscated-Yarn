@@ -15,8 +15,8 @@ import net.minecraft.util.math.Vec3d;
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	private final T actor;
 
-	public MoveToRaidCenterGoal(T raiderEntity) {
-		this.actor = raiderEntity;
+	public MoveToRaidCenterGoal(T actor) {
+		this.actor = actor;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 

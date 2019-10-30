@@ -32,8 +32,8 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		getLocalizedString("selectWorld.gameMode.adventure")
 	};
 
-	public RealmsBackupInfoScreen(RealmsScreen realmsScreen, Backup backup) {
-		this.lastScreen = realmsScreen;
+	public RealmsBackupInfoScreen(RealmsScreen lastScreen, Backup backup) {
+		this.lastScreen = lastScreen;
 		this.backup = backup;
 		if (backup.changeList != null) {
 			for (Entry<String, String> entry : backup.changeList.entrySet()) {
@@ -66,43 +66,43 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i == 256) {
+	public boolean keyPressed(int eventKey, int scancode, int mods) {
+		if (eventKey == 256) {
 			Realms.setScreen(this.lastScreen);
 			return true;
 		} else {
-			return super.keyPressed(i, j, k);
+			return super.keyPressed(eventKey, scancode, mods);
 		}
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int xm, int ym, float a) {
 		this.renderBackground();
 		this.drawCenteredString("Changes from last backup", this.width() / 2, 10, 16777215);
-		this.backupInfoList.render(i, j, f);
-		super.render(i, j, f);
+		this.backupInfoList.render(xm, ym, a);
+		super.render(xm, ym, a);
 	}
 
-	private String checkForSpecificMetadata(String string, String string2) {
-		String string3 = string.toLowerCase(Locale.ROOT);
-		if (string3.contains("game") && string3.contains("mode")) {
-			return this.gameModeMetadata(string2);
+	private String checkForSpecificMetadata(String key, String value) {
+		String string = key.toLowerCase(Locale.ROOT);
+		if (string.contains("game") && string.contains("mode")) {
+			return this.gameModeMetadata(value);
 		} else {
-			return string3.contains("game") && string3.contains("difficulty") ? this.gameDifficultyMetadata(string2) : string2;
+			return string.contains("game") && string.contains("difficulty") ? this.gameDifficultyMetadata(value) : value;
 		}
 	}
 
-	private String gameDifficultyMetadata(String string) {
+	private String gameDifficultyMetadata(String value) {
 		try {
-			return this.difficulties[Integer.parseInt(string)];
+			return this.difficulties[Integer.parseInt(value)];
 		} catch (Exception var3) {
 			return "UNKNOWN";
 		}
 	}
 
-	private String gameModeMetadata(String string) {
+	private String gameModeMetadata(String value) {
 		try {
-			return this.gameModes[Integer.parseInt(string)];
+			return this.gameModes[Integer.parseInt(value)];
 		} catch (Exception var3) {
 			return "UNKNOWN";
 		}
@@ -120,7 +120,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		}
 
 		@Override
-		public boolean isSelectedItem(int i) {
+		public boolean isSelectedItem(int item) {
 			return false;
 		}
 
@@ -134,11 +134,11 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderItem(int i, int j, int k, int l, Tezzelator tezzelator, int m, int n) {
+		public void renderItem(int i, int x, int y, int h, Tezzelator t, int mouseX, int mouseY) {
 			String string = (String)RealmsBackupInfoScreen.this.keys.get(i);
-			RealmsBackupInfoScreen.this.drawString(string, this.width() / 2 - 40, k, 10526880);
+			RealmsBackupInfoScreen.this.drawString(string, this.width() / 2 - 40, y, 10526880);
 			String string2 = (String)RealmsBackupInfoScreen.this.backup.changeList.get(string);
-			RealmsBackupInfoScreen.this.drawString(RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width() / 2 - 40, k + 12, 16777215);
+			RealmsBackupInfoScreen.this.drawString(RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width() / 2 - 40, y + 12, 16777215);
 		}
 	}
 }

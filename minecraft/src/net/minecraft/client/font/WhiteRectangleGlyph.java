@@ -3,13 +3,13 @@ package net.minecraft.client.font;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public enum WhiteRectangleGlyph implements RenderableGlyph {
 	INSTANCE;
 
-	private static final NativeImage IMAGE = SystemUtil.consume(new NativeImage(NativeImage.Format.RGBA, 5, 8, false), nativeImage -> {
+	private static final NativeImage IMAGE = Util.create(new NativeImage(NativeImage.Format.RGBA, 5, 8, false), nativeImage -> {
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 5; j++) {
 				if (j != 0 && j + 1 != 5 && i != 0 && i + 1 != 8) {
@@ -46,8 +46,8 @@ public enum WhiteRectangleGlyph implements RenderableGlyph {
 	}
 
 	@Override
-	public void upload(int i, int j) {
-		IMAGE.upload(0, i, j, false);
+	public void upload(int x, int y) {
+		IMAGE.upload(0, x, y, false);
 	}
 
 	@Override

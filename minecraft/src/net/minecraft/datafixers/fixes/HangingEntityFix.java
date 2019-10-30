@@ -12,32 +12,32 @@ import net.minecraft.datafixers.TypeReferences;
 public class HangingEntityFix extends DataFix {
 	private static final int[][] OFFSETS = new int[][]{{0, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {1, 0, 0}};
 
-	public HangingEntityFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public HangingEntityFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private Dynamic<?> fixDecorationPosition(Dynamic<?> dynamic, boolean bl, boolean bl2) {
-		if ((bl || bl2) && !dynamic.get("Facing").asNumber().isPresent()) {
+	private Dynamic<?> fixDecorationPosition(Dynamic<?> tag, boolean isPainting, boolean isItemFrame) {
+		if ((isPainting || isItemFrame) && !tag.get("Facing").asNumber().isPresent()) {
 			int i;
-			if (dynamic.get("Direction").asNumber().isPresent()) {
-				i = dynamic.get("Direction").asByte((byte)0) % OFFSETS.length;
+			if (tag.get("Direction").asNumber().isPresent()) {
+				i = tag.get("Direction").asByte((byte)0) % OFFSETS.length;
 				int[] is = OFFSETS[i];
-				dynamic = dynamic.set("TileX", dynamic.createInt(dynamic.get("TileX").asInt(0) + is[0]));
-				dynamic = dynamic.set("TileY", dynamic.createInt(dynamic.get("TileY").asInt(0) + is[1]));
-				dynamic = dynamic.set("TileZ", dynamic.createInt(dynamic.get("TileZ").asInt(0) + is[2]));
-				dynamic = dynamic.remove("Direction");
-				if (bl2 && dynamic.get("ItemRotation").asNumber().isPresent()) {
-					dynamic = dynamic.set("ItemRotation", dynamic.createByte((byte)(dynamic.get("ItemRotation").asByte((byte)0) * 2)));
+				tag = tag.set("TileX", tag.createInt(tag.get("TileX").asInt(0) + is[0]));
+				tag = tag.set("TileY", tag.createInt(tag.get("TileY").asInt(0) + is[1]));
+				tag = tag.set("TileZ", tag.createInt(tag.get("TileZ").asInt(0) + is[2]));
+				tag = tag.remove("Direction");
+				if (isItemFrame && tag.get("ItemRotation").asNumber().isPresent()) {
+					tag = tag.set("ItemRotation", tag.createByte((byte)(tag.get("ItemRotation").asByte((byte)0) * 2)));
 				}
 			} else {
-				i = dynamic.get("Dir").asByte((byte)0) % OFFSETS.length;
-				dynamic = dynamic.remove("Dir");
+				i = tag.get("Dir").asByte((byte)0) % OFFSETS.length;
+				tag = tag.remove("Dir");
 			}
 
-			dynamic = dynamic.set("Facing", dynamic.createByte((byte)i));
+			tag = tag.set("Facing", tag.createByte((byte)i));
 		}
 
-		return dynamic;
+		return tag;
 	}
 
 	@Override

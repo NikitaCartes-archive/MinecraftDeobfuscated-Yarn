@@ -26,20 +26,20 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 
 	public UnlockRecipesS2CPacket(
 		UnlockRecipesS2CPacket.Action action,
-		Collection<Identifier> collection,
-		Collection<Identifier> collection2,
-		boolean bl,
-		boolean bl2,
-		boolean bl3,
-		boolean bl4
+		Collection<Identifier> recipeIdsToChange,
+		Collection<Identifier> recipeIdsToInit,
+		boolean guiOpen,
+		boolean filteringCraftable,
+		boolean furnaceGuiOpen,
+		boolean furnaceFilteringCraftable
 	) {
 		this.action = action;
-		this.recipeIdsToChange = ImmutableList.copyOf(collection);
-		this.recipeIdsToInit = ImmutableList.copyOf(collection2);
-		this.guiOpen = bl;
-		this.filteringCraftable = bl2;
-		this.furnaceGuiOpen = bl3;
-		this.furnaceFilteringCraftable = bl4;
+		this.recipeIdsToChange = ImmutableList.copyOf(recipeIdsToChange);
+		this.recipeIdsToInit = ImmutableList.copyOf(recipeIdsToInit);
+		this.guiOpen = guiOpen;
+		this.filteringCraftable = filteringCraftable;
+		this.furnaceGuiOpen = furnaceGuiOpen;
+		this.furnaceFilteringCraftable = furnaceFilteringCraftable;
 	}
 
 	public void method_11753(ClientPlayPacketListener clientPlayPacketListener) {
@@ -47,47 +47,47 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.action = packetByteBuf.readEnumConstant(UnlockRecipesS2CPacket.Action.class);
-		this.guiOpen = packetByteBuf.readBoolean();
-		this.filteringCraftable = packetByteBuf.readBoolean();
-		this.furnaceGuiOpen = packetByteBuf.readBoolean();
-		this.furnaceFilteringCraftable = packetByteBuf.readBoolean();
-		int i = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.action = buf.readEnumConstant(UnlockRecipesS2CPacket.Action.class);
+		this.guiOpen = buf.readBoolean();
+		this.filteringCraftable = buf.readBoolean();
+		this.furnaceGuiOpen = buf.readBoolean();
+		this.furnaceFilteringCraftable = buf.readBoolean();
+		int i = buf.readVarInt();
 		this.recipeIdsToChange = Lists.<Identifier>newArrayList();
 
 		for (int j = 0; j < i; j++) {
-			this.recipeIdsToChange.add(packetByteBuf.readIdentifier());
+			this.recipeIdsToChange.add(buf.readIdentifier());
 		}
 
 		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
-			i = packetByteBuf.readVarInt();
+			i = buf.readVarInt();
 			this.recipeIdsToInit = Lists.<Identifier>newArrayList();
 
 			for (int j = 0; j < i; j++) {
-				this.recipeIdsToInit.add(packetByteBuf.readIdentifier());
+				this.recipeIdsToInit.add(buf.readIdentifier());
 			}
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.action);
-		packetByteBuf.writeBoolean(this.guiOpen);
-		packetByteBuf.writeBoolean(this.filteringCraftable);
-		packetByteBuf.writeBoolean(this.furnaceGuiOpen);
-		packetByteBuf.writeBoolean(this.furnaceFilteringCraftable);
-		packetByteBuf.writeVarInt(this.recipeIdsToChange.size());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeEnumConstant(this.action);
+		buf.writeBoolean(this.guiOpen);
+		buf.writeBoolean(this.filteringCraftable);
+		buf.writeBoolean(this.furnaceGuiOpen);
+		buf.writeBoolean(this.furnaceFilteringCraftable);
+		buf.writeVarInt(this.recipeIdsToChange.size());
 
 		for (Identifier identifier : this.recipeIdsToChange) {
-			packetByteBuf.writeIdentifier(identifier);
+			buf.writeIdentifier(identifier);
 		}
 
 		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
-			packetByteBuf.writeVarInt(this.recipeIdsToInit.size());
+			buf.writeVarInt(this.recipeIdsToInit.size());
 
 			for (Identifier identifier : this.recipeIdsToInit) {
-				packetByteBuf.writeIdentifier(identifier);
+				buf.writeIdentifier(identifier);
 			}
 		}
 	}

@@ -26,7 +26,7 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
+	public void write(PacketByteBuf buf) {
 	}
 
 	@Override

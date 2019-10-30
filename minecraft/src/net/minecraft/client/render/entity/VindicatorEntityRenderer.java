@@ -2,7 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EvilVillagerEntityModel;
@@ -20,7 +20,7 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 			new HeldItemFeatureRenderer<VindicatorEntity, EvilVillagerEntityModel<VindicatorEntity>>(this) {
 				public void method_17156(
 					MatrixStack matrixStack,
-					LayeredVertexConsumerStorage layeredVertexConsumerStorage,
+					VertexConsumerProvider vertexConsumerProvider,
 					int i,
 					VindicatorEntity vindicatorEntity,
 					float f,
@@ -32,7 +32,7 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 					float m
 				) {
 					if (vindicatorEntity.isAttacking()) {
-						super.method_17162(matrixStack, layeredVertexConsumerStorage, i, vindicatorEntity, f, g, h, j, k, l, m);
+						super.method_17162(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l, m);
 					}
 				}
 			}

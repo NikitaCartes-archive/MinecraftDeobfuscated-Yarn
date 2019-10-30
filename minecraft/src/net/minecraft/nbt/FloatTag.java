@@ -32,17 +32,17 @@ public class FloatTag extends AbstractNumberTag {
 	};
 	private final float value;
 
-	private FloatTag(float f) {
-		this.value = f;
+	private FloatTag(float value) {
+		this.value = value;
 	}
 
-	public static FloatTag of(float f) {
-		return f == 0.0F ? ZERO : new FloatTag(f);
+	public static FloatTag of(float value) {
+		return value == 0.0F ? ZERO : new FloatTag(value);
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeFloat(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeFloat(this.value);
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class FloatTag extends AbstractNumberTag {
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof FloatTag && this.value == ((FloatTag)object).value;
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof FloatTag && this.value == ((FloatTag)o).value;
 	}
 
 	public int hashCode() {
@@ -73,7 +73,7 @@ public class FloatTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
+	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("f").formatted(RED);
 		return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
 	}

@@ -25,8 +25,8 @@ public class EffectCommand {
 		new TranslatableText("commands.effect.clear.specific.failed")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("effect")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
@@ -109,50 +109,50 @@ public class EffectCommand {
 	}
 
 	private static int executeGive(
-		ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, StatusEffect statusEffect, @Nullable Integer integer, int i, boolean bl
+		ServerCommandSource source, Collection<? extends Entity> targets, StatusEffect effect, @Nullable Integer seconds, int amplifier, boolean showParticles
 	) throws CommandSyntaxException {
-		int j = 0;
-		int k;
-		if (integer != null) {
-			if (statusEffect.isInstant()) {
-				k = integer;
+		int i = 0;
+		int j;
+		if (seconds != null) {
+			if (effect.isInstant()) {
+				j = seconds;
 			} else {
-				k = integer * 20;
+				j = seconds * 20;
 			}
-		} else if (statusEffect.isInstant()) {
-			k = 1;
+		} else if (effect.isInstant()) {
+			j = 1;
 		} else {
-			k = 600;
+			j = 600;
 		}
 
-		for (Entity entity : collection) {
+		for (Entity entity : targets) {
 			if (entity instanceof LivingEntity) {
-				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect, k, i, false, bl);
+				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(effect, j, amplifier, false, showParticles);
 				if (((LivingEntity)entity).addStatusEffect(statusEffectInstance)) {
-					j++;
+					i++;
 				}
 			}
 		}
 
-		if (j == 0) {
+		if (i == 0) {
 			throw GIVE_FAILED_EXCEPTION.create();
 		} else {
-			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.effect.give.success.single", statusEffect.getName(), ((Entity)collection.iterator().next()).getDisplayName(), k / 20), true
+			if (targets.size() == 1) {
+				source.sendFeedback(
+					new TranslatableText("commands.effect.give.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName(), j / 20), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", statusEffect.getName(), collection.size(), k / 20), true);
+				source.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", effect.getName(), targets.size(), j / 20), true);
 			}
 
-			return j;
+			return i;
 		}
 	}
 
-	private static int executeClear(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) throws CommandSyntaxException {
+	private static int executeClear(ServerCommandSource source, Collection<? extends Entity> targets) throws CommandSyntaxException {
 		int i = 0;
 
-		for (Entity entity : collection) {
+		for (Entity entity : targets) {
 			if (entity instanceof LivingEntity && ((LivingEntity)entity).clearStatusEffects()) {
 				i++;
 			}
@@ -161,23 +161,21 @@ public class EffectCommand {
 		if (i == 0) {
 			throw CLEAR_EVERYTHING_FAILED_EXCEPTION.create();
 		} else {
-			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.effect.clear.everything.success.single", ((Entity)collection.iterator().next()).getDisplayName()), true
-				);
+			if (targets.size() == 1) {
+				source.sendFeedback(new TranslatableText("commands.effect.clear.everything.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.everything.success.multiple", collection.size()), true);
+				source.sendFeedback(new TranslatableText("commands.effect.clear.everything.success.multiple", targets.size()), true);
 			}
 
 			return i;
 		}
 	}
 
-	private static int executeClear(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, StatusEffect statusEffect) throws CommandSyntaxException {
+	private static int executeClear(ServerCommandSource source, Collection<? extends Entity> targets, StatusEffect effect) throws CommandSyntaxException {
 		int i = 0;
 
-		for (Entity entity : collection) {
-			if (entity instanceof LivingEntity && ((LivingEntity)entity).tryRemoveStatusEffect(statusEffect)) {
+		for (Entity entity : targets) {
+			if (entity instanceof LivingEntity && ((LivingEntity)entity).tryRemoveStatusEffect(effect)) {
 				i++;
 			}
 		}
@@ -185,13 +183,12 @@ public class EffectCommand {
 		if (i == 0) {
 			throw CLEAR_SPECIFIC_FAILED_EXCEPTION.create();
 		} else {
-			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableText("commands.effect.clear.specific.success.single", statusEffect.getName(), ((Entity)collection.iterator().next()).getDisplayName()),
-					true
+			if (targets.size() == 1) {
+				source.sendFeedback(
+					new TranslatableText("commands.effect.clear.specific.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.multiple", statusEffect.getName(), collection.size()), true);
+				source.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.multiple", effect.getName(), targets.size()), true);
 			}
 
 			return i;

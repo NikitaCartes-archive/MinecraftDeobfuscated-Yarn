@@ -41,7 +41,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			if (entitySelector.includesNonPlayers()) {
 				throw EntityArgumentType.PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.create();
 			} else {
-				return new GameProfileArgumentType.class_2193(entitySelector);
+				return new GameProfileArgumentType.SelectorBacked(entitySelector);
 			}
 		} else {
 			int i = stringReader.getCursor();
@@ -63,10 +63,10 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		if (commandContext.getSource() instanceof CommandSource) {
-			StringReader stringReader = new StringReader(suggestionsBuilder.getInput());
-			stringReader.setCursor(suggestionsBuilder.getStart());
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		if (context.getSource() instanceof CommandSource) {
+			StringReader stringReader = new StringReader(builder.getInput());
+			stringReader.setCursor(builder.getStart());
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 
 			try {
@@ -75,7 +75,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			}
 
 			return entitySelectorReader.listSuggestions(
-				suggestionsBuilder, suggestionsBuilderx -> CommandSource.suggestMatching(((CommandSource)commandContext.getSource()).getPlayerNames(), suggestionsBuilderx)
+				builder, suggestionsBuilder -> CommandSource.suggestMatching(((CommandSource)context.getSource()).getPlayerNames(), suggestionsBuilder)
 			);
 		} else {
 			return Suggestions.empty();
@@ -92,16 +92,16 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 		Collection<GameProfile> getNames(ServerCommandSource serverCommandSource) throws CommandSyntaxException;
 	}
 
-	public static class class_2193 implements GameProfileArgumentType.GameProfileArgument {
-		private final EntitySelector field_9870;
+	public static class SelectorBacked implements GameProfileArgumentType.GameProfileArgument {
+		private final EntitySelector selector;
 
-		public class_2193(EntitySelector entitySelector) {
-			this.field_9870 = entitySelector;
+		public SelectorBacked(EntitySelector entitySelector) {
+			this.selector = entitySelector;
 		}
 
 		@Override
 		public Collection<GameProfile> getNames(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-			List<ServerPlayerEntity> list = this.field_9870.getPlayers(serverCommandSource);
+			List<ServerPlayerEntity> list = this.selector.getPlayers(serverCommandSource);
 			if (list.isEmpty()) {
 				throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
 			} else {

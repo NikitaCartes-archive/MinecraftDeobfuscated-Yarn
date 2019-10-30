@@ -18,8 +18,8 @@ public class BossBarHud extends DrawableHelper {
 	private final MinecraftClient client;
 	private final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();
 
-	public BossBarHud(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public BossBarHud(MinecraftClient client) {
+		this.client = client;
 	}
 
 	public void render() {
@@ -45,28 +45,28 @@ public class BossBarHud extends DrawableHelper {
 		}
 	}
 
-	private void renderBossBar(int i, int j, BossBar bossBar) {
-		this.blit(i, j, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
+	private void renderBossBar(int x, int y, BossBar bossBar) {
+		this.blit(x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
 		if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-			this.blit(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
+			this.blit(x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
 		}
 
-		int k = (int)(bossBar.getPercent() * 183.0F);
-		if (k > 0) {
-			this.blit(i, j, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, k, 5);
+		int i = (int)(bossBar.getPercent() * 183.0F);
+		if (i > 0) {
+			this.blit(x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
 			if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-				this.blit(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, k, 5);
+				this.blit(x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
 			}
 		}
 	}
 
-	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
-		if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.ADD) {
-			this.bossBars.put(bossBarS2CPacket.getUuid(), new ClientBossBar(bossBarS2CPacket));
-		} else if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.REMOVE) {
-			this.bossBars.remove(bossBarS2CPacket.getUuid());
+	public void handlePacket(BossBarS2CPacket packet) {
+		if (packet.getType() == BossBarS2CPacket.Type.ADD) {
+			this.bossBars.put(packet.getUuid(), new ClientBossBar(packet));
+		} else if (packet.getType() == BossBarS2CPacket.Type.REMOVE) {
+			this.bossBars.remove(packet.getUuid());
 		} else {
-			((ClientBossBar)this.bossBars.get(bossBarS2CPacket.getUuid())).handlePacket(bossBarS2CPacket);
+			((ClientBossBar)this.bossBars.get(packet.getUuid())).handlePacket(packet);
 		}
 	}
 

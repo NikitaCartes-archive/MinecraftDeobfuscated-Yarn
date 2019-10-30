@@ -9,9 +9,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
-public class JungleGroundBushFeature extends AbstractTreeFeature<AbstractTreeFeatureConfig> {
-	public JungleGroundBushFeature(Function<Dynamic<?>, ? extends AbstractTreeFeatureConfig> function) {
-		super(function);
+public class JungleGroundBushFeature extends AbstractTreeFeature<TreeFeatureConfig> {
+	public JungleGroundBushFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
@@ -22,12 +22,12 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<AbstractTreeFea
 		Set<BlockPos> set,
 		Set<BlockPos> set2,
 		BlockBox blockBox,
-		AbstractTreeFeatureConfig abstractTreeFeatureConfig
+		TreeFeatureConfig treeFeatureConfig
 	) {
 		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos).method_10074();
 		if (isNaturalDirtOrGrass(modifiableTestableWorld, blockPos)) {
 			blockPos = blockPos.up();
-			this.method_23382(modifiableTestableWorld, random, blockPos, set, blockBox, abstractTreeFeatureConfig);
+			this.method_23382(modifiableTestableWorld, random, blockPos, set, blockBox, treeFeatureConfig);
 
 			for (int i = 0; i <= 2; i++) {
 				int j = 2 - i;
@@ -36,7 +36,7 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<AbstractTreeFea
 					for (int l = -j; l <= j; l++) {
 						if (Math.abs(k) != j || Math.abs(l) != j || random.nextInt(2) != 0) {
 							this.method_23383(
-								modifiableTestableWorld, random, new BlockPos(k + blockPos.getX(), i + blockPos.getY(), l + blockPos.getZ()), set2, blockBox, abstractTreeFeatureConfig
+								modifiableTestableWorld, random, new BlockPos(k + blockPos.getX(), i + blockPos.getY(), l + blockPos.getZ()), set2, blockBox, treeFeatureConfig
 							);
 						}
 					}

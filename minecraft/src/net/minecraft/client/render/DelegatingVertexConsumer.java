@@ -8,51 +8,51 @@ import net.fabricmc.api.Environment;
 public class DelegatingVertexConsumer implements VertexConsumer {
 	private final Iterable<VertexConsumer> delegates;
 
-	public DelegatingVertexConsumer(ImmutableList<VertexConsumer> immutableList) {
-		for (int i = 0; i < immutableList.size(); i++) {
-			for (int j = i + 1; j < immutableList.size(); j++) {
-				if (immutableList.get(i) == immutableList.get(j)) {
+	public DelegatingVertexConsumer(ImmutableList<VertexConsumer> delegates) {
+		for (int i = 0; i < delegates.size(); i++) {
+			for (int j = i + 1; j < delegates.size(); j++) {
+				if (delegates.get(i) == delegates.get(j)) {
 					throw new IllegalArgumentException("Duplicate delegates");
 				}
 			}
 		}
 
-		this.delegates = immutableList;
+		this.delegates = delegates;
 	}
 
 	@Override
-	public VertexConsumer vertex(double d, double e, double f) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.vertex(d, e, f));
+	public VertexConsumer vertex(double x, double y, double z) {
+		this.delegates.forEach(vertexConsumer -> vertexConsumer.vertex(x, y, z));
 		return this;
 	}
 
 	@Override
-	public VertexConsumer color(int i, int j, int k, int l) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.color(i, j, k, l));
+	public VertexConsumer color(int red, int green, int blue, int alpha) {
+		this.delegates.forEach(vertexConsumer -> vertexConsumer.color(red, green, blue, alpha));
 		return this;
 	}
 
 	@Override
-	public VertexConsumer texture(float f, float g) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.texture(f, g));
+	public VertexConsumer texture(float u, float v) {
+		this.delegates.forEach(vertexConsumer -> vertexConsumer.texture(u, v));
 		return this;
 	}
 
 	@Override
-	public VertexConsumer overlay(int i, int j) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.overlay(i, j));
+	public VertexConsumer overlay(int u, int v) {
+		this.delegates.forEach(vertexConsumer -> vertexConsumer.overlay(u, v));
 		return this;
 	}
 
 	@Override
-	public VertexConsumer light(int i, int j) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.light(i, j));
+	public VertexConsumer light(int u, int v) {
+		this.delegates.forEach(vertexConsumer -> vertexConsumer.light(u, v));
 		return this;
 	}
 
 	@Override
-	public VertexConsumer normal(float f, float g, float h) {
-		this.delegates.forEach(vertexConsumer -> vertexConsumer.normal(f, g, h));
+	public VertexConsumer normal(float x, float y, float z) {
+		this.delegates.forEach(vertexConsumer -> vertexConsumer.normal(x, y, z));
 		return this;
 	}
 

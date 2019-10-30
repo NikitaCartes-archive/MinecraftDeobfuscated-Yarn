@@ -11,23 +11,23 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.NormalTreeFeatureConfig;
+import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 
 public abstract class FoliagePlacer implements DynamicSerializable {
-	protected final int field_21296;
-	protected final int field_21297;
-	protected final FoliagePlacerType<?> field_21298;
+	protected final int radius;
+	protected final int randomRadius;
+	protected final FoliagePlacerType<?> type;
 
-	public FoliagePlacer(int i, int j, FoliagePlacerType<?> foliagePlacerType) {
-		this.field_21296 = i;
-		this.field_21297 = j;
-		this.field_21298 = foliagePlacerType;
+	public FoliagePlacer(int radius, int randomRadius, FoliagePlacerType<?> type) {
+		this.radius = radius;
+		this.randomRadius = randomRadius;
+		this.type = type;
 	}
 
 	public abstract void method_23448(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
-		NormalTreeFeatureConfig normalTreeFeatureConfig,
+		BranchedTreeFeatureConfig branchedTreeFeatureConfig,
 		int i,
 		int j,
 		int k,
@@ -35,7 +35,7 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 		Set<BlockPos> set
 	);
 
-	public abstract int method_23452(Random random, int i, int j, NormalTreeFeatureConfig normalTreeFeatureConfig);
+	public abstract int method_23452(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig);
 
 	protected abstract boolean method_23451(Random random, int i, int j, int k, int l, int m);
 
@@ -44,7 +44,7 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 	protected void method_23449(
 		ModifiableTestableWorld modifiableTestableWorld,
 		Random random,
-		NormalTreeFeatureConfig normalTreeFeatureConfig,
+		BranchedTreeFeatureConfig branchedTreeFeatureConfig,
 		int i,
 		BlockPos blockPos,
 		int j,
@@ -57,29 +57,29 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 			for (int m = -k; m <= k; m++) {
 				if (!this.method_23451(random, i, l, j, m, k)) {
 					mutable.set(l + blockPos.getX(), j + blockPos.getY(), m + blockPos.getZ());
-					this.method_23450(modifiableTestableWorld, random, mutable, normalTreeFeatureConfig, set);
+					this.method_23450(modifiableTestableWorld, random, mutable, branchedTreeFeatureConfig, set);
 				}
 			}
 		}
 	}
 
 	protected void method_23450(
-		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, NormalTreeFeatureConfig normalTreeFeatureConfig, Set<BlockPos> set
+		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BranchedTreeFeatureConfig branchedTreeFeatureConfig, Set<BlockPos> set
 	) {
 		if (AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos)
 			|| AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos)
 			|| AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
-			modifiableTestableWorld.setBlockState(blockPos, normalTreeFeatureConfig.leavesProvider.getBlockState(random, blockPos), 19);
+			modifiableTestableWorld.setBlockState(blockPos, branchedTreeFeatureConfig.leavesProvider.getBlockState(random, blockPos), 19);
 			set.add(blockPos);
 		}
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.FOLIAGE_PLACER_TYPE.getId(this.field_21298).toString()))
-			.put(dynamicOps.createString("radius"), dynamicOps.createInt(this.field_21296))
-			.put(dynamicOps.createString("radius_random"), dynamicOps.createInt(this.field_21296));
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build())).getValue();
+		builder.put(ops.createString("type"), ops.createString(Registry.FOLIAGE_PLACER_TYPE.getId(this.type).toString()))
+			.put(ops.createString("radius"), ops.createInt(this.radius))
+			.put(ops.createString("radius_random"), ops.createInt(this.radius));
+		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 }

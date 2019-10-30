@@ -19,7 +19,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -169,7 +168,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public SoundEvent getEatSound(ItemStack itemStack) {
+	public SoundEvent getEatSound(ItemStack stack) {
 		return SoundEvents.ENTITY_FOX_EAT;
 	}
 
@@ -216,12 +215,12 @@ public class FoxEntity extends AnimalEntity {
 		return this.getHealth() <= 0.0F;
 	}
 
-	private boolean canEat(ItemStack itemStack) {
-		return itemStack.getItem().isFood() && this.getTarget() == null && this.onGround && !this.isSleeping();
+	private boolean canEat(ItemStack stack) {
+		return stack.getItem().isFood() && this.getTarget() == null && this.onGround && !this.isSleeping();
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty localDifficulty) {
+	protected void initEquipment(LocalDifficulty difficulty) {
 		if (this.random.nextFloat() < 0.2F) {
 			float f = this.random.nextFloat();
 			ItemStack itemStack;
@@ -245,8 +244,8 @@ public class FoxEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 45) {
+	public void handleStatus(byte status) {
+		if (status == 45) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
 			if (!itemStack.isEmpty()) {
 				for (int i = 0; i < 8; i++) {
@@ -266,7 +265,7 @@ public class FoxEntity extends AnimalEntity {
 				}
 			}
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
@@ -287,15 +286,15 @@ public class FoxEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public net.minecraft.entity.EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Biome biome = iWorld.getBiome(new BlockPos(this));
+		Biome biome = world.getBiome(new BlockPos(this));
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
 			type = ((FoxEntity.FoxData)entityData).type;
-			if (((FoxEntity.FoxData)entityData).method_22432() >= 2) {
+			if (((FoxEntity.FoxData)entityData).getSpawnedCount() >= 2) {
 				bl = true;
 			}
 		} else {
@@ -308,8 +307,8 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		this.addTypeSpecificGoals();
-		this.initEquipment(localDifficulty);
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.initEquipment(difficulty);
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	private void addTypeSpecificGoals() {
@@ -325,17 +324,17 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void eat(PlayerEntity playerEntity, ItemStack itemStack) {
-		if (this.isBreedingItem(itemStack)) {
-			this.playSound(this.getEatSound(itemStack), 1.0F, 1.0F);
+	protected void eat(PlayerEntity player, ItemStack stack) {
+		if (this.isBreedingItem(stack)) {
+			this.playSound(this.getEatSound(stack), 1.0F, 1.0F);
 		}
 
-		super.eat(playerEntity, itemStack);
+		super.eat(player, stack);
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return this.isBaby() ? entityDimensions.height * 0.85F : 0.4F;
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return this.isBaby() ? dimensions.height * 0.85F : 0.4F;
 	}
 
 	public FoxEntity.Type getFoxType() {
@@ -353,17 +352,17 @@ public class FoxEntity extends AnimalEntity {
 		return list;
 	}
 
-	private void addTrustedUuid(@Nullable UUID uUID) {
+	private void addTrustedUuid(@Nullable UUID uuid) {
 		if (this.dataTracker.get(OWNER).isPresent()) {
-			this.dataTracker.set(OTHER_TRUSTED, Optional.ofNullable(uUID));
+			this.dataTracker.set(OTHER_TRUSTED, Optional.ofNullable(uuid));
 		} else {
-			this.dataTracker.set(OWNER, Optional.ofNullable(uUID));
+			this.dataTracker.set(OWNER, Optional.ofNullable(uuid));
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		List<UUID> list = this.getTrustedUuids();
 		ListTag listTag = new ListTag();
 
@@ -373,26 +372,26 @@ public class FoxEntity extends AnimalEntity {
 			}
 		}
 
-		compoundTag.put("TrustedUUIDs", listTag);
-		compoundTag.putBoolean("Sleeping", this.isSleeping());
-		compoundTag.putString("Type", this.getFoxType().getKey());
-		compoundTag.putBoolean("Sitting", this.isSitting());
-		compoundTag.putBoolean("Crouching", this.isInSneakingPose());
+		tag.put("TrustedUUIDs", listTag);
+		tag.putBoolean("Sleeping", this.isSleeping());
+		tag.putString("Type", this.getFoxType().getKey());
+		tag.putBoolean("Sitting", this.isSitting());
+		tag.putBoolean("Crouching", this.isInSneakingPose());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		ListTag listTag = compoundTag.getList("TrustedUUIDs", 10);
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		ListTag listTag = tag.getList("TrustedUUIDs", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompound(i)));
 		}
 
-		this.setSleeping(compoundTag.getBoolean("Sleeping"));
-		this.setType(FoxEntity.Type.byName(compoundTag.getString("Type")));
-		this.setSitting(compoundTag.getBoolean("Sitting"));
-		this.setCrouching(compoundTag.getBoolean("Crouching"));
+		this.setSleeping(tag.getBoolean("Sleeping"));
+		this.setType(FoxEntity.Type.byName(tag.getString("Type")));
+		this.setSitting(tag.getBoolean("Sitting"));
+		this.setCrouching(tag.getBoolean("Crouching"));
 		this.addTypeSpecificGoals();
 	}
 
@@ -400,24 +399,24 @@ public class FoxEntity extends AnimalEntity {
 		return this.getFoxFlag(1);
 	}
 
-	public void setSitting(boolean bl) {
-		this.setFoxFlag(1, bl);
+	public void setSitting(boolean sitting) {
+		this.setFoxFlag(1, sitting);
 	}
 
 	public boolean isWalking() {
 		return this.getFoxFlag(64);
 	}
 
-	private void setWalking(boolean bl) {
-		this.setFoxFlag(64, bl);
+	private void setWalking(boolean walking) {
+		this.setFoxFlag(64, walking);
 	}
 
 	private boolean isAggressive() {
 		return this.getFoxFlag(128);
 	}
 
-	private void setAggressive(boolean bl) {
-		this.setFoxFlag(128, bl);
+	private void setAggressive(boolean aggressive) {
+		this.setFoxFlag(128, aggressive);
 	}
 
 	@Override
@@ -425,33 +424,33 @@ public class FoxEntity extends AnimalEntity {
 		return this.getFoxFlag(32);
 	}
 
-	private void setSleeping(boolean bl) {
-		this.setFoxFlag(32, bl);
+	private void setSleeping(boolean sleeping) {
+		this.setFoxFlag(32, sleeping);
 	}
 
-	private void setFoxFlag(int i, boolean bl) {
-		if (bl) {
-			this.dataTracker.set(FOX_FLAGS, (byte)(this.dataTracker.get(FOX_FLAGS) | i));
+	private void setFoxFlag(int mask, boolean value) {
+		if (value) {
+			this.dataTracker.set(FOX_FLAGS, (byte)(this.dataTracker.get(FOX_FLAGS) | mask));
 		} else {
-			this.dataTracker.set(FOX_FLAGS, (byte)(this.dataTracker.get(FOX_FLAGS) & ~i));
+			this.dataTracker.set(FOX_FLAGS, (byte)(this.dataTracker.get(FOX_FLAGS) & ~mask));
 		}
 	}
 
-	private boolean getFoxFlag(int i) {
-		return (this.dataTracker.get(FOX_FLAGS) & i) != 0;
+	private boolean getFoxFlag(int bitmask) {
+		return (this.dataTracker.get(FOX_FLAGS) & bitmask) != 0;
 	}
 
 	@Override
-	public boolean canPickUp(ItemStack itemStack) {
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canPickUp(itemStack);
+	public boolean canPickUp(ItemStack stack) {
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
+		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canPickUp(stack);
 	}
 
 	@Override
-	protected boolean canPickupItem(ItemStack itemStack) {
-		Item item = itemStack.getItem();
-		ItemStack itemStack2 = this.getEquippedStack(EquipmentSlot.MAINHAND);
-		return itemStack2.isEmpty() || this.eatingTime > 0 && item.isFood() && !itemStack2.getItem().isFood();
+	protected boolean canPickupItem(ItemStack stack) {
+		Item item = stack.getItem();
+		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
+		return itemStack.isEmpty() || this.eatingTime > 0 && item.isFood() && !itemStack.getItem().isFood();
 	}
 
 	private void spit(ItemStack itemStack) {
@@ -472,8 +471,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void loot(ItemEntity itemEntity) {
-		ItemStack itemStack = itemEntity.getStack();
+	protected void loot(ItemEntity item) {
+		ItemStack itemStack = item.getStack();
 		if (this.canPickupItem(itemStack)) {
 			int i = itemStack.getCount();
 			if (i > 1) {
@@ -483,8 +482,8 @@ public class FoxEntity extends AnimalEntity {
 			this.spit(this.getEquippedStack(EquipmentSlot.MAINHAND));
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack.split(1));
 			this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
-			this.sendPickup(itemEntity, itemStack.getCount());
-			itemEntity.remove();
+			this.sendPickup(item, itemStack.getCount());
+			item.remove();
 			this.eatingTime = 0;
 		}
 	}
@@ -528,13 +527,13 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean isBreedingItem(ItemStack itemStack) {
-		return itemStack.getItem() == Items.SWEET_BERRIES;
+	public boolean isBreedingItem(ItemStack stack) {
+		return stack.getItem() == Items.SWEET_BERRIES;
 	}
 
 	@Override
-	protected void onPlayerSpawnedChild(PlayerEntity playerEntity, PassiveEntity passiveEntity) {
-		((FoxEntity)passiveEntity).addTrustedUuid(playerEntity.getUuid());
+	protected void onPlayerSpawnedChild(PlayerEntity player, PassiveEntity child) {
+		((FoxEntity)child).addTrustedUuid(player.getUuid());
 	}
 
 	public boolean isChasing() {
@@ -577,12 +576,12 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void setTarget(@Nullable LivingEntity livingEntity) {
-		if (this.isAggressive() && livingEntity == null) {
+	public void setTarget(@Nullable LivingEntity target) {
+		if (this.isAggressive() && target == null) {
 			this.setAggressive(false);
 		}
 
-		super.setTarget(livingEntity);
+		super.setTarget(target);
 	}
 
 	@Override
@@ -636,7 +635,7 @@ public class FoxEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_FOX_HURT;
 	}
 
@@ -651,14 +650,14 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void drop(DamageSource damageSource) {
+	protected void drop(DamageSource source) {
 		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
 		if (!itemStack.isEmpty()) {
 			this.dropStack(itemStack);
 			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 		}
 
-		super.drop(damageSource);
+		super.drop(source);
 	}
 
 	public static boolean canJumpChase(FoxEntity foxEntity, LivingEntity livingEntity) {
@@ -682,16 +681,16 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
-		public AttackGoal(double d, boolean bl) {
-			super(FoxEntity.this, d, bl);
+		public AttackGoal(double speed, boolean bl) {
+			super(FoxEntity.this, speed, bl);
 		}
 
 		@Override
-		protected void attack(LivingEntity livingEntity, double d) {
-			double e = this.getSquaredMaxAttackDistance(livingEntity);
-			if (d <= e && this.ticksUntilAttack <= 0) {
+		protected void attack(LivingEntity target, double squaredDistance) {
+			double d = this.getSquaredMaxAttackDistance(target);
+			if (squaredDistance <= d && this.ticksUntilAttack <= 0) {
 				this.ticksUntilAttack = 20;
-				this.mob.tryAttack(livingEntity);
+				this.mob.tryAttack(target);
 				FoxEntity.this.playSound(SoundEvents.ENTITY_FOX_BITE, 1.0F, 1.0F);
 			}
 		}
@@ -711,8 +710,8 @@ public class FoxEntity extends AnimalEntity {
 	class AvoidDaylightGoal extends EscapeSunlightGoal {
 		private int timer = 100;
 
-		public AvoidDaylightGoal(double d) {
-			super(FoxEntity.this, d);
+		public AvoidDaylightGoal(double speed) {
+			super(FoxEntity.this, speed);
 		}
 
 		@Override
@@ -768,8 +767,10 @@ public class FoxEntity extends AnimalEntity {
 		private LivingEntity friend;
 		private int lastAttackedTime;
 
-		public DefendFriendGoal(Class<LivingEntity> class_, boolean bl, boolean bl2, @Nullable Predicate<LivingEntity> predicate) {
-			super(FoxEntity.this, class_, 10, bl, bl2, predicate);
+		public DefendFriendGoal(
+			Class<LivingEntity> targetEntityClass, boolean checkVisibility, boolean checkCanNavigate, @Nullable Predicate<LivingEntity> targetPredicate
+		) {
+			super(FoxEntity.this, targetEntityClass, 10, checkVisibility, checkCanNavigate, targetPredicate);
 		}
 
 		@Override
@@ -858,8 +859,8 @@ public class FoxEntity extends AnimalEntity {
 	public class EatSweetBerriesGoal extends MoveToTargetPosGoal {
 		protected int timer;
 
-		public EatSweetBerriesGoal(double d, int i, int j) {
-			super(FoxEntity.this, d, i, j);
+		public EatSweetBerriesGoal(double speed, int rannge, int maxYDifference) {
+			super(FoxEntity.this, speed, rannge, maxYDifference);
 		}
 
 		@Override
@@ -873,8 +874,8 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean isTargetPos(WorldView worldView, BlockPos blockPos) {
-			BlockState blockState = worldView.getBlockState(blockPos);
+		protected boolean isTargetPos(WorldView worldView, BlockPos pos) {
+			BlockState blockState = worldView.getBlockState(pos);
 			return blockState.getBlock() == Blocks.SWEET_BERRY_BUSH && (Integer)blockState.get(SweetBerryBushBlock.AGE) >= 2;
 		}
 
@@ -930,8 +931,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class EscapeWhenNotAggresiveGoal extends EscapeDangerGoal {
-		public EscapeWhenNotAggresiveGoal(double d) {
-			super(FoxEntity.this, d);
+		public EscapeWhenNotAggresiveGoal(double speed) {
+			super(FoxEntity.this, speed);
 		}
 
 		@Override
@@ -943,9 +944,9 @@ public class FoxEntity extends AnimalEntity {
 	class FollowParentGoal extends net.minecraft.entity.ai.goal.FollowParentGoal {
 		private final FoxEntity fox;
 
-		public FollowParentGoal(FoxEntity foxEntity2, double d) {
-			super(foxEntity2, d);
-			this.fox = foxEntity2;
+		public FollowParentGoal(FoxEntity fox, double speed) {
+			super(fox, speed);
+			this.fox = fox;
 		}
 
 		@Override
@@ -965,11 +966,11 @@ public class FoxEntity extends AnimalEntity {
 		}
 	}
 
-	public static class FoxData extends PassiveEntity.class_4697 {
+	public static class FoxData extends PassiveEntity.EntityData {
 		public final FoxEntity.Type type;
 
 		public FoxData(FoxEntity.Type type) {
-			this.method_22434(false);
+			this.setBabyAllowed(false);
 			this.type = type;
 		}
 	}
@@ -1023,8 +1024,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class GoToVillageGoal extends net.minecraft.entity.ai.goal.GoToVillageGoal {
-		public GoToVillageGoal(int i, int j) {
-			super(FoxEntity.this, j);
+		public GoToVillageGoal(int unused, int searchRange) {
+			super(FoxEntity.this, searchRange);
 		}
 
 		@Override
@@ -1146,8 +1147,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class LookAtEntityGoal extends net.minecraft.entity.ai.goal.LookAtEntityGoal {
-		public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f) {
-			super(mobEntity, class_, f);
+		public LookAtEntityGoal(MobEntity fox, Class<? extends LivingEntity> targetType, float range) {
+			super(fox, targetType, range);
 		}
 
 		@Override
@@ -1162,8 +1163,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class MateGoal extends AnimalMateGoal {
-		public MateGoal(double d) {
-			super(FoxEntity.this, d);
+		public MateGoal(double chance) {
+			super(FoxEntity.this, chance);
 		}
 
 		@Override
@@ -1431,9 +1432,9 @@ public class FoxEntity extends AnimalEntity {
 		private final String key;
 		private final List<Biome> biomes;
 
-		private Type(int j, String string2, Biome... biomes) {
-			this.id = j;
-			this.key = string2;
+		private Type(int id, String key, Biome... biomes) {
+			this.id = id;
+			this.key = key;
 			this.biomes = Arrays.asList(biomes);
 		}
 
@@ -1449,16 +1450,16 @@ public class FoxEntity extends AnimalEntity {
 			return this.id;
 		}
 
-		public static FoxEntity.Type byName(String string) {
-			return (FoxEntity.Type)NAME_TYPE_MAP.getOrDefault(string, RED);
+		public static FoxEntity.Type byName(String name) {
+			return (FoxEntity.Type)NAME_TYPE_MAP.getOrDefault(name, RED);
 		}
 
-		public static FoxEntity.Type fromId(int i) {
-			if (i < 0 || i > TYPES.length) {
-				i = 0;
+		public static FoxEntity.Type fromId(int id) {
+			if (id < 0 || id > TYPES.length) {
+				id = 0;
 			}
 
-			return TYPES[i];
+			return TYPES[id];
 		}
 
 		public static FoxEntity.Type fromBiome(Biome biome) {

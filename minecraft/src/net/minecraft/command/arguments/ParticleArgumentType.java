@@ -28,12 +28,12 @@ public class ParticleArgumentType implements ArgumentType<ParticleEffect> {
 		return new ParticleArgumentType();
 	}
 
-	public static ParticleEffect getParticle(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, ParticleEffect.class);
+	public static ParticleEffect getParticle(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, ParticleEffect.class);
 	}
 
-	public ParticleEffect method_9416(StringReader stringReader) throws CommandSyntaxException {
-		return readParameters(stringReader);
+	public ParticleEffect method_9416(StringReader reader) throws CommandSyntaxException {
+		return readParameters(reader);
 	}
 
 	@Override
@@ -41,20 +41,20 @@ public class ParticleArgumentType implements ArgumentType<ParticleEffect> {
 		return EXAMPLES;
 	}
 
-	public static ParticleEffect readParameters(StringReader stringReader) throws CommandSyntaxException {
-		Identifier identifier = Identifier.fromCommandInput(stringReader);
+	public static ParticleEffect readParameters(StringReader reader) throws CommandSyntaxException {
+		Identifier identifier = Identifier.fromCommandInput(reader);
 		ParticleType<?> particleType = (ParticleType<?>)Registry.PARTICLE_TYPE
 			.getOrEmpty(identifier)
 			.orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
-		return readParameters(stringReader, (ParticleType<ParticleEffect>)particleType);
+		return readParameters(reader, (ParticleType<ParticleEffect>)particleType);
 	}
 
-	private static <T extends ParticleEffect> T readParameters(StringReader stringReader, ParticleType<T> particleType) throws CommandSyntaxException {
-		return particleType.getParametersFactory().read(particleType, stringReader);
+	private static <T extends ParticleEffect> T readParameters(StringReader reader, ParticleType<T> type) throws CommandSyntaxException {
+		return type.getParametersFactory().read(type, reader);
 	}
 
 	@Override
-	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(Registry.PARTICLE_TYPE.getIds(), suggestionsBuilder);
+	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+		return CommandSource.suggestIdentifiers(Registry.PARTICLE_TYPE.getIds(), builder);
 	}
 }

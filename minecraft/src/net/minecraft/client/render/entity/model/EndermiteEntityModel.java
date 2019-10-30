@@ -36,10 +36,10 @@ public class EndermiteEntityModel<T extends Entity> extends CompositeEntityModel
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		for (int l = 0; l < this.field_3368.length; l++) {
-			this.field_3368[l].yaw = MathHelper.cos(h * 0.9F + (float)l * 0.15F * (float) Math.PI) * (float) Math.PI * 0.01F * (float)(1 + Math.abs(l - 2));
-			this.field_3368[l].pivotX = MathHelper.sin(h * 0.9F + (float)l * 0.15F * (float) Math.PI) * (float) Math.PI * 0.1F * (float)Math.abs(l - 2);
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		for (int i = 0; i < this.field_3368.length; i++) {
+			this.field_3368[i].yaw = MathHelper.cos(age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.01F * (float)(1 + Math.abs(i - 2));
+			this.field_3368[i].pivotX = MathHelper.sin(age * 0.9F + (float)i * 0.15F * (float) Math.PI) * (float) Math.PI * 0.1F * (float)Math.abs(i - 2);
 		}
 	}
 }

@@ -10,9 +10,9 @@ public class PounceAtTargetGoal extends Goal {
 	private LivingEntity target;
 	private final float velocity;
 
-	public PounceAtTargetGoal(MobEntity mobEntity, float f) {
-		this.mob = mobEntity;
-		this.velocity = f;
+	public PounceAtTargetGoal(MobEntity rmob, float velocity) {
+		this.mob = rmob;
+		this.velocity = velocity;
 		this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
 	}
 

@@ -14,7 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,10 +32,10 @@ public class PlayerSkinTexture extends ResourceTexture {
 	private CompletableFuture<?> field_20844;
 	private boolean field_5215;
 
-	public PlayerSkinTexture(@Nullable File file, String string, Identifier identifier, boolean bl, @Nullable Runnable runnable) {
-		super(identifier);
-		this.cacheFile = file;
-		this.url = string;
+	public PlayerSkinTexture(@Nullable File cacheFile, String url, Identifier fallbackSkin, boolean bl, @Nullable Runnable runnable) {
+		super(fallbackSkin);
+		this.cacheFile = cacheFile;
+		this.url = url;
 		this.field_20842 = bl;
 		this.field_20843 = runnable;
 	}
@@ -120,7 +120,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 							httpURLConnection.disconnect();
 						}
 					}
-				}, SystemUtil.getServerWorkerExecutor());
+				}, Util.getServerWorkerExecutor());
 			}
 		}
 	}

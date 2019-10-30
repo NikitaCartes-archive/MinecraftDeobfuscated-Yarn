@@ -34,18 +34,18 @@ public class StringTag implements Tag {
 	private static final StringTag EMPTY = new StringTag("");
 	private final String value;
 
-	private StringTag(String string) {
-		Objects.requireNonNull(string, "Null string not allowed");
-		this.value = string;
+	private StringTag(String value) {
+		Objects.requireNonNull(value, "Null string not allowed");
+		this.value = value;
 	}
 
-	public static StringTag of(String string) {
-		return string.isEmpty() ? EMPTY : new StringTag(string);
+	public static StringTag of(String value) {
+		return value.isEmpty() ? EMPTY : new StringTag(value);
 	}
 
 	@Override
-	public void write(DataOutput dataOutput) throws IOException {
-		dataOutput.writeUTF(this.value);
+	public void write(DataOutput output) throws IOException {
+		output.writeUTF(this.value);
 	}
 
 	@Override
@@ -67,8 +67,8 @@ public class StringTag implements Tag {
 		return this;
 	}
 
-	public boolean equals(Object object) {
-		return this == object ? true : object instanceof StringTag && Objects.equals(this.value, ((StringTag)object).value);
+	public boolean equals(Object o) {
+		return this == o ? true : o instanceof StringTag && Objects.equals(this.value, ((StringTag)o).value);
 	}
 
 	public int hashCode() {
@@ -81,19 +81,19 @@ public class StringTag implements Tag {
 	}
 
 	@Override
-	public Text toText(String string, int i) {
-		String string2 = escape(this.value);
-		String string3 = string2.substring(0, 1);
-		Text text = new LiteralText(string2.substring(1, string2.length() - 1)).formatted(GREEN);
-		return new LiteralText(string3).append(text).append(string3);
+	public Text toText(String indent, int depth) {
+		String string = escape(this.value);
+		String string2 = string.substring(0, 1);
+		Text text = new LiteralText(string.substring(1, string.length() - 1)).formatted(GREEN);
+		return new LiteralText(string2).append(text).append(string2);
 	}
 
-	public static String escape(String string) {
+	public static String escape(String value) {
 		StringBuilder stringBuilder = new StringBuilder(" ");
 		char c = 0;
 
-		for (int i = 0; i < string.length(); i++) {
-			char d = string.charAt(i);
+		for (int i = 0; i < value.length(); i++) {
+			char d = value.charAt(i);
 			if (d == '\\') {
 				stringBuilder.append('\\');
 			} else if (d == '"' || d == '\'') {

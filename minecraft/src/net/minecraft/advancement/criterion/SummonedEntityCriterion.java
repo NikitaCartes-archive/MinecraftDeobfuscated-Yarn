@@ -21,24 +21,24 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		return new SummonedEntityCriterion.Conditions(entityPredicate);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, Entity entity) {
-		this.test(serverPlayerEntity.getAdvancementManager(), conditions -> conditions.matches(serverPlayerEntity, entity));
+	public void trigger(ServerPlayerEntity player, Entity entity) {
+		this.test(player.getAdvancementManager(), conditions -> conditions.matches(player, entity));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate entity;
 
-		public Conditions(EntityPredicate entityPredicate) {
+		public Conditions(EntityPredicate entity) {
 			super(SummonedEntityCriterion.ID);
-			this.entity = entityPredicate;
+			this.entity = entity;
 		}
 
 		public static SummonedEntityCriterion.Conditions create(EntityPredicate.Builder builder) {
 			return new SummonedEntityCriterion.Conditions(builder.build());
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, Entity entity) {
-			return this.entity.test(serverPlayerEntity, entity);
+		public boolean matches(ServerPlayerEntity player, Entity entity) {
+			return this.entity.test(player, entity);
 		}
 
 		@Override

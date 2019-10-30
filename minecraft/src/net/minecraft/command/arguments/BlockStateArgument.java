@@ -18,10 +18,10 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 	@Nullable
 	private final CompoundTag data;
 
-	public BlockStateArgument(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
-		this.state = blockState;
-		this.properties = set;
-		this.data = compoundTag;
+	public BlockStateArgument(BlockState state, Set<Property<?>> properties, @Nullable CompoundTag data) {
+		this.state = state;
+		this.properties = properties;
+		this.data = data;
 	}
 
 	public BlockState getBlockState() {

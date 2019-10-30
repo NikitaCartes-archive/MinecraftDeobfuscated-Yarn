@@ -12,25 +12,25 @@ import net.minecraft.util.registry.Registry;
 public class SimpleStateProvider extends StateProvider {
 	private final BlockState state;
 
-	public SimpleStateProvider(BlockState blockState) {
+	public SimpleStateProvider(BlockState state) {
 		super(StateProviderType.SIMPLE_STATE_PROVIDER);
-		this.state = blockState;
+		this.state = state;
 	}
 
-	public <T> SimpleStateProvider(Dynamic<T> dynamic) {
-		this(BlockState.deserialize(dynamic.get("state").orElseEmptyMap()));
+	public <T> SimpleStateProvider(Dynamic<T> configDeserializer) {
+		this(BlockState.deserialize(configDeserializer.get("state").orElseEmptyMap()));
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos blockPos) {
+	public BlockState getBlockState(Random random, BlockPos pos) {
 		return this.state;
 	}
 
 	@Override
-	public <T> T serialize(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> ops) {
 		Builder<T, T> builder = ImmutableMap.builder();
-		builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()))
-			.put(dynamicOps.createString("state"), BlockState.serialize(dynamicOps, this.state).getValue());
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build())).getValue();
+		builder.put(ops.createString("type"), ops.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString()))
+			.put(ops.createString("state"), BlockState.serialize(ops, this.state).getValue());
+		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 }

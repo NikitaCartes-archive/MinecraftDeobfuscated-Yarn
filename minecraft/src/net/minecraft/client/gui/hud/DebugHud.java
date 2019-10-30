@@ -34,7 +34,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -53,7 +53,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
-	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = SystemUtil.consume(new EnumMap(Heightmap.Type.class), enumMap -> {
+	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.create(new EnumMap(Heightmap.Type.class), enumMap -> {
 		enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
 		enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
 		enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
@@ -72,9 +72,9 @@ public class DebugHud extends DrawableHelper {
 	@Nullable
 	private CompletableFuture<WorldChunk> chunkFuture;
 
-	public DebugHud(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
-		this.fontRenderer = minecraftClient.textRenderer;
+	public DebugHud(MinecraftClient client) {
+		this.client = client;
+		this.fontRenderer = client.textRenderer;
 	}
 
 	public void resetChunk() {
@@ -455,10 +455,10 @@ public class DebugHud extends DrawableHelper {
 		}
 	}
 
-	private String propertyToString(Entry<Property<?>, Comparable<?>> entry) {
-		Property<?> property = (Property<?>)entry.getKey();
-		Comparable<?> comparable = (Comparable<?>)entry.getValue();
-		String string = SystemUtil.getValueAsString(property, comparable);
+	private String propertyToString(Entry<Property<?>, Comparable<?>> propEntry) {
+		Property<?> property = (Property<?>)propEntry.getKey();
+		Comparable<?> comparable = (Comparable<?>)propEntry.getValue();
+		String string = Util.getValueAsString(property, comparable);
 		if (Boolean.TRUE.equals(comparable)) {
 			string = Formatting.GREEN + string;
 		} else if (Boolean.FALSE.equals(comparable)) {
@@ -468,88 +468,90 @@ public class DebugHud extends DrawableHelper {
 		return property.getName() + ": " + string;
 	}
 
-	private void drawMetricsData(MetricsData metricsData, int i, int j, boolean bl) {
+	private void drawMetricsData(MetricsData metricsData, int startY, int firstSample, boolean isClient) {
 		RenderSystem.disableDepthTest();
-		int k = metricsData.getStartIndex();
-		int l = metricsData.getCurrentIndex();
+		int i = metricsData.getStartIndex();
+		int j = metricsData.getCurrentIndex();
 		long[] ls = metricsData.getSamples();
-		int n = i;
-		int o = Math.max(0, ls.length - j);
-		int p = ls.length - o;
-		int m = metricsData.wrapIndex(k + o);
-		long q = 0L;
-		int r = Integer.MAX_VALUE;
-		int s = Integer.MIN_VALUE;
+		int l = startY;
+		int m = Math.max(0, ls.length - firstSample);
+		int n = ls.length - m;
+		int k = metricsData.wrapIndex(i + m);
+		long o = 0L;
+		int p = Integer.MAX_VALUE;
+		int q = Integer.MIN_VALUE;
 
-		for (int t = 0; t < p; t++) {
-			int u = (int)(ls[metricsData.wrapIndex(m + t)] / 1000000L);
-			r = Math.min(r, u);
-			s = Math.max(s, u);
-			q += (long)u;
+		for (int r = 0; r < n; r++) {
+			int s = (int)(ls[metricsData.wrapIndex(k + r)] / 1000000L);
+			p = Math.min(p, s);
+			q = Math.max(q, s);
+			o += (long)s;
 		}
 
-		int t = this.client.getWindow().getScaledHeight();
-		fill(i, t - 60, i + p, t, -1873784752);
+		int r = this.client.getWindow().getScaledHeight();
+		fill(startY, r - 60, startY + n, r, -1873784752);
 
-		while (m != l) {
-			int u = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
-			int v = bl ? 100 : 60;
-			int w = this.getMetricsLineColor(MathHelper.clamp(u, 0, v), 0, v / 2, v);
-			this.vLine(n, t, t - u, w);
-			n++;
-			m = metricsData.wrapIndex(m + 1);
+		while (k != j) {
+			int s = metricsData.method_15248(ls[k], isClient ? 30 : 60, isClient ? 60 : 20);
+			int t = isClient ? 100 : 60;
+			int u = this.getMetricsLineColor(MathHelper.clamp(s, 0, t), 0, t / 2, t);
+			this.vLine(l, r, r - s, u);
+			l++;
+			k = metricsData.wrapIndex(k + 1);
 		}
 
-		if (bl) {
-			fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
-			this.fontRenderer.draw("60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 30, -1);
-			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-			this.fontRenderer.draw("30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 60, -1);
+		if (isClient) {
+			fill(startY + 1, r - 30 + 1, startY + 14, r - 30 + 10, -1873784752);
+			this.fontRenderer.draw("60 FPS", (float)(startY + 2), (float)(r - 30 + 2), 14737632);
+			this.hLine(startY, startY + n - 1, r - 30, -1);
+			fill(startY + 1, r - 60 + 1, startY + 14, r - 60 + 10, -1873784752);
+			this.fontRenderer.draw("30 FPS", (float)(startY + 2), (float)(r - 60 + 2), 14737632);
+			this.hLine(startY, startY + n - 1, r - 60, -1);
 		} else {
-			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-			this.fontRenderer.draw("20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 60, -1);
+			fill(startY + 1, r - 60 + 1, startY + 14, r - 60 + 10, -1873784752);
+			this.fontRenderer.draw("20 TPS", (float)(startY + 2), (float)(r - 60 + 2), 14737632);
+			this.hLine(startY, startY + n - 1, r - 60, -1);
 		}
 
-		this.hLine(i, i + p - 1, t - 1, -1);
-		this.vLine(i, t - 60, t, -1);
-		this.vLine(i + p - 1, t - 60, t, -1);
-		if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-			this.hLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+		this.hLine(startY, startY + n - 1, r - 1, -1);
+		this.vLine(startY, r - 60, r, -1);
+		this.vLine(startY + n - 1, r - 60, r, -1);
+		if (isClient && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
+			this.hLine(startY, startY + n - 1, r - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
 		}
 
-		String string = r + " ms min";
-		String string2 = q / (long)p + " ms avg";
-		String string3 = s + " ms max";
-		this.fontRenderer.drawWithShadow(string, (float)(i + 2), (float)(t - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(string2, (float)(i + p / 2 - this.fontRenderer.getStringWidth(string2) / 2), (float)(t - 60 - 9), 14737632);
-		this.fontRenderer.drawWithShadow(string3, (float)(i + p - this.fontRenderer.getStringWidth(string3)), (float)(t - 60 - 9), 14737632);
+		String string = p + " ms min";
+		String string2 = o / (long)n + " ms avg";
+		String string3 = q + " ms max";
+		this.fontRenderer.drawWithShadow(string, (float)(startY + 2), (float)(r - 60 - 9), 14737632);
+		this.fontRenderer.drawWithShadow(string2, (float)(startY + n / 2 - this.fontRenderer.getStringWidth(string2) / 2), (float)(r - 60 - 9), 14737632);
+		this.fontRenderer.drawWithShadow(string3, (float)(startY + n - this.fontRenderer.getStringWidth(string3)), (float)(r - 60 - 9), 14737632);
 		RenderSystem.enableDepthTest();
 	}
 
-	private int getMetricsLineColor(int i, int j, int k, int l) {
-		return i < k ? this.interpolateColor(-16711936, -256, (float)i / (float)k) : this.interpolateColor(-256, -65536, (float)(i - k) / (float)(l - k));
+	private int getMetricsLineColor(int value, int greenValue, int yellowValue, int redValue) {
+		return value < yellowValue
+			? this.interpolateColor(-16711936, -256, (float)value / (float)yellowValue)
+			: this.interpolateColor(-256, -65536, (float)(value - yellowValue) / (float)(redValue - yellowValue));
 	}
 
-	private int interpolateColor(int i, int j, float f) {
-		int k = i >> 24 & 0xFF;
-		int l = i >> 16 & 0xFF;
-		int m = i >> 8 & 0xFF;
-		int n = i & 0xFF;
-		int o = j >> 24 & 0xFF;
-		int p = j >> 16 & 0xFF;
-		int q = j >> 8 & 0xFF;
-		int r = j & 0xFF;
-		int s = MathHelper.clamp((int)MathHelper.lerp(f, (float)k, (float)o), 0, 255);
-		int t = MathHelper.clamp((int)MathHelper.lerp(f, (float)l, (float)p), 0, 255);
-		int u = MathHelper.clamp((int)MathHelper.lerp(f, (float)m, (float)q), 0, 255);
-		int v = MathHelper.clamp((int)MathHelper.lerp(f, (float)n, (float)r), 0, 255);
-		return s << 24 | t << 16 | u << 8 | v;
+	private int interpolateColor(int color1, int color2, float dt) {
+		int i = color1 >> 24 & 0xFF;
+		int j = color1 >> 16 & 0xFF;
+		int k = color1 >> 8 & 0xFF;
+		int l = color1 & 0xFF;
+		int m = color2 >> 24 & 0xFF;
+		int n = color2 >> 16 & 0xFF;
+		int o = color2 >> 8 & 0xFF;
+		int p = color2 & 0xFF;
+		int q = MathHelper.clamp((int)MathHelper.lerp(dt, (float)i, (float)m), 0, 255);
+		int r = MathHelper.clamp((int)MathHelper.lerp(dt, (float)j, (float)n), 0, 255);
+		int s = MathHelper.clamp((int)MathHelper.lerp(dt, (float)k, (float)o), 0, 255);
+		int t = MathHelper.clamp((int)MathHelper.lerp(dt, (float)l, (float)p), 0, 255);
+		return q << 24 | r << 16 | s << 8 | t;
 	}
 
-	private static long toMiB(long l) {
-		return l / 1024L / 1024L;
+	private static long toMiB(long bytes) {
+		return bytes / 1024L / 1024L;
 	}
 }

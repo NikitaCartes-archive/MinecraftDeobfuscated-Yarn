@@ -11,29 +11,29 @@ public class BlockBreakingInfo implements Comparable<BlockBreakingInfo> {
 	private int stage;
 	private int lastUpdateTick;
 
-	public BlockBreakingInfo(int i, BlockPos blockPos) {
-		this.actorNetworkId = i;
-		this.pos = blockPos;
+	public BlockBreakingInfo(int breakingEntityId, BlockPos pos) {
+		this.actorNetworkId = breakingEntityId;
+		this.pos = pos;
 	}
 
 	public BlockPos getPos() {
 		return this.pos;
 	}
 
-	public void setStage(int i) {
-		if (i > 10) {
-			i = 10;
+	public void setStage(int stage) {
+		if (stage > 10) {
+			stage = 10;
 		}
 
-		this.stage = i;
+		this.stage = stage;
 	}
 
 	public int getStage() {
 		return this.stage;
 	}
 
-	public void setLastUpdateTick(int i) {
-		this.lastUpdateTick = i;
+	public void setLastUpdateTick(int lastUpdateTick) {
+		this.lastUpdateTick = lastUpdateTick;
 	}
 
 	public int getLastUpdateTick() {

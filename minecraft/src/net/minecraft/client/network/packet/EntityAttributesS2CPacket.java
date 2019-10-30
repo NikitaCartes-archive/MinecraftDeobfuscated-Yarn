@@ -20,10 +20,10 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public EntityAttributesS2CPacket() {
 	}
 
-	public EntityAttributesS2CPacket(int i, Collection<EntityAttributeInstance> collection) {
-		this.entityId = i;
+	public EntityAttributesS2CPacket(int entityId, Collection<EntityAttributeInstance> attributes) {
+		this.entityId = entityId;
 
-		for (EntityAttributeInstance entityAttributeInstance : collection) {
+		for (EntityAttributeInstance entityAttributeInstance : attributes) {
 			this.entries
 				.add(
 					new EntityAttributesS2CPacket.Entry(
@@ -34,23 +34,19 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.entityId = packetByteBuf.readVarInt();
-		int i = packetByteBuf.readInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.entityId = buf.readVarInt();
+		int i = buf.readInt();
 
 		for (int j = 0; j < i; j++) {
-			String string = packetByteBuf.readString(64);
-			double d = packetByteBuf.readDouble();
+			String string = buf.readString(64);
+			double d = buf.readDouble();
 			List<EntityAttributeModifier> list = Lists.<EntityAttributeModifier>newArrayList();
-			int k = packetByteBuf.readVarInt();
+			int k = buf.readVarInt();
 
 			for (int l = 0; l < k; l++) {
-				UUID uUID = packetByteBuf.readUuid();
-				list.add(
-					new EntityAttributeModifier(
-						uUID, "Unknown synced attribute modifier", packetByteBuf.readDouble(), EntityAttributeModifier.Operation.fromId(packetByteBuf.readByte())
-					)
-				);
+				UUID uUID = buf.readUuid();
+				list.add(new EntityAttributeModifier(uUID, "Unknown synced attribute modifier", buf.readDouble(), EntityAttributeModifier.Operation.fromId(buf.readByte())));
 			}
 
 			this.entries.add(new EntityAttributesS2CPacket.Entry(string, d, list));
@@ -58,19 +54,19 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.entityId);
-		packetByteBuf.writeInt(this.entries.size());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.entityId);
+		buf.writeInt(this.entries.size());
 
 		for (EntityAttributesS2CPacket.Entry entry : this.entries) {
-			packetByteBuf.writeString(entry.getId());
-			packetByteBuf.writeDouble(entry.getBaseValue());
-			packetByteBuf.writeVarInt(entry.getModifiers().size());
+			buf.writeString(entry.getId());
+			buf.writeDouble(entry.getBaseValue());
+			buf.writeVarInt(entry.getModifiers().size());
 
 			for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
-				packetByteBuf.writeUuid(entityAttributeModifier.getId());
-				packetByteBuf.writeDouble(entityAttributeModifier.getAmount());
-				packetByteBuf.writeByte(entityAttributeModifier.getOperation().getId());
+				buf.writeUuid(entityAttributeModifier.getId());
+				buf.writeDouble(entityAttributeModifier.getAmount());
+				buf.writeByte(entityAttributeModifier.getOperation().getId());
 			}
 		}
 	}
@@ -94,8 +90,8 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		private final double baseValue;
 		private final Collection<EntityAttributeModifier> modifiers;
 
-		public Entry(String string, double d, Collection<EntityAttributeModifier> collection) {
-			this.id = string;
+		public Entry(String baseValue, double d, Collection<EntityAttributeModifier> collection) {
+			this.id = baseValue;
 			this.baseValue = d;
 			this.modifiers = collection;
 		}

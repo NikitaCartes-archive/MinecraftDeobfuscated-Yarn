@@ -19,13 +19,13 @@ public class SelectVillagerTradeC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.tradeId = packetByteBuf.readVarInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.tradeId = buf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.tradeId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeVarInt(this.tradeId);
 	}
 
 	public void method_12430(ServerPlayPacketListener serverPlayPacketListener) {

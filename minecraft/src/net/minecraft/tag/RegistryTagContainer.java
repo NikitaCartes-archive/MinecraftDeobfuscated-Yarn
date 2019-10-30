@@ -10,8 +10,8 @@ import net.minecraft.util.registry.Registry;
 public class RegistryTagContainer<T> extends TagContainer<T> {
 	private final Registry<T> registry;
 
-	public RegistryTagContainer(Registry<T> registry, String string, String string2) {
-		super(registry::getOrEmpty, string, false, string2);
+	public RegistryTagContainer(Registry<T> registry, String path, String type) {
+		super(registry::getOrEmpty, path, false, type);
 		this.registry = registry;
 	}
 
@@ -29,17 +29,17 @@ public class RegistryTagContainer<T> extends TagContainer<T> {
 		}
 	}
 
-	public void fromPacket(PacketByteBuf packetByteBuf) {
+	public void fromPacket(PacketByteBuf buf) {
 		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
-		int i = packetByteBuf.readVarInt();
+		int i = buf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			Identifier identifier = packetByteBuf.readIdentifier();
-			int k = packetByteBuf.readVarInt();
+			Identifier identifier = buf.readIdentifier();
+			int k = buf.readVarInt();
 			Tag.Builder<T> builder = Tag.Builder.create();
 
 			for (int l = 0; l < k; l++) {
-				builder.add(this.registry.get(packetByteBuf.readVarInt()));
+				builder.add(this.registry.get(buf.readVarInt()));
 			}
 
 			map.put(identifier, builder.build(identifier));

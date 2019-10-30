@@ -17,46 +17,46 @@ public class TypeFilterableList<T> extends AbstractCollection<T> {
 	private final Class<T> elementType;
 	private final List<T> allElements = Lists.<T>newArrayList();
 
-	public TypeFilterableList(Class<T> class_) {
-		this.elementType = class_;
-		this.elementsByType.put(class_, this.allElements);
+	public TypeFilterableList(Class<T> elementType) {
+		this.elementType = elementType;
+		this.elementsByType.put(elementType, this.allElements);
 	}
 
-	public boolean add(T object) {
+	public boolean add(T e) {
 		boolean bl = false;
 
 		for (Entry<Class<?>, List<T>> entry : this.elementsByType.entrySet()) {
-			if (((Class)entry.getKey()).isInstance(object)) {
-				bl |= ((List)entry.getValue()).add(object);
+			if (((Class)entry.getKey()).isInstance(e)) {
+				bl |= ((List)entry.getValue()).add(e);
 			}
 		}
 
 		return bl;
 	}
 
-	public boolean remove(Object object) {
+	public boolean remove(Object o) {
 		boolean bl = false;
 
 		for (Entry<Class<?>, List<T>> entry : this.elementsByType.entrySet()) {
-			if (((Class)entry.getKey()).isInstance(object)) {
+			if (((Class)entry.getKey()).isInstance(o)) {
 				List<T> list = (List<T>)entry.getValue();
-				bl |= list.remove(object);
+				bl |= list.remove(o);
 			}
 		}
 
 		return bl;
 	}
 
-	public boolean contains(Object object) {
-		return this.getAllOfType(object.getClass()).contains(object);
+	public boolean contains(Object o) {
+		return this.getAllOfType(o.getClass()).contains(o);
 	}
 
-	public <S> Collection<S> getAllOfType(Class<S> class_) {
-		if (!this.elementType.isAssignableFrom(class_)) {
-			throw new IllegalArgumentException("Don't know how to search for " + class_);
+	public <S> Collection<S> getAllOfType(Class<S> type) {
+		if (!this.elementType.isAssignableFrom(type)) {
+			throw new IllegalArgumentException("Don't know how to search for " + type);
 		} else {
 			List<T> list = (List<T>)this.elementsByType
-				.computeIfAbsent(class_, class_x -> (List)this.allElements.stream().filter(class_x::isInstance).collect(Collectors.toList()));
+				.computeIfAbsent(type, class_ -> (List)this.allElements.stream().filter(class_::isInstance).collect(Collectors.toList()));
 			return Collections.unmodifiableCollection(list);
 		}
 	}

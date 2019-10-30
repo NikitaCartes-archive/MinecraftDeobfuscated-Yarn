@@ -30,29 +30,29 @@ public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> 
 	public CustomPayloadS2CPacket() {
 	}
 
-	public CustomPayloadS2CPacket(Identifier identifier, PacketByteBuf packetByteBuf) {
-		this.channel = identifier;
-		this.data = packetByteBuf;
-		if (packetByteBuf.writerIndex() > 1048576) {
+	public CustomPayloadS2CPacket(Identifier channel, PacketByteBuf data) {
+		this.channel = channel;
+		this.data = data;
+		if (data.writerIndex() > 1048576) {
 			throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
 		}
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.channel = packetByteBuf.readIdentifier();
-		int i = packetByteBuf.readableBytes();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.channel = buf.readIdentifier();
+		int i = buf.readableBytes();
 		if (i >= 0 && i <= 1048576) {
-			this.data = new PacketByteBuf(packetByteBuf.readBytes(i));
+			this.data = new PacketByteBuf(buf.readBytes(i));
 		} else {
 			throw new IOException("Payload may not be larger than 1048576 bytes");
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeIdentifier(this.channel);
-		packetByteBuf.writeBytes(this.data.copy());
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeIdentifier(this.channel);
+		buf.writeBytes(this.data.copy());
 	}
 
 	public void method_11457(ClientPlayPacketListener clientPlayPacketListener) {

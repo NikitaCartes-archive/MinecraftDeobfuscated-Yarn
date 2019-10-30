@@ -11,9 +11,9 @@ import org.apache.commons.lang3.tuple.Triple;
 @Environment(EnvType.CLIENT)
 public final class Matrix3f {
 	private static final float THREE_PLUS_TWO_SQRT_TWO = 3.0F + 2.0F * (float)Math.sqrt(2.0);
-	private static final float COS_PI_EIGHTH = (float)Math.cos(Math.PI / 8);
-	private static final float SIN_PI_EIGHTH = (float)Math.sin(Math.PI / 8);
-	private static final float SQRT_ONE_HALF = 1.0F / (float)Math.sqrt(2.0);
+	private static final float COS_PI_OVER_EIGHT = (float)Math.cos(Math.PI / 8);
+	private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(Math.PI / 8);
+	private static final float SQRT_HALF = 1.0F / (float)Math.sqrt(2.0);
 	private final float[] components;
 
 	public Matrix3f() {
@@ -50,33 +50,33 @@ public final class Matrix3f {
 		this.set(1, 2, 2.0F * (n - p));
 	}
 
-	public Matrix3f(Matrix3f matrix3f, boolean bl) {
-		this(matrix3f.components, true);
+	public Matrix3f(Matrix3f matrix, boolean ignoredTransposeMarker) {
+		this(matrix.components, true);
 	}
 
-	public Matrix3f(Matrix4f matrix4f) {
+	public Matrix3f(Matrix4f matrix) {
 		this();
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				this.components[j + i * 3] = matrix4f.get(j, i);
+				this.components[j + i * 3] = matrix.get(j, i);
 			}
 		}
 	}
 
-	public Matrix3f(float[] fs, boolean bl) {
-		this(bl ? new float[9] : Arrays.copyOf(fs, fs.length));
-		if (bl) {
+	public Matrix3f(float[] components, boolean transpose) {
+		this(transpose ? new float[9] : Arrays.copyOf(components, components.length));
+		if (transpose) {
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
-					this.components[j + i * 3] = fs[i + j * 3];
+					this.components[j + i * 3] = components[i + j * 3];
 				}
 			}
 		}
 	}
 
-	public Matrix3f(Matrix3f matrix3f) {
-		this(Arrays.copyOf(matrix3f.components, 9));
+	public Matrix3f(Matrix3f matrix) {
+		this(Arrays.copyOf(matrix.components, 9));
 	}
 
 	private static Pair<Float, Float> method_22849(float f, float g, float h) {
@@ -85,7 +85,7 @@ public final class Matrix3f {
 			float k = MathHelper.fastInverseSqrt(g * g + i * i);
 			return Pair.of(k * g, k * i);
 		} else {
-			return Pair.of(SIN_PI_EIGHTH, COS_PI_EIGHTH);
+			return Pair.of(SIN_PI_OVER_EIGHT, COS_PI_OVER_EIGHT);
 		}
 	}
 
@@ -107,7 +107,7 @@ public final class Matrix3f {
 
 	private static Quaternion method_22857(Matrix3f matrix3f) {
 		Matrix3f matrix3f2 = new Matrix3f();
-		Quaternion quaternion = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+		Quaternion quaternion = Quaternion.IDENTITY.copy();
 		if (matrix3f.get(0, 1) * matrix3f.get(0, 1) + matrix3f.get(1, 0) * matrix3f.get(1, 0) > 1.0E-6F) {
 			Pair<Float, Float> pair = method_22849(matrix3f.get(0, 0), 0.5F * (matrix3f.get(0, 1) + matrix3f.get(1, 0)), matrix3f.get(1, 1));
 			Float float_ = pair.getFirst();
@@ -180,15 +180,15 @@ public final class Matrix3f {
 		this.transpose(1, 2);
 	}
 
-	private void transpose(int i, int j) {
-		float f = this.components[i + 3 * j];
-		this.components[i + 3 * j] = this.components[j + 3 * i];
-		this.components[j + 3 * i] = f;
+	private void transpose(int row, int column) {
+		float f = this.components[row + 3 * column];
+		this.components[row + 3 * column] = this.components[column + 3 * row];
+		this.components[column + 3 * row] = f;
 	}
 
 	public Triple<Quaternion, Vector3f, Quaternion> method_22853() {
-		Quaternion quaternion = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
-		Quaternion quaternion2 = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+		Quaternion quaternion = Quaternion.IDENTITY.copy();
+		Quaternion quaternion2 = Quaternion.IDENTITY.copy();
 		Matrix3f matrix3f = new Matrix3f(this, true);
 		matrix3f.multiply(this);
 
@@ -272,8 +272,8 @@ public final class Matrix3f {
 		return Arrays.hashCode(this.components);
 	}
 
-	public void load(Matrix3f matrix3f) {
-		System.arraycopy(matrix3f.components, 0, this.components, 0, 9);
+	public void load(Matrix3f matrix) {
+		System.arraycopy(matrix.components, 0, this.components, 0, 9);
 	}
 
 	public String toString() {
@@ -306,15 +306,15 @@ public final class Matrix3f {
 		this.components[8] = 1.0F;
 	}
 
-	public float get(int i, int j) {
-		return this.components[3 * j + i];
+	public float get(int row, int column) {
+		return this.components[3 * column + row];
 	}
 
-	public void set(int i, int j, float f) {
-		this.components[3 * j + i] = f;
+	public void set(int row, int column, float value) {
+		this.components[3 * column + row] = value;
 	}
 
-	public void multiply(Matrix3f matrix3f) {
+	public void multiply(Matrix3f matrix) {
 		float[] fs = Arrays.copyOf(this.components, 9);
 
 		for (int i = 0; i < 3; i++) {
@@ -322,7 +322,7 @@ public final class Matrix3f {
 				this.components[i + j * 3] = 0.0F;
 
 				for (int k = 0; k < 3; k++) {
-					this.components[i + j * 3] = this.components[i + j * 3] + fs[i + k * 3] * matrix3f.components[k + j * 3];
+					this.components[i + j * 3] = this.components[i + j * 3] + fs[i + k * 3] * matrix.components[k + j * 3];
 				}
 			}
 		}

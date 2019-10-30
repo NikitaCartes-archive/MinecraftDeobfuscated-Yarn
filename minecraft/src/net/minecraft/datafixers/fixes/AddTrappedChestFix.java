@@ -23,8 +23,8 @@ import org.apache.logging.log4j.Logger;
 public class AddTrappedChestFix extends DataFix {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public AddTrappedChestFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public AddTrappedChestFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -57,12 +57,12 @@ public class AddTrappedChestFix extends DataFix {
 								IntSet intSet = new IntOpenHashSet();
 
 								for (Typed<?> typed2 : list) {
-									AddTrappedChestFix.class_1216 lv = new AddTrappedChestFix.class_1216(typed2, this.getInputSchema());
-									if (!lv.method_5079()) {
+									AddTrappedChestFix.ListFixer listFixer = new AddTrappedChestFix.ListFixer(typed2, this.getInputSchema());
+									if (!listFixer.method_5079()) {
 										for (int i = 0; i < 4096; i++) {
-											int j = lv.method_5075(i);
-											if (lv.method_5180(j)) {
-												intSet.add(lv.method_5077() << 12 | i);
+											int j = listFixer.method_5075(i);
+											if (listFixer.isTarget(j)) {
+												intSet.add(listFixer.method_5077() << 12 | i);
 											}
 										}
 									}
@@ -92,31 +92,31 @@ public class AddTrappedChestFix extends DataFix {
 		}
 	}
 
-	public static final class class_1216 extends LeavesFix.class_1193 {
+	public static final class ListFixer extends LeavesFix.ListFixer {
 		@Nullable
-		private IntSet field_5741;
+		private IntSet targets;
 
-		public class_1216(Typed<?> typed, Schema schema) {
+		public ListFixer(Typed<?> typed, Schema schema) {
 			super(typed, schema);
 		}
 
 		@Override
-		protected boolean method_5076() {
-			this.field_5741 = new IntOpenHashSet();
+		protected boolean needsFix() {
+			this.targets = new IntOpenHashSet();
 
-			for (int i = 0; i < this.field_5692.size(); i++) {
-				Dynamic<?> dynamic = (Dynamic<?>)this.field_5692.get(i);
+			for (int i = 0; i < this.data.size(); i++) {
+				Dynamic<?> dynamic = (Dynamic<?>)this.data.get(i);
 				String string = dynamic.get("Name").asString("");
 				if (Objects.equals(string, "minecraft:trapped_chest")) {
-					this.field_5741.add(i);
+					this.targets.add(i);
 				}
 			}
 
-			return this.field_5741.isEmpty();
+			return this.targets.isEmpty();
 		}
 
-		public boolean method_5180(int i) {
-			return this.field_5741.contains(i);
+		public boolean isTarget(int index) {
+			return this.targets.contains(index);
 		}
 	}
 }

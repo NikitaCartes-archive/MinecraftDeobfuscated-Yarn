@@ -20,12 +20,12 @@ public class IntegratedPlayerManager extends PlayerManager {
 	}
 
 	@Override
-	protected void savePlayerData(ServerPlayerEntity serverPlayerEntity) {
-		if (serverPlayerEntity.getName().getString().equals(this.method_4811().getUserName())) {
-			this.userData = serverPlayerEntity.toTag(new CompoundTag());
+	protected void savePlayerData(ServerPlayerEntity player) {
+		if (player.getName().getString().equals(this.method_4811().getUserName())) {
+			this.userData = player.toTag(new CompoundTag());
 		}
 
-		super.savePlayerData(serverPlayerEntity);
+		super.savePlayerData(player);
 	}
 
 	@Override

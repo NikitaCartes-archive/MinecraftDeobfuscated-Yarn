@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4666;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackProfile;
@@ -93,7 +92,7 @@ public class GameOptions {
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
-	public boolean field_20308 = true;
+	public boolean rawMouseInput = true;
 	public int glDebugVerbosity = 1;
 	public boolean autoJump = true;
 	public boolean autoSuggestions = true;
@@ -113,15 +112,15 @@ public class GameOptions {
 	public boolean touchscreen;
 	public boolean fullscreen;
 	public boolean bobView = true;
-	public boolean field_21332;
-	public boolean field_21333;
+	public boolean sneakToggled;
+	public boolean sprintToggled;
 	public final KeyBinding keyForward = new KeyBinding("key.forward", 87, "key.categories.movement");
 	public final KeyBinding keyLeft = new KeyBinding("key.left", 65, "key.categories.movement");
 	public final KeyBinding keyBack = new KeyBinding("key.back", 83, "key.categories.movement");
 	public final KeyBinding keyRight = new KeyBinding("key.right", 68, "key.categories.movement");
 	public final KeyBinding keyJump = new KeyBinding("key.jump", 32, "key.categories.movement");
-	public final KeyBinding keySneak = new class_4666("key.sneak", 340, "key.categories.movement", () -> this.field_21332);
-	public final KeyBinding keySprint = new class_4666("key.sprint", 341, "key.categories.movement", () -> this.field_21333);
+	public final KeyBinding keySneak = new StickyKeyBinding("key.sneak", 340, "key.categories.movement", () -> this.sneakToggled);
+	public final KeyBinding keySprint = new StickyKeyBinding("key.sprint", 341, "key.categories.movement", () -> this.sprintToggled);
 	public final KeyBinding keyInventory = new KeyBinding("key.inventory", 69, "key.categories.inventory");
 	public final KeyBinding keySwapHands = new KeyBinding("key.swapHands", 70, "key.categories.inventory");
 	public final KeyBinding keyDrop = new KeyBinding("key.drop", 81, "key.categories.inventory");
@@ -196,29 +195,29 @@ public class GameOptions {
 	public NarratorOption narrator = NarratorOption.OFF;
 	public String language = "en_us";
 
-	public GameOptions(MinecraftClient minecraftClient, File file) {
-		this.client = minecraftClient;
-		this.optionsFile = new File(file, "options.txt");
-		if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
+	public GameOptions(MinecraftClient client, File optionsFile) {
+		this.client = client;
+		this.optionsFile = new File(optionsFile, "options.txt");
+		if (client.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
 			Option.RENDER_DISTANCE.setMax(32.0F);
 		} else {
 			Option.RENDER_DISTANCE.setMax(16.0F);
 		}
 
-		this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
+		this.viewDistance = client.is64Bit() ? 12 : 8;
 		this.load();
 	}
 
-	public float getTextBackgroundOpacity(float f) {
-		return this.backgroundForChatOnly ? f : (float)this.textBackgroundOpacity;
+	public float getTextBackgroundOpacity(float fallback) {
+		return this.backgroundForChatOnly ? fallback : (float)this.textBackgroundOpacity;
 	}
 
-	public int getTextBackgroundColor(float f) {
-		return (int)(this.getTextBackgroundOpacity(f) * 255.0F) << 24 & 0xFF000000;
+	public int getTextBackgroundColor(float fallbackOpacity) {
+		return (int)(this.getTextBackgroundOpacity(fallbackOpacity) * 255.0F) << 24 & 0xFF000000;
 	}
 
-	public int getTextBackgroundColor(int i) {
-		return this.backgroundForChatOnly ? i : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
+	public int getTextBackgroundColor(int fallbackColor) {
+		return this.backgroundForChatOnly ? fallbackColor : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
 	}
 
 	public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
@@ -320,11 +319,11 @@ public class GameOptions {
 					}
 
 					if ("toggleCrouch".equals(string)) {
-						this.field_21332 = "true".equals(string2);
+						this.sneakToggled = "true".equals(string2);
 					}
 
 					if ("toggleSprint".equals(string)) {
-						this.field_21333 = "true".equals(string2);
+						this.sprintToggled = "true".equals(string2);
 					}
 
 					if ("mouseSensitivity".equals(string)) {
@@ -501,7 +500,7 @@ public class GameOptions {
 					}
 
 					if ("rawMouseInput".equals(string)) {
-						this.field_20308 = "true".equals(string2);
+						this.rawMouseInput = "true".equals(string2);
 					}
 
 					if ("glDebugVerbosity".equals(string)) {
@@ -536,15 +535,15 @@ public class GameOptions {
 		}
 	}
 
-	private CompoundTag update(CompoundTag compoundTag) {
+	private CompoundTag update(CompoundTag tag) {
 		int i = 0;
 
 		try {
-			i = Integer.parseInt(compoundTag.getString("version"));
+			i = Integer.parseInt(tag.getString("version"));
 		} catch (RuntimeException var4) {
 		}
 
-		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
+		return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, tag, i);
 	}
 
 	private static float parseFloat(String string) {
@@ -579,8 +578,8 @@ public class GameOptions {
 				printWriter.println("touchscreen:" + Option.TOUCHSCREEN.get(this));
 				printWriter.println("fullscreen:" + Option.FULLSCREEN.get(this));
 				printWriter.println("bobView:" + Option.VIEW_BOBBING.get(this));
-				printWriter.println("toggleCrouch:" + this.field_21332);
-				printWriter.println("toggleSprint:" + this.field_21333);
+				printWriter.println("toggleCrouch:" + this.sneakToggled);
+				printWriter.println("toggleSprint:" + this.sprintToggled);
 				printWriter.println("mouseSensitivity:" + this.mouseSensitivity);
 				printWriter.println("fov:" + (this.fov - 70.0) / 40.0);
 				printWriter.println("gamma:" + this.gamma);
@@ -673,9 +672,9 @@ public class GameOptions {
 		return this.soundVolumeLevels.containsKey(soundCategory) ? (Float)this.soundVolumeLevels.get(soundCategory) : 1.0F;
 	}
 
-	public void setSoundVolume(SoundCategory soundCategory, float f) {
-		this.soundVolumeLevels.put(soundCategory, f);
-		this.client.getSoundManager().updateSoundVolume(soundCategory, f);
+	public void setSoundVolume(SoundCategory category, float f) {
+		this.soundVolumeLevels.put(category, f);
+		this.client.getSoundManager().updateSoundVolume(category, f);
 	}
 
 	public void onPlayerModelPartChange() {
@@ -697,11 +696,11 @@ public class GameOptions {
 		return ImmutableSet.copyOf(this.enabledPlayerModelParts);
 	}
 
-	public void setPlayerModelPart(PlayerModelPart playerModelPart, boolean bl) {
+	public void setPlayerModelPart(PlayerModelPart part, boolean bl) {
 		if (bl) {
-			this.enabledPlayerModelParts.add(playerModelPart);
+			this.enabledPlayerModelParts.add(part);
 		} else {
-			this.enabledPlayerModelParts.remove(playerModelPart);
+			this.enabledPlayerModelParts.remove(part);
 		}
 
 		this.onPlayerModelPartChange();
@@ -725,16 +724,16 @@ public class GameOptions {
 		return this.useNativeTransport;
 	}
 
-	public void addResourcePackContainersToManager(ResourcePackManager<ClientResourcePackProfile> resourcePackManager) {
-		resourcePackManager.scanPacks();
+	public void addResourcePackContainersToManager(ResourcePackManager<ClientResourcePackProfile> manager) {
+		manager.scanPacks();
 		Set<ClientResourcePackProfile> set = Sets.<ClientResourcePackProfile>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();
 
 		while (iterator.hasNext()) {
 			String string = (String)iterator.next();
-			ClientResourcePackProfile clientResourcePackProfile = resourcePackManager.getProfile(string);
+			ClientResourcePackProfile clientResourcePackProfile = manager.getProfile(string);
 			if (clientResourcePackProfile == null && !string.startsWith("file/")) {
-				clientResourcePackProfile = resourcePackManager.getProfile("file/" + string);
+				clientResourcePackProfile = manager.getProfile("file/" + string);
 			}
 
 			if (clientResourcePackProfile == null) {
@@ -751,6 +750,6 @@ public class GameOptions {
 			}
 		}
 
-		resourcePackManager.setEnabledProfiles(set);
+		manager.setEnabledProfiles(set);
 	}
 }

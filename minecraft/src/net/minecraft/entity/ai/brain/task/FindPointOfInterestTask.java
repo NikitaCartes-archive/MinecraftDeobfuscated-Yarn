@@ -24,11 +24,11 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 	private final Long2LongMap field_19289 = new Long2LongOpenHashMap();
 	private int field_19290;
 
-	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
-		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_ABSENT));
-		this.poiType = pointOfInterestType;
-		this.field_20287 = memoryModuleType;
-		this.onlyRunIfChild = bl;
+	public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> targetMemoryModule, boolean onlyRunIfChild) {
+		super(ImmutableMap.of(targetMemoryModule, MemoryModuleState.VALUE_ABSENT));
+		this.poiType = poiType;
+		this.field_20287 = targetMemoryModule;
+		this.onlyRunIfChild = onlyRunIfChild;
 	}
 
 	protected boolean method_20816(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {

@@ -17,10 +17,10 @@ public class Frustum {
 		this.init(matrix4f, matrix4f2);
 	}
 
-	public void setPosition(double d, double e, double f) {
-		this.x = d;
-		this.y = e;
-		this.z = f;
+	public void setPosition(double cameraX, double cameraY, double cameraZ) {
+		this.x = cameraX;
+		this.y = cameraY;
+		this.z = cameraZ;
 	}
 
 	private void init(Matrix4f matrix4f, Matrix4f matrix4f2) {
@@ -35,38 +35,38 @@ public class Frustum {
 		this.transform(matrix4f3, 0, 0, 1, 5);
 	}
 
-	private void transform(Matrix4f matrix4f, int i, int j, int k, int l) {
-		Vector4f vector4f = new Vector4f((float)i, (float)j, (float)k, 1.0F);
-		vector4f.multiply(matrix4f);
+	private void transform(Matrix4f function, int x, int y, int z, int index) {
+		Vector4f vector4f = new Vector4f((float)x, (float)y, (float)z, 1.0F);
+		vector4f.multiply(function);
 		vector4f.normalize();
-		this.homogeneousCoordinates[l] = vector4f;
+		this.homogeneousCoordinates[index] = vector4f;
 	}
 
 	public boolean isVisible(Box box) {
-		return this.isVisible(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+		return this.isVisible(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2);
 	}
 
-	private boolean isVisible(double d, double e, double f, double g, double h, double i) {
-		float j = (float)(d - this.x);
-		float k = (float)(e - this.y);
-		float l = (float)(f - this.z);
-		float m = (float)(g - this.x);
-		float n = (float)(h - this.y);
-		float o = (float)(i - this.z);
-		return this.isAnyCornerVisible(j, k, l, m, n, o);
+	private boolean isVisible(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+		float f = (float)(minX - this.x);
+		float g = (float)(minY - this.y);
+		float h = (float)(minZ - this.z);
+		float i = (float)(maxX - this.x);
+		float j = (float)(maxY - this.y);
+		float k = (float)(maxZ - this.z);
+		return this.isAnyCornerVisible(f, g, h, i, j, k);
 	}
 
-	private boolean isAnyCornerVisible(float f, float g, float h, float i, float j, float k) {
-		for (int l = 0; l < 6; l++) {
-			Vector4f vector4f = this.homogeneousCoordinates[l];
-			if (!(vector4f.dotProduct(new Vector4f(f, g, h, 1.0F)) > 0.0F)
-				&& !(vector4f.dotProduct(new Vector4f(i, g, h, 1.0F)) > 0.0F)
-				&& !(vector4f.dotProduct(new Vector4f(f, j, h, 1.0F)) > 0.0F)
-				&& !(vector4f.dotProduct(new Vector4f(i, j, h, 1.0F)) > 0.0F)
-				&& !(vector4f.dotProduct(new Vector4f(f, g, k, 1.0F)) > 0.0F)
-				&& !(vector4f.dotProduct(new Vector4f(i, g, k, 1.0F)) > 0.0F)
-				&& !(vector4f.dotProduct(new Vector4f(f, j, k, 1.0F)) > 0.0F)
-				&& !(vector4f.dotProduct(new Vector4f(i, j, k, 1.0F)) > 0.0F)) {
+	private boolean isAnyCornerVisible(float x1, float y1, float z1, float x2, float y2, float z2) {
+		for (int i = 0; i < 6; i++) {
+			Vector4f vector4f = this.homogeneousCoordinates[i];
+			if (!(vector4f.dotProduct(new Vector4f(x1, y1, z1, 1.0F)) > 0.0F)
+				&& !(vector4f.dotProduct(new Vector4f(x2, y1, z1, 1.0F)) > 0.0F)
+				&& !(vector4f.dotProduct(new Vector4f(x1, y2, z1, 1.0F)) > 0.0F)
+				&& !(vector4f.dotProduct(new Vector4f(x2, y2, z1, 1.0F)) > 0.0F)
+				&& !(vector4f.dotProduct(new Vector4f(x1, y1, z2, 1.0F)) > 0.0F)
+				&& !(vector4f.dotProduct(new Vector4f(x2, y1, z2, 1.0F)) > 0.0F)
+				&& !(vector4f.dotProduct(new Vector4f(x1, y2, z2, 1.0F)) > 0.0F)
+				&& !(vector4f.dotProduct(new Vector4f(x2, y2, z2, 1.0F)) > 0.0F)) {
 				return false;
 			}
 		}

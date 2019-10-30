@@ -30,16 +30,16 @@ public class TranslationStorage {
 	private static final Pattern PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
 	protected final Map<String, String> translations = Maps.<String, String>newHashMap();
 
-	public synchronized void load(ResourceManager resourceManager, List<String> list) {
+	public synchronized void load(ResourceManager container, List<String> list) {
 		this.translations.clear();
 
 		for (String string : list) {
 			String string2 = String.format("lang/%s.json", string);
 
-			for (String string3 : resourceManager.getAllNamespaces()) {
+			for (String string3 : container.getAllNamespaces()) {
 				try {
 					Identifier identifier = new Identifier(string3, string2);
-					this.load(resourceManager.getAllResources(identifier));
+					this.load(container.getAllResources(identifier));
 				} catch (FileNotFoundException var9) {
 				} catch (Exception var10) {
 					LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, var10.toString());
@@ -75,13 +75,13 @@ public class TranslationStorage {
 		return string2 == null ? string : string2;
 	}
 
-	public String translate(String string, Object[] objects) {
-		String string2 = this.get(string);
+	public String translate(String key, Object[] objects) {
+		String string = this.get(key);
 
 		try {
-			return String.format(string2, objects);
+			return String.format(string, objects);
 		} catch (IllegalFormatException var5) {
-			return "Format error: " + string2;
+			return "Format error: " + string;
 		}
 	}
 

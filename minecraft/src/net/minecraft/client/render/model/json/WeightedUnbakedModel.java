@@ -27,19 +27,19 @@ import net.minecraft.util.Identifier;
 public class WeightedUnbakedModel implements UnbakedModel {
 	private final List<ModelVariant> variants;
 
-	public WeightedUnbakedModel(List<ModelVariant> list) {
-		this.variants = list;
+	public WeightedUnbakedModel(List<ModelVariant> variants) {
+		this.variants = variants;
 	}
 
 	public List<ModelVariant> getVariants() {
 		return this.variants;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object instanceof WeightedUnbakedModel) {
-			WeightedUnbakedModel weightedUnbakedModel = (WeightedUnbakedModel)object;
+		} else if (o instanceof WeightedUnbakedModel) {
+			WeightedUnbakedModel weightedUnbakedModel = (WeightedUnbakedModel)o;
 			return this.variants.equals(weightedUnbakedModel.variants);
 		} else {
 			return false;
@@ -56,25 +56,25 @@ public class WeightedUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<String> set) {
+	public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<String> unresolvedTextureReferences) {
 		return (Collection<Identifier>)this.getVariants()
 			.stream()
 			.map(ModelVariant::getLocation)
 			.distinct()
-			.flatMap(identifier -> ((UnbakedModel)function.apply(identifier)).getTextureDependencies(function, set).stream())
+			.flatMap(identifier -> ((UnbakedModel)unbakedModelGetter.apply(identifier)).getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream())
 			.collect(Collectors.toSet());
 	}
 
 	@Nullable
 	@Override
-	public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings, Identifier identifier) {
+	public BakedModel bake(ModelLoader loader, Function<Identifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier identifier) {
 		if (this.getVariants().isEmpty()) {
 			return null;
 		} else {
 			WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
 
 			for (ModelVariant modelVariant : this.getVariants()) {
-				BakedModel bakedModel = modelLoader.bake(modelVariant.getLocation(), modelVariant);
+				BakedModel bakedModel = loader.bake(modelVariant.getLocation(), modelVariant);
 				builder.add(bakedModel, modelVariant.getWeight());
 			}
 
@@ -84,19 +84,19 @@ public class WeightedUnbakedModel implements UnbakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<WeightedUnbakedModel> {
-		public WeightedUnbakedModel method_3499(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public WeightedUnbakedModel method_3499(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
 			List<ModelVariant> list = Lists.<ModelVariant>newArrayList();
-			if (jsonElement.isJsonArray()) {
-				JsonArray jsonArray = jsonElement.getAsJsonArray();
+			if (element.isJsonArray()) {
+				JsonArray jsonArray = element.getAsJsonArray();
 				if (jsonArray.size() == 0) {
 					throw new JsonParseException("Empty variant array");
 				}
 
-				for (JsonElement jsonElement2 : jsonArray) {
-					list.add(jsonDeserializationContext.deserialize(jsonElement2, ModelVariant.class));
+				for (JsonElement jsonElement : jsonArray) {
+					list.add(context.deserialize(jsonElement, ModelVariant.class));
 				}
 			} else {
-				list.add(jsonDeserializationContext.deserialize(jsonElement, ModelVariant.class));
+				list.add(context.deserialize(element, ModelVariant.class));
 			}
 
 			return new WeightedUnbakedModel(list);

@@ -7,13 +7,13 @@ import com.mojang.datafixers.types.DynamicOps;
 public class BuriedTreasureFeatureConfig implements FeatureConfig {
 	public final float probability;
 
-	public BuriedTreasureFeatureConfig(float f) {
-		this.probability = f;
+	public BuriedTreasureFeatureConfig(float probability) {
+		this.probability = probability;
 	}
 
 	@Override
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("probability"), dynamicOps.createFloat(this.probability))));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createMap(ImmutableMap.of(ops.createString("probability"), ops.createFloat(this.probability))));
 	}
 
 	public static <T> BuriedTreasureFeatureConfig deserialize(Dynamic<T> dynamic) {

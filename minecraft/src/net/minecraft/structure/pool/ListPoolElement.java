@@ -46,18 +46,16 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
-	) {
-		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, blockPos, blockRotation, random);
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, pos, rotation, random);
 	}
 
 	@Override
-	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
 		BlockBox blockBox = BlockBox.empty();
 
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation);
+			BlockBox blockBox2 = structurePoolElement.getBoundingBox(structureManager, pos, rotation);
 			blockBox.encompass(blockBox2);
 		}
 
@@ -67,7 +65,7 @@ public class ListPoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		IWorld iWorld,
+		IWorld world,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
 		BlockRotation blockRotation,
@@ -75,7 +73,7 @@ public class ListPoolElement extends StructurePoolElement {
 		Random random
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.generate(structureManager, iWorld, chunkGenerator, blockPos, blockRotation, blockBox, random)) {
+			if (!structurePoolElement.generate(structureManager, world, chunkGenerator, blockPos, blockRotation, blockBox, random)) {
 				return false;
 			}
 		}

@@ -12,9 +12,9 @@ public class FormCaravanGoal extends Goal {
 	private double speed;
 	private int counter;
 
-	public FormCaravanGoal(LlamaEntity llamaEntity, double d) {
-		this.llama = llamaEntity;
-		this.speed = d;
+	public FormCaravanGoal(LlamaEntity llama, double speed) {
+		this.llama = llama;
+		this.speed = speed;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
@@ -30,7 +30,7 @@ public class FormCaravanGoal extends Goal {
 
 			for (Entity entity : list) {
 				LlamaEntity llamaEntity2 = (LlamaEntity)entity;
-				if (llamaEntity2.isFollowing() && !llamaEntity2.method_6793()) {
+				if (llamaEntity2.isFollowing() && !llamaEntity2.hasFollower()) {
 					double e = this.llama.squaredDistanceTo(llamaEntity2);
 					if (!(e > d)) {
 						d = e;
@@ -42,7 +42,7 @@ public class FormCaravanGoal extends Goal {
 			if (llamaEntity == null) {
 				for (Entity entityx : list) {
 					LlamaEntity llamaEntity2 = (LlamaEntity)entityx;
-					if (llamaEntity2.isLeashed() && !llamaEntity2.method_6793()) {
+					if (llamaEntity2.isLeashed() && !llamaEntity2.hasFollower()) {
 						double e = this.llama.squaredDistanceTo(llamaEntity2);
 						if (!(e > d)) {
 							d = e;
@@ -59,7 +59,7 @@ public class FormCaravanGoal extends Goal {
 			} else if (!llamaEntity.isLeashed() && !this.canFollow(llamaEntity, 1)) {
 				return false;
 			} else {
-				this.llama.method_6791(llamaEntity);
+				this.llama.follow(llamaEntity);
 				return true;
 			}
 		} else {
@@ -112,11 +112,11 @@ public class FormCaravanGoal extends Goal {
 		}
 	}
 
-	private boolean canFollow(LlamaEntity llamaEntity, int i) {
-		if (i > 8) {
+	private boolean canFollow(LlamaEntity llamaEntity, int length) {
+		if (length > 8) {
 			return false;
 		} else if (llamaEntity.isFollowing()) {
-			return llamaEntity.getFollowing().isLeashed() ? true : this.canFollow(llamaEntity.getFollowing(), ++i);
+			return llamaEntity.getFollowing().isLeashed() ? true : this.canFollow(llamaEntity.getFollowing(), ++length);
 		} else {
 			return false;
 		}

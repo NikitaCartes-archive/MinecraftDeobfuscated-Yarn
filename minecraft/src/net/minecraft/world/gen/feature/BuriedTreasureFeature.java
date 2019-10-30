@@ -14,14 +14,14 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatureConfig> {
-	public BuriedTreasureFeature(Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> function) {
-		super(function);
+	public BuriedTreasureFeature(Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> configFactory) {
+		super(configFactory);
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int i, int j, Biome biome) {
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
 		if (chunkGenerator.hasStructure(biome, this)) {
-			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), i, j, 10387320);
+			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), chunkZ, i, 10387320);
 			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
 			return random.nextFloat() < buriedTreasureFeatureConfig.probability;
 		} else {
@@ -45,15 +45,15 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			int k = i * 16;
-			int l = j * 16;
-			BlockPos blockPos = new BlockPos(k + 9, 90, l + 9);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+			int i = x * 16;
+			int j = z * 16;
+			BlockPos blockPos = new BlockPos(i + 9, 90, j + 9);
 			this.children.add(new BuriedTreasureGenerator.Piece(blockPos));
 			this.setBoundingBoxFromChildren();
 		}

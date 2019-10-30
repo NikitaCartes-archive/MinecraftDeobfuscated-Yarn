@@ -11,12 +11,12 @@ public class StateProviderType<P extends StateProvider> {
 	public static final StateProviderType<ForestFlowerStateProvider> FOREST_FLOWER_PROVIDER = register("forest_flower_provider", ForestFlowerStateProvider::new);
 	private final Function<Dynamic<?>, P> configDeserializer;
 
-	private static <P extends StateProvider> StateProviderType<P> register(String string, Function<Dynamic<?>, P> function) {
-		return Registry.register(Registry.BLOCK_STATE_PROVIDER_TYPE, string, new StateProviderType<>(function));
+	private static <P extends StateProvider> StateProviderType<P> register(String id, Function<Dynamic<?>, P> configDeserializer) {
+		return Registry.register(Registry.BLOCK_STATE_PROVIDER_TYPE, id, new StateProviderType<>(configDeserializer));
 	}
 
-	private StateProviderType(Function<Dynamic<?>, P> function) {
-		this.configDeserializer = function;
+	private StateProviderType(Function<Dynamic<?>, P> configDeserializer) {
+		this.configDeserializer = configDeserializer;
 	}
 
 	public P deserialize(Dynamic<?> dynamic) {

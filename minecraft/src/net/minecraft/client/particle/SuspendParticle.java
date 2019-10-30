@@ -7,12 +7,12 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SuspendParticle extends SpriteBillboardParticle {
-	private SuspendParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f, g, h, i);
-		float j = this.random.nextFloat() * 0.1F + 0.2F;
-		this.colorRed = j;
-		this.colorGreen = j;
-		this.colorBlue = j;
+	private SuspendParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+		super(world, x, y, z, velocityX, velocityY, velocityZ);
+		float f = this.random.nextFloat() * 0.1F + 0.2F;
+		this.colorRed = f;
+		this.colorGreen = f;
+		this.colorBlue = f;
 		this.setBoundingBoxSpacing(0.02F, 0.02F);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.5F);
 		this.velocityX *= 0.02F;
@@ -27,8 +27,8 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public void move(double d, double e, double f) {
-		this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
+	public void move(double dx, double dy, double dz) {
+		this.setBoundingBox(this.getBoundingBox().offset(dx, dy, dz));
 		this.repositionFromBoundingBox();
 	}
 

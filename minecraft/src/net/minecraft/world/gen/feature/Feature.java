@@ -9,12 +9,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_4627;
-import net.minecraft.class_4628;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
@@ -54,12 +52,10 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"buried_treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig::deserialize)
 	);
 	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
-	public static final Feature<NormalTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(NormalTreeFeatureConfig::method_23426));
-	public static final Feature<NormalTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new class_4627(NormalTreeFeatureConfig::method_23426));
-	public static final Feature<NormalTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(NormalTreeFeatureConfig::method_23426));
-	public static final Feature<AbstractTreeFeatureConfig> JUNGLE_GROUND_BUSH = register(
-		"jungle_ground_bush", new JungleGroundBushFeature(AbstractTreeFeatureConfig::deserialize)
-	);
+	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::method_23426));
+	public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new AcaciaTreeFeature(BranchedTreeFeatureConfig::method_23426));
+	public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(BranchedTreeFeatureConfig::method_23426));
+	public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new JungleGroundBushFeature(TreeFeatureConfig::deserialize));
 	public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(MegaTreeFeatureConfig::method_23408));
 	public static final Feature<MegaTreeFeatureConfig> MEGA_JUNGLE_TREE = register(
 		"mega_jungle_tree", new MegaJungleTreeFeature(MegaTreeFeatureConfig::method_23408)
@@ -68,7 +64,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"mega_spruce_tree", new MegaPineTreeFeature(MegaTreeFeatureConfig::method_23408)
 	);
 	public static final FlowerFeature<FlowerFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(FlowerFeatureConfig::method_23413));
-	public static final Feature<FlowerFeatureConfig> RANDOM_PATCH = register("random_patch", new class_4628(FlowerFeatureConfig::method_23413));
+	public static final Feature<FlowerFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(FlowerFeatureConfig::method_23413));
 	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig::method_23406));
 	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig::method_23440));
 	public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig::deserialize));
@@ -123,7 +119,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DecoratedFeatureConfig> DECORATED_FLOWER = register(
 		"decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig::deserialize)
 	);
-	public static final BiMap<String, StructureFeature<?>> STRUCTURES = SystemUtil.consume(HashBiMap.create(), hashBiMap -> {
+	public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.create(HashBiMap.create(), hashBiMap -> {
 		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
 		hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
 		hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);
@@ -143,29 +139,27 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
 	private final Function<Dynamic<?>, ? extends FC> configDeserializer;
 
-	private static <C extends FeatureConfig, F extends Feature<C>> F register(String string, F feature) {
-		return Registry.register(Registry.FEATURE, string, feature);
+	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
+		return Registry.register(Registry.FEATURE, name, feature);
 	}
 
-	public Feature(Function<Dynamic<?>, ? extends FC> function) {
-		this.configDeserializer = function;
+	public Feature(Function<Dynamic<?>, ? extends FC> configDeserializer) {
+		this.configDeserializer = configDeserializer;
 	}
 
-	public ConfiguredFeature<FC, ?> configure(FC featureConfig) {
-		return new ConfiguredFeature<>(this, featureConfig);
+	public ConfiguredFeature<FC, ?> configure(FC config) {
+		return new ConfiguredFeature<>(this, config);
 	}
 
 	public FC deserializeConfig(Dynamic<?> dynamic) {
 		return (FC)this.configDeserializer.apply(dynamic);
 	}
 
-	protected void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
-		modifiableWorld.setBlockState(blockPos, blockState, 3);
+	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
+		world.setBlockState(pos, state, 3);
 	}
 
-	public abstract boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FC featureConfig
-	);
+	public abstract boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, FC config);
 
 	public List<Biome.SpawnEntry> getMonsterSpawns() {
 		return Collections.emptyList();

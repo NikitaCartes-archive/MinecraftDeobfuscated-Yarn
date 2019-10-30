@@ -16,44 +16,44 @@ public class DefaultedList<E> extends AbstractList<E> {
 		return new DefaultedList<>();
 	}
 
-	public static <E> DefaultedList<E> ofSize(int i, E object) {
-		Validate.notNull(object);
-		Object[] objects = new Object[i];
-		Arrays.fill(objects, object);
-		return new DefaultedList<>(Arrays.asList(objects), object);
+	public static <E> DefaultedList<E> ofSize(int size, E defaultValue) {
+		Validate.notNull(defaultValue);
+		Object[] objects = new Object[size];
+		Arrays.fill(objects, defaultValue);
+		return new DefaultedList<>(Arrays.asList(objects), defaultValue);
 	}
 
 	@SafeVarargs
-	public static <E> DefaultedList<E> copyOf(E object, E... objects) {
-		return new DefaultedList<>(Arrays.asList(objects), object);
+	public static <E> DefaultedList<E> copyOf(E defaultValue, E... values) {
+		return new DefaultedList<>(Arrays.asList(values), defaultValue);
 	}
 
 	protected DefaultedList() {
 		this(Lists.<E>newArrayList(), null);
 	}
 
-	protected DefaultedList(List<E> list, @Nullable E object) {
-		this.delegate = list;
-		this.initialElement = object;
+	protected DefaultedList(List<E> delegate, @Nullable E initialElement) {
+		this.delegate = delegate;
+		this.initialElement = initialElement;
 	}
 
 	@Nonnull
-	public E get(int i) {
-		return (E)this.delegate.get(i);
+	public E get(int index) {
+		return (E)this.delegate.get(index);
 	}
 
-	public E set(int i, E object) {
-		Validate.notNull(object);
-		return (E)this.delegate.set(i, object);
+	public E set(int index, E element) {
+		Validate.notNull(element);
+		return (E)this.delegate.set(index, element);
 	}
 
-	public void add(int i, E object) {
-		Validate.notNull(object);
-		this.delegate.add(i, object);
+	public void add(int value, E element) {
+		Validate.notNull(element);
+		this.delegate.add(value, element);
 	}
 
-	public E remove(int i) {
-		return (E)this.delegate.remove(i);
+	public E remove(int index) {
+		return (E)this.delegate.remove(index);
 	}
 
 	public int size() {

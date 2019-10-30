@@ -14,33 +14,33 @@ public abstract class AbstractCriterion<T extends CriterionConditions> implement
 	private final Map<PlayerAdvancementTracker, Set<Criterion.ConditionsContainer<T>>> progressions = Maps.<PlayerAdvancementTracker, Set<Criterion.ConditionsContainer<T>>>newIdentityHashMap();
 
 	@Override
-	public final void beginTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<T> conditionsContainer) {
-		((Set)this.progressions.computeIfAbsent(playerAdvancementTracker, playerAdvancementTrackerx -> Sets.newHashSet())).add(conditionsContainer);
+	public final void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer) {
+		((Set)this.progressions.computeIfAbsent(manager, playerAdvancementTracker -> Sets.newHashSet())).add(conditionsContainer);
 	}
 
 	@Override
-	public final void endTrackingCondition(PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<T> conditionsContainer) {
-		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(playerAdvancementTracker);
+	public final void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer) {
+		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(manager);
 		if (set != null) {
 			set.remove(conditionsContainer);
 			if (set.isEmpty()) {
-				this.progressions.remove(playerAdvancementTracker);
+				this.progressions.remove(manager);
 			}
 		}
 	}
 
 	@Override
-	public final void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.progressions.remove(playerAdvancementTracker);
+	public final void endTracking(PlayerAdvancementTracker tracker) {
+		this.progressions.remove(tracker);
 	}
 
-	protected void test(PlayerAdvancementTracker playerAdvancementTracker, Predicate<T> predicate) {
-		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(playerAdvancementTracker);
+	protected void test(PlayerAdvancementTracker tracker, Predicate<T> tester) {
+		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(tracker);
 		if (set != null) {
 			List<Criterion.ConditionsContainer<T>> list = null;
 
 			for (Criterion.ConditionsContainer<T> conditionsContainer : set) {
-				if (predicate.test(conditionsContainer.getConditions())) {
+				if (tester.test(conditionsContainer.getConditions())) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<T>>newArrayList();
 					}
@@ -51,17 +51,17 @@ public abstract class AbstractCriterion<T extends CriterionConditions> implement
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<T> conditionsContainerx : list) {
-					conditionsContainerx.grant(playerAdvancementTracker);
+					conditionsContainerx.grant(tracker);
 				}
 			}
 		}
 	}
 
-	protected void grant(PlayerAdvancementTracker playerAdvancementTracker) {
-		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(playerAdvancementTracker);
+	protected void grant(PlayerAdvancementTracker tracker) {
+		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(tracker);
 		if (set != null && !set.isEmpty()) {
 			for (Criterion.ConditionsContainer<T> conditionsContainer : ImmutableSet.copyOf(set)) {
-				conditionsContainer.grant(playerAdvancementTracker);
+				conditionsContainer.grant(tracker);
 			}
 		}
 	}

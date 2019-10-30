@@ -5,7 +5,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,8 +16,8 @@ public class DisableableProfiler implements Profiler {
 	private final DisableableProfiler.ProfilerControllerImpl controller = new DisableableProfiler.ProfilerControllerImpl();
 	private final DisableableProfiler.ProfilerControllerImpl field_16271 = new DisableableProfiler.ProfilerControllerImpl();
 
-	public DisableableProfiler(IntSupplier intSupplier) {
-		this.tickSupplier = intSupplier;
+	public DisableableProfiler(IntSupplier tickSupplier) {
+		this.tickSupplier = tickSupplier;
 	}
 
 	public DisableableProfiler.ProfilerController getController() {
@@ -105,7 +105,7 @@ public class DisableableProfiler implements Profiler {
 		@Override
 		public void enable() {
 			if (this.profiler == DummyProfiler.INSTANCE) {
-				this.profiler = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier, true);
+				this.profiler = new ProfilerSystem(Util.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier, true);
 			}
 		}
 	}

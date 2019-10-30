@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.data.DataTracker;
@@ -25,36 +24,36 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	protected int forcedAge;
 	protected int happyTicksRemaining;
 
-	protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
-		super(entityType, world);
+	protected PassiveEntity(EntityType<? extends PassiveEntity> type, World world) {
+		super(type, world);
 	}
 
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public net.minecraft.entity.EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
-			entityData = new PassiveEntity.class_4697();
+			entityData = new PassiveEntity.EntityData();
 		}
 
-		PassiveEntity.class_4697 lv = (PassiveEntity.class_4697)entityData;
-		if (lv.method_22436() && lv.method_22432() > 0 && this.random.nextFloat() <= lv.method_22437()) {
+		PassiveEntity.EntityData entityData2 = (PassiveEntity.EntityData)entityData;
+		if (entityData2.canSpawnBaby() && entityData2.getSpawnedCount() > 0 && this.random.nextFloat() <= entityData2.getBabyChance()) {
 			this.setBreedingAge(-24000);
 		}
 
-		lv.method_22435();
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData2.countSpawned();
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	@Nullable
-	public abstract PassiveEntity createChild(PassiveEntity passiveEntity);
+	public abstract PassiveEntity createChild(PassiveEntity mate);
 
-	protected void onPlayerSpawnedChild(PlayerEntity playerEntity, PassiveEntity passiveEntity) {
+	protected void onPlayerSpawnedChild(PlayerEntity player, PassiveEntity child) {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).isOfSameEntityType(itemStack.getTag(), this.getType())) {
 			if (!this.world.isClient) {
@@ -67,8 +66,8 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 						passiveEntity.setCustomName(itemStack.getName());
 					}
 
-					this.onPlayerSpawnedChild(playerEntity, passiveEntity);
-					if (!playerEntity.abilities.creativeMode) {
+					this.onPlayerSpawnedChild(player, passiveEntity);
+					if (!player.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}
 				}
@@ -94,17 +93,17 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		}
 	}
 
-	public void growUp(int i, boolean bl) {
-		int j = this.getBreedingAge();
-		j += i * 20;
-		if (j > 0) {
-			j = 0;
+	public void growUp(int age, boolean overGrow) {
+		int i = this.getBreedingAge();
+		i += age * 20;
+		if (i > 0) {
+			i = 0;
 		}
 
-		int l = j - j;
-		this.setBreedingAge(j);
-		if (bl) {
-			this.forcedAge += l;
+		int k = i - i;
+		this.setBreedingAge(i);
+		if (overGrow) {
+			this.forcedAge += k;
 			if (this.happyTicksRemaining == 0) {
 				this.happyTicksRemaining = 40;
 			}
@@ -115,40 +114,40 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		}
 	}
 
-	public void growUp(int i) {
-		this.growUp(i, false);
+	public void growUp(int age) {
+		this.growUp(age, false);
 	}
 
-	public void setBreedingAge(int i) {
-		int j = this.breedingAge;
-		this.breedingAge = i;
-		if (j < 0 && i >= 0 || j >= 0 && i < 0) {
-			this.dataTracker.set(CHILD, i < 0);
+	public void setBreedingAge(int age) {
+		int i = this.breedingAge;
+		this.breedingAge = age;
+		if (i < 0 && age >= 0 || i >= 0 && age < 0) {
+			this.dataTracker.set(CHILD, age < 0);
 			this.onGrowUp();
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("Age", this.getBreedingAge());
-		compoundTag.putInt("ForcedAge", this.forcedAge);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("Age", this.getBreedingAge());
+		tag.putInt("ForcedAge", this.forcedAge);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setBreedingAge(compoundTag.getInt("Age"));
-		this.forcedAge = compoundTag.getInt("ForcedAge");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setBreedingAge(tag.getInt("Age"));
+		this.forcedAge = tag.getInt("ForcedAge");
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (CHILD.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> data) {
+		if (CHILD.equals(data)) {
 			this.calculateDimensions();
 		}
 
-		super.onTrackedDataSet(trackedData);
+		super.onTrackedDataSet(data);
 	}
 
 	@Override
@@ -180,33 +179,33 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		return this.getBreedingAge() < 0;
 	}
 
-	public static class class_4697 implements EntityData {
-		private int field_20684;
-		private boolean field_20685 = true;
-		private float field_20686 = 0.05F;
+	public static class EntityData implements net.minecraft.entity.EntityData {
+		private int spawnCount;
+		private boolean babyAllowed = true;
+		private float babyChance = 0.05F;
 
-		public int method_22432() {
-			return this.field_20684;
+		public int getSpawnedCount() {
+			return this.spawnCount;
 		}
 
-		public void method_22435() {
-			this.field_20684++;
+		public void countSpawned() {
+			this.spawnCount++;
 		}
 
-		public boolean method_22436() {
-			return this.field_20685;
+		public boolean canSpawnBaby() {
+			return this.babyAllowed;
 		}
 
-		public void method_22434(boolean bl) {
-			this.field_20685 = bl;
+		public void setBabyAllowed(boolean babyAllowed) {
+			this.babyAllowed = babyAllowed;
 		}
 
-		public float method_22437() {
-			return this.field_20686;
+		public float getBabyChance() {
+			return this.babyChance;
 		}
 
-		public void method_22433(float f) {
-			this.field_20686 = f;
+		public void setBabyChance(float babyChance) {
+			this.babyChance = babyChance;
 		}
 	}
 }

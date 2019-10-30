@@ -85,8 +85,8 @@ public class ItemSpawnEggFix extends DataFix {
 		strings[200] = "EnderCrystal";
 	});
 
-	public ItemSpawnEggFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemSpawnEggFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

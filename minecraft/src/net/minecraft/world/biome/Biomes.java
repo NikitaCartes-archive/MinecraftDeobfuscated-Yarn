@@ -82,8 +82,8 @@ public abstract class Biomes {
 	public static final Biome BAMBOO_JUNGLE = register(168, "bamboo_jungle", new BambooJungleBiome());
 	public static final Biome BAMBOO_JUNGLE_HILLS = register(169, "bamboo_jungle_hills", new BambooJungleHillsBiome());
 
-	private static Biome register(int i, String string, Biome biome) {
-		Registry.register(Registry.BIOME, i, string, biome);
+	private static Biome register(int rawId, String id, Biome biome) {
+		Registry.register(Registry.BIOME, rawId, id, biome);
 		if (biome.hasParent()) {
 			Biome.PARENT_BIOME_ID_MAP.set(biome, Registry.BIOME.getRawId(Registry.BIOME.get(new Identifier(biome.parent))));
 		}

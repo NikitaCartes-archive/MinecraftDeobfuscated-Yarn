@@ -13,35 +13,35 @@ public interface BlockRenderView extends BlockView {
 
 	LightingProvider getLightingProvider();
 
-	default Biome getBiome(BlockPos blockPos) {
-		return this.getBiomeAccess().getBiome(blockPos);
+	default Biome getBiome(BlockPos pos) {
+		return this.getBiomeAccess().getBiome(pos);
 	}
 
-	default int getLightLevel(LightType lightType, BlockPos blockPos) {
-		return this.getLightingProvider().get(lightType).getLightLevel(blockPos);
+	default int getLightLevel(LightType type, BlockPos pos) {
+		return this.getLightingProvider().get(type).getLightLevel(pos);
 	}
 
-	default int getBaseLightLevel(BlockPos blockPos, int i) {
-		return this.getLightingProvider().getLight(blockPos, i);
+	default int getBaseLightLevel(BlockPos pos, int ambientDarkness) {
+		return this.getLightingProvider().getLight(pos, ambientDarkness);
 	}
 
-	default boolean isSkyVisible(BlockPos blockPos) {
-		return this.getLightLevel(LightType.SKY, blockPos) >= this.getMaxLightLevel();
-	}
-
-	@Environment(EnvType.CLIENT)
-	default int getLightmapCoordinates(BlockPos blockPos) {
-		return this.getLightmapCoordinates(this.getBlockState(blockPos), blockPos);
+	default boolean isSkyVisible(BlockPos pos) {
+		return this.getLightLevel(LightType.SKY, pos) >= this.getMaxLightLevel();
 	}
 
 	@Environment(EnvType.CLIENT)
-	default int getLightmapCoordinates(BlockState blockState, BlockPos blockPos) {
-		if (blockState.hasEmissiveLighting()) {
+	default int getLightmapCoordinates(BlockPos pos) {
+		return this.getLightmapCoordinates(this.getBlockState(pos), pos);
+	}
+
+	@Environment(EnvType.CLIENT)
+	default int getLightmapCoordinates(BlockState state, BlockPos pos) {
+		if (state.hasEmissiveLighting()) {
 			return 15728880;
 		} else {
-			int i = this.getLightLevel(LightType.SKY, blockPos);
-			int j = this.getLightLevel(LightType.BLOCK, blockPos);
-			int k = blockState.getLuminance();
+			int i = this.getLightLevel(LightType.SKY, pos);
+			int j = this.getLightLevel(LightType.BLOCK, pos);
+			int k = state.getLuminance();
 			if (j < k) {
 				j = k;
 			}

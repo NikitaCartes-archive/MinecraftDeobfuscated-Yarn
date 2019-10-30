@@ -4,69 +4,69 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.light.LevelPropagator;
 
 public abstract class ChunkPosDistanceLevelPropagator extends LevelPropagator {
-	protected ChunkPosDistanceLevelPropagator(int i, int j, int k) {
-		super(i, j, k);
+	protected ChunkPosDistanceLevelPropagator(int levelCount, int initLevelCapacity, int initTotalCapacity) {
+		super(levelCount, initLevelCapacity, initTotalCapacity);
 	}
 
 	@Override
-	protected boolean isMarker(long l) {
-		return l == ChunkPos.MARKER;
+	protected boolean isMarker(long id) {
+		return id == ChunkPos.MARKER;
 	}
 
 	@Override
-	protected void propagateLevel(long l, int i, boolean bl) {
-		ChunkPos chunkPos = new ChunkPos(l);
+	protected void propagateLevel(long id, int level, boolean decrease) {
+		ChunkPos chunkPos = new ChunkPos(id);
+		int i = chunkPos.x;
+		int j = chunkPos.z;
+
+		for (int k = -1; k <= 1; k++) {
+			for (int l = -1; l <= 1; l++) {
+				long m = ChunkPos.toLong(i + k, j + l);
+				if (m != id) {
+					this.propagateLevel(id, m, level, decrease);
+				}
+			}
+		}
+	}
+
+	@Override
+	protected int recalculateLevel(long id, long excludedId, int maxLevel) {
+		int i = maxLevel;
+		ChunkPos chunkPos = new ChunkPos(id);
 		int j = chunkPos.x;
 		int k = chunkPos.z;
 
-		for (int m = -1; m <= 1; m++) {
-			for (int n = -1; n <= 1; n++) {
-				long o = ChunkPos.toLong(j + m, k + n);
-				if (o != l) {
-					this.propagateLevel(l, o, i, bl);
-				}
-			}
-		}
-	}
-
-	@Override
-	protected int recalculateLevel(long l, long m, int i) {
-		int j = i;
-		ChunkPos chunkPos = new ChunkPos(l);
-		int k = chunkPos.x;
-		int n = chunkPos.z;
-
-		for (int o = -1; o <= 1; o++) {
-			for (int p = -1; p <= 1; p++) {
-				long q = ChunkPos.toLong(k + o, n + p);
-				if (q == l) {
-					q = ChunkPos.MARKER;
+		for (int l = -1; l <= 1; l++) {
+			for (int m = -1; m <= 1; m++) {
+				long n = ChunkPos.toLong(j + l, k + m);
+				if (n == id) {
+					n = ChunkPos.MARKER;
 				}
 
-				if (q != m) {
-					int r = this.getPropagatedLevel(q, l, this.getLevel(q));
-					if (j > r) {
-						j = r;
+				if (n != excludedId) {
+					int o = this.getPropagatedLevel(n, id, this.getLevel(n));
+					if (i > o) {
+						i = o;
 					}
 
-					if (j == 0) {
-						return j;
+					if (i == 0) {
+						return i;
 					}
 				}
 			}
 		}
 
-		return j;
+		return i;
 	}
 
 	@Override
-	protected int getPropagatedLevel(long l, long m, int i) {
-		return l == ChunkPos.MARKER ? this.getInitialLevel(m) : i + 1;
+	protected int getPropagatedLevel(long sourceId, long targetId, int level) {
+		return sourceId == ChunkPos.MARKER ? this.getInitialLevel(targetId) : level + 1;
 	}
 
-	protected abstract int getInitialLevel(long l);
+	protected abstract int getInitialLevel(long id);
 
-	public void updateLevel(long l, int i, boolean bl) {
-		this.updateLevel(ChunkPos.MARKER, l, i, bl);
+	public void updateLevel(long chunkPos, int distance, boolean decrease) {
+		this.updateLevel(ChunkPos.MARKER, chunkPos, distance, decrease);
 	}
 }

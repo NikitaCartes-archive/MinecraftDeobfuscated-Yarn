@@ -63,13 +63,13 @@ public class DolphinEntityModel<T extends Entity> extends CompositeEntityModel<T
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		this.field_4658.pitch = j * (float) (Math.PI / 180.0);
-		this.field_4658.yaw = i * (float) (Math.PI / 180.0);
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		this.field_4658.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.field_4658.yaw = headYaw * (float) (Math.PI / 180.0);
 		if (Entity.squaredHorizontalLength(entity.getVelocity()) > 1.0E-7) {
-			this.field_4658.pitch = this.field_4658.pitch + -0.05F + -0.05F * MathHelper.cos(h * 0.3F);
-			this.field_4657.pitch = -0.1F * MathHelper.cos(h * 0.3F);
-			this.field_4655.pitch = -0.2F * MathHelper.cos(h * 0.3F);
+			this.field_4658.pitch = this.field_4658.pitch + -0.05F + -0.05F * MathHelper.cos(age * 0.3F);
+			this.field_4657.pitch = -0.1F * MathHelper.cos(age * 0.3F);
+			this.field_4655.pitch = -0.2F * MathHelper.cos(age * 0.3F);
 		}
 	}
 }

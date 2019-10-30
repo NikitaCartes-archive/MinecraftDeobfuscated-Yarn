@@ -11,25 +11,25 @@ import net.minecraft.world.World;
 
 public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior {
 	@Override
-	public ItemStack dispenseSilently(BlockPointer blockPointer, ItemStack itemStack) {
-		World world = blockPointer.getWorld();
-		Position position = DispenserBlock.getOutputLocation(blockPointer);
-		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-		Projectile projectile = this.createProjectile(world, position, itemStack);
+	public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+		World world = pointer.getWorld();
+		Position position = DispenserBlock.getOutputLocation(pointer);
+		Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
+		Projectile projectile = this.createProjectile(world, position, stack);
 		projectile.setVelocity(
 			(double)direction.getOffsetX(), (double)((float)direction.getOffsetY() + 0.1F), (double)direction.getOffsetZ(), this.getForce(), this.getVariation()
 		);
 		world.spawnEntity((Entity)projectile);
-		itemStack.decrement(1);
-		return itemStack;
+		stack.decrement(1);
+		return stack;
 	}
 
 	@Override
-	protected void playSound(BlockPointer blockPointer) {
-		blockPointer.getWorld().playLevelEvent(1002, blockPointer.getBlockPos(), 0);
+	protected void playSound(BlockPointer pointer) {
+		pointer.getWorld().playLevelEvent(1002, pointer.getBlockPos(), 0);
 	}
 
-	protected abstract Projectile createProjectile(World world, Position position, ItemStack itemStack);
+	protected abstract Projectile createProjectile(World position, Position stack, ItemStack itemStack);
 
 	protected float getVariation() {
 		return 6.0F;

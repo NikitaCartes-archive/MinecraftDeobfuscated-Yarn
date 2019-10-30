@@ -48,11 +48,11 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 		"▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _"
 	};
 
-	public RealmsLongRunningMcoTaskScreen(RealmsScreen realmsScreen, LongRunningTask longRunningTask) {
-		this.lastScreen = realmsScreen;
-		this.task = longRunningTask;
-		longRunningTask.setScreen(this);
-		this.taskThread = longRunningTask;
+	public RealmsLongRunningMcoTaskScreen(RealmsScreen lastScreen, LongRunningTask task) {
+		this.lastScreen = lastScreen;
+		this.task = task;
+		task.setScreen(this);
+		this.taskThread = task;
 	}
 
 	public void start() {
@@ -70,12 +70,12 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i == 256) {
+	public boolean keyPressed(int eventKey, int scancode, int mods) {
+		if (eventKey == 256) {
 			this.cancelOrBackButtonClicked();
 			return true;
 		} else {
-			return super.keyPressed(i, j, k);
+			return super.keyPressed(eventKey, scancode, mods);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void render(int xm, int ym, float a) {
 		this.renderBackground();
 		this.drawCenteredString(this.title, this.width() / 2, RealmsConstants.row(3), 16777215);
 		if (!this.error) {
@@ -108,7 +108,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 			this.drawCenteredString(this.errorMessage, this.width() / 2, RealmsConstants.row(8), 16711680);
 		}
 
-		super.render(i, j, f);
+		super.render(xm, ym, a);
 	}
 
 	public void method_21290(String string) {
@@ -124,8 +124,8 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 		});
 	}
 
-	public void setTitle(String string) {
-		this.title = string;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public boolean aborted() {

@@ -63,9 +63,9 @@ public class BlockArgumentParser {
 	private int cursorPos;
 	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
 
-	public BlockArgumentParser(StringReader stringReader, boolean bl) {
-		this.reader = stringReader;
-		this.allowTag = bl;
+	public BlockArgumentParser(StringReader reader, boolean allowTag) {
+		this.reader = reader;
+		this.allowTag = allowTag;
 	}
 
 	public Map<Property<?>, Comparable<?>> getBlockProperties() {
@@ -87,7 +87,7 @@ public class BlockArgumentParser {
 		return this.tagId;
 	}
 
-	public BlockArgumentParser parse(boolean bl) throws CommandSyntaxException {
+	public BlockArgumentParser parse(boolean allowNbt) throws CommandSyntaxException {
 		this.suggestions = this::suggestBlockOrTagId;
 		if (this.reader.canRead() && this.reader.peek() == '#') {
 			this.parseTagId();
@@ -105,7 +105,7 @@ public class BlockArgumentParser {
 			}
 		}
 
-		if (bl && this.reader.canRead() && this.reader.peek() == '{') {
+		if (allowNbt && this.reader.canRead() && this.reader.peek() == '{') {
 			this.suggestions = SUGGEST_DEFAULT;
 			this.parseSnbt();
 		}

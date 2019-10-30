@@ -13,26 +13,26 @@ public class CsvWriter {
 	private final Writer writer;
 	private final int column;
 
-	private CsvWriter(Writer writer, List<String> list) throws IOException {
+	private CsvWriter(Writer writer, List<String> headers) throws IOException {
 		this.writer = writer;
-		this.column = list.size();
-		this.printRow(list.stream());
+		this.column = headers.size();
+		this.printRow(headers.stream());
 	}
 
 	public static CsvWriter.Header makeHeader() {
 		return new CsvWriter.Header();
 	}
 
-	public void printRow(Object... objects) throws IOException {
-		if (objects.length != this.column) {
-			throw new IllegalArgumentException("Invalid number of columns, expected " + this.column + ", but got " + objects.length);
+	public void printRow(Object... columns) throws IOException {
+		if (columns.length != this.column) {
+			throw new IllegalArgumentException("Invalid number of columns, expected " + this.column + ", but got " + columns.length);
 		} else {
-			this.printRow(Stream.of(objects));
+			this.printRow(Stream.of(columns));
 		}
 	}
 
-	private void printRow(Stream<?> stream) throws IOException {
-		this.writer.write((String)stream.map(CsvWriter::print).collect(Collectors.joining(",")) + "\r\n");
+	private void printRow(Stream<?> columns) throws IOException {
+		this.writer.write((String)columns.map(CsvWriter::print).collect(Collectors.joining(",")) + "\r\n");
 	}
 
 	private static String print(@Nullable Object object) {

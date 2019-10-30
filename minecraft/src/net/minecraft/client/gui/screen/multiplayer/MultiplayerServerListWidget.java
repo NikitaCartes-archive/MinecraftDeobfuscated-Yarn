@@ -25,8 +25,8 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -45,9 +45,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	private final MultiplayerServerListWidget.Entry scanningEntry = new MultiplayerServerListWidget.ScanningEntry();
 	private final List<MultiplayerServerListWidget.LanServerEntry> lanServers = Lists.<MultiplayerServerListWidget.LanServerEntry>newArrayList();
 
-	public MultiplayerServerListWidget(MultiplayerScreen multiplayerScreen, MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-		super(minecraftClient, i, j, k, l, m);
-		this.screen = multiplayerScreen;
+	public MultiplayerServerListWidget(MultiplayerScreen screen, MinecraftClient client, int width, int height, int top, int bottom, int entryHeight) {
+		super(client, width, height, top, bottom, entryHeight);
+		this.screen = screen;
 	}
 
 	private void updateEntries() {
@@ -89,20 +89,20 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 	}
 
-	public void setServers(ServerList serverList) {
+	public void setServers(ServerList servers) {
 		this.servers.clear();
 
-		for (int i = 0; i < serverList.size(); i++) {
-			this.servers.add(new MultiplayerServerListWidget.ServerEntry(this.screen, serverList.get(i)));
+		for (int i = 0; i < servers.size(); i++) {
+			this.servers.add(new MultiplayerServerListWidget.ServerEntry(this.screen, servers.get(i)));
 		}
 
 		this.updateEntries();
 	}
 
-	public void setLanServers(List<LanServerInfo> list) {
+	public void setLanServers(List<LanServerInfo> lanServers) {
 		this.lanServers.clear();
 
-		for (LanServerInfo lanServerInfo : list) {
+		for (LanServerInfo lanServerInfo : lanServers) {
 			this.lanServers.add(new MultiplayerServerListWidget.LanServerEntry(this.screen, lanServerInfo));
 		}
 
@@ -135,9 +135,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		protected final LanServerInfo server;
 		private long time;
 
-		protected LanServerEntry(MultiplayerScreen multiplayerScreen, LanServerInfo lanServerInfo) {
-			this.screen = multiplayerScreen;
-			this.server = lanServerInfo;
+		protected LanServerEntry(MultiplayerScreen screen, LanServerInfo server) {
+			this.screen = screen;
+			this.server = server;
 			this.client = MinecraftClient.getInstance();
 		}
 
@@ -153,13 +153,13 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		@Override
-		public boolean mouseClicked(double d, double e, int i) {
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
 			this.screen.select(this);
-			if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
+			if (Util.getMeasuringTimeMs() - this.time < 250L) {
 				this.screen.connect();
 			}
 
-			this.time = SystemUtil.getMeasuringTimeMs();
+			this.time = Util.getMeasuringTimeMs();
 			return false;
 		}
 
@@ -184,7 +184,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 					16777215
 				);
 			String string;
-			switch ((int)(SystemUtil.getMeasuringTimeMs() / 300L % 4L)) {
+			switch ((int)(Util.getMeasuringTimeMs() / 300L % 4L)) {
 				case 0:
 				default:
 					string = "O o o";
@@ -213,11 +213,11 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private NativeImageBackedTexture icon;
 		private long time;
 
-		protected ServerEntry(MultiplayerScreen multiplayerScreen, ServerInfo serverInfo) {
-			this.screen = multiplayerScreen;
-			this.server = serverInfo;
+		protected ServerEntry(MultiplayerScreen screen, ServerInfo server) {
+			this.screen = screen;
+			this.server = server;
 			this.client = MinecraftClient.getInstance();
-			this.iconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverInfo.address) + "/icon");
+			this.iconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(server.address) + "/icon");
 			this.icon = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.iconTextureId);
 		}
 
@@ -285,7 +285,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 			} else {
 				r = 1;
-				s = (int)(SystemUtil.getMeasuringTimeMs() / 100L + (long)(i * 2) & 7L);
+				s = (int)(Util.getMeasuringTimeMs() / 100L + (long)(i * 2) & 7L);
 				if (s > 4) {
 					s = 8 - s;
 				}
@@ -348,10 +348,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 		}
 
-		protected void draw(int i, int j, Identifier identifier) {
-			this.client.getTextureManager().bindTexture(identifier);
+		protected void draw(int x, int y, Identifier textureId) {
+			this.client.getTextureManager().bindTexture(textureId);
 			RenderSystem.enableBlend();
-			DrawableHelper.blit(i, j, 0.0F, 0.0F, 32, 32, 32, 32);
+			DrawableHelper.blit(x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
 		}
 
@@ -411,34 +411,34 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		@Override
-		public boolean mouseClicked(double d, double e, int i) {
-			double f = d - (double)MultiplayerServerListWidget.this.getRowLeft();
-			double g = e - (double)MultiplayerServerListWidget.this.getRowTop(MultiplayerServerListWidget.this.children().indexOf(this));
-			if (f <= 32.0) {
-				if (f < 32.0 && f > 16.0 && this.method_20136()) {
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			double d = mouseX - (double)MultiplayerServerListWidget.this.getRowLeft();
+			double e = mouseY - (double)MultiplayerServerListWidget.this.getRowTop(MultiplayerServerListWidget.this.children().indexOf(this));
+			if (d <= 32.0) {
+				if (d < 32.0 && d > 16.0 && this.method_20136()) {
 					this.screen.select(this);
 					this.screen.connect();
 					return true;
 				}
 
-				int j = this.screen.serverListWidget.children().indexOf(this);
-				if (f < 16.0 && g < 16.0 && j > 0) {
-					this.swapEntries(j, j - 1);
+				int i = this.screen.serverListWidget.children().indexOf(this);
+				if (d < 16.0 && e < 16.0 && i > 0) {
+					this.swapEntries(i, i - 1);
 					return true;
 				}
 
-				if (f < 16.0 && g > 16.0 && j < this.screen.getServerList().size() - 1) {
-					this.swapEntries(j, j + 1);
+				if (d < 16.0 && e > 16.0 && i < this.screen.getServerList().size() - 1) {
+					this.swapEntries(i, i + 1);
 					return true;
 				}
 			}
 
 			this.screen.select(this);
-			if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
+			if (Util.getMeasuringTimeMs() - this.time < 250L) {
 				this.screen.connect();
 			}
 
-			this.time = SystemUtil.getMeasuringTimeMs();
+			this.time = Util.getMeasuringTimeMs();
 			return false;
 		}
 

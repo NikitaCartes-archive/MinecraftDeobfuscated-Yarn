@@ -28,9 +28,9 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 	}
 
 	public <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC, F> configuredFeature
+		IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, ConfiguredFeature<FC, F> configuredFeature
 	) {
-		return this.decorator.generate(iWorld, chunkGenerator, random, blockPos, this.config, configuredFeature);
+		return this.decorator.generate(world, generator, random, pos, this.config, configuredFeature);
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {

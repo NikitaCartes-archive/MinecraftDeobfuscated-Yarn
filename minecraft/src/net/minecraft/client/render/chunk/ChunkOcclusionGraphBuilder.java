@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -18,7 +18,7 @@ public class ChunkOcclusionGraphBuilder {
 	private static final int STEP_Y = (int)Math.pow(16.0, 2.0);
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private final BitSet closed = new BitSet(4096);
-	private static final int[] EDGE_POINTS = SystemUtil.consume(new int[1352], is -> {
+	private static final int[] EDGE_POINTS = Util.create(new int[1352], is -> {
 		int i = 0;
 		int j = 15;
 		int k = 0;
@@ -35,17 +35,17 @@ public class ChunkOcclusionGraphBuilder {
 	});
 	private int openCount = 4096;
 
-	public void markClosed(BlockPos blockPos) {
-		this.closed.set(pack(blockPos), true);
+	public void markClosed(BlockPos pos) {
+		this.closed.set(pack(pos), true);
 		this.openCount--;
 	}
 
-	private static int pack(BlockPos blockPos) {
-		return pack(blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15);
+	private static int pack(BlockPos pos) {
+		return pack(pos.getX() & 15, pos.getY() & 15, pos.getZ() & 15);
 	}
 
-	private static int pack(int i, int j, int k) {
-		return i << 0 | j << 8 | k << 4;
+	private static int pack(int x, int y, int z) {
+		return x << 0 | y << 8 | z << 4;
 	}
 
 	public ChunkOcclusionGraph build() {
@@ -65,25 +65,25 @@ public class ChunkOcclusionGraphBuilder {
 		return chunkOcclusionGraph;
 	}
 
-	public Set<Direction> getOpenFaces(BlockPos blockPos) {
-		return this.getOpenFaces(pack(blockPos));
+	public Set<Direction> getOpenFaces(BlockPos pos) {
+		return this.getOpenFaces(pack(pos));
 	}
 
-	private Set<Direction> getOpenFaces(int i) {
+	private Set<Direction> getOpenFaces(int pos) {
 		Set<Direction> set = EnumSet.noneOf(Direction.class);
 		IntPriorityQueue intPriorityQueue = new IntArrayFIFOQueue();
-		intPriorityQueue.enqueue(i);
-		this.closed.set(i, true);
+		intPriorityQueue.enqueue(pos);
+		this.closed.set(pos, true);
 
 		while (!intPriorityQueue.isEmpty()) {
-			int j = intPriorityQueue.dequeueInt();
-			this.addEdgeFaces(j, set);
+			int i = intPriorityQueue.dequeueInt();
+			this.addEdgeFaces(i, set);
 
 			for (Direction direction : DIRECTIONS) {
-				int k = this.offset(j, direction);
-				if (k >= 0 && !this.closed.get(k)) {
-					this.closed.set(k, true);
-					intPriorityQueue.enqueue(k);
+				int j = this.offset(i, direction);
+				if (j >= 0 && !this.closed.get(j)) {
+					this.closed.set(j, true);
+					intPriorityQueue.enqueue(j);
 				}
 			}
 		}
@@ -91,67 +91,67 @@ public class ChunkOcclusionGraphBuilder {
 		return set;
 	}
 
-	private void addEdgeFaces(int i, Set<Direction> set) {
-		int j = i >> 0 & 15;
+	private void addEdgeFaces(int pos, Set<Direction> openFaces) {
+		int i = pos >> 0 & 15;
+		if (i == 0) {
+			openFaces.add(Direction.WEST);
+		} else if (i == 15) {
+			openFaces.add(Direction.EAST);
+		}
+
+		int j = pos >> 8 & 15;
 		if (j == 0) {
-			set.add(Direction.WEST);
+			openFaces.add(Direction.DOWN);
 		} else if (j == 15) {
-			set.add(Direction.EAST);
+			openFaces.add(Direction.UP);
 		}
 
-		int k = i >> 8 & 15;
+		int k = pos >> 4 & 15;
 		if (k == 0) {
-			set.add(Direction.DOWN);
+			openFaces.add(Direction.NORTH);
 		} else if (k == 15) {
-			set.add(Direction.UP);
-		}
-
-		int l = i >> 4 & 15;
-		if (l == 0) {
-			set.add(Direction.NORTH);
-		} else if (l == 15) {
-			set.add(Direction.SOUTH);
+			openFaces.add(Direction.SOUTH);
 		}
 	}
 
-	private int offset(int i, Direction direction) {
+	private int offset(int pos, Direction direction) {
 		switch (direction) {
 			case DOWN:
-				if ((i >> 8 & 15) == 0) {
+				if ((pos >> 8 & 15) == 0) {
 					return -1;
 				}
 
-				return i - STEP_Y;
+				return pos - STEP_Y;
 			case UP:
-				if ((i >> 8 & 15) == 15) {
+				if ((pos >> 8 & 15) == 15) {
 					return -1;
 				}
 
-				return i + STEP_Y;
+				return pos + STEP_Y;
 			case NORTH:
-				if ((i >> 4 & 15) == 0) {
+				if ((pos >> 4 & 15) == 0) {
 					return -1;
 				}
 
-				return i - STEP_Z;
+				return pos - STEP_Z;
 			case SOUTH:
-				if ((i >> 4 & 15) == 15) {
+				if ((pos >> 4 & 15) == 15) {
 					return -1;
 				}
 
-				return i + STEP_Z;
+				return pos + STEP_Z;
 			case WEST:
-				if ((i >> 0 & 15) == 0) {
+				if ((pos >> 0 & 15) == 0) {
 					return -1;
 				}
 
-				return i - STEP_X;
+				return pos - STEP_X;
 			case EAST:
-				if ((i >> 0 & 15) == 15) {
+				if ((pos >> 0 & 15) == 15) {
 					return -1;
 				}
 
-				return i + STEP_X;
+				return pos + STEP_X;
 			default:
 				return -1;
 		}

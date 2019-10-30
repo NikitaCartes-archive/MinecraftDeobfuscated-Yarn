@@ -21,8 +21,8 @@ import net.minecraft.world.SpawnHelper;
 public class PhantomSpawner {
 	private int ticksUntilNextSpawn;
 
-	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-		if (!bl) {
+	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
+		if (!spawnMonsters) {
 			return 0;
 		} else if (!serverWorld.getGameRules().getBoolean(GameRules.DO_INSOMNIA)) {
 			return 0;

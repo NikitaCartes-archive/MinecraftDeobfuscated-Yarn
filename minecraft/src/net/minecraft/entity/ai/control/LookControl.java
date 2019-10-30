@@ -19,24 +19,24 @@ public class LookControl {
 		this.entity = mobEntity;
 	}
 
-	public void lookAt(Vec3d vec3d) {
-		this.lookAt(vec3d.x, vec3d.y, vec3d.z);
+	public void lookAt(Vec3d direction) {
+		this.lookAt(direction.x, direction.y, direction.z);
 	}
 
-	public void lookAt(Entity entity, float f, float g) {
-		this.lookAt(entity.getX(), getLookingHeightFor(entity), entity.getZ(), f, g);
+	public void lookAt(Entity entity, float yawSpeed, float pitchSpeed) {
+		this.lookAt(entity.getX(), getLookingHeightFor(entity), entity.getZ(), yawSpeed, pitchSpeed);
 	}
 
-	public void lookAt(double d, double e, double f) {
-		this.lookAt(d, e, f, (float)this.entity.getLookYawSpeed(), (float)this.entity.getLookPitchSpeed());
+	public void lookAt(double x, double y, double z) {
+		this.lookAt(x, y, z, (float)this.entity.getLookYawSpeed(), (float)this.entity.getLookPitchSpeed());
 	}
 
-	public void lookAt(double d, double e, double f, float g, float h) {
-		this.lookX = d;
-		this.lookY = e;
-		this.lookZ = f;
-		this.yawSpeed = g;
-		this.pitchSpeed = h;
+	public void lookAt(double x, double y, double z, float yawSpeed, float pitchSpeed) {
+		this.lookX = x;
+		this.lookY = y;
+		this.lookZ = z;
+		this.yawSpeed = yawSpeed;
+		this.pitchSpeed = pitchSpeed;
 		this.active = true;
 	}
 
@@ -92,13 +92,13 @@ public class LookControl {
 		return (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 	}
 
-	protected float changeAngle(float f, float g, float h) {
-		float i = MathHelper.subtractAngles(f, g);
-		float j = MathHelper.clamp(i, -h, h);
-		return f + j;
+	protected float changeAngle(float from, float to, float max) {
+		float f = MathHelper.subtractAngles(from, to);
+		float g = MathHelper.clamp(f, -max, max);
+		return from + g;
 	}
 
 	private static double getLookingHeightFor(Entity entity) {
-		return entity instanceof LivingEntity ? entity.method_23320() : (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
+		return entity instanceof LivingEntity ? entity.method_23320() : (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0;
 	}
 }

@@ -12,18 +12,18 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(EntryCombiner[] entryCombiners) {
-		switch (entryCombiners.length) {
+	protected EntryCombiner combine(EntryCombiner[] children) {
+		switch (children.length) {
 			case 0:
 				return ALWAYS_FALSE;
 			case 1:
-				return entryCombiners[0];
+				return children[0];
 			case 2:
-				return entryCombiners[0].or(entryCombiners[1]);
+				return children[0].or(children[1]);
 			default:
-				return (lootContext, consumer) -> {
-					for (EntryCombiner entryCombiner : entryCombiners) {
-						if (entryCombiner.expand(lootContext, consumer)) {
+				return (context, lootChoiceExpander) -> {
+					for (EntryCombiner entryCombiner : children) {
+						if (entryCombiner.expand(context, lootChoiceExpander)) {
 							return true;
 						}
 					}
@@ -44,15 +44,15 @@ public class AlternativeEntry extends CombinedEntry {
 		}
 	}
 
-	public static AlternativeEntry.Builder builder(LootEntry.Builder<?>... builders) {
-		return new AlternativeEntry.Builder(builders);
+	public static AlternativeEntry.Builder builder(LootEntry.Builder<?>... children) {
+		return new AlternativeEntry.Builder(children);
 	}
 
 	public static class Builder extends LootEntry.Builder<AlternativeEntry.Builder> {
 		private final List<LootEntry> children = Lists.<LootEntry>newArrayList();
 
-		public Builder(LootEntry.Builder<?>... builders) {
-			for (LootEntry.Builder<?> builder : builders) {
+		public Builder(LootEntry.Builder<?>... children) {
+			for (LootEntry.Builder<?> builder : children) {
 				this.children.add(builder.build());
 			}
 		}

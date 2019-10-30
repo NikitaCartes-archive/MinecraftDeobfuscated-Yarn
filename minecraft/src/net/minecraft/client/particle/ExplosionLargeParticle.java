@@ -9,20 +9,20 @@ import net.minecraft.world.World;
 public class ExplosionLargeParticle extends SpriteBillboardParticle {
 	private final SpriteProvider field_17815;
 
-	private ExplosionLargeParticle(World world, double d, double e, double f, double g, SpriteProvider spriteProvider) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	private ExplosionLargeParticle(World world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
+		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.maxAge = 6 + this.random.nextInt(4);
-		float h = this.random.nextFloat() * 0.6F + 0.4F;
-		this.colorRed = h;
-		this.colorGreen = h;
-		this.colorBlue = h;
-		this.scale = 2.0F * (1.0F - (float)g * 0.5F);
+		float f = this.random.nextFloat() * 0.6F + 0.4F;
+		this.colorRed = f;
+		this.colorGreen = f;
+		this.colorBlue = f;
+		this.scale = 2.0F * (1.0F - (float)d * 0.5F);
 		this.field_17815 = spriteProvider;
 		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
-	public int getColorMultiplier(float f) {
+	public int getColorMultiplier(float tint) {
 		return 15728880;
 	}
 

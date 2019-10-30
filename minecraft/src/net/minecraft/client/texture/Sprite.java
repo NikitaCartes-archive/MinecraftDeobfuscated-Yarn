@@ -14,7 +14,7 @@ import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -40,7 +40,7 @@ public class Sprite {
 	private float vMax;
 	protected int frameIndex;
 	protected int frameTicks;
-	private static final float[] srgbLinearMap = SystemUtil.consume(new float[256], fs -> {
+	private static final float[] srgbLinearMap = Util.create(new float[256], fs -> {
 		for (int i = 0; i < fs.length; i++) {
 			fs[i] = (float)Math.pow((double)((float)i / 255.0F), 2.2);
 		}
@@ -71,69 +71,69 @@ public class Sprite {
 		this.animationMetadata = animationResourceMetadata;
 	}
 
-	private static Pair<Integer, Integer> getDimensions(int i, int j, int k, int l) {
-		if (i != -1) {
-			return j != -1 ? Pair.of(i, j) : Pair.of(i, l);
-		} else if (j != -1) {
-			return Pair.of(k, j);
+	private static Pair<Integer, Integer> getDimensions(int animationMetadataWidth, int animationMetadataHeight, int width, int height) {
+		if (animationMetadataWidth != -1) {
+			return animationMetadataHeight != -1 ? Pair.of(animationMetadataWidth, animationMetadataHeight) : Pair.of(animationMetadataWidth, height);
+		} else if (animationMetadataHeight != -1) {
+			return Pair.of(width, animationMetadataHeight);
 		} else {
-			int m = Math.min(k, l);
-			return Pair.of(m, m);
+			int i = Math.min(width, height);
+			return Pair.of(i, i);
 		}
 	}
 
-	private static boolean isDivisibleBy(int i, int j) {
-		return i / j * j == i;
+	private static boolean isDivisibleBy(int number, int divisor) {
+		return number / divisor * divisor == number;
 	}
 
-	private void generateMipmapsInternal(int i) {
-		NativeImage[] nativeImages = new NativeImage[i + 1];
+	private void generateMipmapsInternal(int mipLevels) {
+		NativeImage[] nativeImages = new NativeImage[mipLevels + 1];
 		nativeImages[0] = this.images[0];
-		if (i > 0) {
+		if (mipLevels > 0) {
 			boolean bl = false;
 
 			label71:
-			for (int j = 0; j < this.images[0].getWidth(); j++) {
-				for (int k = 0; k < this.images[0].getHeight(); k++) {
-					if (this.images[0].getPixelRgba(j, k) >> 24 == 0) {
+			for (int i = 0; i < this.images[0].getWidth(); i++) {
+				for (int j = 0; j < this.images[0].getHeight(); j++) {
+					if (this.images[0].getPixelRgba(i, j) >> 24 == 0) {
 						bl = true;
 						break label71;
 					}
 				}
 			}
 
-			for (int j = 1; j <= i; j++) {
-				if (this.images.length > j && this.images[j] != null) {
-					nativeImages[j] = this.images[j];
+			for (int i = 1; i <= mipLevels; i++) {
+				if (this.images.length > i && this.images[i] != null) {
+					nativeImages[i] = this.images[i];
 				} else {
-					NativeImage nativeImage = nativeImages[j - 1];
+					NativeImage nativeImage = nativeImages[i - 1];
 					NativeImage nativeImage2 = new NativeImage(nativeImage.getWidth() >> 1, nativeImage.getHeight() >> 1, false);
-					int l = nativeImage2.getWidth();
-					int m = nativeImage2.getHeight();
+					int k = nativeImage2.getWidth();
+					int l = nativeImage2.getHeight();
 
-					for (int n = 0; n < l; n++) {
-						for (int o = 0; o < m; o++) {
+					for (int m = 0; m < k; m++) {
+						for (int n = 0; n < l; n++) {
 							nativeImage2.setPixelRgba(
+								m,
 								n,
-								o,
 								blendPixels(
-									nativeImage.getPixelRgba(n * 2 + 0, o * 2 + 0),
-									nativeImage.getPixelRgba(n * 2 + 1, o * 2 + 0),
-									nativeImage.getPixelRgba(n * 2 + 0, o * 2 + 1),
-									nativeImage.getPixelRgba(n * 2 + 1, o * 2 + 1),
+									nativeImage.getPixelRgba(m * 2 + 0, n * 2 + 0),
+									nativeImage.getPixelRgba(m * 2 + 1, n * 2 + 0),
+									nativeImage.getPixelRgba(m * 2 + 0, n * 2 + 1),
+									nativeImage.getPixelRgba(m * 2 + 1, n * 2 + 1),
 									bl
 								)
 							);
 						}
 					}
 
-					nativeImages[j] = nativeImage2;
+					nativeImages[i] = nativeImage2;
 				}
 			}
 
-			for (int jx = i + 1; jx < this.images.length; jx++) {
-				if (this.images[jx] != null) {
-					this.images[jx].close();
+			for (int ix = mipLevels + 1; ix < this.images.length; ix++) {
+				if (this.images[ix] != null) {
+					this.images[ix].close();
 				}
 			}
 		}
@@ -141,84 +141,84 @@ public class Sprite {
 		this.images = nativeImages;
 	}
 
-	private static int blendPixels(int i, int j, int k, int l, boolean bl) {
-		if (bl) {
+	private static int blendPixels(int colorTopLeft, int colorTopRight, int colorBottomLeft, int colorBottomRight, boolean hasTransparency) {
+		if (hasTransparency) {
 			float f = 0.0F;
 			float g = 0.0F;
 			float h = 0.0F;
-			float m = 0.0F;
-			if (i >> 24 != 0) {
-				f += srgbToLinear(i >> 24);
-				g += srgbToLinear(i >> 16);
-				h += srgbToLinear(i >> 8);
-				m += srgbToLinear(i >> 0);
+			float i = 0.0F;
+			if (colorTopLeft >> 24 != 0) {
+				f += srgbToLinear(colorTopLeft >> 24);
+				g += srgbToLinear(colorTopLeft >> 16);
+				h += srgbToLinear(colorTopLeft >> 8);
+				i += srgbToLinear(colorTopLeft >> 0);
 			}
 
-			if (j >> 24 != 0) {
-				f += srgbToLinear(j >> 24);
-				g += srgbToLinear(j >> 16);
-				h += srgbToLinear(j >> 8);
-				m += srgbToLinear(j >> 0);
+			if (colorTopRight >> 24 != 0) {
+				f += srgbToLinear(colorTopRight >> 24);
+				g += srgbToLinear(colorTopRight >> 16);
+				h += srgbToLinear(colorTopRight >> 8);
+				i += srgbToLinear(colorTopRight >> 0);
 			}
 
-			if (k >> 24 != 0) {
-				f += srgbToLinear(k >> 24);
-				g += srgbToLinear(k >> 16);
-				h += srgbToLinear(k >> 8);
-				m += srgbToLinear(k >> 0);
+			if (colorBottomLeft >> 24 != 0) {
+				f += srgbToLinear(colorBottomLeft >> 24);
+				g += srgbToLinear(colorBottomLeft >> 16);
+				h += srgbToLinear(colorBottomLeft >> 8);
+				i += srgbToLinear(colorBottomLeft >> 0);
 			}
 
-			if (l >> 24 != 0) {
-				f += srgbToLinear(l >> 24);
-				g += srgbToLinear(l >> 16);
-				h += srgbToLinear(l >> 8);
-				m += srgbToLinear(l >> 0);
+			if (colorBottomRight >> 24 != 0) {
+				f += srgbToLinear(colorBottomRight >> 24);
+				g += srgbToLinear(colorBottomRight >> 16);
+				h += srgbToLinear(colorBottomRight >> 8);
+				i += srgbToLinear(colorBottomRight >> 0);
 			}
 
 			f /= 4.0F;
 			g /= 4.0F;
 			h /= 4.0F;
-			m /= 4.0F;
-			int n = (int)(Math.pow((double)f, 0.45454545454545453) * 255.0);
-			int o = (int)(Math.pow((double)g, 0.45454545454545453) * 255.0);
-			int p = (int)(Math.pow((double)h, 0.45454545454545453) * 255.0);
-			int q = (int)(Math.pow((double)m, 0.45454545454545453) * 255.0);
-			if (n < 96) {
-				n = 0;
+			i /= 4.0F;
+			int j = (int)(Math.pow((double)f, 0.45454545454545453) * 255.0);
+			int k = (int)(Math.pow((double)g, 0.45454545454545453) * 255.0);
+			int l = (int)(Math.pow((double)h, 0.45454545454545453) * 255.0);
+			int m = (int)(Math.pow((double)i, 0.45454545454545453) * 255.0);
+			if (j < 96) {
+				j = 0;
 			}
 
-			return n << 24 | o << 16 | p << 8 | q;
+			return j << 24 | k << 16 | l << 8 | m;
 		} else {
-			int r = blendPixelsComponent(i, j, k, l, 24);
-			int s = blendPixelsComponent(i, j, k, l, 16);
-			int t = blendPixelsComponent(i, j, k, l, 8);
-			int u = blendPixelsComponent(i, j, k, l, 0);
-			return r << 24 | s << 16 | t << 8 | u;
+			int n = blendPixelsComponent(colorTopLeft, colorTopRight, colorBottomLeft, colorBottomRight, 24);
+			int o = blendPixelsComponent(colorTopLeft, colorTopRight, colorBottomLeft, colorBottomRight, 16);
+			int p = blendPixelsComponent(colorTopLeft, colorTopRight, colorBottomLeft, colorBottomRight, 8);
+			int q = blendPixelsComponent(colorTopLeft, colorTopRight, colorBottomLeft, colorBottomRight, 0);
+			return n << 24 | o << 16 | p << 8 | q;
 		}
 	}
 
-	private static int blendPixelsComponent(int i, int j, int k, int l, int m) {
-		float f = srgbToLinear(i >> m);
-		float g = srgbToLinear(j >> m);
-		float h = srgbToLinear(k >> m);
-		float n = srgbToLinear(l >> m);
-		float o = (float)((double)((float)Math.pow((double)(f + g + h + n) * 0.25, 0.45454545454545453)));
-		return (int)((double)o * 255.0);
+	private static int blendPixelsComponent(int colorTopLeft, int colorTopRight, int colorBottomLeft, int colorBottomRight, int componentShift) {
+		float f = srgbToLinear(colorTopLeft >> componentShift);
+		float g = srgbToLinear(colorTopRight >> componentShift);
+		float h = srgbToLinear(colorBottomLeft >> componentShift);
+		float i = srgbToLinear(colorBottomRight >> componentShift);
+		float j = (float)((double)((float)Math.pow((double)(f + g + h + i) * 0.25, 0.45454545454545453)));
+		return (int)((double)j * 255.0);
 	}
 
 	private static float srgbToLinear(int i) {
 		return srgbLinearMap[i & 0xFF];
 	}
 
-	private void upload(int i) {
+	private void upload(int frame) {
+		int i = 0;
 		int j = 0;
-		int k = 0;
 		if (this.frameXs != null) {
-			j = this.frameXs[i] * this.width;
-			k = this.frameYs[i] * this.height;
+			i = this.frameXs[frame] * this.width;
+			j = this.frameYs[frame] * this.height;
 		}
 
-		this.upload(j, k, this.images);
+		this.upload(i, j, this.images);
 	}
 
 	private void upload(int i, int j, NativeImage[] nativeImages) {
@@ -227,13 +227,13 @@ public class Sprite {
 		}
 	}
 
-	public void init(int i, int j, int k, int l) {
-		this.x = k;
-		this.y = l;
-		this.uMin = (float)k / (float)i;
-		this.uMax = (float)(k + this.width) / (float)i;
-		this.vMin = (float)l / (float)j;
-		this.vMax = (float)(l + this.height) / (float)j;
+	public void init(int width, int height, int x, int y) {
+		this.x = x;
+		this.y = y;
+		this.uMin = (float)x / (float)width;
+		this.uMax = (float)(x + this.width) / (float)width;
+		this.vMin = (float)y / (float)height;
+		this.vMax = (float)(y + this.height) / (float)height;
 	}
 
 	public int getWidth() {
@@ -335,8 +335,8 @@ public class Sprite {
 		}
 	}
 
-	private int lerp(double d, int i, int j) {
-		return (int)(d * (double)i + (1.0 - d) * (double)j);
+	private int lerp(double multiplier, int first, int second) {
+		return (int)(multiplier * (double)first + (1.0 - multiplier) * (double)second);
 	}
 
 	public int getFrameCount() {
@@ -478,12 +478,12 @@ public class Sprite {
 			+ '}';
 	}
 
-	private int getFramePixel(int i, int j, int k, int l) {
-		return this.images[j].getPixelRgba(k + (this.frameXs[i] * this.width >> j), l + (this.frameYs[i] * this.height >> j));
+	private int getFramePixel(int frame, int image, int x, int y) {
+		return this.images[image].getPixelRgba(x + (this.frameXs[frame] * this.width >> image), y + (this.frameYs[frame] * this.height >> image));
 	}
 
-	public boolean isPixelTransparent(int i, int j, int k) {
-		return (this.images[0].getPixelRgba(j + this.frameXs[i] * this.width, k + this.frameYs[i] * this.height) >> 24 & 0xFF) == 0;
+	public boolean isPixelTransparent(int frame, int x, int y) {
+		return (this.images[0].getPixelRgba(x + this.frameXs[frame] * this.width, y + this.frameYs[frame] * this.height) >> 24 & 0xFF) == 0;
 	}
 
 	public void upload() {

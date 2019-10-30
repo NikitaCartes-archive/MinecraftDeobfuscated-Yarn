@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 public class CurrentDownParticle extends SpriteBillboardParticle {
 	private float field_3897;
 
-	private CurrentDownParticle(World world, double d, double e, double f) {
-		super(world, d, e, f);
+	private CurrentDownParticle(World world, double x, double y, double z) {
+		super(world, x, y, z);
 		this.maxAge = (int)(Math.random() * 60.0) + 30;
 		this.collidesWithWorld = false;
 		this.velocityX = 0.0;

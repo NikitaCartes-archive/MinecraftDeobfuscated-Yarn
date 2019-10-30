@@ -13,12 +13,12 @@ import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 
 public class ObjectiveRenderTypeFix extends DataFix {
-	public ObjectiveRenderTypeFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ObjectiveRenderTypeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private static ScoreboardCriterion.RenderType parseLegacyRenderType(String string) {
-		return string.equals("health") ? ScoreboardCriterion.RenderType.HEARTS : ScoreboardCriterion.RenderType.INTEGER;
+	private static ScoreboardCriterion.RenderType parseLegacyRenderType(String oldName) {
+		return oldName.equals("health") ? ScoreboardCriterion.RenderType.HEARTS : ScoreboardCriterion.RenderType.INTEGER;
 	}
 
 	@Override

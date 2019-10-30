@@ -1,12 +1,12 @@
 package net.minecraft.world.biome.layer;
 
 public interface InitLayer {
-	default <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> layerSampleContext) {
-		return () -> layerSampleContext.createSampler((i, j) -> {
-				layerSampleContext.initSeed((long)i, (long)j);
-				return this.sample(layerSampleContext, i, j);
+	default <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> context) {
+		return () -> context.createSampler((x, z) -> {
+				context.initSeed((long)x, (long)z);
+				return this.sample(context, x, z);
 			});
 	}
 
-	int sample(LayerRandomnessSource layerRandomnessSource, int i, int j);
+	int sample(LayerRandomnessSource context, int x, int y);
 }

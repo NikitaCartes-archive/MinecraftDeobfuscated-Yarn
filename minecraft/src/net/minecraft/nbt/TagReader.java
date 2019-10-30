@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.IOException;
 
 public interface TagReader<T extends Tag> {
-	T read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException;
+	T read(DataInput input, int depth, PositionTracker tracker) throws IOException;
 
 	default boolean isImmutable() {
 		return false;
@@ -14,20 +14,20 @@ public interface TagReader<T extends Tag> {
 
 	String getCommandFeedbackName();
 
-	static TagReader<EndTag> createInvalid(int i) {
+	static TagReader<EndTag> createInvalid(int type) {
 		return new TagReader<EndTag>() {
 			public EndTag method_23264(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-				throw new IllegalArgumentException("Invalid tag id: " + i);
+				throw new IllegalArgumentException("Invalid tag id: " + type);
 			}
 
 			@Override
 			public String getCrashReportName() {
-				return "INVALID[" + i + "]";
+				return "INVALID[" + type + "]";
 			}
 
 			@Override
 			public String getCommandFeedbackName() {
-				return "UNKNOWN_" + i;
+				return "UNKNOWN_" + type;
 			}
 		};
 	}

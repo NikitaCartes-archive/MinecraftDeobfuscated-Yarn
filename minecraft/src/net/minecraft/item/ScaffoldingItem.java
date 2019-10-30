@@ -21,19 +21,19 @@ public class ScaffoldingItem extends BlockItem {
 
 	@Nullable
 	@Override
-	public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		World world = itemPlacementContext.getWorld();
+	public ItemPlacementContext getPlacementContext(ItemPlacementContext context) {
+		BlockPos blockPos = context.getBlockPos();
+		World world = context.getWorld();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = this.getBlock();
 		if (blockState.getBlock() != block) {
-			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : itemPlacementContext;
+			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : context;
 		} else {
 			Direction direction;
-			if (itemPlacementContext.shouldCancelInteraction()) {
-				direction = itemPlacementContext.hitsInsideBlock() ? itemPlacementContext.getSide().getOpposite() : itemPlacementContext.getSide();
+			if (context.shouldCancelInteraction()) {
+				direction = context.hitsInsideBlock() ? context.getSide().getOpposite() : context.getSide();
 			} else {
-				direction = itemPlacementContext.getSide() == Direction.UP ? itemPlacementContext.getPlayerFacing() : Direction.UP;
+				direction = context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP;
 			}
 
 			int i = 0;
@@ -41,7 +41,7 @@ public class ScaffoldingItem extends BlockItem {
 
 			while (i < 7) {
 				if (!world.isClient && !World.isValid(mutable)) {
-					PlayerEntity playerEntity = itemPlacementContext.getPlayer();
+					PlayerEntity playerEntity = context.getPlayer();
 					int j = world.getHeight();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(
@@ -54,8 +54,8 @@ public class ScaffoldingItem extends BlockItem {
 
 				blockState = world.getBlockState(mutable);
 				if (blockState.getBlock() != this.getBlock()) {
-					if (blockState.canReplace(itemPlacementContext)) {
-						return ItemPlacementContext.offset(itemPlacementContext, mutable, direction);
+					if (blockState.canReplace(context)) {
+						return ItemPlacementContext.offset(context, mutable, direction);
 					}
 					break;
 				}

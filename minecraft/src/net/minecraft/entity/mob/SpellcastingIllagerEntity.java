@@ -21,8 +21,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	protected int spellTicks;
 	private SpellcastingIllagerEntity.Spell spell = SpellcastingIllagerEntity.Spell.NONE;
 
-	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
-		super(entityType, world);
+	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> type, World world) {
+		super(type, world);
 	}
 
 	@Override
@@ -32,15 +32,15 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.spellTicks = compoundTag.getInt("SpellTicks");
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.spellTicks = tag.getInt("SpellTicks");
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putInt("SpellTicks", this.spellTicks);
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putInt("SpellTicks", this.spellTicks);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -203,14 +203,14 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		private final int id;
 		private final double[] particleVelocity;
 
-		private Spell(int j, double d, double e, double f) {
-			this.id = j;
-			this.particleVelocity = new double[]{d, e, f};
+		private Spell(int id, double particleVelocityX, double particleVelocityY, double particleVelocityZ) {
+			this.id = id;
+			this.particleVelocity = new double[]{particleVelocityX, particleVelocityY, particleVelocityZ};
 		}
 
-		public static SpellcastingIllagerEntity.Spell byId(int i) {
+		public static SpellcastingIllagerEntity.Spell byId(int id) {
 			for (SpellcastingIllagerEntity.Spell spell : values()) {
-				if (i == spell.id) {
+				if (id == spell.id) {
 					return spell;
 				}
 			}

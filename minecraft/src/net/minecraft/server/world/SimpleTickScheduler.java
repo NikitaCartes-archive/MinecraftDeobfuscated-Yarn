@@ -8,9 +8,9 @@ import java.util.stream.Stream;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ScheduledTick;
+import net.minecraft.world.TickPriority;
 import net.minecraft.world.TickScheduler;
 
 public class SimpleTickScheduler<T> implements TickScheduler<T> {
@@ -27,17 +27,17 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public boolean isScheduled(BlockPos blockPos, T object) {
+	public boolean isScheduled(BlockPos pos, T object) {
 		return false;
 	}
 
 	@Override
-	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-		this.scheduledTicks.add(new ScheduledTick(blockPos, object, (long)i, taskPriority));
+	public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
+		this.scheduledTicks.add(new ScheduledTick(pos, object, (long)delay, priority));
 	}
 
 	@Override
-	public boolean isTicking(BlockPos blockPos, T object) {
+	public boolean isTicking(BlockPos pos, T object) {
 		return false;
 	}
 
@@ -50,15 +50,15 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 		return this.scheduledTicks.stream();
 	}
 
-	public ListTag toNbt(long l) {
-		return ServerTickScheduler.serializeScheduledTicks(this.identifierProvider, this.scheduledTicks, l);
+	public ListTag toNbt(long time) {
+		return ServerTickScheduler.serializeScheduledTicks(this.identifierProvider, this.scheduledTicks, time);
 	}
 
-	public static <T> SimpleTickScheduler<T> fromNbt(ListTag listTag, Function<T, Identifier> function, Function<Identifier, T> function2) {
+	public static <T> SimpleTickScheduler<T> fromNbt(ListTag ticks, Function<T, Identifier> function, Function<Identifier, T> function2) {
 		Set<ScheduledTick<T>> set = Sets.<ScheduledTick<T>>newHashSet();
 
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
+		for (int i = 0; i < ticks.size(); i++) {
+			CompoundTag compoundTag = ticks.getCompound(i);
 			T object = (T)function2.apply(new Identifier(compoundTag.getString("i")));
 			if (object != null) {
 				set.add(
@@ -66,7 +66,7 @@ public class SimpleTickScheduler<T> implements TickScheduler<T> {
 						new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")),
 						object,
 						(long)compoundTag.getInt("t"),
-						TaskPriority.getByIndex(compoundTag.getInt("p"))
+						TickPriority.byIndex(compoundTag.getInt("p"))
 					)
 				);
 			}

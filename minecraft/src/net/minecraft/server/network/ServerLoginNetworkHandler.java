@@ -74,11 +74,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		return this.client;
 	}
 
-	public void disconnect(Text text) {
+	public void disconnect(Text reason) {
 		try {
-			LOGGER.info("Disconnecting {}: {}", this.getConnectionInfo(), text.getString());
-			this.client.send(new LoginDisconnectS2CPacket(text));
-			this.client.disconnect(text);
+			LOGGER.info("Disconnecting {}: {}", this.getConnectionInfo(), reason.getString());
+			this.client.send(new LoginDisconnectS2CPacket(reason));
+			this.client.disconnect(reason);
 		} catch (Exception var3) {
 			LOGGER.error("Error whilst disconnecting player", (Throwable)var3);
 		}
@@ -114,8 +114,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	@Override
-	public void onDisconnected(Text text) {
-		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), text.getString());
+	public void onDisconnected(Text reason) {
+		LOGGER.info("{} lost connection: {}", this.getConnectionInfo(), reason.getString());
 	}
 
 	public String getConnectionInfo() {

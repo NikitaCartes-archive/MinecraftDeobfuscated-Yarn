@@ -18,9 +18,9 @@ public class SetIdleTimeoutCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.getMinecraftServer().setPlayerIdleTimeout(i);
-		serverCommandSource.sendFeedback(new TranslatableText("commands.setidletimeout.success", i), true);
-		return i;
+	private static int execute(ServerCommandSource source, int minutes) {
+		source.getMinecraftServer().setPlayerIdleTimeout(minutes);
+		source.sendFeedback(new TranslatableText("commands.setidletimeout.success", minutes), true);
+		return minutes;
 	}
 }

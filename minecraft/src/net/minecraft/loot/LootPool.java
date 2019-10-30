@@ -37,32 +37,26 @@ public class LootPool {
 	private final LootTableRange rollsRange;
 	private final UniformLootTableRange bonusRollsRange;
 
-	private LootPool(
-		LootEntry[] lootEntrys,
-		LootCondition[] lootConditions,
-		LootFunction[] lootFunctions,
-		LootTableRange lootTableRange,
-		UniformLootTableRange uniformLootTableRange
-	) {
-		this.entries = lootEntrys;
-		this.conditions = lootConditions;
-		this.predicate = LootConditions.joinAnd(lootConditions);
-		this.functions = lootFunctions;
-		this.javaFunctions = LootFunctions.join(lootFunctions);
-		this.rollsRange = lootTableRange;
-		this.bonusRollsRange = uniformLootTableRange;
+	private LootPool(LootEntry[] entries, LootCondition[] conditions, LootFunction[] functions, LootTableRange rollsRange, UniformLootTableRange bonusRollsRange) {
+		this.entries = entries;
+		this.conditions = conditions;
+		this.predicate = LootConditions.joinAnd(conditions);
+		this.functions = functions;
+		this.javaFunctions = LootFunctions.join(functions);
+		this.rollsRange = rollsRange;
+		this.bonusRollsRange = bonusRollsRange;
 	}
 
-	private void supplyOnce(Consumer<ItemStack> consumer, LootContext lootContext) {
-		Random random = lootContext.getRandom();
+	private void supplyOnce(Consumer<ItemStack> itemDropper, LootContext context) {
+		Random random = context.getRandom();
 		List<LootChoice> list = Lists.<LootChoice>newArrayList();
 		MutableInt mutableInt = new MutableInt();
 
 		for (LootEntry lootEntry : this.entries) {
-			lootEntry.expand(lootContext, lootChoicex -> {
-				int i = lootChoicex.getWeight(lootContext.getLuck());
+			lootEntry.expand(context, choice -> {
+				int i = choice.getWeight(context.getLuck());
 				if (i > 0) {
-					list.add(lootChoicex);
+					list.add(choice);
 					mutableInt.add(i);
 				}
 			});
@@ -71,14 +65,14 @@ public class LootPool {
 		int i = list.size();
 		if (mutableInt.intValue() != 0 && i != 0) {
 			if (i == 1) {
-				((LootChoice)list.get(0)).drop(consumer, lootContext);
+				((LootChoice)list.get(0)).drop(itemDropper, context);
 			} else {
 				int j = random.nextInt(mutableInt.intValue());
 
 				for (LootChoice lootChoice : list) {
-					j -= lootChoice.getWeight(lootContext.getLuck());
+					j -= lootChoice.getWeight(context.getLuck());
 					if (j < 0) {
-						lootChoice.drop(consumer, lootContext);
+						lootChoice.drop(itemDropper, context);
 						return;
 					}
 				}
@@ -86,14 +80,14 @@ public class LootPool {
 		}
 	}
 
-	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		if (this.predicate.test(lootContext)) {
-			Consumer<ItemStack> consumer2 = LootFunction.apply(this.javaFunctions, consumer, lootContext);
-			Random random = lootContext.getRandom();
-			int i = this.rollsRange.next(random) + MathHelper.floor(this.bonusRollsRange.nextFloat(random) * lootContext.getLuck());
+	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+		if (this.predicate.test(context)) {
+			Consumer<ItemStack> consumer = LootFunction.apply(this.javaFunctions, itemDropper, context);
+			Random random = context.getRandom();
+			int i = this.rollsRange.next(random) + MathHelper.floor(this.bonusRollsRange.nextFloat(random) * context.getLuck());
 
 			for (int j = 0; j < i; j++) {
-				this.supplyOnce(consumer2, lootContext);
+				this.supplyOnce(consumer, context);
 			}
 		}
 	}
@@ -123,8 +117,8 @@ public class LootPool {
 		private LootTableRange rollsRange = new UniformLootTableRange(1.0F);
 		private UniformLootTableRange bonusRollsRange = new UniformLootTableRange(0.0F, 0.0F);
 
-		public LootPool.Builder withRolls(LootTableRange lootTableRange) {
-			this.rollsRange = lootTableRange;
+		public LootPool.Builder withRolls(LootTableRange rollsRange) {
+			this.rollsRange = rollsRange;
 			return this;
 		}
 
@@ -132,8 +126,8 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder withEntry(LootEntry.Builder<?> builder) {
-			this.entries.add(builder.build());
+		public LootPool.Builder withEntry(LootEntry.Builder<?> entryBuilder) {
+			this.entries.add(entryBuilder.build());
 			return this;
 		}
 

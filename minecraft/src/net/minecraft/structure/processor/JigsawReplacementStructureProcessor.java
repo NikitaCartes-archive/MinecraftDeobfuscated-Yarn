@@ -23,10 +23,10 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	@Override
 	public Structure.StructureBlockInfo process(
 		WorldView worldView,
-		BlockPos blockPos,
+		BlockPos pos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData structurePlacementData
+		StructurePlacementData placementData
 	) {
 		Block block = structureBlockInfo2.state.getBlock();
 		if (block != Blocks.JIGSAW) {

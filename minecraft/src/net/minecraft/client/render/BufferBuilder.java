@@ -33,20 +33,20 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private VertexFormat format;
 	private boolean building;
 
-	public BufferBuilder(int i) {
-		this.buffer = GlAllocationUtils.allocateByteBuffer(i * 4);
+	public BufferBuilder(int initialCapacity) {
+		this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity * 4);
 	}
 
 	protected void grow() {
 		this.grow(this.format.getVertexSize());
 	}
 
-	private void grow(int i) {
-		if (this.elementOffset + i > this.buffer.capacity()) {
-			int j = this.buffer.capacity();
-			int k = j + roundBufferSize(i);
-			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", j, k);
-			ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(k);
+	private void grow(int size) {
+		if (this.elementOffset + size > this.buffer.capacity()) {
+			int i = this.buffer.capacity();
+			int j = i + roundBufferSize(size);
+			LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", i, j);
+			ByteBuffer byteBuffer = GlAllocationUtils.allocateByteBuffer(j);
 			this.buffer.position(0);
 			byteBuffer.put(this.buffer);
 			byteBuffer.rewind();
@@ -54,28 +54,28 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 	}
 
-	private static int roundBufferSize(int i) {
-		int j = 2097152;
-		if (i == 0) {
-			return j;
+	private static int roundBufferSize(int amount) {
+		int i = 2097152;
+		if (amount == 0) {
+			return i;
 		} else {
-			if (i < 0) {
-				j *= -1;
+			if (amount < 0) {
+				i *= -1;
 			}
 
-			int k = i % j;
-			return k == 0 ? i : i + j - k;
+			int j = amount % i;
+			return j == 0 ? amount : amount + i - j;
 		}
 	}
 
-	public void sortQuads(float f, float g, float h) {
+	public void sortQuads(float cameraX, float cameraY, float cameraZ) {
 		this.buffer.clear();
 		FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
 		int i = this.vertexCount / 4;
 		float[] fs = new float[i];
 
 		for (int j = 0; j < i; j++) {
-			fs[j] = getDistanceSq(floatBuffer, f, g, h, this.format.getVertexSizeInteger(), this.buildStart / 4 + j * this.format.getVertexSize());
+			fs[j] = getDistanceSq(floatBuffer, cameraX, cameraY, cameraZ, this.format.getVertexSizeInteger(), this.buildStart / 4 + j * this.format.getVertexSize());
 		}
 
 		int[] is = new int[i];
@@ -121,7 +121,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		floatBuffer.position(this.buildStart / 4 + i * j);
 	}
 
-	public BufferBuilder.State toBufferState() {
+	public BufferBuilder.State popState() {
 		this.buffer.limit(this.elementOffset);
 		this.buffer.position(this.buildStart);
 		ByteBuffer byteBuffer = ByteBuffer.allocate(this.vertexCount * this.format.getVertexSize());
@@ -130,23 +130,23 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		return new BufferBuilder.State(byteBuffer, this.format);
 	}
 
-	private static float getDistanceSq(FloatBuffer floatBuffer, float f, float g, float h, int i, int j) {
-		float k = floatBuffer.get(j + i * 0 + 0);
-		float l = floatBuffer.get(j + i * 0 + 1);
-		float m = floatBuffer.get(j + i * 0 + 2);
-		float n = floatBuffer.get(j + i * 1 + 0);
-		float o = floatBuffer.get(j + i * 1 + 1);
-		float p = floatBuffer.get(j + i * 1 + 2);
-		float q = floatBuffer.get(j + i * 2 + 0);
-		float r = floatBuffer.get(j + i * 2 + 1);
-		float s = floatBuffer.get(j + i * 2 + 2);
-		float t = floatBuffer.get(j + i * 3 + 0);
-		float u = floatBuffer.get(j + i * 3 + 1);
-		float v = floatBuffer.get(j + i * 3 + 2);
-		float w = (k + n + q + t) * 0.25F - f;
-		float x = (l + o + r + u) * 0.25F - g;
-		float y = (m + p + s + v) * 0.25F - h;
-		return w * w + x * x + y * y;
+	private static float getDistanceSq(FloatBuffer buffer, float x, float y, float z, int i, int j) {
+		float f = buffer.get(j + i * 0 + 0);
+		float g = buffer.get(j + i * 0 + 1);
+		float h = buffer.get(j + i * 0 + 2);
+		float k = buffer.get(j + i * 1 + 0);
+		float l = buffer.get(j + i * 1 + 1);
+		float m = buffer.get(j + i * 1 + 2);
+		float n = buffer.get(j + i * 2 + 0);
+		float o = buffer.get(j + i * 2 + 1);
+		float p = buffer.get(j + i * 2 + 2);
+		float q = buffer.get(j + i * 3 + 0);
+		float r = buffer.get(j + i * 3 + 1);
+		float s = buffer.get(j + i * 3 + 2);
+		float t = (f + k + n + q) * 0.25F - x;
+		float u = (g + l + o + r) * 0.25F - y;
+		float v = (h + m + p + s) * 0.25F - z;
+		return t * t + u * u + v * v;
 	}
 
 	public void restoreState(BufferBuilder.State state) {
@@ -162,14 +162,14 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		this.elementOffset = this.buildStart + this.vertexCount * this.format.getVertexSize();
 	}
 
-	public void begin(int i, VertexFormat vertexFormat) {
+	public void begin(int drawMode, VertexFormat format) {
 		if (this.building) {
 			throw new IllegalStateException("Already building!");
 		} else {
 			this.building = true;
-			this.drawMode = i;
-			this.format = vertexFormat;
-			this.currentElement = (VertexFormatElement)vertexFormat.getElements().get(0);
+			this.drawMode = drawMode;
+			this.format = format;
+			this.currentElement = (VertexFormatElement)format.getElements().get(0);
 			this.currentElementId = 0;
 			this.buffer.clear();
 		}
@@ -189,18 +189,18 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	}
 
 	@Override
-	public void putByte(int i, byte b) {
-		this.buffer.put(this.elementOffset + i, b);
+	public void putByte(int index, byte value) {
+		this.buffer.put(this.elementOffset + index, value);
 	}
 
 	@Override
-	public void putShort(int i, short s) {
-		this.buffer.putShort(this.elementOffset + i, s);
+	public void putShort(int index, short value) {
+		this.buffer.putShort(this.elementOffset + index, value);
 	}
 
 	@Override
-	public void putFloat(int i, float f) {
-		this.buffer.putFloat(this.elementOffset + i, f);
+	public void putFloat(int index, float value) {
+		this.buffer.putFloat(this.elementOffset + index, value);
 	}
 
 	@Override
@@ -230,11 +230,11 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	}
 
 	@Override
-	public VertexConsumer color(int i, int j, int k, int l) {
+	public VertexConsumer color(int red, int green, int blue, int alpha) {
 		if (this.colorFixed) {
 			throw new IllegalStateException();
 		} else {
-			return BufferVertexConsumer.super.color(i, j, k, l);
+			return BufferVertexConsumer.super.color(red, green, blue, alpha);
 		}
 	}
 
@@ -287,10 +287,10 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		private final int count;
 		private final int mode;
 
-		private DrawArrayParameters(VertexFormat vertexFormat, int i, int j) {
+		private DrawArrayParameters(VertexFormat vertexFormat, int count, int mode) {
 			this.vertexFormat = vertexFormat;
-			this.count = i;
-			this.mode = j;
+			this.count = count;
+			this.mode = mode;
 		}
 
 		public VertexFormat getVertexFormat() {
@@ -311,9 +311,9 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		private final ByteBuffer buffer;
 		private final VertexFormat format;
 
-		private State(ByteBuffer byteBuffer, VertexFormat vertexFormat) {
-			this.buffer = byteBuffer;
-			this.format = vertexFormat;
+		private State(ByteBuffer buffer, VertexFormat format) {
+			this.buffer = buffer;
+			this.format = format;
 		}
 	}
 }

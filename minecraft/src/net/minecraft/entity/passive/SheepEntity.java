@@ -12,7 +12,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerType;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -47,7 +46,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
@@ -56,7 +55,7 @@ import net.minecraft.world.World;
 
 public class SheepEntity extends AnimalEntity {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final Map<DyeColor, ItemConvertible> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
+	private static final Map<DyeColor, ItemConvertible> DROPS = Util.create(Maps.newEnumMap(DyeColor.class), enumMap -> {
 		enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
 		enumMap.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
 		enumMap.put(DyeColor.MAGENTA, Blocks.MAGENTA_WOOL);
@@ -80,11 +79,11 @@ public class SheepEntity extends AnimalEntity {
 	private int field_6865;
 	private EatGrassGoal eatGrassGoal;
 
-	private static float[] getDyedColor(DyeColor dyeColor) {
-		if (dyeColor == DyeColor.WHITE) {
+	private static float[] getDyedColor(DyeColor color) {
+		if (color == DyeColor.WHITE) {
 			return new float[]{0.9019608F, 0.9019608F, 0.9019608F};
 		} else {
-			float[] fs = dyeColor.getColorComponents();
+			float[] fs = color.getColorComponents();
 			float f = 0.75F;
 			return new float[]{fs[0] * 0.75F, fs[1] * 0.75F, fs[2] * 0.75F};
 		}
@@ -186,11 +185,11 @@ public class SheepEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void handleStatus(byte b) {
-		if (b == 10) {
+	public void handleStatus(byte status) {
+		if (status == 10) {
 			this.field_6865 = 40;
 		} else {
-			super.handleStatus(b);
+			super.handleStatus(status);
 		}
 	}
 
@@ -216,17 +215,17 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean interactMob(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() == Items.SHEARS && !this.isSheared() && !this.isBaby()) {
 			this.dropItems();
 			if (!this.world.isClient) {
-				itemStack.damage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}
 
 			return true;
 		} else {
-			return super.interactMob(playerEntity, hand);
+			return super.interactMob(player, hand);
 		}
 	}
 
@@ -254,17 +253,17 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putBoolean("Sheared", this.isSheared());
-		compoundTag.putByte("Color", (byte)this.getColor().getId());
+	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
+		tag.putBoolean("Sheared", this.isSheared());
+		tag.putByte("Color", (byte)this.getColor().getId());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		this.setSheared(compoundTag.getBoolean("Sheared"));
-		this.setColor(DyeColor.byId(compoundTag.getByte("Color")));
+	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
+		this.setSheared(tag.getBoolean("Sheared"));
+		this.setColor(DyeColor.byId(tag.getByte("Color")));
 	}
 
 	@Override
@@ -273,7 +272,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_SHEEP_HURT;
 	}
 
@@ -283,7 +282,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos pos, BlockState state) {
 		this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15F, 1.0F);
 	}
 
@@ -341,11 +340,11 @@ public class SheepEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(
-		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
+	public net.minecraft.entity.EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		this.setColor(generateDefaultColor(iWorld.getRandom()));
-		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.setColor(generateDefaultColor(world.getRandom()));
+		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 
 	private DyeColor getChildColor(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
@@ -366,7 +365,7 @@ public class SheepEntity extends AnimalEntity {
 	private static CraftingInventory createDyeMixingCraftingInventory(DyeColor dyeColor, DyeColor dyeColor2) {
 		CraftingInventory craftingInventory = new CraftingInventory(new Container(null, -1) {
 			@Override
-			public boolean canUse(PlayerEntity playerEntity) {
+			public boolean canUse(PlayerEntity player) {
 				return false;
 			}
 		}, 2, 1);
@@ -376,7 +375,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntityDimensions entityDimensions) {
-		return 0.95F * entityDimensions.height;
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return 0.95F * dimensions.height;
 	}
 }

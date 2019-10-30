@@ -131,13 +131,13 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	}
 
 	@Override
-	public void initSeed(long l) {
-		if (this.seed != l || this.field_15644 == null || this.field_15642 == null) {
-			ChunkRandom chunkRandom = new ChunkRandom(l);
+	public void initSeed(long seed) {
+		if (this.seed != seed || this.field_15644 == null || this.field_15642 == null) {
+			ChunkRandom chunkRandom = new ChunkRandom(seed);
 			this.field_15644 = new OctaveSimplexNoiseSampler(chunkRandom, 3, 0);
 			this.field_15642 = new OctaveSimplexNoiseSampler(chunkRandom, 0, 0);
 		}
 
-		this.seed = l;
+		this.seed = seed;
 	}
 }

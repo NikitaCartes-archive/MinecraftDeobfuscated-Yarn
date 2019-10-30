@@ -23,12 +23,12 @@ public class GuiCloseC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.id = packetByteBuf.readByte();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.id = buf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.id);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeByte(this.id);
 	}
 }

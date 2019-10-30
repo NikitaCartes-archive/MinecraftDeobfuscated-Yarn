@@ -13,33 +13,33 @@ public class ChorusFruitItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-		ItemStack itemStack2 = super.finishUsing(itemStack, world, livingEntity);
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+		ItemStack itemStack = super.finishUsing(stack, world, user);
 		if (!world.isClient) {
-			double d = livingEntity.getX();
-			double e = livingEntity.getY();
-			double f = livingEntity.getZ();
+			double d = user.getX();
+			double e = user.getY();
+			double f = user.getZ();
 
 			for (int i = 0; i < 16; i++) {
-				double g = livingEntity.getX() + (livingEntity.getRandom().nextDouble() - 0.5) * 16.0;
-				double h = MathHelper.clamp(livingEntity.getY() + (double)(livingEntity.getRandom().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
-				double j = livingEntity.getZ() + (livingEntity.getRandom().nextDouble() - 0.5) * 16.0;
-				if (livingEntity.hasVehicle()) {
-					livingEntity.stopRiding();
+				double g = user.getX() + (user.getRandom().nextDouble() - 0.5) * 16.0;
+				double h = MathHelper.clamp(user.getY() + (double)(user.getRandom().nextInt(16) - 8), 0.0, (double)(world.getEffectiveHeight() - 1));
+				double j = user.getZ() + (user.getRandom().nextDouble() - 0.5) * 16.0;
+				if (user.hasVehicle()) {
+					user.stopRiding();
 				}
 
-				if (livingEntity.teleport(g, h, j, true)) {
+				if (user.teleport(g, h, j, true)) {
 					world.playSound(null, d, e, f, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);
-					livingEntity.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 1.0F, 1.0F);
+					user.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 1.0F, 1.0F);
 					break;
 				}
 			}
 
-			if (livingEntity instanceof PlayerEntity) {
-				((PlayerEntity)livingEntity).getItemCooldownManager().set(this, 20);
+			if (user instanceof PlayerEntity) {
+				((PlayerEntity)user).getItemCooldownManager().set(this, 20);
 			}
 		}
 
-		return itemStack2;
+		return itemStack;
 	}
 }

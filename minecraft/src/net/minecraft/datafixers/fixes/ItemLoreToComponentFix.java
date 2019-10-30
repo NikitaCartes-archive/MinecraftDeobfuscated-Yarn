@@ -14,8 +14,8 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class ItemLoreToComponentFix extends DataFix {
-	public ItemLoreToComponentFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemLoreToComponentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -40,8 +40,8 @@ public class ItemLoreToComponentFix extends DataFix {
 		);
 	}
 
-	private static <T> Stream<Dynamic<T>> fixLoreTags(Stream<Dynamic<T>> stream) {
-		return stream.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::componentize).map(dynamic::createString), dynamic));
+	private static <T> Stream<Dynamic<T>> fixLoreTags(Stream<Dynamic<T>> tags) {
+		return tags.map(dynamic -> DataFixUtils.orElse(dynamic.asString().map(ItemLoreToComponentFix::componentize).map(dynamic::createString), dynamic));
 	}
 
 	private static String componentize(String string) {

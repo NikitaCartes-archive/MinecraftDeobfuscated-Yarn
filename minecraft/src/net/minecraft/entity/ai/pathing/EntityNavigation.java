@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -55,8 +55,8 @@ public abstract class EntityNavigation {
 
 	protected abstract PathNodeNavigator createPathNodeNavigator(int i);
 
-	public void setSpeed(double d) {
-		this.speed = d;
+	public void setSpeed(double speed) {
+		this.speed = speed;
 	}
 
 	public float getFollowRange() {
@@ -81,62 +81,62 @@ public abstract class EntityNavigation {
 	}
 
 	@Nullable
-	public final Path findPathTo(double d, double e, double f, int i) {
-		return this.findPathTo(new BlockPos(d, e, f), i);
+	public final Path findPathTo(double x, double y, double z, int distance) {
+		return this.findPathTo(new BlockPos(x, y, z), distance);
 	}
 
 	@Nullable
-	public Path findPathToAny(Stream<BlockPos> stream, int i) {
-		return this.findPathToAny((Set<BlockPos>)stream.collect(Collectors.toSet()), 8, false, i);
+	public Path findPathToAny(Stream<BlockPos> positions, int distance) {
+		return this.findPathToAny((Set<BlockPos>)positions.collect(Collectors.toSet()), 8, false, distance);
 	}
 
 	@Nullable
-	public Path findPathTo(BlockPos blockPos, int i) {
-		return this.findPathToAny(ImmutableSet.of(blockPos), 8, false, i);
+	public Path findPathTo(BlockPos target, int distance) {
+		return this.findPathToAny(ImmutableSet.of(target), 8, false, distance);
 	}
 
 	@Nullable
-	public Path findPathTo(Entity entity, int i) {
-		return this.findPathToAny(ImmutableSet.of(new BlockPos(entity)), 16, true, i);
+	public Path findPathTo(Entity entity, int distance) {
+		return this.findPathToAny(ImmutableSet.of(new BlockPos(entity)), 16, true, distance);
 	}
 
 	@Nullable
-	protected Path findPathToAny(Set<BlockPos> set, int i, boolean bl, int j) {
-		if (set.isEmpty()) {
+	protected Path findPathToAny(Set<BlockPos> positions, int range, boolean bl, int distance) {
+		if (positions.isEmpty()) {
 			return null;
 		} else if (this.entity.getY() < 0.0) {
 			return null;
 		} else if (!this.isAtValidPosition()) {
 			return null;
-		} else if (this.currentPath != null && !this.currentPath.isFinished() && set.contains(this.currentTarget)) {
+		} else if (this.currentPath != null && !this.currentPath.isFinished() && positions.contains(this.currentTarget)) {
 			return this.currentPath;
 		} else {
 			this.world.getProfiler().push("pathfind");
 			float f = this.getFollowRange();
 			BlockPos blockPos = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
-			int k = (int)(f + (float)i);
-			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-k, -k, -k), blockPos.add(k, k, k));
-			Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, set, f, j);
+			int i = (int)(f + (float)range);
+			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));
+			Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, positions, f, distance);
 			this.world.getProfiler().pop();
 			if (path != null && path.getTarget() != null) {
 				this.currentTarget = path.getTarget();
-				this.field_20294 = j;
+				this.field_20294 = distance;
 			}
 
 			return path;
 		}
 	}
 
-	public boolean startMovingTo(double d, double e, double f, double g) {
-		return this.startMovingAlong(this.findPathTo(d, e, f, 1), g);
+	public boolean startMovingTo(double x, double y, double z, double speed) {
+		return this.startMovingAlong(this.findPathTo(x, y, z, 1), speed);
 	}
 
-	public boolean startMovingTo(Entity entity, double d) {
+	public boolean startMovingTo(Entity entity, double speed) {
 		Path path = this.findPathTo(entity, 1);
-		return path != null && this.startMovingAlong(path, d);
+		return path != null && this.startMovingAlong(path, speed);
 	}
 
-	public boolean startMovingAlong(@Nullable Path path, double d) {
+	public boolean startMovingAlong(@Nullable Path path, double speed) {
 		if (path == null) {
 			this.currentPath = null;
 			return false;
@@ -152,7 +152,7 @@ public abstract class EntityNavigation {
 				if (this.currentPath.getLength() <= 0) {
 					return false;
 				} else {
-					this.speed = d;
+					this.speed = speed;
 					Vec3d vec3d = this.getPos();
 					this.field_6674 = this.tickCount;
 					this.field_6672 = vec3d;
@@ -226,7 +226,7 @@ public abstract class EntityNavigation {
 		if (this.currentPath != null && !this.currentPath.isFinished()) {
 			Vec3d vec3d2 = this.currentPath.getCurrentPosition();
 			if (vec3d2.equals(this.field_6680)) {
-				this.field_6670 = this.field_6670 + (SystemUtil.getMeasuringTimeMs() - this.field_6669);
+				this.field_6670 = this.field_6670 + (Util.getMeasuringTimeMs() - this.field_6669);
 			} else {
 				this.field_6680 = vec3d2;
 				double d = vec3d.distanceTo(this.field_6680);
@@ -240,7 +240,7 @@ public abstract class EntityNavigation {
 				this.stop();
 			}
 
-			this.field_6669 = SystemUtil.getMeasuringTimeMs();
+			this.field_6669 = Util.getMeasuringTimeMs();
 		}
 	}
 
@@ -277,19 +277,19 @@ public abstract class EntityNavigation {
 		}
 	}
 
-	protected abstract boolean canPathDirectlyThrough(Vec3d vec3d, Vec3d vec3d2, int i, int j, int k);
+	protected abstract boolean canPathDirectlyThrough(Vec3d origin, Vec3d target, int sizeX, int sizeY, int sizeZ);
 
-	public boolean isValidPosition(BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.method_10074();
-		return this.world.getBlockState(blockPos2).isFullOpaque(this.world, blockPos2);
+	public boolean isValidPosition(BlockPos pos) {
+		BlockPos blockPos = pos.method_10074();
+		return this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos);
 	}
 
 	public PathNodeMaker getNodeMaker() {
 		return this.nodeMaker;
 	}
 
-	public void setCanSwim(boolean bl) {
-		this.nodeMaker.setCanSwim(bl);
+	public void setCanSwim(boolean canSwim) {
+		this.nodeMaker.setCanSwim(canSwim);
 	}
 
 	public boolean canSwim() {

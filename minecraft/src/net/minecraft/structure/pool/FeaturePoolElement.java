@@ -26,8 +26,8 @@ public class FeaturePoolElement extends StructurePoolElement {
 	private final CompoundTag tag;
 
 	@Deprecated
-	public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature) {
-		this(configuredFeature, StructurePool.Projection.RIGID);
+	public FeaturePoolElement(ConfiguredFeature<?, ?> feature) {
+		this(feature, StructurePool.Projection.RIGID);
 	}
 
 	public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
@@ -55,38 +55,29 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
-	) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
+		list.add(new Structure.StructureBlockInfo(pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
 		return list;
 	}
 
 	@Override
-	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
-		BlockPos blockPos2 = this.method_16601(structureManager, blockRotation);
-		return new BlockBox(
-			blockPos.getX(),
-			blockPos.getY(),
-			blockPos.getZ(),
-			blockPos.getX() + blockPos2.getX(),
-			blockPos.getY() + blockPos2.getY(),
-			blockPos.getZ() + blockPos2.getZ()
-		);
+	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
+		BlockPos blockPos = this.method_16601(structureManager, rotation);
+		return new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + blockPos.getX(), pos.getY() + blockPos.getY(), pos.getZ() + blockPos.getZ());
 	}
 
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		IWorld iWorld,
+		IWorld world,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
 		BlockRotation blockRotation,
 		BlockBox blockBox,
 		Random random
 	) {
-		return this.feature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
+		return this.feature.generate(world, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
 	}
 
 	@Override

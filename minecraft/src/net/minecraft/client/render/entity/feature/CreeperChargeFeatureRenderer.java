@@ -12,13 +12,13 @@ public class CreeperChargeFeatureRenderer extends EnergySwirlOverlayFeatureRende
 	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> model = new CreeperEntityModel<>(2.0F);
 
-	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> featureRendererContext) {
-		super(featureRendererContext);
+	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> context) {
+		super(context);
 	}
 
 	@Override
-	protected float getEnergySwirlX(float f) {
-		return f * 0.01F;
+	protected float getEnergySwirlX(float partialAge) {
+		return partialAge * 0.01F;
 	}
 
 	@Override

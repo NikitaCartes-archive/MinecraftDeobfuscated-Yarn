@@ -21,16 +21,16 @@ import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.VersionedChunkStorage;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
+import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,20 +48,18 @@ public class WorldUpdater {
 	private volatile int totalChunkCount;
 	private volatile int upgradedChunkCount;
 	private volatile int skippedChunkCount;
-	private final Object2FloatMap<DimensionType> dimensionProgress = Object2FloatMaps.synchronize(
-		new Object2FloatOpenCustomHashMap<>(SystemUtil.identityHashStrategy())
-	);
+	private final Object2FloatMap<DimensionType> dimensionProgress = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap<>(Util.identityHashStrategy()));
 	private volatile Text status = new TranslatableText("optimizeWorld.stage.counting");
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean bl) {
+	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean eraseCache) {
 		this.levelName = levelProperties.getLevelName();
-		this.eraseCache = bl;
+		this.eraseCache = eraseCache;
 		this.worldSaveHandler = levelStorage.createSaveHandler(string, null);
 		this.worldSaveHandler.saveWorld(levelProperties);
 		this.persistentStateManager = new PersistentStateManager(
-			new File(DimensionType.OVERWORLD.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
+			new File(DimensionType.OVERWORLD.getSaveDirectory(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
 		);
 		this.worldDirectory = this.worldSaveHandler.getWorldDir();
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
@@ -100,12 +98,12 @@ public class WorldUpdater {
 			Builder<DimensionType, VersionedChunkStorage> builder2 = ImmutableMap.builder();
 
 			for (DimensionType dimensionType2 : DimensionType.getAll()) {
-				File file2 = dimensionType2.getFile(file);
+				File file2 = dimensionType2.getSaveDirectory(file);
 				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file2, "region"), this.worldSaveHandler.getDataFixer()));
 			}
 
 			ImmutableMap<DimensionType, VersionedChunkStorage> immutableMap2 = builder2.build();
-			long l = SystemUtil.getMeasuringTimeMs();
+			long l = Util.getMeasuringTimeMs();
 			this.status = new TranslatableText("optimizeWorld.stage.upgrading");
 
 			while (this.keepUpgradingChunks) {
@@ -120,7 +118,7 @@ public class WorldUpdater {
 						boolean bl2 = false;
 
 						try {
-							CompoundTag compoundTag = versionedChunkStorage.getTagAt(chunkPos);
+							CompoundTag compoundTag = versionedChunkStorage.getNbt(chunkPos);
 							if (compoundTag != null) {
 								int i = VersionedChunkStorage.getDataVersion(compoundTag);
 								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(dimensionType3, () -> this.persistentStateManager, compoundTag);
@@ -185,14 +183,14 @@ public class WorldUpdater {
 			}
 
 			this.persistentStateManager.save();
-			l = SystemUtil.getMeasuringTimeMs() - l;
+			l = Util.getMeasuringTimeMs() - l;
 			LOGGER.info("World optimizaton finished after {} ms", l);
 			this.isDone = true;
 		}
 	}
 
 	private List<ChunkPos> getChunkPositions(DimensionType dimensionType) {
-		File file = dimensionType.getFile(this.worldDirectory);
+		File file = dimensionType.getSaveDirectory(this.worldDirectory);
 		File file2 = new File(file, "region");
 		File[] files = file2.listFiles((filex, string) -> string.endsWith(".mca"));
 		if (files == null) {

@@ -7,8 +7,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixers.TypeReferences;
 
 public class BlockStateStructureTemplateFix extends DataFix {
-	public BlockStateStructureTemplateFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BlockStateStructureTemplateFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

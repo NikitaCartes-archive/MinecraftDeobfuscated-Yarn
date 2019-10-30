@@ -16,21 +16,21 @@ public class EntityAttachS2CPacket implements Packet<ClientPlayPacketListener> {
 	public EntityAttachS2CPacket() {
 	}
 
-	public EntityAttachS2CPacket(Entity entity, @Nullable Entity entity2) {
-		this.attachedId = entity.getEntityId();
-		this.holdingId = entity2 != null ? entity2.getEntityId() : 0;
+	public EntityAttachS2CPacket(Entity attachedEntity, @Nullable Entity holdingEntity) {
+		this.attachedId = attachedEntity.getEntityId();
+		this.holdingId = holdingEntity != null ? holdingEntity.getEntityId() : 0;
 	}
 
 	@Override
-	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.attachedId = packetByteBuf.readInt();
-		this.holdingId = packetByteBuf.readInt();
+	public void read(PacketByteBuf buf) throws IOException {
+		this.attachedId = buf.readInt();
+		this.holdingId = buf.readInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeInt(this.attachedId);
-		packetByteBuf.writeInt(this.holdingId);
+	public void write(PacketByteBuf buf) throws IOException {
+		buf.writeInt(this.attachedId);
+		buf.writeInt(this.holdingId);
 	}
 
 	public void method_11811(ClientPlayPacketListener clientPlayPacketListener) {

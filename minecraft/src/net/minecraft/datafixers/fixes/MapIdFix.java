@@ -11,8 +11,8 @@ import java.util.Optional;
 import net.minecraft.datafixers.TypeReferences;
 
 public class MapIdFix extends DataFix {
-	public MapIdFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public MapIdFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

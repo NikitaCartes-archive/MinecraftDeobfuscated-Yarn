@@ -14,8 +14,8 @@ import net.minecraft.world.biome.Biome;
 public class PillagerSpawner {
 	private int ticksUntilNextSpawn;
 
-	public int spawn(ServerWorld serverWorld, boolean bl, boolean bl2) {
-		if (!bl) {
+	public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
+		if (!spawnMonsters) {
 			return 0;
 		} else {
 			Random random = serverWorld.random;

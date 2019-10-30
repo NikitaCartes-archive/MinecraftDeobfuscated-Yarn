@@ -77,10 +77,10 @@ public class SpiderEntityModel<T extends Entity> extends CompositeEntityModel<T>
 	}
 
 	@Override
-	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		this.field_3583.yaw = i * (float) (Math.PI / 180.0);
-		this.field_3583.pitch = j * (float) (Math.PI / 180.0);
-		float l = (float) (Math.PI / 4);
+	public void setAngles(T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float scale) {
+		this.field_3583.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.field_3583.pitch = headPitch * (float) (Math.PI / 180.0);
+		float f = (float) (Math.PI / 4);
 		this.field_3580.roll = (float) (-Math.PI / 4);
 		this.field_3578.roll = (float) (Math.PI / 4);
 		this.field_3586.roll = -0.58119464F;
@@ -89,8 +89,8 @@ public class SpiderEntityModel<T extends Entity> extends CompositeEntityModel<T>
 		this.field_3581.roll = 0.58119464F;
 		this.field_3576.roll = (float) (-Math.PI / 4);
 		this.field_3582.roll = (float) (Math.PI / 4);
-		float m = -0.0F;
-		float n = (float) (Math.PI / 8);
+		float g = -0.0F;
+		float h = (float) (Math.PI / 8);
 		this.field_3580.yaw = (float) (Math.PI / 4);
 		this.field_3578.yaw = (float) (-Math.PI / 4);
 		this.field_3586.yaw = (float) (Math.PI / 8);
@@ -99,29 +99,29 @@ public class SpiderEntityModel<T extends Entity> extends CompositeEntityModel<T>
 		this.field_3581.yaw = (float) (Math.PI / 8);
 		this.field_3576.yaw = (float) (-Math.PI / 4);
 		this.field_3582.yaw = (float) (Math.PI / 4);
-		float o = -(MathHelper.cos(f * 0.6662F * 2.0F + 0.0F) * 0.4F) * g;
-		float p = -(MathHelper.cos(f * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * g;
-		float q = -(MathHelper.cos(f * 0.6662F * 2.0F + (float) (Math.PI / 2)) * 0.4F) * g;
-		float r = -(MathHelper.cos(f * 0.6662F * 2.0F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * g;
-		float s = Math.abs(MathHelper.sin(f * 0.6662F + 0.0F) * 0.4F) * g;
-		float t = Math.abs(MathHelper.sin(f * 0.6662F + (float) Math.PI) * 0.4F) * g;
-		float u = Math.abs(MathHelper.sin(f * 0.6662F + (float) (Math.PI / 2)) * 0.4F) * g;
-		float v = Math.abs(MathHelper.sin(f * 0.6662F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * g;
-		this.field_3580.yaw += o;
-		this.field_3578.yaw += -o;
-		this.field_3586.yaw += p;
-		this.field_3577.yaw += -p;
-		this.field_3579.yaw += q;
-		this.field_3581.yaw += -q;
-		this.field_3576.yaw += r;
-		this.field_3582.yaw += -r;
-		this.field_3580.roll += s;
-		this.field_3578.roll += -s;
-		this.field_3586.roll += t;
-		this.field_3577.roll += -t;
-		this.field_3579.roll += u;
-		this.field_3581.roll += -u;
-		this.field_3576.roll += v;
-		this.field_3582.roll += -v;
+		float i = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + 0.0F) * 0.4F) * limbDistance;
+		float j = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * limbDistance;
+		float k = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) (Math.PI / 2)) * 0.4F) * limbDistance;
+		float l = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * limbDistance;
+		float m = Math.abs(MathHelper.sin(limbAngle * 0.6662F + 0.0F) * 0.4F) * limbDistance;
+		float n = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) Math.PI) * 0.4F) * limbDistance;
+		float o = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) (Math.PI / 2)) * 0.4F) * limbDistance;
+		float p = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * limbDistance;
+		this.field_3580.yaw += i;
+		this.field_3578.yaw += -i;
+		this.field_3586.yaw += j;
+		this.field_3577.yaw += -j;
+		this.field_3579.yaw += k;
+		this.field_3581.yaw += -k;
+		this.field_3576.yaw += l;
+		this.field_3582.yaw += -l;
+		this.field_3580.roll += m;
+		this.field_3578.roll += -m;
+		this.field_3586.roll += n;
+		this.field_3577.roll += -n;
+		this.field_3579.roll += o;
+		this.field_3581.roll += -o;
+		this.field_3576.roll += p;
+		this.field_3582.roll += -p;
 	}
 }

@@ -17,16 +17,16 @@ public class MapBannerMarker {
 	@Nullable
 	private final Text name;
 
-	public MapBannerMarker(BlockPos blockPos, DyeColor dyeColor, @Nullable Text text) {
-		this.pos = blockPos;
+	public MapBannerMarker(BlockPos pos, DyeColor dyeColor, @Nullable Text name) {
+		this.pos = pos;
 		this.color = dyeColor;
-		this.name = text;
+		this.name = name;
 	}
 
-	public static MapBannerMarker fromNbt(CompoundTag compoundTag) {
-		BlockPos blockPos = NbtHelper.toBlockPos(compoundTag.getCompound("Pos"));
-		DyeColor dyeColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.WHITE);
-		Text text = compoundTag.contains("Name") ? Text.Serializer.fromJson(compoundTag.getString("Name")) : null;
+	public static MapBannerMarker fromNbt(CompoundTag tag) {
+		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
+		DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
+		Text text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
 		return new MapBannerMarker(blockPos, dyeColor, text);
 	}
 
@@ -90,11 +90,11 @@ public class MapBannerMarker {
 		return this.name;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (object != null && this.getClass() == object.getClass()) {
-			MapBannerMarker mapBannerMarker = (MapBannerMarker)object;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			MapBannerMarker mapBannerMarker = (MapBannerMarker)o;
 			return Objects.equals(this.pos, mapBannerMarker.pos) && this.color == mapBannerMarker.color && Objects.equals(this.name, mapBannerMarker.name);
 		} else {
 			return false;

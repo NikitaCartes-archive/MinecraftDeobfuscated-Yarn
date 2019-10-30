@@ -25,10 +25,10 @@ public class UnicodeTextureFont implements Font {
 	private final String template;
 	private final Map<Identifier, NativeImage> images = Maps.<Identifier, NativeImage>newHashMap();
 
-	public UnicodeTextureFont(ResourceManager resourceManager, byte[] bs, String string) {
+	public UnicodeTextureFont(ResourceManager resourceManager, byte[] sizes, String template) {
 		this.resourceManager = resourceManager;
-		this.sizes = bs;
-		this.template = string;
+		this.sizes = sizes;
+		this.template = template;
 
 		for (int i = 0; i < 256; i++) {
 			char c = (char)(i * 256);
@@ -41,9 +41,9 @@ public class UnicodeTextureFont implements Font {
 				try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream())) {
 					if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
 						for (int j = 0; j < 256; j++) {
-							byte b = bs[c + j];
+							byte b = sizes[c + j];
 							if (b != 0 && getStart(b) > getEnd(b)) {
-								bs[c + j] = 0;
+								sizes[c + j] = 0;
 							}
 						}
 						continue;
@@ -67,7 +67,7 @@ public class UnicodeTextureFont implements Font {
 			} catch (IOException var43) {
 			}
 
-			Arrays.fill(bs, c, c + 256, (byte)0);
+			Arrays.fill(sizes, c, c + 256, (byte)0);
 		}
 	}
 
@@ -76,8 +76,8 @@ public class UnicodeTextureFont implements Font {
 		this.images.values().forEach(NativeImage::close);
 	}
 
-	private Identifier getImageId(char c) {
-		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", c / 256)));
+	private Identifier getImageId(char character) {
+		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", character / 256)));
 		return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
 	}
 
@@ -97,9 +97,9 @@ public class UnicodeTextureFont implements Font {
 	}
 
 	@Nullable
-	private NativeImage getGlyphImage(Identifier identifier) {
+	private NativeImage getGlyphImage(Identifier glyphId) {
 		try {
-			Resource resource = this.resourceManager.getResource(identifier);
+			Resource resource = this.resourceManager.getResource(glyphId);
 			Throwable var3 = null;
 
 			NativeImage var4;
@@ -124,17 +124,17 @@ public class UnicodeTextureFont implements Font {
 
 			return var4;
 		} catch (IOException var16) {
-			LOGGER.error("Couldn't load texture {}", identifier, var16);
+			LOGGER.error("Couldn't load texture {}", glyphId, var16);
 			return null;
 		}
 	}
 
-	private static int getStart(byte b) {
-		return b >> 4 & 15;
+	private static int getStart(byte size) {
+		return size >> 4 & 15;
 	}
 
-	private static int getEnd(byte b) {
-		return (b & 15) + 1;
+	private static int getEnd(byte size) {
+		return (size & 15) + 1;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -142,13 +142,13 @@ public class UnicodeTextureFont implements Font {
 		private final Identifier sizes;
 		private final String template;
 
-		public Loader(Identifier identifier, String string) {
-			this.sizes = identifier;
-			this.template = string;
+		public Loader(Identifier sizes, String template) {
+			this.sizes = sizes;
+			this.template = template;
 		}
 
-		public static FontLoader fromJson(JsonObject jsonObject) {
-			return new UnicodeTextureFont.Loader(new Identifier(JsonHelper.getString(jsonObject, "sizes")), JsonHelper.getString(jsonObject, "template"));
+		public static FontLoader fromJson(JsonObject json) {
+			return new UnicodeTextureFont.Loader(new Identifier(JsonHelper.getString(json, "sizes")), JsonHelper.getString(json, "template"));
 		}
 
 		@Nullable
@@ -196,12 +196,12 @@ public class UnicodeTextureFont implements Font {
 		private final int unpackSkipRows;
 		private final NativeImage image;
 
-		private UnicodeTextureGlyph(int i, int j, int k, int l, NativeImage nativeImage) {
-			this.width = k;
-			this.height = l;
-			this.unpackSkipPixels = i;
-			this.unpackSkipRows = j;
-			this.image = nativeImage;
+		private UnicodeTextureGlyph(int x, int y, int width, int height, NativeImage image) {
+			this.width = width;
+			this.height = height;
+			this.unpackSkipPixels = x;
+			this.unpackSkipRows = y;
+			this.image = image;
 		}
 
 		@Override
@@ -225,8 +225,8 @@ public class UnicodeTextureFont implements Font {
 		}
 
 		@Override
-		public void upload(int i, int j) {
-			this.image.upload(0, i, j, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
+		public void upload(int x, int y) {
+			this.image.upload(0, x, y, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
 		}
 
 		@Override

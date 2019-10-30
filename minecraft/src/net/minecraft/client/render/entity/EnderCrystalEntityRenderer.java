@@ -4,10 +4,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.EnderCrystalEntity;
@@ -36,21 +36,14 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 	}
 
 	public void method_3908(
-		EnderCrystalEntity enderCrystalEntity,
-		double d,
-		double e,
-		double f,
-		float g,
-		float h,
-		MatrixStack matrixStack,
-		LayeredVertexConsumerStorage layeredVertexConsumerStorage
+		EnderCrystalEntity enderCrystalEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider
 	) {
 		matrixStack.push();
 		float i = method_23155(enderCrystalEntity, h);
 		float j = 0.0625F;
 		float k = ((float)enderCrystalEntity.field_7034 + h) * 3.0F;
 		int l = enderCrystalEntity.getLightmapCoordinates();
-		VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(this.method_3909(enderCrystalEntity)));
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(this.method_3909(enderCrystalEntity)));
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.translate(0.0, -0.5, 0.0);
@@ -83,10 +76,10 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 			float s = (float)((double)p - enderCrystalEntity.getY());
 			float t = (float)((double)q - enderCrystalEntity.getZ());
 			matrixStack.translate((double)r, (double)s, (double)t);
-			EnderDragonEntityRenderer.renderCrystalBeam(-r, -s + i, -t, h, enderCrystalEntity.field_7034, matrixStack, layeredVertexConsumerStorage, l);
+			EnderDragonEntityRenderer.renderCrystalBeam(-r, -s + i, -t, h, enderCrystalEntity.field_7034, matrixStack, vertexConsumerProvider, l);
 		}
 
-		super.render(enderCrystalEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+		super.render(enderCrystalEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
 	}
 
 	public static float method_23155(EnderCrystalEntity enderCrystalEntity, float f) {

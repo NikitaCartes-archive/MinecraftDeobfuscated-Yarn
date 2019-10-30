@@ -156,7 +156,7 @@ import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
 import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 
 public enum NetworkState {
@@ -367,13 +367,13 @@ public enum NetworkState {
 	}
 
 	@Nullable
-	public Integer getPacketId(NetworkSide networkSide, Packet<?> packet) {
-		return ((NetworkState.PacketHandler)this.packetHandlers.get(networkSide)).getId(packet.getClass());
+	public Integer getPacketId(NetworkSide side, Packet<?> packet) {
+		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).getId(packet.getClass());
 	}
 
 	@Nullable
-	public Packet<?> getPacketHandler(NetworkSide networkSide, int i) {
-		return ((NetworkState.PacketHandler)this.packetHandlers.get(networkSide)).createPacket(i);
+	public Packet<?> getPacketHandler(NetworkSide side, int i) {
+		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).createPacket(i);
 	}
 
 	public int getId() {
@@ -381,12 +381,12 @@ public enum NetworkState {
 	}
 
 	@Nullable
-	public static NetworkState byId(int i) {
-		return i >= -1 && i <= 2 ? STATES[i - -1] : null;
+	public static NetworkState byId(int id) {
+		return id >= -1 && id <= 2 ? STATES[id - -1] : null;
 	}
 
-	public static NetworkState getPacketHandlerState(Packet<?> packet) {
-		return (NetworkState)HANDLER_STATE_MAP.get(packet.getClass());
+	public static NetworkState getPacketHandlerState(Packet<?> handler) {
+		return (NetworkState)HANDLER_STATE_MAP.get(handler.getClass());
 	}
 
 	static {
@@ -416,7 +416,7 @@ public enum NetworkState {
 	}
 
 	static class PacketHandler<T extends PacketListener> {
-		private final Object2IntMap<Class<? extends Packet<T>>> packetIds = SystemUtil.consume(
+		private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.create(
 			new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1)
 		);
 		private final List<Supplier<? extends Packet<T>>> packetFactories = Lists.<Supplier<? extends Packet<T>>>newArrayList();
@@ -424,28 +424,28 @@ public enum NetworkState {
 		private PacketHandler() {
 		}
 
-		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> class_, Supplier<P> supplier) {
+		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> type, Supplier<P> factory) {
 			int i = this.packetFactories.size();
-			int j = this.packetIds.put(class_, i);
+			int j = this.packetIds.put(type, i);
 			if (j != -1) {
-				String string = "Packet " + class_ + " is already registered to ID " + j;
+				String string = "Packet " + type + " is already registered to ID " + j;
 				LogManager.getLogger().fatal(string);
 				throw new IllegalArgumentException(string);
 			} else {
-				this.packetFactories.add(supplier);
+				this.packetFactories.add(factory);
 				return this;
 			}
 		}
 
 		@Nullable
-		public Integer getId(Class<?> class_) {
-			int i = this.packetIds.getInt(class_);
+		public Integer getId(Class<?> packet) {
+			int i = this.packetIds.getInt(packet);
 			return i == -1 ? null : i;
 		}
 
 		@Nullable
-		public Packet<?> createPacket(int i) {
-			Supplier<? extends Packet<T>> supplier = (Supplier<? extends Packet<T>>)this.packetFactories.get(i);
+		public Packet<?> createPacket(int id) {
+			Supplier<? extends Packet<T>> supplier = (Supplier<? extends Packet<T>>)this.packetFactories.get(id);
 			return supplier != null ? (Packet)supplier.get() : null;
 		}
 
@@ -460,8 +460,8 @@ public enum NetworkState {
 		private PacketHandlerInitializer() {
 		}
 
-		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide networkSide, NetworkState.PacketHandler<T> packetHandler) {
-			this.packetHandlers.put(networkSide, packetHandler);
+		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide side, NetworkState.PacketHandler<T> packetHandler) {
+			this.packetHandlers.put(side, packetHandler);
 			return this;
 		}
 	}

@@ -28,19 +28,19 @@ public class FontStorage implements AutoCloseable {
 	private final TextureManager textureManager;
 	private final Identifier id;
 	private GlyphRenderer blankGlyphRenderer;
-	private GlyphRenderer field_20910;
+	private GlyphRenderer whiteRectangleGlyphRenderer;
 	private final List<Font> fonts = Lists.<Font>newArrayList();
 	private final Char2ObjectMap<GlyphRenderer> glyphRendererCache = new Char2ObjectOpenHashMap<>();
 	private final Char2ObjectMap<Glyph> glyphCache = new Char2ObjectOpenHashMap<>();
 	private final Int2ObjectMap<CharList> charactersByWidth = new Int2ObjectOpenHashMap<>();
 	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
 
-	public FontStorage(TextureManager textureManager, Identifier identifier) {
+	public FontStorage(TextureManager textureManager, Identifier id) {
 		this.textureManager = textureManager;
-		this.id = identifier;
+		this.id = id;
 	}
 
-	public void setFonts(List<Font> list) {
+	public void setFonts(List<Font> fonts) {
 		for (Font font : this.fonts) {
 			font.close();
 		}
@@ -52,11 +52,11 @@ public class FontStorage implements AutoCloseable {
 		this.glyphCache.clear();
 		this.charactersByWidth.clear();
 		this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
-		this.field_20910 = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
+		this.whiteRectangleGlyphRenderer = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
 		Set<Font> set = Sets.<Font>newHashSet();
 
 		for (char c = 0; c < '\uffff'; c++) {
-			for (Font font2 : list) {
+			for (Font font2 : fonts) {
 				Glyph glyph = (Glyph)(c == ' ' ? SPACE : font2.getGlyph(c));
 				if (glyph != null) {
 					set.add(font2);
@@ -68,7 +68,7 @@ public class FontStorage implements AutoCloseable {
 			}
 		}
 
-		list.stream().filter(set::contains).forEach(this.fonts::add);
+		fonts.stream().filter(set::contains).forEach(this.fonts::add);
 	}
 
 	public void close() {
@@ -101,20 +101,20 @@ public class FontStorage implements AutoCloseable {
 			.computeIfAbsent(c, i -> (GlyphRenderer)(i == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph((char)i))));
 	}
 
-	private GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
+	private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {
 		for (GlyphAtlasTexture glyphAtlasTexture : this.glyphAtlases) {
-			GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(renderableGlyph);
+			GlyphRenderer glyphRenderer = glyphAtlasTexture.getGlyphRenderer(c);
 			if (glyphRenderer != null) {
 				return glyphRenderer;
 			}
 		}
 
 		GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(
-			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), renderableGlyph.hasColor()
+			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), c.hasColor()
 		);
 		this.glyphAtlases.add(glyphAtlasTexture2);
 		this.textureManager.registerTexture(glyphAtlasTexture2.getId(), glyphAtlasTexture2);
-		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(renderableGlyph);
+		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(c);
 		return glyphRenderer2 == null ? this.blankGlyphRenderer : glyphRenderer2;
 	}
 
@@ -123,7 +123,7 @@ public class FontStorage implements AutoCloseable {
 		return charList != null && !charList.isEmpty() ? this.getGlyphRenderer(charList.get(RANDOM.nextInt(charList.size()))) : this.blankGlyphRenderer;
 	}
 
-	public GlyphRenderer method_22943() {
-		return this.field_20910;
+	public GlyphRenderer getRectangleRenderer() {
+		return this.whiteRectangleGlyphRenderer;
 	}
 }
