@@ -11,10 +11,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -50,11 +50,11 @@ public class FirstPersonRenderer {
         this.itemRenderer = minecraftClient.getItemRenderer();
     }
 
-    public void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         if (itemStack.isEmpty()) {
             return;
         }
-        this.itemRenderer.method_23177(livingEntity, itemStack, type, bl, matrixStack, layeredVertexConsumerStorage, livingEntity.world, livingEntity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV);
+        this.itemRenderer.method_23177(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, livingEntity.world, livingEntity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV);
     }
 
     private float getMapAngle(float f) {
@@ -64,7 +64,7 @@ public class FirstPersonRenderer {
         return g;
     }
 
-    private void renderArm(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Arm arm) {
+    private void renderArm(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Arm arm) {
         this.client.getTextureManager().bindTexture(this.client.player.getSkinTexture());
         PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.getRenderer(this.client.player);
         matrixStack.push();
@@ -74,20 +74,20 @@ public class FirstPersonRenderer {
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(f * -41.0f));
         matrixStack.translate(f * 0.3f, -1.1f, 0.45f);
         if (arm == Arm.RIGHT) {
-            playerEntityRenderer.renderRightArm(matrixStack, layeredVertexConsumerStorage, this.client.player);
+            playerEntityRenderer.renderRightArm(matrixStack, vertexConsumerProvider, this.client.player);
         } else {
-            playerEntityRenderer.renderLeftArm(matrixStack, layeredVertexConsumerStorage, this.client.player);
+            playerEntityRenderer.renderLeftArm(matrixStack, vertexConsumerProvider, this.client.player);
         }
         matrixStack.pop();
     }
 
-    private void renderMapInOneHand(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, float f, Arm arm, float g, ItemStack itemStack) {
+    private void renderMapInOneHand(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f, Arm arm, float g, ItemStack itemStack) {
         float h = arm == Arm.RIGHT ? 1.0f : -1.0f;
         matrixStack.translate(h * 0.125f, -0.125, 0.0);
         if (!this.client.player.isInvisible()) {
             matrixStack.push();
             matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(h * 10.0f));
-            this.renderArmHoldingItem(matrixStack, layeredVertexConsumerStorage, f, g, arm);
+            this.renderArmHoldingItem(matrixStack, vertexConsumerProvider, f, g, arm);
             matrixStack.pop();
         }
         matrixStack.push();
@@ -100,11 +100,11 @@ public class FirstPersonRenderer {
         matrixStack.translate(h * l, m - 0.3f * k, n);
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(k * -45.0f));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h * k * -30.0f));
-        this.renderFirstPersonMap(matrixStack, layeredVertexConsumerStorage, i, itemStack);
+        this.renderFirstPersonMap(matrixStack, vertexConsumerProvider, i, itemStack);
         matrixStack.pop();
     }
 
-    private void renderMapInBothHands(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, float f, float g, float h) {
+    private void renderMapInBothHands(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f, float g, float h) {
         float j = MathHelper.sqrt(h);
         float k = -0.2f * MathHelper.sin(h * (float)Math.PI);
         float l = -0.4f * MathHelper.sin(j * (float)Math.PI);
@@ -115,35 +115,35 @@ public class FirstPersonRenderer {
         if (!this.client.player.isInvisible()) {
             matrixStack.push();
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f));
-            this.renderArm(matrixStack, layeredVertexConsumerStorage, Arm.RIGHT);
-            this.renderArm(matrixStack, layeredVertexConsumerStorage, Arm.LEFT);
+            this.renderArm(matrixStack, vertexConsumerProvider, Arm.RIGHT);
+            this.renderArm(matrixStack, vertexConsumerProvider, Arm.LEFT);
             matrixStack.pop();
         }
         float n = MathHelper.sin(j * (float)Math.PI);
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(n * 20.0f));
         matrixStack.scale(2.0f, 2.0f, 2.0f);
-        this.renderFirstPersonMap(matrixStack, layeredVertexConsumerStorage, i, this.mainHand);
+        this.renderFirstPersonMap(matrixStack, vertexConsumerProvider, i, this.mainHand);
     }
 
-    private void renderFirstPersonMap(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, ItemStack itemStack) {
+    private void renderFirstPersonMap(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ItemStack itemStack) {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
         matrixStack.scale(0.38f, 0.38f, 0.38f);
         matrixStack.translate(-0.5, -0.5, 0.0);
         matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(MapRenderer.field_21056));
-        Matrix4f matrix4f = matrixStack.peek();
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getText(MapRenderer.field_21056));
+        Matrix4f matrix4f = matrixStack.peekModel();
         vertexConsumer.vertex(matrix4f, -7.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(i).next();
         vertexConsumer.vertex(matrix4f, 135.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(i).next();
         vertexConsumer.vertex(matrix4f, 135.0f, -7.0f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(i).next();
         vertexConsumer.vertex(matrix4f, -7.0f, -7.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).light(i).next();
         MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.client.world);
         if (mapState != null) {
-            this.client.gameRenderer.getMapRenderer().draw(matrixStack, layeredVertexConsumerStorage, mapState, false, i);
+            this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapState, false, i);
         }
     }
 
-    private void renderArmHoldingItem(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, float f, float g, Arm arm) {
+    private void renderArmHoldingItem(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, float f, float g, Arm arm) {
         boolean bl = arm != Arm.LEFT;
         float h = bl ? 1.0f : -1.0f;
         float i = MathHelper.sqrt(g);
@@ -165,9 +165,9 @@ public class FirstPersonRenderer {
         matrixStack.translate(h * 5.6f, 0.0, 0.0);
         PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.getRenderer(abstractClientPlayerEntity);
         if (bl) {
-            playerEntityRenderer.renderRightArm(matrixStack, layeredVertexConsumerStorage, abstractClientPlayerEntity);
+            playerEntityRenderer.renderRightArm(matrixStack, vertexConsumerProvider, abstractClientPlayerEntity);
         } else {
-            playerEntityRenderer.renderLeftArm(matrixStack, layeredVertexConsumerStorage, abstractClientPlayerEntity);
+            playerEntityRenderer.renderLeftArm(matrixStack, vertexConsumerProvider, abstractClientPlayerEntity);
         }
     }
 
@@ -202,7 +202,7 @@ public class FirstPersonRenderer {
         matrixStack.translate((float)i * 0.56f, -0.52f + f * -0.6f, -0.72f);
     }
 
-    public void method_22976(float f, MatrixStack matrixStack, LayeredVertexConsumerStorage.Drawer drawer) {
+    public void method_22976(float f, MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate) {
         float l;
         ItemStack itemStack;
         ClientPlayerEntity clientPlayerEntity = this.client.player;
@@ -240,30 +240,30 @@ public class FirstPersonRenderer {
         if (bl) {
             float k = hand == Hand.MAIN_HAND ? g : 0.0f;
             l = 1.0f - MathHelper.lerp(f, this.prevEquipProgressMainHand, this.equipProgressMainHand);
-            this.renderFirstPersonItem(clientPlayerEntity, f, h, Hand.MAIN_HAND, k, this.mainHand, l, matrixStack, drawer);
+            this.renderFirstPersonItem(clientPlayerEntity, f, h, Hand.MAIN_HAND, k, this.mainHand, l, matrixStack, immediate);
         }
         if (bl2) {
             float k = hand == Hand.OFF_HAND ? g : 0.0f;
             l = 1.0f - MathHelper.lerp(f, this.prevEquipProgressOffHand, this.equipProgressOffHand);
-            this.renderFirstPersonItem(clientPlayerEntity, f, h, Hand.OFF_HAND, k, this.offHand, l, matrixStack, drawer);
+            this.renderFirstPersonItem(clientPlayerEntity, f, h, Hand.OFF_HAND, k, this.offHand, l, matrixStack, immediate);
         }
-        drawer.draw();
+        immediate.draw();
     }
 
-    private void renderFirstPersonItem(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, Hand hand, float h, ItemStack itemStack, float i, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    private void renderFirstPersonItem(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, Hand hand, float h, ItemStack itemStack, float i, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         boolean bl = hand == Hand.MAIN_HAND;
         Arm arm = bl ? abstractClientPlayerEntity.getMainArm() : abstractClientPlayerEntity.getMainArm().getOpposite();
         matrixStack.push();
         if (itemStack.isEmpty()) {
             if (bl && !abstractClientPlayerEntity.isInvisible()) {
-                this.renderArmHoldingItem(matrixStack, layeredVertexConsumerStorage, i, h, arm);
+                this.renderArmHoldingItem(matrixStack, vertexConsumerProvider, i, h, arm);
             }
         } else if (itemStack.getItem() == Items.FILLED_MAP) {
             int j = abstractClientPlayerEntity.getLightmapCoordinates();
             if (bl && this.offHand.isEmpty()) {
-                this.renderMapInBothHands(matrixStack, layeredVertexConsumerStorage, j, g, i, h);
+                this.renderMapInBothHands(matrixStack, vertexConsumerProvider, j, g, i, h);
             } else {
-                this.renderMapInOneHand(matrixStack, layeredVertexConsumerStorage, j, i, arm, h, itemStack);
+                this.renderMapInOneHand(matrixStack, vertexConsumerProvider, j, i, arm, h, itemStack);
             }
         } else if (itemStack.getItem() == Items.CROSSBOW) {
             int k;
@@ -302,7 +302,7 @@ public class FirstPersonRenderer {
                     matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)k * 10.0f));
                 }
             }
-            this.renderItem(abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl3, matrixStack, layeredVertexConsumerStorage);
+            this.renderItem(abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl3, matrixStack, vertexConsumerProvider);
         } else {
             boolean bl2;
             boolean bl3 = bl2 = arm == Arm.RIGHT;
@@ -384,7 +384,7 @@ public class FirstPersonRenderer {
                 this.applyHandOffset(matrixStack, arm, i);
                 this.method_3217(matrixStack, arm, h);
             }
-            this.renderItem(abstractClientPlayerEntity, itemStack, bl2 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl2, matrixStack, layeredVertexConsumerStorage);
+            this.renderItem(abstractClientPlayerEntity, itemStack, bl2 ? ModelTransformation.Type.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Type.FIRST_PERSON_LEFT_HAND, !bl2, matrixStack, vertexConsumerProvider);
         }
         matrixStack.pop();
     }

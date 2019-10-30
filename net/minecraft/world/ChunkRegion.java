@@ -24,7 +24,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -70,7 +70,7 @@ implements IWorld {
     public ChunkRegion(ServerWorld serverWorld, List<Chunk> list) {
         int i = MathHelper.floor(Math.sqrt(list.size()));
         if (i * i != list.size()) {
-            throw SystemUtil.throwOrPause(new IllegalStateException("Cache size is not a square."));
+            throw Util.throwOrPause(new IllegalStateException("Cache size is not a square."));
         }
         ChunkPos chunkPos = list.get(list.size() / 2).getPos();
         this.chunks = list;
@@ -123,9 +123,9 @@ implements IWorld {
         LOGGER.error("Requested chunk : {} {}", (Object)i, (Object)j);
         LOGGER.error("Region bounds : {} {} | {} {}", (Object)chunk2.getPos().x, (Object)chunk2.getPos().z, (Object)chunk3.getPos().x, (Object)chunk3.getPos().z);
         if (chunk != null) {
-            throw SystemUtil.throwOrPause(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j)));
+            throw Util.throwOrPause(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", chunkStatus, chunk.getStatus(), i, j)));
         }
-        throw SystemUtil.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j)));
+        throw Util.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", i, j)));
     }
 
     @Override

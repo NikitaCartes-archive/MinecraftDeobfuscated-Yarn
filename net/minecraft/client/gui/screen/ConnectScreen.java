@@ -23,8 +23,8 @@ import net.minecraft.server.network.packet.HandshakeC2SPacket;
 import net.minecraft.server.network.packet.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -127,7 +127,7 @@ extends Screen {
     @Override
     public void render(int i, int j, float f) {
         this.renderBackground();
-        long l = SystemUtil.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         if (l - this.field_19097 > 2000L) {
             this.field_19097 = l;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining", new Object[0]).getString());

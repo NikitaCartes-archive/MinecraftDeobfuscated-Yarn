@@ -87,7 +87,7 @@ extends Item {
             return TypedActionResult.pass(itemStack);
         }
         if (world.isClient) {
-            return TypedActionResult.successWithSwing(itemStack);
+            return TypedActionResult.success(itemStack);
         }
         BlockHitResult blockHitResult = (BlockHitResult)hitResult;
         BlockPos blockPos = blockHitResult.getBlockPos();
@@ -105,7 +105,7 @@ extends Item {
             itemStack.decrement(1);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-        return TypedActionResult.successWithSwing(itemStack);
+        return TypedActionResult.success(itemStack);
     }
 
     public boolean isOfSameEntityType(@Nullable CompoundTag compoundTag, EntityType<?> entityType) {

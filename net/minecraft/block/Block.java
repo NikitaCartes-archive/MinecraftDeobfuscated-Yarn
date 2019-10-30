@@ -65,7 +65,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IdList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -272,30 +272,30 @@ implements ItemConvertible {
     }
 
     public static boolean canConnect(Block block) {
-        return block instanceof LeavesBlock || block == Blocks.BARRIER || block == Blocks.CARVED_PUMPKIN || block == Blocks.JACK_O_LANTERN || block == Blocks.MELON || block == Blocks.PUMPKIN;
+        return block instanceof LeavesBlock || block == Blocks.BARRIER || block == Blocks.CARVED_PUMPKIN || block == Blocks.JACK_O_LANTERN || block == Blocks.MELON || block == Blocks.PUMPKIN || block.matches(BlockTags.SHULKER_BOXES);
     }
 
     @Deprecated
     public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return blockState.getMaterial().blocksLight() && blockState.method_21743(blockView, blockPos) && !blockState.emitsRedstonePower();
+        return blockState.getMaterial().blocksLight() && blockState.isFullCube(blockView, blockPos) && !blockState.emitsRedstonePower();
     }
 
     @Deprecated
     public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return this.material.blocksMovement() && blockState.method_21743(blockView, blockPos);
+        return this.material.blocksMovement() && blockState.isFullCube(blockView, blockPos);
     }
 
     @Deprecated
     public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
         switch (blockPlacementEnvironment) {
             case LAND: {
-                return !blockState.method_21743(blockView, blockPos);
+                return !blockState.isFullCube(blockView, blockPos);
             }
             case WATER: {
                 return blockView.getFluidState(blockPos).matches(FluidTags.WATER);
             }
             case AIR: {
-                return !blockState.method_21743(blockView, blockPos);
+                return !blockState.isFullCube(blockView, blockPos);
             }
         }
         return false;
@@ -650,7 +650,7 @@ implements ItemConvertible {
 
     public String getTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = SystemUtil.createTranslationKey("block", Registry.BLOCK.getId(this));
+            this.translationKey = Util.createTranslationKey("block", Registry.BLOCK.getId(this));
         }
         return this.translationKey;
     }
@@ -668,7 +668,7 @@ implements ItemConvertible {
     @Deprecated
     @Environment(value=EnvType.CLIENT)
     public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return blockState.method_21743(blockView, blockPos) ? 0.2f : 1.0f;
+        return blockState.isFullCube(blockView, blockPos) ? 0.2f : 1.0f;
     }
 
     public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {

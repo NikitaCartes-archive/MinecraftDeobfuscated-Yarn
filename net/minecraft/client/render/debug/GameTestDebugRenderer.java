@@ -10,7 +10,7 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(value=EnvType.CLIENT)
@@ -19,7 +19,7 @@ implements DebugRenderer.Renderer {
     private final Map<BlockPos, Marker> markers = Maps.newHashMap();
 
     public void addMarker(BlockPos blockPos, int i, String string, int j) {
-        this.markers.put(blockPos, new Marker(i, string, SystemUtil.getMeasuringTimeMs() + (long)j));
+        this.markers.put(blockPos, new Marker(i, string, Util.getMeasuringTimeMs() + (long)j));
     }
 
     @Override
@@ -28,8 +28,8 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
-        long m = SystemUtil.getMeasuringTimeMs();
+    public void render(long l) {
+        long m = Util.getMeasuringTimeMs();
         this.markers.entrySet().removeIf(entry -> m > ((Marker)entry.getValue()).removalTime);
         this.markers.forEach(this::method_23111);
     }
@@ -40,12 +40,12 @@ implements DebugRenderer.Renderer {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.color4f(0.0f, 1.0f, 0.0f, 0.75f);
         RenderSystem.disableTexture();
-        DebugRenderer.method_23103(blockPos, 0.02f, marker.method_23112(), marker.method_23113(), marker.method_23114(), marker.method_23115());
+        DebugRenderer.drawBox(blockPos, 0.02f, marker.method_23112(), marker.method_23113(), marker.method_23114(), marker.method_23115());
         if (!marker.message.isEmpty()) {
             double d = (double)blockPos.getX() + 0.5;
             double e = (double)blockPos.getY() + 1.2;
             double f = (double)blockPos.getZ() + 0.5;
-            DebugRenderer.method_23107(marker.message, d, e, f, -1, 0.01f, true, 0.0f, true);
+            DebugRenderer.drawString(marker.message, d, e, f, -1, 0.01f, true, 0.0f, true);
         }
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

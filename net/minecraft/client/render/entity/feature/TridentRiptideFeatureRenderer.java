@@ -6,10 +6,10 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -29,11 +29,11 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         this.field_21012.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 32.0f, 16.0f);
     }
 
-    public void method_4203(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4203(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!((LivingEntity)livingEntity).isUsingRiptide()) {
             return;
         }
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
         for (int n = 0; n < 3; ++n) {
             matrixStack.push();
             float o = j * (float)(-(45 + n * 5));

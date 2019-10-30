@@ -17,7 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.BlockView;
@@ -130,7 +130,7 @@ StructureHolder {
     public TickScheduler<Fluid> getFluidTickScheduler();
 
     default public BitSet getCarvingMask(GenerationStep.Carver carver) {
-        throw SystemUtil.throwOrPause(new RuntimeException("Meaningless in this context"));
+        throw Util.throwOrPause(new RuntimeException("Meaningless in this context"));
     }
 
     public UpgradeData getUpgradeData();

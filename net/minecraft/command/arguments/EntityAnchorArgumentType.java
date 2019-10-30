@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,7 +94,7 @@ implements ArgumentType<EntityAnchor> {
         }
 
         static {
-            anchors = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+            anchors = Util.create(Maps.newHashMap(), hashMap -> {
                 for (EntityAnchor entityAnchor : EntityAnchor.values()) {
                     hashMap.put(entityAnchor.id, entityAnchor);
                 }

@@ -358,7 +358,7 @@ implements State<BlockState> {
         return Block.isSideSolidFullSquare(this, blockView, blockPos, direction);
     }
 
-    public boolean method_21743(BlockView blockView, BlockPos blockPos) {
+    public boolean isFullCube(BlockView blockView, BlockPos blockPos) {
         if (this.shapeCache != null) {
             return this.shapeCache.field_20337;
         }

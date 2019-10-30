@@ -12,9 +12,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -57,9 +57,9 @@ extends BlockEntityRenderer<BedBlockEntity> {
         this.field_20815[3].roll = (float)Math.PI;
     }
 
-    public void method_3557(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_3557(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
         if (bedBlockEntity.hasWorld()) {
             BlockState blockState = bedBlockEntity.getCachedState();
             this.method_3558(matrixStack, vertexConsumer, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), identifier, i, j, false);

@@ -31,7 +31,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -66,11 +66,11 @@ extends JsonDataLoader {
     }
 
     public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> recipeType, C inventory, World world) {
-        return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).findFirst();
+        return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> Util.stream(recipeType.get(recipe, world, inventory))).findFirst();
     }
 
     public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> recipeType, C inventory, World world) {
-        return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey())).collect(Collectors.toList());
+        return this.getAllOfType(recipeType).values().stream().flatMap(recipe -> Util.stream(recipeType.get(recipe, world, inventory))).sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey())).collect(Collectors.toList());
     }
 
     private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllOfType(RecipeType<T> recipeType) {

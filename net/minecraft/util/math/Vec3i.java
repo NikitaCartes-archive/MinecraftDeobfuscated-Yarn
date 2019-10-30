@@ -73,15 +73,15 @@ implements Comparable<Vec3i> {
         return this.z;
     }
 
-    public Vec3i method_23228() {
-        return this.method_23227(1);
+    public Vec3i down() {
+        return this.down(1);
     }
 
-    public Vec3i method_23227(int i) {
-        return this.method_23226(Direction.DOWN, i);
+    public Vec3i down(int i) {
+        return this.offset(Direction.DOWN, i);
     }
 
-    public Vec3i method_23226(Direction direction, int i) {
+    public Vec3i offset(Direction direction, int i) {
         if (i == 0) {
             return this;
         }

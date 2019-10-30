@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
@@ -30,7 +30,7 @@ extends EntityRenderer<BoatEntity> {
         this.field_4673 = 0.8f;
     }
 
-    public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_3888(BoatEntity boatEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         float k;
         matrixStack.push();
         matrixStack.translate(0.0, 0.375, 0.0);
@@ -50,12 +50,12 @@ extends EntityRenderer<BoatEntity> {
         int l = boatEntity.getLightmapCoordinates();
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f));
         this.model.method_22952(boatEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(this.method_3891(boatEntity)));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_3891(boatEntity)));
         this.model.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
-        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getWaterMask());
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getWaterMask());
         this.model.getBottom().render(matrixStack, vertexConsumer2, 0.0625f, l, OverlayTexture.DEFAULT_UV, null);
         matrixStack.pop();
-        super.render(boatEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(boatEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     public Identifier method_3891(BoatEntity boatEntity) {

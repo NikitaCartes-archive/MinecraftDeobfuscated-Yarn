@@ -5,8 +5,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -27,7 +27,7 @@ extends EntityRenderer<FireworkEntity> {
         this.itemRenderer = itemRenderer;
     }
 
-    public void method_3968(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_3968(FireworkEntity fireworkEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         matrixStack.push();
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
         float i = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
@@ -37,9 +37,9 @@ extends EntityRenderer<FireworkEntity> {
         } else {
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         }
-        this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, fireworkEntity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, matrixStack, layeredVertexConsumerStorage);
+        this.itemRenderer.method_23178(fireworkEntity.getStack(), ModelTransformation.Type.GROUND, fireworkEntity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
-        super.render(fireworkEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(fireworkEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     public Identifier method_3969(FireworkEntity fireworkEntity) {

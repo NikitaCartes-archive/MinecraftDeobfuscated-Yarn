@@ -15,12 +15,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.RegionFile;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class RegionBasedStorage
+public final class RegionBasedStorage
 implements AutoCloseable {
-    protected final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap();
+    private final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap();
     private final File directory;
 
-    protected RegionBasedStorage(File file) {
+    RegionBasedStorage(File file) {
         this.directory = file;
     }
 
@@ -55,7 +55,7 @@ implements AutoCloseable {
         }
     }
 
-    protected void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
+    protected void write(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
         RegionFile regionFile = this.getRegionFile(chunkPos);
         try (DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(chunkPos);){
             NbtIo.write(compoundTag, (DataOutput)dataOutputStream);

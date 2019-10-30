@@ -35,7 +35,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -56,7 +56,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class DebugHud
 extends DrawableHelper {
-    private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = SystemUtil.consume(new EnumMap(Heightmap.Type.class), enumMap -> {
+    private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = Util.create(new EnumMap(Heightmap.Type.class), enumMap -> {
         enumMap.put(Heightmap.Type.WORLD_SURFACE_WG, "SW");
         enumMap.put(Heightmap.Type.WORLD_SURFACE, "S");
         enumMap.put(Heightmap.Type.OCEAN_FLOOR_WG, "OW");
@@ -337,7 +337,7 @@ extends DrawableHelper {
     private String propertyToString(Map.Entry<Property<?>, Comparable<?>> entry) {
         Property<?> property = entry.getKey();
         Comparable<?> comparable = entry.getValue();
-        String string = SystemUtil.getValueAsString(property, comparable);
+        String string = Util.getValueAsString(property, comparable);
         if (Boolean.TRUE.equals(comparable)) {
             string = (Object)((Object)Formatting.GREEN) + string;
         } else if (Boolean.FALSE.equals(comparable)) {

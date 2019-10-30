@@ -51,7 +51,7 @@ implements LootCondition {
         }
 
         public TimeCheckLootCondition method_22590(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-            Long long_ = jsonObject.has("period") ? Long.valueOf(JsonHelper.method_22449(jsonObject, "period")) : null;
+            Long long_ = jsonObject.has("period") ? Long.valueOf(JsonHelper.getLong(jsonObject, "period")) : null;
             UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "value", jsonDeserializationContext, UniformLootTableRange.class);
             return new TimeCheckLootCondition(long_, uniformLootTableRange);
         }

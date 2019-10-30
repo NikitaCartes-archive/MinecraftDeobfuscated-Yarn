@@ -10,7 +10,7 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -124,7 +124,7 @@ public class StructurePlacementData {
             return this.random;
         }
         if (blockPos == null) {
-            return new Random(SystemUtil.getMeasuringTimeMs());
+            return new Random(Util.getMeasuringTimeMs());
         }
         return new Random(MathHelper.hashCode(blockPos));
     }

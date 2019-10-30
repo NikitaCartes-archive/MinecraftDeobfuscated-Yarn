@@ -15,10 +15,10 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.AreaEffectCloudEntityRenderer;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
@@ -329,12 +329,12 @@ public class EntityRenderDispatcher {
     }
 
     public void render(Entity entity, float f) {
-        LayeredVertexConsumerStorage.Drawer drawer = MinecraftClient.getInstance().getBufferBuilderStorage().getGeneralDrawer();
-        this.render(entity, 0.0, 0.0, 0.0, 0.0f, f, new MatrixStack(), drawer);
-        drawer.draw();
+        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        this.render(entity, 0.0, 0.0, 0.0, 0.0f, f, new MatrixStack(), immediate);
+        immediate.draw();
     }
 
-    public <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public <E extends Entity> void render(E entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         EntityRenderer<E> entityRenderer = this.getRenderer(entity);
         try {
             double l;
@@ -345,16 +345,16 @@ public class EntityRenderDispatcher {
             double k = f + vec3d.getZ();
             matrixStack.push();
             matrixStack.translate(i, j, k);
-            entityRenderer.render(entity, i, j, k, g, h, matrixStack, layeredVertexConsumerStorage);
+            entityRenderer.render(entity, i, j, k, g, h, matrixStack, vertexConsumerProvider);
             if (entity.doesRenderOnFire()) {
-                this.renderFire(matrixStack, layeredVertexConsumerStorage, entity);
+                this.renderFire(matrixStack, vertexConsumerProvider, entity);
             }
             matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
             if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.field_4673 > 0.0f && !entity.isInvisible() && (m = (float)((1.0 - (l = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ())) / 256.0) * (double)entityRenderer.field_4672)) > 0.0f) {
-                EntityRenderDispatcher.method_23166(matrixStack, layeredVertexConsumerStorage, entity, m, h, this.world, entityRenderer.field_4673);
+                EntityRenderDispatcher.method_23166(matrixStack, vertexConsumerProvider, entity, m, h, this.world, entityRenderer.field_4673);
             }
             if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-                this.renderHitbox(matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines()), entity, h);
+                this.renderHitbox(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getLines()), entity, h);
             }
             matrixStack.pop();
         } catch (Throwable throwable) {
@@ -389,20 +389,20 @@ public class EntityRenderDispatcher {
         }
         if (entity instanceof LivingEntity) {
             float l = 0.01f;
-            WorldRenderer.method_22980(matrixStack, vertexConsumer, -g, entity.getStandingEyeHeight() - 0.01f, -g, g, entity.getStandingEyeHeight() + 0.01f, g, 1.0f, 0.0f, 0.0f, 1.0f);
+            WorldRenderer.drawBox(matrixStack, vertexConsumer, -g, entity.getStandingEyeHeight() - 0.01f, -g, g, entity.getStandingEyeHeight() + 0.01f, g, 1.0f, 0.0f, 0.0f, 1.0f);
         }
         Vec3d vec3d = entity.getRotationVec(f);
-        Matrix4f matrix4f = matrixStack.peek();
+        Matrix4f matrix4f = matrixStack.peekModel();
         vertexConsumer.vertex(matrix4f, 0.0f, entity.getStandingEyeHeight(), 0.0f).color(0, 0, 255, 255).next();
         vertexConsumer.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0)).color(0, 0, 255, 255).next();
     }
 
     private void method_23164(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, float f, float g, float h) {
         Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
-        WorldRenderer.method_22982(matrixStack, vertexConsumer, box, f, g, h, 1.0f);
+        WorldRenderer.drawBox(matrixStack, vertexConsumer, box, f, g, h, 1.0f);
     }
 
-    private void renderFire(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity) {
+    private void renderFire(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
         SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
         Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.FIRE_0);
         Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.FIRE_1);
@@ -417,8 +417,8 @@ public class EntityRenderDispatcher {
         matrixStack.translate(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
         float k = 0.0f;
         int l = 0;
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
-        Matrix4f matrix4f = matrixStack.peek();
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        Matrix4f matrix4f = matrixStack.peekModel();
         while (i > 0.0f) {
             Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
             float m = sprite3.getMinU();
@@ -447,7 +447,7 @@ public class EntityRenderDispatcher {
         vertexConsumer.vertex(matrix4f, f, g, h).color(255, 255, 255, 255).texture(i, j).overlay(0, 10).light(240).normal(0.0f, 1.0f, 0.0f).next();
     }
 
-    private static void method_23166(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity, float f, float g, WorldView worldView, float h) {
+    private static void method_23166(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float f, float g, WorldView worldView, float h) {
         MobEntity mobEntity;
         float i = h;
         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).isBaby()) {
@@ -462,8 +462,8 @@ public class EntityRenderDispatcher {
         int n = MathHelper.floor(e);
         int o = MathHelper.floor(j - (double)i);
         int p = MathHelper.floor(j + (double)i);
-        Matrix4f matrix4f = matrixStack.peek();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityNoOutline(field_21009));
+        Matrix4f matrix4f = matrixStack.peekModel();
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityNoOutline(field_21009));
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(k, m, o), new BlockPos(l, n, p))) {
             EntityRenderDispatcher.method_23163(matrix4f, vertexConsumer, worldView, blockPos, d, e, j, i, f);
         }
@@ -475,7 +475,7 @@ public class EntityRenderDispatcher {
         if (blockState.getRenderType() == BlockRenderType.INVISIBLE || worldView.getLightLevel(blockPos) <= 3) {
             return;
         }
-        if (!blockState.method_21743(worldView, blockPos2)) {
+        if (!blockState.isFullCube(worldView, blockPos2)) {
             return;
         }
         VoxelShape voxelShape = blockState.getOutlineShape(worldView, blockPos.method_10074());
@@ -488,11 +488,11 @@ public class EntityRenderDispatcher {
                 i = 1.0f;
             }
             Box box = voxelShape.getBoundingBox();
-            double j = (double)blockPos.getX() + box.minX;
-            double k = (double)blockPos.getX() + box.maxX;
-            double l = (double)blockPos.getY() + box.minY;
-            double m = (double)blockPos.getZ() + box.minZ;
-            double n = (double)blockPos.getZ() + box.maxZ;
+            double j = (double)blockPos.getX() + box.x1;
+            double k = (double)blockPos.getX() + box.x2;
+            double l = (double)blockPos.getY() + box.y1;
+            double m = (double)blockPos.getZ() + box.z1;
+            double n = (double)blockPos.getZ() + box.z2;
             float o = (float)(j - d);
             float p = (float)(k - d);
             float q = (float)(l - e + 0.015625);
@@ -510,7 +510,7 @@ public class EntityRenderDispatcher {
     }
 
     private static void method_23162(Matrix4f matrix4f, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k) {
-        vertexConsumer.vertex(matrix4f, g, h, i).color(1.0f, 1.0f, 1.0f, f).texture(j, k).defaultOverlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, g, h, i).color(1.0f, 1.0f, 1.0f, f).texture(j, k).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
     }
 
     public void setWorld(@Nullable World world) {

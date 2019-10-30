@@ -59,7 +59,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -105,21 +105,21 @@ public interface DispenserBehavior {
 
             @Override
             protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                return SystemUtil.consume(new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
+                return Util.create(new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
             }
         });
         DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior(){
 
             @Override
             protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                return SystemUtil.consume(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
+                return Util.create(new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
             }
         });
         DispenserBlock.registerBehavior(Items.EXPERIENCE_BOTTLE, new ProjectileDispenserBehavior(){
 
             @Override
             protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                return SystemUtil.consume(new ThrownExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()), thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack));
+                return Util.create(new ThrownExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()), thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack));
             }
 
             @Override
@@ -140,7 +140,7 @@ public interface DispenserBehavior {
 
                     @Override
                     protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                        return SystemUtil.consume(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
+                        return Util.create(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
                     }
 
                     @Override
@@ -163,7 +163,7 @@ public interface DispenserBehavior {
 
                     @Override
                     protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
-                        return SystemUtil.consume(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
+                        return Util.create(new ThrownPotionEntity(world, position.getX(), position.getY(), position.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
                     }
 
                     @Override
@@ -243,7 +243,7 @@ public interface DispenserBehavior {
                 double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
                 double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
                 double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-                world.spawnEntity(SystemUtil.consume(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(itemStack)));
+                world.spawnEntity(Util.create(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(itemStack)));
                 itemStack.decrement(1);
                 return itemStack;
             }

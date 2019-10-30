@@ -62,7 +62,7 @@ extends Item {
                 }
             }
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-            return TypedActionResult.successWithSwing(itemStack);
+            return TypedActionResult.success(itemStack);
         }
         return TypedActionResult.pass(itemStack);
     }

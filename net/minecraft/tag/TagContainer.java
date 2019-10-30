@@ -31,7 +31,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -101,7 +101,7 @@ public class TagContainer<T> {
                                         LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
                                         continue;
                                     }
-                                    map.computeIfAbsent(identifier22, identifier -> SystemUtil.consume(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
+                                    map.computeIfAbsent(identifier22, identifier -> Util.create(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
                                 } catch (Throwable throwable3) {
                                     throwable2 = throwable3;
                                     throw throwable3;

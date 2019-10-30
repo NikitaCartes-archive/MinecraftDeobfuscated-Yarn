@@ -127,7 +127,7 @@ implements VillagerDataContainer {
             }
             if (!this.world.isClient) {
                 this.setConverting(playerEntity.getUuid(), this.random.nextInt(2401) + 3600);
-                playerEntity.method_23667(hand, true);
+                playerEntity.swingHand(hand, true);
             }
             return true;
         }

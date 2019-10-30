@@ -36,6 +36,7 @@ public abstract class Particle {
     private Box boundingBox = EMPTY_BOUNDING_BOX;
     protected boolean onGround;
     protected boolean collidesWithWorld = true;
+    private boolean field_21507;
     protected boolean dead;
     protected float spacingXZ = 0.6f;
     protected float spacingY = 1.8f;
@@ -141,9 +142,9 @@ public abstract class Particle {
             this.spacingXZ = f;
             this.spacingY = g;
             Box box = this.getBoundingBox();
-            double d = (box.minX + box.maxX - (double)f) / 2.0;
-            double e = (box.minZ + box.maxZ - (double)f) / 2.0;
-            this.setBoundingBox(new Box(d, box.minY, e, d + (double)this.spacingXZ, box.minY + (double)this.spacingY, e + (double)this.spacingXZ));
+            double d = (box.x1 + box.x2 - (double)f) / 2.0;
+            double e = (box.z1 + box.z2 - (double)f) / 2.0;
+            this.setBoundingBox(new Box(d, box.y1, e, d + (double)this.spacingXZ, box.y1 + (double)this.spacingY, e + (double)this.spacingXZ));
         }
     }
 
@@ -157,10 +158,13 @@ public abstract class Particle {
     }
 
     public void move(double d, double e, double f) {
+        if (this.field_21507) {
+            e = 0.0;
+        }
         double g = d;
         double h = e;
         double i = f;
-        if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0)) {
+        if (this.collidesWithWorld && (d != 0.0 || e != 0.0 || f != 0.0) && !this.field_21507) {
             Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(d, e, f), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
             d = vec3d.x;
             e = vec3d.y;
@@ -169,6 +173,9 @@ public abstract class Particle {
         if (d != 0.0 || e != 0.0 || f != 0.0) {
             this.setBoundingBox(this.getBoundingBox().offset(d, e, f));
             this.repositionFromBoundingBox();
+        }
+        if (Math.abs(e) < (double)1.0E-5f) {
+            this.field_21507 = true;
         }
         boolean bl = this.onGround = h != e && h < 0.0;
         if (g != d) {
@@ -181,9 +188,9 @@ public abstract class Particle {
 
     protected void repositionFromBoundingBox() {
         Box box = this.getBoundingBox();
-        this.x = (box.minX + box.maxX) / 2.0;
-        this.y = box.minY;
-        this.z = (box.minZ + box.maxZ) / 2.0;
+        this.x = (box.x1 + box.x2) / 2.0;
+        this.y = box.y1;
+        this.z = (box.z1 + box.z2) / 2.0;
     }
 
     protected int getColorMultiplier(float f) {

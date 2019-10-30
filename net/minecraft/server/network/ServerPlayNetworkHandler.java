@@ -120,7 +120,7 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -225,7 +225,7 @@ implements ServerPlayPacketListener {
             }
         }
         this.server.getProfiler().push("keepAlive");
-        long l = SystemUtil.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         if (l - this.lastKeepAliveTime >= 15000L) {
             if (this.waitingForKeepAlive) {
                 this.disconnect(new TranslatableText("disconnect.timeout", new Object[0]));
@@ -243,7 +243,7 @@ implements ServerPlayPacketListener {
         if (this.creativeItemDropThreshold > 0) {
             --this.creativeItemDropThreshold;
         }
-        if (this.player.getLastActionTime() > 0L && this.server.getPlayerIdleTimeout() > 0 && SystemUtil.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
+        if (this.player.getLastActionTime() > 0L && this.server.getPlayerIdleTimeout() > 0 && Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
             this.disconnect(new TranslatableText("multiplayer.disconnect.idling", new Object[0]));
         }
     }
@@ -269,7 +269,7 @@ implements ServerPlayPacketListener {
     public void disconnect(Text text) {
         this.client.send(new DisconnectS2CPacket(text), future -> this.client.disconnect(text));
         this.client.disableAutoRead();
-        this.server.executeSync(this.client::handleDisconnection);
+        this.server.submitAndJoin(this.client::handleDisconnection);
     }
 
     @Override
@@ -603,6 +603,7 @@ implements ServerPlayPacketListener {
 
     @Override
     public void onBookUpdate(BookUpdateC2SPacket bookUpdateC2SPacket) {
+        NetworkThreadUtils.forceMainThread(bookUpdateC2SPacket, this, this.player.getServerWorld());
         ItemStack itemStack = bookUpdateC2SPacket.getBook();
         if (itemStack.isEmpty()) {
             return;
@@ -837,8 +838,8 @@ implements ServerPlayPacketListener {
         this.player.updateLastActionTime();
         if (blockPos.getY() < this.server.getWorldHeight() - 1 || direction != Direction.UP && blockPos.getY() < this.server.getWorldHeight()) {
             ActionResult actionResult;
-            if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos) && (actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult)).method_23666()) {
-                this.player.method_23667(hand, true);
+            if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos) && (actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult)).shouldSwingHand()) {
+                this.player.swingHand(hand, true);
             }
         } else {
             Text text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
@@ -1179,10 +1180,7 @@ implements ServerPlayPacketListener {
                 this.player.playerContainer.sendContentUpdates();
             } else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
                 this.creativeItemDropThreshold += 20;
-                ItemEntity itemEntity = this.player.dropItem(itemStack, true);
-                if (itemEntity != null) {
-                    itemEntity.setCreativeDespawnTime();
-                }
+                this.player.dropItem(itemStack, true);
             }
         }
     }
@@ -1225,7 +1223,7 @@ implements ServerPlayPacketListener {
     @Override
     public void onKeepAlive(KeepAliveC2SPacket keepAliveC2SPacket) {
         if (this.waitingForKeepAlive && keepAliveC2SPacket.getId() == this.keepAliveId) {
-            int i = (int)(SystemUtil.getMeasuringTimeMs() - this.lastKeepAliveTime);
+            int i = (int)(Util.getMeasuringTimeMs() - this.lastKeepAliveTime);
             this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
             this.waitingForKeepAlive = false;
         } else if (!this.isServerOwner()) {

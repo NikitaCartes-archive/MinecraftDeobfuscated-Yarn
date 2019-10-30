@@ -23,7 +23,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -140,7 +140,7 @@ Element {
         if (this.changedListener != null) {
             this.changedListener.accept(string);
         }
-        this.nextNarration = SystemUtil.getMeasuringTimeMs() + 500L;
+        this.nextNarration = Util.getMeasuringTimeMs() + 500L;
     }
 
     private void erase(int i) {
@@ -436,7 +436,7 @@ Element {
             i = this.x + this.width;
         }
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.color4f(0.0f, 0.0f, 255.0f, 255.0f);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();

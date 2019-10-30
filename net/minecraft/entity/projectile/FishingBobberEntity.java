@@ -179,7 +179,7 @@ extends Entity {
                         this.hookedEntity = null;
                         this.state = State.FLYING;
                     } else {
-                        this.setPosition(this.hookedEntity.getX(), this.hookedEntity.method_23323(0.8), this.hookedEntity.getZ());
+                        this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getHeightAt(0.8), this.hookedEntity.getZ());
                     }
                 }
                 return;

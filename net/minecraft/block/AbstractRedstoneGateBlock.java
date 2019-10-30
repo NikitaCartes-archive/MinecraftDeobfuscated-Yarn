@@ -17,11 +17,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.TickPriority;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
@@ -56,7 +56,7 @@ extends HorizontalFacingBlock {
         } else if (!bl) {
             serverWorld.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 2);
             if (!bl2) {
-                serverWorld.method_14196().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TaskPriority.HIGH);
+                serverWorld.method_14196().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), TickPriority.HIGH);
             }
         }
     }
@@ -98,13 +98,13 @@ extends HorizontalFacingBlock {
         }
         boolean bl = blockState.get(POWERED);
         if (bl != (bl2 = this.hasPower(world, blockPos, blockState)) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
-            TaskPriority taskPriority = TaskPriority.HIGH;
+            TickPriority tickPriority = TickPriority.HIGH;
             if (this.isTargetNotAligned(world, blockPos, blockState)) {
-                taskPriority = TaskPriority.EXTREMELY_HIGH;
+                tickPriority = TickPriority.EXTREMELY_HIGH;
             } else if (bl) {
-                taskPriority = TaskPriority.VERY_HIGH;
+                tickPriority = TickPriority.VERY_HIGH;
             }
-            world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), taskPriority);
+            world.getBlockTickScheduler().schedule(blockPos, this, this.getUpdateDelayInternal(blockState), tickPriority);
         }
     }
 

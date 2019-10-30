@@ -22,7 +22,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
@@ -271,7 +271,7 @@ public class LevelProperties {
         compoundTag.putLong("Time", this.time);
         compoundTag.putLong("DayTime", this.timeOfDay);
         compoundTag.putLong("SizeOnDisk", this.sizeOnDisk);
-        compoundTag.putLong("LastPlayed", SystemUtil.getEpochTimeMs());
+        compoundTag.putLong("LastPlayed", Util.getEpochTimeMs());
         compoundTag.putString("LevelName", this.levelName);
         compoundTag.putInt("version", this.version);
         compoundTag.putInt("clearWeatherTime", this.clearWeatherTime);
@@ -361,7 +361,7 @@ public class LevelProperties {
         }
         if (this.playerWorldId < SharedConstants.getGameVersion().getWorldVersion()) {
             if (this.dataFixer == null) {
-                throw SystemUtil.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
+                throw Util.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
             }
             this.playerData = NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.playerWorldId);
         }

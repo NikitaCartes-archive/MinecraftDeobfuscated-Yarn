@@ -44,7 +44,7 @@ extends StateProvider {
     @Override
     public <T> T serialize(DynamicOps<T> dynamicOps) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString())).put(dynamicOps.createString("entries"), this.states.method_23330(dynamicOps, blockState -> BlockState.serialize(dynamicOps, blockState)));
+        builder.put(dynamicOps.createString("type"), dynamicOps.createString(Registry.BLOCK_STATE_PROVIDER_TYPE.getId(this.stateProvider).toString())).put(dynamicOps.createString("entries"), this.states.serialize(dynamicOps, blockState -> BlockState.serialize(dynamicOps, blockState)));
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(builder.build())).getValue();
     }
 }

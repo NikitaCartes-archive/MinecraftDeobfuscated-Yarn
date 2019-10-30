@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -24,8 +24,8 @@ extends FeatureRenderer<T, M> {
         super(featureRendererContext);
     }
 
-    public void method_23204(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T mobEntity, float f, float g, float h, float j, float k, float l, float m) {
-        StrayOverlayFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, mobEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
+    public void method_23204(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T mobEntity, float f, float g, float h, float j, float k, float l, float m) {
+        StrayOverlayFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, mobEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
     }
 }
 

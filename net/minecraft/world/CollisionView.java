@@ -70,12 +70,12 @@ extends BlockView {
     }
 
     default public Stream<VoxelShape> getBlockCollisions(final @Nullable Entity entity, Box box) {
-        int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
-        int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
-        int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
-        int l = MathHelper.floor(box.maxY + 1.0E-7) + 1;
-        int m = MathHelper.floor(box.minZ - 1.0E-7) - 1;
-        int n = MathHelper.floor(box.maxZ + 1.0E-7) + 1;
+        int i = MathHelper.floor(box.x1 - 1.0E-7) - 1;
+        int j = MathHelper.floor(box.x2 + 1.0E-7) + 1;
+        int k = MathHelper.floor(box.y1 - 1.0E-7) - 1;
+        int l = MathHelper.floor(box.y2 + 1.0E-7) + 1;
+        int m = MathHelper.floor(box.z1 - 1.0E-7) - 1;
+        int n = MathHelper.floor(box.z2 + 1.0E-7) + 1;
         final EntityContext entityContext = entity == null ? EntityContext.absent() : EntityContext.of(entity);
         final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
         final BlockPos.Mutable mutable = new BlockPos.Mutable();

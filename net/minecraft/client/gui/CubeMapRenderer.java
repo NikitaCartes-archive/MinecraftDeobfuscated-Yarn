@@ -28,7 +28,7 @@ public class CubeMapRenderer {
 
     public void draw(MinecraftClient minecraftClient, float f, float g, float h) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.matrixMode(5889);
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();
@@ -54,7 +54,7 @@ public class CubeMapRenderer {
             RenderSystem.rotatef(g, 0.0f, 1.0f, 0.0f);
             for (int n = 0; n < 6; ++n) {
                 minecraftClient.getTextureManager().bindTexture(this.faces[n]);
-                bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+                bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
                 int o = Math.round(255.0f * h) / (j + 1);
                 if (n == 0) {
                     bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0f, 0.0f).color(255, 255, 255, o).next();

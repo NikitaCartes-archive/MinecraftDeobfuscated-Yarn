@@ -35,7 +35,7 @@ import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
@@ -119,12 +119,12 @@ implements ResourcePackProvider {
                 ProgressScreen progressScreen = new ProgressScreen();
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
-                minecraftClient.executeSync(() -> minecraftClient.openScreen(progressScreen));
+                minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
                 completableFuture = NetworkUtils.download(file, string, map, 0x3200000, progressScreen, minecraftClient.getNetworkProxy());
             }
             CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)completableFuture.thenCompose(object -> {
                 if (!this.verifyFile(string4, file)) {
-                    return SystemUtil.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"));
+                    return Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"));
                 }
                 return this.loadServerPack(file);
             })).whenComplete((void_, throwable) -> {
@@ -214,7 +214,7 @@ implements ResourcePackProvider {
             string = iOException.getMessage();
         }
         if (string != null) {
-            return SystemUtil.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
+            return Util.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
         }
         LOGGER.info("Applying server pack {}", (Object)file);
         this.serverContainer = new ClientResourcePackProfile("server", true, () -> new ZipResourcePack(file), new TranslatableText("resourcePack.server.name", new Object[0]), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), ResourcePackProfile.InsertionPosition.TOP, true, nativeImage);

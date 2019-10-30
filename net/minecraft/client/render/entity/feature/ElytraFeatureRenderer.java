@@ -6,9 +6,9 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -32,7 +32,7 @@ extends FeatureRenderer<T, M> {
         super(featureRendererContext);
     }
 
-    public void method_17161(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_17161(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
         AbstractClientPlayerEntity abstractClientPlayerEntity;
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.CHEST);
         if (itemStack.getItem() != Items.ELYTRA) {
@@ -43,7 +43,7 @@ extends FeatureRenderer<T, M> {
         matrixStack.translate(0.0, 0.0, 0.125);
         ((EntityModel)this.getModel()).copyStateTo(this.elytra);
         this.elytra.method_17079(livingEntity, f, g, j, k, l, m);
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(layeredVertexConsumerStorage, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint());
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, this.elytra.getLayer(identifier), false, itemStack.hasEnchantmentGlint());
         this.elytra.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }

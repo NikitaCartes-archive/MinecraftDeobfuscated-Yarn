@@ -25,7 +25,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -47,7 +47,7 @@ extends Block {
     public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
     public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
     public static final BooleanProperty UP = ConnectedPlantBlock.UP;
-    private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(SystemUtil.toMap());
+    private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(Util.toMap());
     private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<Block>();
     private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<Block>();
 

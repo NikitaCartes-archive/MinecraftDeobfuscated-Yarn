@@ -196,7 +196,7 @@ implements RangedAttackMob {
         ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
         ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
         double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.method_23323(0.3333333333333333) - projectileEntity.getY();
+        double e = livingEntity.getHeightAt(0.3333333333333333) - projectileEntity.getY();
         double g = livingEntity.getZ() - this.getZ();
         double h = MathHelper.sqrt(d * d + g * g);
         projectileEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);

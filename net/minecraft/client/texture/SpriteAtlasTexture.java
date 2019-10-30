@@ -32,7 +32,7 @@ import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -159,7 +159,7 @@ implements TextureTickListener {
                     return;
                 }
                 concurrentLinkedQueue.add(sprite);
-            }, SystemUtil.getServerWorkerExecutor()));
+            }, Util.getServerWorkerExecutor()));
         }
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();
         return concurrentLinkedQueue;
@@ -177,7 +177,7 @@ implements TextureTickListener {
                 if (this.loadSprite(resourceManager, sprite)) {
                     concurrentLinkedQueue.add(sprite);
                 }
-            }, SystemUtil.getServerWorkerExecutor()));
+            }, Util.getServerWorkerExecutor()));
         }
         CompletableFuture.allOf(list.toArray(new CompletableFuture[0])).join();
         return Lists.newArrayList(concurrentLinkedQueue);

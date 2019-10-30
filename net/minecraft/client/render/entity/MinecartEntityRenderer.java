@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -34,8 +34,8 @@ extends EntityRenderer<T> {
         this.field_4673 = 0.7f;
     }
 
-    public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        super.render(abstractMinecartEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+    public void method_4063(T abstractMinecartEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+        super.render(abstractMinecartEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
         matrixStack.push();
         long l = (long)((Entity)abstractMinecartEntity).getEntityId() * 493286711L;
         l = l * l * 4392167121L + l * 98761L;
@@ -85,12 +85,12 @@ extends EntityRenderer<T> {
             float v = 0.75f;
             matrixStack.scale(0.75f, 0.75f, 0.75f);
             matrixStack.translate(-0.5, (float)(t - 8) / 16.0f, 0.5);
-            this.renderBlock(abstractMinecartEntity, h, blockState, matrixStack, layeredVertexConsumerStorage, u);
+            this.renderBlock(abstractMinecartEntity, h, blockState, matrixStack, vertexConsumerProvider, u);
             matrixStack.pop();
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         this.model.setAngles(abstractMinecartEntity, 0.0f, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(this.method_4065(abstractMinecartEntity)));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_4065(abstractMinecartEntity)));
         this.model.render(matrixStack, vertexConsumer, u, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
@@ -99,8 +99,8 @@ extends EntityRenderer<T> {
         return SKIN;
     }
 
-    protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
-        MinecraftClient.getInstance().getBlockRenderManager().renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
+    protected void renderBlock(T abstractMinecartEntity, float f, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
     }
 }
 

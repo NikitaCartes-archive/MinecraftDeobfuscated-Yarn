@@ -420,7 +420,10 @@ public class EntitySelectorOptions {
                     return false;
                 }
                 ServerWorld serverWorld = (ServerWorld)entity.world;
-                LootCondition lootCondition = serverWorld.getServer().getPredicateManager().get(identifier, LootCondition.ALWAYS_FALSE);
+                LootCondition lootCondition = serverWorld.getServer().getPredicateManager().get(identifier);
+                if (lootCondition == null) {
+                    return false;
+                }
                 LootContext lootContext = new LootContext.Builder(serverWorld).put(LootContextParameters.THIS_ENTITY, entity).put(LootContextParameters.POSITION, new BlockPos((Entity)entity)).build(LootContextTypes.SELECTOR);
                 return bl ^ lootCondition.test(lootContext);
             });

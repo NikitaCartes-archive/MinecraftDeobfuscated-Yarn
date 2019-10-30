@@ -24,7 +24,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -69,7 +69,7 @@ extends ChunkGeneratorConfig {
     private static final ConfiguredFeature<?, ?> NETHER_BRIDGE = Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
     private static final ConfiguredFeature<?, ?> OCEAN_RUIN = Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.1f)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
     private static final ConfiguredFeature<?, ?> PILLAGER_OUTPOST = Feature.PILLAGER_OUTPOST.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
-    public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.create(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
         hashMap.put(VILLAGE, GenerationStep.Feature.SURFACE_STRUCTURES);
         hashMap.put(STRONGHOLD, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
@@ -87,7 +87,7 @@ extends ChunkGeneratorConfig {
         hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
         hashMap.put(PILLAGER_OUTPOST, GenerationStep.Feature.SURFACE_STRUCTURES);
     });
-    public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = Util.create(Maps.newHashMap(), hashMap -> {
         hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
         hashMap.put("village", new ConfiguredFeature[]{VILLAGE});
         hashMap.put("stronghold", new ConfiguredFeature[]{STRONGHOLD});
@@ -100,7 +100,7 @@ extends ChunkGeneratorConfig {
         hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
         hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
     });
-    public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.create(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
         hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));
         hashMap.put(STRONGHOLD, FeatureConfig.DEFAULT);

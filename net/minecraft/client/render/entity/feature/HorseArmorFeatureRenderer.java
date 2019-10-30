@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
@@ -27,7 +27,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18658(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_18658(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
         float q;
         float p;
         float o;
@@ -49,7 +49,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
             p = 1.0f;
             q = 1.0f;
         }
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, o, p, q);
     }
 }

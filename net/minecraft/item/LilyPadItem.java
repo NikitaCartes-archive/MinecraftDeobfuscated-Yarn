@@ -68,7 +68,7 @@ extends BlockItem {
                 }
                 playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
                 world.playSound(playerEntity, blockPos, SoundEvents.BLOCK_LILY_PAD_PLACE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                return TypedActionResult.successWithSwing(itemStack);
+                return TypedActionResult.success(itemStack);
             }
         }
         return TypedActionResult.fail(itemStack);

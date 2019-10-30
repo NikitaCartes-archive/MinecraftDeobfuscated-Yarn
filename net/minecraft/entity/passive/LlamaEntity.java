@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarpetBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -61,11 +60,11 @@ implements RangedAttackMob {
     private static final TrackedData<Integer> ATTR_STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private boolean field_6999;
+    private boolean spit;
     @Nullable
-    private LlamaEntity field_7000;
+    private LlamaEntity following;
     @Nullable
-    private LlamaEntity field_6997;
+    private LlamaEntity follower;
 
     public LlamaEntity(EntityType<? extends LlamaEntity> entityType, World world) {
         super((EntityType<? extends AbstractDonkeyEntity>)entityType, world);
@@ -122,7 +121,7 @@ implements RangedAttackMob {
         this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.7));
         this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0f));
         this.goalSelector.add(8, new LookAroundGoal(this));
-        this.targetSelector.add(1, new class_1504(this));
+        this.targetSelector.add(1, new SpitRevengeGoal(this));
         this.targetSelector.add(2, new ChaseWolvesGoal(this));
     }
 
@@ -227,14 +226,14 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public net.minecraft.entity.EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag compoundTag) {
         int i;
         this.initializeStrength();
-        if (entityData instanceof class_1503) {
-            i = ((class_1503)entityData).field_7001;
+        if (entityData instanceof EntityData) {
+            i = ((EntityData)entityData).variant;
         } else {
             i = this.random.nextInt(4);
-            entityData = new class_1503(i);
+            entityData = new EntityData(i);
         }
         this.setVariant(i);
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
@@ -367,17 +366,17 @@ implements RangedAttackMob {
     private void spitAt(LivingEntity livingEntity) {
         LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
         double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.method_23323(0.3333333333333333) - llamaSpitEntity.getY();
+        double e = livingEntity.getHeightAt(0.3333333333333333) - llamaSpitEntity.getY();
         double f = livingEntity.getZ() - this.getZ();
         float g = MathHelper.sqrt(d * d + f * f) * 0.2f;
         llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5f, 10.0f);
         this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_SPIT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         this.world.spawnEntity(llamaSpitEntity);
-        this.field_6999 = true;
+        this.spit = true;
     }
 
-    private void method_6808(boolean bl) {
-        this.field_6999 = bl;
+    private void setSpit(boolean bl) {
+        this.spit = bl;
     }
 
     @Override
@@ -399,28 +398,28 @@ implements RangedAttackMob {
     }
 
     public void method_6797() {
-        if (this.field_7000 != null) {
-            this.field_7000.field_6997 = null;
+        if (this.following != null) {
+            this.following.follower = null;
         }
-        this.field_7000 = null;
+        this.following = null;
     }
 
-    public void method_6791(LlamaEntity llamaEntity) {
-        this.field_7000 = llamaEntity;
-        this.field_7000.field_6997 = this;
+    public void follow(LlamaEntity llamaEntity) {
+        this.following = llamaEntity;
+        this.following.follower = this;
     }
 
-    public boolean method_6793() {
-        return this.field_6997 != null;
+    public boolean hasFollower() {
+        return this.follower != null;
     }
 
     public boolean isFollowing() {
-        return this.field_7000 != null;
+        return this.following != null;
     }
 
     @Nullable
     public LlamaEntity getFollowing() {
-        return this.field_7000;
+        return this.following;
     }
 
     @Override
@@ -462,29 +461,29 @@ implements RangedAttackMob {
         }
     }
 
-    static class class_1504
+    static class SpitRevengeGoal
     extends RevengeGoal {
-        public class_1504(LlamaEntity llamaEntity) {
+        public SpitRevengeGoal(LlamaEntity llamaEntity) {
             super(llamaEntity, new Class[0]);
         }
 
         @Override
         public boolean shouldContinue() {
             LlamaEntity llamaEntity;
-            if (this.mob instanceof LlamaEntity && (llamaEntity = (LlamaEntity)this.mob).field_6999) {
-                llamaEntity.method_6808(false);
+            if (this.mob instanceof LlamaEntity && (llamaEntity = (LlamaEntity)this.mob).spit) {
+                llamaEntity.setSpit(false);
                 return false;
             }
             return super.shouldContinue();
         }
     }
 
-    static class class_1503
-    extends PassiveEntity.class_4697 {
-        public final int field_7001;
+    static class EntityData
+    extends PassiveEntity.EntityData {
+        public final int variant;
 
-        private class_1503(int i) {
-            this.field_7001 = i;
+        private EntityData(int i) {
+            this.variant = i;
         }
     }
 }

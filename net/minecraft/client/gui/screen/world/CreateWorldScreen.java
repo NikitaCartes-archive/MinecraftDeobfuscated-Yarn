@@ -361,7 +361,7 @@ extends Screen {
             }
             this.seedField.render(i, j, f);
             if (LevelGeneratorType.TYPES[this.generatorType].hasInfo()) {
-                this.font.drawStringBounded(I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getInfoTranslationKey(), new Object[0]), this.mapTypeSwitchButton.x + 2, this.mapTypeSwitchButton.y + 22, this.mapTypeSwitchButton.getWidth(), 0xA0A0A0);
+                this.font.drawTrimmed(I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getInfoTranslationKey(), new Object[0]), this.mapTypeSwitchButton.x + 2, this.mapTypeSwitchButton.y + 22, this.mapTypeSwitchButton.getWidth(), 0xA0A0A0);
             }
         } else {
             this.drawString(this.font, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 47, -6250336);

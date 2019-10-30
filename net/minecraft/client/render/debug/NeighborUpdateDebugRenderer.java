@@ -15,10 +15,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.util.math.BlockPos;
@@ -27,19 +27,19 @@ import net.minecraft.util.math.Box;
 @Environment(value=EnvType.CLIENT)
 public class NeighborUpdateDebugRenderer
 implements DebugRenderer.Renderer {
-    private final MinecraftClient field_4622;
-    private final Map<Long, Map<BlockPos, Integer>> field_4623 = Maps.newTreeMap(Ordering.natural().reverse());
+    private final MinecraftClient client;
+    private final Map<Long, Map<BlockPos, Integer>> neighborUpdates = Maps.newTreeMap(Ordering.natural().reverse());
 
     NeighborUpdateDebugRenderer(MinecraftClient minecraftClient) {
-        this.field_4622 = minecraftClient;
+        this.client = minecraftClient;
     }
 
-    public void method_3870(long l, BlockPos blockPos) {
+    public void addNeighborUpdate(long l, BlockPos blockPos) {
         Integer integer;
-        Map<BlockPos, Integer> map = this.field_4623.get(l);
+        Map<BlockPos, Integer> map = this.neighborUpdates.get(l);
         if (map == null) {
             map = Maps.newHashMap();
-            this.field_4623.put(l, map);
+            this.neighborUpdates.put(l, map);
         }
         if ((integer = map.get(blockPos)) == null) {
             integer = 0;
@@ -48,9 +48,9 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
-        long m = this.field_4622.world.getTime();
-        Camera camera = this.field_4622.gameRenderer.getCamera();
+    public void render(long l) {
+        long m = this.client.world.getTime();
+        Camera camera = this.client.gameRenderer.getCamera();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;
@@ -63,9 +63,9 @@ implements DebugRenderer.Renderer {
         double g = 0.0025;
         HashSet<BlockPos> set = Sets.newHashSet();
         HashMap<BlockPos, Integer> map = Maps.newHashMap();
-        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = drawer.getBuffer(RenderLayer.getLines());
-        Iterator<Map.Entry<Long, Map<BlockPos, Integer>>> iterator = this.field_4623.entrySet().iterator();
+        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        VertexConsumer vertexConsumer = immediate.getBuffer(RenderLayer.getLines());
+        Iterator<Map.Entry<Long, Map<BlockPos, Integer>>> iterator = this.neighborUpdates.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Long, Map<BlockPos, Integer>> entry = iterator.next();
             Long long_ = entry.getKey();
@@ -80,15 +80,15 @@ implements DebugRenderer.Renderer {
                 Integer integer = entry2.getValue();
                 if (!set.add(blockPos)) continue;
                 Box box = new Box(BlockPos.ORIGIN).expand(0.002).contract(0.0025 * (double)n).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()).offset(-d, -e, -f);
-                WorldRenderer.drawBoxOutline(vertexConsumer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1.0f, 1.0f, 1.0f, 1.0f);
+                WorldRenderer.drawBox(vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, 1.0f, 1.0f, 1.0f, 1.0f);
                 map.put(blockPos, integer);
             }
         }
-        drawer.draw();
+        immediate.draw();
         for (Map.Entry entry : map.entrySet()) {
             BlockPos blockPos2 = (BlockPos)entry.getKey();
             Integer integer2 = (Integer)entry.getValue();
-            DebugRenderer.method_23108(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
+            DebugRenderer.drawString(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
         }
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();

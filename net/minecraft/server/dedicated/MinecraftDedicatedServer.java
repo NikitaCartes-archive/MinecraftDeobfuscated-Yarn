@@ -48,10 +48,10 @@ import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionHandler;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -182,7 +182,7 @@ implements DedicatedServer {
             return false;
         }
         this.setPlayerManager(new DedicatedPlayerManager(this));
-        long l = SystemUtil.getMeasuringTimeNano();
+        long l = Util.getMeasuringTimeNano();
         String string = serverPropertiesHandler.levelSeed;
         String string2 = serverPropertiesHandler.generatorSettings;
         long m = new Random().nextLong();
@@ -209,7 +209,7 @@ implements DedicatedServer {
             jsonObject = JsonHelper.deserialize(string2);
         }
         this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
-        long o = SystemUtil.getMeasuringTimeNano() - l;
+        long o = Util.getMeasuringTimeNano() - l;
         String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
         LOGGER.info("Done ({})! For help, type \"help\"", (Object)string3);
         if (serverPropertiesHandler.announcePlayerAchievements != null) {
@@ -533,7 +533,7 @@ implements DedicatedServer {
     @Override
     public String executeRconCommand(String string) {
         this.rconCommandOutput.clear();
-        this.executeSync(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
+        this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
         return this.rconCommandOutput.asString();
     }
 
@@ -544,7 +544,7 @@ implements DedicatedServer {
     @Override
     public void shutdown() {
         super.shutdown();
-        SystemUtil.shutdownServerWorkerExecutor();
+        Util.shutdownServerWorkerExecutor();
     }
 
     @Override

@@ -18,10 +18,10 @@ import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Rotation3;
@@ -54,12 +54,12 @@ implements AutoCloseable {
 
     public int drawWithShadow(String string, float f, float g, int i) {
         RenderSystem.enableAlphaTest();
-        return this.method_22941(string, f, g, i, Rotation3.identity().getMatrix(), true);
+        return this.draw(string, f, g, i, Rotation3.identity().getMatrix(), true);
     }
 
     public int draw(String string, float f, float g, int i) {
         RenderSystem.enableAlphaTest();
-        return this.method_22941(string, f, g, i, Rotation3.identity().getMatrix(), false);
+        return this.draw(string, f, g, i, Rotation3.identity().getMatrix(), false);
     }
 
     public String mirror(String string) {
@@ -72,21 +72,21 @@ implements AutoCloseable {
         }
     }
 
-    private int method_22941(String string, float f, float g, int i, Matrix4f matrix4f, boolean bl) {
+    private int draw(String string, float f, float g, int i, Matrix4f matrix4f, boolean bl) {
         if (string == null) {
             return 0;
         }
-        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
-        int j = this.method_22942(string, f, g, i, bl, matrix4f, drawer, false, 0, 0xF000F0);
-        drawer.draw();
+        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        int j = this.draw(string, f, g, i, bl, matrix4f, immediate, false, 0, 0xF000F0);
+        immediate.draw();
         return j;
     }
 
-    public int method_22942(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k) {
-        return this.draw(string, f, g, i, bl, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
+    public int draw(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k) {
+        return this.drawInternal(string, f, g, i, bl, matrix4f, vertexConsumerProvider, bl2, j, k);
     }
 
-    private int draw(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k) {
+    private int drawInternal(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k) {
         if (this.rightToLeft) {
             string = this.mirror(string);
         }
@@ -94,13 +94,13 @@ implements AutoCloseable {
             i |= 0xFF000000;
         }
         if (bl) {
-            this.drawLayer(string, f, g, i, true, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
+            this.drawLayer(string, f, g, i, true, matrix4f, vertexConsumerProvider, bl2, j, k);
         }
-        f = this.drawLayer(string, f, g, i, false, matrix4f, layeredVertexConsumerStorage, bl2, j, k);
+        f = this.drawLayer(string, f, g, i, false, matrix4f, vertexConsumerProvider, bl2, j, k);
         return (int)f + (bl ? 1 : 0);
     }
 
-    private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl2, int j, int k) {
+    private float drawLayer(String string, float f, float g, int i, boolean bl, Matrix4f matrix4f, VertexConsumerProvider vertexConsumerProvider, boolean bl2, int j, int k) {
         GlyphRenderer glyphRenderer2;
         Identifier identifier2;
         float h = bl ? 0.25f : 1.0f;
@@ -161,7 +161,7 @@ implements AutoCloseable {
             if (identifier != null) {
                 v = bl4 ? glyph.getBoldOffset() : 0.0f;
                 w = bl ? glyph.getShadowOffset() : 0.0f;
-                VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier) : RenderLayer.getText(identifier));
+                VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier) : RenderLayer.getText(identifier));
                 this.drawGlyph(glyphRenderer, bl4, bl5, v, o + w, g + w, matrix4f, vertexConsumer, p, q, r, s, k);
             }
             v = glyph.getAdvance(bl4);
@@ -181,10 +181,10 @@ implements AutoCloseable {
             float aa = (float)(j & 0xFF) / 255.0f;
             list.add(new GlyphRenderer.Rectangle(f - 1.0f, g + 9.0f, o + 1.0f, g - 1.0f, 0.01f, y, z, aa, x));
         }
-        if (!list.isEmpty() && (identifier2 = (glyphRenderer2 = this.fontStorage.method_22943()).getId()) != null) {
-            VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier2) : RenderLayer.getText(identifier2));
+        if (!list.isEmpty() && (identifier2 = (glyphRenderer2 = this.fontStorage.getRectangleRenderer()).getId()) != null) {
+            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getTextSeeThrough(identifier2) : RenderLayer.getText(identifier2));
             for (GlyphRenderer.Rectangle rectangle : list) {
-                glyphRenderer2.method_22944(rectangle, matrix4f, vertexConsumer2, k);
+                glyphRenderer2.drawRectangle(rectangle, matrix4f, vertexConsumer2, k);
             }
         }
         return o;
@@ -273,12 +273,12 @@ implements AutoCloseable {
         return string;
     }
 
-    public void drawStringBounded(String string, int i, int j, int k, int l) {
+    public void drawTrimmed(String string, int i, int j, int k, int l) {
         string = this.trimEndNewlines(string);
-        this.renderStringBounded(string, i, j, k, l);
+        this.drawWrapped(string, i, j, k, l);
     }
 
-    private void renderStringBounded(String string, int i, int j, int k, int l) {
+    private void drawWrapped(String string, int i, int j, int k, int l) {
         List<String> list = this.wrapStringToWidthAsList(string, k);
         Matrix4f matrix4f = Rotation3.identity().getMatrix();
         for (String string2 : list) {
@@ -287,7 +287,7 @@ implements AutoCloseable {
                 int m = this.getStringWidth(this.mirror(string2));
                 f += (float)(k - m);
             }
-            this.method_22941(string2, f, j, l, matrix4f, false);
+            this.draw(string2, f, j, l, matrix4f, false);
             j += 9;
         }
     }

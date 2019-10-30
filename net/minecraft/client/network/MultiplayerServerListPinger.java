@@ -41,7 +41,7 @@ import net.minecraft.server.network.packet.QueryRequestC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -112,7 +112,7 @@ public class MultiplayerServerListPinger {
                 } else {
                     serverInfo.setIcon(null);
                 }
-                this.startTime = SystemUtil.getMeasuringTimeMs();
+                this.startTime = Util.getMeasuringTimeMs();
                 clientConnection.send(new QueryPingC2SPacket(this.startTime));
                 this.sentQuery = true;
             }
@@ -120,7 +120,7 @@ public class MultiplayerServerListPinger {
             @Override
             public void onPong(QueryPongS2CPacket queryPongS2CPacket) {
                 long l = this.startTime;
-                long m = SystemUtil.getMeasuringTimeMs();
+                long m = Util.getMeasuringTimeMs();
                 serverInfo.ping = m - l;
                 clientConnection.disconnect(new TranslatableText("multiplayer.status.finished", new Object[0]));
             }

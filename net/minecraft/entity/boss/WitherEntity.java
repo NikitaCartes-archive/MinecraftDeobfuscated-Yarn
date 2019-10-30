@@ -88,7 +88,7 @@ RangedAttackMob {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new class_1529());
+        this.goalSelector.add(0, new DescendAtHalfHealthGoal());
         this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 40, 20.0f));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
@@ -109,7 +109,7 @@ RangedAttackMob {
     @Override
     public void writeCustomDataToTag(CompoundTag compoundTag) {
         super.writeCustomDataToTag(compoundTag);
-        compoundTag.putInt("Invul", this.getInvulTimer());
+        compoundTag.putInt("Invul", this.getInvulnerableTimer());
     }
 
     @Override
@@ -201,7 +201,7 @@ RangedAttackMob {
             if (!bl || this.world.random.nextInt(4) != 0) continue;
             this.world.addParticle(ParticleTypes.ENTITY_EFFECT, p + this.random.nextGaussian() * (double)0.3f, q + this.random.nextGaussian() * (double)0.3f, r + this.random.nextGaussian() * (double)0.3f, 0.7f, 0.7f, 0.5);
         }
-        if (this.getInvulTimer() > 0) {
+        if (this.getInvulnerableTimer() > 0) {
             for (j = 0; j < 3; ++j) {
                 this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + this.random.nextGaussian(), this.getY() + (double)(this.random.nextFloat() * 3.3f), this.getZ() + this.random.nextGaussian(), 0.7f, 0.7f, 0.9f);
             }
@@ -212,8 +212,8 @@ RangedAttackMob {
     protected void mobTick() {
         int j;
         int i;
-        if (this.getInvulTimer() > 0) {
-            int i2 = this.getInvulTimer() - 1;
+        if (this.getInvulnerableTimer() > 0) {
+            int i2 = this.getInvulnerableTimer() - 1;
             if (i2 <= 0) {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
                 this.world.createExplosion(this, this.getX(), this.method_23320(), this.getZ(), 7.0f, false, destructionType);
@@ -404,7 +404,7 @@ RangedAttackMob {
         if (damageSource == DamageSource.DROWN || damageSource.getAttacker() instanceof WitherEntity) {
             return false;
         }
-        if (this.getInvulTimer() > 0 && damageSource != DamageSource.OUT_OF_WORLD) {
+        if (this.getInvulnerableTimer() > 0 && damageSource != DamageSource.OUT_OF_WORLD) {
             return false;
         }
         if (this.shouldRenderOverlay() && (entity = damageSource.getSource()) instanceof ProjectileEntity) {
@@ -474,7 +474,7 @@ RangedAttackMob {
         return this.sideHeadPitches[i];
     }
 
-    public int getInvulTimer() {
+    public int getInvulnerableTimer() {
         return this.dataTracker.get(INVUL_TIMER);
     }
 
@@ -518,15 +518,15 @@ RangedAttackMob {
         return super.canHaveStatusEffect(statusEffectInstance);
     }
 
-    class class_1529
+    class DescendAtHalfHealthGoal
     extends Goal {
-        public class_1529() {
+        public DescendAtHalfHealthGoal() {
             this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.JUMP, Goal.Control.LOOK));
         }
 
         @Override
         public boolean canStart() {
-            return WitherEntity.this.getInvulTimer() > 0;
+            return WitherEntity.this.getInvulnerableTimer() > 0;
         }
     }
 }

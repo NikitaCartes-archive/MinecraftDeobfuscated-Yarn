@@ -60,7 +60,7 @@ public class ItemColors {
         }
         itemColors.register((itemStack, i) -> {
             BlockState blockState = ((BlockItem)itemStack.getItem()).getBlock().getDefaultState();
-            return blockColors.getColorMultiplier(blockState, null, null, i);
+            return blockColors.getColor(blockState, null, null, i);
         }, Blocks.GRASS_BLOCK, Blocks.GRASS, Blocks.FERN, Blocks.VINE, Blocks.OAK_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.LILY_PAD);
         itemColors.register((itemStack, i) -> i == 0 ? PotionUtil.getColor(itemStack) : -1, Items.TIPPED_ARROW);
         itemColors.register((itemStack, i) -> i == 0 ? -1 : FilledMapItem.getMapColor(itemStack), Items.FILLED_MAP);

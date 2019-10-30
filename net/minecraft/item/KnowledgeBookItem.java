@@ -56,7 +56,7 @@ extends Item {
             playerEntity.unlockRecipes(list);
             playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        return TypedActionResult.successWithSwing(itemStack);
+        return TypedActionResult.success(itemStack);
     }
 }
 

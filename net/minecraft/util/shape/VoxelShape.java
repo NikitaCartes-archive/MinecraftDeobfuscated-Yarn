@@ -12,7 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.OffsetDoubleList;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
@@ -53,7 +53,7 @@ public abstract class VoxelShape {
 
     public Box getBoundingBox() {
         if (this.isEmpty()) {
-            throw SystemUtil.throwOrPause(new UnsupportedOperationException("No bounds for empty shape."));
+            throw Util.throwOrPause(new UnsupportedOperationException("No bounds for empty shape."));
         }
         return new Box(this.getMinimum(Direction.Axis.X), this.getMinimum(Direction.Axis.Y), this.getMinimum(Direction.Axis.Z), this.getMaximum(Direction.Axis.X), this.getMaximum(Direction.Axis.Y), this.getMaximum(Direction.Axis.Z));
     }

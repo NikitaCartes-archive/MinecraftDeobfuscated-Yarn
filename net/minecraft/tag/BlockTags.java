@@ -48,6 +48,7 @@ public class BlockTags {
     public static final Tag<Block> FENCES;
     public static final Tag<Block> TALL_FLOWERS;
     public static final Tag<Block> FLOWERS;
+    public static final Tag<Block> SHULKER_BOXES;
     public static final Tag<Block> FLOWER_POTS;
     public static final Tag<Block> ENDERMAN_HOLDABLE;
     public static final Tag<Block> ICE;
@@ -117,6 +118,7 @@ public class BlockTags {
         FENCES = BlockTags.register("fences");
         TALL_FLOWERS = BlockTags.register("tall_flowers");
         FLOWERS = BlockTags.register("flowers");
+        SHULKER_BOXES = BlockTags.register("shulker_boxes");
         FLOWER_POTS = BlockTags.register("flower_pots");
         ENDERMAN_HOLDABLE = BlockTags.register("enderman_holdable");
         ICE = BlockTags.register("ice");

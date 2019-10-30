@@ -158,7 +158,7 @@ import net.minecraft.datafixers.schemas.Schema705;
 import net.minecraft.datafixers.schemas.Schema808;
 import net.minecraft.datafixers.schemas.Schema99;
 import net.minecraft.datafixers.schemas.SchemaIdentifierNormalize;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public class Schemas {
     private static final BiFunction<Integer, Schema, Schema> EMPTY = Schema::new;
@@ -168,7 +168,7 @@ public class Schemas {
     private static DataFixer create() {
         DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
         Schemas.build(dataFixerBuilder);
-        return dataFixerBuilder.build(SystemUtil.getServerWorkerExecutor());
+        return dataFixerBuilder.build(Util.getServerWorkerExecutor());
     }
 
     public static DataFixer getFixer() {

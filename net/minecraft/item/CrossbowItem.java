@@ -84,7 +84,7 @@ extends RangedWeaponItem {
         if (CrossbowItem.isCharged(itemStack)) {
             CrossbowItem.shootAll(world, playerEntity, hand, itemStack, CrossbowItem.getSpeed(itemStack), 1.0f);
             CrossbowItem.setCharged(itemStack, false);
-            return TypedActionResult.successWithoutSwing(itemStack);
+            return TypedActionResult.consume(itemStack);
         }
         if (!playerEntity.getArrowType(itemStack).isEmpty()) {
             if (!CrossbowItem.isCharged(itemStack)) {
@@ -92,7 +92,7 @@ extends RangedWeaponItem {
                 this.loaded = false;
                 playerEntity.setCurrentHand(hand);
             }
-            return TypedActionResult.successWithoutSwing(itemStack);
+            return TypedActionResult.consume(itemStack);
         }
         return TypedActionResult.fail(itemStack);
     }

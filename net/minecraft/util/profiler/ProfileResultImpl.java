@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.minecraft.SharedConstants;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerTiming;
 import org.apache.commons.io.IOUtils;
@@ -178,7 +178,7 @@ implements ProfileResult {
     private static String generateWittyComment() {
         String[] strings = new String[]{"Shiny numbers!", "Am I not running fast enough? :(", "I'm working as hard as I can!", "Will I ever be good enough for you? :(", "Speedy. Zoooooom!", "Hello world", "40% better than a crash report.", "Now with extra numbers", "Now with less numbers", "Now with the same numbers", "You should add flames to things, it makes them go faster!", "Do you feel the need for... optimization?", "*cracks redstone whip*", "Maybe if you treated it better then it'll have more motivation to work faster! Poor server."};
         try {
-            return strings[(int)(SystemUtil.getMeasuringTimeNano() % (long)strings.length)];
+            return strings[(int)(Util.getMeasuringTimeNano() % (long)strings.length)];
         } catch (Throwable throwable) {
             return "Witty comment unavailable :(";
         }

@@ -14,7 +14,7 @@ import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -38,7 +38,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig>
 extends ChunkGenerator<T> {
-    private static final float[] field_16649 = SystemUtil.consume(new float[13824], fs -> {
+    private static final float[] field_16649 = Util.create(new float[13824], fs -> {
         for (int i = 0; i < 24; ++i) {
             for (int j = 0; j < 24; ++j) {
                 for (int k = 0; k < 24; ++k) {

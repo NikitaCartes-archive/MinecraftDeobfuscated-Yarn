@@ -6,10 +6,10 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.Matrix4f;
@@ -33,7 +33,7 @@ extends EntityRenderer<FishingBobberEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_3974(FishingBobberEntity fishingBobberEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         double z;
         float y;
         double x;
@@ -52,13 +52,13 @@ extends EntityRenderer<FishingBobberEntity> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - this.renderManager.cameraYaw));
         float l = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
-        Matrix4f matrix4f = matrixStack.peek();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutout(SKIN));
+        Matrix4f matrix4f = matrixStack.peekModel();
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SKIN));
         int m = fishingBobberEntity.getLightmapCoordinates();
-        vertexConsumer.vertex(matrix4f, -0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, -0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, -0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, 0.5f, -0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, 0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, -0.5f, 0.5f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
         matrixStack.pop();
         int n = playerEntity.getMainArm() == Arm.RIGHT ? 1 : -1;
         ItemStack itemStack = playerEntity.getMainHandStack();
@@ -95,15 +95,15 @@ extends EntityRenderer<FishingBobberEntity> {
         float ac = (float)(v - z);
         float ad = (float)(w - aa) + y;
         float ae = (float)(x - ab);
-        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines());
-        Matrix4f matrix4f2 = matrixStack.peek();
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
+        Matrix4f matrix4f2 = matrixStack.peekModel();
         int af = 16;
         for (int ag = 0; ag < 16; ++ag) {
             FishingBobberEntityRenderer.method_23172(ac, ad, ae, vertexConsumer2, matrix4f2, ag / 16);
             FishingBobberEntityRenderer.method_23172(ac, ad, ae, vertexConsumer2, matrix4f2, (ag + 1) / 16);
         }
         matrixStack.pop();
-        super.render(fishingBobberEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(fishingBobberEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, Matrix4f matrix4f, float i) {

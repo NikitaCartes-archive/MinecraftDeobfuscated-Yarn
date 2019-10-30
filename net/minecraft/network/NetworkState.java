@@ -160,7 +160,7 @@ import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
 import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -241,7 +241,7 @@ public enum NetworkState {
     }
 
     static class PacketHandler<T extends PacketListener> {
-        private final Object2IntMap<Class<? extends Packet<T>>> packetIds = SystemUtil.consume(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
+        private final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.create(new Object2IntOpenHashMap(), object2IntOpenHashMap -> object2IntOpenHashMap.defaultReturnValue(-1));
         private final List<Supplier<? extends Packet<T>>> packetFactories = Lists.newArrayList();
 
         private PacketHandler() {

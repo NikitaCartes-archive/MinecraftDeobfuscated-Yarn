@@ -98,9 +98,9 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -784,7 +784,7 @@ extends World {
             for (Entity entity : typeFilterableList) {
                 if (entity instanceof ServerPlayerEntity) continue;
                 if (this.ticking) {
-                    throw SystemUtil.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
+                    throw Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
                 }
                 this.entitiesById.remove(entity.getEntityId());
                 this.unloadEntity(entity);
@@ -830,7 +830,7 @@ extends World {
 
     public void removeEntity(Entity entity) {
         if (this.ticking) {
-            throw SystemUtil.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
+            throw Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
         }
         this.removeEntityFromChunk(entity);
         this.entitiesById.remove(entity.getEntityId());

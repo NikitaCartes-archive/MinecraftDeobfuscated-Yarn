@@ -23,7 +23,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.village.VillageGossipType;
 
 public class VillagerGossips {
@@ -96,7 +96,7 @@ public class VillagerGossips {
     }
 
     public void deserialize(Dynamic<?> dynamic) {
-        dynamic.asStream().map(GossipEntry::deserialize).flatMap(SystemUtil::stream).forEach(gossipEntry -> this.getReputationFor(gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
+        dynamic.asStream().map(GossipEntry::deserialize).flatMap(Util::stream).forEach(gossipEntry -> this.getReputationFor(gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
     }
 
     private static int max(int i, int j) {
@@ -174,11 +174,11 @@ public class VillagerGossips {
         }
 
         public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-            return SystemUtil.writeUuid("Target", this.target, new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Type"), dynamicOps.createString(this.type.key), dynamicOps.createString("Value"), dynamicOps.createInt(this.value)))));
+            return Util.writeUuid("Target", this.target, new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Type"), dynamicOps.createString(this.type.key), dynamicOps.createString("Value"), dynamicOps.createInt(this.value)))));
         }
 
         public static Optional<GossipEntry> deserialize(Dynamic<?> dynamic) {
-            return dynamic.get("Type").asString().map(VillageGossipType::byKey).flatMap(villageGossipType -> SystemUtil.readUuid("Target", dynamic).flatMap(uUID -> dynamic.get("Value").asNumber().map(number -> new GossipEntry((UUID)uUID, (VillageGossipType)((Object)villageGossipType), number.intValue()))));
+            return dynamic.get("Type").asString().map(VillageGossipType::byKey).flatMap(villageGossipType -> Util.readUuid("Target", dynamic).flatMap(uUID -> dynamic.get("Value").asNumber().map(number -> new GossipEntry((UUID)uUID, (VillageGossipType)((Object)villageGossipType), number.intValue()))));
         }
     }
 }

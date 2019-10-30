@@ -69,8 +69,8 @@ extends DataFix {
             Typed<?> typed22 = typed.updateTyped(opticFinder2, typed2 -> {
                 int m;
                 int l;
-                Int2ObjectOpenHashMap<class_1192> int2ObjectMap = new Int2ObjectOpenHashMap<class_1192>(typed2.getAllTyped(opticFinder3).stream().map(typed -> new class_1192((Typed<?>)typed, this.getInputSchema())).collect(Collectors.toMap(class_1193::method_5077, arg -> arg)));
-                if (int2ObjectMap.values().stream().allMatch(class_1193::method_5079)) {
+                Int2ObjectOpenHashMap<class_1192> int2ObjectMap = new Int2ObjectOpenHashMap<class_1192>(typed2.getAllTyped(opticFinder3).stream().map(typed -> new class_1192((Typed<?>)typed, this.getInputSchema())).collect(Collectors.toMap(ListFixer::method_5077, arg -> arg)));
+                if (int2ObjectMap.values().stream().allMatch(ListFixer::method_5079)) {
                     return typed2;
                 }
                 ArrayList<IntOpenHashSet> list = Lists.newArrayList();
@@ -157,7 +157,7 @@ extends DataFix {
     }
 
     public static final class class_1192
-    extends class_1193 {
+    extends ListFixer {
         @Nullable
         private IntSet field_5689;
         @Nullable
@@ -170,18 +170,18 @@ extends DataFix {
         }
 
         @Override
-        protected boolean method_5076() {
+        protected boolean needsFix() {
             this.field_5689 = new IntOpenHashSet();
             this.field_5691 = new IntOpenHashSet();
             this.field_5690 = new Int2IntOpenHashMap();
-            for (int i = 0; i < this.field_5692.size(); ++i) {
-                Dynamic dynamic = (Dynamic)this.field_5692.get(i);
+            for (int i = 0; i < this.data.size(); ++i) {
+                Dynamic dynamic = (Dynamic)this.data.get(i);
                 String string = dynamic.get("Name").asString("");
                 if (field_5688.containsKey(string)) {
                     boolean bl = Objects.equals(dynamic.get("Properties").get("decayable").asString(""), "false");
                     this.field_5689.add(i);
                     this.field_5690.put(this.method_5082(string, bl, 7), i);
-                    this.field_5692.set(i, this.method_5072(dynamic, string, bl, 7));
+                    this.data.set(i, this.method_5072(dynamic, string, bl, 7));
                 }
                 if (!field_5686.contains(string)) continue;
                 this.field_5691.add(i);
@@ -211,20 +211,20 @@ extends DataFix {
             if (this.method_5068(i)) {
                 return 0;
             }
-            return Integer.parseInt(((Dynamic)this.field_5692.get(i)).get("Properties").get("distance").asString(""));
+            return Integer.parseInt(((Dynamic)this.data.get(i)).get("Properties").get("distance").asString(""));
         }
 
         private void method_5070(int i, int j, int k) {
             int m;
             boolean bl;
-            Dynamic dynamic = (Dynamic)this.field_5692.get(j);
+            Dynamic dynamic = (Dynamic)this.data.get(j);
             String string = dynamic.get("Name").asString("");
             int l = this.method_5082(string, bl = Objects.equals(dynamic.get("Properties").get("persistent").asString(""), "true"), k);
             if (!this.field_5690.containsKey(l)) {
-                m = this.field_5692.size();
+                m = this.data.size();
                 this.field_5689.add(m);
                 this.field_5690.put(l, m);
-                this.field_5692.add(this.method_5072(dynamic, string, bl, k));
+                this.data.add(this.method_5072(dynamic, string, bl, k));
             }
             m = this.field_5690.get(l);
             if (1 << this.field_5696.getElementBits() <= m) {
@@ -238,31 +238,31 @@ extends DataFix {
         }
     }
 
-    public static abstract class class_1193 {
+    public static abstract class ListFixer {
         private final Type<Pair<String, Dynamic<?>>> field_5695 = DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType());
         protected final OpticFinder<List<Pair<String, Dynamic<?>>>> field_5693 = DSL.fieldFinder("Palette", DSL.list(this.field_5695));
-        protected final List<Dynamic<?>> field_5692;
+        protected final List<Dynamic<?>> data;
         protected final int field_5694;
         @Nullable
         protected PackedIntegerArray field_5696;
 
-        public class_1193(Typed<?> typed, Schema schema) {
+        public ListFixer(Typed<?> typed, Schema schema) {
             if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.field_5695)) {
                 throw new IllegalStateException("Block state type is not what was expected.");
             }
             Optional<List<Pair<String, Dynamic<?>>>> optional = typed.getOptional(this.field_5693);
-            this.field_5692 = optional.map(list -> list.stream().map(Pair::getSecond).collect(Collectors.toList())).orElse(ImmutableList.of());
+            this.data = optional.map(list -> list.stream().map(Pair::getSecond).collect(Collectors.toList())).orElse(ImmutableList.of());
             Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
             this.field_5694 = dynamic.get("Y").asInt(0);
             this.method_5074(dynamic);
         }
 
         protected void method_5074(Dynamic<?> dynamic) {
-            if (this.method_5076()) {
+            if (this.needsFix()) {
                 this.field_5696 = null;
             } else {
                 long[] ls = dynamic.get("BlockStates").asLongStreamOpt().get().toArray();
-                int i = Math.max(4, DataFixUtils.ceillog2(this.field_5692.size()));
+                int i = Math.max(4, DataFixUtils.ceillog2(this.data.size()));
                 this.field_5696 = new PackedIntegerArray(i, 4096, ls);
             }
         }
@@ -271,7 +271,7 @@ extends DataFix {
             if (this.method_5079()) {
                 return typed;
             }
-            return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.field_5696.getStorage())))).set(this.field_5693, this.field_5692.stream().map(dynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), dynamic)).collect(Collectors.toList()));
+            return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.field_5696.getStorage())))).set(this.field_5693, this.data.stream().map(dynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), dynamic)).collect(Collectors.toList()));
         }
 
         public boolean method_5079() {
@@ -290,7 +290,7 @@ extends DataFix {
             return this.field_5694;
         }
 
-        protected abstract boolean method_5076();
+        protected abstract boolean needsFix();
     }
 }
 

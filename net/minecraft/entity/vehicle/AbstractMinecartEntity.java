@@ -39,7 +39,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -59,15 +59,15 @@ extends Entity {
     private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private boolean field_7660;
-    private static final Map<RailShape, Pair<Vec3i, Vec3i>> field_7664 = SystemUtil.consume(Maps.newEnumMap(RailShape.class), enumMap -> {
+    private static final Map<RailShape, Pair<Vec3i, Vec3i>> field_7664 = Util.create(Maps.newEnumMap(RailShape.class), enumMap -> {
         Vec3i vec3i = Direction.WEST.getVector();
         Vec3i vec3i2 = Direction.EAST.getVector();
         Vec3i vec3i3 = Direction.NORTH.getVector();
         Vec3i vec3i4 = Direction.SOUTH.getVector();
-        Vec3i vec3i5 = vec3i.method_23228();
-        Vec3i vec3i6 = vec3i2.method_23228();
-        Vec3i vec3i7 = vec3i3.method_23228();
-        Vec3i vec3i8 = vec3i4.method_23228();
+        Vec3i vec3i5 = vec3i.down();
+        Vec3i vec3i6 = vec3i2.down();
+        Vec3i vec3i7 = vec3i3.down();
+        Vec3i vec3i8 = vec3i4.down();
         enumMap.put(RailShape.NORTH_SOUTH, Pair.of(vec3i3, vec3i4));
         enumMap.put(RailShape.EAST_WEST, Pair.of(vec3i, vec3i2));
         enumMap.put(RailShape.ASCENDING_EAST, Pair.of(vec3i5, vec3i2));

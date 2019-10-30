@@ -256,7 +256,7 @@ extends AnimalEntity {
         boolean bl = false;
         if (entityData instanceof FoxData) {
             type = ((FoxData)entityData).type;
-            if (((FoxData)entityData).method_22432() >= 2) {
+            if (((FoxData)entityData).getSpawnedCount() >= 2) {
                 bl = true;
             }
         } else {
@@ -865,11 +865,11 @@ extends AnimalEntity {
     }
 
     public static class FoxData
-    extends PassiveEntity.class_4697 {
+    extends PassiveEntity.EntityData {
         public final Type type;
 
         public FoxData(Type type) {
-            this.method_22434(false);
+            this.setBabyAllowed(false);
             this.type = type;
         }
     }

@@ -7,10 +7,10 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.AnimalModel;
@@ -38,14 +38,14 @@ extends FeatureRenderer<T, M> {
         this.modelBody = bipedEntityModel2;
     }
 
-    public void method_17157(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
-        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.CHEST, i);
-        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.LEGS, i);
-        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.FEET, i);
-        this.renderArmor(matrixStack, layeredVertexConsumerStorage, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.HEAD, i);
+    public void method_17157(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.CHEST, i);
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.LEGS, i);
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.FEET, i);
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.HEAD, i);
     }
 
-    private void renderArmor(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, T livingEntity, float f, float g, float h, float i, float j, float k, float l, EquipmentSlot equipmentSlot, int m) {
+    private void renderArmor(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, T livingEntity, float f, float g, float h, float i, float j, float k, float l, EquipmentSlot equipmentSlot, int m) {
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(equipmentSlot);
         if (!(itemStack.getItem() instanceof ArmorItem)) {
             return;
@@ -66,15 +66,15 @@ extends FeatureRenderer<T, M> {
             float o = (float)(n >> 16 & 0xFF) / 255.0f;
             float p = (float)(n >> 8 & 0xFF) / 255.0f;
             float q = (float)(n & 0xFF) / 255.0f;
-            this.renderArmorParts(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, o, p, q, null);
-            this.renderArmorParts(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, "overlay");
+            this.renderArmorParts(matrixStack, vertexConsumerProvider, m, armorItem, bl2, bipedEntityModel, bl, o, p, q, null);
+            this.renderArmorParts(matrixStack, vertexConsumerProvider, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, "overlay");
         } else {
-            this.renderArmorParts(matrixStack, layeredVertexConsumerStorage, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, null);
+            this.renderArmorParts(matrixStack, vertexConsumerProvider, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, null);
         }
     }
 
-    private void renderArmorParts(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, ArmorItem armorItem, boolean bl, A bipedEntityModel, boolean bl2, float f, float g, float h, @Nullable String string) {
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(layeredVertexConsumerStorage, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(armorItem, bl2, string)), false, bl);
+    private void renderArmorParts(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, ArmorItem armorItem, boolean bl, A bipedEntityModel, boolean bl2, float f, float g, float h, @Nullable String string) {
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(armorItem, bl2, string)), false, bl);
         ((AnimalModel)bipedEntityModel).render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h);
     }
 

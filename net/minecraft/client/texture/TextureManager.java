@@ -116,12 +116,12 @@ ResourceReloadListener {
         if (!this.textures.containsKey(identifier)) {
             AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
             this.textures.put(identifier, asyncTexture);
-            return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), TextureManager::method_22812);
+            return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), TextureManager::runOnRenderThread);
         }
         return CompletableFuture.completedFuture(null);
     }
 
-    private static void method_22812(Runnable runnable) {
+    private static void runOnRenderThread(Runnable runnable) {
         MinecraftClient.getInstance().execute(() -> RenderSystem.recordRenderCall(runnable::run));
     }
 

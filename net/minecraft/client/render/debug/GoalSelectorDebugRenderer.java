@@ -18,14 +18,14 @@ import net.minecraft.util.math.BlockPos;
 public class GoalSelectorDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient client;
-    private final Map<Integer, List<class_4206>> goalSelectors = Maps.newHashMap();
+    private final Map<Integer, List<GoalSelector>> goalSelectors = Maps.newHashMap();
 
     @Override
     public void clear() {
         this.goalSelectors.clear();
     }
 
-    public void setGoalSelectorList(int i, List<class_4206> list) {
+    public void setGoalSelectorList(int i, List<GoalSelector> list) {
         this.goalSelectors.put(i, list);
     }
 
@@ -34,7 +34,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         Camera camera = this.client.gameRenderer.getCamera();
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
@@ -43,13 +43,13 @@ implements DebugRenderer.Renderer {
         BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
         this.goalSelectors.forEach((integer, list) -> {
             for (int i = 0; i < list.size(); ++i) {
-                class_4206 lv = (class_4206)list.get(i);
-                if (!blockPos.isWithinDistance(lv.field_18782, 160.0)) continue;
-                double d = (double)lv.field_18782.getX() + 0.5;
-                double e = (double)lv.field_18782.getY() + 2.0 + (double)i * 0.25;
-                double f = (double)lv.field_18782.getZ() + 0.5;
-                int j = lv.field_18785 ? -16711936 : -3355444;
-                DebugRenderer.method_23105(lv.field_18784, d, e, f, j);
+                GoalSelector goalSelector = (GoalSelector)list.get(i);
+                if (!blockPos.isWithinDistance(goalSelector.pos, 160.0)) continue;
+                double d = (double)goalSelector.pos.getX() + 0.5;
+                double e = (double)goalSelector.pos.getY() + 2.0 + (double)i * 0.25;
+                double f = (double)goalSelector.pos.getZ() + 0.5;
+                int j = goalSelector.field_18785 ? -16711936 : -3355444;
+                DebugRenderer.drawString(goalSelector.name, d, e, f, j);
             }
         });
         RenderSystem.enableDepthTest();
@@ -58,16 +58,16 @@ implements DebugRenderer.Renderer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_4206 {
-        public final BlockPos field_18782;
+    public static class GoalSelector {
+        public final BlockPos pos;
         public final int field_18783;
-        public final String field_18784;
+        public final String name;
         public final boolean field_18785;
 
-        public class_4206(BlockPos blockPos, int i, String string, boolean bl) {
-            this.field_18782 = blockPos;
+        public GoalSelector(BlockPos blockPos, int i, String string, boolean bl) {
+            this.pos = blockPos;
             this.field_18783 = i;
-            this.field_18784 = string;
+            this.name = string;
             this.field_18785 = bl;
         }
     }

@@ -51,7 +51,7 @@ import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.FontManager;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -89,9 +89,9 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LayeredBufferBuilderStorage;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -174,11 +174,10 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.NonBlockingThreadExecutor;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -195,6 +194,7 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
+import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biome;
@@ -209,7 +209,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class MinecraftClient
-extends NonBlockingThreadExecutor<Runnable>
+extends ReentrantThreadExecutor<Runnable>
 implements SnooperListener,
 WindowEventHandler {
     private static MinecraftClient instance;
@@ -225,8 +225,8 @@ WindowEventHandler {
     private final WindowProvider windowProvider;
     private final Window window;
     private final RenderTickCounter renderTickCounter = new RenderTickCounter(20.0f, 0L);
-    private final Snooper snooper = new Snooper("client", this, SystemUtil.getMeasuringTimeMs());
-    private final LayeredBufferBuilderStorage bufferBuilderStorage;
+    private final Snooper snooper = new Snooper("client", this, Util.getMeasuringTimeMs());
+    private final BufferBuilderStorage bufferBuilders;
     public final WorldRenderer worldRenderer;
     private final EntityRenderDispatcher entityRenderManager;
     private final ItemRenderer itemRenderer;
@@ -258,7 +258,7 @@ WindowEventHandler {
     private final LanguageManager languageManager;
     private final BlockColors blockColorMap;
     private final ItemColors itemColorMap;
-    private final GlFramebuffer framebuffer;
+    private final Framebuffer framebuffer;
     private final SpriteAtlasTexture spriteAtlas;
     private final SoundManager soundManager;
     private final MusicTracker musicTracker;
@@ -292,12 +292,12 @@ WindowEventHandler {
     @Nullable
     public Entity targetedEntity;
     @Nullable
-    public HitResult hitResult;
+    public HitResult crosshairTarget;
     private int itemUseCooldown;
     protected int attackCooldown;
     private boolean paused;
     private float pausedTickDelta;
-    private long lastMetricsSampleTime = SystemUtil.getMeasuringTimeNano();
+    private long lastMetricsSampleTime = Util.getMeasuringTimeNano();
     private long nextDebugInfoUpdateTime;
     private int fpsCounter;
     public boolean skipGameRender;
@@ -347,8 +347,8 @@ WindowEventHandler {
         this.isDemo = runArgs.game.demo;
         this.is64Bit = MinecraftClient.checkIs64Bit();
         this.server = null;
-        if (runArgs.autoConnect.serverIP != null) {
-            string2 = runArgs.autoConnect.serverIP;
+        if (runArgs.autoConnect.serverAddress != null) {
+            string2 = runArgs.autoConnect.serverAddress;
             i = runArgs.autoConnect.serverPort;
         } else {
             string2 = null;
@@ -366,7 +366,7 @@ WindowEventHandler {
         this.startTimerHackThread();
         LOGGER.info("Backend library: {}", (Object)RenderSystem.getBackendDescription());
         WindowSettings windowSettings = this.options.overrideHeight > 0 && this.options.overrideWidth > 0 ? new WindowSettings(this.options.overrideWidth, this.options.overrideHeight, runArgs.windowSettings.fullscreenWidth, runArgs.windowSettings.fullscreenHeight, runArgs.windowSettings.fullscreen) : runArgs.windowSettings;
-        SystemUtil.nanoTimeSupplier = RenderSystem.initBackendSystem();
+        Util.nanoTimeSupplier = RenderSystem.initBackendSystem();
         this.windowProvider = new WindowProvider(this);
         this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, "Minecraft " + SharedConstants.getGameVersion().getName());
         this.onWindowFocusChanged(true);
@@ -383,7 +383,7 @@ WindowEventHandler {
         this.keyboard = new Keyboard(this);
         this.keyboard.setup(this.window.getHandle());
         RenderSystem.initRenderer(this.options.glDebugVerbosity, false);
-        this.framebuffer = new GlFramebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, IS_SYSTEM_MAC);
+        this.framebuffer = new Framebuffer(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), true, IS_SYSTEM_MAC);
         this.framebuffer.setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         this.resourceManager = new ReloadableResourceManagerImpl(ResourceType.CLIENT_RESOURCES, this.thread);
         this.options.addResourcePackContainersToManager(this.resourcePackManager);
@@ -430,12 +430,12 @@ WindowEventHandler {
         this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
         this.firstPersonRenderer = new FirstPersonRenderer(this);
         this.resourceManager.registerListener(this.itemRenderer);
-        this.bufferBuilderStorage = new LayeredBufferBuilderStorage();
-        this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilderStorage);
+        this.bufferBuilders = new BufferBuilderStorage();
+        this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
         this.resourceManager.registerListener(this.gameRenderer);
         this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockStateMaps(), this.blockColorMap);
         this.resourceManager.registerListener(this.blockRenderManager);
-        this.worldRenderer = new WorldRenderer(this, this.bufferBuilderStorage);
+        this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
         this.resourceManager.registerListener(this.worldRenderer);
         this.initializeSearchableContainers();
         this.resourceManager.registerListener(this.searchManager);
@@ -453,7 +453,7 @@ WindowEventHandler {
             this.options.fullscreen = this.window.isFullscreen();
         }
         this.window.setVsync(this.options.enableVsync);
-        this.window.method_21668(this.options.field_20308);
+        this.window.setRawMouseMotion(this.options.rawMouseInput);
         this.window.logOnGlError();
         this.onResolutionChanged();
         if (string2 != null) {
@@ -462,7 +462,7 @@ WindowEventHandler {
             this.openScreen(new TitleScreen(true));
         }
         SplashScreen.init(this);
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE), () -> {
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginInitialMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE), () -> {
             if (SharedConstants.isDevelopment) {
                 this.checkGameData();
             }
@@ -492,12 +492,12 @@ WindowEventHandler {
                 }
             }
         } catch (CrashException crashException) {
-            this.populateCrashReport(crashException.getReport());
+            this.addDetailsToCrashReport(crashException.getReport());
             this.cleanUpAfterCrash();
             LOGGER.fatal("Reported exception thrown!", (Throwable)crashException);
             MinecraftClient.printCrashReport(crashException.getReport());
         } catch (Throwable throwable) {
-            CrashReport crashReport = this.populateCrashReport(new CrashReport("Unexpected error", throwable));
+            CrashReport crashReport = this.addDetailsToCrashReport(new CrashReport("Unexpected error", throwable));
             LOGGER.fatal("Unreported exception thrown!", throwable);
             this.cleanUpAfterCrash();
             MinecraftClient.printCrashReport(crashReport);
@@ -536,7 +536,7 @@ WindowEventHandler {
         return false;
     }
 
-    public GlFramebuffer getFramebuffer() {
+    public Framebuffer getFramebuffer() {
         return this.framebuffer;
     }
 
@@ -600,7 +600,7 @@ WindowEventHandler {
         }
         this.resourcePackManager.scanPacks();
         List<ResourcePack> list = this.resourcePackManager.getEnabledProfiles().stream().map(ResourcePackProfile::createResourcePack).collect(Collectors.toList());
-        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), () -> {
+        this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), () -> {
             this.languageManager.reloadResources(list);
             this.worldRenderer.reload();
             completableFuture.complete(null);
@@ -700,7 +700,7 @@ WindowEventHandler {
             }
             this.close();
         } finally {
-            SystemUtil.nanoTimeSupplier = System::nanoTime;
+            Util.nanoTimeSupplier = System::nanoTime;
             if (this.crashReport == null) {
                 System.exit(0);
             }
@@ -720,7 +720,7 @@ WindowEventHandler {
             this.particleManager.clearAtlas();
             this.statusEffectSpriteManager.close();
             this.paintingManager.close();
-            SystemUtil.shutdownServerWorkerExecutor();
+            Util.shutdownServerWorkerExecutor();
         } finally {
             this.windowProvider.close();
             this.window.close();
@@ -732,7 +732,7 @@ WindowEventHandler {
         int i;
         Runnable runnable;
         this.window.setPhase("Pre render");
-        long l = SystemUtil.getMeasuringTimeNano();
+        long l = Util.getMeasuringTimeNano();
         this.profiler.startTick();
         if (this.window.shouldClose()) {
             this.scheduleStop();
@@ -746,12 +746,12 @@ WindowEventHandler {
             runnable.run();
         }
         if (bl) {
-            this.renderTickCounter.beginRenderTick(SystemUtil.getMeasuringTimeMs());
+            this.renderTickCounter.beginRenderTick(Util.getMeasuringTimeMs());
             this.profiler.push("scheduledExecutables");
-            this.executeQueuedTasks();
+            this.runTasks();
             this.profiler.pop();
         }
-        long m = SystemUtil.getMeasuringTimeNano();
+        long m = Util.getMeasuringTimeNano();
         this.profiler.push("tick");
         if (bl) {
             for (i = 0; i < Math.min(10, this.renderTickCounter.ticksThisFrame); ++i) {
@@ -807,10 +807,10 @@ WindowEventHandler {
             }
             this.paused = bl2;
         }
-        long n = SystemUtil.getMeasuringTimeNano();
+        long n = Util.getMeasuringTimeNano();
         this.metricsData.pushSample(n - this.lastMetricsSampleTime);
         this.lastMetricsSampleTime = n;
-        while (SystemUtil.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
+        while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             currentFps = this.fpsCounter;
             Object[] objectArray = new Object[5];
             objectArray[0] = currentFps;
@@ -835,8 +835,8 @@ WindowEventHandler {
         if (this.currentScreen != null) {
             this.currentScreen.resize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
         }
-        GlFramebuffer glFramebuffer = this.getFramebuffer();
-        glFramebuffer.resize(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), IS_SYSTEM_MAC);
+        Framebuffer framebuffer = this.getFramebuffer();
+        framebuffer.resize(this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), IS_SYSTEM_MAC);
         this.gameRenderer.onResized(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
         this.mouse.onResolutionChanged();
     }
@@ -905,7 +905,7 @@ WindowEventHandler {
         RenderSystem.lineWidth(1.0f);
         RenderSystem.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         int i = 160;
         int j = this.window.getFramebufferWidth() - 160 - 10;
         int k = this.window.getFramebufferHeight() - 320;
@@ -1006,9 +1006,9 @@ WindowEventHandler {
         if (this.attackCooldown > 0 || this.player.isUsingItem()) {
             return;
         }
-        if (bl && this.hitResult != null && this.hitResult.getType() == HitResult.Type.BLOCK) {
+        if (bl && this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
             Direction direction;
-            BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
+            BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
             BlockPos blockPos = blockHitResult.getBlockPos();
             if (!this.world.getBlockState(blockPos).isAir() && this.interactionManager.updateBlockBreakingProgress(blockPos, direction = blockHitResult.getSide())) {
                 this.particleManager.addBlockBreakingParticles(blockPos, direction);
@@ -1023,7 +1023,7 @@ WindowEventHandler {
         if (this.attackCooldown > 0) {
             return;
         }
-        if (this.hitResult == null) {
+        if (this.crosshairTarget == null) {
             LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
             if (this.interactionManager.hasLimitedAttackSpeed()) {
                 this.attackCooldown = 10;
@@ -1033,13 +1033,13 @@ WindowEventHandler {
         if (this.player.isRiding()) {
             return;
         }
-        switch (this.hitResult.getType()) {
+        switch (this.crosshairTarget.getType()) {
             case ENTITY: {
-                this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.hitResult).getEntity());
+                this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.crosshairTarget).getEntity());
                 break;
             }
             case BLOCK: {
-                BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
+                BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
                 BlockPos blockPos = blockHitResult.getBlockPos();
                 if (!this.world.getBlockState(blockPos).isAir()) {
                     this.interactionManager.attackBlock(blockPos, blockHitResult.getSide());
@@ -1064,33 +1064,33 @@ WindowEventHandler {
         if (this.player.isRiding()) {
             return;
         }
-        if (this.hitResult == null) {
+        if (this.crosshairTarget == null) {
             LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
         }
         for (Hand hand : Hand.values()) {
             ActionResult actionResult3;
             ItemStack itemStack = this.player.getStackInHand(hand);
-            if (this.hitResult != null) {
-                switch (this.hitResult.getType()) {
+            if (this.crosshairTarget != null) {
+                switch (this.crosshairTarget.getType()) {
                     case ENTITY: {
-                        EntityHitResult entityHitResult = (EntityHitResult)this.hitResult;
+                        EntityHitResult entityHitResult = (EntityHitResult)this.crosshairTarget;
                         Entity entity = entityHitResult.getEntity();
                         ActionResult actionResult = this.interactionManager.interactEntityAtLocation(this.player, entity, entityHitResult, hand);
-                        if (!actionResult.method_23665()) {
+                        if (!actionResult.isAccepted()) {
                             actionResult = this.interactionManager.interactEntity(this.player, entity, hand);
                         }
-                        if (!actionResult.method_23665()) break;
-                        if (actionResult.method_23666()) {
+                        if (!actionResult.isAccepted()) break;
+                        if (actionResult.shouldSwingHand()) {
                             this.player.swingHand(hand);
                         }
                         return;
                     }
                     case BLOCK: {
-                        BlockHitResult blockHitResult = (BlockHitResult)this.hitResult;
+                        BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
                         int i = itemStack.getCount();
                         ActionResult actionResult2 = this.interactionManager.interactBlock(this.player, this.world, hand, blockHitResult);
-                        if (actionResult2.method_23665()) {
-                            if (actionResult2.method_23666()) {
+                        if (actionResult2.isAccepted()) {
+                            if (actionResult2.shouldSwingHand()) {
                                 this.player.swingHand(hand);
                                 if (!itemStack.isEmpty() && (itemStack.getCount() != i || this.interactionManager.hasCreativeInventory())) {
                                     this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
@@ -1103,8 +1103,8 @@ WindowEventHandler {
                     }
                 }
             }
-            if (itemStack.isEmpty() || !(actionResult3 = this.interactionManager.interactItem(this.player, this.world, hand)).method_23665()) continue;
-            if (actionResult3.method_23666()) {
+            if (itemStack.isEmpty() || !(actionResult3 = this.interactionManager.interactItem(this.player, this.world, hand)).isAccepted()) continue;
+            if (actionResult3.shouldSwingHand()) {
                 this.player.swingHand(hand);
             }
             this.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
@@ -1126,7 +1126,7 @@ WindowEventHandler {
         }
         this.profiler.pop();
         this.gameRenderer.updateTargetedEntity(1.0f);
-        this.tutorialManager.tick(this.world, this.hitResult);
+        this.tutorialManager.tick(this.world, this.crosshairTarget);
         this.profiler.push("gameMode");
         if (!this.paused && this.world != null) {
             this.interactionManager.tick();
@@ -1387,7 +1387,7 @@ WindowEventHandler {
     public void disconnect(Screen screen) {
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
         if (clientPlayNetworkHandler != null) {
-            this.clearTasks();
+            this.cancelTasks();
             clientPlayNetworkHandler.clearWorld();
         }
         IntegratedServer integratedServer = this.server;
@@ -1451,14 +1451,14 @@ WindowEventHandler {
 
     private void doItemPick() {
         ItemStack itemStack;
-        if (this.hitResult == null || this.hitResult.getType() == HitResult.Type.MISS) {
+        if (this.crosshairTarget == null || this.crosshairTarget.getType() == HitResult.Type.MISS) {
             return;
         }
         boolean bl = this.player.abilities.creativeMode;
         BlockEntity blockEntity = null;
-        HitResult.Type type = this.hitResult.getType();
+        HitResult.Type type = this.crosshairTarget.getType();
         if (type == HitResult.Type.BLOCK) {
-            BlockPos blockPos = ((BlockHitResult)this.hitResult).getBlockPos();
+            BlockPos blockPos = ((BlockHitResult)this.crosshairTarget).getBlockPos();
             BlockState blockState = this.world.getBlockState(blockPos);
             Block block = blockState.getBlock();
             if (blockState.isAir()) {
@@ -1472,7 +1472,7 @@ WindowEventHandler {
                 blockEntity = this.world.getBlockEntity(blockPos);
             }
         } else if (type == HitResult.Type.ENTITY && bl) {
-            Entity entity = ((EntityHitResult)this.hitResult).getEntity();
+            Entity entity = ((EntityHitResult)this.crosshairTarget).getEntity();
             if (entity instanceof PaintingEntity) {
                 itemStack = new ItemStack(Items.PAINTING);
             } else if (entity instanceof LeadKnotEntity) {
@@ -1529,9 +1529,9 @@ WindowEventHandler {
         if (itemStack.isEmpty()) {
             String string = "";
             if (type == HitResult.Type.BLOCK) {
-                string = Registry.BLOCK.getId(this.world.getBlockState(((BlockHitResult)this.hitResult).getBlockPos()).getBlock()).toString();
+                string = Registry.BLOCK.getId(this.world.getBlockState(((BlockHitResult)this.crosshairTarget).getBlockPos()).getBlock()).toString();
             } else if (type == HitResult.Type.ENTITY) {
-                string = Registry.ENTITY_TYPE.getId(((EntityHitResult)this.hitResult).getEntity().getType()).toString();
+                string = Registry.ENTITY_TYPE.getId(((EntityHitResult)this.crosshairTarget).getEntity().getType()).toString();
             }
             LOGGER.warn("Picking on: [{}] {} gave null item", (Object)type, (Object)string);
             return;
@@ -1569,15 +1569,15 @@ WindowEventHandler {
         return itemStack;
     }
 
-    public CrashReport populateCrashReport(CrashReport crashReport) {
-        MinecraftClient.method_22681(this.languageManager, this.gameVersion, this.options, crashReport);
+    public CrashReport addDetailsToCrashReport(CrashReport crashReport) {
+        MinecraftClient.addSystemDetailsToCrashReport(this.languageManager, this.gameVersion, this.options, crashReport);
         if (this.world != null) {
             this.world.addDetailsToCrashReport(crashReport);
         }
         return crashReport;
     }
 
-    public static void method_22681(@Nullable LanguageManager languageManager, String string, @Nullable GameOptions gameOptions, CrashReport crashReport) {
+    public static void addSystemDetailsToCrashReport(@Nullable LanguageManager languageManager, String string, @Nullable GameOptions gameOptions, CrashReport crashReport) {
         CrashReportSection crashReportSection = crashReport.getSystemDetailsSection();
         crashReportSection.add("Launched Version", () -> string);
         crashReportSection.add("Backend library", RenderSystem::getBackendDescription);
@@ -1620,7 +1620,7 @@ WindowEventHandler {
     }
 
     public CompletableFuture<Void> reloadResourcesConcurrently() {
-        return this.supply(this::reloadResources).thenCompose(completableFuture -> completableFuture);
+        return this.submit(this::reloadResources).thenCompose(completableFuture -> completableFuture);
     }
 
     @Override
@@ -1629,7 +1629,7 @@ WindowEventHandler {
         snooper.addInfo("vsync_enabled", this.options.enableVsync);
         snooper.addInfo("display_frequency", this.window.getRefreshRate());
         snooper.addInfo("display_type", this.window.isFullscreen() ? "fullscreen" : "windowed");
-        snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
+        snooper.addInfo("run_time", (Util.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
         snooper.addInfo("current_action", this.getCurrentAction());
         snooper.addInfo("language", this.options.language == null ? "en_us" : this.options.language);
         String string = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN ? "little" : "big";
@@ -1922,8 +1922,8 @@ WindowEventHandler {
         return this.window;
     }
 
-    public LayeredBufferBuilderStorage getBufferBuilderStorage() {
-        return this.bufferBuilderStorage;
+    public BufferBuilderStorage getBufferBuilders() {
+        return this.bufferBuilders;
     }
 
     private static /* synthetic */ ResourcePack method_1528(Supplier supplier) {
@@ -1932,7 +1932,7 @@ WindowEventHandler {
 
     static {
         LOGGER = LogManager.getLogger();
-        IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.OSX;
+        IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
         DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);

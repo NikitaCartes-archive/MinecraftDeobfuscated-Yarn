@@ -21,7 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
@@ -94,7 +94,7 @@ extends Item {
     }
 
     private static <T> T cycle(Iterable<T> iterable, @Nullable T object, boolean bl) {
-        return bl ? SystemUtil.previous(iterable, object) : SystemUtil.next(iterable, object);
+        return bl ? Util.previous(iterable, object) : Util.next(iterable, object);
     }
 
     private static void sendMessage(PlayerEntity playerEntity, Text text) {

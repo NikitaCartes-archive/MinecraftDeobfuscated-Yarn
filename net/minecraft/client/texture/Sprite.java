@@ -17,7 +17,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -43,7 +43,7 @@ public class Sprite {
     private float vMax;
     protected int frameIndex;
     protected int frameTicks;
-    private static final float[] srgbLinearMap = SystemUtil.consume(new float[256], fs -> {
+    private static final float[] srgbLinearMap = Util.create(new float[256], fs -> {
         for (int i = 0; i < ((float[])fs).length; ++i) {
             fs[i] = (float)Math.pow((float)i / 255.0f, 2.2);
         }

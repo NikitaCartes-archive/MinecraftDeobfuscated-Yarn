@@ -33,11 +33,11 @@ public class RunArgs {
     @Environment(value=EnvType.CLIENT)
     public static class AutoConnect {
         @Nullable
-        public final String serverIP;
+        public final String serverAddress;
         public final int serverPort;
 
         public AutoConnect(@Nullable String string, int i) {
-            this.serverIP = string;
+            this.serverAddress = string;
             this.serverPort = i;
         }
     }

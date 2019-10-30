@@ -50,7 +50,7 @@ public class PngFile {
 
     private static Reader createReader(InputStream inputStream) {
         if (inputStream instanceof FileInputStream) {
-            return new FileReader(((FileInputStream)inputStream).getChannel());
+            return new SeekableChannelReader(((FileInputStream)inputStream).getChannel());
         }
         return new ChannelReader(Channels.newChannel(inputStream));
     }
@@ -58,133 +58,133 @@ public class PngFile {
     @Environment(value=EnvType.CLIENT)
     static class ChannelReader
     extends Reader {
-        private final ReadableByteChannel field_5229;
-        private long field_5233 = MemoryUtil.nmemAlloc(128L);
-        private int field_5232 = 128;
-        private int field_5231;
-        private int field_5230;
+        private final ReadableByteChannel channel;
+        private long buffer = MemoryUtil.nmemAlloc(128L);
+        private int bufferSize = 128;
+        private int bufferPosition;
+        private int readPosition;
 
         private ChannelReader(ReadableByteChannel readableByteChannel) {
-            this.field_5229 = readableByteChannel;
+            this.channel = readableByteChannel;
         }
 
         /*
          * WARNING - Removed try catching itself - possible behaviour change.
          */
-        private void method_4548(int i) throws IOException {
-            ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(this.field_5233, this.field_5232);
-            if (i + this.field_5230 > this.field_5232) {
-                this.field_5232 = i + this.field_5230;
-                byteBuffer = MemoryUtil.memRealloc(byteBuffer, this.field_5232);
-                this.field_5233 = MemoryUtil.memAddress(byteBuffer);
+        private void readToBuffer(int i) throws IOException {
+            ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(this.buffer, this.bufferSize);
+            if (i + this.readPosition > this.bufferSize) {
+                this.bufferSize = i + this.readPosition;
+                byteBuffer = MemoryUtil.memRealloc(byteBuffer, this.bufferSize);
+                this.buffer = MemoryUtil.memAddress(byteBuffer);
             }
-            byteBuffer.position(this.field_5231);
-            while (i + this.field_5230 > this.field_5231) {
+            byteBuffer.position(this.bufferPosition);
+            while (i + this.readPosition > this.bufferPosition) {
                 try {
-                    int j = this.field_5229.read(byteBuffer);
+                    int j = this.channel.read(byteBuffer);
                     if (j != -1) continue;
                     break;
                 } finally {
-                    this.field_5231 = byteBuffer.position();
+                    this.bufferPosition = byteBuffer.position();
                 }
             }
         }
 
         @Override
-        public int method_4544(long l, int i) throws IOException {
-            this.method_4548(i);
-            if (i + this.field_5230 > this.field_5231) {
-                i = this.field_5231 - this.field_5230;
+        public int read(long l, int i) throws IOException {
+            this.readToBuffer(i);
+            if (i + this.readPosition > this.bufferPosition) {
+                i = this.bufferPosition - this.readPosition;
             }
-            MemoryUtil.memCopy(this.field_5233 + (long)this.field_5230, l, i);
-            this.field_5230 += i;
+            MemoryUtil.memCopy(this.buffer + (long)this.readPosition, l, i);
+            this.readPosition += i;
             return i;
         }
 
         @Override
-        public void method_4545(int i) throws IOException {
+        public void skip(int i) throws IOException {
             if (i > 0) {
-                this.method_4548(i);
-                if (i + this.field_5230 > this.field_5231) {
+                this.readToBuffer(i);
+                if (i + this.readPosition > this.bufferPosition) {
                     throw new EOFException("Can't skip past the EOF.");
                 }
             }
-            if (this.field_5230 + i < 0) {
-                throw new IOException("Can't seek before the beginning: " + (this.field_5230 + i));
+            if (this.readPosition + i < 0) {
+                throw new IOException("Can't seek before the beginning: " + (this.readPosition + i));
             }
-            this.field_5230 += i;
+            this.readPosition += i;
         }
 
         @Override
         public void close() throws IOException {
-            MemoryUtil.nmemFree(this.field_5233);
-            this.field_5229.close();
+            MemoryUtil.nmemFree(this.buffer);
+            this.channel.close();
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class FileReader
+    static class SeekableChannelReader
     extends Reader {
-        private final SeekableByteChannel field_5234;
+        private final SeekableByteChannel channel;
 
-        private FileReader(SeekableByteChannel seekableByteChannel) {
-            this.field_5234 = seekableByteChannel;
+        private SeekableChannelReader(SeekableByteChannel seekableByteChannel) {
+            this.channel = seekableByteChannel;
         }
 
         @Override
-        public int method_4544(long l, int i) throws IOException {
+        public int read(long l, int i) throws IOException {
             ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(l, i);
-            return this.field_5234.read(byteBuffer);
+            return this.channel.read(byteBuffer);
         }
 
         @Override
-        public void method_4545(int i) throws IOException {
-            this.field_5234.position(this.field_5234.position() + (long)i);
+        public void skip(int i) throws IOException {
+            this.channel.position(this.channel.position() + (long)i);
         }
 
         @Override
         public int eof(long l) {
-            return super.eof(l) != 0 && this.field_5234.isOpen() ? 1 : 0;
+            return super.eof(l) != 0 && this.channel.isOpen() ? 1 : 0;
         }
 
         @Override
         public void close() throws IOException {
-            this.field_5234.close();
+            this.channel.close();
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     static abstract class Reader
     implements AutoCloseable {
-        protected boolean field_5228;
+        protected boolean errored;
 
         private Reader() {
         }
 
         int read(long l, long m, int i) {
             try {
-                return this.method_4544(m, i);
+                return this.read(m, i);
             } catch (IOException iOException) {
-                this.field_5228 = true;
+                this.errored = true;
                 return 0;
             }
         }
 
         void skip(long l, int i) {
             try {
-                this.method_4545(i);
+                this.skip(i);
             } catch (IOException iOException) {
-                this.field_5228 = true;
+                this.errored = true;
             }
         }
 
         int eof(long l) {
-            return this.field_5228 ? 1 : 0;
+            return this.errored ? 1 : 0;
         }
 
-        protected abstract int method_4544(long var1, int var3) throws IOException;
+        protected abstract int read(long var1, int var3) throws IOException;
 
-        protected abstract void method_4545(int var1) throws IOException;
+        protected abstract void skip(int var1) throws IOException;
 
         @Override
         public abstract void close() throws IOException;

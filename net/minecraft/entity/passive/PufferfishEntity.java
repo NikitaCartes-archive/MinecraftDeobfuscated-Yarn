@@ -32,9 +32,9 @@ import net.minecraft.world.World;
 public class PufferfishEntity
 extends FishEntity {
     private static final TrackedData<Integer> PUFF_STATE = DataTracker.registerData(PufferfishEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private int field_6833;
-    private int field_6832;
-    private static final Predicate<LivingEntity> field_6834 = livingEntity -> {
+    private int inflateTicks;
+    private int deflateTicks;
+    private static final Predicate<LivingEntity> BLOW_UP_FILTER = livingEntity -> {
         if (livingEntity == null) {
             return false;
         }
@@ -90,30 +90,30 @@ extends FishEntity {
     @Override
     protected void initGoals() {
         super.initGoals();
-        this.goalSelector.add(1, new class_1455(this));
+        this.goalSelector.add(1, new InflateGoal(this));
     }
 
     @Override
     public void tick() {
         if (!this.world.isClient && this.isAlive() && this.canMoveVoluntarily()) {
-            if (this.field_6833 > 0) {
+            if (this.inflateTicks > 0) {
                 if (this.getPuffState() == 0) {
                     this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
                     this.setPuffState(1);
-                } else if (this.field_6833 > 40 && this.getPuffState() == 1) {
+                } else if (this.inflateTicks > 40 && this.getPuffState() == 1) {
                     this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
                     this.setPuffState(2);
                 }
-                ++this.field_6833;
+                ++this.inflateTicks;
             } else if (this.getPuffState() != 0) {
-                if (this.field_6832 > 60 && this.getPuffState() == 2) {
+                if (this.deflateTicks > 60 && this.getPuffState() == 2) {
                     this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
                     this.setPuffState(1);
-                } else if (this.field_6832 > 100 && this.getPuffState() == 1) {
+                } else if (this.deflateTicks > 100 && this.getPuffState() == 1) {
                     this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_OUT, this.getSoundVolume(), this.getSoundPitch());
                     this.setPuffState(0);
                 }
-                ++this.field_6832;
+                ++this.deflateTicks;
             }
         }
         super.tick();
@@ -123,7 +123,7 @@ extends FishEntity {
     public void tickMovement() {
         super.tickMovement();
         if (this.isAlive() && this.getPuffState() > 0) {
-            List<LivingEntity> list = this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), field_6834);
+            List<LivingEntity> list = this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), BLOW_UP_FILTER);
             for (MobEntity mobEntity : list) {
                 if (!mobEntity.isAlive()) continue;
                 this.sting(mobEntity);
@@ -185,34 +185,34 @@ extends FishEntity {
         return 1.0f;
     }
 
-    static class class_1455
+    static class InflateGoal
     extends Goal {
         private final PufferfishEntity pufferfish;
 
-        public class_1455(PufferfishEntity pufferfishEntity) {
+        public InflateGoal(PufferfishEntity pufferfishEntity) {
             this.pufferfish = pufferfishEntity;
         }
 
         @Override
         public boolean canStart() {
-            List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), field_6834);
+            List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
             return !list.isEmpty();
         }
 
         @Override
         public void start() {
-            this.pufferfish.field_6833 = 1;
-            this.pufferfish.field_6832 = 0;
+            this.pufferfish.inflateTicks = 1;
+            this.pufferfish.deflateTicks = 0;
         }
 
         @Override
         public void stop() {
-            this.pufferfish.field_6833 = 0;
+            this.pufferfish.inflateTicks = 0;
         }
 
         @Override
         public boolean shouldContinue() {
-            List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), field_6834);
+            List<LivingEntity> list = this.pufferfish.world.getEntities(LivingEntity.class, this.pufferfish.getBoundingBox().expand(2.0), BLOW_UP_FILTER);
             return !list.isEmpty();
         }
     }

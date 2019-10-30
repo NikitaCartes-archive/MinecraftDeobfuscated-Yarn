@@ -6,10 +6,10 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -28,7 +28,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         super(featureRendererContext);
     }
 
-    public void method_4177(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4177(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!abstractClientPlayerEntity.canRenderCapeTexture() || abstractClientPlayerEntity.isInvisible() || !abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE) || abstractClientPlayerEntity.getCapeTexture() == null) {
             return;
         }
@@ -61,7 +61,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0f + s / 2.0f + r));
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(t / 2.0f));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - t / 2.0f));
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
         ((PlayerEntityModel)this.getModel()).renderCape(matrixStack, vertexConsumer, 0.0625f, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }

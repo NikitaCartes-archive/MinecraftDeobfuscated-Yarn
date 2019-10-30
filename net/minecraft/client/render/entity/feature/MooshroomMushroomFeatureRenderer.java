@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -26,7 +26,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4195(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T mooshroomEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4195(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T mooshroomEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (((PassiveEntity)mooshroomEntity).isBaby() || ((Entity)mooshroomEntity).isInvisible()) {
             return;
         }
@@ -39,13 +39,13 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         int n = LivingEntityRenderer.method_23622(mooshroomEntity, 0.0f);
         matrixStack.push();
         matrixStack.translate(-0.5, -0.5, 0.5);
-        blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+        blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, n);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(-0.1f, 0.0, -0.6f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-42.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+        blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, n);
         matrixStack.pop();
         matrixStack.pop();
         matrixStack.push();
@@ -54,7 +54,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         matrixStack.translate(0.0, 0.7f, -0.2f);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-12.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        blockRenderManager.renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, n);
+        blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, n);
         matrixStack.pop();
     }
 }

@@ -39,14 +39,14 @@ extends Goal {
         double d = Double.MAX_VALUE;
         for (Entity entity2 : list) {
             llamaEntity2 = (LlamaEntity)entity2;
-            if (!llamaEntity2.isFollowing() || llamaEntity2.method_6793() || (e = this.llama.squaredDistanceTo(llamaEntity2)) > d) continue;
+            if (!llamaEntity2.isFollowing() || llamaEntity2.hasFollower() || (e = this.llama.squaredDistanceTo(llamaEntity2)) > d) continue;
             d = e;
             llamaEntity = llamaEntity2;
         }
         if (llamaEntity == null) {
             for (Entity entity2 : list) {
                 llamaEntity2 = (LlamaEntity)entity2;
-                if (!llamaEntity2.isLeashed() || llamaEntity2.method_6793() || (e = this.llama.squaredDistanceTo(llamaEntity2)) > d) continue;
+                if (!llamaEntity2.isLeashed() || llamaEntity2.hasFollower() || (e = this.llama.squaredDistanceTo(llamaEntity2)) > d) continue;
                 d = e;
                 llamaEntity = llamaEntity2;
             }
@@ -60,7 +60,7 @@ extends Goal {
         if (!llamaEntity.isLeashed() && !this.canFollow((LlamaEntity)llamaEntity, 1)) {
             return false;
         }
-        this.llama.method_6791((LlamaEntity)llamaEntity);
+        this.llama.follow((LlamaEntity)llamaEntity);
         return true;
     }
 

@@ -91,7 +91,7 @@ implements Position {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vec3d method_22882() {
+    public Vec3d negate() {
         return this.multiply(-1.0);
     }
 

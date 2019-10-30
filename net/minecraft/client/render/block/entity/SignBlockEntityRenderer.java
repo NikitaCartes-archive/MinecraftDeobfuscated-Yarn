@@ -19,10 +19,10 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -48,7 +48,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
         this.field_20991.addCuboid(-1.0f, -2.0f, -1.0f, 2.0f, 14.0f, 2.0f, 0.0f);
     }
 
-    public void method_23083(SignBlockEntity signBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_23083(SignBlockEntity signBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         float k;
         BlockState blockState = signBlockEntity.getCachedState();
         matrixStack.push();
@@ -68,11 +68,11 @@ extends BlockEntityRenderer<SignBlockEntity> {
         Sprite sprite = this.getSprite(this.getModelTexture(blockState.getBlock()));
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
         this.field_20990.render(matrixStack, vertexConsumer, 0.0625f, i, j, sprite);
         this.field_20991.render(matrixStack, vertexConsumer, 0.0625f, i, j, sprite);
         matrixStack.pop();
-        TextRenderer textRenderer = this.field_20989.getFontRenderer();
+        TextRenderer textRenderer = this.blockEntityRenderDispatcher.getTextRenderer();
         float l = 0.010416667f;
         matrixStack.translate(0.0, 0.3333333432674408, 0.046666666865348816);
         matrixStack.scale(0.010416667f, -0.010416667f, 0.010416667f);
@@ -84,7 +84,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
             });
             if (string == null) continue;
             float o = -textRenderer.getStringWidth(string) / 2;
-            textRenderer.method_22942(string, o, n * 10 - signBlockEntity.text.length * 5, m, false, matrixStack.peek(), layeredVertexConsumerStorage, false, 0, i);
+            textRenderer.draw(string, o, n * 10 - signBlockEntity.text.length * 5, m, false, matrixStack.peekModel(), vertexConsumerProvider, false, 0, i);
             if (n != signBlockEntity.getCurrentRow() || signBlockEntity.getSelectionStart() < 0) continue;
             int p = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
             int q = textRenderer.isRightToLeft() ? -1 : 1;
@@ -94,7 +94,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
                 if (signBlockEntity.getSelectionStart() < string.length()) {
                     DrawableHelper.fill(r, s - 1, r + 1, s + textRenderer.fontHeight, 0xFF000000 | m);
                 } else {
-                    textRenderer.method_22942("_", r, s, m, false, matrixStack.peek(), layeredVertexConsumerStorage, false, 0, i);
+                    textRenderer.draw("_", r, s, m, false, matrixStack.peekModel(), vertexConsumerProvider, false, 0, i);
                 }
             }
             if (signBlockEntity.getSelectionEnd() == signBlockEntity.getSelectionStart()) continue;
@@ -103,7 +103,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
             int v = (textRenderer.getStringWidth(string.substring(0, t)) - textRenderer.getStringWidth(string) / 2) * q;
             int w = (textRenderer.getStringWidth(string.substring(0, u)) - textRenderer.getStringWidth(string) / 2) * q;
             RenderSystem.pushMatrix();
-            RenderSystem.multMatrix(matrixStack.peek());
+            RenderSystem.multMatrix(matrixStack.peekModel());
             this.method_16210(Math.min(v, w), s, Math.max(v, w), s + textRenderer.fontHeight);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.popMatrix();
@@ -135,7 +135,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
 
     private void method_16210(int i, int j, int k, int l) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.color4f(0.0f, 0.0f, 1.0f, 1.0f);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();

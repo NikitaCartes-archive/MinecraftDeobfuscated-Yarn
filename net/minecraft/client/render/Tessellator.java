@@ -32,7 +32,7 @@ public class Tessellator {
         BufferRenderer.draw(this.buffer);
     }
 
-    public BufferBuilder getBufferBuilder() {
+    public BufferBuilder getBuffer() {
         return this.buffer;
     }
 }

@@ -7,8 +7,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.container.CartographyTableContainer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -111,9 +111,9 @@ extends AbstractContainerScreen<CartographyTableContainer> {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(i, j, 1.0f);
             RenderSystem.scalef(f, f, 1.0f);
-            LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
-            this.minecraft.gameRenderer.getMapRenderer().draw(new MatrixStack(), drawer, mapState, true, 0xF000F0);
-            drawer.draw();
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+            this.minecraft.gameRenderer.getMapRenderer().draw(new MatrixStack(), immediate, mapState, true, 0xF000F0);
+            immediate.draw();
             RenderSystem.popMatrix();
         }
     }

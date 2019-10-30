@@ -582,7 +582,7 @@ CommandOutput {
     }
 
     protected BlockPos method_23314() {
-        return new BlockPos(this.x, this.getBoundingBox().minY - 0.5000001, this.z);
+        return new BlockPos(this.x, this.getBoundingBox().y1 - 0.5000001, this.z);
     }
 
     protected Vec3d adjustMovementForSneaking(Vec3d vec3d, MovementType movementType) {
@@ -718,7 +718,7 @@ CommandOutput {
 
     public void moveToBoundingBoxCenter() {
         Box box = this.getBoundingBox();
-        this.setPos((box.minX + box.maxX) / 2.0, box.minY, (box.minZ + box.maxZ) / 2.0);
+        this.setPos((box.x1 + box.x2) / 2.0, box.y1, (box.z1 + box.z2) / 2.0);
     }
 
     protected SoundEvent getSwimSound() {
@@ -735,8 +735,8 @@ CommandOutput {
 
     protected void checkBlockCollision() {
         Box box = this.getBoundingBox();
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.minX + 0.001, box.minY + 0.001, box.minZ + 0.001);
-             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.maxX - 0.001, box.maxY - 0.001, box.maxZ - 0.001);
+        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.x1 + 0.001, box.y1 + 0.001, box.z1 + 0.001);
+             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.x2 - 0.001, box.y2 - 0.001, box.z2 - 0.001);
              BlockPos.PooledMutable pooledMutable3 = BlockPos.PooledMutable.get();){
             if (this.world.isRegionLoaded(pooledMutable, pooledMutable2)) {
                 for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); ++i) {
@@ -1832,7 +1832,7 @@ CommandOutput {
         for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
             double i;
             mutable.set(blockPos).setOffset(direction2);
-            if (this.world.getBlockState(mutable).method_21743(this.world, mutable)) continue;
+            if (this.world.getBlockState(mutable).isFullCube(this.world, mutable)) continue;
             double h = vec3d.getComponentAlongAxis(direction2.getAxis());
             double d2 = i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
             if (!(i < g)) continue;
@@ -2136,7 +2136,7 @@ CommandOutput {
             return;
         }
         Box box = this.getBoundingBox();
-        this.setBoundingBox(new Box(box.minX, box.minY, box.minZ, box.minX + (double)entityDimensions2.width, box.minY + (double)entityDimensions2.height, box.minZ + (double)entityDimensions2.width));
+        this.setBoundingBox(new Box(box.x1, box.y1, box.z1, box.x1 + (double)entityDimensions2.width, box.y1 + (double)entityDimensions2.height, box.z1 + (double)entityDimensions2.width));
         if (entityDimensions2.width > entityDimensions.width && !this.firstUpdate && !this.world.isClient) {
             float f = entityDimensions.width - entityDimensions2.width;
             this.move(MovementType.SELF, new Vec3d(f, 0.0, f));
@@ -2428,12 +2428,12 @@ CommandOutput {
     public boolean updateMovementInFluid(Tag<Fluid> tag) {
         int n;
         Box box = this.getBoundingBox().contract(0.001);
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        if (!this.world.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y2);
+        int m = MathHelper.floor(box.z1);
+        if (!this.world.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.z2))) {
             return false;
         }
         double d = 0.0;
@@ -2448,9 +2448,9 @@ CommandOutput {
                         double e;
                         pooledMutable.method_10113(p, q, r);
                         FluidState fluidState = this.world.getFluidState(pooledMutable);
-                        if (!fluidState.matches(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= box.minY)) continue;
+                        if (!fluidState.matches(tag) || !((e = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= box.y1)) continue;
                         bl2 = true;
-                        d = Math.max(e - box.minY, d);
+                        d = Math.max(e - box.y1, d);
                         if (!bl) continue;
                         Vec3d vec3d2 = fluidState.getVelocity(this.world, pooledMutable);
                         if (d < 0.4) {
@@ -2525,12 +2525,12 @@ CommandOutput {
         return this.y;
     }
 
-    public double method_23323(double d) {
+    public double getHeightAt(double d) {
         return this.y + (double)this.getHeight() * d;
     }
 
     public double method_23319() {
-        return this.method_23323(this.random.nextDouble());
+        return this.getHeightAt(this.random.nextDouble());
     }
 
     public double method_23320() {

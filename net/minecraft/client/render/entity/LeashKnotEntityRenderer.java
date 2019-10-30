@@ -5,9 +5,9 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.LeashEntityModel;
@@ -25,16 +25,16 @@ extends EntityRenderer<LeadKnotEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_4035(LeadKnotEntity leadKnotEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         matrixStack.push();
         float i = 0.0625f;
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         int j = leadKnotEntity.getLightmapCoordinates();
         this.model.setAngles(leadKnotEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(this.model.getLayer(SKIN));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
         this.model.render(matrixStack, vertexConsumer, j, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
-        super.render(leadKnotEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(leadKnotEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     public Identifier method_4036(LeadKnotEntity leadKnotEntity) {

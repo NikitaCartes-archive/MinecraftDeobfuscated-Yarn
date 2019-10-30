@@ -7,10 +7,10 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EnderCrystalEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -38,7 +38,7 @@ extends EntityRenderer<EnderDragonEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_3918(EnderDragonEntity enderDragonEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_3918(EnderDragonEntity enderDragonEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         matrixStack.push();
         float i = (float)enderDragonEntity.method_6817(7, h)[0];
         float j = (float)(enderDragonEntity.method_6817(5, h)[1] - enderDragonEntity.method_6817(10, h)[1]);
@@ -53,15 +53,15 @@ extends EntityRenderer<EnderDragonEntity> {
         this.field_21008.method_23620(enderDragonEntity, 0.0f, 0.0f, h);
         if (enderDragonEntity.field_7031 > 0) {
             float m = (float)enderDragonEntity.field_7031 / 200.0f;
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEX, m));
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEX, m));
             this.field_21008.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
-            VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityDecal(SKIN));
+            VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityDecal(SKIN));
             this.field_21008.render(matrixStack, vertexConsumer2, l, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f);
         } else {
-            VertexConsumer vertexConsumer3 = layeredVertexConsumerStorage.getBuffer(this.field_21008.getLayer(SKIN));
+            VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(this.field_21008.getLayer(SKIN));
             this.field_21008.render(matrixStack, vertexConsumer3, l, OverlayTexture.packUv(0.0f, bl), 1.0f, 1.0f, 1.0f);
         }
-        VertexConsumer vertexConsumer3 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEyes(EYES_TEX));
+        VertexConsumer vertexConsumer3 = vertexConsumerProvider.getBuffer(RenderLayer.getEyes(EYES_TEX));
         this.field_21008.render(matrixStack, vertexConsumer3, l, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         if (enderDragonEntity.field_7031 > 0) {
             float n = ((float)enderDragonEntity.field_7031 + h) / 200.0f;
@@ -70,7 +70,7 @@ extends EntityRenderer<EnderDragonEntity> {
                 o = (n - 0.8f) / 0.2f;
             }
             Random random = new Random(432L);
-            VertexConsumer vertexConsumer4 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLightning());
+            VertexConsumer vertexConsumer4 = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
             matrixStack.push();
             matrixStack.translate(0.0, -1.0, -2.0);
             int p = 0;
@@ -83,7 +83,7 @@ extends EntityRenderer<EnderDragonEntity> {
                 matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(random.nextFloat() * 360.0f + n * 90.0f));
                 float q = random.nextFloat() * 20.0f + 5.0f + o * 10.0f;
                 float r = random.nextFloat() * 2.0f + 1.0f + o * 2.0f;
-                Matrix4f matrix4f = matrixStack.peek();
+                Matrix4f matrix4f = matrixStack.peekModel();
                 int s = (int)(255.0f * (1.0f - o));
                 EnderDragonEntityRenderer.method_23157(vertexConsumer4, matrix4f, s);
                 EnderDragonEntityRenderer.method_23156(vertexConsumer4, matrix4f, q, r);
@@ -104,10 +104,10 @@ extends EntityRenderer<EnderDragonEntity> {
             float n = (float)(enderDragonEntity.connectedCrystal.getX() - MathHelper.lerp((double)h, enderDragonEntity.prevX, enderDragonEntity.getX()));
             float o = (float)(enderDragonEntity.connectedCrystal.getY() - MathHelper.lerp((double)h, enderDragonEntity.prevY, enderDragonEntity.getY()));
             float t = (float)(enderDragonEntity.connectedCrystal.getZ() - MathHelper.lerp((double)h, enderDragonEntity.prevZ, enderDragonEntity.getZ()));
-            EnderDragonEntityRenderer.renderCrystalBeam(n, o + EnderCrystalEntityRenderer.method_23155(enderDragonEntity.connectedCrystal, h), t, h, enderDragonEntity.age, matrixStack, layeredVertexConsumerStorage, l);
+            EnderDragonEntityRenderer.renderCrystalBeam(n, o + EnderCrystalEntityRenderer.method_23155(enderDragonEntity.connectedCrystal, h), t, h, enderDragonEntity.age, matrixStack, vertexConsumerProvider, l);
             matrixStack.pop();
         }
-        super.render(enderDragonEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(enderDragonEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     private static void method_23157(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i) {
@@ -127,29 +127,29 @@ extends EntityRenderer<EnderDragonEntity> {
         vertexConsumer.vertex(matrix4f, 0.0f, f, 1.0f * g).color(255, 0, 255, 0).next();
     }
 
-    public static void renderCrystalBeam(float f, float g, float h, float i, int j, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int k) {
+    public static void renderCrystalBeam(float f, float g, float h, float i, int j, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int k) {
         float l = MathHelper.sqrt(f * f + h * h);
         float m = MathHelper.sqrt(f * f + g * g + h * h);
         matrixStack.push();
         matrixStack.translate(0.0, 2.0, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.method_23626((float)(-Math.atan2(h, f)) - 1.5707964f));
         matrixStack.multiply(Vector3f.POSITIVE_X.method_23626((float)(-Math.atan2(l, g)) - 1.5707964f));
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM_TEX));
         float n = 0.0f - ((float)j + i) * 0.01f;
         float o = MathHelper.sqrt(f * f + g * g + h * h) / 32.0f - ((float)j + i) * 0.01f;
         int p = 8;
         float q = 0.0f;
         float r = 0.75f;
         float s = 0.0f;
-        Matrix4f matrix4f = matrixStack.peek();
+        Matrix4f matrix4f = matrixStack.peekModel();
         for (int t = 1; t <= 8; ++t) {
             float u = MathHelper.sin((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;
             float v = MathHelper.cos((float)(t % 8) * ((float)Math.PI * 2) / 8.0f) * 0.75f;
             float w = (float)(t % 8) / 8.0f;
-            vertexConsumer.vertex(matrix4f, q * 0.2f, r * 0.2f, 0.0f).color(0, 0, 0, 255).texture(s, n).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, q, r, m).color(255, 255, 255, 255).texture(s, o).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, u, v, m).color(255, 255, 255, 255).texture(w, o).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
-            vertexConsumer.vertex(matrix4f, u * 0.2f, v * 0.2f, 0.0f).color(0, 0, 0, 255).texture(w, n).defaultOverlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, q * 0.2f, r * 0.2f, 0.0f).color(0, 0, 0, 255).texture(s, n).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, q, r, m).color(255, 255, 255, 255).texture(s, o).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, u, v, m).color(255, 255, 255, 255).texture(w, o).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, u * 0.2f, v * 0.2f, 0.0f).color(0, 0, 0, 255).texture(w, n).overlay(OverlayTexture.DEFAULT_UV).light(k).normal(0.0f, 1.0f, 0.0f).next();
             q = u;
             r = v;
             s = w;

@@ -233,7 +233,7 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean shouldRenderFog(int i, int j) {
+    public boolean isFogThick(int i, int j) {
         return false;
     }
 }

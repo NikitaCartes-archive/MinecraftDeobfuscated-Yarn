@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PigEntityModel;
@@ -26,14 +26,14 @@ extends FeatureRenderer<PigEntity, PigEntityModel<PigEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4196(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, PigEntity pigEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4196(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PigEntity pigEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!pigEntity.isSaddled()) {
             return;
         }
         ((PigEntityModel)this.getModel()).copyStateTo(this.model);
         this.model.animateModel(pigEntity, f, g, h);
         this.model.setAngles(pigEntity, f, g, j, k, l, m);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
     }
 }

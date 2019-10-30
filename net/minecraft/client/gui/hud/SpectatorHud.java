@@ -13,7 +13,7 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuCloseCallback;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -31,7 +31,7 @@ implements SpectatorMenuCloseCallback {
     }
 
     public void selectSlot(int i) {
-        this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
+        this.lastInteractionTime = Util.getMeasuringTimeMs();
         if (this.spectatorMenu != null) {
             this.spectatorMenu.useCommand(i);
         } else {
@@ -40,7 +40,7 @@ implements SpectatorMenuCloseCallback {
     }
 
     private float getSpectatorMenuHeight() {
-        long l = this.lastInteractionTime - SystemUtil.getMeasuringTimeMs() + 5000L;
+        long l = this.lastInteractionTime - Util.getMeasuringTimeMs() + 5000L;
         return MathHelper.clamp((float)l / 2000.0f, 0.0f, 1.0f);
     }
 
@@ -132,12 +132,12 @@ implements SpectatorMenuCloseCallback {
         }
         if (i >= 0 && i <= 8) {
             this.spectatorMenu.useCommand(i);
-            this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
+            this.lastInteractionTime = Util.getMeasuringTimeMs();
         }
     }
 
     public void useSelectedCommand() {
-        this.lastInteractionTime = SystemUtil.getMeasuringTimeMs();
+        this.lastInteractionTime = Util.getMeasuringTimeMs();
         if (this.isOpen()) {
             int i = this.spectatorMenu.getSelectedSlot();
             if (i != -1) {

@@ -143,7 +143,7 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public /* synthetic */ void onPartAdded(Object object) {
+    public /* synthetic */ void accept(Object object) {
         this.method_22696((ModelPart)object);
     }
 }

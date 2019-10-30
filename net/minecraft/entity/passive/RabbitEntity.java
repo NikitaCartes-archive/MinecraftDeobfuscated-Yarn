@@ -50,7 +50,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -328,7 +328,7 @@ extends AnimalEntity {
             this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
             this.targetSelector.add(2, new FollowTargetGoal<WolfEntity>((MobEntity)this, WolfEntity.class, true));
             if (!this.hasCustomName()) {
-                this.setCustomName(new TranslatableText(SystemUtil.createTranslationKey("entity", KILLER_BUNNY), new Object[0]));
+                this.setCustomName(new TranslatableText(Util.createTranslationKey("entity", KILLER_BUNNY), new Object[0]));
             }
         }
         this.dataTracker.set(RABBIT_TYPE, i);
@@ -558,12 +558,12 @@ extends AnimalEntity {
     }
 
     public static class RabbitEntityData
-    extends PassiveEntity.class_4697 {
+    extends PassiveEntity.EntityData {
         public final int type;
 
         public RabbitEntityData(int i) {
             this.type = i;
-            this.method_22433(1.0f);
+            this.setBabyChance(1.0f);
         }
     }
 }

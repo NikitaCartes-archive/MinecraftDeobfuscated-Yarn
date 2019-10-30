@@ -22,11 +22,11 @@ public class TypedActionResult<T> {
         return this.value;
     }
 
-    public static <T> TypedActionResult<T> successWithSwing(T object) {
+    public static <T> TypedActionResult<T> success(T object) {
         return new TypedActionResult<T>(ActionResult.SUCCESS, object);
     }
 
-    public static <T> TypedActionResult<T> successWithoutSwing(T object) {
+    public static <T> TypedActionResult<T> consume(T object) {
         return new TypedActionResult<T>(ActionResult.CONSUME, object);
     }
 

@@ -263,18 +263,18 @@ implements AutoCloseable {
     }
 
     public void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2) {
-        this.method_22619(i, j, k, l, m, n, o, false, false, bl, bl2);
+        this.upload(i, j, k, l, m, n, o, false, false, bl, bl2);
     }
 
-    public void method_22619(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+    public void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
         if (!RenderSystem.isOnRenderThreadOrInit()) {
-            RenderSystem.recordRenderCall(() -> this.upload(i, j, k, l, m, n, o, bl, bl2, bl3, bl4));
+            RenderSystem.recordRenderCall(() -> this.uploadInternal(i, j, k, l, m, n, o, bl, bl2, bl3, bl4));
         } else {
-            this.upload(i, j, k, l, m, n, o, bl, bl2, bl3, bl4);
+            this.uploadInternal(i, j, k, l, m, n, o, bl, bl2, bl3, bl4);
         }
     }
 
-    private void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+    private void uploadInternal(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         this.checkAllocated();
         NativeImage.setTextureFilter(bl, bl3);

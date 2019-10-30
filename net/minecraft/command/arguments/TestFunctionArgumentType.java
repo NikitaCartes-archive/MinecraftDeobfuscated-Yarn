@@ -35,7 +35,7 @@ implements ArgumentType<TestFunction> {
         throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
     }
 
-    public static TestFunctionArgumentType method_22371() {
+    public static TestFunctionArgumentType testFunction() {
         return new TestFunctionArgumentType();
     }
 

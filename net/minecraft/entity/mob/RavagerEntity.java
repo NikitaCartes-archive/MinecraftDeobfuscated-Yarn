@@ -120,7 +120,7 @@ extends RaiderEntity {
 
     @Override
     protected EntityNavigation createNavigation(World world) {
-        return new class_1586(this, world);
+        return new Navigation(this, world);
     }
 
     @Override
@@ -163,7 +163,7 @@ extends RaiderEntity {
         if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
             boolean bl = false;
             Box box = this.getBoundingBox().expand(0.2);
-            for (BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.minX), MathHelper.floor(box.minY), MathHelper.floor(box.minZ), MathHelper.floor(box.maxX), MathHelper.floor(box.maxY), MathHelper.floor(box.maxZ))) {
+            for (BlockPos blockPos : BlockPos.iterate(MathHelper.floor(box.x1), MathHelper.floor(box.y1), MathHelper.floor(box.z1), MathHelper.floor(box.x2), MathHelper.floor(box.y2), MathHelper.floor(box.z2))) {
                 BlockState blockState = this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 if (!(block instanceof LeavesBlock)) continue;
@@ -325,9 +325,9 @@ extends RaiderEntity {
         return false;
     }
 
-    static class class_1587
+    static class PathNodeMaker
     extends LandPathNodeMaker {
-        private class_1587() {
+        private PathNodeMaker() {
         }
 
         @Override
@@ -339,15 +339,15 @@ extends RaiderEntity {
         }
     }
 
-    static class class_1586
+    static class Navigation
     extends MobNavigation {
-        public class_1586(MobEntity mobEntity, World world) {
+        public Navigation(MobEntity mobEntity, World world) {
             super(mobEntity, world);
         }
 
         @Override
         protected PathNodeNavigator createPathNodeNavigator(int i) {
-            this.nodeMaker = new class_1587();
+            this.nodeMaker = new PathNodeMaker();
             return new PathNodeNavigator(this.nodeMaker, i);
         }
     }

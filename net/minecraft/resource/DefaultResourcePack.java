@@ -39,7 +39,7 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -223,7 +223,7 @@ implements ResourcePack {
 
     static {
         LOGGER = LogManager.getLogger();
-        typeToFileSystem = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+        typeToFileSystem = Util.create(Maps.newHashMap(), hashMap -> {
             Class<DefaultResourcePack> clazz = DefaultResourcePack.class;
             synchronized (DefaultResourcePack.class) {
                 for (ResourceType resourceType : ResourceType.values()) {

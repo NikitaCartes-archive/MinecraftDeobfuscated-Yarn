@@ -121,7 +121,7 @@ public class ModelPart {
         }
         matrixStack.push();
         this.rotate(matrixStack, f);
-        this.renderCuboids(matrixStack.peek(), vertexConsumer, f, i, j, sprite, g, h, k);
+        this.renderCuboids(matrixStack.peekModel(), vertexConsumer, f, i, j, sprite, g, h, k);
         for (ModelPart modelPart : this.children) {
             modelPart.render(matrixStack, vertexConsumer, f, i, j, sprite, g, h, k);
         }
@@ -167,7 +167,7 @@ public class ModelPart {
                         p = sprite.getU(vertex.u * 16.0f);
                         q = sprite.getV(vertex.v * 16.0f);
                     }
-                    vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ()).color(g, h, k, 1.0f).texture(p, q).defaultOverlay(j).light(i).normal(l, m, n).next();
+                    vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ()).color(g, h, k, 1.0f).texture(p, q).overlay(j).light(i).normal(l, m, n).next();
                 }
             }
         }

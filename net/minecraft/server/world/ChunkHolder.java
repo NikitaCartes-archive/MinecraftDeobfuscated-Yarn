@@ -22,7 +22,7 @@ import net.minecraft.client.network.packet.LightUpdateS2CPacket;
 import net.minecraft.network.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -321,7 +321,7 @@ public class ChunkHolder {
         boolean bl8 = levelType2.isAfter(LevelType.ENTITY_TICKING);
         if (!bl7 && bl8) {
             if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
-                throw SystemUtil.throwOrPause(new IllegalStateException());
+                throw Util.throwOrPause(new IllegalStateException());
             }
             this.entityTickingFuture = threadedAnvilChunkStorage.createEntityTickingChunkFuture(this.pos);
             this.updateFuture(this.entityTickingFuture);

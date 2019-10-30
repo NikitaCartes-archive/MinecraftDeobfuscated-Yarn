@@ -165,7 +165,7 @@ import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
-import net.minecraft.client.render.debug.PointOfInterestDebugRenderer;
+import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
@@ -741,7 +741,7 @@ implements ClientPlayPacketListener {
             if (entity instanceof ItemEntity) {
                 ((ItemEntity)entity).getStack().setCount(itemPickupAnimationS2CPacket.getStackAmount());
             }
-            this.client.particleManager.addParticle(new ItemPickupParticle(this.client.getEntityRenderManager(), this.client.getBufferBuilderStorage(), this.world, entity, livingEntity));
+            this.client.particleManager.addParticle(new ItemPickupParticle(this.client.getEntityRenderManager(), this.client.getBufferBuilders(), this.world, entity, livingEntity));
             this.world.removeEntity(itemPickupAnimationS2CPacket.getEntityId());
         }
     }
@@ -1605,7 +1605,7 @@ implements ClientPlayPacketListener {
             } else if (CustomPayloadS2CPacket.DEBUG_NEIGHBORS_UPDATE.equals(identifier)) {
                 long l = packetByteBuf.readVarLong();
                 BlockPos blockPos = packetByteBuf.readBlockPos();
-                ((NeighborUpdateDebugRenderer)this.client.debugRenderer.neighborUpdateDebugRenderer).method_3870(l, blockPos);
+                ((NeighborUpdateDebugRenderer)this.client.debugRenderer.neighborUpdateDebugRenderer).addNeighborUpdate(l, blockPos);
             } else if (CustomPayloadS2CPacket.DEBUG_CAVES.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 int j = packetByteBuf.readInt();
@@ -1633,35 +1633,35 @@ implements ClientPlayPacketListener {
                 int j;
                 int i = packetByteBuf.readInt();
                 for (j = 0; j < i; ++j) {
-                    this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19433(packetByteBuf.readChunkSectionPos());
+                    this.client.debugRenderer.villageDebugRenderer.addSection(packetByteBuf.readChunkSectionPos());
                 }
                 j = packetByteBuf.readInt();
                 for (int m = 0; m < j; ++m) {
-                    this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19435(packetByteBuf.readChunkSectionPos());
+                    this.client.debugRenderer.villageDebugRenderer.removeSection(packetByteBuf.readChunkSectionPos());
                 }
             } else if (CustomPayloadS2CPacket.DEBUG_POI_ADDED.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 String string = packetByteBuf.readString();
                 int m = packetByteBuf.readInt();
-                PointOfInterestDebugRenderer.class_4233 lv = new PointOfInterestDebugRenderer.class_4233(blockPos2, string, m);
-                this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19701(lv);
+                VillageDebugRenderer.PointOfInterest pointOfInterest = new VillageDebugRenderer.PointOfInterest(blockPos2, string, m);
+                this.client.debugRenderer.villageDebugRenderer.addPointOfInterest(pointOfInterest);
             } else if (CustomPayloadS2CPacket.DEBUG_POI_REMOVED.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
-                this.client.debugRenderer.pointsOfInterestDebugRenderer.removePointOfInterest(blockPos2);
+                this.client.debugRenderer.villageDebugRenderer.removePointOfInterest(blockPos2);
             } else if (CustomPayloadS2CPacket.DEBUG_POI_TICKET_COUNT.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 int j = packetByteBuf.readInt();
-                this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19702(blockPos2, j);
+                this.client.debugRenderer.villageDebugRenderer.setFreeTicketCount(blockPos2, j);
             } else if (CustomPayloadS2CPacket.DEBUG_GOAL_SELECTOR.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 int j = packetByteBuf.readInt();
                 int m = packetByteBuf.readInt();
-                ArrayList<GoalSelectorDebugRenderer.class_4206> list2 = Lists.newArrayList();
+                ArrayList<GoalSelectorDebugRenderer.GoalSelector> list2 = Lists.newArrayList();
                 for (int k = 0; k < m; ++k) {
                     int n = packetByteBuf.readInt();
                     boolean bl = packetByteBuf.readBoolean();
                     String string2 = packetByteBuf.readString(255);
-                    list2.add(new GoalSelectorDebugRenderer.class_4206(blockPos2, n, string2, bl));
+                    list2.add(new GoalSelectorDebugRenderer.GoalSelector(blockPos2, n, string2, bl));
                 }
                 this.client.debugRenderer.goalSelectorDebugRenderer.setGoalSelectorList(j, list2);
             } else if (CustomPayloadS2CPacket.DEBUG_RAIDS.equals(identifier)) {
@@ -1689,33 +1689,33 @@ implements ClientPlayPacketListener {
                 boolean bl2 = packetByteBuf.readBoolean();
                 Path path2 = bl2 ? Path.fromBuffer(packetByteBuf) : null;
                 boolean bl3 = packetByteBuf.readBoolean();
-                PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, o, string3, string4, p, position, string5, path2, bl3);
+                VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string3, string4, p, position, string5, path2, bl3);
                 int q = packetByteBuf.readInt();
                 for (r = 0; r < q; ++r) {
                     String string6 = packetByteBuf.readString();
-                    lv2.field_18927.add(string6);
+                    brain.field_18927.add(string6);
                 }
                 r = packetByteBuf.readInt();
                 for (s = 0; s < r; ++s) {
                     String string7 = packetByteBuf.readString();
-                    lv2.field_18928.add(string7);
+                    brain.field_18928.add(string7);
                 }
                 s = packetByteBuf.readInt();
                 for (t = 0; t < s; ++t) {
                     String string8 = packetByteBuf.readString();
-                    lv2.field_19374.add(string8);
+                    brain.field_19374.add(string8);
                 }
                 t = packetByteBuf.readInt();
                 for (u = 0; u < t; ++u) {
                     BlockPos blockPos3 = packetByteBuf.readBlockPos();
-                    lv2.field_18930.add(blockPos3);
+                    brain.field_18930.add(blockPos3);
                 }
                 u = packetByteBuf.readInt();
                 for (int v = 0; v < u; ++v) {
                     String string9 = packetByteBuf.readString();
-                    lv2.field_19375.add(string9);
+                    brain.field_19375.add(string9);
                 }
-                this.client.debugRenderer.pointsOfInterestDebugRenderer.addPointOfInterest(lv2);
+                this.client.debugRenderer.villageDebugRenderer.addBrain(brain);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
                 this.client.debugRenderer.gameTestDebugRenderer.clear();
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER.equals(identifier)) {

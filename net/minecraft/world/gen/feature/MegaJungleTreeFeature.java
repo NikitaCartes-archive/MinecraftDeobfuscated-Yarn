@@ -11,9 +11,9 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MegaTreeFeature;
 import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class MegaJungleTreeFeature
 extends MegaTreeFeature<MegaTreeFeatureConfig> {
@@ -49,10 +49,10 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
         return true;
     }
 
-    private void makeLeaves(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, AbstractTreeFeatureConfig abstractTreeFeatureConfig) {
+    private void makeLeaves(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         int j = 2;
         for (int k = -2; k <= 0; ++k) {
-            this.makeSquaredLeafLayer(modifiableTestableWorld, random, blockPos.up(k), i + 1 - k, set, blockBox, abstractTreeFeatureConfig);
+            this.makeSquaredLeafLayer(modifiableTestableWorld, random, blockPos.up(k), i + 1 - k, set, blockBox, treeFeatureConfig);
         }
     }
 }

@@ -7,9 +7,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -42,8 +42,8 @@ extends EntityRenderer<ItemFrameEntity> {
         this.itemRenderer = itemRenderer;
     }
 
-    public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        super.render(itemFrameEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+    public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+        super.render(itemFrameEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
         matrixStack.push();
         Direction direction = itemFrameEntity.getHorizontalFacing();
         Vec3d vec3d = this.method_23174(itemFrameEntity, d, e, f, h);
@@ -58,7 +58,7 @@ extends EntityRenderer<ItemFrameEntity> {
         matrixStack.push();
         matrixStack.translate(-0.5, -0.5, -0.5);
         int j = itemFrameEntity.getLightmapCoordinates();
-        blockRenderManager.getModelRenderer().render(matrixStack.peek(), matrixStack.peekNormal(), layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, j, OverlayTexture.DEFAULT_UV);
+        blockRenderManager.getModelRenderer().render(matrixStack.peekModel(), matrixStack.peekNormal(), vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, j, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
         ItemStack itemStack = itemFrameEntity.getHeldItemStack();
         if (!itemStack.isEmpty()) {
@@ -75,11 +75,11 @@ extends EntityRenderer<ItemFrameEntity> {
                 MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, itemFrameEntity.world);
                 matrixStack.translate(0.0, 0.0, -1.0);
                 if (mapState != null) {
-                    this.client.gameRenderer.getMapRenderer().draw(matrixStack, layeredVertexConsumerStorage, mapState, true, j);
+                    this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapState, true, j);
                 }
             } else {
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.DEFAULT_UV, matrixStack, layeredVertexConsumerStorage);
+                this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
             }
         }
         matrixStack.pop();
@@ -102,8 +102,8 @@ extends EntityRenderer<ItemFrameEntity> {
         return d < (double)(f * f);
     }
 
-    protected void method_23175(ItemFrameEntity itemFrameEntity, String string, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName().asFormattedString(), matrixStack, layeredVertexConsumerStorage);
+    protected void method_23175(ItemFrameEntity itemFrameEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+        super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName().asFormattedString(), matrixStack, vertexConsumerProvider);
     }
 }
 

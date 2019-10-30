@@ -17,7 +17,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -36,20 +36,20 @@ implements DebugRenderer.Renderer {
 
     public void addPath(int i, Path path, float f) {
         this.paths.put(i, path);
-        this.pathTimes.put(i, SystemUtil.getMeasuringTimeMs());
+        this.pathTimes.put(i, Util.getMeasuringTimeMs());
         this.field_4617.put(i, Float.valueOf(f));
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         if (this.paths.isEmpty()) {
             return;
         }
-        long m = SystemUtil.getMeasuringTimeMs();
+        long m = Util.getMeasuringTimeMs();
         for (Integer integer : this.paths.keySet()) {
             Path path = this.paths.get(integer);
             float f = this.field_4617.get(integer).floatValue();
-            PathfindingDebugRenderer.method_23118(this.method_23120(), path, f, true, true);
+            PathfindingDebugRenderer.drawPath(this.getCamera(), path, f, true, true);
         }
         for (Integer integer2 : this.pathTimes.keySet().toArray(new Integer[0])) {
             if (m - this.pathTimes.get(integer2) <= 20000L) continue;
@@ -58,68 +58,68 @@ implements DebugRenderer.Renderer {
         }
     }
 
-    public static void method_23118(Camera camera, Path path, float f, boolean bl, boolean bl2) {
+    public static void drawPath(Camera camera, Path path, float f, boolean bl, boolean bl2) {
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.color4f(0.0f, 1.0f, 0.0f, 0.75f);
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(6.0f);
-        PathfindingDebugRenderer.method_23121(camera, path, f, bl, bl2);
+        PathfindingDebugRenderer.drawPathInternal(camera, path, f, bl, bl2);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         RenderSystem.popMatrix();
     }
 
-    private static void method_23121(Camera camera, Path path, float f, boolean bl, boolean bl2) {
+    private static void drawPathInternal(Camera camera, Path path, float f, boolean bl, boolean bl2) {
         int i;
-        PathfindingDebugRenderer.method_23117(camera, path);
+        PathfindingDebugRenderer.drawPathLines(camera, path);
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double g = camera.getPos().z;
         BlockPos blockPos = path.getTarget();
-        if (PathfindingDebugRenderer.method_23119(camera, blockPos) <= 40.0f) {
-            DebugRenderer.method_23102(new Box((float)blockPos.getX() + 0.25f, (float)blockPos.getY() + 0.25f, (double)blockPos.getZ() + 0.25, (float)blockPos.getX() + 0.75f, (float)blockPos.getY() + 0.75f, (float)blockPos.getZ() + 0.75f).offset(-d, -e, -g), 0.0f, 1.0f, 0.0f, 0.5f);
+        if (PathfindingDebugRenderer.getManhattanDistance(camera, blockPos) <= 40.0f) {
+            DebugRenderer.drawBox(new Box((float)blockPos.getX() + 0.25f, (float)blockPos.getY() + 0.25f, (double)blockPos.getZ() + 0.25, (float)blockPos.getX() + 0.75f, (float)blockPos.getY() + 0.75f, (float)blockPos.getZ() + 0.75f).offset(-d, -e, -g), 0.0f, 1.0f, 0.0f, 0.5f);
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.method_23119(camera, pathNode.method_22879()) <= 40.0f)) continue;
+                if (!(PathfindingDebugRenderer.getManhattanDistance(camera, pathNode.getPos()) <= 40.0f)) continue;
                 float h = i == path.getCurrentNodeIndex() ? 1.0f : 0.0f;
                 float j = i == path.getCurrentNodeIndex() ? 0.0f : 1.0f;
-                DebugRenderer.method_23102(new Box((float)pathNode.x + 0.5f - f, (float)pathNode.y + 0.01f * (float)i, (float)pathNode.z + 0.5f - f, (float)pathNode.x + 0.5f + f, (float)pathNode.y + 0.25f + 0.01f * (float)i, (float)pathNode.z + 0.5f + f).offset(-d, -e, -g), h, 0.0f, j, 0.5f);
+                DebugRenderer.drawBox(new Box((float)pathNode.x + 0.5f - f, (float)pathNode.y + 0.01f * (float)i, (float)pathNode.z + 0.5f - f, (float)pathNode.x + 0.5f + f, (float)pathNode.y + 0.25f + 0.01f * (float)i, (float)pathNode.z + 0.5f + f).offset(-d, -e, -g), h, 0.0f, j, 0.5f);
             }
         }
         if (bl) {
             for (PathNode pathNode2 : path.method_22881()) {
-                if (!(PathfindingDebugRenderer.method_23119(camera, pathNode2.method_22879()) <= 40.0f)) continue;
-                DebugRenderer.method_23105(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
-                DebugRenderer.method_23105(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536);
+                if (!(PathfindingDebugRenderer.getManhattanDistance(camera, pathNode2.getPos()) <= 40.0f)) continue;
+                DebugRenderer.drawString(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
+                DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536);
             }
             for (PathNode pathNode2 : path.method_22880()) {
-                if (!(PathfindingDebugRenderer.method_23119(camera, pathNode2.method_22879()) <= 40.0f)) continue;
-                DebugRenderer.method_23105(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -16776961);
-                DebugRenderer.method_23105(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -16776961);
+                if (!(PathfindingDebugRenderer.getManhattanDistance(camera, pathNode2.getPos()) <= 40.0f)) continue;
+                DebugRenderer.drawString(String.format("%s", new Object[]{pathNode2.type}), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -16776961);
+                DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode2.penalty)), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -16776961);
             }
         }
         if (bl2) {
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
-                if (!(PathfindingDebugRenderer.method_23119(camera, pathNode.method_22879()) <= 40.0f)) continue;
-                DebugRenderer.method_23105(String.format("%s", new Object[]{pathNode.type}), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
-                DebugRenderer.method_23105(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode.penalty)), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1);
+                if (!(PathfindingDebugRenderer.getManhattanDistance(camera, pathNode.getPos()) <= 40.0f)) continue;
+                DebugRenderer.drawString(String.format("%s", new Object[]{pathNode.type}), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
+                DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode.penalty)), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1);
             }
         }
     }
 
-    public static void method_23117(Camera camera, Path path) {
+    public static void drawPathLines(Camera camera, Path path) {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (int i = 0; i < path.getLength(); ++i) {
             PathNode pathNode = path.getNode(i);
-            if (PathfindingDebugRenderer.method_23119(camera, pathNode.method_22879()) > 40.0f) continue;
+            if (PathfindingDebugRenderer.getManhattanDistance(camera, pathNode.getPos()) > 40.0f) continue;
             float g = (float)i / (float)path.getLength() * 0.33f;
             int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9f, 0.9f);
             int k = j >> 16 & 0xFF;
@@ -130,11 +130,11 @@ implements DebugRenderer.Renderer {
         tessellator.draw();
     }
 
-    private static float method_23119(Camera camera, BlockPos blockPos) {
+    private static float getManhattanDistance(Camera camera, BlockPos blockPos) {
         return (float)(Math.abs((double)blockPos.getX() - camera.getPos().x) + Math.abs((double)blockPos.getY() - camera.getPos().y) + Math.abs((double)blockPos.getZ() - camera.getPos().z));
     }
 
-    private Camera method_23120() {
+    private Camera getCamera() {
         return this.client.gameRenderer.getCamera();
     }
 }

@@ -119,7 +119,7 @@ extends RangedWeaponItem {
         boolean bl2 = bl = !playerEntity.getArrowType(itemStack).isEmpty();
         if (playerEntity.abilities.creativeMode || bl) {
             playerEntity.setCurrentHand(hand);
-            return TypedActionResult.successWithoutSwing(itemStack);
+            return TypedActionResult.consume(itemStack);
         }
         return TypedActionResult.fail(itemStack);
     }

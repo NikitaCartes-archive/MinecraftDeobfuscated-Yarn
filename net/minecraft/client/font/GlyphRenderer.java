@@ -50,7 +50,7 @@ public class GlyphRenderer {
         vertexConsumer.vertex(matrix4f, o + t, r, 0.0f).color(h, i, j, k).texture(this.uMax, this.vMin).light(l).next();
     }
 
-    public void method_22944(Rectangle rectangle, Matrix4f matrix4f, VertexConsumer vertexConsumer, int i) {
+    public void drawRectangle(Rectangle rectangle, Matrix4f matrix4f, VertexConsumer vertexConsumer, int i) {
         vertexConsumer.vertex(matrix4f, rectangle.xMin, rectangle.yMin, rectangle.field_20911).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMin, this.vMin).light(i).next();
         vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMin, rectangle.field_20911).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMin, this.vMax).light(i).next();
         vertexConsumer.vertex(matrix4f, rectangle.xMax, rectangle.yMax, rectangle.field_20911).color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha).texture(this.uMax, this.vMax).light(i).next();

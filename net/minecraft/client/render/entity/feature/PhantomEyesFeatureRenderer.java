@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.entity.feature.EntityEyesFeatureRenderer;
+import net.minecraft.client.render.entity.feature.EyesFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PhantomEntityModel;
 import net.minecraft.entity.Entity;
@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class PhantomEyesFeatureRenderer<T extends Entity>
-extends EntityEyesFeatureRenderer<T, PhantomEntityModel<T>> {
+extends EyesFeatureRenderer<T, PhantomEntityModel<T>> {
     private static final Identifier SKIN = new Identifier("textures/entity/phantom_eyes.png");
 
     public PhantomEyesFeatureRenderer(FeatureRendererContext<T, PhantomEntityModel<T>> featureRendererContext) {
@@ -21,7 +21,7 @@ extends EntityEyesFeatureRenderer<T, PhantomEntityModel<T>> {
     }
 
     @Override
-    public Identifier getTexture() {
+    public Identifier getEyesTexture() {
         return SKIN;
     }
 }

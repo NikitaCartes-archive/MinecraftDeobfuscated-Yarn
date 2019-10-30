@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.NormalTreeFeatureConfig;
+import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
@@ -23,21 +23,21 @@ extends FoliagePlacer {
     }
 
     @Override
-    public void method_23448(ModifiableTestableWorld modifiableTestableWorld, Random random, NormalTreeFeatureConfig normalTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
-        normalTreeFeatureConfig.foliagePlacer.method_23449(modifiableTestableWorld, random, normalTreeFeatureConfig, i, blockPos, 0, k, set);
-        normalTreeFeatureConfig.foliagePlacer.method_23449(modifiableTestableWorld, random, normalTreeFeatureConfig, i, blockPos, 1, 1, set);
+    public void method_23448(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
+        branchedTreeFeatureConfig.foliagePlacer.method_23449(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, 0, k, set);
+        branchedTreeFeatureConfig.foliagePlacer.method_23449(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, 1, 1, set);
         BlockPos blockPos2 = blockPos.up();
         for (int l = 2; l <= k - 1; ++l) {
-            this.method_23450(modifiableTestableWorld, random, blockPos2.east(l), normalTreeFeatureConfig, set);
-            this.method_23450(modifiableTestableWorld, random, blockPos2.west(l), normalTreeFeatureConfig, set);
-            this.method_23450(modifiableTestableWorld, random, blockPos2.south(l), normalTreeFeatureConfig, set);
-            this.method_23450(modifiableTestableWorld, random, blockPos2.north(l), normalTreeFeatureConfig, set);
+            this.method_23450(modifiableTestableWorld, random, blockPos2.east(l), branchedTreeFeatureConfig, set);
+            this.method_23450(modifiableTestableWorld, random, blockPos2.west(l), branchedTreeFeatureConfig, set);
+            this.method_23450(modifiableTestableWorld, random, blockPos2.south(l), branchedTreeFeatureConfig, set);
+            this.method_23450(modifiableTestableWorld, random, blockPos2.north(l), branchedTreeFeatureConfig, set);
         }
     }
 
     @Override
-    public int method_23452(Random random, int i, int j, NormalTreeFeatureConfig normalTreeFeatureConfig) {
-        return this.field_21296 + random.nextInt(this.field_21297 + 1);
+    public int method_23452(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+        return this.radius + random.nextInt(this.randomRadius + 1);
     }
 
     @Override
@@ -47,13 +47,7 @@ extends FoliagePlacer {
 
     @Override
     public int method_23447(int i, int j, int k, int l) {
-        if (l == 0) {
-            return 0;
-        }
-        if (l >= 1 + j - 2) {
-            return k;
-        }
-        return 1;
+        return l == 0 ? 0 : 2;
     }
 }
 

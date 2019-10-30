@@ -12,12 +12,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntSupplier;
 import net.minecraft.server.world.ChunkTaskPrioritySystem;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
-import net.minecraft.util.Actor;
-import net.minecraft.util.MailboxProcessor;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.thread.MessageListener;
+import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -32,18 +32,18 @@ public class ServerLightingProvider
 extends LightingProvider
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final MailboxProcessor<Runnable> processor;
+    private final TaskExecutor<Runnable> processor;
     private final ObjectList<Pair<Stage, Runnable>> pendingTasks = new ObjectArrayList<Pair<Stage, Runnable>>();
     private final ThreadedAnvilChunkStorage chunkStorage;
-    private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> actor;
+    private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor;
     private volatile int taskBatchSize = 5;
     private final AtomicBoolean field_18812 = new AtomicBoolean();
 
-    public ServerLightingProvider(ChunkProvider chunkProvider, ThreadedAnvilChunkStorage threadedAnvilChunkStorage, boolean bl, MailboxProcessor<Runnable> mailboxProcessor, Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> actor) {
+    public ServerLightingProvider(ChunkProvider chunkProvider, ThreadedAnvilChunkStorage threadedAnvilChunkStorage, boolean bl, TaskExecutor<Runnable> taskExecutor, MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> messageListener) {
         super(chunkProvider, true, bl);
         this.chunkStorage = threadedAnvilChunkStorage;
-        this.actor = actor;
-        this.processor = mailboxProcessor;
+        this.executor = messageListener;
+        this.processor = taskExecutor;
     }
 
     @Override
@@ -52,22 +52,22 @@ implements AutoCloseable {
 
     @Override
     public int doLightUpdates(int i, boolean bl, boolean bl2) {
-        throw SystemUtil.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+        throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
     @Override
     public void addLightSource(BlockPos blockPos, int i) {
-        throw SystemUtil.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
+        throw Util.throwOrPause(new UnsupportedOperationException("Ran authomatically on a different thread!"));
     }
 
     @Override
     public void checkBlock(BlockPos blockPos) {
         BlockPos blockPos2 = blockPos.toImmutable();
-        this.enqueue(blockPos.getX() >> 4, blockPos.getZ() >> 4, Stage.POST_UPDATE, SystemUtil.debugRunnable(() -> super.checkBlock(blockPos2), () -> "checkBlock " + blockPos2));
+        this.enqueue(blockPos.getX() >> 4, blockPos.getZ() >> 4, Stage.POST_UPDATE, Util.debugRunnable(() -> super.checkBlock(blockPos2), () -> "checkBlock " + blockPos2));
     }
 
     protected void updateChunkStatus(ChunkPos chunkPos) {
-        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
+        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> {
             int i;
             super.setRetainData(chunkPos, false);
             super.setLightEnabled(chunkPos, false);
@@ -83,17 +83,17 @@ implements AutoCloseable {
 
     @Override
     public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
-        this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl));
+        this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl));
     }
 
     @Override
     public void setLightEnabled(ChunkPos chunkPos, boolean bl) {
-        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.setLightEnabled(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl));
+        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setLightEnabled(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl));
     }
 
     @Override
     public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
-        this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos));
+        this.enqueue(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos));
     }
 
     private void enqueue(int i, int j, Stage stage, Runnable runnable) {
@@ -101,7 +101,7 @@ implements AutoCloseable {
     }
 
     private void enqueue(int i, int j, IntSupplier intSupplier, Stage stage, Runnable runnable) {
-        this.actor.send(ChunkTaskPrioritySystem.createRunnableMessage(() -> {
+        this.executor.send(ChunkTaskPrioritySystem.createMessage(() -> {
             this.pendingTasks.add(Pair.of(stage, runnable));
             if (this.pendingTasks.size() >= this.taskBatchSize) {
                 this.runTasks();
@@ -111,13 +111,13 @@ implements AutoCloseable {
 
     @Override
     public void setRetainData(ChunkPos chunkPos, boolean bl) {
-        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> super.setRetainData(chunkPos, bl), () -> "retainData " + chunkPos));
+        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setRetainData(chunkPos, bl), () -> "retainData " + chunkPos));
     }
 
     public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
         ChunkPos chunkPos = chunk.getPos();
         chunk.setLightOn(false);
-        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, SystemUtil.debugRunnable(() -> {
+        this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> {
             ChunkSection[] chunkSections = chunk.getSectionArray();
             for (int i = 0; i < 16; ++i) {
                 ChunkSection chunkSection = chunkSections[i];

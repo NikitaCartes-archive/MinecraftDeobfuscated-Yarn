@@ -66,7 +66,7 @@ public class GLX {
     public static LongSupplier _initGlfw() {
         LongSupplier longSupplier;
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
-        Window.method_4492((integer, string) -> {
+        Window.acceptError((integer, string) -> {
             throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", integer, string));
         });
         ArrayList<String> list = Lists.newArrayList();
@@ -128,7 +128,7 @@ public class GLX {
         GlStateManager.disableTexture();
         GlStateManager.depthMask(false);
         Tessellator tessellator = RenderSystem.renderThreadTesselator();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GL11.glLineWidth(4.0f);
         bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
         if (bl) {

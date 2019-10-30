@@ -32,9 +32,9 @@ extends Item {
                 if (itemStack.isEmpty()) {
                     ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
                     itemStack2.setTag(itemStack.getTag());
-                    return TypedActionResult.successWithSwing(itemStack2);
+                    return TypedActionResult.success(itemStack2);
                 }
-                return TypedActionResult.successWithSwing(itemStack);
+                return TypedActionResult.success(itemStack);
             }
         }
         playerEntity2.incrementStat(Stats.USED.getOrCreateStat(this));

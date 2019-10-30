@@ -23,14 +23,14 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         int k;
         RenderSystem.shadeModel(7425);
         RenderSystem.enableAlphaTest();
         RenderSystem.defaultAlphaFunc();
         Camera camera = this.client.gameRenderer.getCamera();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
         double f = camera.getPos().z;

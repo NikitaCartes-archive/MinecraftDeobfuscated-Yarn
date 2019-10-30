@@ -116,7 +116,7 @@ public enum Direction implements StringIdentifiable
                 return Vector3f.POSITIVE_X.getRotationQuaternion(180.0f);
             }
             case UP: {
-                return Vector3f.POSITIVE_Y.getRotationQuaternion(0.0f);
+                return Quaternion.IDENTITY.copy();
             }
             case NORTH: {
                 quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
@@ -126,11 +126,11 @@ public enum Direction implements StringIdentifiable
                 return quaternion;
             }
             case WEST: {
-                quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f));
+                quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
                 return quaternion;
             }
         }
-        quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
+        quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getRotationQuaternion(-90.0f));
         return quaternion;
     }
 

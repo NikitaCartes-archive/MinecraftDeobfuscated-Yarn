@@ -16,9 +16,9 @@ import org.apache.commons.lang3.tuple.Triple;
 @Environment(value=EnvType.CLIENT)
 public final class Matrix3f {
     private static final float THREE_PLUS_TWO_SQRT_TWO = 3.0f + 2.0f * (float)Math.sqrt(2.0);
-    private static final float COS_PI_EIGHTH = (float)Math.cos(0.39269908169872414);
-    private static final float SIN_PI_EIGHTH = (float)Math.sin(0.39269908169872414);
-    private static final float SQRT_ONE_HALF = 1.0f / (float)Math.sqrt(2.0);
+    private static final float COS_PI_OVER_EIGHT = (float)Math.cos(0.39269908169872414);
+    private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(0.39269908169872414);
+    private static final float SQRT_HALF = 1.0f / (float)Math.sqrt(2.0);
     private final float[] components;
 
     public Matrix3f() {
@@ -90,7 +90,7 @@ public final class Matrix3f {
             float k = MathHelper.fastInverseSqrt(j * j + i * i);
             return Pair.of(Float.valueOf(k * j), Float.valueOf(k * i));
         }
-        return Pair.of(Float.valueOf(SIN_PI_EIGHTH), Float.valueOf(COS_PI_EIGHTH));
+        return Pair.of(Float.valueOf(SIN_PI_OVER_EIGHT), Float.valueOf(COS_PI_OVER_EIGHT));
     }
 
     private static Pair<Float, Float> method_22848(float f, float g) {
@@ -116,7 +116,7 @@ public final class Matrix3f {
         Float float_;
         Pair<Float, Float> pair;
         Matrix3f matrix3f2 = new Matrix3f();
-        Quaternion quaternion = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+        Quaternion quaternion = Quaternion.IDENTITY.copy();
         if (matrix3f.get(0, 1) * matrix3f.get(0, 1) + matrix3f.get(1, 0) * matrix3f.get(1, 0) > 1.0E-6f) {
             pair = Matrix3f.method_22849(matrix3f.get(0, 0), 0.5f * (matrix3f.get(0, 1) + matrix3f.get(1, 0)), matrix3f.get(1, 1));
             float_ = pair.getFirst();
@@ -193,8 +193,8 @@ public final class Matrix3f {
     }
 
     public Triple<Quaternion, Vector3f, Quaternion> method_22853() {
-        Quaternion quaternion = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-        Quaternion quaternion2 = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+        Quaternion quaternion = Quaternion.IDENTITY.copy();
+        Quaternion quaternion2 = Quaternion.IDENTITY.copy();
         Matrix3f matrix3f = new Matrix3f(this, true);
         matrix3f.multiply(this);
         for (int i = 0; i < 5; ++i) {

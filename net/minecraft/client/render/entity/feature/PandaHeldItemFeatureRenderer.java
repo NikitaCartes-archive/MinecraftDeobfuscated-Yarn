@@ -6,7 +6,7 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
@@ -24,7 +24,7 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4194(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4194(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l, float m) {
         ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
         if (!pandaEntity.isScared() || pandaEntity.method_6524()) {
             return;
@@ -37,7 +37,7 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         }
         matrixStack.push();
         matrixStack.translate(0.1f, o, n);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, layeredVertexConsumerStorage);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(pandaEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
     }
 }

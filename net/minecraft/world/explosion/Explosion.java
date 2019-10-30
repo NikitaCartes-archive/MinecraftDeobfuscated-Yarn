@@ -79,9 +79,9 @@ public class Explosion {
 
     public static float getExposure(Vec3d vec3d, Entity entity) {
         Box box = entity.getBoundingBox();
-        double d = 1.0 / ((box.maxX - box.minX) * 2.0 + 1.0);
-        double e = 1.0 / ((box.maxY - box.minY) * 2.0 + 1.0);
-        double f = 1.0 / ((box.maxZ - box.minZ) * 2.0 + 1.0);
+        double d = 1.0 / ((box.x2 - box.x1) * 2.0 + 1.0);
+        double e = 1.0 / ((box.y2 - box.y1) * 2.0 + 1.0);
+        double f = 1.0 / ((box.z2 - box.z1) * 2.0 + 1.0);
         double g = (1.0 - Math.floor(1.0 / d) * d) / 2.0;
         double h = (1.0 - Math.floor(1.0 / f) * f) / 2.0;
         if (d < 0.0 || e < 0.0 || f < 0.0) {
@@ -97,8 +97,8 @@ public class Explosion {
                 while (m <= 1.0f) {
                     double p;
                     double o;
-                    double n = MathHelper.lerp((double)k, box.minX, box.maxX);
-                    Vec3d vec3d2 = new Vec3d(n + g, o = MathHelper.lerp((double)l, box.minY, box.maxY), (p = MathHelper.lerp((double)m, box.minZ, box.maxZ)) + h);
+                    double n = MathHelper.lerp((double)k, box.x1, box.x2);
+                    Vec3d vec3d2 = new Vec3d(n + g, o = MathHelper.lerp((double)l, box.y1, box.y2), (p = MathHelper.lerp((double)m, box.z1, box.z2)) + h);
                     if (entity.world.rayTrace(new RayTraceContext(vec3d2, vec3d, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS) {
                         ++i;
                     }

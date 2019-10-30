@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.ChunkStatus;
 
@@ -21,7 +21,7 @@ public class LevelLoadingScreen
 extends Screen {
     private final WorldGenerationProgressTracker progressProvider;
     private long field_19101 = -1L;
-    private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = SystemUtil.consume(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
+    private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = Util.create(new Object2IntOpenHashMap(), object2IntOpenHashMap -> {
         object2IntOpenHashMap.defaultReturnValue(0);
         object2IntOpenHashMap.put(ChunkStatus.EMPTY, 0x545454);
         object2IntOpenHashMap.put(ChunkStatus.STRUCTURE_STARTS, 0x999999);
@@ -57,7 +57,7 @@ extends Screen {
     public void render(int i, int j, float f) {
         this.renderBackground();
         String string = MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%";
-        long l = SystemUtil.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         if (l - this.field_19101 > 2000L) {
             this.field_19101 = l;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.loading", string).getString());

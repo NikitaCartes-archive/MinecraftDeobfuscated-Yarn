@@ -604,7 +604,7 @@ extends LivingEntity {
             LivingEntity livingEntity = (LivingEntity)entity;
             h = livingEntity.method_23320() - this.method_23320();
         } else {
-            h = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0 - this.method_23320();
+            h = (entity.getBoundingBox().y1 + entity.getBoundingBox().y2) / 2.0 - this.method_23320();
         }
         double i = MathHelper.sqrt(d * d + e * e);
         float j = (float)(MathHelper.atan2(e, d) * 57.2957763671875) - 90.0f;

@@ -44,7 +44,7 @@ public interface VertexConsumer {
         return this.light(i & 0xFFFF, i >> 16 & 0xFFFF);
     }
 
-    default public VertexConsumer defaultOverlay(int i) {
+    default public VertexConsumer overlay(int i) {
         return this.overlay(i & 0xFFFF, i >> 16 & 0xFFFF);
     }
 
@@ -60,7 +60,7 @@ public interface VertexConsumer {
         int j = 8;
         int k = js.length / 8;
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
-            ByteBuffer byteBuffer = memoryStack.malloc(VertexFormats.POSITION_COLOR_UV_NORMAL.getVertexSize());
+            ByteBuffer byteBuffer = memoryStack.malloc(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL.getVertexSize());
             IntBuffer intBuffer = byteBuffer.asIntBuffer();
             for (int l = 0; l < k; ++l) {
                 byte d;
@@ -90,7 +90,7 @@ public interface VertexConsumer {
                 this.vertex(matrix4f, m, n, o);
                 this.color(b, c, d, 255);
                 this.texture(s, t);
-                this.defaultOverlay(i);
+                this.overlay(i);
                 this.light(p);
                 this.normal(vector3f.getX(), vector3f.getY(), vector3f.getZ());
                 this.next();

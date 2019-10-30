@@ -25,7 +25,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         FluidState fluidState;
         Camera camera = this.client.gameRenderer.getCamera();
         double d = camera.getPos().x;
@@ -42,12 +42,12 @@ implements DebugRenderer.Renderer {
             fluidState = worldView.getFluidState(blockPos2);
             if (!fluidState.matches(FluidTags.WATER)) continue;
             double g = (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2);
-            DebugRenderer.method_23102(new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, g, (float)blockPos2.getZ() + 0.99f).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 0.2f);
+            DebugRenderer.drawBox(new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, g, (float)blockPos2.getZ() + 0.99f).offset(-d, -e, -f), 1.0f, 1.0f, 1.0f, 0.2f);
         }
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = worldView.getFluidState(blockPos2);
             if (!fluidState.matches(FluidTags.WATER)) continue;
-            DebugRenderer.method_23105(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
+            DebugRenderer.drawString(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
         }
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

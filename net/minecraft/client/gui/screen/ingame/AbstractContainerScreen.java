@@ -22,7 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -128,7 +128,7 @@ implements ContainerProvider<T> {
             this.drawItem(itemStack, i - k - 8, j - l - q, string);
         }
         if (!this.touchDropReturningStack.isEmpty()) {
-            float g = (float)(SystemUtil.getMeasuringTimeMs() - this.touchDropTime) / 100.0f;
+            float g = (float)(Util.getMeasuringTimeMs() - this.touchDropTime) / 100.0f;
             if (g >= 1.0f) {
                 g = 1.0f;
                 this.touchDropReturningStack = ItemStack.EMPTY;
@@ -253,7 +253,7 @@ implements ContainerProvider<T> {
         }
         boolean bl = this.minecraft.options.keyPickItem.matchesMouse(i);
         Slot slot = this.getSlotAt(d, e);
-        long l = SystemUtil.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         this.isDoubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == i;
         this.cancelNextRelease = false;
         if (i == 0 || i == 1 || bl) {
@@ -332,7 +332,7 @@ implements ContainerProvider<T> {
                         this.touchDragStack = this.touchDragSlotStart.getStack().copy();
                     }
                 } else if (this.touchDragStack.getCount() > 1 && slot != null && Container.canInsertItemIntoSlot(slot, this.touchDragStack, false)) {
-                    long l = SystemUtil.getMeasuringTimeMs();
+                    long l = Util.getMeasuringTimeMs();
                     if (this.touchHoveredSlot == slot) {
                         if (l - this.touchDropTimer > 500L) {
                             this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, 0, SlotActionType.PICKUP);
@@ -408,14 +408,14 @@ implements ContainerProvider<T> {
                             this.touchDropY = MathHelper.floor(e - (double)k);
                             this.touchDropOriginSlot = this.touchDragSlotStart;
                             this.touchDropReturningStack = this.touchDragStack;
-                            this.touchDropTime = SystemUtil.getMeasuringTimeMs();
+                            this.touchDropTime = Util.getMeasuringTimeMs();
                         }
                     } else if (!this.touchDragStack.isEmpty()) {
                         this.touchDropX = MathHelper.floor(d - (double)j);
                         this.touchDropY = MathHelper.floor(e - (double)k);
                         this.touchDropOriginSlot = this.touchDragSlotStart;
                         this.touchDropReturningStack = this.touchDragStack;
-                        this.touchDropTime = SystemUtil.getMeasuringTimeMs();
+                        this.touchDropTime = Util.getMeasuringTimeMs();
                     }
                     this.touchDragStack = ItemStack.EMPTY;
                     this.touchDragSlotStart = null;

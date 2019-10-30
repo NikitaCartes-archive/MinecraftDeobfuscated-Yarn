@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.passive;
 
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.data.DataTracker;
@@ -34,15 +33,15 @@ extends MobEntityWithAi {
     }
 
     @Override
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        class_4697 lv;
+    public net.minecraft.entity.EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag compoundTag) {
+        EntityData entityData2;
         if (entityData == null) {
-            entityData = new class_4697();
+            entityData = new EntityData();
         }
-        if ((lv = (class_4697)entityData).method_22436() && lv.method_22432() > 0 && this.random.nextFloat() <= lv.method_22437()) {
+        if ((entityData2 = (EntityData)entityData).canSpawnBaby() && entityData2.getSpawnedCount() > 0 && this.random.nextFloat() <= entityData2.getBabyChance()) {
             this.setBreedingAge(-24000);
         }
-        lv.method_22435();
+        entityData2.countSpawned();
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
@@ -170,34 +169,34 @@ extends MobEntityWithAi {
         return this.getBreedingAge() < 0;
     }
 
-    public static class class_4697
-    implements EntityData {
-        private int field_20684;
-        private boolean field_20685 = true;
-        private float field_20686 = 0.05f;
+    public static class EntityData
+    implements net.minecraft.entity.EntityData {
+        private int spawnCount;
+        private boolean babyAllowed = true;
+        private float babyChance = 0.05f;
 
-        public int method_22432() {
-            return this.field_20684;
+        public int getSpawnedCount() {
+            return this.spawnCount;
         }
 
-        public void method_22435() {
-            ++this.field_20684;
+        public void countSpawned() {
+            ++this.spawnCount;
         }
 
-        public boolean method_22436() {
-            return this.field_20685;
+        public boolean canSpawnBaby() {
+            return this.babyAllowed;
         }
 
-        public void method_22434(boolean bl) {
-            this.field_20685 = bl;
+        public void setBabyAllowed(boolean bl) {
+            this.babyAllowed = bl;
         }
 
-        public float method_22437() {
-            return this.field_20686;
+        public float getBabyChance() {
+            return this.babyChance;
         }
 
-        public void method_22433(float f) {
-            this.field_20686 = f;
+        public void setBabyChance(float f) {
+            this.babyChance = f;
         }
     }
 }

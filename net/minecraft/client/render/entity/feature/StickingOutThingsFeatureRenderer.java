@@ -7,7 +7,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -25,9 +25,9 @@ extends FeatureRenderer<T, M> {
 
     protected abstract int getThingCount(T var1);
 
-    protected abstract void renderThing(MatrixStack var1, LayeredVertexConsumerStorage var2, Entity var3, float var4, float var5, float var6, float var7);
+    protected abstract void renderThing(MatrixStack var1, VertexConsumerProvider var2, Entity var3, float var4, float var5, float var6, float var7);
 
-    public void method_22132(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_22132(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
         int n = this.getThingCount(livingEntity);
         Random random = new Random(((Entity)livingEntity).getEntityId());
         if (n <= 0) {
@@ -48,7 +48,7 @@ extends FeatureRenderer<T, M> {
             p = -1.0f * (p * 2.0f - 1.0f);
             q = -1.0f * (q * 2.0f - 1.0f);
             r = -1.0f * (r * 2.0f - 1.0f);
-            this.renderThing(matrixStack, layeredVertexConsumerStorage, (Entity)livingEntity, p, q, r, h);
+            this.renderThing(matrixStack, vertexConsumerProvider, (Entity)livingEntity, p, q, r, h);
             matrixStack.pop();
         }
     }

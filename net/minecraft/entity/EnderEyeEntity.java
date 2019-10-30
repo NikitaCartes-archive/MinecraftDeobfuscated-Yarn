@@ -21,7 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -50,7 +50,7 @@ implements FlyingItemEntity {
 
     public void setItem(ItemStack itemStack2) {
         if (itemStack2.getItem() != Items.ENDER_EYE || itemStack2.hasTag()) {
-            this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
+            this.getDataTracker().set(ITEM, Util.create(itemStack2.copy(), itemStack -> itemStack.setCount(1)));
         }
     }
 

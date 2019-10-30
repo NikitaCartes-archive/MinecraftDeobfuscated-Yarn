@@ -104,8 +104,8 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -147,7 +147,7 @@ implements ContainerListener {
     private int field_13998 = 60;
     private ChatVisibility clientChatVisibility;
     private boolean field_13971 = true;
-    private long lastActionTime = SystemUtil.getMeasuringTimeMs();
+    private long lastActionTime = Util.getMeasuringTimeMs();
     private Entity cameraEntity;
     private boolean inTeleportationState;
     private boolean seenCredits;
@@ -1102,7 +1102,7 @@ implements ContainerListener {
     }
 
     public void updateLastActionTime() {
-        this.lastActionTime = SystemUtil.getMeasuringTimeMs();
+        this.lastActionTime = Util.getMeasuringTimeMs();
     }
 
     public ServerStatHandler getStatHandler() {

@@ -29,7 +29,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.server.network.packet.BookUpdateC2SPacket;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -473,13 +473,13 @@ extends Screen {
             int o = this.getStringWidth(string3);
             this.font.draw((Object)((Object)Formatting.DARK_GRAY) + string3, k + 36 + (114 - o) / 2, 60.0f, 0);
             String string4 = I18n.translate("book.finalizeWarning", new Object[0]);
-            this.font.drawStringBounded(string4, k + 36, 82, 114, 0);
+            this.font.drawTrimmed(string4, k + 36, 82, 114, 0);
         } else {
             String string = I18n.translate("book.pageIndicator", this.currentPage + 1, this.countPages());
             String string2 = this.getCurrentPageContent();
             int m = this.getStringWidth(string);
             this.font.draw(string, k - m + 192 - 44, 18.0f, 0);
-            this.font.drawStringBounded(string2, k + 36, 32, 114, 0);
+            this.font.drawTrimmed(string2, k + 36, 32, 114, 0);
             this.drawHighlight(string2);
             if (this.tickCounter / 6 % 2 == 0) {
                 Position position = this.getCursorPositionForIndex(string2, this.cursorIndex);
@@ -558,7 +558,7 @@ extends Screen {
         this.translateRelativePositionToGlPosition(position3);
         this.translateRelativePositionToGlPosition(position4);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.color4f(0.0f, 0.0f, 255.0f, 255.0f);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
@@ -683,7 +683,7 @@ extends Screen {
     @Override
     public boolean mouseClicked(double d, double e, int i) {
         if (i == 0) {
-            long l = SystemUtil.getMeasuringTimeMs();
+            long l = Util.getMeasuringTimeMs();
             String string = this.getCurrentPageContent();
             if (!string.isEmpty()) {
                 Position position = new Position((int)d, (int)e);

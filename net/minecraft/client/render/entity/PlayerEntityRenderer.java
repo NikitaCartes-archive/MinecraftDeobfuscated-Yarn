@@ -7,9 +7,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -62,9 +62,9 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         this.addFeature(new StingerFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
     }
 
-    public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         this.setModelPose(abstractClientPlayerEntity);
-        super.method_4054(abstractClientPlayerEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.method_4054(abstractClientPlayerEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     public Vec3d method_23206(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g) {
@@ -145,30 +145,30 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         matrixStack.scale(0.9375f, 0.9375f, 0.9375f);
     }
 
-    protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         Scoreboard scoreboard;
         ScoreboardObjective scoreboardObjective;
         double d = this.renderManager.getSquaredDistanceToCamera(abstractClientPlayerEntity);
         matrixStack.push();
         if (d < 100.0 && (scoreboardObjective = (scoreboard = abstractClientPlayerEntity.getScoreboard()).getObjectiveForSlot(2)) != null) {
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
-            super.renderLabelIfPresent(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().asFormattedString(), matrixStack, layeredVertexConsumerStorage);
+            super.renderLabelIfPresent(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().asFormattedString(), matrixStack, vertexConsumerProvider);
             this.getFontRenderer().getClass();
             matrixStack.translate(0.0, 9.0f * 1.15f * 0.025f, 0.0);
         }
-        super.renderLabelIfPresent(abstractClientPlayerEntity, string, matrixStack, layeredVertexConsumerStorage);
+        super.renderLabelIfPresent(abstractClientPlayerEntity, string, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
     }
 
-    public void renderRightArm(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, AbstractClientPlayerEntity abstractClientPlayerEntity) {
-        this.method_23205(matrixStack, layeredVertexConsumerStorage, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).rightArm, ((PlayerEntityModel)this.model).rightArmOverlay);
+    public void renderRightArm(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, AbstractClientPlayerEntity abstractClientPlayerEntity) {
+        this.method_23205(matrixStack, vertexConsumerProvider, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).rightArm, ((PlayerEntityModel)this.model).rightArmOverlay);
     }
 
-    public void renderLeftArm(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, AbstractClientPlayerEntity abstractClientPlayerEntity) {
-        this.method_23205(matrixStack, layeredVertexConsumerStorage, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).leftArm, ((PlayerEntityModel)this.model).leftArmOverlay);
+    public void renderLeftArm(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, AbstractClientPlayerEntity abstractClientPlayerEntity) {
+        this.method_23205(matrixStack, vertexConsumerProvider, abstractClientPlayerEntity, ((PlayerEntityModel)this.model).leftArm, ((PlayerEntityModel)this.model).leftArmOverlay);
     }
 
-    private void method_23205(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, AbstractClientPlayerEntity abstractClientPlayerEntity, ModelPart modelPart, ModelPart modelPart2) {
+    private void method_23205(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, AbstractClientPlayerEntity abstractClientPlayerEntity, ModelPart modelPart, ModelPart modelPart2) {
         float f = 0.0625f;
         PlayerEntityModel playerEntityModel = (PlayerEntityModel)this.getModel();
         this.setModelPose(abstractClientPlayerEntity);
@@ -178,9 +178,9 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         playerEntityModel.field_3396 = 0.0f;
         playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0625f);
         modelPart.pitch = 0.0f;
-        modelPart.render(matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), 0.0625f, i, OverlayTexture.DEFAULT_UV, null);
+        modelPart.render(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture())), 0.0625f, i, OverlayTexture.DEFAULT_UV, null);
         modelPart2.pitch = 0.0f;
-        modelPart2.render(matrixStack, layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())), 0.0625f, i, OverlayTexture.DEFAULT_UV, null);
+        modelPart2.render(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(abstractClientPlayerEntity.getSkinTexture())), 0.0625f, i, OverlayTexture.DEFAULT_UV, null);
     }
 
     protected void method_4212(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {

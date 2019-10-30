@@ -26,13 +26,13 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 
 public class GiveGiftsToHeroTask
 extends Task<VillagerEntity> {
-    private static final Map<VillagerProfession, Identifier> GIFTS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<VillagerProfession, Identifier> GIFTS = Util.create(Maps.newHashMap(), hashMap -> {
         hashMap.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);
         hashMap.put(VillagerProfession.BUTCHER, LootTables.HERO_OF_THE_VILLAGE_BUTCHER_GIFT_GAMEPLAY);
         hashMap.put(VillagerProfession.CARTOGRAPHER, LootTables.HERO_OF_THE_VILLAGE_CARTOGRAPHER_GIFT_GAMEPLAY);

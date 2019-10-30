@@ -10,13 +10,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
 public class MatrixStack {
-    private final Deque<Entry> stack = SystemUtil.consume(Queues.newArrayDeque(), arrayDeque -> {
+    private final Deque<Entry> stack = Util.create(Queues.newArrayDeque(), arrayDeque -> {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.loadIdentity();
         Matrix3f matrix3f = new Matrix3f();
@@ -66,7 +66,7 @@ public class MatrixStack {
         this.stack.removeLast();
     }
 
-    public Matrix4f peek() {
+    public Matrix4f peekModel() {
         return this.stack.getLast().modelMatrix;
     }
 

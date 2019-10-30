@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
@@ -23,7 +23,7 @@ extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4179(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, EndermanEntity endermanEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4179(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, EndermanEntity endermanEntity, float f, float g, float h, float j, float k, float l, float m) {
         BlockState blockState = endermanEntity.getCarriedBlock();
         if (blockState == null) {
             return;
@@ -35,7 +35,7 @@ extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         matrixStack.translate(0.25, 0.1875, 0.25);
         float n = 0.5f;
         matrixStack.scale(-0.5f, -0.5f, 0.5f);
-        MinecraftClient.getInstance().getBlockRenderManager().renderOnEntity(blockState, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }
 }

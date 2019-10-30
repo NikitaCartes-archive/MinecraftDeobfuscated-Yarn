@@ -27,7 +27,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         Camera camera = this.client.gameRenderer.getCamera();
         ClientWorld iWorld = this.client.world;
         double d = camera.getPos().x;
@@ -39,15 +39,15 @@ implements DebugRenderer.Renderer {
         RenderSystem.disableTexture();
         BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
             int i;
             if (iWorld.getBlockState(blockPos2.add(0, i = iWorld.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ()), 0).method_10074()).isAir()) {
-                WorldRenderer.buildBoxOutline(bufferBuilder, (double)((float)blockPos2.getX() + 0.25f) - d, (double)i - e, (double)((float)blockPos2.getZ() + 0.25f) - f, (double)((float)blockPos2.getX() + 0.75f) - d, (double)i + 0.09375 - e, (double)((float)blockPos2.getZ() + 0.75f) - f, 0.0f, 0.0f, 1.0f, 0.5f);
+                WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos2.getX() + 0.25f) - d, (double)i - e, (double)((float)blockPos2.getZ() + 0.25f) - f, (double)((float)blockPos2.getX() + 0.75f) - d, (double)i + 0.09375 - e, (double)((float)blockPos2.getZ() + 0.75f) - f, 0.0f, 0.0f, 1.0f, 0.5f);
                 continue;
             }
-            WorldRenderer.buildBoxOutline(bufferBuilder, (double)((float)blockPos2.getX() + 0.25f) - d, (double)i - e, (double)((float)blockPos2.getZ() + 0.25f) - f, (double)((float)blockPos2.getX() + 0.75f) - d, (double)i + 0.09375 - e, (double)((float)blockPos2.getZ() + 0.75f) - f, 0.0f, 1.0f, 0.0f, 0.5f);
+            WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos2.getX() + 0.25f) - d, (double)i - e, (double)((float)blockPos2.getZ() + 0.25f) - f, (double)((float)blockPos2.getX() + 0.75f) - d, (double)i + 0.09375 - e, (double)((float)blockPos2.getZ() + 0.75f) - f, 0.0f, 1.0f, 0.0f, 0.5f);
         }
         tessellator.draw();
         RenderSystem.enableTexture();

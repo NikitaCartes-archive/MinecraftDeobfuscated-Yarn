@@ -6,7 +6,7 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.FoxEntityModel;
@@ -24,7 +24,7 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18335(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, FoxEntity foxEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_18335(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, FoxEntity foxEntity, float f, float g, float h, float j, float k, float l, float m) {
         float n;
         boolean bl = foxEntity.isSleeping();
         boolean bl2 = foxEntity.isBaby();
@@ -55,7 +55,7 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
             matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
         }
         ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, layeredVertexConsumerStorage);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
     }
 }

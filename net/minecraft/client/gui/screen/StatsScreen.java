@@ -35,7 +35,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,7 +88,7 @@ implements StatsListener {
         if (this.downloadingStats) {
             this.renderBackground();
             this.drawCenteredString(this.font, I18n.translate("multiplayer.downloadingStats", new Object[0]), this.width / 2, this.height / 2, 0xFFFFFF);
-            this.drawCenteredString(this.font, PROGRESS_BAR_STAGES[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)], this.width / 2, this.height / 2 + this.font.fontHeight * 2, 0xFFFFFF);
+            this.drawCenteredString(this.font, PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)], this.width / 2, this.height / 2 + this.font.fontHeight * 2, 0xFFFFFF);
         } else {
             this.getSelectedStatList().render(i, j, f);
             this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
@@ -170,7 +170,7 @@ implements StatsListener {
 
             @Override
             public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-                String string = I18n.translate(SystemUtil.createTranslationKey("entity", EntityType.getId(this.entityType)), new Object[0]);
+                String string = I18n.translate(Util.createTranslationKey("entity", EntityType.getId(this.entityType)), new Object[0]);
                 int p = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(this.entityType));
                 int q = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(this.entityType));
                 EntityStatsListWidget.this.drawString(StatsScreen.this.font, string, k + 2, j + 1, 0xFFFFFF);

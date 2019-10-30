@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.DrownedEntityModel;
@@ -23,8 +23,8 @@ extends FeatureRenderer<T, DrownedEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4182(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T zombieEntity, float f, float g, float h, float j, float k, float l, float m) {
-        DrownedOverlayFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, zombieEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
+    public void method_4182(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T zombieEntity, float f, float g, float h, float j, float k, float l, float m) {
+        DrownedOverlayFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, zombieEntity, f, g, j, k, l, m, h, 1.0f, 1.0f, 1.0f);
     }
 }
 

@@ -4,26 +4,26 @@
 package net.minecraft.world;
 
 import java.util.Comparator;
-import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.TickPriority;
 
 public class ScheduledTick<T> {
     private static long idCounter;
     private final T object;
     public final BlockPos pos;
     public final long time;
-    public final TaskPriority priority;
+    public final TickPriority priority;
     private final long id = idCounter++;
 
     public ScheduledTick(BlockPos blockPos, T object) {
-        this(blockPos, object, 0L, TaskPriority.NORMAL);
+        this(blockPos, object, 0L, TickPriority.NORMAL);
     }
 
-    public ScheduledTick(BlockPos blockPos, T object, long l, TaskPriority taskPriority) {
+    public ScheduledTick(BlockPos blockPos, T object, long l, TickPriority tickPriority) {
         this.pos = blockPos.toImmutable();
         this.object = object;
         this.time = l;
-        this.priority = taskPriority;
+        this.priority = tickPriority;
     }
 
     public boolean equals(Object object) {

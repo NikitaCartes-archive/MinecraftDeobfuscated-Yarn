@@ -110,7 +110,7 @@ extends Item {
             return TypedActionResult.fail(itemStack);
         }
         playerEntity.setCurrentHand(hand);
-        return TypedActionResult.successWithoutSwing(itemStack);
+        return TypedActionResult.consume(itemStack);
     }
 
     @Override

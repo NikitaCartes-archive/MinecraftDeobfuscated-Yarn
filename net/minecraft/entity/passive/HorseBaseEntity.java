@@ -917,8 +917,8 @@ JumpingMount {
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
         if (entityData == null) {
-            entityData = new PassiveEntity.class_4697();
-            ((PassiveEntity.class_4697)entityData).method_22433(0.2f);
+            entityData = new PassiveEntity.EntityData();
+            ((PassiveEntity.EntityData)entityData).setBabyChance(0.2f);
         }
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }

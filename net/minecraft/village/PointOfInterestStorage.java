@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.util.SectionDistanceLevelPropagator;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -145,7 +145,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
 
     public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, chunkSection.getYOffset() >> 4);
-        SystemUtil.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
+        Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
             if (PointOfInterestStorage.shouldScan(chunkSection)) {
                 this.scanAndPopulate(chunkSection, chunkSectionPos, (BiConsumer<BlockPos, PointOfInterestType>)biConsumer);
             }
@@ -169,7 +169,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public void method_22439(WorldView worldView, BlockPos blockPos, int i) {
-        ChunkSectionPos.method_22446(new ChunkPos(blockPos), Math.floorDiv(i, 16)).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::method_22444).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.field_20688.add(chunkPos.toLong())).forEach(chunkPos -> worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+        ChunkSectionPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16)).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::method_22444).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.field_20688.add(chunkPos.toLong())).forEach(chunkPos -> worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
     }
 
     final class PointOfInterestDistanceTracker

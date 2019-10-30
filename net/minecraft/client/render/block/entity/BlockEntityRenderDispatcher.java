@@ -12,8 +12,8 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -48,11 +48,11 @@ public class BlockEntityRenderDispatcher {
     private final Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = Maps.newHashMap();
     public static final BlockEntityRenderDispatcher INSTANCE = new BlockEntityRenderDispatcher();
     private final BufferBuilder bufferBuilder = new BufferBuilder(256);
-    private TextRenderer fontRenderer;
+    private TextRenderer textRenderer;
     public TextureManager textureManager;
     public World world;
-    public Camera cameraEntity;
-    public HitResult hitResult;
+    public Camera camera;
+    public HitResult crosshairTarget;
 
     private BlockEntityRenderDispatcher() {
         this.register(BlockEntityType.SIGN, new SignBlockEntityRenderer(this));
@@ -90,13 +90,13 @@ public class BlockEntityRenderDispatcher {
             this.setWorld(world);
         }
         this.textureManager = textureManager;
-        this.cameraEntity = camera;
-        this.fontRenderer = textRenderer;
-        this.hitResult = hitResult;
+        this.camera = camera;
+        this.textRenderer = textRenderer;
+        this.crosshairTarget = hitResult;
     }
 
-    public <E extends BlockEntity> void render(E blockEntity, float f, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, double d, double e, double g) {
-        if (!(blockEntity.getSquaredDistance(this.cameraEntity.getPos().x, this.cameraEntity.getPos().y, this.cameraEntity.getPos().z) < blockEntity.getSquaredRenderDistance())) {
+    public <E extends BlockEntity> void render(E blockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double g) {
+        if (!(blockEntity.getSquaredDistance(this.camera.getPos().x, this.camera.getPos().y, this.camera.getPos().z) < blockEntity.getSquaredRenderDistance())) {
             return;
         }
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
@@ -107,28 +107,28 @@ public class BlockEntityRenderDispatcher {
             return;
         }
         BlockPos blockPos = blockEntity.getPos();
-        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - g, f, matrixStack, layeredVertexConsumerStorage));
+        BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - g, f, matrixStack, vertexConsumerProvider));
     }
 
-    private static <T extends BlockEntity> void render(BlockEntityRenderer<T> blockEntityRenderer, T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    private static <T extends BlockEntity> void render(BlockEntityRenderer<T> blockEntityRenderer, T blockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         World world = blockEntity.getWorld();
         int i = world != null ? world.getLightmapCoordinates(blockEntity.getPos()) : 0xF000F0;
-        blockEntityRenderer.method_3569(blockEntity, d, e, f, g, matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
+        blockEntityRenderer.render(blockEntity, d, e, f, g, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
     }
 
     @Deprecated
     public <E extends BlockEntity> void renderEntity(E blockEntity, MatrixStack matrixStack) {
-        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(this.bufferBuilder);
-        this.renderEntity(blockEntity, matrixStack, drawer, 0xF000F0, OverlayTexture.DEFAULT_UV);
-        drawer.draw();
+        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(this.bufferBuilder);
+        this.renderEntity(blockEntity, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV);
+        immediate.draw();
     }
 
-    public <E extends BlockEntity> boolean renderEntity(E blockEntity, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public <E extends BlockEntity> boolean renderEntity(E blockEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
         if (blockEntityRenderer == null) {
             return true;
         }
-        BlockEntityRenderDispatcher.runReported(blockEntity, () -> blockEntityRenderer.method_3569(blockEntity, 0.0, 0.0, 0.0, 0.0f, matrixStack, layeredVertexConsumerStorage, i, j));
+        BlockEntityRenderDispatcher.runReported(blockEntity, () -> blockEntityRenderer.render(blockEntity, 0.0, 0.0, 0.0, 0.0f, matrixStack, vertexConsumerProvider, i, j));
         return false;
     }
 
@@ -146,12 +146,12 @@ public class BlockEntityRenderDispatcher {
     public void setWorld(@Nullable World world) {
         this.world = world;
         if (world == null) {
-            this.cameraEntity = null;
+            this.camera = null;
         }
     }
 
-    public TextRenderer getFontRenderer() {
-        return this.fontRenderer;
+    public TextRenderer getTextRenderer() {
+        return this.textRenderer;
     }
 }
 

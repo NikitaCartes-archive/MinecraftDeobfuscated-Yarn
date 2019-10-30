@@ -26,7 +26,7 @@ import net.minecraft.client.texture.PlayerSkinTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -110,7 +110,7 @@ public class PlayerSkinProvider {
                 }
             })));
         };
-        SystemUtil.getServerWorkerExecutor().execute(runnable);
+        Util.getServerWorkerExecutor().execute(runnable);
     }
 
     public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {

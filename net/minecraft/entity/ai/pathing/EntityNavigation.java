@@ -20,7 +20,7 @@ import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -220,7 +220,7 @@ public abstract class EntityNavigation {
         if (this.currentPath != null && !this.currentPath.isFinished()) {
             Vec3d vec3d2 = this.currentPath.getCurrentPosition();
             if (vec3d2.equals(this.field_6680)) {
-                this.field_6670 += SystemUtil.getMeasuringTimeMs() - this.field_6669;
+                this.field_6670 += Util.getMeasuringTimeMs() - this.field_6669;
             } else {
                 this.field_6680 = vec3d2;
                 double d = vec3d.distanceTo(this.field_6680);
@@ -232,7 +232,7 @@ public abstract class EntityNavigation {
                 this.field_6682 = 0.0;
                 this.stop();
             }
-            this.field_6669 = SystemUtil.getMeasuringTimeMs();
+            this.field_6669 = Util.getMeasuringTimeMs();
         }
     }
 

@@ -16,7 +16,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -26,7 +26,7 @@ import net.minecraft.world.biome.Biomes;
 
 @Environment(value=EnvType.CLIENT)
 public class BackgroundRenderer {
-    private static final FloatBuffer blackColorBuffer = SystemUtil.consume(GlAllocationUtils.allocateFloatBuffer(16), floatBuffer -> floatBuffer.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip());
+    private static final FloatBuffer blackColorBuffer = Util.create(GlAllocationUtils.allocateFloatBuffer(16), floatBuffer -> floatBuffer.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip());
     private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(16);
     private float red;
     private float green;
@@ -35,14 +35,14 @@ public class BackgroundRenderer {
     private int nextWaterFogColor = -1;
     private long lastWaterFogColorUpdateTime = -1L;
 
-    public void renderBackground(Camera camera, float f, World world, int i, float g) {
+    public void render(Camera camera, float f, World world, int i, float g) {
         float w;
         float v;
         float u;
         int j;
         FluidState fluidState = camera.getSubmergedFluidState();
         if (fluidState.matches(FluidTags.WATER)) {
-            long l = SystemUtil.getMeasuringTimeMs();
+            long l = Util.getMeasuringTimeMs();
             j = world.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
             if (this.lastWaterFogColorUpdateTime < 0L) {
                 this.waterFogColor = j;
@@ -220,7 +220,6 @@ public class BackgroundRenderer {
             }
         }
         RenderSystem.enableFog();
-        RenderSystem.colorMaterial(1028, 4608);
     }
 
     public static void setFogBlack(boolean bl) {

@@ -41,7 +41,7 @@ extends Item {
         if (itemStack2.isEmpty()) {
             playerEntity.equipStack(equipmentSlot, itemStack.copy());
             itemStack.setCount(0);
-            return TypedActionResult.successWithSwing(itemStack);
+            return TypedActionResult.success(itemStack);
         }
         return TypedActionResult.fail(itemStack);
     }

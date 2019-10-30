@@ -16,7 +16,7 @@ import net.minecraft.client.options.Option;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class ControlsOptionsScreen
@@ -65,7 +65,7 @@ extends GameOptionsScreen {
                 this.field_21336.setKeyCode(this.focusedBinding, InputUtil.getKeyCode(i, j));
             }
             this.focusedBinding = null;
-            this.time = SystemUtil.getMeasuringTimeMs();
+            this.time = Util.getMeasuringTimeMs();
             KeyBinding.updateKeysByCode();
             return true;
         }

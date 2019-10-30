@@ -96,7 +96,7 @@ extends Entity {
         } else {
             boolean bl = this.noClip = !this.world.doesNotCollide(this);
             if (this.noClip) {
-                this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
+                this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().y1 + this.getBoundingBox().y2) / 2.0, this.getZ());
             }
         }
         if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getEntityId()) % 4 == 0) {
@@ -190,10 +190,6 @@ extends Entity {
         if (itemStack2.isEmpty()) {
             itemEntity2.remove();
         }
-    }
-
-    public void setCreativeDespawnTime() {
-        this.age = 4800;
     }
 
     @Override

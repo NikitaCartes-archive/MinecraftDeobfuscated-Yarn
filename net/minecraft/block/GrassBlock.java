@@ -43,7 +43,7 @@ implements Fertilizable {
             BlockState blockState4;
             BlockPos blockPos3 = blockPos2;
             for (int j = 0; j < i / 16; ++j) {
-                if (serverWorld.getBlockState((blockPos3 = blockPos3.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1)).method_10074()).getBlock() != this || serverWorld.getBlockState(blockPos3).method_21743(serverWorld, blockPos3)) continue block0;
+                if (serverWorld.getBlockState((blockPos3 = blockPos3.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1)).method_10074()).getBlock() != this || serverWorld.getBlockState(blockPos3).isFullCube(serverWorld, blockPos3)) continue block0;
             }
             BlockState blockState3 = serverWorld.getBlockState(blockPos3);
             if (blockState3.getBlock() == blockState2.getBlock() && random.nextInt(10) == 0) {

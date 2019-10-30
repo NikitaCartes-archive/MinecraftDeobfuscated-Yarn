@@ -19,12 +19,12 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.DelegatingVertexConsumer;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.ItemModels;
@@ -89,7 +89,7 @@ implements SynchronousResourceReloadListener {
         this.method_23180(matrixStack, vertexConsumer, bakedModel.getQuads(null, null, random), itemStack, i, j);
     }
 
-    public void method_23179(ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j, BakedModel bakedModel) {
+    public void method_23179(ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, BakedModel bakedModel) {
         boolean bl3;
         if (itemStack.isEmpty()) {
             return;
@@ -103,26 +103,26 @@ implements SynchronousResourceReloadListener {
         bakedModel.getTransformation().getTransformation(type).method_23075(bl, matrixStack);
         matrixStack.translate(-0.5, -0.5, -0.5);
         if (bakedModel.isBuiltin() || itemStack.getItem() == Items.TRIDENT && !bl3) {
-            BuiltinModelItemRenderer.INSTANCE.render(itemStack, matrixStack, layeredVertexConsumerStorage, i, j);
+            BuiltinModelItemRenderer.INSTANCE.render(itemStack, matrixStack, vertexConsumerProvider, i, j);
         } else {
             RenderLayer renderLayer = RenderLayers.getItemLayer(itemStack);
             RenderLayer renderLayer2 = bl2 && Objects.equals(renderLayer, RenderLayer.getEntityTranslucent(SpriteAtlasTexture.BLOCK_ATLAS_TEX)) ? RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX) : renderLayer;
-            VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(layeredVertexConsumerStorage, renderLayer2, true, itemStack.hasEnchantmentGlint());
+            VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumerProvider, renderLayer2, true, itemStack.hasEnchantmentGlint());
             this.method_23182(bakedModel, itemStack, i, j, matrixStack, vertexConsumer);
         }
         matrixStack.pop();
     }
 
-    public static VertexConsumer getArmorVertexConsumer(LayeredVertexConsumerStorage layeredVertexConsumerStorage, RenderLayer renderLayer, boolean bl, boolean bl2) {
+    public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
         if (bl2) {
-            return new DelegatingVertexConsumer(ImmutableList.of(layeredVertexConsumerStorage.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), layeredVertexConsumerStorage.getBuffer(renderLayer)));
+            return new DelegatingVertexConsumer(ImmutableList.of(vertexConsumerProvider.getBuffer(bl ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumerProvider.getBuffer(renderLayer)));
         }
-        return layeredVertexConsumerStorage.getBuffer(renderLayer);
+        return vertexConsumerProvider.getBuffer(renderLayer);
     }
 
     private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
         boolean bl = !itemStack.isEmpty();
-        Matrix4f matrix4f = matrixStack.peek();
+        Matrix4f matrix4f = matrixStack.peekModel();
         Matrix3f matrix3f = matrixStack.peekNormal();
         for (BakedQuad bakedQuad : list) {
             int k = -1;
@@ -150,16 +150,16 @@ implements SynchronousResourceReloadListener {
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
     }
 
-    public void method_23178(ItemStack itemStack, ModelTransformation.Type type, int i, int j, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        this.method_23177(null, itemStack, type, false, matrixStack, layeredVertexConsumerStorage, null, i, j);
+    public void method_23178(ItemStack itemStack, ModelTransformation.Type type, int i, int j, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+        this.method_23177(null, itemStack, type, false, matrixStack, vertexConsumerProvider, null, i, j);
     }
 
-    public void method_23177(@Nullable LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, @Nullable World world, int i, int j) {
+    public void method_23177(@Nullable LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, boolean bl, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, @Nullable World world, int i, int j) {
         if (itemStack.isEmpty()) {
             return;
         }
         BakedModel bakedModel = this.getHeldItemModel(itemStack, world, livingEntity);
-        this.method_23179(itemStack, type, bl, matrixStack, layeredVertexConsumerStorage, i, j, bakedModel);
+        this.method_23179(itemStack, type, bl, matrixStack, vertexConsumerProvider, i, j, bakedModel);
     }
 
     public void renderGuiItemIcon(ItemStack itemStack, int i, int j) {
@@ -181,9 +181,9 @@ implements SynchronousResourceReloadListener {
         RenderSystem.scalef(1.0f, -1.0f, 1.0f);
         RenderSystem.scalef(16.0f, 16.0f, 16.0f);
         MatrixStack matrixStack = new MatrixStack();
-        LayeredVertexConsumerStorage.Drawer drawer = MinecraftClient.getInstance().getBufferBuilderStorage().getGeneralDrawer();
-        this.method_23179(itemStack, ModelTransformation.Type.GUI, false, matrixStack, drawer, 0xF000F0, OverlayTexture.DEFAULT_UV, bakedModel);
-        drawer.draw();
+        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        this.method_23179(itemStack, ModelTransformation.Type.GUI, false, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, bakedModel);
+        immediate.draw();
         RenderSystem.enableDepthTest();
         RenderSystem.disableAlphaTest();
         RenderSystem.disableRescaleNormal();
@@ -227,9 +227,9 @@ implements SynchronousResourceReloadListener {
         if (itemStack.getCount() != 1 || string != null) {
             String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
             matrixStack.translate(0.0, 0.0, this.zOffset + 200.0f);
-            LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
-            textRenderer.method_22942(string2, i + 19 - 2 - textRenderer.getStringWidth(string2), j + 6 + 3, 0xFFFFFF, true, matrixStack.peek(), drawer, false, 0, 0xF000F0);
-            drawer.draw();
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+            textRenderer.draw(string2, i + 19 - 2 - textRenderer.getStringWidth(string2), j + 6 + 3, 0xFFFFFF, true, matrixStack.peekModel(), immediate, false, 0, 0xF000F0);
+            immediate.draw();
         }
         if (itemStack.isDamaged()) {
             RenderSystem.disableDepthTest();
@@ -237,7 +237,7 @@ implements SynchronousResourceReloadListener {
             RenderSystem.disableAlphaTest();
             RenderSystem.disableBlend();
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
             float f = itemStack.getDamage();
             float g = itemStack.getMaxDamage();
             float h = Math.max(0.0f, (g - f) / g);
@@ -255,7 +255,7 @@ implements SynchronousResourceReloadListener {
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
             Tessellator tessellator2 = Tessellator.getInstance();
-            BufferBuilder bufferBuilder2 = tessellator2.getBufferBuilder();
+            BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
             this.renderGuiQuad(bufferBuilder2, i, j + MathHelper.floor(16.0f * (1.0f - m)), 16, MathHelper.ceil(16.0f * m), 255, 255, 255, 127);
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();

@@ -18,7 +18,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 
@@ -101,7 +101,7 @@ public class PointOfInterestType {
         pointOfInterestType.workStationStates.forEach(blockState -> {
             PointOfInterestType pointOfInterestType2 = BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put((BlockState)blockState, pointOfInterestType);
             if (pointOfInterestType2 != null) {
-                throw SystemUtil.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
+                throw Util.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
             }
         });
         return pointOfInterestType;

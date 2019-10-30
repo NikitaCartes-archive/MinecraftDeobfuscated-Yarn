@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkUpdateState;
 import net.minecraft.world.PersistentStateManager;
@@ -24,7 +24,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public class FeatureUpdater {
-    private static final Map<String, String> OLD_TO_NEW = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<String, String> OLD_TO_NEW = Util.create(Maps.newHashMap(), (T hashMap) -> {
         hashMap.put("Village", "Village");
         hashMap.put("Mineshaft", "Mineshaft");
         hashMap.put("Mansion", "Mansion");
@@ -37,7 +37,7 @@ public class FeatureUpdater {
         hashMap.put("Fortress", "Fortress");
         hashMap.put("EndCity", "EndCity");
     });
-    private static final Map<String, String> ANCIENT_TO_OLD = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<String, String> ANCIENT_TO_OLD = Util.create(Maps.newHashMap(), (T hashMap) -> {
         hashMap.put("Iglu", "Igloo");
         hashMap.put("TeDP", "Desert_Pyramid");
         hashMap.put("TeJP", "Jungle_Pyramid");

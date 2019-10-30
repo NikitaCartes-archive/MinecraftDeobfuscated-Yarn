@@ -9,7 +9,7 @@ import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.WaterPathNodeMaker;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.DolphinEntity;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -39,7 +39,7 @@ extends EntityNavigation {
 
     @Override
     protected Vec3d getPos() {
-        return new Vec3d(this.entity.getX(), this.entity.method_23323(0.5), this.entity.getZ());
+        return new Vec3d(this.entity.getX(), this.entity.getHeightAt(0.5), this.entity.getZ());
     }
 
     @Override
@@ -106,7 +106,7 @@ extends EntityNavigation {
         if (this.currentPath != null && !this.currentPath.isFinished()) {
             Vec3d vec3d2 = this.currentPath.getCurrentPosition();
             if (vec3d2.equals(this.field_6680)) {
-                this.field_6670 += SystemUtil.getMeasuringTimeMs() - this.field_6669;
+                this.field_6670 += Util.getMeasuringTimeMs() - this.field_6669;
             } else {
                 this.field_6680 = vec3d2;
                 double d = vec3d.distanceTo(this.field_6680);
@@ -118,7 +118,7 @@ extends EntityNavigation {
                 this.field_6682 = 0.0;
                 this.stop();
             }
-            this.field_6669 = SystemUtil.getMeasuringTimeMs();
+            this.field_6669 = Util.getMeasuringTimeMs();
         }
     }
 

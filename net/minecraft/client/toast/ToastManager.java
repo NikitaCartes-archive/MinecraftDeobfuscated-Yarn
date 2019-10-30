@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.toast.Toast;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,7 +94,7 @@ extends DrawableHelper {
         }
 
         public boolean draw(int i, int j) {
-            long l = SystemUtil.getMeasuringTimeMs();
+            long l = Util.getMeasuringTimeMs();
             if (this.field_2243 == -1L) {
                 this.field_2243 = l;
                 this.visibility.playSound(this.field_2245.client.getSoundManager());

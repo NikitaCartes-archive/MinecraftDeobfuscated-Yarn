@@ -18,7 +18,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -33,7 +33,7 @@ implements Waterloggable {
     public static final BooleanProperty SOUTH = ConnectedPlantBlock.SOUTH;
     public static final BooleanProperty WEST = ConnectedPlantBlock.WEST;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    protected static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> ((Direction)entry.getKey()).getAxis().isHorizontal()).collect(SystemUtil.toMap());
+    protected static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectedPlantBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> ((Direction)entry.getKey()).getAxis().isHorizontal()).collect(Util.toMap());
     protected final VoxelShape[] collisionShapes;
     protected final VoxelShape[] boundingShapes;
     private final Object2IntMap<BlockState> SHAPE_INDEX_CACHE = new Object2IntOpenHashMap<BlockState>();

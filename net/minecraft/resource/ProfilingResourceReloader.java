@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.resource.ResourceReloader;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.Unit;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerSystem;
 import org.apache.logging.log4j.LogManager;
@@ -28,16 +28,16 @@ extends ResourceReloader<Summary> {
         super(executor, executor22, resourceManager2, list, (synchronizer, resourceManager, resourceReloadListener, executor2, executor3) -> {
             AtomicLong atomicLong = new AtomicLong();
             AtomicLong atomicLong2 = new AtomicLong();
-            ProfilerSystem profilerSystem = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), () -> 0, false);
-            ProfilerSystem profilerSystem2 = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), () -> 0, false);
+            ProfilerSystem profilerSystem = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
+            ProfilerSystem profilerSystem2 = new ProfilerSystem(Util.getMeasuringTimeNano(), () -> 0, false);
             CompletableFuture<Void> completableFuture = resourceReloadListener.reload(synchronizer, resourceManager, profilerSystem, profilerSystem2, runnable -> executor2.execute(() -> {
-                long l = SystemUtil.getMeasuringTimeNano();
+                long l = Util.getMeasuringTimeNano();
                 runnable.run();
-                atomicLong.addAndGet(SystemUtil.getMeasuringTimeNano() - l);
+                atomicLong.addAndGet(Util.getMeasuringTimeNano() - l);
             }), runnable -> executor3.execute(() -> {
-                long l = SystemUtil.getMeasuringTimeNano();
+                long l = Util.getMeasuringTimeNano();
                 runnable.run();
-                atomicLong2.addAndGet(SystemUtil.getMeasuringTimeNano() - l);
+                atomicLong2.addAndGet(Util.getMeasuringTimeNano() - l);
             }));
             return completableFuture.thenApplyAsync(void_ -> new Summary(resourceReloadListener.getName(), profilerSystem.getResults(), profilerSystem2.getResults(), atomicLong, atomicLong2), executor22);
         }, completableFuture);

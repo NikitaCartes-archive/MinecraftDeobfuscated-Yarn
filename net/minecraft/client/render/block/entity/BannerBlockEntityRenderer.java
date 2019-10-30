@@ -12,9 +12,9 @@ import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.ModelLoader;
@@ -45,7 +45,7 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         this.topBar.addCuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f, 0.0f);
     }
 
-    public void method_3546(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_3546(BannerBlockEntity bannerBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         float k;
         long l;
         float h = 0.6666667f;
@@ -75,7 +75,7 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
         k = 0.0625f;
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
         this.verticalBar.render(matrixStack, vertexConsumer, 0.0625f, i, j, sprite);
         this.topBar.render(matrixStack, vertexConsumer, 0.0625f, i, j, sprite);
         if (bannerBlockEntity.isPreview()) {
@@ -89,7 +89,7 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         this.area.render(matrixStack, vertexConsumer, 0.0625f, i, j, sprite);
         List<BannerPattern> list = bannerBlockEntity.getPatterns();
         List<DyeColor> list2 = bannerBlockEntity.getPatternColors();
-        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityNoOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
         if (list == null) {
             LOGGER.error("patterns are null");
         } else if (list2 == null) {

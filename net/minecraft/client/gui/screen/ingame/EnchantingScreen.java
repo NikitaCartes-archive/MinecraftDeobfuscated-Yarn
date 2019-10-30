@@ -13,10 +13,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
 import net.minecraft.client.gui.screen.ingame.EnchantingPhrases;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.Matrix4f;
@@ -94,7 +94,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         RenderSystem.matrixMode(5888);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.push();
-        matrixStack.peek().loadIdentity();
+        matrixStack.peekModel().loadIdentity();
         matrixStack.translate(0.0, 3.3f, 1984.0);
         float g = 5.0f;
         matrixStack.scale(5.0f, 5.0f, 5.0f);
@@ -123,10 +123,10 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
         }
         RenderSystem.enableRescaleNormal();
         bookModel.setPageAngles(0.0f, o, p, h);
-        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
-        VertexConsumer vertexConsumer = drawer.getBuffer(bookModel.getLayer(BOOK_TEXURE));
+        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        VertexConsumer vertexConsumer = immediate.getBuffer(bookModel.getLayer(BOOK_TEXURE));
         bookModel.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
-        drawer.draw();
+        immediate.draw();
         matrixStack.pop();
         RenderSystem.matrixMode(5889);
         RenderSystem.viewport(0, 0, this.minecraft.getWindow().getFramebufferWidth(), this.minecraft.getWindow().getFramebufferHeight());
@@ -154,7 +154,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
             if (!(q >= r + 1 && this.minecraft.player.experienceLevel >= u || this.minecraft.player.abilities.creativeMode)) {
                 this.blit(s, l + 14 + 19 * r, 0, 185, 108, 19);
                 this.blit(s + 1, l + 15 + 19 * r, 16 * r, 239, 16, 16);
-                textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 0xFEFEFE) >> 1);
+                textRenderer.drawTrimmed(string2, t, l + 16 + 19 * r, v, (w & 0xFEFEFE) >> 1);
                 w = 4226832;
             } else {
                 int x = i - (k + 60);
@@ -166,7 +166,7 @@ extends AbstractContainerScreen<EnchantingTableContainer> {
                     this.blit(s, l + 14 + 19 * r, 0, 166, 108, 19);
                 }
                 this.blit(s + 1, l + 15 + 19 * r, 16 * r, 223, 16, 16);
-                textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, w);
+                textRenderer.drawTrimmed(string2, t, l + 16 + 19 * r, v, w);
                 w = 8453920;
             }
             textRenderer = this.minecraft.textRenderer;

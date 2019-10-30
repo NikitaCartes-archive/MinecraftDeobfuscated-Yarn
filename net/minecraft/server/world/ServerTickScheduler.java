@@ -22,7 +22,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TaskPriority;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -30,6 +29,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ScheduledTick;
+import net.minecraft.world.TickPriority;
 import net.minecraft.world.TickScheduler;
 import org.jetbrains.annotations.Nullable;
 
@@ -167,7 +167,7 @@ implements TickScheduler<T> {
             compoundTag.putInt("y", scheduledTick.pos.getY());
             compoundTag.putInt("z", scheduledTick.pos.getZ());
             compoundTag.putInt("t", (int)(scheduledTick.time - l));
-            compoundTag.putInt("p", scheduledTick.priority.getPriorityIndex());
+            compoundTag.putInt("p", scheduledTick.priority.getIndex());
             listTag.add(compoundTag);
         }
         return listTag;
@@ -179,9 +179,9 @@ implements TickScheduler<T> {
     }
 
     @Override
-    public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+    public void schedule(BlockPos blockPos, T object, int i, TickPriority tickPriority) {
         if (!this.invalidObjPredicate.test(object)) {
-            this.addScheduledTick(new ScheduledTick<T>(blockPos, object, (long)i + this.world.getTime(), taskPriority));
+            this.addScheduledTick(new ScheduledTick<T>(blockPos, object, (long)i + this.world.getTime(), tickPriority));
         }
     }
 

@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.SlimeOverlayFeatureRenderer;
@@ -25,9 +25,9 @@ extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
         this.addFeature(new SlimeOverlayFeatureRenderer<SlimeEntity>(this));
     }
 
-    public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         this.field_4673 = 0.25f * (float)slimeEntity.getSize();
-        super.method_4072(slimeEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.method_4072(slimeEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     protected void method_4118(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {

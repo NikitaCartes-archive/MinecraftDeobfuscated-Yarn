@@ -562,12 +562,12 @@ AutoCloseable {
     }
 
     public boolean isAreaNotEmpty(Box box) {
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        int n = MathHelper.ceil(box.maxZ);
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y2);
+        int m = MathHelper.floor(box.z1);
+        int n = MathHelper.ceil(box.z2);
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (int o = i; o < j; ++o) {
                 for (int p = k; p < l; ++p) {
@@ -585,12 +585,12 @@ AutoCloseable {
 
     public boolean doesAreaContainFireSource(Box box) {
         int n;
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        if (this.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y2);
+        int m = MathHelper.floor(box.z1);
+        if (this.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.z2))) {
             try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
                 for (int o = i; o < j; ++o) {
                     for (int p = k; p < l; ++p) {
@@ -611,12 +611,12 @@ AutoCloseable {
     @Environment(value=EnvType.CLIENT)
     public BlockState getBlockState(Box box, Block block) {
         int n;
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        if (this.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y2);
+        int m = MathHelper.floor(box.z1);
+        if (this.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.z2))) {
             try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
                 for (int o = i; o < j; ++o) {
                     for (int p = k; p < l; ++p) {
@@ -634,12 +634,12 @@ AutoCloseable {
     }
 
     public boolean containsBlockWithMaterial(Box box, Material material) {
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        int n = MathHelper.ceil(box.maxZ);
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y2);
+        int m = MathHelper.floor(box.z1);
+        int n = MathHelper.ceil(box.z2);
         MaterialPredicate materialPredicate = MaterialPredicate.create(material);
         return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.method_11745(this.getBlockState((BlockPos)blockPos)));
     }
@@ -797,10 +797,10 @@ AutoCloseable {
     @Override
     public List<Entity> getEntities(@Nullable Entity entity, Box box, @Nullable Predicate<? super Entity> predicate) {
         ArrayList<Entity> list = Lists.newArrayList();
-        int i = MathHelper.floor((box.minX - 2.0) / 16.0);
-        int j = MathHelper.floor((box.maxX + 2.0) / 16.0);
-        int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
-        int l = MathHelper.floor((box.maxZ + 2.0) / 16.0);
+        int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
+        int j = MathHelper.floor((box.x2 + 2.0) / 16.0);
+        int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
+        int l = MathHelper.floor((box.z2 + 2.0) / 16.0);
         for (int m = i; m <= j; ++m) {
             for (int n = k; n <= l; ++n) {
                 WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
@@ -812,10 +812,10 @@ AutoCloseable {
     }
 
     public <T extends Entity> List<T> getEntities(@Nullable EntityType<T> entityType, Box box, Predicate<? super T> predicate) {
-        int i = MathHelper.floor((box.minX - 2.0) / 16.0);
-        int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
-        int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
-        int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
+        int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
+        int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
+        int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
+        int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
         ArrayList list = Lists.newArrayList();
         for (int m = i; m < j; ++m) {
             for (int n = k; n < l; ++n) {
@@ -829,10 +829,10 @@ AutoCloseable {
 
     @Override
     public <T extends Entity> List<T> getEntities(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
-        int i = MathHelper.floor((box.minX - 2.0) / 16.0);
-        int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
-        int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
-        int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
+        int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
+        int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
+        int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
+        int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
         ArrayList list = Lists.newArrayList();
         ChunkManager chunkManager = this.getChunkManager();
         for (int m = i; m < j; ++m) {
@@ -847,10 +847,10 @@ AutoCloseable {
 
     @Override
     public <T extends Entity> List<T> getEntitiesIncludingUngeneratedChunks(Class<? extends T> class_, Box box, @Nullable Predicate<? super T> predicate) {
-        int i = MathHelper.floor((box.minX - 2.0) / 16.0);
-        int j = MathHelper.ceil((box.maxX + 2.0) / 16.0);
-        int k = MathHelper.floor((box.minZ - 2.0) / 16.0);
-        int l = MathHelper.ceil((box.maxZ + 2.0) / 16.0);
+        int i = MathHelper.floor((box.x1 - 2.0) / 16.0);
+        int j = MathHelper.ceil((box.x2 + 2.0) / 16.0);
+        int k = MathHelper.floor((box.z1 - 2.0) / 16.0);
+        int l = MathHelper.ceil((box.z2 + 2.0) / 16.0);
         ArrayList list = Lists.newArrayList();
         ChunkManager chunkManager = this.getChunkManager();
         for (int m = i; m < j; ++m) {

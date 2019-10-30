@@ -80,7 +80,7 @@ Element {
             int w = this.buttonX + 4 + 25 * (v % o);
             int x = this.buttonY + 5 + 25 * (v / o);
             if (this.furnace) {
-                this.alternateButtons.add(new class_511(w, x, recipe, bl2));
+                this.alternateButtons.add(new FurnaceAlternateButtonWidget(w, x, recipe, bl2));
                 continue;
             }
             this.alternateButtons.add(new AlternateButtonWidget(w, x, recipe, bl2));
@@ -250,9 +250,9 @@ Element {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class class_511
+    class FurnaceAlternateButtonWidget
     extends AlternateButtonWidget {
-        public class_511(int i, int j, Recipe<?> recipe, boolean bl) {
+        public FurnaceAlternateButtonWidget(int i, int j, Recipe<?> recipe, boolean bl) {
             super(i, j, recipe, bl);
         }
 

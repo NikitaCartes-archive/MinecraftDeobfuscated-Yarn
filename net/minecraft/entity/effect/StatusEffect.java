@@ -20,7 +20,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -116,7 +116,7 @@ public class StatusEffect {
 
     protected String loadTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = SystemUtil.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
+            this.translationKey = Util.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
         }
         return this.translationKey;
     }

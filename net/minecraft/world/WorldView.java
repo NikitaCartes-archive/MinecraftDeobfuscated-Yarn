@@ -109,12 +109,12 @@ BiomeAccess.Storage {
     }
 
     default public boolean containsFluid(Box box) {
-        int i = MathHelper.floor(box.minX);
-        int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        int n = MathHelper.ceil(box.maxZ);
+        int i = MathHelper.floor(box.x1);
+        int j = MathHelper.ceil(box.x2);
+        int k = MathHelper.floor(box.y1);
+        int l = MathHelper.ceil(box.y2);
+        int m = MathHelper.floor(box.z1);
+        int n = MathHelper.ceil(box.z2);
         try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
             for (int o = i; o < j; ++o) {
                 for (int p = k; p < l; ++p) {

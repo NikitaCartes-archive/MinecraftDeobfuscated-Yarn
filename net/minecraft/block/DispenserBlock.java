@@ -35,7 +35,7 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPointerImpl;
@@ -51,7 +51,7 @@ public class DispenserBlock
 extends BlockWithEntity {
     public static final DirectionProperty FACING = FacingBlock.FACING;
     public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
-    private static final Map<Item, DispenserBehavior> BEHAVIORS = SystemUtil.consume(new Object2ObjectOpenHashMap(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior()));
+    private static final Map<Item, DispenserBehavior> BEHAVIORS = Util.create(new Object2ObjectOpenHashMap(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue(new ItemDispenserBehavior()));
 
     public static void registerBehavior(ItemConvertible itemConvertible, DispenserBehavior dispenserBehavior) {
         BEHAVIORS.put(itemConvertible.asItem(), dispenserBehavior);

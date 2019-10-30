@@ -17,7 +17,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class BlockListProvider
@@ -41,7 +41,7 @@ implements DataProvider {
                 for (Property property : stateManager.getProperties()) {
                     JsonArray jsonArray = new JsonArray();
                     for (Comparable comparable : property.getValues()) {
-                        jsonArray.add(SystemUtil.getValueAsString(property, comparable));
+                        jsonArray.add(Util.getValueAsString(property, comparable));
                     }
                     jsonObject3.add(property.getName(), jsonArray);
                 }
@@ -52,7 +52,7 @@ implements DataProvider {
                 JsonObject jsonObject4 = new JsonObject();
                 JsonObject jsonObject5 = new JsonObject();
                 for (Property<?> property2 : stateManager.getProperties()) {
-                    jsonObject5.addProperty(property2.getName(), SystemUtil.getValueAsString(property2, blockState.get(property2)));
+                    jsonObject5.addProperty(property2.getName(), Util.getValueAsString(property2, blockState.get(property2)));
                 }
                 if (jsonObject5.size() > 0) {
                     jsonObject4.add("properties", jsonObject5);

@@ -51,7 +51,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
@@ -62,7 +62,7 @@ import org.jetbrains.annotations.Nullable;
 public class SheepEntity
 extends AnimalEntity {
     private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final Map<DyeColor, ItemConvertible> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
+    private static final Map<DyeColor, ItemConvertible> DROPS = Util.create(Maps.newEnumMap(DyeColor.class), enumMap -> {
         enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
         enumMap.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
         enumMap.put(DyeColor.MAGENTA, Blocks.MAGENTA_WOOL);

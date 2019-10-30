@@ -17,7 +17,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 
 public class FileNameUtil {
-    private static final Pattern field_18956 = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
+    private static final Pattern FILE_NAME_WITH_COUNT = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
     private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 
     @Environment(value=EnvType.CLIENT)
@@ -28,7 +28,7 @@ public class FileNameUtil {
         if (RESERVED_WINDOWS_NAMES.matcher(string = string.replaceAll("[./\"]", "_")).matches()) {
             string = "_" + string + "_";
         }
-        Matcher matcher = field_18956.matcher(string);
+        Matcher matcher = FILE_NAME_WITH_COUNT.matcher(string);
         int i = 0;
         if (matcher.matches()) {
             string = matcher.group("name");

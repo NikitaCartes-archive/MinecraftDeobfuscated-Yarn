@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,7 +23,7 @@ extends BlockEntityRenderer<MobSpawnerBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3589(MobSpawnerBlockEntity mobSpawnerBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_3589(MobSpawnerBlockEntity mobSpawnerBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         matrixStack.push();
         matrixStack.translate(0.5, 0.0, 0.5);
         MobSpawnerLogic mobSpawnerLogic = mobSpawnerBlockEntity.getLogic();
@@ -40,7 +40,7 @@ extends BlockEntityRenderer<MobSpawnerBlockEntity> {
             matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-30.0f));
             matrixStack.scale(h, h, h);
             entity.setPositionAndAngles(d, e, f, 0.0f, 0.0f);
-            MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0f, g, matrixStack, layeredVertexConsumerStorage);
+            MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0f, g, matrixStack, vertexConsumerProvider);
         }
         matrixStack.pop();
     }

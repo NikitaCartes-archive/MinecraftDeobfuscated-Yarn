@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
@@ -46,11 +46,11 @@ public abstract class EntityRenderer<T extends Entity> {
         return Vec3d.ZERO;
     }
 
-    public void render(T entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void render(T entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         if (!this.hasLabel(entity)) {
             return;
         }
-        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName().asFormattedString(), matrixStack, layeredVertexConsumerStorage);
+        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName().asFormattedString(), matrixStack, vertexConsumerProvider);
     }
 
     protected boolean hasLabel(T entity) {
@@ -63,7 +63,7 @@ public abstract class EntityRenderer<T extends Entity> {
         return this.renderManager.getTextRenderer();
     }
 
-    protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         double d = this.renderManager.getSquaredDistanceToCamera((Entity)entity);
         if (d > 4096.0) {
             return;
@@ -80,14 +80,14 @@ public abstract class EntityRenderer<T extends Entity> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch));
         matrixStack.scale(-0.025f, -0.025f, 0.025f);
-        Matrix4f matrix4f = matrixStack.peek();
+        Matrix4f matrix4f = matrixStack.peekModel();
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
         int k = (int)(g * 255.0f) << 24;
         TextRenderer textRenderer = this.getFontRenderer();
         float h = -textRenderer.getStringWidth(string) / 2;
-        textRenderer.method_22942(string, h, j, 0x20FFFFFF, false, matrix4f, layeredVertexConsumerStorage, bl, k, i);
+        textRenderer.draw(string, h, j, 0x20FFFFFF, false, matrix4f, vertexConsumerProvider, bl, k, i);
         if (bl) {
-            textRenderer.method_22942(string, h, j, -1, false, matrix4f, layeredVertexConsumerStorage, false, 0, i);
+            textRenderer.draw(string, h, j, -1, false, matrix4f, vertexConsumerProvider, false, 0, i);
         }
         matrixStack.pop();
     }

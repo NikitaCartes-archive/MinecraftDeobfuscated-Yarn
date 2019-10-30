@@ -22,7 +22,7 @@ import net.minecraft.resource.ResourceNotFoundException;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 public class DirectoryResourcePack
 extends AbstractFileResourcePack {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final boolean IS_WINDOWS = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.WINDOWS;
+    private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
     private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
 
     public DirectoryResourcePack(File file) {

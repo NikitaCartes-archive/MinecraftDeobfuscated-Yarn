@@ -42,9 +42,9 @@ public class FireworksSparkParticle {
         }
 
         public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            ExplosionParticle explosionParticle = new ExplosionParticle(world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider);
-            explosionParticle.setColorAlpha(0.99f);
-            return explosionParticle;
+            Explosion explosion = new Explosion(world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider);
+            explosion.setColorAlpha(0.99f);
+            return explosion;
         }
     }
 
@@ -58,16 +58,16 @@ public class FireworksSparkParticle {
         }
 
         public Particle method_18121(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            FlashParticle flashParticle = new FlashParticle(world, d, e, f);
-            flashParticle.setSprite(this.spriteProvider);
-            return flashParticle;
+            Flash flash = new Flash(world, d, e, f);
+            flash.setSprite(this.spriteProvider);
+            return flash;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class FlashParticle
+    public static class Flash
     extends SpriteBillboardParticle {
-        private FlashParticle(World world, double d, double e, double f) {
+        private Flash(World world, double d, double e, double f) {
             super(world, d, e, f);
             this.maxAge = 4;
         }
@@ -90,7 +90,7 @@ public class FireworksSparkParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class ExplosionParticle
+    static class Explosion
     extends AnimatedParticle {
         private boolean trail;
         private boolean flicker;
@@ -100,7 +100,7 @@ public class FireworksSparkParticle {
         private float field_3799;
         private boolean field_3802;
 
-        private ExplosionParticle(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, SpriteProvider spriteProvider) {
+        private Explosion(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, SpriteProvider spriteProvider) {
             super(world, d, e, f, spriteProvider, -0.004f);
             this.velocityX = g;
             this.velocityY = h;
@@ -130,18 +130,18 @@ public class FireworksSparkParticle {
         public void tick() {
             super.tick();
             if (this.trail && this.age < this.maxAge / 2 && (this.age + this.maxAge) % 2 == 0) {
-                ExplosionParticle explosionParticle = new ExplosionParticle(this.world, this.x, this.y, this.z, 0.0, 0.0, 0.0, this.particleManager, this.spriteProvider);
-                explosionParticle.setColorAlpha(0.99f);
-                explosionParticle.setColor(this.colorRed, this.colorGreen, this.colorBlue);
-                explosionParticle.age = explosionParticle.maxAge / 2;
+                Explosion explosion = new Explosion(this.world, this.x, this.y, this.z, 0.0, 0.0, 0.0, this.particleManager, this.spriteProvider);
+                explosion.setColorAlpha(0.99f);
+                explosion.setColor(this.colorRed, this.colorGreen, this.colorBlue);
+                explosion.age = explosion.maxAge / 2;
                 if (this.field_3802) {
-                    explosionParticle.field_3802 = true;
-                    explosionParticle.field_3801 = this.field_3801;
-                    explosionParticle.field_3800 = this.field_3800;
-                    explosionParticle.field_3799 = this.field_3799;
+                    explosion.field_3802 = true;
+                    explosion.field_3801 = this.field_3801;
+                    explosion.field_3800 = this.field_3800;
+                    explosion.field_3799 = this.field_3799;
                 }
-                explosionParticle.flicker = this.flicker;
-                this.particleManager.addParticle(explosionParticle);
+                explosion.flicker = this.flicker;
+                this.particleManager.addParticle(explosion);
             }
         }
     }
@@ -253,14 +253,14 @@ public class FireworksSparkParticle {
         }
 
         private void addExplosionParticle(double d, double e, double f, double g, double h, double i, int[] is, int[] js, boolean bl, boolean bl2) {
-            ExplosionParticle explosionParticle = (ExplosionParticle)this.particleManager.addParticle(ParticleTypes.FIREWORK, d, e, f, g, h, i);
-            explosionParticle.setTrail(bl);
-            explosionParticle.setFlicker(bl2);
-            explosionParticle.setColorAlpha(0.99f);
+            Explosion explosion = (Explosion)this.particleManager.addParticle(ParticleTypes.FIREWORK, d, e, f, g, h, i);
+            explosion.setTrail(bl);
+            explosion.setFlicker(bl2);
+            explosion.setColorAlpha(0.99f);
             int j = this.random.nextInt(is.length);
-            explosionParticle.setColor(is[j]);
+            explosion.setColor(is[j]);
             if (js.length > 0) {
-                explosionParticle.setTargetColor(js[this.random.nextInt(js.length)]);
+                explosion.setTargetColor(js[this.random.nextInt(js.length)]);
             }
         }
 

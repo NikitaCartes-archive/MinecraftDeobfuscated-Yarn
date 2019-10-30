@@ -22,7 +22,7 @@ extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<Wanderi
     public WanderingTraderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new VillagerResemblingModel(0.0f), 0.5f);
         this.addFeature(new HeadFeatureRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>>(this));
-        this.addFeature(new VillagerHeldItemFeatureRenderer<WanderingTraderEntity>(this));
+        this.addFeature(new VillagerHeldItemFeatureRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>>(this));
     }
 
     public Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {

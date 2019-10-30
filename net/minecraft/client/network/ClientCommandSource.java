@@ -52,8 +52,8 @@ implements CommandSource {
 
     @Override
     public Collection<String> getEntitySuggestions() {
-        if (this.client.hitResult != null && this.client.hitResult.getType() == HitResult.Type.ENTITY) {
-            return Collections.singleton(((EntityHitResult)this.client.hitResult).getEntity().getUuidAsString());
+        if (this.client.crosshairTarget != null && this.client.crosshairTarget.getType() == HitResult.Type.ENTITY) {
+            return Collections.singleton(((EntityHitResult)this.client.crosshairTarget).getEntity().getUuidAsString());
         }
         return Collections.emptyList();
     }
@@ -100,7 +100,7 @@ implements CommandSource {
 
     @Override
     public Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
-        HitResult hitResult = this.client.hitResult;
+        HitResult hitResult = this.client.crosshairTarget;
         if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) {
             return CommandSource.super.getBlockPositionSuggestions();
         }
@@ -110,7 +110,7 @@ implements CommandSource {
 
     @Override
     public Collection<CommandSource.RelativePosition> getPositionSuggestions() {
-        HitResult hitResult = this.client.hitResult;
+        HitResult hitResult = this.client.crosshairTarget;
         if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) {
             return CommandSource.super.getPositionSuggestions();
         }

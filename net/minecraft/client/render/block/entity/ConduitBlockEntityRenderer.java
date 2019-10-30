@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -46,11 +46,11 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         this.field_20826.addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f);
     }
 
-    public void method_22750(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_22750(ConduitBlockEntity conduitBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         float h = (float)conduitBlockEntity.ticks + g;
         if (!conduitBlockEntity.isActive()) {
             float k = conduitBlockEntity.getRotation(0.0f);
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
             matrixStack.push();
             matrixStack.translate(0.5, 0.5, 0.5);
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
@@ -58,7 +58,7 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
             matrixStack.pop();
             return;
         }
-        VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SpriteAtlasTexture.BLOCK_ATLAS_TEX));
         float l = conduitBlockEntity.getRotation(g) * 57.295776f;
         float m = MathHelper.sin(h * 0.1f) / 2.0f + 0.5f;
         m = m * m + m;
@@ -87,7 +87,7 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
         this.field_20824.render(matrixStack, vertexConsumer2, 0.0625f, i, j, sprite);
         matrixStack.pop();
-        Camera camera = this.field_20989.cameraEntity;
+        Camera camera = this.blockEntityRenderDispatcher.camera;
         matrixStack.push();
         matrixStack.translate(0.5, 0.3f + m * 0.2f, 0.5);
         matrixStack.scale(0.5f, 0.5f, 0.5f);

@@ -27,8 +27,8 @@ import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
@@ -41,7 +41,7 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -175,20 +175,20 @@ implements Drawable {
         this.fillGradient(m - 3, n - 3, m + l + 3, n - 3 + 1, 0x505000FF, 0x505000FF);
         this.fillGradient(m - 3, n + o + 2, m + l + 3, n + o + 3, 1344798847, 1344798847);
         MatrixStack matrixStack = new MatrixStack();
-        LayeredVertexConsumerStorage.Drawer drawer = LayeredVertexConsumerStorage.makeDrawer(Tessellator.getInstance().getBufferBuilder());
+        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrixStack.translate(0.0, 0.0, this.itemRenderer.zOffset);
-        Matrix4f matrix4f = matrixStack.peek();
+        Matrix4f matrix4f = matrixStack.peekModel();
         for (int s = 0; s < list.size(); ++s) {
             String string2 = list.get(s);
             if (string2 != null) {
-                this.font.method_22942(string2, m, n, -1, true, matrix4f, drawer, false, 0, 0xF000F0);
+                this.font.draw(string2, m, n, -1, true, matrix4f, immediate, false, 0, 0xF000F0);
             }
             if (s == 0) {
                 n += 2;
             }
             n += 10;
         }
-        drawer.draw();
+        immediate.draw();
         this.setBlitOffset(0);
         this.itemRenderer.zOffset = 0.0f;
         RenderSystem.enableDepthTest();
@@ -350,11 +350,11 @@ implements Drawable {
     public void renderDirtBackground(int i) {
         RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(0.0, this.height, 0.0).texture(0.0f, (float)this.height / 32.0f + (float)i).color(64, 64, 64, 255).next();
         bufferBuilder.vertex(this.width, this.height, 0.0).texture((float)this.width / 32.0f, (float)this.height / 32.0f + (float)i).color(64, 64, 64, 255).next();
         bufferBuilder.vertex(this.width, 0.0, 0.0).texture((float)this.width / 32.0f, i).color(64, 64, 64, 255).next();
@@ -375,7 +375,7 @@ implements Drawable {
     }
 
     private void openLink(URI uRI) {
-        SystemUtil.getOperatingSystem().open(uRI);
+        Util.getOperatingSystem().open(uRI);
     }
 
     public static boolean hasControlDown() {

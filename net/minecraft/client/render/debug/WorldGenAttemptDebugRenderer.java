@@ -42,7 +42,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         Camera camera = this.field_4634.gameRenderer.getCamera();
         double d = camera.getPos().x;
         double e = camera.getPos().y;
@@ -52,13 +52,13 @@ implements DebugRenderer.Renderer {
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
         for (int i = 0; i < this.field_4640.size(); ++i) {
             BlockPos blockPos = this.field_4640.get(i);
             Float float_ = this.field_4635.get(i);
             float g = float_.floatValue() / 2.0f;
-            WorldRenderer.buildBoxOutline(bufferBuilder, (double)((float)blockPos.getX() + 0.5f - g) - d, (double)((float)blockPos.getY() + 0.5f - g) - e, (double)((float)blockPos.getZ() + 0.5f - g) - f, (double)((float)blockPos.getX() + 0.5f + g) - d, (double)((float)blockPos.getY() + 0.5f + g) - e, (double)((float)blockPos.getZ() + 0.5f + g) - f, this.field_4639.get(i).floatValue(), this.field_4636.get(i).floatValue(), this.field_4638.get(i).floatValue(), this.field_4637.get(i).floatValue());
+            WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos.getX() + 0.5f - g) - d, (double)((float)blockPos.getY() + 0.5f - g) - e, (double)((float)blockPos.getZ() + 0.5f - g) - f, (double)((float)blockPos.getX() + 0.5f + g) - d, (double)((float)blockPos.getY() + 0.5f + g) - e, (double)((float)blockPos.getZ() + 0.5f + g) - f, this.field_4639.get(i).floatValue(), this.field_4636.get(i).floatValue(), this.field_4638.get(i).floatValue(), this.field_4637.get(i).floatValue());
         }
         tessellator.draw();
         RenderSystem.enableTexture();

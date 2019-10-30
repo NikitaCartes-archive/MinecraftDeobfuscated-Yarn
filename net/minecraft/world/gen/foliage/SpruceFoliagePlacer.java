@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.NormalTreeFeatureConfig;
+import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
@@ -23,12 +23,12 @@ extends FoliagePlacer {
     }
 
     @Override
-    public void method_23448(ModifiableTestableWorld modifiableTestableWorld, Random random, NormalTreeFeatureConfig normalTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
+    public void method_23448(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, int j, int k, BlockPos blockPos, Set<BlockPos> set) {
         int l = random.nextInt(2);
         int m = 1;
         int n = 0;
         for (int o = i; o >= j; --o) {
-            this.method_23449(modifiableTestableWorld, random, normalTreeFeatureConfig, i, blockPos, o, l, set);
+            this.method_23449(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPos, o, l, set);
             if (l >= m) {
                 l = n;
                 n = 1;
@@ -40,8 +40,8 @@ extends FoliagePlacer {
     }
 
     @Override
-    public int method_23452(Random random, int i, int j, NormalTreeFeatureConfig normalTreeFeatureConfig) {
-        return this.field_21296 + random.nextInt(this.field_21297 + 1);
+    public int method_23452(Random random, int i, int j, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
+        return this.radius + random.nextInt(this.randomRadius + 1);
     }
 
     @Override
@@ -51,7 +51,7 @@ extends FoliagePlacer {
 
     @Override
     public int method_23447(int i, int j, int k, int l) {
-        return l < i ? 0 : k;
+        return l <= 1 ? 0 : 2;
     }
 }
 

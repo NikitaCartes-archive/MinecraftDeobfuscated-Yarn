@@ -19,7 +19,7 @@ import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class ResourcePackOptionsScreen
@@ -34,7 +34,7 @@ extends GameOptionsScreen {
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, I18n.translate("resourcePack.openFolder", new Object[0]), buttonWidget -> SystemUtil.getOperatingSystem().open(this.minecraft.getResourcePackDir())));
+        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, I18n.translate("resourcePack.openFolder", new Object[0]), buttonWidget -> Util.getOperatingSystem().open(this.minecraft.getResourcePackDir())));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
             if (this.dirty) {
                 ArrayList<ClientResourcePackProfile> list = Lists.newArrayList();

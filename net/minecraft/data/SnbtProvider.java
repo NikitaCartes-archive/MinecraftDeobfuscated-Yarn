@@ -25,7 +25,7 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,21 +35,21 @@ public class SnbtProvider
 implements DataProvider {
     private static final Logger LOGGER = LogManager.getLogger();
     private final DataGenerator root;
-    private final List<class_4460> field_20309 = Lists.newArrayList();
+    private final List<Tweaker> write = Lists.newArrayList();
 
     public SnbtProvider(DataGenerator dataGenerator) {
         this.root = dataGenerator;
     }
 
-    public SnbtProvider method_21672(class_4460 arg) {
-        this.field_20309.add(arg);
+    public SnbtProvider addWriter(Tweaker tweaker) {
+        this.write.add(tweaker);
         return this;
     }
 
-    private CompoundTag method_21673(String string, CompoundTag compoundTag) {
+    private CompoundTag write(String string, CompoundTag compoundTag) {
         CompoundTag compoundTag2 = compoundTag;
-        for (class_4460 lv : this.field_20309) {
-            compoundTag2 = lv.method_21674(string, compoundTag2);
+        for (Tweaker tweaker : this.write) {
+            compoundTag2 = tweaker.write(string, compoundTag2);
         }
         return compoundTag2;
     }
@@ -59,9 +59,9 @@ implements DataProvider {
         Path path3 = this.root.getOutput();
         ArrayList list = Lists.newArrayList();
         for (Path path22 : this.root.getInputs()) {
-            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path2 -> list.add(CompletableFuture.supplyAsync(() -> this.method_22144((Path)path2, this.method_10500(path22, (Path)path2)), SystemUtil.getServerWorkerExecutor())));
+            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path2 -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt((Path)path2, this.getFileName(path22, (Path)path2)), Util.getServerWorkerExecutor())));
         }
-        SystemUtil.thenCombine(list).join().stream().filter(Objects::nonNull).forEach(arg -> this.method_10497(dataCache, (class_4511)arg, path3));
+        Util.combine(list).join().stream().filter(Objects::nonNull).forEach(compressedData -> this.write(dataCache, (CompressedData)compressedData, path3));
     }
 
     @Override
@@ -69,7 +69,7 @@ implements DataProvider {
         return "SNBT -> NBT";
     }
 
-    private String method_10500(Path path, Path path2) {
+    private String getFileName(Path path, Path path2) {
         String string = path.relativize(path2).toString().replaceAll("\\\\", "/");
         return string.substring(0, string.length() - ".snbt".length());
     }
@@ -80,15 +80,15 @@ implements DataProvider {
      * Enabled aggressive exception aggregation
      */
     @Nullable
-    private class_4511 method_22144(Path path, String string) {
+    private CompressedData toCompressedNbt(Path path, String string) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(path);){
             String string2 = IOUtils.toString(bufferedReader);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(this.method_21673(string, StringNbtReader.parse(string2)), byteArrayOutputStream);
+            NbtIo.writeCompressed(this.write(string, StringNbtReader.parse(string2)), byteArrayOutputStream);
             byte[] bs = byteArrayOutputStream.toByteArray();
             String string3 = SHA1.hashBytes(bs).toString();
-            class_4511 class_45112 = new class_4511(string, bs, string3);
-            return class_45112;
+            CompressedData compressedData = new CompressedData(string, bs, string3);
+            return compressedData;
         } catch (CommandSyntaxException commandSyntaxException) {
             LOGGER.error("Couldn't convert {} from SNBT to NBT at {} as it's invalid SNBT", (Object)string, (Object)path, (Object)commandSyntaxException);
             return null;
@@ -98,35 +98,35 @@ implements DataProvider {
         return null;
     }
 
-    private void method_10497(DataCache dataCache, class_4511 arg, Path path) {
-        Path path2 = path.resolve(arg.field_20538 + ".nbt");
+    private void write(DataCache dataCache, CompressedData compressedData, Path path) {
+        Path path2 = path.resolve(compressedData.name + ".nbt");
         try {
-            if (!Objects.equals(dataCache.getOldSha1(path2), arg.field_20540) || !Files.exists(path2, new LinkOption[0])) {
+            if (!Objects.equals(dataCache.getOldSha1(path2), compressedData.sha1) || !Files.exists(path2, new LinkOption[0])) {
                 Files.createDirectories(path2.getParent(), new FileAttribute[0]);
                 try (OutputStream outputStream = Files.newOutputStream(path2, new OpenOption[0]);){
-                    outputStream.write(arg.field_20539);
+                    outputStream.write(compressedData.bytes);
                 }
             }
-            dataCache.updateSha1(path2, arg.field_20540);
+            dataCache.updateSha1(path2, compressedData.sha1);
         } catch (IOException iOException) {
-            LOGGER.error("Couldn't write structure {} at {}", (Object)arg.field_20538, (Object)path2, (Object)iOException);
+            LOGGER.error("Couldn't write structure {} at {}", (Object)compressedData.name, (Object)path2, (Object)iOException);
         }
     }
 
     @FunctionalInterface
-    public static interface class_4460 {
-        public CompoundTag method_21674(String var1, CompoundTag var2);
+    public static interface Tweaker {
+        public CompoundTag write(String var1, CompoundTag var2);
     }
 
-    static class class_4511 {
-        private final String field_20538;
-        private final byte[] field_20539;
-        private final String field_20540;
+    static class CompressedData {
+        private final String name;
+        private final byte[] bytes;
+        private final String sha1;
 
-        public class_4511(String string, byte[] bs, String string2) {
-            this.field_20538 = string;
-            this.field_20539 = bs;
-            this.field_20540 = string2;
+        public CompressedData(String string, byte[] bs, String string2) {
+            this.name = string;
+            this.bytes = bs;
+            this.sha1 = string2;
         }
     }
 }

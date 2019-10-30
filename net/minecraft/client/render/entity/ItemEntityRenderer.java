@@ -6,8 +6,8 @@ package net.minecraft.client.render.entity;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -49,7 +49,7 @@ extends EntityRenderer<ItemEntity> {
         return i;
     }
 
-    public void method_3996(ItemEntity itemEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_3996(ItemEntity itemEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         float t;
         float s;
         matrixStack.push();
@@ -88,13 +88,13 @@ extends EntityRenderer<ItemEntity> {
                     matrixStack.translate(s, t, 0.0);
                 }
             }
-            this.itemRenderer.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, layeredVertexConsumerStorage, itemEntity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, bakedModel);
+            this.itemRenderer.method_23179(itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, itemEntity.getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, bakedModel);
             matrixStack.pop();
             if (bl) continue;
             matrixStack.translate(0.0f * o, 0.0f * p, 0.09375f * q);
         }
         matrixStack.pop();
-        super.render(itemEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(itemEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     public Identifier method_3999(ItemEntity itemEntity) {

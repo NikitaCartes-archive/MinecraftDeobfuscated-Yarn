@@ -6,7 +6,6 @@ package net.minecraft.entity.passive;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnType;
@@ -289,24 +288,24 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
+    public net.minecraft.entity.EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable net.minecraft.entity.EntityData entityData, @Nullable CompoundTag compoundTag) {
         int i;
-        if (entityData instanceof class_1499) {
-            i = ((class_1499)entityData).field_6994;
+        if (entityData instanceof EntityData) {
+            i = ((EntityData)entityData).variant;
         } else {
             i = this.random.nextInt(7);
-            entityData = new class_1499(i);
+            entityData = new EntityData(i);
         }
         this.setVariant(i | this.random.nextInt(5) << 8);
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
-    public static class class_1499
-    extends PassiveEntity.class_4697 {
-        public final int field_6994;
+    public static class EntityData
+    extends PassiveEntity.EntityData {
+        public final int variant;
 
-        public class_1499(int i) {
-            this.field_6994 = i;
+        public EntityData(int i) {
+            this.variant = i;
         }
     }
 }

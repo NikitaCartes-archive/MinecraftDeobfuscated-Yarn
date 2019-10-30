@@ -19,13 +19,13 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public class ItemSlotArgumentType
 implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("container.5", "12", "weapon");
     private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("slot.unknown", object));
-    private static final Map<String, Integer> slotNamesToSlotCommandId = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<String, Integer> slotNamesToSlotCommandId = Util.create(Maps.newHashMap(), hashMap -> {
         int i;
         for (i = 0; i < 54; ++i) {
             hashMap.put("container." + i, i);

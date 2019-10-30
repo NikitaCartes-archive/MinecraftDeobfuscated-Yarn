@@ -43,10 +43,6 @@ extends JsonDataLoader {
         return this.conditions.get(identifier);
     }
 
-    public LootCondition get(Identifier identifier, LootCondition lootCondition) {
-        return this.conditions.getOrDefault(identifier, lootCondition);
-    }
-
     protected void method_22563(Map<Identifier, JsonObject> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder builder = ImmutableMap.builder();
         map.forEach((identifier, jsonObject) -> {

@@ -114,7 +114,7 @@ implements ResourceReloadListener {
     private final Random random = new Random();
     private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap();
     private final Queue<Particle> newParticles = Queues.newArrayDeque();
-    private final Map<Identifier, SimpleSpriteProvider> field_18300 = Maps.newHashMap();
+    private final Map<Identifier, SimpleSpriteProvider> spriteAwareFactories = Maps.newHashMap();
     private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture("textures/particle");
 
     public ParticleManager(World world, TextureManager textureManager) {
@@ -183,20 +183,20 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.UNDERWATER, WaterSuspendParticle.UnderwaterFactory::new);
         this.registerFactory(ParticleTypes.SPLASH, WaterSplashParticle.SplashFactory::new);
         this.registerFactory(ParticleTypes.WITCH, SpellParticle.WitchFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_HONEY, BlockLeakParticle.class_4500::new);
-        this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.class_4499::new);
-        this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.class_4501::new);
-        this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.class_4502::new);
+        this.registerFactory(ParticleTypes.DRIPPING_HONEY, BlockLeakParticle.DrippingHoneyFactory::new);
+        this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.FallingHoneyFactory::new);
+        this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.LandingHoneyFactory::new);
+        this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.FallingNectarFactory::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, ParticleFactory<T> particleFactory) {
         this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), (ParticleFactory<?>)particleFactory);
     }
 
-    private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, class_4091<T> arg) {
+    private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, SpriteAwareFactory<T> spriteAwareFactory) {
         SimpleSpriteProvider simpleSpriteProvider = new SimpleSpriteProvider();
-        this.field_18300.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
-        this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), (ParticleFactory<?>)arg.create(simpleSpriteProvider));
+        this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
+        this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), (ParticleFactory<?>)spriteAwareFactory.create(simpleSpriteProvider));
     }
 
     @Override
@@ -219,7 +219,7 @@ implements ResourceReloadListener {
             Sprite sprite = this.particleAtlasTexture.getSprite(MissingSprite.getMissingSpriteId());
             map.forEach((identifier, list) -> {
                 ImmutableList<Sprite> immutableList = list.isEmpty() ? ImmutableList.of(sprite) : list.stream().map(this.particleAtlasTexture::getSprite).collect(ImmutableList.toImmutableList());
-                this.field_18300.get(identifier).setSprites(immutableList);
+                this.spriteAwareFactories.get(identifier).setSprites(immutableList);
             });
             profiler2.pop();
             profiler2.endTick();
@@ -236,7 +236,7 @@ implements ResourceReloadListener {
              InputStreamReader reader = new InputStreamReader(resource.getInputStream(), Charsets.UTF_8);){
             ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
             List<Identifier> list = particleTextureData.getTextureList();
-            boolean bl = this.field_18300.containsKey(identifier);
+            boolean bl = this.spriteAwareFactories.containsKey(identifier);
             if (list == null) {
                 if (bl) {
                     throw new IllegalStateException("Missing texture list for particle " + identifier);
@@ -344,7 +344,7 @@ implements ResourceReloadListener {
             if (iterable == null) continue;
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
             particleTextureSheet.begin(bufferBuilder, this.textureManager);
             for (Particle particle : iterable) {
                 try {
@@ -409,26 +409,26 @@ implements ResourceReloadListener {
         int k = blockPos.getZ();
         float f = 0.1f;
         Box box = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
-        double d = (double)i + this.random.nextDouble() * (box.maxX - box.minX - (double)0.2f) + (double)0.1f + box.minX;
-        double e = (double)j + this.random.nextDouble() * (box.maxY - box.minY - (double)0.2f) + (double)0.1f + box.minY;
-        double g = (double)k + this.random.nextDouble() * (box.maxZ - box.minZ - (double)0.2f) + (double)0.1f + box.minZ;
+        double d = (double)i + this.random.nextDouble() * (box.x2 - box.x1 - (double)0.2f) + (double)0.1f + box.x1;
+        double e = (double)j + this.random.nextDouble() * (box.y2 - box.y1 - (double)0.2f) + (double)0.1f + box.y1;
+        double g = (double)k + this.random.nextDouble() * (box.z2 - box.z1 - (double)0.2f) + (double)0.1f + box.z1;
         if (direction == Direction.DOWN) {
-            e = (double)j + box.minY - (double)0.1f;
+            e = (double)j + box.y1 - (double)0.1f;
         }
         if (direction == Direction.UP) {
-            e = (double)j + box.maxY + (double)0.1f;
+            e = (double)j + box.y2 + (double)0.1f;
         }
         if (direction == Direction.NORTH) {
-            g = (double)k + box.minZ - (double)0.1f;
+            g = (double)k + box.z1 - (double)0.1f;
         }
         if (direction == Direction.SOUTH) {
-            g = (double)k + box.maxZ + (double)0.1f;
+            g = (double)k + box.z2 + (double)0.1f;
         }
         if (direction == Direction.WEST) {
-            d = (double)i + box.minX - (double)0.1f;
+            d = (double)i + box.x1 - (double)0.1f;
         }
         if (direction == Direction.EAST) {
-            d = (double)i + box.maxX + (double)0.1f;
+            d = (double)i + box.x2 + (double)0.1f;
         }
         this.addParticle(new BlockCrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2f).scale(0.6f));
     }
@@ -462,7 +462,7 @@ implements ResourceReloadListener {
 
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    static interface class_4091<T extends ParticleEffect> {
+    static interface SpriteAwareFactory<T extends ParticleEffect> {
         public ParticleFactory<T> create(SpriteProvider var1);
     }
 }

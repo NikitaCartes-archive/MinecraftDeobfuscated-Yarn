@@ -28,7 +28,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -48,7 +48,7 @@ implements DebugRenderer.Renderer {
     }
 
     private static void method_23122(BlockPos blockPos) {
-        DebugRenderer.method_23104(blockPos.add(-0.5, -0.5, -0.5), blockPos.add(1.5, 1.5, 1.5), 1.0f, 0.0f, 0.0f, 0.15f);
+        DebugRenderer.drawBox(blockPos.add(-0.5, -0.5, -0.5), blockPos.add(1.5, 1.5, 1.5), 1.0f, 0.0f, 0.0f, 0.15f);
         int i = -65536;
         RaidCenterDebugRenderer.method_23123("Raid center", blockPos, -65536);
     }
@@ -57,7 +57,7 @@ implements DebugRenderer.Renderer {
         double d = (double)blockPos.getX() + 0.5;
         double e = (double)blockPos.getY() + 1.3;
         double f = (double)blockPos.getZ() + 0.5;
-        DebugRenderer.method_23107(string, d, e, f, i, 0.04f, true, 0.0f, true);
+        DebugRenderer.drawString(string, d, e, f, i, 0.04f, true, 0.0f, true);
     }
 
     private Camera method_23125() {

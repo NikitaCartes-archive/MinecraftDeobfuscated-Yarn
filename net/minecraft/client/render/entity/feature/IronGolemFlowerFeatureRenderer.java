@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.IronGolemEntityModel;
@@ -23,7 +23,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         super(featureRendererContext);
     }
 
-    public void method_4188(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4188(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (ironGolemEntity.method_6502() == 0) {
             return;
         }
@@ -36,7 +36,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        MinecraftClient.getInstance().getBlockRenderManager().renderOnEntity(Blocks.POPPY.getDefaultState(), matrixStack, layeredVertexConsumerStorage, i, OverlayTexture.DEFAULT_UV);
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }
 }

@@ -146,8 +146,8 @@ extends Screen {
         m *= m;
         m = m * 96.0f / 255.0f;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(0.0, this.height, this.getBlitOffset()).texture(0.0f, g * 0.015625f).color(m, m, m, 1.0f).next();
         bufferBuilder.vertex(k, this.height, this.getBlitOffset()).texture((float)k * 0.015625f, g * 0.015625f).color(m, m, m, 1.0f).next();
         bufferBuilder.vertex(k, 0.0, this.getBlitOffset()).texture((float)k * 0.015625f, h * 0.015625f).color(m, m, m, 1.0f).next();
@@ -198,8 +198,8 @@ extends Screen {
         o = this.width;
         int p = this.height;
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
         bufferBuilder.vertex(0.0, p, this.getBlitOffset()).texture(0.0f, 1.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();
         bufferBuilder.vertex(o, p, this.getBlitOffset()).texture(1.0f, 1.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();
         bufferBuilder.vertex(o, 0.0, this.getBlitOffset()).texture(1.0f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();

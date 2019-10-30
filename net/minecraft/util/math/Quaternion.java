@@ -10,6 +10,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
 
 public final class Quaternion {
+    public static final Quaternion IDENTITY = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
     private final float[] components;
 
     private Quaternion(float[] fs) {
@@ -152,6 +153,11 @@ public final class Quaternion {
             this.components[2] = 0.0f;
             this.components[3] = 0.0f;
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Quaternion copy() {
+        return new Quaternion((float[])this.components.clone());
     }
 }
 

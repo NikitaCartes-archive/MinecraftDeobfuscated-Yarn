@@ -16,7 +16,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_4623;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +24,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Boxes;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -115,7 +115,7 @@ implements Tickable {
         }
         List<Box> list = voxelShape.getBoundingBoxes();
         Box box = this.offsetHeadBox(this.getApproximateHeadBox(list));
-        List<Entity> list2 = this.world.getEntities(null, class_4623.method_23362(box, direction, d).union(box));
+        List<Entity> list2 = this.world.getEntities(null, Boxes.stretch(box, direction, d).union(box));
         if (list2.isEmpty()) {
             return;
         }
@@ -147,7 +147,7 @@ implements Tickable {
             }
             double i = 0.0;
             Iterator<Box> iterator = list.iterator();
-            while (!(!iterator.hasNext() || (box3 = class_4623.method_23362(this.offsetHeadBox(box2 = iterator.next()), direction, d)).intersects(box4 = entity.getBoundingBox()) && (i = Math.max(i, PistonBlockEntity.getIntersectionSize(box3, direction, box4))) >= d)) {
+            while (!(!iterator.hasNext() || (box3 = Boxes.stretch(this.offsetHeadBox(box2 = iterator.next()), direction, d)).intersects(box4 = entity.getBoundingBox()) && (i = Math.max(i, PistonBlockEntity.getIntersectionSize(box3, direction, box4))) >= d)) {
             }
             if (i <= 0.0) continue;
             i = Math.min(i, d) + 0.01;
@@ -181,7 +181,7 @@ implements Tickable {
     }
 
     private static boolean method_23671(Box box, Entity entity) {
-        return entity.getPistonBehavior() == PistonBehavior.NORMAL && entity.onGround && entity.getX() >= box.minX && entity.getX() <= box.maxX && entity.getZ() >= box.minZ && entity.getZ() <= box.maxZ;
+        return entity.getPistonBehavior() == PistonBehavior.NORMAL && entity.onGround && entity.getX() >= box.x1 && entity.getX() <= box.x2 && entity.getZ() >= box.z1 && entity.getZ() <= box.z2;
     }
 
     private boolean method_23364() {
@@ -200,12 +200,12 @@ implements Tickable {
         double h = 1.0;
         double i = 1.0;
         for (Box box : list) {
-            d = Math.min(box.minX, d);
-            e = Math.min(box.minY, e);
-            f = Math.min(box.minZ, f);
-            g = Math.max(box.maxX, g);
-            h = Math.max(box.maxY, h);
-            i = Math.max(box.maxZ, i);
+            d = Math.min(box.x1, d);
+            e = Math.min(box.y1, e);
+            f = Math.min(box.z1, f);
+            g = Math.max(box.x2, g);
+            h = Math.max(box.y2, h);
+            i = Math.max(box.z2, i);
         }
         return new Box(d, e, f, g, h, i);
     }
@@ -213,23 +213,23 @@ implements Tickable {
     private static double getIntersectionSize(Box box, Direction direction, Box box2) {
         switch (direction) {
             case EAST: {
-                return box.maxX - box2.minX;
+                return box.x2 - box2.x1;
             }
             case WEST: {
-                return box2.maxX - box.minX;
+                return box2.x2 - box.x1;
             }
             default: {
-                return box.maxY - box2.minY;
+                return box.y2 - box2.y1;
             }
             case DOWN: {
-                return box2.maxY - box.minY;
+                return box2.y2 - box.y1;
             }
             case SOUTH: {
-                return box.maxZ - box2.minZ;
+                return box.z2 - box2.z1;
             }
             case NORTH: 
         }
-        return box2.maxZ - box.minZ;
+        return box2.z2 - box.z1;
     }
 
     private Box offsetHeadBox(Box box) {

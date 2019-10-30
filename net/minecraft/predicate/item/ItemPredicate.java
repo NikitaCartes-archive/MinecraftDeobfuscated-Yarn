@@ -219,11 +219,6 @@ public class ItemPredicate {
             return this;
         }
 
-        public Builder count(NumberRange.IntRange intRange) {
-            this.count = intRange;
-            return this;
-        }
-
         public Builder nbt(CompoundTag compoundTag) {
             this.nbt = new NbtPredicate(compoundTag);
             return this;

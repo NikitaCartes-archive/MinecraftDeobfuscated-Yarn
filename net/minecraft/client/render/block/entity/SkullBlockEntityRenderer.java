@@ -15,10 +15,10 @@ import net.minecraft.block.SkullBlock;
 import net.minecraft.block.WallSkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.model.DragonHeadEntityModel;
@@ -28,14 +28,14 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SkullBlockEntityRenderer
 extends BlockEntityRenderer<SkullBlockEntity> {
-    private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<SkullBlock.SkullType, SkullEntityModel> MODELS = Util.create(Maps.newHashMap(), hashMap -> {
         SkullEntityModel skullEntityModel = new SkullEntityModel(0, 0, 64, 32);
         SkullOverlayEntityModel skullEntityModel2 = new SkullOverlayEntityModel();
         DragonHeadEntityModel dragonHeadEntityModel = new DragonHeadEntityModel(0.0f);
@@ -46,7 +46,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         hashMap.put(SkullBlock.Type.CREEPER, skullEntityModel);
         hashMap.put(SkullBlock.Type.DRAGON, dragonHeadEntityModel);
     });
-    private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<SkullBlock.SkullType, Identifier> TEXTURES = Util.create(Maps.newHashMap(), hashMap -> {
         hashMap.put(SkullBlock.Type.SKELETON, new Identifier("textures/entity/skeleton/skeleton.png"));
         hashMap.put(SkullBlock.Type.WITHER_SKELETON, new Identifier("textures/entity/skeleton/wither_skeleton.png"));
         hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));
@@ -59,16 +59,16 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         float h = skullBlockEntity.getTicksPowered(g);
         BlockState blockState = skullBlockEntity.getCachedState();
         boolean bl = blockState.getBlock() instanceof WallSkullBlock;
         Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
         float k = 22.5f * (float)(bl ? (2 + direction.getHorizontal()) * 4 : blockState.get(SkullBlock.ROTATION));
-        SkullBlockEntityRenderer.render(direction, k, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, matrixStack, layeredVertexConsumerStorage, i);
+        SkullBlockEntityRenderer.render(direction, k, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), h, matrixStack, vertexConsumerProvider, i);
     }
 
-    public static void render(@Nullable Direction direction, float f, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i) {
+    public static void render(@Nullable Direction direction, float f, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         SkullEntityModel skullEntityModel = MODELS.get(skullType);
         matrixStack.push();
         if (direction == null) {
@@ -93,7 +93,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
             }
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(SkullBlockEntityRenderer.method_3578(skullType, gameProfile));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(SkullBlockEntityRenderer.method_3578(skullType, gameProfile));
         skullEntityModel.render(g, f, 0.0f);
         skullEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();

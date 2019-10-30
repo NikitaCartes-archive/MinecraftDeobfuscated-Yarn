@@ -6,17 +6,17 @@ package net.minecraft.block.sapling;
 import java.util.Random;
 import net.minecraft.block.sapling.LargeTreeSaplingGenerator;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
+import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
-import net.minecraft.world.gen.feature.NormalTreeFeatureConfig;
 import org.jetbrains.annotations.Nullable;
 
 public class SpruceSaplingGenerator
 extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
-    protected ConfiguredFeature<NormalTreeFeatureConfig, ?> createTreeFeature(Random random) {
+    protected ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random) {
         return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21185);
     }
 

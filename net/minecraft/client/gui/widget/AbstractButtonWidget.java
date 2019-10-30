@@ -19,7 +19,7 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -91,7 +91,7 @@ Element {
 
     protected void narrate() {
         String string;
-        if (this.active && this.isHovered() && SystemUtil.getMeasuringTimeMs() > this.nextNarration && !(string = this.getNarrationMessage()).isEmpty()) {
+        if (this.active && this.isHovered() && Util.getMeasuringTimeMs() > this.nextNarration && !(string = this.getNarrationMessage()).isEmpty()) {
             NarratorManager.INSTANCE.narrate(string);
             this.nextNarration = Long.MAX_VALUE;
         }
@@ -226,7 +226,7 @@ Element {
     }
 
     public void queueNarration(int i) {
-        this.nextNarration = SystemUtil.getMeasuringTimeMs() + (long)i;
+        this.nextNarration = Util.getMeasuringTimeMs() + (long)i;
     }
 
     public String getMessage() {

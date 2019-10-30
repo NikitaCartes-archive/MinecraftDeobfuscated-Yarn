@@ -59,7 +59,7 @@ extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         playerEntity.setCurrentHand(hand);
-        return TypedActionResult.successWithoutSwing(itemStack);
+        return TypedActionResult.consume(itemStack);
     }
 
     @Override

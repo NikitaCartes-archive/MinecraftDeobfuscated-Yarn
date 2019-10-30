@@ -17,7 +17,6 @@ import net.minecraft.util.Identifier;
 public interface LootCondition
 extends LootContextAware,
 Predicate<LootContext> {
-    public static final LootCondition ALWAYS_FALSE = lootContext -> false;
 
     public static abstract class Factory<T extends LootCondition> {
         private final Identifier id;

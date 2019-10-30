@@ -17,7 +17,7 @@ import net.minecraft.client.util.Untracker;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.EXTFramebufferObject;
@@ -47,8 +47,8 @@ public class GlStateManager {
     private static final ClearState CLEAR = new ClearState();
     private static final StencilState STENCIL = new StencilState();
     private static final FloatBuffer field_20771 = GlAllocationUtils.allocateFloatBuffer(4);
-    private static final Vector3f field_20772 = SystemUtil.consume(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::reciprocal);
-    private static final Vector3f field_20773 = SystemUtil.consume(new Vector3f(-0.2f, 1.0f, 0.7f), Vector3f::reciprocal);
+    private static final Vector3f field_20772 = Util.create(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::reciprocal);
+    private static final Vector3f field_20773 = Util.create(new Vector3f(-0.2f, 1.0f, 0.7f), Vector3f::reciprocal);
     private static int activeTexture;
     private static final Texture2DState[] TEXTURES;
     private static int shadeModel;
@@ -224,10 +224,10 @@ public class GlStateManager {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
         if (gLCapabilities.OpenGL30) {
             fboMode = FBOMode.BASE;
-            FramebufferInfo.field_20457 = 36160;
-            FramebufferInfo.field_20458 = 36161;
+            FramebufferInfo.target = 36160;
+            FramebufferInfo.renderBufferTarget = 36161;
             FramebufferInfo.field_20459 = 36064;
-            FramebufferInfo.field_20460 = 36096;
+            FramebufferInfo.attachment = 36096;
             FramebufferInfo.field_20461 = 36053;
             FramebufferInfo.field_20462 = 36054;
             FramebufferInfo.field_20463 = 36055;
@@ -237,10 +237,10 @@ public class GlStateManager {
         }
         if (gLCapabilities.GL_ARB_framebuffer_object) {
             fboMode = FBOMode.ARB;
-            FramebufferInfo.field_20457 = 36160;
-            FramebufferInfo.field_20458 = 36161;
+            FramebufferInfo.target = 36160;
+            FramebufferInfo.renderBufferTarget = 36161;
             FramebufferInfo.field_20459 = 36064;
-            FramebufferInfo.field_20460 = 36096;
+            FramebufferInfo.attachment = 36096;
             FramebufferInfo.field_20461 = 36053;
             FramebufferInfo.field_20463 = 36055;
             FramebufferInfo.field_20462 = 36054;
@@ -250,10 +250,10 @@ public class GlStateManager {
         }
         if (gLCapabilities.GL_EXT_framebuffer_object) {
             fboMode = FBOMode.EXT;
-            FramebufferInfo.field_20457 = 36160;
-            FramebufferInfo.field_20458 = 36161;
+            FramebufferInfo.target = 36160;
+            FramebufferInfo.renderBufferTarget = 36161;
             FramebufferInfo.field_20459 = 36064;
-            FramebufferInfo.field_20460 = 36096;
+            FramebufferInfo.attachment = 36096;
             FramebufferInfo.field_20461 = 36053;
             FramebufferInfo.field_20463 = 36055;
             FramebufferInfo.field_20462 = 36054;
@@ -671,11 +671,8 @@ public class GlStateManager {
 
     public static void method_22616(Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        GlStateManager.enableLighting();
         GlStateManager.enableLight(0);
         GlStateManager.enableLight(1);
-        GlStateManager.enableColorMaterial();
-        GlStateManager.colorMaterial(1032, 5634);
         Vector4f vector4f = new Vector4f(field_20772);
         vector4f.multiply(matrix4f);
         GlStateManager.light(16384, 4611, GlStateManager.method_22613(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0f));
@@ -692,8 +689,6 @@ public class GlStateManager {
         GlStateManager.shadeModel(7424);
         float g = 0.4f;
         GlStateManager.lightModel(2899, GlStateManager.method_22613(0.4f, 0.4f, 0.4f, 1.0f));
-        GlStateManager.disableLighting();
-        GlStateManager.disableColorMaterial();
     }
 
     public static void method_22617(Matrix4f matrix4f) {

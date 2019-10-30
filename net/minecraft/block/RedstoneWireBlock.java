@@ -134,7 +134,7 @@ extends Block {
             boolean bl;
             boolean bl2 = bl = blockState.isSideSolidFullSquare(blockView, blockPos2, Direction.UP) || blockState.getBlock() == Blocks.HOPPER;
             if (bl && RedstoneWireBlock.connectsTo(blockView.getBlockState(blockPos2.up()))) {
-                if (blockState.method_21743(blockView, blockPos2)) {
+                if (blockState.isFullCube(blockView, blockPos2)) {
                     return WireConnection.UP;
                 }
                 return WireConnection.SIDE;

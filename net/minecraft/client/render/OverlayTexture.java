@@ -35,7 +35,7 @@ implements AutoCloseable {
         RenderSystem.scalef(0.06666667f, 0.06666667f, 0.06666667f);
         RenderSystem.matrixMode(5888);
         this.texture.bindTexture();
-        nativeImage.method_22619(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
+        nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
         RenderSystem.activeTexture(33984);
     }
 

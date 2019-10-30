@@ -31,10 +31,10 @@ import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.AbstractTreeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
-public abstract class AbstractTreeFeature<T extends AbstractTreeFeatureConfig>
+public abstract class AbstractTreeFeature<T extends TreeFeatureConfig>
 extends Feature<T> {
     public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> function) {
         super(function);
@@ -94,18 +94,18 @@ extends Feature<T> {
         }
     }
 
-    protected boolean method_23382(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, AbstractTreeFeatureConfig abstractTreeFeatureConfig) {
+    protected boolean method_23382(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         if (AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
-            this.setBlockState(modifiableTestableWorld, blockPos, abstractTreeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
+            this.setBlockState(modifiableTestableWorld, blockPos, treeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
             set.add(blockPos.toImmutable());
             return true;
         }
         return false;
     }
 
-    protected boolean method_23383(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, AbstractTreeFeatureConfig abstractTreeFeatureConfig) {
+    protected boolean method_23383(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         if (AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
-            this.setBlockState(modifiableTestableWorld, blockPos, abstractTreeFeatureConfig.leavesProvider.getBlockState(random, blockPos), blockBox);
+            this.setBlockState(modifiableTestableWorld, blockPos, treeFeatureConfig.leavesProvider.getBlockState(random, blockPos), blockBox);
             set.add(blockPos.toImmutable());
             return true;
         }
@@ -126,21 +126,21 @@ extends Feature<T> {
         modifiableWorld.setBlockState(blockPos, blockState, 19);
     }
 
-    public final boolean method_22362(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T abstractTreeFeatureConfig) {
+    public final boolean method_22362(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T treeFeatureConfig) {
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
         HashSet<BlockPos> set3 = Sets.newHashSet();
         BlockBox blockBox = BlockBox.empty();
-        boolean bl = this.generate(iWorld, random, blockPos, set, set2, blockBox, abstractTreeFeatureConfig);
+        boolean bl = this.generate(iWorld, random, blockPos, set, set2, blockBox, treeFeatureConfig);
         if (blockBox.minX > blockBox.maxX || !bl || set.isEmpty()) {
             return false;
         }
-        if (!((AbstractTreeFeatureConfig)abstractTreeFeatureConfig).decorators.isEmpty()) {
+        if (!((TreeFeatureConfig)treeFeatureConfig).decorators.isEmpty()) {
             ArrayList<BlockPos> list = Lists.newArrayList(set);
             ArrayList<BlockPos> list2 = Lists.newArrayList(set2);
             list.sort(Comparator.comparingInt(Vec3i::getY));
             list2.sort(Comparator.comparingInt(Vec3i::getY));
-            ((AbstractTreeFeatureConfig)abstractTreeFeatureConfig).decorators.forEach(treeDecorator -> treeDecorator.method_23469(iWorld, random, list, list2, set3, blockBox));
+            ((TreeFeatureConfig)treeFeatureConfig).decorators.forEach(treeDecorator -> treeDecorator.method_23469(iWorld, random, list, list2, set3, blockBox));
         }
         VoxelSet voxelSet = this.method_23380(iWorld, blockBox, set, set3);
         Structure.method_20532(iWorld, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);

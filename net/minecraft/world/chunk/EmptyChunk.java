@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EmptyChunk
 extends WorldChunk {
-    private static final Biome[] BIOMES = SystemUtil.consume(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
+    private static final Biome[] BIOMES = Util.create(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, Biomes.PLAINS));
 
     public EmptyChunk(World world, ChunkPos chunkPos) {
         super(world, chunkPos, new BiomeArray(BIOMES));

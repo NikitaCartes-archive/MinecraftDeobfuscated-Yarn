@@ -6,7 +6,7 @@ package net.minecraft.world.gen.chunk;
 import java.util.List;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -28,7 +28,7 @@ import net.minecraft.world.level.LevelGeneratorType;
 
 public class OverworldChunkGenerator
 extends SurfaceChunkGenerator<OverworldChunkGeneratorConfig> {
-    private static final float[] BIOME_WEIGHT_TABLE = SystemUtil.consume(new float[25], fs -> {
+    private static final float[] BIOME_WEIGHT_TABLE = Util.create(new float[25], fs -> {
         for (int i = -2; i <= 2; ++i) {
             for (int j = -2; j <= 2; ++j) {
                 float f;

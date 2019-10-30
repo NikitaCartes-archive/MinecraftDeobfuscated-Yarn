@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
@@ -25,7 +25,7 @@ extends FeatureRenderer<T, M> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, T entity, float f, float g, float h, float j, float k, float l, float m) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float h, float j, float k, float l, float m) {
         if (!((SkinOverlayOwner)entity).shouldRenderOverlay()) {
             return;
         }
@@ -33,7 +33,7 @@ extends FeatureRenderer<T, M> {
         EntityModel<T> entityModel = this.getEnergySwirlModel();
         entityModel.animateModel(entity, f, g, h);
         ((EntityModel)this.getModel()).copyStateTo(entityModel);
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(n), n * 0.01f));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(n), n * 0.01f));
         entityModel.setAngles(entity, f, g, j, k, l, m);
         entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f);
     }

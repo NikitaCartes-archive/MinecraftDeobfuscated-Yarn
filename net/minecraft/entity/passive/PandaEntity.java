@@ -487,8 +487,8 @@ extends AnimalEntity {
         this.setHiddenGene(Gene.createRandom(this.random));
         this.resetAttributes();
         if (entityData == null) {
-            entityData = new PassiveEntity.class_4697();
-            ((PassiveEntity.class_4697)entityData).method_22433(0.2f);
+            entityData = new PassiveEntity.EntityData();
+            ((PassiveEntity.EntityData)entityData).setBabyChance(0.2f);
         }
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
@@ -576,7 +576,7 @@ extends AnimalEntity {
             } else {
                 return false;
             }
-            playerEntity.method_23667(hand, true);
+            playerEntity.swingHand(hand, true);
             return true;
         }
         return false;

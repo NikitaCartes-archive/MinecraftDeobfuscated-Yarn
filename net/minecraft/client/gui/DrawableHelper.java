@@ -61,7 +61,7 @@ public abstract class DrawableHelper {
         float g = (float)(m >> 16 & 0xFF) / 255.0f;
         float h = (float)(m >> 8 & 0xFF) / 255.0f;
         float o = (float)(m & 0xFF) / 255.0f;
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
@@ -91,7 +91,7 @@ public abstract class DrawableHelper {
         RenderSystem.defaultBlendFunc();
         RenderSystem.shadeModel(7425);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(k, j, this.blitOffset).color(g, h, o, f).next();
         bufferBuilder.vertex(i, j, this.blitOffset).color(g, h, o, f).next();
@@ -141,8 +141,8 @@ public abstract class DrawableHelper {
     }
 
     protected static void innerBlit(int i, int j, int k, int l, int m, float f, float g, float h, float n) {
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
-        bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(i, l, m).texture(f, n).next();
         bufferBuilder.vertex(j, l, m).texture(g, n).next();
         bufferBuilder.vertex(j, k, m).texture(g, h).next();

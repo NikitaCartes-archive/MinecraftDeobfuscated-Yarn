@@ -164,7 +164,7 @@ extends BlockWithEntity {
                 BlockState blockState2 = world.getBlockState(blockPos2);
                 VoxelShape voxelShape2 = blockState2.getCollisionShape(world, blockPos2);
                 double f = voxelShape2.getMaximum(Direction.Axis.Y);
-                if ((f < 1.0 || !blockState2.method_21743(world, blockPos2)) && blockState2.getFluidState().isEmpty()) {
+                if ((f < 1.0 || !blockState2.isFullCube(world, blockPos2)) && blockState2.getFluidState().isEmpty()) {
                     this.addHoneyParticle(world, blockPos, voxelShape, (double)blockPos.getY() - 0.05);
                 }
             }

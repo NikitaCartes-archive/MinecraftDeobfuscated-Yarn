@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
@@ -30,12 +30,12 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         return wolfEntity.method_6714();
     }
 
-    public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         if (wolfEntity.isWet()) {
             float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
             ((WolfEntityModel)this.model).setColorMultiplier(i, i, i);
         }
-        super.method_4072(wolfEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.method_4072(wolfEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
         if (wolfEntity.isWet()) {
             ((WolfEntityModel)this.model).setColorMultiplier(1.0f, 1.0f, 1.0f);
         }

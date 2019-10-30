@@ -28,13 +28,13 @@ extends NetworkSyncedItem {
             itemStack2.decrement(1);
         }
         if (itemStack2.isEmpty()) {
-            return TypedActionResult.successWithSwing(itemStack);
+            return TypedActionResult.success(itemStack);
         }
         if (!playerEntity.inventory.insertStack(itemStack.copy())) {
             playerEntity.dropItem(itemStack, false);
         }
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-        return TypedActionResult.successWithSwing(itemStack2);
+        return TypedActionResult.success(itemStack2);
     }
 }
 

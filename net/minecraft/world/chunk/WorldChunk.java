@@ -422,8 +422,8 @@ implements Chunk {
     }
 
     public void getEntities(@Nullable Entity entity, Box box, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
-        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
-        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
+        int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
+        int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
@@ -443,8 +443,8 @@ implements Chunk {
     }
 
     public <T extends Entity> void getEntities(@Nullable EntityType<?> entityType, Box box, List<? super T> list, Predicate<? super T> predicate) {
-        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
-        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
+        int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
+        int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {
@@ -458,8 +458,8 @@ implements Chunk {
     }
 
     public <T extends Entity> void getEntities(Class<? extends T> class_, Box box, List<T> list, @Nullable Predicate<? super T> predicate) {
-        int i = MathHelper.floor((box.minY - 2.0) / 16.0);
-        int j = MathHelper.floor((box.maxY + 2.0) / 16.0);
+        int i = MathHelper.floor((box.y1 - 2.0) / 16.0);
+        int j = MathHelper.floor((box.y2 + 2.0) / 16.0);
         i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
         j = MathHelper.clamp(j, 0, this.entitySections.length - 1);
         for (int k = i; k <= j; ++k) {

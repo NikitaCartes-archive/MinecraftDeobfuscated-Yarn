@@ -37,7 +37,7 @@ import net.minecraft.test.TestManager;
 import net.minecraft.test.TestRunner;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
@@ -45,7 +45,7 @@ public class TestUtil {
     public static TestCompletionListener field_20573 = new FailureLoggingTestCompletionListener();
 
     public static void startTest(GameTest gameTest, TestManager testManager) {
-        gameTest.method_23634();
+        gameTest.startCountdown();
         testManager.start(gameTest);
         gameTest.addListener(new TestListener(){
 
@@ -57,7 +57,7 @@ public class TestUtil {
             @Override
             public void onFailed(GameTest gameTest) {
                 TestUtil.createBeacon(gameTest, gameTest.isRequired() ? Blocks.RED_STAINED_GLASS : Blocks.ORANGE_STAINED_GLASS);
-                TestUtil.createLectern(gameTest, SystemUtil.getInnermostMessage(gameTest.getThrowable()));
+                TestUtil.createLectern(gameTest, Util.getInnermostMessage(gameTest.getThrowable()));
                 TestUtil.handleTestFail(gameTest);
             }
         });
@@ -91,7 +91,7 @@ public class TestUtil {
 
     private static void handleTestFail(GameTest gameTest) {
         Throwable throwable = gameTest.getThrowable();
-        String string = gameTest.getStructureName() + " failed! " + SystemUtil.getInnermostMessage(throwable);
+        String string = gameTest.getStructurePath() + " failed! " + Util.getInnermostMessage(throwable);
         TestUtil.sendMessage(gameTest.getWorld(), Formatting.RED, string);
         if (throwable instanceof PositionedException) {
             PositionedException positionedException = (PositionedException)throwable;
@@ -121,7 +121,7 @@ public class TestUtil {
         BlockPos blockPos2 = blockPos.add(-1, 1, -1);
         serverWorld.setBlockState(blockPos2, Blocks.LECTERN.getDefaultState());
         BlockState blockState = serverWorld.getBlockState(blockPos2);
-        ItemStack itemStack = TestUtil.createBook(gameTest.getStructureName(), gameTest.isRequired(), string);
+        ItemStack itemStack = TestUtil.createBook(gameTest.getStructurePath(), gameTest.isRequired(), string);
         LecternBlock.putBookIfAbsent(serverWorld, blockPos2, blockState, itemStack);
     }
 

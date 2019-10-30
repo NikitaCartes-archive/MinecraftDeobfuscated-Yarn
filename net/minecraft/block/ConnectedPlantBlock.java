@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -26,7 +26,7 @@ extends Block {
     public static final BooleanProperty WEST = Properties.WEST;
     public static final BooleanProperty UP = Properties.UP;
     public static final BooleanProperty DOWN = Properties.DOWN;
-    public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = SystemUtil.consume(Maps.newEnumMap(Direction.class), enumMap -> {
+    public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = Util.create(Maps.newEnumMap(Direction.class), enumMap -> {
         enumMap.put(Direction.NORTH, NORTH);
         enumMap.put(Direction.EAST, EAST);
         enumMap.put(Direction.SOUTH, SOUTH);

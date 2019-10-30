@@ -18,7 +18,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.util.BooleanBiFunction;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -39,7 +39,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.WorldView;
 
 public final class VoxelShapes {
-    private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
+    private static final VoxelShape FULL_CUBE = Util.create(() -> {
         BitSetVoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);
         ((VoxelSet)voxelSet).set(0, 0, 0, true, true);
         return new SimpleVoxelShape(voxelSet);
@@ -60,11 +60,11 @@ public final class VoxelShapes {
     }
 
     public static VoxelShape cuboid(Box box) {
-        int i = VoxelShapes.findRequiredBitResolution(box.minX, box.maxX);
-        int j = VoxelShapes.findRequiredBitResolution(box.minY, box.maxY);
-        int k = VoxelShapes.findRequiredBitResolution(box.minZ, box.maxZ);
+        int i = VoxelShapes.findRequiredBitResolution(box.x1, box.x2);
+        int j = VoxelShapes.findRequiredBitResolution(box.y1, box.y2);
+        int k = VoxelShapes.findRequiredBitResolution(box.z1, box.z2);
         if (i < 0 || j < 0 || k < 0) {
-            return new ArrayVoxelShape(VoxelShapes.FULL_CUBE.voxels, new double[]{box.minX, box.maxX}, new double[]{box.minY, box.maxY}, new double[]{box.minZ, box.maxZ});
+            return new ArrayVoxelShape(VoxelShapes.FULL_CUBE.voxels, new double[]{box.x1, box.x2}, new double[]{box.y1, box.y2}, new double[]{box.z1, box.z2});
         }
         if (i == 0 && j == 0 && k == 0) {
             return box.contains(0.5, 0.5, 0.5) ? VoxelShapes.fullCube() : VoxelShapes.empty();
@@ -72,12 +72,12 @@ public final class VoxelShapes {
         int l = 1 << i;
         int m = 1 << j;
         int n = 1 << k;
-        int o = (int)Math.round(box.minX * (double)l);
-        int p = (int)Math.round(box.maxX * (double)l);
-        int q = (int)Math.round(box.minY * (double)m);
-        int r = (int)Math.round(box.maxY * (double)m);
-        int s = (int)Math.round(box.minZ * (double)n);
-        int t = (int)Math.round(box.maxZ * (double)n);
+        int o = (int)Math.round(box.x1 * (double)l);
+        int p = (int)Math.round(box.x2 * (double)l);
+        int q = (int)Math.round(box.y1 * (double)m);
+        int r = (int)Math.round(box.y2 * (double)m);
+        int s = (int)Math.round(box.z1 * (double)n);
+        int t = (int)Math.round(box.z2 * (double)n);
         BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(l, m, n, o, q, s, p, r, t);
         for (long u = (long)o; u < (long)p; ++u) {
             for (long v = (long)q; v < (long)r; ++v) {
@@ -123,7 +123,7 @@ public final class VoxelShapes {
 
     public static VoxelShape combine(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
         if (booleanBiFunction.apply(false, false)) {
-            throw SystemUtil.throwOrPause(new IllegalArgumentException());
+            throw Util.throwOrPause(new IllegalArgumentException());
         }
         if (voxelShape == voxelShape2) {
             return booleanBiFunction.apply(true, true) ? voxelShape : VoxelShapes.empty();
@@ -148,7 +148,7 @@ public final class VoxelShapes {
 
     public static boolean matchesAnywhere(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
         if (booleanBiFunction.apply(false, false)) {
-            throw SystemUtil.throwOrPause(new IllegalArgumentException());
+            throw Util.throwOrPause(new IllegalArgumentException());
         }
         if (voxelShape == voxelShape2) {
             return booleanBiFunction.apply(true, true);
@@ -254,7 +254,7 @@ public final class VoxelShapes {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static boolean method_1083(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
+    public static boolean isSideCovered(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
         if (voxelShape == VoxelShapes.fullCube() && voxelShape2 == VoxelShapes.fullCube()) {
             return true;
         }

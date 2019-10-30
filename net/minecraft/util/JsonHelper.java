@@ -165,7 +165,7 @@ public class JsonHelper {
         throw new JsonSyntaxException("Expected " + string + " to be a Long, was " + JsonHelper.getType(jsonElement));
     }
 
-    public static long method_22449(JsonObject jsonObject, String string) {
+    public static long getLong(JsonObject jsonObject, String string) {
         if (jsonObject.has(string)) {
             return JsonHelper.asLong(jsonObject.get(string), string);
         }

@@ -226,10 +226,10 @@ public class ServerPlayerInteractionManager {
             return true;
         }
         ItemStack itemStack = this.player.getMainHandStack();
+        ItemStack itemStack2 = itemStack.copy();
         boolean bl2 = this.player.isUsingEffectiveTool(blockState);
         itemStack.postMine(this.world, blockState, blockPos, this.player);
         if (bl && bl2) {
-            ItemStack itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
             block.afterBreak(this.world, this.player, blockPos, blockState, blockEntity, itemStack2);
         }
         return true;
@@ -283,7 +283,7 @@ public class ServerPlayerInteractionManager {
         }
         boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = playerEntity.shouldCancelInteraction() && bl;
-        if (!bl2 && (actionResult = blockState.onUse(world, playerEntity, hand, blockHitResult)).method_23665()) {
+        if (!bl2 && (actionResult = blockState.onUse(world, playerEntity, hand, blockHitResult)).isAccepted()) {
             return actionResult;
         }
         if (itemStack.isEmpty() || playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {

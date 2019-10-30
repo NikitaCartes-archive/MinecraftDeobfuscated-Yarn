@@ -12,10 +12,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.AbstractTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
-public abstract class MegaTreeFeature<T extends AbstractTreeFeatureConfig>
+public abstract class MegaTreeFeature<T extends TreeFeatureConfig>
 extends AbstractTreeFeature<T> {
     public MegaTreeFeature(Function<Dynamic<?>, ? extends T> function) {
         super(function);
@@ -67,24 +67,24 @@ extends AbstractTreeFeature<T> {
         return this.doesTreeFit(modifiableTestableWorld, blockPos, i) && this.replaceGround(modifiableTestableWorld, blockPos);
     }
 
-    protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, AbstractTreeFeatureConfig abstractTreeFeatureConfig) {
+    protected void makeSquaredLeafLayer(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         int j = i * i;
         for (int k = -i; k <= i + 1; ++k) {
             for (int l = -i; l <= i + 1; ++l) {
                 int n;
                 int m = Math.min(Math.abs(k), Math.abs(k - 1));
                 if (m + (n = Math.min(Math.abs(l), Math.abs(l - 1))) >= 7 || m * m + n * n > j) continue;
-                this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, abstractTreeFeatureConfig);
+                this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
             }
         }
     }
 
-    protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, AbstractTreeFeatureConfig abstractTreeFeatureConfig) {
+    protected void makeRoundLeafLayer(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         int j = i * i;
         for (int k = -i; k <= i; ++k) {
             for (int l = -i; l <= i; ++l) {
                 if (k * k + l * l > j) continue;
-                this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, abstractTreeFeatureConfig);
+                this.method_23383(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
             }
         }
     }

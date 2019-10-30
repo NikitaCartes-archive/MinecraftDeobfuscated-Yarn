@@ -25,7 +25,7 @@ extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
     }
 
     public Identifier method_4153(WitherEntity witherEntity) {
-        int i = witherEntity.getInvulTimer();
+        int i = witherEntity.getInvulnerableTimer();
         if (i <= 0 || i <= 80 && i / 5 % 2 == 1) {
             return SKIN;
         }
@@ -34,7 +34,7 @@ extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
 
     protected void method_4152(WitherEntity witherEntity, MatrixStack matrixStack, float f) {
         float g = 2.0f;
-        int i = witherEntity.getInvulTimer();
+        int i = witherEntity.getInvulnerableTimer();
         if (i > 0) {
             g -= ((float)i - f) / 220.0f * 0.5f;
         }

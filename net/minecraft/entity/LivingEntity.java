@@ -1246,10 +1246,10 @@ extends Entity {
     }
 
     public void swingHand(Hand hand) {
-        this.method_23667(hand, false);
+        this.swingHand(hand, false);
     }
 
-    public void method_23667(Hand hand, boolean bl) {
+    public void swingHand(Hand hand, boolean bl) {
         if (!this.isHandSwinging || this.handSwingTicks >= this.getHandSwingDuration() / 2 || this.handSwingTicks < 0) {
             this.handSwingTicks = -1;
             this.isHandSwinging = true;
@@ -1484,11 +1484,11 @@ extends Entity {
             double d = (double)(this.getWidth() / 2.0f + entity.getWidth() / 2.0f) + 0.4;
             Box box = entity.getBoundingBox();
             if (entity instanceof BoatEntity) {
-                e = box.maxY;
+                e = box.y2;
                 i = 2;
                 f = 0.0f;
             } else {
-                e = box.minY;
+                e = box.y1;
                 i = 3;
                 f = 1.5707964f * (float)(this.getMainArm() == Arm.RIGHT ? -1 : 1);
             }
@@ -1509,11 +1509,11 @@ extends Entity {
                 }
                 n += 1.0;
             }
-            this.setPosition(entity.getX(), entity.method_23323(1.0) + 0.001, entity.getZ());
+            this.setPosition(entity.getX(), entity.getHeightAt(1.0) + 0.001, entity.getZ());
             return;
         }
         double q = entity.getX();
-        double r = entity.method_23323(1.0);
+        double r = entity.getHeightAt(1.0);
         double s = entity.getZ();
         Direction direction = entity.getMovementDirection();
         if (direction != null && direction.getAxis() != Direction.Axis.Y) {
@@ -1521,9 +1521,9 @@ extends Entity {
             int[][] is = new int[][]{{0, 1}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}, {-1, 0}, {1, 0}, {0, 1}};
             double k = Math.floor(this.getX()) + 0.5;
             double t = Math.floor(this.getZ()) + 0.5;
-            double l = this.getBoundingBox().maxX - this.getBoundingBox().minX;
-            double m = this.getBoundingBox().maxZ - this.getBoundingBox().minZ;
-            Box box3 = new Box(k - l / 2.0, entity.getBoundingBox().minY, t - m / 2.0, k + l / 2.0, Math.floor(entity.getBoundingBox().minY) + (double)this.getHeight(), t + m / 2.0);
+            double l = this.getBoundingBox().x2 - this.getBoundingBox().x1;
+            double m = this.getBoundingBox().z2 - this.getBoundingBox().z1;
+            Box box3 = new Box(k - l / 2.0, entity.getBoundingBox().y1, t - m / 2.0, k + l / 2.0, Math.floor(entity.getBoundingBox().y1) + (double)this.getHeight(), t + m / 2.0);
             for (int[] js : is) {
                 BlockPos blockPos;
                 double u = direction.getOffsetX() * js[0] + direction2.getOffsetX() * js[1];

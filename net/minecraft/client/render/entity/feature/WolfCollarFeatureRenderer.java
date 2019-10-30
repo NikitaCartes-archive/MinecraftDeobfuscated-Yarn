@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
@@ -22,12 +22,12 @@ extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4209(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4209(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!wolfEntity.isTamed() || wolfEntity.isInvisible()) {
             return;
         }
         float[] fs = wolfEntity.getCollarColor().getColorComponents();
-        WolfCollarFeatureRenderer.renderModel(this.getModel(), SKIN, matrixStack, layeredVertexConsumerStorage, i, wolfEntity, fs[0], fs[1], fs[2]);
+        WolfCollarFeatureRenderer.renderModel(this.getModel(), SKIN, matrixStack, vertexConsumerProvider, i, wolfEntity, fs[0], fs[1], fs[2]);
     }
 }
 

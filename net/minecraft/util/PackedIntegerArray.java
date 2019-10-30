@@ -4,7 +4,7 @@
 package net.minecraft.util;
 
 import java.util.function.IntConsumer;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 
@@ -26,7 +26,7 @@ public class PackedIntegerArray {
         this.maxValue = (1L << i) - 1L;
         int k = MathHelper.roundUp(j * i, 64) / 64;
         if (ls.length != k) {
-            throw SystemUtil.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + ls.length + " but expected: " + k));
+            throw Util.throwOrPause(new RuntimeException("Invalid length given for storage, got: " + ls.length + " but expected: " + k));
         }
     }
 

@@ -21,7 +21,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.source.BiomeSourceType;
 import org.jetbrains.annotations.Nullable;
@@ -45,12 +45,12 @@ extends Screen {
     @Override
     protected void init() {
         this.minecraft.keyboard.enableRepeatEvents(true);
-        this.addButton(new ButtonWidget((this.width - 200) / 2, 40, 200, 20, I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(SystemUtil.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]), buttonWidget -> {
+        this.addButton(new ButtonWidget((this.width - 200) / 2, 40, 200, 20, I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(Util.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]), buttonWidget -> {
             ++this.biomeListLength;
             if (this.biomeListLength >= CHUNK_GENERATOR_TYPES.size()) {
                 this.biomeListLength = 0;
             }
-            buttonWidget.setMessage(I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(SystemUtil.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]));
+            buttonWidget.setMessage(I18n.translate("createWorld.customize.buffet.generatortype", new Object[0]) + " " + I18n.translate(Util.createTranslationKey("generator", CHUNK_GENERATOR_TYPES.get(this.biomeListLength)), new Object[0]));
         }));
         this.biomeSelectionList = new BuffetBiomesListWidget();
         this.children.add(this.biomeSelectionList);

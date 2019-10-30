@@ -25,7 +25,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +55,7 @@ extends DrawableHelper {
 
     public void tick(boolean bl) {
         if (bl && !this.visible) {
-            this.showTime = SystemUtil.getMeasuringTimeMs();
+            this.showTime = Util.getMeasuringTimeMs();
         }
         this.visible = bl;
     }
@@ -179,7 +179,7 @@ extends DrawableHelper {
         if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;
             this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
-            long m = SystemUtil.getMeasuringTimeMs();
+            long m = Util.getMeasuringTimeMs();
             if (this.showTime == playerListEntry.method_2976()) {
                 if (l < playerListEntry.method_2973()) {
                     playerListEntry.method_2978(m);

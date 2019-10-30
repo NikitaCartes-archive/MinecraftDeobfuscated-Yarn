@@ -6,6 +6,7 @@ package net.minecraft.client.main;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.blaze3d.systems.RenderCallStorage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.File;
 import java.lang.reflect.Type;
@@ -22,7 +23,6 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4491;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.WindowSettings;
@@ -30,8 +30,8 @@ import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,7 +61,7 @@ public class Main {
         ArgumentAcceptingOptionSpec<Integer> optionSpec7 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080", (String[])new String[0]).ofType(Integer.class);
         ArgumentAcceptingOptionSpec<String> optionSpec8 = optionParser.accepts("proxyUser").withRequiredArg();
         ArgumentAcceptingOptionSpec<String> optionSpec9 = optionParser.accepts("proxyPass").withRequiredArg();
-        ArgumentAcceptingOptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + SystemUtil.getMeasuringTimeMs() % 1000L, (String[])new String[0]);
+        ArgumentAcceptingOptionSpec<String> optionSpec10 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + Util.getMeasuringTimeMs() % 1000L, (String[])new String[0]);
         ArgumentAcceptingOptionSpec<String> optionSpec11 = optionParser.accepts("uuid").withRequiredArg();
         ArgumentAcceptingOptionSpec<String> optionSpec12 = optionParser.accepts("accessToken").withRequiredArg().required();
         ArgumentAcceptingOptionSpec<String> optionSpec13 = optionParser.accepts("version").withRequiredArg().required();
@@ -136,7 +136,7 @@ public class Main {
         };
         thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
         Runtime.getRuntime().addShutdownHook(thread);
-        class_4491 lv = new class_4491();
+        RenderCallStorage renderCallStorage = new RenderCallStorage();
         try {
             Thread.currentThread().setName("Render thread");
             RenderSystem.initRenderThread();
@@ -146,7 +146,7 @@ public class Main {
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Initializing game");
             crashReport.addElement("Initialization");
-            MinecraftClient.method_22681(null, runArgs.game.version, null, crashReport);
+            MinecraftClient.addSystemDetailsToCrashReport(null, runArgs.game.version, null, crashReport);
             MinecraftClient.printCrashReport(crashReport);
             return;
         }

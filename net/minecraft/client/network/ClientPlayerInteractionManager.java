@@ -260,7 +260,7 @@ public class ClientPlayerInteractionManager {
         }
         boolean bl = !clientPlayerEntity.getMainHandStack().isEmpty() || !clientPlayerEntity.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = clientPlayerEntity.shouldCancelInteraction() && bl;
-        if (!bl2 && (actionResult = clientWorld.getBlockState(blockPos).onUse(clientWorld, clientPlayerEntity, hand, blockHitResult)).method_23665()) {
+        if (!bl2 && (actionResult = clientWorld.getBlockState(blockPos).onUse(clientWorld, clientPlayerEntity, hand, blockHitResult)).isAccepted()) {
             this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
             return actionResult;
         }

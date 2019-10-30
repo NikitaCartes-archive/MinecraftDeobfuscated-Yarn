@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.StickingOutThingsFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
@@ -35,7 +35,7 @@ extends StickingOutThingsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected void renderThing(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity, float f, float g, float h, float i) {
+    protected void renderThing(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float f, float g, float h, float i) {
         float j = MathHelper.sqrt(f * f + h * h);
         float k = (float)(Math.atan2(f, h) * 57.2957763671875);
         float l = (float)(Math.atan2(g, j) * 57.2957763671875);
@@ -51,10 +51,10 @@ extends StickingOutThingsFeatureRenderer<T, M> {
         matrixStack.scale(0.03125f, 0.03125f, 0.03125f);
         matrixStack.translate(2.5, 0.0, 0.0);
         int r = entity.getLightmapCoordinates();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
         for (int s = 0; s < 4; ++s) {
             matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
-            Matrix4f matrix4f = matrixStack.peek();
+            Matrix4f matrix4f = matrixStack.peekModel();
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, -4.5f, -1, 0.0f, 0.0f, r);
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, 4.5f, -1, 0.125f, 0.0f, r);
             StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, 4.5f, 1, 0.125f, 0.0625f, r);
@@ -63,7 +63,7 @@ extends StickingOutThingsFeatureRenderer<T, M> {
     }
 
     private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, int i, float g, float h, int j) {
-        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).defaultOverlay(OverlayTexture.DEFAULT_UV).light(j).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).overlay(OverlayTexture.DEFAULT_UV).light(j).normal(0.0f, 1.0f, 0.0f).next();
     }
 }
 

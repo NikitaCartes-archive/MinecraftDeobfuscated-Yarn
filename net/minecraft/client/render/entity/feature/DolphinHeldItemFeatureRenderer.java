@@ -6,7 +6,7 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.DolphinEntityModel;
@@ -24,7 +24,7 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_17160(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, DolphinEntity dolphinEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_17160(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, DolphinEntity dolphinEntity, float f, float g, float h, float j, float k, float l, float m) {
         boolean bl = dolphinEntity.getMainArm() == Arm.RIGHT;
         matrixStack.push();
         float n = 1.0f;
@@ -36,7 +36,7 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
             matrixStack.translate(0.0, 1.0f + p * 0.8f, -1.0f + p * 0.2f);
         }
         ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(dolphinEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, layeredVertexConsumerStorage);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(dolphinEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
     }
 }

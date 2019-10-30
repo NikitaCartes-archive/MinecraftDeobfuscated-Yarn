@@ -16,7 +16,7 @@ import net.minecraft.text.LiteralText;
 public class RepeatedNarrator {
     final Duration repeatDelay;
     private final float permitsPerSecond;
-    final AtomicReference<class_4283> params;
+    final AtomicReference<Parameters> params;
 
     public RepeatedNarrator(Duration duration) {
         this.repeatDelay = duration;
@@ -26,26 +26,26 @@ public class RepeatedNarrator {
     }
 
     public void narrate(String string) {
-        class_4283 lv = this.params.updateAndGet(arg -> {
-            if (arg == null || !string.equals(arg.field_19210)) {
-                return new class_4283(string, RateLimiter.create(this.permitsPerSecond));
+        Parameters parameters2 = this.params.updateAndGet(parameters -> {
+            if (parameters == null || !string.equals(parameters.message)) {
+                return new Parameters(string, RateLimiter.create(this.permitsPerSecond));
             }
-            return arg;
+            return parameters;
         });
-        if (lv.field_19211.tryAcquire(1)) {
+        if (parameters2.rateLimiter.tryAcquire(1)) {
             NarratorManager narratorManager = NarratorManager.INSTANCE;
             narratorManager.onChatMessage(MessageType.SYSTEM, new LiteralText(string));
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_4283 {
-        String field_19210;
-        RateLimiter field_19211;
+    static class Parameters {
+        String message;
+        RateLimiter rateLimiter;
 
-        class_4283(String string, RateLimiter rateLimiter) {
-            this.field_19210 = string;
-            this.field_19211 = rateLimiter;
+        Parameters(String string, RateLimiter rateLimiter) {
+            this.message = string;
+            this.rateLimiter = rateLimiter;
         }
     }
 }

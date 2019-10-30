@@ -131,7 +131,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -375,7 +375,7 @@ public class EntityType<T extends Entity> {
 
     public String getTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = SystemUtil.createTranslationKey("entity", Registry.ENTITY_TYPE.getId(this));
+            this.translationKey = Util.createTranslationKey("entity", Registry.ENTITY_TYPE.getId(this));
         }
         return this.translationKey;
     }
@@ -415,7 +415,7 @@ public class EntityType<T extends Entity> {
     }
 
     public static Optional<Entity> getEntityFromTag(CompoundTag compoundTag, World world) {
-        return SystemUtil.ifPresentOrElse(EntityType.fromTag(compoundTag).map(entityType -> entityType.create(world)), entity -> entity.fromTag(compoundTag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)compoundTag.getString("id")));
+        return Util.ifPresentOrElse(EntityType.fromTag(compoundTag).map(entityType -> entityType.create(world)), entity -> entity.fromTag(compoundTag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)compoundTag.getString("id")));
     }
 
     @Nullable

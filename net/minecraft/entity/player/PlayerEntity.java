@@ -1061,7 +1061,7 @@ extends LivingEntity {
                     }
                     if (this.world instanceof ServerWorld && m > 2.0f) {
                         int n = (int)((double)m * 0.5);
-                        ((ServerWorld)this.world).spawnParticles(ParticleTypes.DAMAGE_INDICATOR, entity.getX(), entity.method_23323(0.5), entity.getZ(), n, 0.1, 0.0, 0.1, 0.2);
+                        ((ServerWorld)this.world).spawnParticles(ParticleTypes.DAMAGE_INDICATOR, entity.getX(), entity.getHeightAt(0.5), entity.getZ(), n, 0.1, 0.0, 0.1, 0.2);
                     }
                 }
                 this.addExhaustion(0.1f);
@@ -1101,7 +1101,7 @@ extends LivingEntity {
         double d = -MathHelper.sin(this.yaw * ((float)Math.PI / 180));
         double e = MathHelper.cos(this.yaw * ((float)Math.PI / 180));
         if (this.world instanceof ServerWorld) {
-            ((ServerWorld)this.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, this.getX() + d, this.method_23323(0.5), this.getZ() + e, 0, d, 0.0, e, 0.0);
+            ((ServerWorld)this.world).spawnParticles(ParticleTypes.SWEEP_ATTACK, this.getX() + d, this.getHeightAt(0.5), this.getZ() + e, 0, d, 0.0, e, 0.0);
         }
     }
 

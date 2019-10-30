@@ -32,7 +32,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -386,7 +386,7 @@ extends BlockEntity {
 
     private static Random createRandom(long l) {
         if (l == 0L) {
-            return new Random(SystemUtil.getMeasuringTimeMs());
+            return new Random(Util.getMeasuringTimeMs());
         }
         return new Random(l);
     }

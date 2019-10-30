@@ -19,7 +19,7 @@ import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.texture.TextureUtil;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -124,7 +124,7 @@ extends ResourceTexture {
                     httpURLConnection.disconnect();
                 }
             }
-        }, SystemUtil.getServerWorkerExecutor());
+        }, Util.getServerWorkerExecutor());
     }
 
     @Nullable

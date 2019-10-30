@@ -27,7 +27,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.IdList;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -81,7 +81,7 @@ public abstract class Biome {
     protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.newArrayList();
     protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.newHashMap();
     private final Map<EntityCategory, List<SpawnEntry>> spawns = Maps.newHashMap();
-    private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> SystemUtil.get(() -> {
+    private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.create(() -> {
         Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25f){
 
             @Override
@@ -308,7 +308,7 @@ public abstract class Biome {
 
     public String getTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = SystemUtil.createTranslationKey("biome", Registry.BIOME.getId(this));
+            this.translationKey = Util.createTranslationKey("biome", Registry.BIOME.getId(this));
         }
         return this.translationKey;
     }

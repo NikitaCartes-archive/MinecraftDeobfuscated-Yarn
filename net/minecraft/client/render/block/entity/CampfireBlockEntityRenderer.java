@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -25,7 +25,7 @@ extends BlockEntityRenderer<CampfireBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_17581(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_17581(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
         DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
         for (int k = 0; k < defaultedList.size(); ++k) {
@@ -39,7 +39,7 @@ extends BlockEntityRenderer<CampfireBlockEntity> {
             matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
             matrixStack.translate(-0.3125, -0.3125, 0.0);
             matrixStack.scale(0.375f, 0.375f, 0.375f);
-            MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, layeredVertexConsumerStorage);
+            MinecraftClient.getInstance().getItemRenderer().method_23178(itemStack, ModelTransformation.Type.FIXED, i, j, matrixStack, vertexConsumerProvider);
             matrixStack.pop();
         }
     }

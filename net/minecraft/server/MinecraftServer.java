@@ -112,12 +112,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
@@ -130,6 +129,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
+import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameMode;
@@ -150,7 +150,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MinecraftServer
-extends NonBlockingThreadExecutor<ServerTask>
+extends ReentrantThreadExecutor<ServerTask>
 implements SnooperListener,
 CommandOutput,
 AutoCloseable,
@@ -160,7 +160,7 @@ Runnable {
     private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
     public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo("North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT).setBonusChest();
     private final LevelStorage levelStorage;
-    private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
+    private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
     private final File gameDir;
     private final List<Runnable> serverGuiTickables = Lists.newArrayList();
     private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
@@ -212,8 +212,8 @@ Runnable {
     private final GameProfileRepository gameProfileRepo;
     private final UserCache userCache;
     private long lastPlayerSampleUpdate;
-    protected final Thread serverThread = SystemUtil.consume(new Thread((Runnable)this, "Server thread"), thread2 -> thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable)));
-    private long timeReference = SystemUtil.getMeasuringTimeMs();
+    protected final Thread serverThread = Util.create(new Thread((Runnable)this, "Server thread"), (T thread2) -> thread2.setUncaughtExceptionHandler((thread, throwable) -> LOGGER.error(throwable)));
+    private long timeReference = Util.getMeasuringTimeMs();
     private long field_19248;
     private boolean field_19249;
     @Environment(value=EnvType.CLIENT)
@@ -261,7 +261,7 @@ Runnable {
         this.dataManager.registerListener(this.lootManager);
         this.dataManager.registerListener(this.commandFunctionManager);
         this.dataManager.registerListener(this.advancementManager);
-        this.workerExecutor = SystemUtil.getServerWorkerExecutor();
+        this.workerExecutor = Util.getServerWorkerExecutor();
         this.levelName = string;
     }
 
@@ -278,7 +278,7 @@ Runnable {
             LOGGER.info("Converting map!");
             this.setLoadingStage(new TranslatableText("menu.convertingLevel", new Object[0]));
             this.getLevelStorage().convertLevel(string, new ProgressListener(){
-                private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
+                private long lastProgressUpdate = Util.getMeasuringTimeMs();
 
                 @Override
                 public void method_15412(Text text) {
@@ -291,8 +291,8 @@ Runnable {
 
                 @Override
                 public void progressStagePercentage(int i) {
-                    if (SystemUtil.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
-                        this.lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
+                    if (Util.getMeasuringTimeMs() - this.lastProgressUpdate >= 1000L) {
+                        this.lastProgressUpdate = Util.getMeasuringTimeMs();
                         LOGGER.info("Converting... {}%", (Object)i);
                     }
                 }
@@ -448,13 +448,13 @@ Runnable {
         worldGenerationProgressListener.start(new ChunkPos(blockPos));
         ServerChunkManager serverChunkManager = serverWorld.method_14178();
         serverChunkManager.method_17293().setTaskBatchSize(500);
-        this.timeReference = SystemUtil.getMeasuringTimeMs();
+        this.timeReference = Util.getMeasuringTimeMs();
         serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
         while (serverChunkManager.getTotalChunksLoadedCount() != 441) {
-            this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
+            this.timeReference = Util.getMeasuringTimeMs() + 10L;
             this.method_16208();
         }
-        this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
+        this.timeReference = Util.getMeasuringTimeMs() + 10L;
         this.method_16208();
         for (DimensionType dimensionType : DimensionType.getAll()) {
             ForcedChunkState forcedChunkState = this.getWorld(dimensionType).getPersistentStateManager().get(ForcedChunkState::new, "chunks");
@@ -467,7 +467,7 @@ Runnable {
                 serverWorld2.method_14178().setChunkForced(chunkPos, true);
             }
         }
-        this.timeReference = SystemUtil.getMeasuringTimeMs() + 10L;
+        this.timeReference = Util.getMeasuringTimeMs() + 10L;
         this.method_16208();
         worldGenerationProgressListener.stop();
         serverChunkManager.method_17293().setTaskBatchSize(5);
@@ -583,12 +583,12 @@ Runnable {
     public void run() {
         try {
             if (this.setupServer()) {
-                this.timeReference = SystemUtil.getMeasuringTimeMs();
+                this.timeReference = Util.getMeasuringTimeMs();
                 this.metadata.setDescription(new LiteralText(this.motd));
                 this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                 this.setFavicon(this.metadata);
                 while (this.running) {
-                    long l = SystemUtil.getMeasuringTimeMs() - this.timeReference;
+                    long l = Util.getMeasuringTimeMs() - this.timeReference;
                     if (l > 2000L && this.timeReference - this.field_4557 >= 15000L) {
                         long m = l / 50L;
                         LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", (Object)l, (Object)m);
@@ -605,7 +605,7 @@ Runnable {
                     this.tick(this::shouldKeepTicking);
                     this.profiler.swap("nextTickWait");
                     this.field_19249 = true;
-                    this.field_19248 = Math.max(SystemUtil.getMeasuringTimeMs() + 50L, this.timeReference);
+                    this.field_19248 = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
                     this.method_16208();
                     this.profiler.pop();
                     this.profiler.endTick();
@@ -637,12 +637,12 @@ Runnable {
     }
 
     private boolean shouldKeepTicking() {
-        return this.hasRunningTasks() || SystemUtil.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
+        return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
     }
 
     protected void method_16208() {
-        this.executeQueuedTasks();
-        this.executeTasks(() -> !this.shouldKeepTicking());
+        this.runTasks();
+        this.runTasks(() -> !this.shouldKeepTicking());
     }
 
     protected ServerTask method_16209(Runnable runnable) {
@@ -654,14 +654,14 @@ Runnable {
     }
 
     @Override
-    public boolean executeQueuedTask() {
+    public boolean runTask() {
         boolean bl;
         this.field_19249 = bl = this.method_20415();
         return bl;
     }
 
     private boolean method_20415() {
-        if (super.executeQueuedTask()) {
+        if (super.runTask()) {
             return true;
         }
         if (this.shouldKeepTicking()) {
@@ -720,7 +720,7 @@ Runnable {
     }
 
     protected void tick(BooleanSupplier booleanSupplier) {
-        long l = SystemUtil.getMeasuringTimeNano();
+        long l = Util.getMeasuringTimeNano();
         ++this.ticks;
         this.tickWorlds(booleanSupplier);
         if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
@@ -751,11 +751,11 @@ Runnable {
         }
         this.profiler.pop();
         this.profiler.push("tallying");
-        long l2 = SystemUtil.getMeasuringTimeNano() - l;
+        long l2 = Util.getMeasuringTimeNano() - l;
         this.lastTickLengths[this.ticks % 100] = l2;
         long m = l2;
         this.tickTime = this.tickTime * 0.8f + (float)m / 1000000.0f * 0.19999999f;
-        long n = SystemUtil.getMeasuringTimeNano();
+        long n = Util.getMeasuringTimeNano();
         this.metricsData.pushSample(n - l);
         this.profiler.pop();
     }
@@ -1100,7 +1100,7 @@ Runnable {
         }
         snooper.addInfo("uses_auth", this.onlineMode);
         snooper.addInfo("gui_state", this.hasGui() ? "enabled" : "disabled");
-        snooper.addInfo("run_time", (SystemUtil.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
+        snooper.addInfo("run_time", (Util.getMeasuringTimeMs() - snooper.getStartTime()) / 60L * 1000L);
         snooper.addInfo("avg_tick_ms", (int)(MathHelper.average(this.lastTickLengths) * 1.0E-6));
         int i = 0;
         for (ServerWorld serverWorld : this.getWorlds()) {
@@ -1345,7 +1345,7 @@ Runnable {
         ArrayList<ResourcePack> list2 = Lists.newArrayList();
         this.dataPackManager.getEnabledProfiles().forEach(resourcePackProfile -> list2.add(resourcePackProfile.createResourcePack()));
         CompletableFuture<Unit> completableFuture = this.dataManager.beginReload(this.workerExecutor, this, list2, COMPLETED_UNIT_FUTURE);
-        this.executeTasks(completableFuture::isDone);
+        this.runTasks(completableFuture::isDone);
         try {
             completableFuture.get();
         } catch (Exception exception) {
@@ -1499,10 +1499,10 @@ Runnable {
 
     private void dumpStats(Path path) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
-            writer.write(String.format("pending_tasks: %d\n", this.getTaskQueueSize()));
+            writer.write(String.format("pending_tasks: %d\n", this.getTaskCount()));
             writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
             writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
-            writer.write(String.format("queue: %s\n", SystemUtil.getServerWorkerExecutor()));
+            writer.write(String.format("queue: %s\n", Util.getServerWorkerExecutor()));
         }
     }
 

@@ -115,6 +115,10 @@ implements ParsableText {
             this.id = identifier;
         }
 
+        public Identifier method_23728() {
+            return this.id;
+        }
+
         @Override
         public Text copy() {
             return new StorageNbtText(this.rawPath, this.path, this.interpret, this.id);

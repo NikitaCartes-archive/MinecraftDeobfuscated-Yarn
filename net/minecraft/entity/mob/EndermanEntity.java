@@ -217,7 +217,7 @@ extends HostileEntity {
     }
 
     private boolean teleportTo(Entity entity) {
-        Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.method_23323(0.5) - entity.method_23320(), this.getZ() - entity.getZ());
+        Vec3d vec3d = new Vec3d(this.getX() - entity.getX(), this.getHeightAt(0.5) - entity.method_23320(), this.getZ() - entity.getZ());
         vec3d = vec3d.normalize();
         double d = 16.0;
         double e = this.getX() + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.x * 16.0;
@@ -388,7 +388,7 @@ extends HostileEntity {
         }
 
         private boolean method_7033(WorldView worldView, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
-            return blockState2.isAir() && !blockState3.isAir() && blockState3.method_21743(worldView, blockPos2) && blockState.canPlaceAt(worldView, blockPos);
+            return blockState2.isAir() && !blockState3.isAir() && blockState3.isFullCube(worldView, blockPos2) && blockState.canPlaceAt(worldView, blockPos);
         }
     }
 

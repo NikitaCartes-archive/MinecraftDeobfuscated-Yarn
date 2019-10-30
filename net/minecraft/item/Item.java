@@ -39,9 +39,9 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -146,7 +146,7 @@ implements ItemConvertible {
             ItemStack itemStack = playerEntity.getStackInHand(hand);
             if (playerEntity.canConsume(this.getFoodComponent().isAlwaysEdible())) {
                 playerEntity.setCurrentHand(hand);
-                return TypedActionResult.successWithSwing(itemStack);
+                return TypedActionResult.success(itemStack);
             }
             return TypedActionResult.fail(itemStack);
         }
@@ -199,7 +199,7 @@ implements ItemConvertible {
 
     protected String getOrCreateTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = SystemUtil.createTranslationKey("item", Registry.ITEM.getId(this));
+            this.translationKey = Util.createTranslationKey("item", Registry.ITEM.getId(this));
         }
         return this.translationKey;
     }

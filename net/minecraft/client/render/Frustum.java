@@ -46,7 +46,7 @@ public class Frustum {
     }
 
     public boolean isVisible(Box box) {
-        return this.isVisible(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+        return this.isVisible(box.x1, box.y1, box.z1, box.x2, box.y2, box.z2);
     }
 
     private boolean isVisible(double d, double e, double f, double g, double h, double i) {

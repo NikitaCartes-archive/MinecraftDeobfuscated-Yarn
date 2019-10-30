@@ -29,7 +29,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -283,7 +283,7 @@ public class EnchantmentHelper {
         if (!list2.isEmpty()) {
             list.add(WeightedPicker.getRandom(random, list2));
             while (random.nextInt(50) <= i) {
-                EnchantmentHelper.remove(list2, SystemUtil.getLast(list));
+                EnchantmentHelper.remove(list2, Util.getLast(list));
                 if (list2.isEmpty()) break;
                 list.add(WeightedPicker.getRandom(random, list2));
                 i /= 2;

@@ -78,7 +78,7 @@ implements RangedAttackMob {
         this.goalSelector.add(2, new TridentAttackGoal(this, 1.0, 40, 10.0f));
         this.goalSelector.add(2, new DrownedAttackGoal(this, 1.0, false));
         this.goalSelector.add(5, new LeaveWaterGoal(this, 1.0));
-        this.goalSelector.add(6, new class_1557(this, 1.0, this.world.getSeaLevel()));
+        this.goalSelector.add(6, new TargetAboveWaterGoal(this, 1.0, this.world.getSeaLevel()));
         this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
         this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombiePigmanEntity.class));
         this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::method_7012));
@@ -238,7 +238,7 @@ implements RangedAttackMob {
         }
     }
 
-    protected boolean method_7016() {
+    protected boolean hasFinishedCurrentPath() {
         double d;
         BlockPos blockPos;
         Path path = this.getNavigation().getCurrentPath();
@@ -249,7 +249,7 @@ implements RangedAttackMob {
     public void attack(LivingEntity livingEntity, float f) {
         TridentEntity tridentEntity = new TridentEntity(this.world, (LivingEntity)this, new ItemStack(Items.TRIDENT));
         double d = livingEntity.getX() - this.getX();
-        double e = livingEntity.method_23323(0.3333333333333333) - tridentEntity.getY();
+        double e = livingEntity.getHeightAt(0.3333333333333333) - tridentEntity.getY();
         double g = livingEntity.getZ() - this.getZ();
         double h = MathHelper.sqrt(d * d + g * g);
         tridentEntity.setVelocity(d, e + h * (double)0.2f, g, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
@@ -419,14 +419,14 @@ implements RangedAttackMob {
         }
     }
 
-    static class class_1557
+    static class TargetAboveWaterGoal
     extends Goal {
         private final DrownedEntity drowned;
         private final double speed;
         private final int minY;
-        private boolean field_7248;
+        private boolean foundTarget;
 
-        public class_1557(DrownedEntity drownedEntity, double d, int i) {
+        public TargetAboveWaterGoal(DrownedEntity drownedEntity, double d, int i) {
             this.drowned = drownedEntity;
             this.speed = d;
             this.minY = i;
@@ -439,15 +439,15 @@ implements RangedAttackMob {
 
         @Override
         public boolean shouldContinue() {
-            return this.canStart() && !this.field_7248;
+            return this.canStart() && !this.foundTarget;
         }
 
         @Override
         public void tick() {
-            if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.method_7016())) {
+            if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.hasFinishedCurrentPath())) {
                 Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()));
                 if (vec3d == null) {
-                    this.field_7248 = true;
+                    this.foundTarget = true;
                     return;
                 }
                 this.drowned.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.speed);
@@ -457,7 +457,7 @@ implements RangedAttackMob {
         @Override
         public void start() {
             this.drowned.setTargetingUnderwater(true);
-            this.field_7248 = false;
+            this.foundTarget = false;
         }
 
         @Override

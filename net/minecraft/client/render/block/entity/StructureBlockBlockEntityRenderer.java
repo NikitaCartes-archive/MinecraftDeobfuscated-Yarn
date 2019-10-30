@@ -10,9 +10,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -27,7 +27,7 @@ extends BlockEntityRenderer<StructureBlockBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, int j) {
+    public void method_3587(StructureBlockBlockEntity structureBlockBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         double s;
         double r;
         double q;
@@ -97,9 +97,9 @@ extends BlockEntityRenderer<StructureBlockBlockEntity> {
         float t = 1.0f;
         float u = 0.9f;
         float v = 0.5f;
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLines());
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
         if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.shouldShowBoundingBox()) {
-            WorldRenderer.method_22981(matrixStack, vertexConsumer, p, l, q, r, m, s, 0.9f, 0.9f, 0.9f, 1.0f, 0.5f, 0.5f, 0.5f);
+            WorldRenderer.drawBox(matrixStack, vertexConsumer, p, l, q, r, m, s, 0.9f, 0.9f, 0.9f, 1.0f, 0.5f, 0.5f, 0.5f);
         }
         if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE && structureBlockBlockEntity.shouldShowAir()) {
             this.method_3585(structureBlockBlockEntity, vertexConsumer, blockPos, true, matrixStack);
@@ -125,14 +125,14 @@ extends BlockEntityRenderer<StructureBlockBlockEntity> {
             double i = (float)(blockPos4.getY() - blockPos2.getY()) + 0.55f + f;
             double j = (float)(blockPos4.getZ() - blockPos2.getZ()) + 0.55f + f;
             if (bl) {
-                WorldRenderer.method_22981(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+                WorldRenderer.drawBox(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
                 continue;
             }
             if (bl2) {
-                WorldRenderer.method_22981(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.5f, 0.5f, 1.0f, 1.0f, 0.5f, 0.5f, 1.0f);
+                WorldRenderer.drawBox(matrixStack, vertexConsumer, d, e, g, h, i, j, 0.5f, 0.5f, 1.0f, 1.0f, 0.5f, 0.5f, 1.0f);
                 continue;
             }
-            WorldRenderer.method_22981(matrixStack, vertexConsumer, d, e, g, h, i, j, 1.0f, 0.25f, 0.25f, 1.0f, 1.0f, 0.25f, 0.25f);
+            WorldRenderer.drawBox(matrixStack, vertexConsumer, d, e, g, h, i, j, 1.0f, 0.25f, 0.25f, 1.0f, 1.0f, 0.25f, 0.25f);
         }
     }
 

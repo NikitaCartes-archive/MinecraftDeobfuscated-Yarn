@@ -20,11 +20,11 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class RenderLayers {
-    private static final Map<Block, RenderLayer> BLOCKS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<Block, RenderLayer> BLOCKS = Util.create(Maps.newHashMap(), hashMap -> {
         RenderLayer renderLayer = RenderLayer.getCutoutMipped();
         hashMap.put(Blocks.GRASS_BLOCK, renderLayer);
         hashMap.put(Blocks.IRON_BARS, renderLayer);
@@ -244,7 +244,7 @@ public class RenderLayers {
         hashMap.put(Blocks.FROSTED_ICE, renderLayer3);
         hashMap.put(Blocks.BUBBLE_COLUMN, renderLayer3);
     });
-    private static final Map<Item, RenderLayer> ITEMS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<Item, RenderLayer> ITEMS = Util.create(Maps.newHashMap(), hashMap -> {
         RenderLayer renderLayer = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
         hashMap.put(Items.LEVER, renderLayer);
         hashMap.put(Items.OAK_SIGN, renderLayer);
@@ -259,7 +259,7 @@ public class RenderLayers {
         hashMap.put(Items.BARRIER, renderLayer);
         hashMap.put(Items.STRUCTURE_VOID, renderLayer);
     });
-    private static final Map<Fluid, RenderLayer> FLUIDS = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+    private static final Map<Fluid, RenderLayer> FLUIDS = Util.create(Maps.newHashMap(), hashMap -> {
         RenderLayer renderLayer = RenderLayer.getTranslucent();
         hashMap.put(Fluids.FLOWING_WATER, renderLayer);
         hashMap.put(Fluids.WATER, renderLayer);

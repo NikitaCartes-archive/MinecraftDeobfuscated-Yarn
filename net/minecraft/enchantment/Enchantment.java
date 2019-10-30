@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,7 +90,7 @@ public abstract class Enchantment {
 
     protected String getOrCreateTranslationKey() {
         if (this.translationKey == null) {
-            this.translationKey = SystemUtil.createTranslationKey("enchantment", Registry.ENCHANTMENT.getId(this));
+            this.translationKey = Util.createTranslationKey("enchantment", Registry.ENCHANTMENT.getId(this));
         }
         return this.translationKey;
     }

@@ -30,8 +30,8 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -197,7 +197,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 }
             } else {
                 r = 1;
-                s = (int)(SystemUtil.getMeasuringTimeMs() / 100L + (long)(i * 2) & 7L);
+                s = (int)(Util.getMeasuringTimeMs() / 100L + (long)(i * 2) & 7L);
                 if (s > 4) {
                     s = 8 - s;
                 }
@@ -333,10 +333,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 }
             }
             this.screen.select(this);
-            if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
+            if (Util.getMeasuringTimeMs() - this.time < 250L) {
                 this.screen.connect();
             }
-            this.time = SystemUtil.getMeasuringTimeMs();
+            this.time = Util.getMeasuringTimeMs();
             return false;
         }
 
@@ -373,10 +373,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         @Override
         public boolean mouseClicked(double d, double e, int i) {
             this.screen.select(this);
-            if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
+            if (Util.getMeasuringTimeMs() - this.time < 250L) {
                 this.screen.connect();
             }
-            this.time = SystemUtil.getMeasuringTimeMs();
+            this.time = Util.getMeasuringTimeMs();
             return false;
         }
 
@@ -395,7 +395,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             String string;
             int p = j + m / 2 - this.client.textRenderer.fontHeight / 2;
             this.client.textRenderer.draw(I18n.translate("lanServer.scanning", new Object[0]), this.client.currentScreen.width / 2 - this.client.textRenderer.getStringWidth(I18n.translate("lanServer.scanning", new Object[0])) / 2, p, 0xFFFFFF);
-            switch ((int)(SystemUtil.getMeasuringTimeMs() / 300L % 4L)) {
+            switch ((int)(Util.getMeasuringTimeMs() / 300L % 4L)) {
                 default: {
                     string = "O o o";
                     break;

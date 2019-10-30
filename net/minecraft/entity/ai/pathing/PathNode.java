@@ -79,7 +79,7 @@ public class PathNode {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public BlockPos method_22879() {
+    public BlockPos getPos() {
         return new BlockPos(this.x, this.y, this.z);
     }
 

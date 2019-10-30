@@ -12,10 +12,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4629;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.placer.BlockPlacer;
 import net.minecraft.world.gen.placer.BlockPlacerType;
 import net.minecraft.world.gen.stateprovider.StateProvider;
 import net.minecraft.world.gen.stateprovider.StateProviderType;
@@ -23,7 +23,7 @@ import net.minecraft.world.gen.stateprovider.StateProviderType;
 public class FlowerFeatureConfig
 implements FeatureConfig {
     public final StateProvider field_21237;
-    public final class_4629 field_21238;
+    public final BlockPlacer field_21238;
     public final Set<Block> field_21239;
     public final Set<BlockState> field_21240;
     public final int field_21241;
@@ -34,9 +34,9 @@ implements FeatureConfig {
     public final boolean field_21246;
     public final boolean field_21247;
 
-    private FlowerFeatureConfig(StateProvider stateProvider, class_4629 arg, Set<Block> set, Set<BlockState> set2, int i, int j, int k, int l, boolean bl, boolean bl2, boolean bl3) {
+    private FlowerFeatureConfig(StateProvider stateProvider, BlockPlacer blockPlacer, Set<Block> set, Set<BlockState> set2, int i, int j, int k, int l, boolean bl, boolean bl2, boolean bl3) {
         this.field_21237 = stateProvider;
-        this.field_21238 = arg;
+        this.field_21238 = blockPlacer;
         this.field_21239 = set;
         this.field_21240 = set2;
         this.field_21241 = i;
@@ -58,12 +58,12 @@ implements FeatureConfig {
     public static <T> FlowerFeatureConfig method_23413(Dynamic<T> dynamic) {
         StateProviderType<T> stateProviderType = Registry.BLOCK_STATE_PROVIDER_TYPE.get(new Identifier(dynamic.get("state_provider").get("type").asString().orElseThrow(RuntimeException::new)));
         BlockPlacerType<T> blockPlacerType = Registry.BLOCK_PLACER_TYPE.get(new Identifier(dynamic.get("block_placer").get("type").asString().orElseThrow(RuntimeException::new)));
-        return new FlowerFeatureConfig((StateProvider)stateProviderType.deserialize(dynamic.get("state_provider").orElseEmptyMap()), (class_4629)blockPlacerType.deserialize(dynamic.get("block_placer").orElseEmptyMap()), dynamic.get("whitelist").asList(BlockState::deserialize).stream().map(BlockState::getBlock).collect(Collectors.toSet()), (Set<BlockState>)Sets.newHashSet(dynamic.get("blacklist").asList(BlockState::deserialize)), dynamic.get("tries").asInt(128), dynamic.get("xspread").asInt(7), dynamic.get("yspread").asInt(3), dynamic.get("zspread").asInt(7), dynamic.get("can_replace").asBoolean(false), dynamic.get("project").asBoolean(true), dynamic.get("need_water").asBoolean(false));
+        return new FlowerFeatureConfig((StateProvider)stateProviderType.deserialize(dynamic.get("state_provider").orElseEmptyMap()), (BlockPlacer)blockPlacerType.deserialize(dynamic.get("block_placer").orElseEmptyMap()), dynamic.get("whitelist").asList(BlockState::deserialize).stream().map(BlockState::getBlock).collect(Collectors.toSet()), (Set<BlockState>)Sets.newHashSet(dynamic.get("blacklist").asList(BlockState::deserialize)), dynamic.get("tries").asInt(128), dynamic.get("xspread").asInt(7), dynamic.get("yspread").asInt(3), dynamic.get("zspread").asInt(7), dynamic.get("can_replace").asBoolean(false), dynamic.get("project").asBoolean(true), dynamic.get("need_water").asBoolean(false));
     }
 
-    public static class class_4639 {
+    public static class Builder {
         private final StateProvider field_21248;
-        private final class_4629 field_21249;
+        private final BlockPlacer field_21249;
         private Set<Block> field_21250 = ImmutableSet.of();
         private Set<BlockState> field_21251 = ImmutableSet.of();
         private int field_21252 = 64;
@@ -74,52 +74,52 @@ implements FeatureConfig {
         private boolean field_21257 = true;
         private boolean field_21258 = false;
 
-        public class_4639(StateProvider stateProvider, class_4629 arg) {
+        public Builder(StateProvider stateProvider, BlockPlacer blockPlacer) {
             this.field_21248 = stateProvider;
-            this.field_21249 = arg;
+            this.field_21249 = blockPlacer;
         }
 
-        public class_4639 method_23418(Set<Block> set) {
+        public Builder method_23418(Set<Block> set) {
             this.field_21250 = set;
             return this;
         }
 
-        public class_4639 method_23421(Set<BlockState> set) {
+        public Builder method_23421(Set<BlockState> set) {
             this.field_21251 = set;
             return this;
         }
 
-        public class_4639 method_23417(int i) {
+        public Builder method_23417(int i) {
             this.field_21252 = i;
             return this;
         }
 
-        public class_4639 method_23420(int i) {
+        public Builder method_23420(int i) {
             this.field_21253 = i;
             return this;
         }
 
-        public class_4639 method_23423(int i) {
+        public Builder method_23423(int i) {
             this.field_21254 = i;
             return this;
         }
 
-        public class_4639 method_23425(int i) {
+        public Builder method_23425(int i) {
             this.field_21255 = i;
             return this;
         }
 
-        public class_4639 method_23416() {
+        public Builder method_23416() {
             this.field_21256 = true;
             return this;
         }
 
-        public class_4639 method_23419() {
+        public Builder method_23419() {
             this.field_21257 = false;
             return this;
         }
 
-        public class_4639 method_23422() {
+        public Builder method_23422() {
             this.field_21258 = true;
             return this;
         }

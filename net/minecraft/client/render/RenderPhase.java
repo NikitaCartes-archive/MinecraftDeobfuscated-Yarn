@@ -15,7 +15,7 @@ import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -159,7 +159,7 @@ public class RenderPhase {
         RenderSystem.matrixMode(5890);
         RenderSystem.pushMatrix();
         RenderSystem.loadIdentity();
-        long l = SystemUtil.getMeasuringTimeMs() * 8L;
+        long l = Util.getMeasuringTimeMs() * 8L;
         float g = (float)(l % 110000L) / 110000.0f;
         float h = (float)(l % 30000L) / 30000.0f;
         RenderSystem.translatef(-g, h, 0.0f);
@@ -416,7 +416,7 @@ public class RenderPhase {
                 RenderSystem.loadIdentity();
                 RenderSystem.translatef(0.5f, 0.5f, 0.0f);
                 RenderSystem.scalef(0.5f, 0.5f, 1.0f);
-                RenderSystem.translatef(17.0f / (float)i, (2.0f + (float)i / 1.5f) * ((float)(SystemUtil.getMeasuringTimeMs() % 800000L) / 800000.0f), 0.0f);
+                RenderSystem.translatef(17.0f / (float)i, (2.0f + (float)i / 1.5f) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0f), 0.0f);
                 RenderSystem.rotatef(((float)(i * i) * 4321.0f + (float)i * 9.0f) * 2.0f, 0.0f, 0.0f, 1.0f);
                 RenderSystem.scalef(4.5f - (float)i / 4.0f, 4.5f - (float)i / 4.0f, 1.0f);
                 RenderSystem.mulTextureByProjModelView();

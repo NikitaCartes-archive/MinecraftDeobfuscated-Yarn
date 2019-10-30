@@ -6,10 +6,10 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -43,16 +43,16 @@ extends LivingEntityRenderer<T, M> {
         return false;
     }
 
-    public void method_4072(T mobEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        super.method_4054(mobEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+    public void method_4072(T mobEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+        super.method_4054(mobEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
         Entity entity = ((MobEntity)mobEntity).getHoldingEntity();
         if (entity == null) {
             return;
         }
-        MobEntityRenderer.method_4073(mobEntity, h, matrixStack, layeredVertexConsumerStorage, entity);
+        MobEntityRenderer.method_4073(mobEntity, h, matrixStack, vertexConsumerProvider, entity);
     }
 
-    public static void method_4073(MobEntity mobEntity, float f, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, Entity entity) {
+    public static void method_4073(MobEntity mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
         matrixStack.push();
         double d = MathHelper.lerp(f * 0.5f, entity.yaw, entity.prevYaw) * ((float)Math.PI / 180);
         double e = MathHelper.lerp(f * 0.5f, entity.pitch, entity.prevPitch) * ((float)Math.PI / 180);
@@ -79,8 +79,8 @@ extends LivingEntityRenderer<T, M> {
         float s = (float)(l - p);
         float t = (float)(m - q);
         float u = 0.025f;
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getLeash());
-        Matrix4f matrix4f = matrixStack.peek();
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLeash());
+        Matrix4f matrix4f = matrixStack.peekModel();
         float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025f / 2.0f;
         float w = t * v;
         float x = r * v;

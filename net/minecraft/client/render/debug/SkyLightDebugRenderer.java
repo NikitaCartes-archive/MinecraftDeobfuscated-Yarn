@@ -27,7 +27,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void method_23109(long l) {
+    public void render(long l) {
         Camera camera = this.client.gameRenderer.getCamera();
         ClientWorld world = this.client.world;
         RenderSystem.pushMatrix();
@@ -42,10 +42,10 @@ implements DebugRenderer.Renderer {
             int j = MathHelper.hsvToRgb(f, 0.9f, 0.9f);
             long m = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
             if (longSet.add(m)) {
-                DebugRenderer.method_23106(((World)world).getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(m)), ChunkSectionPos.getX(m) * 16 + 8, ChunkSectionPos.getY(m) * 16 + 8, ChunkSectionPos.getZ(m) * 16 + 8, 0xFF0000, 0.3f);
+                DebugRenderer.drawString(((World)world).getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(m)), ChunkSectionPos.getX(m) * 16 + 8, ChunkSectionPos.getY(m) * 16 + 8, ChunkSectionPos.getZ(m) * 16 + 8, 0xFF0000, 0.3f);
             }
             if (i == 15) continue;
-            DebugRenderer.method_23105(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
+            DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
         }
         RenderSystem.enableTexture();
         RenderSystem.popMatrix();

@@ -3,6 +3,10 @@
  */
 package net.minecraft.entity.passive;
 
+import com.google.common.collect.ImmutableList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -141,7 +145,7 @@ extends GolemEntity {
         this.setPlayerCreated(compoundTag.getBoolean("PlayerCreated"));
     }
 
-    private float method_22328() {
+    private float getAttackDamage() {
         return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
     }
 
@@ -149,7 +153,7 @@ extends GolemEntity {
     public boolean tryAttack(Entity entity) {
         this.field_6762 = 10;
         this.world.sendEntityStatus(this, (byte)4);
-        float f = this.method_22328();
+        float f = this.getAttackDamage();
         float g = f > 0.0f ? f / 2.0f + (float)this.random.nextInt((int)f) : 0.0f;
         boolean bl = entity.damage(DamageSource.mob(this), g);
         if (bl) {
@@ -162,26 +166,16 @@ extends GolemEntity {
 
     @Override
     public boolean damage(DamageSource damageSource, float f) {
-        class_4621 lv = this.method_23347();
+        Crack crack = this.getCrack();
         boolean bl = super.damage(damageSource, f);
-        if (bl && this.method_23347() != lv) {
+        if (bl && this.getCrack() != crack) {
             this.playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 1.0f, 1.0f);
         }
         return bl;
     }
 
-    public class_4621 method_23347() {
-        float f = this.getHealth();
-        if (f < 25.0f) {
-            return class_4621.HIGH;
-        }
-        if (f < 50.0f) {
-            return class_4621.MEDIUM;
-        }
-        if (f < 75.0f) {
-            return class_4621.LOW;
-        }
-        return class_4621.NONE;
+    public Crack getCrack() {
+        return Crack.from(this.getHealth() / this.getMaximumHealth());
     }
 
     @Override
@@ -289,12 +283,30 @@ extends GolemEntity {
         return false;
     }
 
-    public static enum class_4621 {
-        NONE,
-        LOW,
-        MEDIUM,
-        HIGH;
+    public static enum Crack {
+        NONE(1.0f),
+        LOW(0.75f),
+        MEDIUM(0.5f),
+        HIGH(0.25f);
 
+        private static final List<Crack> VALUES;
+        private final float maxHealthFraction;
+
+        private Crack(float f) {
+            this.maxHealthFraction = f;
+        }
+
+        public static Crack from(float f) {
+            for (Crack crack : VALUES) {
+                if (!(f < crack.maxHealthFraction)) continue;
+                return crack;
+            }
+            return NONE;
+        }
+
+        static {
+            VALUES = Stream.of(Crack.values()).sorted(Comparator.comparingDouble(crack -> crack.maxHealthFraction)).collect(ImmutableList.toImmutableList());
+        }
     }
 }
 

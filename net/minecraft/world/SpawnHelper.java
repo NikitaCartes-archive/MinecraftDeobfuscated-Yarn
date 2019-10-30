@@ -131,7 +131,7 @@ public final class SpawnHelper {
     }
 
     public static boolean isClearForSpawn(BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-        if (blockState.method_21743(blockView, blockPos)) {
+        if (blockState.isFullCube(blockView, blockPos)) {
             return false;
         }
         if (blockState.emitsRedstonePower()) {

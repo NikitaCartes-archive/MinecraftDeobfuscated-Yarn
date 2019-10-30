@@ -61,7 +61,7 @@ extends Item {
                     itemStack.decrement(1);
                 }
             }
-            return TypedActionResult.successWithSwing(playerEntity.getStackInHand(hand));
+            return TypedActionResult.success(playerEntity.getStackInHand(hand));
         }
         return TypedActionResult.pass(playerEntity.getStackInHand(hand));
     }

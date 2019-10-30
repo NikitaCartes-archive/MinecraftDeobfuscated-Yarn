@@ -62,10 +62,10 @@ implements Monster {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(1, new class_1623(this));
-        this.goalSelector.add(2, new class_1622(this));
-        this.goalSelector.add(3, new class_1626(this));
-        this.goalSelector.add(5, new class_1624(this));
+        this.goalSelector.add(1, new SwimmingGoal(this));
+        this.goalSelector.add(2, new FaceTowardTargetGoal(this));
+        this.goalSelector.add(3, new RandomLookGoal(this));
+        this.goalSelector.add(5, new MoveGoal(this));
         this.targetSelector.add(1, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, livingEntity -> Math.abs(livingEntity.getY() - this.getY()) <= 4.0));
         this.targetSelector.add(3, new FollowTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, true));
     }
@@ -336,11 +336,11 @@ implements Monster {
         return super.getDimensions(entityPose).scaled(0.255f * (float)this.getSize());
     }
 
-    static class class_1624
+    static class MoveGoal
     extends Goal {
         private final SlimeEntity slime;
 
-        public class_1624(SlimeEntity slimeEntity) {
+        public MoveGoal(SlimeEntity slimeEntity) {
             this.slime = slimeEntity;
             this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
         }
@@ -356,11 +356,11 @@ implements Monster {
         }
     }
 
-    static class class_1623
+    static class SwimmingGoal
     extends Goal {
         private final SlimeEntity slime;
 
-        public class_1623(SlimeEntity slimeEntity) {
+        public SwimmingGoal(SlimeEntity slimeEntity) {
             this.slime = slimeEntity;
             this.setControls(EnumSet.of(Goal.Control.JUMP, Goal.Control.MOVE));
             slimeEntity.getNavigation().setCanSwim(true);
@@ -380,13 +380,13 @@ implements Monster {
         }
     }
 
-    static class class_1626
+    static class RandomLookGoal
     extends Goal {
         private final SlimeEntity slime;
-        private float field_7400;
-        private int field_7401;
+        private float targetYaw;
+        private int timer;
 
-        public class_1626(SlimeEntity slimeEntity) {
+        public RandomLookGoal(SlimeEntity slimeEntity) {
             this.slime = slimeEntity;
             this.setControls(EnumSet.of(Goal.Control.LOOK));
         }
@@ -398,20 +398,20 @@ implements Monster {
 
         @Override
         public void tick() {
-            if (--this.field_7401 <= 0) {
-                this.field_7401 = 40 + this.slime.getRandom().nextInt(60);
-                this.field_7400 = this.slime.getRandom().nextInt(360);
+            if (--this.timer <= 0) {
+                this.timer = 40 + this.slime.getRandom().nextInt(60);
+                this.targetYaw = this.slime.getRandom().nextInt(360);
             }
-            ((SlimeMoveControl)this.slime.getMoveControl()).look(this.field_7400, false);
+            ((SlimeMoveControl)this.slime.getMoveControl()).look(this.targetYaw, false);
         }
     }
 
-    static class class_1622
+    static class FaceTowardTargetGoal
     extends Goal {
         private final SlimeEntity slime;
-        private int field_7392;
+        private int ticksLeft;
 
-        public class_1622(SlimeEntity slimeEntity) {
+        public FaceTowardTargetGoal(SlimeEntity slimeEntity) {
             this.slime = slimeEntity;
             this.setControls(EnumSet.of(Goal.Control.LOOK));
         }
@@ -433,7 +433,7 @@ implements Monster {
 
         @Override
         public void start() {
-            this.field_7392 = 300;
+            this.ticksLeft = 300;
             super.start();
         }
 
@@ -449,7 +449,7 @@ implements Monster {
             if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.invulnerable) {
                 return false;
             }
-            return --this.field_7392 > 0;
+            return --this.ticksLeft > 0;
         }
 
         @Override

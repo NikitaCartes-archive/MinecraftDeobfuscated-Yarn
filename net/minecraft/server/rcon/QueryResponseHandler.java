@@ -22,7 +22,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.rcon.BufferHelper;
 import net.minecraft.server.rcon.DataStreamHelper;
 import net.minecraft.server.rcon.RconBase;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public class QueryResponseHandler
 extends RconBase {
@@ -38,10 +38,10 @@ extends RconBase {
     private final Map<SocketAddress, String> field_14448;
     private String ip;
     private String hostname;
-    private final Map<SocketAddress, class_3365> field_14453;
-    private final long field_14451;
+    private final Map<SocketAddress, Query> queries;
+    private final long creationTime;
     private final DataStreamHelper data;
-    private long field_14450;
+    private long lastResponseTime;
 
     public QueryResponseHandler(DedicatedServer dedicatedServer) {
         super(dedicatedServer, "Query Listener");
@@ -51,7 +51,7 @@ extends RconBase {
         this.motd = dedicatedServer.getMotd();
         this.maxPlayerCount = dedicatedServer.getMaxPlayerCount();
         this.levelName = dedicatedServer.getLevelName();
-        this.field_14450 = 0L;
+        this.lastResponseTime = 0L;
         this.ip = "0.0.0.0";
         if (this.hostname.isEmpty() || this.ip.equals(this.hostname)) {
             this.hostname = "0.0.0.0";
@@ -66,8 +66,8 @@ extends RconBase {
         }
         this.field_14448 = Maps.newHashMap();
         this.data = new DataStreamHelper(1460);
-        this.field_14453 = Maps.newHashMap();
-        this.field_14451 = new Date().getTime();
+        this.queries = Maps.newHashMap();
+        this.creationTime = new Date().getTime();
     }
 
     private void reply(byte[] bs, DatagramPacket datagramPacket) throws IOException {
@@ -86,12 +86,12 @@ extends RconBase {
         this.log("Packet '" + BufferHelper.toHex(bs[2]) + "' [" + socketAddress + "]");
         switch (bs[2]) {
             case 9: {
-                this.method_14749(datagramPacket);
+                this.createQuery(datagramPacket);
                 this.log("Challenge [" + socketAddress + "]");
                 return true;
             }
             case 0: {
-                if (!this.method_14753(datagramPacket).booleanValue()) {
+                if (!this.isValidQuery(datagramPacket).booleanValue()) {
                     this.log("Invalid challenge [" + socketAddress + "]");
                     return false;
                 }
@@ -102,7 +102,7 @@ extends RconBase {
                 }
                 DataStreamHelper dataStreamHelper = new DataStreamHelper(1460);
                 dataStreamHelper.write(0);
-                dataStreamHelper.write(this.method_14748(datagramPacket.getSocketAddress()));
+                dataStreamHelper.write(this.getMessageBytes(datagramPacket.getSocketAddress()));
                 dataStreamHelper.writeBytes(this.motd);
                 dataStreamHelper.writeBytes("SMP");
                 dataStreamHelper.writeBytes(this.levelName);
@@ -119,20 +119,20 @@ extends RconBase {
 
     private byte[] createRulesReply(DatagramPacket datagramPacket) throws IOException {
         String[] strings;
-        long l = SystemUtil.getMeasuringTimeMs();
-        if (l < this.field_14450 + 5000L) {
+        long l = Util.getMeasuringTimeMs();
+        if (l < this.lastResponseTime + 5000L) {
             byte[] bs = this.data.bytes();
-            byte[] cs = this.method_14748(datagramPacket.getSocketAddress());
+            byte[] cs = this.getMessageBytes(datagramPacket.getSocketAddress());
             bs[1] = cs[0];
             bs[2] = cs[1];
             bs[3] = cs[2];
             bs[4] = cs[3];
             return bs;
         }
-        this.field_14450 = l;
+        this.lastResponseTime = l;
         this.data.reset();
         this.data.write(0);
-        this.data.write(this.method_14748(datagramPacket.getSocketAddress()));
+        this.data.write(this.getMessageBytes(datagramPacket.getSocketAddress()));
         this.data.writeBytes("splitnum");
         this.data.write(128);
         this.data.write(0);
@@ -167,41 +167,41 @@ extends RconBase {
         return this.data.bytes();
     }
 
-    private byte[] method_14748(SocketAddress socketAddress) {
-        return this.field_14453.get(socketAddress).method_14758();
+    private byte[] getMessageBytes(SocketAddress socketAddress) {
+        return this.queries.get(socketAddress).getMessageBytes();
     }
 
-    private Boolean method_14753(DatagramPacket datagramPacket) {
+    private Boolean isValidQuery(DatagramPacket datagramPacket) {
         SocketAddress socketAddress = datagramPacket.getSocketAddress();
-        if (!this.field_14453.containsKey(socketAddress)) {
+        if (!this.queries.containsKey(socketAddress)) {
             return false;
         }
         byte[] bs = datagramPacket.getData();
-        if (this.field_14453.get(socketAddress).method_14756() != BufferHelper.getIntBE(bs, 7, datagramPacket.getLength())) {
+        if (this.queries.get(socketAddress).getId() != BufferHelper.getIntBE(bs, 7, datagramPacket.getLength())) {
             return false;
         }
         return true;
     }
 
-    private void method_14749(DatagramPacket datagramPacket) throws IOException {
-        class_3365 lv = new class_3365(datagramPacket);
-        this.field_14453.put(datagramPacket.getSocketAddress(), lv);
-        this.reply(lv.method_14757(), datagramPacket);
+    private void createQuery(DatagramPacket datagramPacket) throws IOException {
+        Query query = new Query(datagramPacket);
+        this.queries.put(datagramPacket.getSocketAddress(), query);
+        this.reply(query.getReplyBuf(), datagramPacket);
     }
 
-    private void method_14746() {
+    private void cleanUp() {
         if (!this.running) {
             return;
         }
-        long l = SystemUtil.getMeasuringTimeMs();
+        long l = Util.getMeasuringTimeMs();
         if (l < this.lastQueryTime + 30000L) {
             return;
         }
         this.lastQueryTime = l;
-        Iterator<Map.Entry<SocketAddress, class_3365>> iterator = this.field_14453.entrySet().iterator();
+        Iterator<Map.Entry<SocketAddress, Query>> iterator = this.queries.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<SocketAddress, class_3365> entry = iterator.next();
-            if (!entry.getValue().method_14755(l).booleanValue()) continue;
+            Map.Entry<SocketAddress, Query> entry = iterator.next();
+            if (!entry.getValue().startedBefore(l).booleanValue()) continue;
             iterator.remove();
         }
     }
@@ -209,16 +209,16 @@ extends RconBase {
     @Override
     public void run() {
         this.info("Query running on " + this.hostname + ":" + this.queryPort);
-        this.lastQueryTime = SystemUtil.getMeasuringTimeMs();
+        this.lastQueryTime = Util.getMeasuringTimeMs();
         this.currentPacket = new DatagramPacket(this.packetBuffer, this.packetBuffer.length);
         try {
             while (this.running) {
                 try {
                     this.socket.receive(this.currentPacket);
-                    this.method_14746();
+                    this.cleanUp();
                     this.handle(this.currentPacket);
                 } catch (SocketTimeoutException socketTimeoutException) {
-                    this.method_14746();
+                    this.cleanUp();
                 } catch (PortUnreachableException socketTimeoutException) {
                 } catch (IOException iOException) {
                     this.handleIoException(iOException);
@@ -270,39 +270,39 @@ extends RconBase {
         return false;
     }
 
-    class class_3365 {
-        private final long field_14459 = new Date().getTime();
-        private final int field_14458;
-        private final byte[] field_14460;
-        private final byte[] field_14461;
-        private final String field_14462;
+    class Query {
+        private final long startTime = new Date().getTime();
+        private final int id;
+        private final byte[] messageBytes;
+        private final byte[] replyBuf;
+        private final String message;
 
-        public class_3365(DatagramPacket datagramPacket) {
+        public Query(DatagramPacket datagramPacket) {
             byte[] bs = datagramPacket.getData();
-            this.field_14460 = new byte[4];
-            this.field_14460[0] = bs[3];
-            this.field_14460[1] = bs[4];
-            this.field_14460[2] = bs[5];
-            this.field_14460[3] = bs[6];
-            this.field_14462 = new String(this.field_14460, StandardCharsets.UTF_8);
-            this.field_14458 = new Random().nextInt(0x1000000);
-            this.field_14461 = String.format("\t%s%d\u0000", this.field_14462, this.field_14458).getBytes(StandardCharsets.UTF_8);
+            this.messageBytes = new byte[4];
+            this.messageBytes[0] = bs[3];
+            this.messageBytes[1] = bs[4];
+            this.messageBytes[2] = bs[5];
+            this.messageBytes[3] = bs[6];
+            this.message = new String(this.messageBytes, StandardCharsets.UTF_8);
+            this.id = new Random().nextInt(0x1000000);
+            this.replyBuf = String.format("\t%s%d\u0000", this.message, this.id).getBytes(StandardCharsets.UTF_8);
         }
 
-        public Boolean method_14755(long l) {
-            return this.field_14459 < l;
+        public Boolean startedBefore(long l) {
+            return this.startTime < l;
         }
 
-        public int method_14756() {
-            return this.field_14458;
+        public int getId() {
+            return this.id;
         }
 
-        public byte[] method_14757() {
-            return this.field_14461;
+        public byte[] getReplyBuf() {
+            return this.replyBuf;
         }
 
-        public byte[] method_14758() {
-            return this.field_14460;
+        public byte[] getMessageBytes() {
+            return this.messageBytes;
         }
     }
 }

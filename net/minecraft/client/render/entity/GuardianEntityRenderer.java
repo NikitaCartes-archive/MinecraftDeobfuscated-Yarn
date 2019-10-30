@@ -6,10 +6,10 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
@@ -57,8 +57,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         return new Vec3d(e, g, h);
     }
 
-    public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
-        super.method_4072(guardianEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+    public void method_3977(GuardianEntity guardianEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+        super.method_4072(guardianEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
         LivingEntity livingEntity = guardianEntity.getBeamTarget();
         if (livingEntity != null) {
             float i = guardianEntity.getBeamProgress(h);
@@ -105,8 +105,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             float ap = 0.4999f;
             float aq = -1.0f + k;
             float ar = m * 2.5f + aq;
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX));
-            Matrix4f matrix4f = matrixStack.peek();
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(EXPLOSION_BEAM_TEX));
+            Matrix4f matrix4f = matrixStack.peekModel();
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, af, an, ag, s, t, u, 0.4999f, ar);
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, af, 0.0f, ag, s, t, u, 0.4999f, aq);
             GuardianEntityRenderer.method_23173(vertexConsumer, matrix4f, ah, 0.0f, ai, s, t, u, 0.0f, aq);
@@ -128,7 +128,7 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
     }
 
     private static void method_23173(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, float l, float m) {
-        vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).defaultOverlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f, g, h).color(i, j, k, 255).texture(l, m).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(0.0f, 1.0f, 0.0f).next();
     }
 
     public Identifier method_3976(GuardianEntity guardianEntity) {

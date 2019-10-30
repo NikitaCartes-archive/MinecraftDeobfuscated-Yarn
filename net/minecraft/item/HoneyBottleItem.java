@@ -39,6 +39,13 @@ extends Item {
         if (itemStack.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);
         }
+        if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {
+            ItemStack itemStack2 = new ItemStack(Items.GLASS_BOTTLE);
+            PlayerEntity playerEntity = (PlayerEntity)livingEntity;
+            if (!playerEntity.inventory.insertStack(itemStack2)) {
+                playerEntity.dropItem(itemStack2, false);
+            }
+        }
         return itemStack;
     }
 
@@ -65,7 +72,7 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         playerEntity.setCurrentHand(hand);
-        return TypedActionResult.successWithSwing(playerEntity.getStackInHand(hand));
+        return TypedActionResult.success(playerEntity.getStackInHand(hand));
     }
 }
 

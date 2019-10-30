@@ -75,7 +75,7 @@ extends ListWidget {
         this.capYPosition();
         RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         int m = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
         int n = this.top + 4 - (int)this.scroll;
         if (this.renderHeader) {
@@ -97,19 +97,19 @@ extends ListWidget {
             if (q < this.top) {
                 q = this.top;
             }
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(k, this.bottom, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(l, this.bottom, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(l, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
             bufferBuilder.vertex(k, this.top, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 255).next();
             tessellator.draw();
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(k, q + p, 0.0).texture(0.0f, 1.0f).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(l, q + p, 0.0).texture(1.0f, 1.0f).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(l, q, 0.0).texture(1.0f, 0.0f).color(128, 128, 128, 255).next();
             bufferBuilder.vertex(k, q, 0.0).texture(0.0f, 0.0f).color(128, 128, 128, 255).next();
             tessellator.draw();
-            bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+            bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(k, q + p - 1, 0.0).texture(0.0f, 1.0f).color(192, 192, 192, 255).next();
             bufferBuilder.vertex(l - 1, q + p - 1, 0.0).texture(1.0f, 1.0f).color(192, 192, 192, 255).next();
             bufferBuilder.vertex(l - 1, q, 0.0).texture(1.0f, 0.0f).color(192, 192, 192, 255).next();

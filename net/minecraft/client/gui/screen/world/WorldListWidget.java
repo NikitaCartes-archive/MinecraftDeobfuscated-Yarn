@@ -40,7 +40,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -228,11 +228,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.play();
                 return true;
             }
-            if (SystemUtil.getMeasuringTimeMs() - this.time < 250L) {
+            if (Util.getMeasuringTimeMs() - this.time < 250L) {
                 this.play();
                 return true;
             }
-            this.time = SystemUtil.getMeasuringTimeMs();
+            this.time = Util.getMeasuringTimeMs();
             return false;
         }
 

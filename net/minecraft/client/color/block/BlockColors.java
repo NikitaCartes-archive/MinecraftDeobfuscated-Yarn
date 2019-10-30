@@ -98,7 +98,7 @@ public class BlockColors {
         return materialColor != null ? materialColor.color : -1;
     }
 
-    public int getColorMultiplier(BlockState blockState, @Nullable BlockRenderView blockRenderView, @Nullable BlockPos blockPos, int i) {
+    public int getColor(BlockState blockState, @Nullable BlockRenderView blockRenderView, @Nullable BlockPos blockPos, int i) {
         BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(blockState.getBlock()));
         return blockColorProvider == null ? -1 : blockColorProvider.getColor(blockState, blockRenderView, blockPos, i);
     }

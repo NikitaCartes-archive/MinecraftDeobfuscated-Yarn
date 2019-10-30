@@ -17,7 +17,7 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class RedirectedResourcePack
 implements ResourcePack {
     private final ResourcePack parent;
     private final Map<Identifier, Identifier> idMap;
-    public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = SystemUtil.get(() -> {
+    public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = Util.create(() -> {
         ImmutableMap.Builder<Identifier, Identifier> builder = ImmutableMap.builder();
         builder.put(new Identifier("textures/block/melon_stem.png"), new Identifier("textures/block/pumpkin_stem.png"));
         builder.put(new Identifier("textures/block/anvil.png"), new Identifier("textures/blocks/anvil_base.png"));

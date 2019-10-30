@@ -10,9 +10,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
@@ -40,8 +40,8 @@ implements AutoCloseable {
         this.getMapTexture(mapState).updateTexture();
     }
 
-    public void draw(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, MapState mapState, boolean bl, int i) {
-        this.getMapTexture(mapState).draw(matrixStack, layeredVertexConsumerStorage, bl, i);
+    public void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, MapState mapState, boolean bl, int i) {
+        this.getMapTexture(mapState).draw(matrixStack, vertexConsumerProvider, bl, i);
     }
 
     private MapTexture getMapTexture(MapState mapState) {
@@ -106,12 +106,12 @@ implements AutoCloseable {
             this.texture.upload();
         }
 
-        private void draw(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, boolean bl, int i) {
+        private void draw(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean bl, int i) {
             boolean j = false;
             boolean k = false;
             float f = 0.0f;
-            Matrix4f matrix4f = matrixStack.peek();
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(this.id));
+            Matrix4f matrix4f = matrixStack.peekModel();
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getText(this.id));
             vertexConsumer.vertex(matrix4f, 0.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(i).next();
             vertexConsumer.vertex(matrix4f, 128.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(i).next();
             vertexConsumer.vertex(matrix4f, 128.0f, 0.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 0.0f).light(i).next();
@@ -129,9 +129,9 @@ implements AutoCloseable {
                 float h = (float)(b / 16 + 0) / 16.0f;
                 float m = (float)(b % 16 + 1) / 16.0f;
                 float n = (float)(b / 16 + 1) / 16.0f;
-                Matrix4f matrix4f2 = matrixStack.peek();
+                Matrix4f matrix4f2 = matrixStack.peekModel();
                 float o = -0.001f;
-                VertexConsumer vertexConsumer2 = layeredVertexConsumerStorage.getBuffer(RenderLayer.getText(MAP_ICONS_TEXTURE));
+                VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getText(MAP_ICONS_TEXTURE));
                 vertexConsumer2.vertex(matrix4f2, -1.0f, 1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(g, h).light(i).next();
                 vertexConsumer2.vertex(matrix4f2, 1.0f, 1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(m, h).light(i).next();
                 vertexConsumer2.vertex(matrix4f2, 1.0f, -1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(m, n).light(i).next();
@@ -148,7 +148,7 @@ implements AutoCloseable {
                     matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - p * q / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);
                     matrixStack.scale(q, q, 1.0f);
                     matrixStack.translate(0.0, 0.0, -0.1f);
-                    textRenderer.method_22942(string, 0.0f, 0.0f, -1, false, matrixStack.peek(), layeredVertexConsumerStorage, false, Integer.MIN_VALUE, i);
+                    textRenderer.draw(string, 0.0f, 0.0f, -1, false, matrixStack.peekModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
                     matrixStack.pop();
                 }
                 ++l;

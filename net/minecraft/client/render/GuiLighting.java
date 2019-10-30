@@ -13,6 +13,7 @@ public class GuiLighting {
     public static void enable() {
         RenderSystem.enableLighting();
         RenderSystem.enableColorMaterial();
+        RenderSystem.colorMaterial(1032, 5634);
     }
 
     public static void disable() {

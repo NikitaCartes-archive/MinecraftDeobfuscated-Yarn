@@ -204,7 +204,7 @@ implements Tickable {
                 for (int l = 255; l > (blockPos2 == null ? 0 : blockPos2.getY()); --l) {
                     BlockPos blockPos3 = new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
                     BlockState blockState = blockView.getBlockState(blockPos3);
-                    if (!blockState.method_21743(blockView, blockPos3) || !bl && blockState.getBlock() == Blocks.BEDROCK) continue;
+                    if (!blockState.isFullCube(blockView, blockPos3) || !bl && blockState.getBlock() == Blocks.BEDROCK) continue;
                     blockPos2 = blockPos3;
                     continue block1;
                 }
@@ -229,7 +229,7 @@ implements Tickable {
             BlockState blockState = worldChunk.getBlockState(blockPos4);
             BlockPos blockPos5 = blockPos4.up();
             BlockPos blockPos6 = blockPos4.up(2);
-            if (blockState.getBlock() != Blocks.END_STONE || worldChunk.getBlockState(blockPos5).method_21743(worldChunk, blockPos5) || worldChunk.getBlockState(blockPos6).method_21743(worldChunk, blockPos6)) continue;
+            if (blockState.getBlock() != Blocks.END_STONE || worldChunk.getBlockState(blockPos5).isFullCube(worldChunk, blockPos5) || worldChunk.getBlockState(blockPos6).isFullCube(worldChunk, blockPos6)) continue;
             double e = blockPos4.getSquaredDistance(0.0, 0.0, 0.0, true);
             if (blockPos3 != null && !(e < d)) continue;
             blockPos3 = blockPos4;

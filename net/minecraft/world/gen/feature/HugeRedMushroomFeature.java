@@ -8,13 +8,13 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MushroomBlock;
-import net.minecraft.class_4625;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.feature.HugeMushroomFeature;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 
 public class HugeRedMushroomFeature
-extends class_4625 {
+extends HugeMushroomFeature {
     public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
         super(function);
     }

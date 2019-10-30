@@ -98,8 +98,8 @@ public class TestRunner {
         int i = 0;
         for (GameTest gameTest : collection) {
             BlockPos blockPos = new BlockPos(this.reusablePos);
-            gameTest.method_23635(blockPos);
-            StructureTestUtil.method_22250(gameTest.method_23638(), blockPos, 2, this.world, true);
+            gameTest.setPos(blockPos);
+            StructureTestUtil.method_22250(gameTest.getStructureName(), blockPos, 2, this.world, true);
             BlockPos blockPos2 = gameTest.getSize();
             int j = blockPos2 == null ? 1 : blockPos2.getX();
             int k = blockPos2 == null ? 1 : blockPos2.getZ();

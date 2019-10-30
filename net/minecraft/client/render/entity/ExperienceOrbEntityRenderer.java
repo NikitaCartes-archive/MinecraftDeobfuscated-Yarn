@@ -5,10 +5,10 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.Matrix4f;
@@ -29,7 +29,7 @@ extends EntityRenderer<ExperienceOrbEntity> {
         this.field_4672 = 0.75f;
     }
 
-    public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         matrixStack.push();
         int i = experienceOrbEntity.getOrbSize();
         float j = (float)(i % 4 * 16 + 0) / 64.0f;
@@ -51,18 +51,18 @@ extends EntityRenderer<ExperienceOrbEntity> {
         float w = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
         int x = experienceOrbEntity.getLightmapCoordinates();
-        VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(RenderLayer.getEntityCutout(SKIN));
-        Matrix4f matrix4f = matrixStack.peek();
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SKIN));
+        Matrix4f matrix4f = matrixStack.peekModel();
         ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, -0.5f, -0.25f, s, 255, u, j, m, x);
         ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, 0.5f, -0.25f, s, 255, u, k, m, x);
         ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, 0.5f, 0.75f, s, 255, u, k, l, x);
         ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, -0.5f, 0.75f, s, 255, u, j, l, x);
         matrixStack.pop();
-        super.render(experienceOrbEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(experienceOrbEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     private static void method_23171(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, int i, int j, int k, float h, float l, int m) {
-        vertexConsumer.vertex(matrix4f, f, g, 0.0f).color(i, j, k, 128).texture(h, l).defaultOverlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        vertexConsumer.vertex(matrix4f, f, g, 0.0f).color(i, j, k, 128).texture(h, l).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
     }
 
     public Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {

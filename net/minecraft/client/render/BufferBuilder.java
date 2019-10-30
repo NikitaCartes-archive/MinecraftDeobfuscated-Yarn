@@ -128,7 +128,7 @@ implements BufferVertexConsumer {
         floatBuffer.position(this.buildStart / 4 + i * j);
     }
 
-    public State toBufferState() {
+    public State popState() {
         this.buffer.limit(this.elementOffset);
         this.buffer.position(this.buildStart);
         ByteBuffer byteBuffer = ByteBuffer.allocate(this.vertexCount * this.format.getVertexSize());

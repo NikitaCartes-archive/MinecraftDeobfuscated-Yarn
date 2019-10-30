@@ -421,7 +421,7 @@ extends AbstractClientPlayerEntity {
     private boolean cannotFitAt(BlockPos blockPos) {
         Box box = this.getBoundingBox();
         BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
-        for (int i = MathHelper.floor(box.minY); i < MathHelper.ceil(box.maxY); ++i) {
+        for (int i = MathHelper.floor(box.y1); i < MathHelper.ceil(box.y2); ++i) {
             mutable.setY(i);
             if (this.doesNotSuffocate(mutable)) continue;
             return true;
@@ -614,6 +614,7 @@ extends AbstractClientPlayerEntity {
     public void tickMovement() {
         int i;
         ItemStack itemStack;
+        boolean bl6;
         boolean bl5;
         ++this.field_3921;
         if (this.field_3935 > 0) {
@@ -642,7 +643,7 @@ extends AbstractClientPlayerEntity {
             this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
             this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
         }
-        boolean bl6 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.abilities.allowFlying;
+        boolean bl7 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.abilities.allowFlying;
         if (!(!this.onGround && !this.isInWater() || bl2 || bl3 || !this.method_20623() || this.isSprinting() || !bl5 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
             if (this.field_3935 > 0 || this.client.options.keySprint.isPressed()) {
                 this.setSprinting(true);
@@ -654,21 +655,23 @@ extends AbstractClientPlayerEntity {
             this.setSprinting(true);
         }
         if (this.isSprinting()) {
-            boolean bl7;
-            boolean bl62 = !this.input.hasForwardMovement() || !bl5;
-            boolean bl8 = bl7 = bl62 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
+            boolean bl72;
+            bl6 = !this.input.hasForwardMovement() || !bl5;
+            boolean bl8 = bl72 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
             if (this.isSwimming()) {
-                if (!this.onGround && !this.input.sneaking && bl62 || !this.isInsideWater()) {
+                if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
                     this.setSprinting(false);
                 }
-            } else if (bl7) {
+            } else if (bl72) {
                 this.setSprinting(false);
             }
         }
+        bl6 = false;
         if (this.abilities.allowFlying) {
             if (this.client.interactionManager.isFlyingLocked()) {
                 if (!this.abilities.flying) {
                     this.abilities.flying = true;
+                    bl6 = true;
                     this.sendAbilitiesUpdate();
                 }
             } else if (!bl && this.input.jumping && !bl4) {
@@ -676,12 +679,13 @@ extends AbstractClientPlayerEntity {
                     this.field_7489 = 7;
                 } else if (!this.isSwimming()) {
                     this.abilities.flying = !this.abilities.flying;
+                    bl6 = true;
                     this.sendAbilitiesUpdate();
                     this.field_7489 = 0;
                 }
             }
         }
-        if (this.input.jumping && !bl && !this.abilities.flying && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
+        if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
             this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
         this.field_3939 = this.isFallFlying();
@@ -836,7 +840,7 @@ extends AbstractClientPlayerEntity {
             return;
         }
         EntityContext entityContext = EntityContext.of(this);
-        BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().maxY, this.getZ());
+        BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().y2, this.getZ());
         BlockState blockState = this.world.getBlockState(blockPos);
         if (!blockState.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
             return;
@@ -869,7 +873,7 @@ extends AbstractClientPlayerEntity {
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();
             if (!box2.intersects(vec3d10, vec3d11) && !box2.intersects(vec3d12, vec3d13)) continue;
-            t = (float)box2.maxY;
+            t = (float)box2.y2;
             Vec3d vec3d14 = box2.getCenter();
             BlockPos blockPos2 = new BlockPos(vec3d14);
             int u = 1;

@@ -5,7 +5,7 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.CatEntityModel;
@@ -23,12 +23,12 @@ extends FeatureRenderer<CatEntity, CatEntityModel<CatEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_16047(MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage, int i, CatEntity catEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_16047(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CatEntity catEntity, float f, float g, float h, float j, float k, float l, float m) {
         if (!catEntity.isTamed()) {
             return;
         }
         float[] fs = catEntity.getCollarColor().getColorComponents();
-        CatCollarFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, layeredVertexConsumerStorage, i, catEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
+        CatCollarFeatureRenderer.render(this.getModel(), this.model, SKIN, matrixStack, vertexConsumerProvider, i, catEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
     }
 }
 

@@ -101,7 +101,7 @@ extends Item {
         ItemStack itemStack = playerEntity.getStackInHand(hand);
         playerEntity.openEditBookScreen(itemStack, hand);
         playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
-        return TypedActionResult.successWithSwing(itemStack);
+        return TypedActionResult.success(itemStack);
     }
 
     public static boolean resolve(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {

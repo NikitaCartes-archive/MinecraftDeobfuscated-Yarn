@@ -17,7 +17,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.world.PlayerSaveHandler;
 import net.minecraft.world.SessionLockException;
 import net.minecraft.world.level.LevelProperties;
@@ -31,7 +31,7 @@ implements PlayerSaveHandler {
     private static final Logger LOGGER = LogManager.getLogger();
     private final File worldDir;
     private final File playerDataDir;
-    private final long saveStartTime = SystemUtil.getMeasuringTimeMs();
+    private final long saveStartTime = Util.getMeasuringTimeMs();
     private final String worldName;
     private final StructureManager structureManager;
     protected final DataFixer dataFixer;

@@ -193,7 +193,7 @@ implements Flutterer {
         super.tick();
         if (this.hasNectar() && this.getCropsGrownSincePollination() < 10 && this.random.nextFloat() < 0.05f) {
             for (int i = 0; i < this.random.nextInt(2) + 1; ++i) {
-                this.addParticle(this.world, this.getX() - (double)0.3f, this.getX() + (double)0.3f, this.getZ() - (double)0.3f, this.getZ() + (double)0.3f, this.method_23323(0.5), ParticleTypes.FALLING_NECTAR);
+                this.addParticle(this.world, this.getX() - (double)0.3f, this.getX() + (double)0.3f, this.getZ() - (double)0.3f, this.getZ() + (double)0.3f, this.getHeightAt(0.5), ParticleTypes.FALLING_NECTAR);
             }
         }
         this.updateBodyPitch();

@@ -17,13 +17,13 @@ import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.FirstPersonRenderer;
 import net.minecraft.client.render.GuiLighting;
-import net.minecraft.client.render.LayeredBufferBuilderStorage;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
@@ -46,7 +46,7 @@ import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -74,7 +74,7 @@ SynchronousResourceReloadListener {
     private float viewDistance;
     public final FirstPersonRenderer firstPersonRenderer;
     private final MapRenderer mapRenderer;
-    private final LayeredBufferBuilderStorage layeredBufferBuilderStorage;
+    private final BufferBuilderStorage buffers;
     private int ticks;
     private float movementFovMultiplier;
     private float lastMovementFovMultiplier;
@@ -83,13 +83,13 @@ SynchronousResourceReloadListener {
     private boolean renderHand = true;
     private boolean blockOutlineEnabled = true;
     private long lastWorldIconUpdate;
-    private long lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
+    private long lastWindowFocusedTime = Util.getMeasuringTimeMs();
     private final LightmapTextureManager lightmapTextureManager;
     private final OverlayTexture overlayTexture = new OverlayTexture();
     private boolean renderingPanorama;
-    private float field_4005 = 1.0f;
-    private float field_3988;
-    private float field_4004;
+    private float zoom = 1.0f;
+    private float zoomX;
+    private float zoomY;
     @Nullable
     private ItemStack floatingItem;
     private int floatingItemTimeLeft;
@@ -103,13 +103,13 @@ SynchronousResourceReloadListener {
     private boolean shadersEnabled;
     private final Camera camera = new Camera();
 
-    public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager, LayeredBufferBuilderStorage layeredBufferBuilderStorage) {
+    public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager, BufferBuilderStorage bufferBuilderStorage) {
         this.client = minecraftClient;
         this.resourceContainer = resourceManager;
         this.firstPersonRenderer = minecraftClient.getFirstPersonRenderer();
         this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
         this.lightmapTextureManager = new LightmapTextureManager(this, minecraftClient);
-        this.layeredBufferBuilderStorage = layeredBufferBuilderStorage;
+        this.buffers = bufferBuilderStorage;
         this.shader = null;
     }
 
@@ -229,7 +229,7 @@ SynchronousResourceReloadListener {
         this.client.getProfiler().push("pick");
         this.client.targetedEntity = null;
         double d = this.client.interactionManager.getReachDistance();
-        this.client.hitResult = entity2.rayTrace(d, f, false);
+        this.client.crosshairTarget = entity2.rayTrace(d, f, false);
         Vec3d vec3d = entity2.getCameraPosVec(f);
         boolean bl = false;
         int i = 3;
@@ -243,8 +243,8 @@ SynchronousResourceReloadListener {
             d = e;
         }
         e *= e;
-        if (this.client.hitResult != null) {
-            e = this.client.hitResult.getPos().squaredDistanceTo(vec3d);
+        if (this.client.crosshairTarget != null) {
+            e = this.client.crosshairTarget.getPos().squaredDistanceTo(vec3d);
         }
         Vec3d vec3d2 = entity2.getRotationVec(1.0f);
         Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
@@ -256,9 +256,9 @@ SynchronousResourceReloadListener {
             Vec3d vec3d4 = entityHitResult.getPos();
             double h = vec3d.squaredDistanceTo(vec3d4);
             if (bl && h > 9.0) {
-                this.client.hitResult = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
-            } else if (h < e || this.client.hitResult == null) {
-                this.client.hitResult = entityHitResult;
+                this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
+            } else if (h < e || this.client.crosshairTarget == null) {
+                this.client.crosshairTarget = entityHitResult;
                 if (entity22 instanceof LivingEntity || entity22 instanceof ItemFrameEntity) {
                     this.client.targetedEntity = entity22;
                 }
@@ -342,8 +342,8 @@ SynchronousResourceReloadListener {
         if (this.renderingPanorama) {
             return;
         }
-        this.method_22709(camera, f, false, false, 2.0f);
-        matrixStack.peek().loadIdentity();
+        this.method_22709(this.method_22973(camera, f, false));
+        matrixStack.peekModel().loadIdentity();
         matrixStack.push();
         this.bobViewWhenHurt(matrixStack, f);
         if (this.client.options.bobView) {
@@ -352,7 +352,7 @@ SynchronousResourceReloadListener {
         boolean bl2 = bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
         if (this.client.options.perspective == 0 && !bl && !this.client.options.hudHidden && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
             this.lightmapTextureManager.enable();
-            this.firstPersonRenderer.method_22976(f, matrixStack, this.layeredBufferBuilderStorage.getGeneralDrawer());
+            this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers());
             this.lightmapTextureManager.disable();
         }
         matrixStack.pop();
@@ -365,22 +365,22 @@ SynchronousResourceReloadListener {
         }
     }
 
-    public void method_22709(Camera camera, float f, boolean bl, boolean bl2, float g) {
+    public void method_22709(Matrix4f matrix4f) {
         RenderSystem.matrixMode(5889);
         RenderSystem.loadIdentity();
-        RenderSystem.multMatrix(this.method_22973(camera, f, bl, bl2, g));
+        RenderSystem.multMatrix(matrix4f);
         RenderSystem.matrixMode(5888);
     }
 
-    public Matrix4f method_22973(Camera camera, float f, boolean bl, boolean bl2, float g) {
+    public Matrix4f method_22973(Camera camera, float f, boolean bl) {
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.peek().loadIdentity();
-        if (bl2 && this.field_4005 != 1.0f) {
-            matrixStack.translate(this.field_3988, -this.field_4004, 0.0);
-            matrixStack.scale(this.field_4005, this.field_4005, 1.0f);
+        matrixStack.peekModel().loadIdentity();
+        if (this.zoom != 1.0f) {
+            matrixStack.translate(this.zoomX, -this.zoomY, 0.0);
+            matrixStack.scale(this.zoom, this.zoom, 1.0f);
         }
-        matrixStack.peek().multiply(Matrix4f.method_4929(this.getFov(camera, f, bl), (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.viewDistance * g));
-        return matrixStack.peek();
+        matrixStack.peekModel().multiply(Matrix4f.method_4929(this.getFov(camera, f, bl), (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.viewDistance * 4.0f));
+        return matrixStack.peekModel();
     }
 
     public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -393,8 +393,8 @@ SynchronousResourceReloadListener {
 
     public void render(float f, long l, boolean bl) {
         if (this.client.isWindowFocused() || !this.client.options.pauseOnLostFocus || this.client.options.touchscreen && this.client.mouse.wasRightButtonClicked()) {
-            this.lastWindowFocusedTime = SystemUtil.getMeasuringTimeMs();
-        } else if (SystemUtil.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
+            this.lastWindowFocusedTime = Util.getMeasuringTimeMs();
+        } else if (Util.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
             this.client.openPauseMenu(false);
         }
         if (this.client.skipGameRender) {
@@ -409,11 +409,11 @@ SynchronousResourceReloadListener {
             this.client.getProfiler().push("level");
             int m = Math.min(MinecraftClient.getCurrentFps(), k);
             m = Math.max(m, 60);
-            long n = SystemUtil.getMeasuringTimeNano() - l;
+            long n = Util.getMeasuringTimeNano() - l;
             long o = Math.max((long)(1000000000 / m / 4) - n, 0L);
-            this.renderWorld(f, SystemUtil.getMeasuringTimeNano() + o, matrixStack);
-            if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < SystemUtil.getMeasuringTimeMs() - 1000L) {
-                this.lastWorldIconUpdate = SystemUtil.getMeasuringTimeMs();
+            this.renderWorld(f, Util.getMeasuringTimeNano() + o, matrixStack);
+            if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
+                this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
                 if (!this.client.getServer().hasIconFile()) {
                     this.updateWorldIcon();
                 }
@@ -441,7 +441,7 @@ SynchronousResourceReloadListener {
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0f, 0.0f, -2000.0f);
-        GuiLighting.enableForItems(matrixStack.peek());
+        GuiLighting.enableForItems(matrixStack.peekModel());
         if (bl && this.client.world != null) {
             this.client.getProfiler().swap("gui");
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {
@@ -512,7 +512,7 @@ SynchronousResourceReloadListener {
         boolean bl2 = bl = entity instanceof PlayerEntity && !this.client.options.hudHidden;
         if (bl && !((PlayerEntity)entity).abilities.allowModifyWorld) {
             ItemStack itemStack = ((LivingEntity)entity).getMainHandStack();
-            HitResult hitResult = this.client.hitResult;
+            HitResult hitResult = this.client.crosshairTarget;
             if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
                 BlockState blockState = this.client.world.getBlockState(blockPos);
@@ -539,7 +539,8 @@ SynchronousResourceReloadListener {
         this.client.getProfiler().swap("camera");
         Camera camera = this.camera;
         this.viewDistance = this.client.options.viewDistance * 16;
-        this.method_22709(camera, f, true, true, MathHelper.SQUARE_ROOT_OF_TWO);
+        Matrix4f matrix4f = this.method_22973(camera, f, true);
+        this.method_22709(matrix4f);
         this.bobViewWhenHurt(matrixStack, f);
         if (this.client.options.bobView) {
             this.bobView(matrixStack, f);
@@ -560,7 +561,7 @@ SynchronousResourceReloadListener {
         camera.update(this.client.world, this.client.getCameraEntity() == null ? this.client.player : this.client.getCameraEntity(), this.client.options.perspective > 0, this.client.options.perspective == 2, f);
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(camera.getPitch()));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(camera.getYaw() + 180.0f));
-        this.client.worldRenderer.render(matrixStack, f, l, bl, camera, this, this.lightmapTextureManager);
+        this.client.worldRenderer.render(matrixStack, f, l, bl, camera, this, this.lightmapTextureManager, matrix4f);
         this.client.getProfiler().swap("hand");
         if (this.renderHand) {
             RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
@@ -611,10 +612,10 @@ SynchronousResourceReloadListener {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(900.0f * MathHelper.abs(MathHelper.sin(n))));
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(6.0f * MathHelper.cos(g * 8.0f)));
-        LayeredVertexConsumerStorage.Drawer drawer = this.layeredBufferBuilderStorage.getGeneralDrawer();
-        this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, drawer);
+        VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
+        this.client.getItemRenderer().method_23178(this.floatingItem, ModelTransformation.Type.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
         matrixStack.pop();
-        drawer.draw();
+        immediate.draw();
         RenderSystem.popAttributes();
         RenderSystem.popMatrix();
         RenderSystem.enableCull();

@@ -83,7 +83,7 @@ extends Entity {
 
     private void explode() {
         float f = 4.0f;
-        this.world.createExplosion(this, this.getX(), this.method_23323(0.0625), this.getZ(), 4.0f, Explosion.DestructionType.BREAK);
+        this.world.createExplosion(this, this.getX(), this.getHeightAt(0.0625), this.getZ(), 4.0f, Explosion.DestructionType.BREAK);
     }
 
     @Override

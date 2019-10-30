@@ -59,7 +59,7 @@ public class InGameOverlayRenderer {
 
     private static void renderInWallOverlay(MinecraftClient minecraftClient, Sprite sprite, MatrixStack matrixStack) {
         minecraftClient.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float f = 0.1f;
         float g = -1.0f;
         float h = 1.0f;
@@ -70,8 +70,8 @@ public class InGameOverlayRenderer {
         float m = sprite.getMaxU();
         float n = sprite.getMinV();
         float o = sprite.getMaxV();
-        Matrix4f matrix4f = matrixStack.peek();
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV);
+        Matrix4f matrix4f = matrixStack.peekModel();
+        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
         bufferBuilder.vertex(matrix4f, -1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(m, o).next();
         bufferBuilder.vertex(matrix4f, 1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(l, o).next();
         bufferBuilder.vertex(matrix4f, 1.0f, 1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(l, n).next();
@@ -82,7 +82,7 @@ public class InGameOverlayRenderer {
 
     private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
         minecraftClient.getTextureManager().bindTexture(UNDERWATER_TEX);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float f = minecraftClient.player.getBrightnessAtEyes();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -94,8 +94,8 @@ public class InGameOverlayRenderer {
         float l = -0.5f;
         float m = -minecraftClient.player.yaw / 64.0f;
         float n = minecraftClient.player.pitch / 64.0f;
-        Matrix4f matrix4f = matrixStack.peek();
-        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV);
+        Matrix4f matrix4f = matrixStack.peekModel();
+        bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
         bufferBuilder.vertex(matrix4f, -1.0f, -1.0f, -0.5f).color(f, f, f, 0.1f).texture(4.0f + m, 4.0f + n).next();
         bufferBuilder.vertex(matrix4f, 1.0f, -1.0f, -0.5f).color(f, f, f, 0.1f).texture(0.0f + m, 4.0f + n).next();
         bufferBuilder.vertex(matrix4f, 1.0f, 1.0f, -0.5f).color(f, f, f, 0.1f).texture(0.0f + m, 0.0f + n).next();
@@ -106,7 +106,7 @@ public class InGameOverlayRenderer {
     }
 
     private static void renderFireOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBufferBuilder();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.depthFunc(519);
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
@@ -127,8 +127,8 @@ public class InGameOverlayRenderer {
             float p = -0.5f;
             matrixStack.translate((float)(-(i * 2 - 1)) * 0.24f, -0.3f, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion((float)(i * 2 - 1) * 10.0f));
-            Matrix4f matrix4f = matrixStack.peek();
-            bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV);
+            Matrix4f matrix4f = matrixStack.peekModel();
+            bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
             bufferBuilder.vertex(matrix4f, -0.5f, -0.5f, -0.5f).color(1.0f, 1.0f, 1.0f, 0.9f).texture(h, k).next();
             bufferBuilder.vertex(matrix4f, 0.5f, -0.5f, -0.5f).color(1.0f, 1.0f, 1.0f, 0.9f).texture(g, k).next();
             bufferBuilder.vertex(matrix4f, 0.5f, 0.5f, -0.5f).color(1.0f, 1.0f, 1.0f, 0.9f).texture(g, j).next();

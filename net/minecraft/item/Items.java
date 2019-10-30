@@ -982,7 +982,7 @@ public class Items {
     public static final Item HONEYCOMB = Items.register("honeycomb", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item BEE_NEST = Items.register(Blocks.BEE_NEST, ItemGroup.DECORATIONS);
     public static final Item BEE_HIVE = Items.register(Blocks.BEEHIVE, ItemGroup.DECORATIONS);
-    public static final Item HONEY_BOTTLE = Items.register("honey_bottle", (Item)new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(1)));
+    public static final Item HONEY_BOTTLE = Items.register("honey_bottle", (Item)new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(16)));
     public static final Item field_21086 = Items.register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
     public static final Item field_21087 = Items.register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 

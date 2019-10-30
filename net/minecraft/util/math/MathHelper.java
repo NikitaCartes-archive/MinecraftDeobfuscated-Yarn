@@ -8,13 +8,13 @@ import java.util.UUID;
 import java.util.function.IntPredicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3i;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
     public static final float SQUARE_ROOT_OF_TWO = MathHelper.sqrt(2.0f);
-    private static final float[] SINE_TABLE = SystemUtil.consume(new float[65536], fs -> {
+    private static final float[] SINE_TABLE = Util.create(new float[65536], fs -> {
         for (int i = 0; i < ((float[])fs).length; ++i) {
             fs[i] = (float)Math.sin((double)i * Math.PI * 2.0 / 65536.0);
         }
@@ -506,7 +506,7 @@ public class MathHelper {
         return q << 16 | r << 8 | s;
     }
 
-    public static int method_15354(int i) {
+    public static int idealHash(int i) {
         i ^= i >>> 16;
         i *= -2048144789;
         i ^= i >>> 13;

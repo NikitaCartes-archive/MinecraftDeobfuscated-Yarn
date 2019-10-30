@@ -36,7 +36,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 public interface Text
@@ -173,7 +173,7 @@ Iterable<Text> {
     public static class Serializer
     implements JsonDeserializer<Text>,
     JsonSerializer<Text> {
-        private static final Gson GSON = SystemUtil.get(() -> {
+        private static final Gson GSON = Util.create(() -> {
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.disableHtmlEscaping();
             gsonBuilder.registerTypeHierarchyAdapter(Text.class, new Serializer());
@@ -181,7 +181,7 @@ Iterable<Text> {
             gsonBuilder.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory());
             return gsonBuilder.create();
         });
-        private static final Field JSON_READER_POS = SystemUtil.get(() -> {
+        private static final Field JSON_READER_POS = Util.create(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("pos");
@@ -191,7 +191,7 @@ Iterable<Text> {
                 throw new IllegalStateException("Couldn't get field 'pos' for JsonReader", noSuchFieldException);
             }
         });
-        private static final Field JSON_READER_LINE_START = SystemUtil.get(() -> {
+        private static final Field JSON_READER_LINE_START = Util.create(() -> {
             try {
                 new JsonReader(new StringReader(""));
                 Field field = JsonReader.class.getDeclaredField("lineStart");
@@ -349,10 +349,14 @@ Iterable<Text> {
                     NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)text;
                     jsonObject.addProperty("block", blockNbtText.getPos());
                     return jsonObject;
-                } else {
-                    if (!(text instanceof NbtText.EntityNbtText)) throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
+                } else if (text instanceof NbtText.EntityNbtText) {
                     NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)text;
                     jsonObject.addProperty("entity", entityNbtText.getSelector());
+                    return jsonObject;
+                } else {
+                    if (!(text instanceof NbtText.StorageNbtText)) throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
+                    NbtText.StorageNbtText storageNbtText = (NbtText.StorageNbtText)text;
+                    jsonObject.addProperty("storage", storageNbtText.method_23728().toString());
                 }
             }
             return jsonObject;

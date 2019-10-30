@@ -159,6 +159,7 @@ implements DynamicSerializable {
         return this.down(1);
     }
 
+    @Override
     public BlockPos down(int i) {
         return this.method_10079(Direction.DOWN, i);
     }
@@ -290,17 +291,17 @@ implements DynamicSerializable {
     }
 
     @Override
-    public /* synthetic */ Vec3i method_23226(Direction direction, int i) {
+    public /* synthetic */ Vec3i offset(Direction direction, int i) {
         return this.method_10079(direction, i);
     }
 
     @Override
-    public /* synthetic */ Vec3i method_23227(int i) {
+    public /* synthetic */ Vec3i down(int i) {
         return this.down(i);
     }
 
     @Override
-    public /* synthetic */ Vec3i method_23228() {
+    public /* synthetic */ Vec3i down() {
         return this.method_10074();
     }
 
@@ -560,17 +561,17 @@ implements DynamicSerializable {
         }
 
         @Override
-        public /* synthetic */ Vec3i method_23226(Direction direction, int i) {
+        public /* synthetic */ Vec3i offset(Direction direction, int i) {
             return this.method_10079(direction, i);
         }
 
         @Override
-        public /* synthetic */ Vec3i method_23227(int i) {
+        public /* synthetic */ Vec3i down(int i) {
             return super.down(i);
         }
 
         @Override
-        public /* synthetic */ Vec3i method_23228() {
+        public /* synthetic */ Vec3i down() {
             return super.method_10074();
         }
     }

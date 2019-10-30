@@ -15,7 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.util.PackedIntegerArray;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 
@@ -157,7 +157,7 @@ public class Heightmap {
         }
 
         static {
-            BY_NAME = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
+            BY_NAME = Util.create(Maps.newHashMap(), hashMap -> {
                 for (Type type : Type.values()) {
                     hashMap.put(type.name, type);
                 }

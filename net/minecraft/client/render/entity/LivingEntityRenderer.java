@@ -10,10 +10,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -57,7 +57,7 @@ implements FeatureRendererContext<T, M> {
         return this.model;
     }
 
-    public void method_4054(T livingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, LayeredVertexConsumerStorage layeredVertexConsumerStorage) {
+    public void method_4054(T livingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
         float n;
         Direction direction;
         matrixStack.push();
@@ -114,16 +114,16 @@ implements FeatureRendererContext<T, M> {
         ((EntityModel)this.model).setAngles(livingEntity, p, o, l, k, m, 0.0625f);
         if (bl || bl2) {
             Identifier identifier = this.getTexture(livingEntity);
-            VertexConsumer vertexConsumer = layeredVertexConsumerStorage.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : ((Model)this.model).getLayer(identifier));
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : ((Model)this.model).getLayer(identifier));
             ((Model)this.model).render(matrixStack, vertexConsumer, q, LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0f, 1.0f, 1.0f);
         }
         if (!((Entity)livingEntity).isSpectator()) {
             for (FeatureRenderer<T, M> featureRenderer : this.features) {
-                featureRenderer.render(matrixStack, layeredVertexConsumerStorage, q, livingEntity, p, o, h, l, k, m, 0.0625f);
+                featureRenderer.render(matrixStack, vertexConsumerProvider, q, livingEntity, p, o, h, l, k, m, 0.0625f);
             }
         }
         matrixStack.pop();
-        super.render(livingEntity, d, e, f, g, h, matrixStack, layeredVertexConsumerStorage);
+        super.render(livingEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
     }
 
     public static int method_23622(LivingEntity livingEntity, float f) {

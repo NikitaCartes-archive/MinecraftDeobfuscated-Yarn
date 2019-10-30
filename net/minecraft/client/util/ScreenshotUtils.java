@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.GlFramebuffer;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.ResourceImpl;
 import net.minecraft.text.ClickEvent;
@@ -28,20 +28,20 @@ public class ScreenshotUtils {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-    public static void saveScreenshot(File file, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
-        ScreenshotUtils.saveScreenshot(file, null, i, j, glFramebuffer, consumer);
+    public static void saveScreenshot(File file, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
+        ScreenshotUtils.saveScreenshot(file, null, i, j, framebuffer, consumer);
     }
 
-    public static void saveScreenshot(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
+    public static void saveScreenshot(File file, @Nullable String string, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> ScreenshotUtils.saveScreenshotInner(file, string, i, j, glFramebuffer, consumer));
+            RenderSystem.recordRenderCall(() -> ScreenshotUtils.saveScreenshotInner(file, string, i, j, framebuffer, consumer));
         } else {
-            ScreenshotUtils.saveScreenshotInner(file, string, i, j, glFramebuffer, consumer);
+            ScreenshotUtils.saveScreenshotInner(file, string, i, j, framebuffer, consumer);
         }
     }
 
-    private static void saveScreenshotInner(File file, @Nullable String string, int i, int j, GlFramebuffer glFramebuffer, Consumer<Text> consumer) {
-        NativeImage nativeImage = ScreenshotUtils.takeScreenshot(i, j, glFramebuffer);
+    private static void saveScreenshotInner(File file, @Nullable String string, int i, int j, Framebuffer framebuffer, Consumer<Text> consumer) {
+        NativeImage nativeImage = ScreenshotUtils.takeScreenshot(i, j, framebuffer);
         File file2 = new File(file, "screenshots");
         file2.mkdir();
         File file3 = string == null ? ScreenshotUtils.getScreenshotFilename(file2) : new File(file2, string);
@@ -59,11 +59,11 @@ public class ScreenshotUtils {
         });
     }
 
-    public static NativeImage takeScreenshot(int i, int j, GlFramebuffer glFramebuffer) {
-        i = glFramebuffer.texWidth;
-        j = glFramebuffer.texHeight;
+    public static NativeImage takeScreenshot(int i, int j, Framebuffer framebuffer) {
+        i = framebuffer.textureWidth;
+        j = framebuffer.textureHeight;
         NativeImage nativeImage = new NativeImage(i, j, false);
-        RenderSystem.bindTexture(glFramebuffer.colorAttachment);
+        RenderSystem.bindTexture(framebuffer.colorAttachment);
         nativeImage.loadFromTextureImage(0, true);
         nativeImage.mirrorVertically();
         return nativeImage;

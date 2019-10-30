@@ -7,10 +7,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.LayeredBufferBuilderStorage;
-import net.minecraft.client.render.LayeredVertexConsumerStorage;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -21,19 +21,19 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class ItemPickupParticle
 extends Particle {
-    private final LayeredBufferBuilderStorage field_20944;
+    private final BufferBuilderStorage field_20944;
     private final Entity field_3823;
     private final Entity field_3821;
     private int field_3826;
     private final EntityRenderDispatcher field_3824;
 
-    public ItemPickupParticle(EntityRenderDispatcher entityRenderDispatcher, LayeredBufferBuilderStorage layeredBufferBuilderStorage, World world, Entity entity, Entity entity2) {
-        this(entityRenderDispatcher, layeredBufferBuilderStorage, world, entity, entity2, entity.getVelocity());
+    public ItemPickupParticle(EntityRenderDispatcher entityRenderDispatcher, BufferBuilderStorage bufferBuilderStorage, World world, Entity entity, Entity entity2) {
+        this(entityRenderDispatcher, bufferBuilderStorage, world, entity, entity2, entity.getVelocity());
     }
 
-    private ItemPickupParticle(EntityRenderDispatcher entityRenderDispatcher, LayeredBufferBuilderStorage layeredBufferBuilderStorage, World world, Entity entity, Entity entity2, Vec3d vec3d) {
+    private ItemPickupParticle(EntityRenderDispatcher entityRenderDispatcher, BufferBuilderStorage bufferBuilderStorage, World world, Entity entity, Entity entity2, Vec3d vec3d) {
         super(world, entity.getX(), entity.getY(), entity.getZ(), vec3d.x, vec3d.y, vec3d.z);
-        this.field_20944 = layeredBufferBuilderStorage;
+        this.field_20944 = bufferBuilderStorage;
         this.field_3823 = entity;
         this.field_3821 = entity2;
         this.field_3824 = entityRenderDispatcher;
@@ -54,9 +54,9 @@ extends Particle {
         double n = MathHelper.lerp((double)l, this.field_3823.getX(), d);
         double o = MathHelper.lerp((double)l, this.field_3823.getY(), e);
         double p = MathHelper.lerp((double)l, this.field_3823.getZ(), m);
-        LayeredVertexConsumerStorage.Drawer drawer = this.field_20944.getGeneralDrawer();
-        this.field_3824.render(this.field_3823, n - cameraX, o - cameraY, p - cameraZ, this.field_3823.yaw, f, new MatrixStack(), drawer);
-        drawer.draw();
+        VertexConsumerProvider.Immediate immediate = this.field_20944.getEntityVertexConsumers();
+        this.field_3824.render(this.field_3823, n - cameraX, o - cameraY, p - cameraZ, this.field_3823.yaw, f, new MatrixStack(), immediate);
+        immediate.draw();
     }
 
     @Override

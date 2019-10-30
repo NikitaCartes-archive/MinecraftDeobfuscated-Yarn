@@ -10,7 +10,7 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.chunk.ChunkOcclusionGraph;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -21,7 +21,7 @@ public class ChunkOcclusionGraphBuilder {
     private static final int STEP_Y = (int)Math.pow(16.0, 2.0);
     private static final Direction[] DIRECTIONS = Direction.values();
     private final BitSet closed = new BitSet(4096);
-    private static final int[] EDGE_POINTS = SystemUtil.consume(new int[1352], is -> {
+    private static final int[] EDGE_POINTS = Util.create(new int[1352], is -> {
         boolean i = false;
         int j = 15;
         int k = 0;

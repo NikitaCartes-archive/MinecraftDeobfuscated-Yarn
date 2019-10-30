@@ -236,7 +236,7 @@ extends HostileEntity {
                         this.getLookControl().tick();
                         double d = this.getBeamProgress(0.0f);
                         double e = livingEntity.getX() - this.getX();
-                        double f = livingEntity.method_23323(0.5) - this.method_23320();
+                        double f = livingEntity.getHeightAt(0.5) - this.method_23320();
                         double g = livingEntity.getZ() - this.getZ();
                         double h = Math.sqrt(e * e + f * f + g * g);
                         e /= h;

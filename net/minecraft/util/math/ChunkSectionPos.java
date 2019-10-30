@@ -159,7 +159,7 @@ extends Vec3i {
         return ChunkSectionPos.stream(j - i, k - i, l - i, j + i, k + i, l + i);
     }
 
-    public static Stream<ChunkSectionPos> method_22446(ChunkPos chunkPos, int i) {
+    public static Stream<ChunkSectionPos> stream(ChunkPos chunkPos, int i) {
         int j = chunkPos.x;
         int k = chunkPos.z;
         return ChunkSectionPos.stream(j - i, 0, k - i, j + i, 15, k + i);

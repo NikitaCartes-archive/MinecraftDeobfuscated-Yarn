@@ -53,7 +53,7 @@ extends AbstractTexture {
 
     private void method_22810(NativeImage nativeImage, boolean bl, boolean bl2) {
         TextureUtil.prepareImage(this.getGlId(), 0, nativeImage.getWidth(), nativeImage.getHeight());
-        nativeImage.method_22619(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), bl, bl2, false, true);
+        nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), bl, bl2, false, true);
     }
 
     protected TextureData loadTextureData(ResourceManager resourceManager) {
