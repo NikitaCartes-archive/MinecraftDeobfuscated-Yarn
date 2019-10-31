@@ -4,12 +4,13 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.class_4465;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.PillarBlock;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -86,8 +87,8 @@ public class AxeItem extends MiningToolItem {
 	}
 
 	@Override
-	protected class_4465 method_21754() {
-		return class_4465.field_20341;
+	protected ToolType getToolType() {
+		return ToolType.field_20341;
 	}
 
 	@Override
@@ -110,5 +111,11 @@ public class AxeItem extends MiningToolItem {
 		} else {
 			return ActionResult.field_5811;
 		}
+	}
+
+	@Override
+	public boolean postHit(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
+		itemStack.damage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.field_6173));
+		return true;
 	}
 }

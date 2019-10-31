@@ -25,6 +25,8 @@ public class VideoOptionsScreen extends Screen {
 		Option.VIEW_BOBBING,
 		Option.GUI_SCALE,
 		Option.ATTACK_INDICATOR,
+		Option.field_20357,
+		Option.field_20358,
 		Option.GAMMA,
 		Option.CLOUDS,
 		Option.FULLSCREEN,

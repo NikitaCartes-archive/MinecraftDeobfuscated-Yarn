@@ -891,6 +891,10 @@ public abstract class LivingEntity extends Entity {
 				i = Math.min((int)((PlayerEntity)entity).method_21752(), i);
 			}
 
+			if (damageSource.isProjectile()) {
+				i = 0;
+			}
+
 			boolean bl2 = true;
 			if (this.timeUntilRegen > 0) {
 				if (f <= this.field_6253) {
@@ -1011,7 +1015,7 @@ public abstract class LivingEntity extends Entity {
 	protected void knockback(LivingEntity livingEntity) {
 		livingEntity.takeKnockback(this, 0.5F, livingEntity.x - this.x, livingEntity.z - this.z);
 		if (this.getMainHandStack().getItem() instanceof AxeItem) {
-			float f = 0.5F + (float)EnchantmentHelper.getEfficiency(this) * 0.1F;
+			float f = 1.6F + (float)EnchantmentHelper.getChoppingLevel(this) * 0.5F;
 			livingEntity.method_21748(f);
 		}
 	}
@@ -1085,7 +1089,7 @@ public abstract class LivingEntity extends Entity {
 				Vec3d vec3d2 = this.getRotationVec(1.0F);
 				Vec3d vec3d3 = vec3d.reverseSubtract(new Vec3d(this.x, this.y, this.z)).normalize();
 				vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
-				if (vec3d3.dotProduct(vec3d2) < 0.0) {
+				if (vec3d3.dotProduct(vec3d2) * (float) Math.PI < 0.87266463F) {
 					return true;
 				}
 			}
@@ -1199,7 +1203,8 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void takeKnockback(Entity entity, float f, double d, double e) {
-		if (!(this.random.nextDouble() < this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue())) {
+		f = (float)((double)f * (1.0 - this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue()));
+		if (!(f <= 0.0F)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
 			Vec3d vec3d2 = new Vec3d(d, 0.0, e).normalize().multiply((double)f);

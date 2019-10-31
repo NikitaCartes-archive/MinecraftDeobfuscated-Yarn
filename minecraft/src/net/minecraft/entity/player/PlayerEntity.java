@@ -188,7 +188,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.1F);
 		this.getAttributeContainer().register(EntityAttributes.ATTACK_SPEED);
 		this.getAttributeContainer().register(EntityAttributes.LUCK);
-		this.getAttributeContainer().register(EntityAttributes.field_20339);
+		this.getAttributeContainer().register(EntityAttributes.ATTACK_REACH);
 	}
 
 	@Override
@@ -1164,14 +1164,10 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public boolean method_21748(float f) {
-		if (this.random.nextFloat() < f) {
-			this.getItemCooldownManager().set(Items.field_8255, 100);
-			this.clearActiveItem();
-			this.world.sendEntityStatus(this, (byte)30);
-			return true;
-		} else {
-			return false;
-		}
+		this.getItemCooldownManager().set(Items.field_8255, (int)(f * 20.0F));
+		this.clearActiveItem();
+		this.world.sendEntityStatus(this, (byte)30);
+		return true;
 	}
 
 	public void addCritParticles(Entity entity) {
@@ -1986,7 +1982,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			g = 0.5F;
 		}
 
-		return (float)this.getAttributeInstance(EntityAttributes.field_20339).getValue() + g;
+		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_REACH).getValue() + g;
 	}
 
 	public ItemCooldownManager getItemCooldownManager() {

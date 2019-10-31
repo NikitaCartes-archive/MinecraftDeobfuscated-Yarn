@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.PumpkinBlock;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ElytraItem;
@@ -104,6 +105,12 @@ public enum EnchantmentTarget {
 		@Override
 		public boolean isAcceptableItem(Item item) {
 			return item instanceof CrossbowItem;
+		}
+	},
+	field_20355 {
+		@Override
+		public boolean isAcceptableItem(Item item) {
+			return item instanceof AxeItem;
 		}
 	};
 

@@ -3,7 +3,6 @@ package net.minecraft.item;
 import com.google.common.collect.Multimap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4465;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -149,7 +148,7 @@ public class TridentItem extends Item {
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
 		if (equipmentSlot == EquipmentSlot.field_6173) {
-			class_4465.field_20345.method_21756(ToolMaterials.field_8923, multimap);
+			ToolType.field_20345.initModifiers(ToolMaterials.field_8923, multimap);
 		}
 
 		return multimap;

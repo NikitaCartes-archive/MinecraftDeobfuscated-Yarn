@@ -37,6 +37,7 @@ public class Enchantments {
 		"looting", new LuckEnchantment(Enchantment.Weight.field_9088, EnchantmentTarget.field_9074, EquipmentSlot.field_6173)
 	);
 	public static final Enchantment field_9115 = register("sweeping", new SweepingEnchantment(Enchantment.Weight.field_9088, EquipmentSlot.field_6173));
+	public static final Enchantment field_20356 = register("chopping", new ChoppingEnchantment(Enchantment.Weight.field_9088, EquipmentSlot.field_6173));
 	public static final Enchantment field_9131 = register("efficiency", new EfficiencyEnchantment(Enchantment.Weight.field_9087, EquipmentSlot.field_6173));
 	public static final Enchantment field_9099 = register("silk_touch", new SilkTouchEnchantment(Enchantment.Weight.field_9091, EquipmentSlot.field_6173));
 	public static final Enchantment field_9119 = register("unbreaking", new UnbreakingEnchantment(Enchantment.Weight.field_9090, EquipmentSlot.field_6173));

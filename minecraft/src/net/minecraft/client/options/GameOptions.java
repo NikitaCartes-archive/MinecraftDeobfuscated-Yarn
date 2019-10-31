@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4467;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackContainer;
@@ -89,6 +90,8 @@ public class GameOptions {
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
 	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
+	public class_4467 field_20359 = class_4467.field_20361;
+	public boolean field_20360 = true;
 	public TutorialStep tutorialStep = TutorialStep.field_5650;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
@@ -383,6 +386,14 @@ public class GameOptions {
 						this.attackIndicator = AttackIndicator.byId(Integer.parseInt(string2));
 					}
 
+					if ("shieldIndicator".equals(string)) {
+						this.field_20359 = class_4467.method_21775(Integer.parseInt(string2));
+					}
+
+					if ("shieldAnimation".equals(string)) {
+						Option.field_20358.set(this, string2);
+					}
+
 					if ("resourcePacks".equals(string)) {
 						this.resourcePacks = JsonHelper.deserialize(GSON, string2, STRING_LIST_TYPE);
 						if (this.resourcePacks == null) {
@@ -616,6 +627,8 @@ public class GameOptions {
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
 				printWriter.println("mainHand:" + (this.mainArm == Arm.field_6182 ? "left" : "right"));
 				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
+				printWriter.println("shieldIndicator:" + this.field_20359.method_21774());
+				printWriter.println("shieldAnimation:" + Option.field_20358.get(this));
 				printWriter.println("narrator:" + this.narrator.getId());
 				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);

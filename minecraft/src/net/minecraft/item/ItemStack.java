@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4465;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -554,15 +553,15 @@ public final class ItemStack {
 					double d = entityAttributeModifier.getAmount();
 					boolean bl = false;
 					if (playerEntity != null) {
-						if (entityAttributeModifier.getId() == class_4465.field_20346) {
+						if (entityAttributeModifier.getId() == ToolType.ATTACK_DAMAGE_MODIFIER_ID) {
 							d += playerEntity.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getBaseValue();
 							d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
 							bl = true;
-						} else if (entityAttributeModifier.getId() == class_4465.field_20347) {
+						} else if (entityAttributeModifier.getId() == ToolType.ATTACK_SPEED_MODIFIER_ID) {
 							d += playerEntity.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getBaseValue() - 1.5;
 							bl = true;
-						} else if (entityAttributeModifier.getId() == class_4465.field_20348) {
-							d += playerEntity.getAttributeInstance(EntityAttributes.field_20339).getBaseValue();
+						} else if (entityAttributeModifier.getId() == ToolType.ATTACK_REACH_MODIFIER_ID) {
+							d += playerEntity.getAttributeInstance(EntityAttributes.ATTACK_REACH).getBaseValue();
 							bl = true;
 						}
 					}
