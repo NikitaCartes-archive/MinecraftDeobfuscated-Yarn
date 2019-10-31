@@ -2,6 +2,7 @@ package net.minecraft.client.options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4467;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -180,6 +181,14 @@ public abstract class Option {
 		"options.attackIndicator",
 		(gameOptions, integer) -> gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + integer),
 		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.attackIndicator.getTranslationKey())
+	);
+	public static final CyclingOption field_20357 = new CyclingOption(
+		"options.shieldIndicator",
+		(gameOptions, integer) -> gameOptions.field_20359 = class_4467.method_21775(gameOptions.field_20359.method_21774() + integer),
+		(gameOptions, cyclingOption) -> cyclingOption.getDisplayPrefix() + I18n.translate(gameOptions.field_20359.method_21776())
+	);
+	public static final BooleanOption field_20358 = new BooleanOption(
+		"options.shieldAnimation", gameOptions -> gameOptions.field_20360, (gameOptions, boolean_) -> gameOptions.field_20360 = boolean_
 	);
 	public static final CyclingOption VISIBILITY = new CyclingOption(
 		"options.chat.visibility",

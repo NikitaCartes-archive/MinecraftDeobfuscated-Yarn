@@ -1155,6 +1155,8 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 				}
 
 				this.field_20352 = false;
+			} else if (bl && this.player.getAttackCooldownProgress(0.0F) >= 1.2F) {
+				this.doAttack();
 			} else {
 				this.interactionManager.cancelBlockBreaking();
 			}

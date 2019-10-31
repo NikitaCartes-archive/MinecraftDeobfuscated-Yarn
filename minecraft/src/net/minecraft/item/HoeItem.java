@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.util.Map;
-import net.minecraft.class_4465;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -70,7 +69,7 @@ public class HoeItem extends ToolItem {
 	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
 		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(equipmentSlot);
 		if (equipmentSlot == EquipmentSlot.field_6173) {
-			class_4465.field_20343.method_21756(this.getMaterial(), multimap);
+			ToolType.field_20343.initModifiers(this.getMaterial(), multimap);
 		}
 
 		return multimap;

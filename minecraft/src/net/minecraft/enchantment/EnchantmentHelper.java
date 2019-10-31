@@ -169,6 +169,10 @@ public class EnchantmentHelper {
 		return getEquipmentLevel(Enchantments.field_9124, livingEntity);
 	}
 
+	public static int getChoppingLevel(LivingEntity livingEntity) {
+		return getEquipmentLevel(Enchantments.field_20356, livingEntity);
+	}
+
 	public static int getRespiration(LivingEntity livingEntity) {
 		return getEquipmentLevel(Enchantments.field_9127, livingEntity);
 	}

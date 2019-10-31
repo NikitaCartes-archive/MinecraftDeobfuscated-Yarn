@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.class_4465;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -88,7 +87,7 @@ public class ShovelItem extends MiningToolItem {
 	}
 
 	@Override
-	protected class_4465 method_21754() {
-		return class_4465.field_20344;
+	protected ToolType getToolType() {
+		return ToolType.field_20344;
 	}
 }

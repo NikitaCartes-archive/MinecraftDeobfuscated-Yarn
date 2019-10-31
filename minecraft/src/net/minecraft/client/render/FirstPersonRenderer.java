@@ -397,6 +397,11 @@ public class FirstPersonRenderer {
 						this.applyHandOffset(arm, i);
 						break;
 					case field_8949:
+						if (!this.client.options.field_20360) {
+							GlStateManager.popMatrix();
+							return;
+						}
+
 						this.applyHandOffset(arm, i);
 						break;
 					case field_8953:
