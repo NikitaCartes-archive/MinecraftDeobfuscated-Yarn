@@ -215,7 +215,9 @@ extends LandPathNodeMaker {
                 pathNodeType = PathNodeType.DAMAGE_OTHER;
             }
         }
-        pathNodeType = AmphibiousPathNodeMaker.method_59(blockView, i, j, k, pathNodeType);
+        if (pathNodeType == PathNodeType.WALKABLE) {
+            pathNodeType = AmphibiousPathNodeMaker.method_59(blockView, i, j, k, pathNodeType);
+        }
         return pathNodeType;
     }
 }

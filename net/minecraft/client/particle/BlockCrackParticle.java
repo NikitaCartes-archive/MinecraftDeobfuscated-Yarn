@@ -13,6 +13,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -95,7 +96,7 @@ extends SpriteBillboardParticle {
         int i = super.getColorMultiplier(f);
         int j = 0;
         if (this.world.isChunkLoaded(this.blockPos)) {
-            j = this.world.getLightmapCoordinates(this.blockPos);
+            j = WorldRenderer.method_23794(this.world, this.blockPos);
         }
         return i == 0 ? j : i;
     }

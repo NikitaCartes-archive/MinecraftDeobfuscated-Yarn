@@ -25,23 +25,22 @@ extends EntityRenderer<TntEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_4135(TntEntity tntEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_4135(TntEntity tntEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.translate(0.0, 0.5, 0.0);
-        if ((float)tntEntity.getFuseTimer() - h + 1.0f < 10.0f) {
-            float i = 1.0f - ((float)tntEntity.getFuseTimer() - h + 1.0f) / 10.0f;
-            i = MathHelper.clamp(i, 0.0f, 1.0f);
-            i *= i;
-            i *= i;
-            float j = 1.0f + i * 0.3f;
+        if ((float)tntEntity.getFuseTimer() - g + 1.0f < 10.0f) {
+            float h = 1.0f - ((float)tntEntity.getFuseTimer() - g + 1.0f) / 10.0f;
+            h = MathHelper.clamp(h, 0.0f, 1.0f);
+            h *= h;
+            h *= h;
+            float j = 1.0f + h * 0.3f;
             matrixStack.scale(j, j, j);
         }
-        int k = tntEntity.getLightmapCoordinates();
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-90.0f));
         matrixStack.translate(-0.5, -0.5, 0.5);
-        TntMinecartEntityRenderer.method_23190(Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, k, tntEntity.getFuseTimer() / 5 % 2 == 0);
+        TntMinecartEntityRenderer.method_23190(Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, tntEntity.getFuseTimer() / 5 % 2 == 0);
         matrixStack.pop();
-        super.render(tntEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(tntEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public Identifier method_4136(TntEntity tntEntity) {

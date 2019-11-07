@@ -56,17 +56,17 @@ extends EntityModel<E> {
                 matrixStack.scale(k, k, k);
             }
             matrixStack.translate(0.0, this.childHeadYOffset / 16.0f, this.childHeadZOffset / 16.0f);
-            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
             matrixStack.pop();
             matrixStack.push();
             k = 1.0f / this.invertedChildBodyScale;
             matrixStack.scale(k, k, k);
             matrixStack.translate(0.0, this.childBodyYOffset / 16.0f, 0.0);
-            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
             matrixStack.pop();
         } else {
-            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
-            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            this.getHeadParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
+            this.getBodyParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
         }
     }
 

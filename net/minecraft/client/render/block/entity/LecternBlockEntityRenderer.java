@@ -28,15 +28,15 @@ extends BlockEntityRenderer<LecternBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_17582(LecternBlockEntity lecternBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    public void method_17582(LecternBlockEntity lecternBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         BlockState blockState = lecternBlockEntity.getCachedState();
         if (!blockState.get(LecternBlock.HAS_BOOK).booleanValue()) {
             return;
         }
         matrixStack.push();
         matrixStack.translate(0.5, 1.0625, 0.5);
-        float h = blockState.get(LecternBlock.FACING).rotateYClockwise().asRotation();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-h));
+        float g = blockState.get(LecternBlock.FACING).rotateYClockwise().asRotation();
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-g));
         matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(67.5f));
         matrixStack.translate(0.0, -0.125, 0.0);
         this.book.setPageAngles(0.0f, 0.1f, 0.9f, 1.2f);

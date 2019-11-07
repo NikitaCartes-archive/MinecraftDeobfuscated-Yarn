@@ -12,7 +12,10 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.container.Slot;
@@ -106,25 +109,28 @@ implements RecipeBookProvider {
 
     public static void drawEntity(int i, int j, int k, float f, float g, LivingEntity livingEntity) {
         RenderSystem.pushMatrix();
-        RenderSystem.translatef(i, j, 50.0f);
-        RenderSystem.scalef(-k, k, k);
-        RenderSystem.rotatef(180.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.scalef(-1.0f, 1.0f, 1.0f);
+        MatrixStack matrixStack = new MatrixStack();
+        matrixStack.translate(-i, j, 50.0);
+        matrixStack.scale(k, k, k);
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-((float)Math.atan(g / 40.0f)) * 20.0f));
         float h = livingEntity.bodyYaw;
         float l = livingEntity.yaw;
         float m = livingEntity.pitch;
         float n = livingEntity.prevHeadYaw;
         float o = livingEntity.headYaw;
-        RenderSystem.rotatef(-((float)Math.atan(g / 40.0f)) * 20.0f, 1.0f, 0.0f, 0.0f);
         livingEntity.bodyYaw = (float)Math.atan(f / 40.0f) * 20.0f;
         livingEntity.yaw = (float)Math.atan(f / 40.0f) * 40.0f;
         livingEntity.pitch = -((float)Math.atan(g / 40.0f)) * 20.0f;
         livingEntity.headYaw = livingEntity.yaw;
         livingEntity.prevHeadYaw = livingEntity.yaw;
-        RenderSystem.translatef(0.0f, 0.0f, 0.0f);
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
         entityRenderDispatcher.setCameraYaw(180.0f);
         entityRenderDispatcher.setRenderShadows(false);
-        entityRenderDispatcher.render(livingEntity, 1.0f);
+        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        entityRenderDispatcher.render(livingEntity, 0.0, 0.0, 0.0, 0.0f, 1.0f, matrixStack, immediate, 0xF000F0);
+        immediate.method_23796(-i, j, 1000);
         entityRenderDispatcher.setRenderShadows(true);
         livingEntity.bodyYaw = h;
         livingEntity.yaw = l;
@@ -132,7 +138,6 @@ implements RecipeBookProvider {
         livingEntity.prevHeadYaw = n;
         livingEntity.headYaw = o;
         RenderSystem.popMatrix();
-        RenderSystem.disableRescaleNormal();
     }
 
     @Override

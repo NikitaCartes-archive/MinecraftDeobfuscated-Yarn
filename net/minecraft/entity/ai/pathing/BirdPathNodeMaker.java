@@ -236,9 +236,23 @@ extends LandPathNodeMaker {
         if (pathNodeType == PathNodeType.OPEN && j >= 1) {
             Block block = blockView.getBlockState(new BlockPos(i, j - 1, k)).getBlock();
             PathNodeType pathNodeType2 = BirdPathNodeMaker.getBasicPathNodeType(blockView, i, j - 1, k);
-            pathNodeType = pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block == Blocks.CAMPFIRE ? PathNodeType.DAMAGE_FIRE : (pathNodeType2 == PathNodeType.DAMAGE_CACTUS ? PathNodeType.DAMAGE_CACTUS : (pathNodeType2 == PathNodeType.DAMAGE_OTHER ? PathNodeType.DAMAGE_OTHER : (pathNodeType2 == PathNodeType.WALKABLE || pathNodeType2 == PathNodeType.OPEN || pathNodeType2 == PathNodeType.WATER ? PathNodeType.OPEN : PathNodeType.WALKABLE)));
+            if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block == Blocks.CAMPFIRE) {
+                pathNodeType = PathNodeType.DAMAGE_FIRE;
+            } else if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
+                pathNodeType = PathNodeType.DAMAGE_CACTUS;
+            } else if (pathNodeType2 == PathNodeType.DAMAGE_OTHER) {
+                pathNodeType = PathNodeType.DAMAGE_OTHER;
+            } else if (pathNodeType2 == PathNodeType.COCOA) {
+                pathNodeType = PathNodeType.COCOA;
+            } else if (pathNodeType2 == PathNodeType.FENCE) {
+                pathNodeType = PathNodeType.FENCE;
+            } else {
+                PathNodeType pathNodeType3 = pathNodeType = pathNodeType2 == PathNodeType.WALKABLE || pathNodeType2 == PathNodeType.OPEN || pathNodeType2 == PathNodeType.WATER ? PathNodeType.OPEN : PathNodeType.WALKABLE;
+            }
         }
-        pathNodeType = BirdPathNodeMaker.method_59(blockView, i, j, k, pathNodeType);
+        if (pathNodeType == PathNodeType.WALKABLE || pathNodeType == PathNodeType.OPEN) {
+            pathNodeType = BirdPathNodeMaker.method_59(blockView, i, j, k, pathNodeType);
+        }
         return pathNodeType;
     }
 

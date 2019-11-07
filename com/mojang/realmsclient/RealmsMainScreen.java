@@ -3,6 +3,7 @@
  */
 package com.mojang.realmsclient;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -32,6 +33,7 @@ import com.mojang.realmsclient.util.RealmsTextureManager;
 import com.mojang.realmsclient.util.RealmsUtil;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -45,6 +47,8 @@ import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsMth;
 import net.minecraft.realms.RealmsObjectSelectionList;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,7 +59,7 @@ extends RealmsScreen {
     private static boolean overrideConfigure;
     private final RateLimiter field_19477;
     private boolean dontSetConnectedToRealms;
-    private static final String[] IMAGES_LOCATION;
+    private static List<Identifier> field_21517;
     private static final RealmsDataFetcher realmsDataFetcher;
     private static int lastScrollYPosition;
     private final RealmsScreen lastScreen;
@@ -757,18 +761,20 @@ extends RealmsScreen {
         RenderSystem.pushMatrix();
         RealmsScreen.blit(k, l, 0.0f, 0.0f, 310, 166, 310, 166);
         RenderSystem.popMatrix();
-        RealmsScreen.bind(IMAGES_LOCATION[this.carouselIndex]);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.pushMatrix();
-        RealmsScreen.blit(k + 7, l + 7, 0.0f, 0.0f, 195, 152, 195, 152);
-        RenderSystem.popMatrix();
-        if (this.carouselTick % 95 < 5) {
-            if (!this.hasSwitchedCarouselImage) {
-                this.carouselIndex = this.carouselIndex == IMAGES_LOCATION.length - 1 ? 0 : ++this.carouselIndex;
-                this.hasSwitchedCarouselImage = true;
+        if (!field_21517.isEmpty()) {
+            RealmsScreen.bind(field_21517.get(this.carouselIndex).toString());
+            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.pushMatrix();
+            RealmsScreen.blit(k + 7, l + 7, 0.0f, 0.0f, 195, 152, 195, 152);
+            RenderSystem.popMatrix();
+            if (this.carouselTick % 95 < 5) {
+                if (!this.hasSwitchedCarouselImage) {
+                    this.carouselIndex = (this.carouselIndex + 1) % field_21517.size();
+                    this.hasSwitchedCarouselImage = true;
+                }
+            } else {
+                this.hasSwitchedCarouselImage = false;
             }
-        } else {
-            this.hasSwitchedCarouselImage = false;
         }
         int o = 0;
         for (String string2 : list) {
@@ -1051,8 +1057,13 @@ extends RealmsScreen {
         }
     }
 
+    public static void method_23765(ResourceManager resourceManager) {
+        Collection<Identifier> collection = resourceManager.findResources("textures/gui/images", string -> string.endsWith(".png"));
+        field_21517 = collection.stream().filter(identifier -> identifier.getNamespace().equals("realms")).collect(ImmutableList.toImmutableList());
+    }
+
     static {
-        IMAGES_LOCATION = new String[]{"realms:textures/gui/realms/images/sand_castle.png", "realms:textures/gui/realms/images/factory_floor.png", "realms:textures/gui/realms/images/escher_tunnel.png", "realms:textures/gui/realms/images/tree_houses.png", "realms:textures/gui/realms/images/balloon_trip.png", "realms:textures/gui/realms/images/halloween_woods.png", "realms:textures/gui/realms/images/flower_mountain.png", "realms:textures/gui/realms/images/dornenstein_estate.png", "realms:textures/gui/realms/images/desert.png", "realms:textures/gui/realms/images/gray.png", "realms:textures/gui/realms/images/imperium.png", "realms:textures/gui/realms/images/ludo.png", "realms:textures/gui/realms/images/makersspleef.png", "realms:textures/gui/realms/images/negentropy.png", "realms:textures/gui/realms/images/pumpkin_party.png", "realms:textures/gui/realms/images/sparrenhout.png", "realms:textures/gui/realms/images/spindlewood.png"};
+        field_21517 = ImmutableList.of();
         realmsDataFetcher = new RealmsDataFetcher();
         lastScrollYPosition = -1;
     }

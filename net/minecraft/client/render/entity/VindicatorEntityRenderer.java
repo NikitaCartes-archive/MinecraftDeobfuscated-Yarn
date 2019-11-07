@@ -24,9 +24,9 @@ extends IllagerEntityRenderer<VindicatorEntity> {
         super(entityRenderDispatcher, new EvilVillagerEntityModel(0.0f, 0.0f, 64, 64), 0.5f);
         this.addFeature(new HeldItemFeatureRenderer<VindicatorEntity, EvilVillagerEntityModel<VindicatorEntity>>((FeatureRendererContext)this){
 
-            public void method_17156(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, VindicatorEntity vindicatorEntity, float f, float g, float h, float j, float k, float l, float m) {
+            public void method_17156(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, VindicatorEntity vindicatorEntity, float f, float g, float h, float j, float k, float l) {
                 if (vindicatorEntity.isAttacking()) {
-                    super.method_17162(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l, m);
+                    super.method_17162(matrixStack, vertexConsumerProvider, i, vindicatorEntity, f, g, h, j, k, l);
                 }
             }
         });

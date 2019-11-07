@@ -4,8 +4,6 @@
 package net.minecraft.item;
 
 import java.util.Collection;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,7 +33,6 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean hasEnchantmentGlint(ItemStack itemStack) {
         return true;
     }

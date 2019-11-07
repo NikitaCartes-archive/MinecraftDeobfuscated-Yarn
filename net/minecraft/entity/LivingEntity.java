@@ -973,24 +973,31 @@ extends Entity {
         this.getDamageTracker().update();
         if (!this.world.isClient) {
             this.drop(damageSource);
-            boolean bl = false;
-            if (livingEntity instanceof WitherEntity) {
-                if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-                    BlockPos blockPos = new BlockPos(this);
-                    BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
-                    if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-                        this.world.setBlockState(blockPos, blockState, 3);
-                        bl = true;
-                    }
-                }
-                if (!bl) {
-                    ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
-                    this.world.spawnEntity(itemEntity);
-                }
-            }
+            this.method_23733(livingEntity);
         }
         this.world.sendEntityStatus(this, (byte)3);
         this.setPose(EntityPose.DYING);
+    }
+
+    protected void method_23733(@Nullable LivingEntity livingEntity) {
+        if (this.world.isClient) {
+            return;
+        }
+        boolean bl = false;
+        if (livingEntity instanceof WitherEntity) {
+            if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+                BlockPos blockPos = new BlockPos(this);
+                BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
+                if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
+                    this.world.setBlockState(blockPos, blockState, 3);
+                    bl = true;
+                }
+            }
+            if (!bl) {
+                ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
+                this.world.spawnEntity(itemEntity);
+            }
+        }
     }
 
     protected void drop(DamageSource damageSource) {
@@ -1299,6 +1306,7 @@ extends Entity {
                 if (soundEvent2 != null) {
                     this.playSound(soundEvent2, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
                 }
+                if (this instanceof PlayerEntity) break;
                 this.setHealth(0.0f);
                 this.onDeath(DamageSource.GENERIC);
                 break;
@@ -2530,7 +2538,7 @@ extends Entity {
         if (itemStack.isFood()) {
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             this.applyFoodEffects(itemStack, world, this);
-            if (this instanceof PlayerEntity && !((PlayerEntity)this).abilities.creativeMode) {
+            if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).abilities.creativeMode) {
                 itemStack.decrement(1);
             }
         }

@@ -3,8 +3,6 @@
  */
 package net.minecraft.item;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
 import net.minecraft.item.Item;
@@ -23,7 +21,6 @@ extends Item {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean hasEnchantmentGlint(ItemStack itemStack) {
         return true;
     }

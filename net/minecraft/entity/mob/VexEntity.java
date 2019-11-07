@@ -185,7 +185,7 @@ extends HostileEntity {
     @Override
     @Environment(value=EnvType.CLIENT)
     public int getLightmapCoordinates() {
-        return 0xF000F0;
+        return 15;
     }
 
     @Override

@@ -85,8 +85,8 @@ extends AnimalModel<T> {
         this.stinger.visible = !((BeeEntity)beeEntity).hasStung();
     }
 
-    public void method_22112(T beeEntity, float f, float g, float h, float i, float j, float k) {
-        float l;
+    public void method_22112(T beeEntity, float f, float g, float h, float i, float j) {
+        float k;
         boolean bl;
         this.leftWing.pitch = 0.0f;
         this.leftAntenna.pitch = 0.0f;
@@ -104,9 +104,9 @@ extends AnimalModel<T> {
             this.midLeg.pitch = 0.0f;
             this.backLeg.pitch = 0.0f;
         } else {
-            l = h * 2.1f;
+            k = h * 2.1f;
             this.leftWing.yaw = 0.0f;
-            this.leftWing.roll = MathHelper.cos(l) * (float)Math.PI * 0.15f;
+            this.leftWing.roll = MathHelper.cos(k) * (float)Math.PI * 0.15f;
             this.rightWing.pitch = this.leftWing.pitch;
             this.rightWing.yaw = this.leftWing.yaw;
             this.rightWing.roll = -this.leftWing.roll;
@@ -122,12 +122,12 @@ extends AnimalModel<T> {
             this.body.yaw = 0.0f;
             this.body.roll = 0.0f;
             if (!bl) {
-                l = MathHelper.cos(h * 0.18f);
-                this.body.pitch = 0.1f + l * (float)Math.PI * 0.025f;
-                this.leftAntenna.pitch = l * (float)Math.PI * 0.03f;
-                this.rightAntenna.pitch = l * (float)Math.PI * 0.03f;
-                this.frontLeg.pitch = -l * (float)Math.PI * 0.1f + 0.3926991f;
-                this.backLeg.pitch = -l * (float)Math.PI * 0.05f + 0.7853982f;
+                k = MathHelper.cos(h * 0.18f);
+                this.body.pitch = 0.1f + k * (float)Math.PI * 0.025f;
+                this.leftAntenna.pitch = k * (float)Math.PI * 0.03f;
+                this.rightAntenna.pitch = k * (float)Math.PI * 0.03f;
+                this.frontLeg.pitch = -k * (float)Math.PI * 0.1f + 0.3926991f;
+                this.backLeg.pitch = -k * (float)Math.PI * 0.05f + 0.7853982f;
                 this.body.pivotY = 19.0f - MathHelper.cos(h * 0.18f) * 0.9f;
             }
         }

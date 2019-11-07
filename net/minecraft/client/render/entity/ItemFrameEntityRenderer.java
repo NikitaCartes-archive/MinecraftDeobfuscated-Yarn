@@ -42,13 +42,13 @@ extends EntityRenderer<ItemFrameEntity> {
         this.itemRenderer = itemRenderer;
     }
 
-    public void method_3994(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-        super.render(itemFrameEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+    public void method_3994(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        super.render(itemFrameEntity, f, g, matrixStack, vertexConsumerProvider, i);
         matrixStack.push();
         Direction direction = itemFrameEntity.getHorizontalFacing();
-        Vec3d vec3d = this.method_23174(itemFrameEntity, d, e, f, h);
+        Vec3d vec3d = this.method_23174(itemFrameEntity, g);
         matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
-        double i = 0.46875;
+        double d = 0.46875;
         matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(itemFrameEntity.pitch));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - itemFrameEntity.yaw));
@@ -57,35 +57,34 @@ extends EntityRenderer<ItemFrameEntity> {
         ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
         matrixStack.push();
         matrixStack.translate(-0.5, -0.5, -0.5);
-        int j = itemFrameEntity.getLightmapCoordinates();
-        blockRenderManager.getModelRenderer().render(matrixStack.peekModel(), matrixStack.peekNormal(), vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, j, OverlayTexture.DEFAULT_UV);
+        blockRenderManager.getModelRenderer().render(matrixStack.method_23760(), vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEX)), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
         ItemStack itemStack = itemFrameEntity.getHeldItemStack();
         if (!itemStack.isEmpty()) {
             boolean bl = itemStack.getItem() == Items.FILLED_MAP;
             matrixStack.translate(0.0, 0.0, 0.4375);
-            int k = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)k * 360.0f / 8.0f));
+            int j = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion((float)j * 360.0f / 8.0f));
             if (bl) {
                 this.renderManager.textureManager.bindTexture(MapRenderer.field_21056);
                 matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
-                float l = 0.0078125f;
+                float h = 0.0078125f;
                 matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
                 matrixStack.translate(-64.0, -64.0, 0.0);
                 MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, itemFrameEntity.world);
                 matrixStack.translate(0.0, 0.0, -1.0);
                 if (mapState != null) {
-                    this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapState, true, j);
+                    this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, mapState, true, i);
                 }
             } else {
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, j, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+                this.itemRenderer.method_23178(itemStack, ModelTransformation.Type.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
             }
         }
         matrixStack.pop();
     }
 
-    public Vec3d method_23174(ItemFrameEntity itemFrameEntity, double d, double e, double f, float g) {
+    public Vec3d method_23174(ItemFrameEntity itemFrameEntity, float f) {
         return new Vec3d((float)itemFrameEntity.getHorizontalFacing().getOffsetX() * 0.3f, -0.25, (float)itemFrameEntity.getHorizontalFacing().getOffsetZ() * 0.3f);
     }
 
@@ -102,8 +101,8 @@ extends EntityRenderer<ItemFrameEntity> {
         return d < (double)(f * f);
     }
 
-    protected void method_23175(ItemFrameEntity itemFrameEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-        super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName().asFormattedString(), matrixStack, vertexConsumerProvider);
+    protected void method_23175(ItemFrameEntity itemFrameEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName().asFormattedString(), matrixStack, vertexConsumerProvider, i);
     }
 }
 

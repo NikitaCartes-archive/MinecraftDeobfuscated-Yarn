@@ -25,6 +25,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -96,7 +97,9 @@ implements AutoCloseable {
         if (bl) {
             this.drawLayer(string, f, g, i, true, matrix4f, vertexConsumerProvider, bl2, j, k);
         }
-        f = this.drawLayer(string, f, g, i, false, matrix4f, vertexConsumerProvider, bl2, j, k);
+        Matrix4f matrix4f2 = matrix4f.copy();
+        matrix4f2.addToLastColumn(new Vector3f(0.0f, 0.0f, 0.001f));
+        f = this.drawLayer(string, f, g, i, false, matrix4f2, vertexConsumerProvider, bl2, j, k);
         return (int)f + (bl ? 1 : 0);
     }
 

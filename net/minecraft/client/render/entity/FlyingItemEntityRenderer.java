@@ -35,16 +35,16 @@ extends EntityRenderer<T> {
     }
 
     @Override
-    public void render(T entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.scale(this.scale, this.scale, this.scale);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
-        float i = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(i));
+        float h = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * this.renderManager.cameraPitch;
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
-        this.item.method_23178(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, ((Entity)entity).getLightmapCoordinates(), OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
+        this.item.method_23178(((FlyingItemEntity)entity).getStack(), ModelTransformation.Type.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider);
         matrixStack.pop();
-        super.render(entity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     @Override

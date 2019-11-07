@@ -136,12 +136,6 @@ implements Nameable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public String getPatternCacheKey() {
-        this.readPattern();
-        return this.patternCacheKey;
-    }
-
-    @Environment(value=EnvType.CLIENT)
     private void readPattern() {
         if (this.patterns != null && this.patternColors != null && this.patternCacheKey != null) {
             return;

@@ -27,10 +27,10 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18658(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l, float m) {
-        float q;
+    public void method_18658(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l) {
         float p;
         float o;
+        float n;
         ItemStack itemStack = horseEntity.getArmorType();
         if (!(itemStack.getItem() instanceof HorseArmorItem)) {
             return;
@@ -38,19 +38,19 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
         HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
         ((HorseEntityModel)this.getModel()).copyStateTo(this.model);
         this.model.method_17084(horseEntity, f, g, h);
-        this.model.method_17085(horseEntity, f, g, j, k, l, m);
+        this.model.method_17085(horseEntity, f, g, j, k, l);
         if (horseArmorItem instanceof DyeableHorseArmorItem) {
-            int n = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
-            o = (float)(n >> 16 & 0xFF) / 255.0f;
-            p = (float)(n >> 8 & 0xFF) / 255.0f;
-            q = (float)(n & 0xFF) / 255.0f;
+            int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
+            n = (float)(m >> 16 & 0xFF) / 255.0f;
+            o = (float)(m >> 8 & 0xFF) / 255.0f;
+            p = (float)(m & 0xFF) / 255.0f;
         } else {
+            n = 1.0f;
             o = 1.0f;
             p = 1.0f;
-            q = 1.0f;
         }
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(horseArmorItem.getEntityTexture()));
-        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, o, p, q);
+        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, n, o, p);
     }
 }
 

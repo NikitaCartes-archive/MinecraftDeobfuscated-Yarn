@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Vec3i;
@@ -48,15 +49,16 @@ public interface VertexConsumer {
         return this.overlay(i & 0xFFFF, i >> 16 & 0xFFFF);
     }
 
-    default public void quad(Matrix4f matrix4f, Matrix3f matrix3f, BakedQuad bakedQuad, float f, float g, float h, int i, int j) {
-        this.quad(matrix4f, matrix3f, bakedQuad, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, f, g, h, new int[]{i, i, i, i}, j, false);
+    default public void quad(MatrixStack.Entry entry, BakedQuad bakedQuad, float f, float g, float h, int i, int j) {
+        this.quad(entry, bakedQuad, new float[]{1.0f, 1.0f, 1.0f, 1.0f}, f, g, h, new int[]{i, i, i, i}, j, false);
     }
 
-    default public void quad(Matrix4f matrix4f, Matrix3f matrix3f, BakedQuad bakedQuad, float[] fs, float f, float g, float h, int[] is, int i, boolean bl) {
+    default public void quad(MatrixStack.Entry entry, BakedQuad bakedQuad, float[] fs, float f, float g, float h, int[] is, int i, boolean bl) {
         int[] js = bakedQuad.getVertexData();
         Vec3i vec3i = bakedQuad.getFace().getVector();
         Vector3f vector3f = new Vector3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
-        vector3f.multiply(matrix3f);
+        Matrix4f matrix4f = entry.method_23761();
+        vector3f.multiply(entry.method_23762());
         int j = 8;
         int k = js.length / 8;
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
@@ -102,6 +104,12 @@ public interface VertexConsumer {
         Vector4f vector4f = new Vector4f(f, g, h, 1.0f);
         vector4f.multiply(matrix4f);
         return this.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+    }
+
+    default public VertexConsumer method_23763(Matrix3f matrix3f, float f, float g, float h) {
+        Vector3f vector3f = new Vector3f(f, g, h);
+        vector3f.multiply(matrix3f);
+        return this.normal(vector3f.getX(), vector3f.getY(), vector3f.getZ());
     }
 }
 

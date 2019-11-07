@@ -25,7 +25,7 @@ extends BlockEntityRenderer<CampfireBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_17581(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    public void method_17581(CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
         DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
         for (int k = 0; k < defaultedList.size(); ++k) {
@@ -34,8 +34,8 @@ extends BlockEntityRenderer<CampfireBlockEntity> {
             matrixStack.push();
             matrixStack.translate(0.5, 0.44921875, 0.5);
             Direction direction2 = Direction.fromHorizontal((k + direction.getHorizontal()) % 4);
-            float h = -direction2.asRotation();
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(h));
+            float g = -direction2.asRotation();
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(g));
             matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
             matrixStack.translate(-0.3125, -0.3125, 0.0);
             matrixStack.scale(0.375f, 0.375f, 0.375f);

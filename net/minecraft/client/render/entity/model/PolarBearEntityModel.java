@@ -51,28 +51,28 @@ extends QuadrupedEntityModel<T> {
         this.leg4.pivotZ -= 1.0f;
     }
 
-    public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j, float k) {
-        super.setAngles(polarBearEntity, f, g, h, i, j, k);
-        float l = h - (float)((PolarBearEntity)polarBearEntity).age;
-        float m = ((PolarBearEntity)polarBearEntity).getWarningAnimationProgress(l);
-        m *= m;
-        float n = 1.0f - m;
-        this.body.pitch = 1.5707964f - m * (float)Math.PI * 0.35f;
-        this.body.pivotY = 9.0f * n + 11.0f * m;
-        this.leg3.pivotY = 14.0f * n - 6.0f * m;
-        this.leg3.pivotZ = -8.0f * n - 4.0f * m;
-        this.leg3.pitch -= m * (float)Math.PI * 0.45f;
+    public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j) {
+        super.setAngles(polarBearEntity, f, g, h, i, j);
+        float k = h - (float)((PolarBearEntity)polarBearEntity).age;
+        float l = ((PolarBearEntity)polarBearEntity).getWarningAnimationProgress(k);
+        l *= l;
+        float m = 1.0f - l;
+        this.body.pitch = 1.5707964f - l * (float)Math.PI * 0.35f;
+        this.body.pivotY = 9.0f * m + 11.0f * l;
+        this.leg3.pivotY = 14.0f * m - 6.0f * l;
+        this.leg3.pivotZ = -8.0f * m - 4.0f * l;
+        this.leg3.pitch -= l * (float)Math.PI * 0.45f;
         this.leg4.pivotY = this.leg3.pivotY;
         this.leg4.pivotZ = this.leg3.pivotZ;
-        this.leg4.pitch -= m * (float)Math.PI * 0.45f;
+        this.leg4.pitch -= l * (float)Math.PI * 0.45f;
         if (this.isChild) {
-            this.head.pivotY = 10.0f * n - 9.0f * m;
-            this.head.pivotZ = -16.0f * n - 7.0f * m;
+            this.head.pivotY = 10.0f * m - 9.0f * l;
+            this.head.pivotZ = -16.0f * m - 7.0f * l;
         } else {
-            this.head.pivotY = 10.0f * n - 14.0f * m;
-            this.head.pivotZ = -16.0f * n - 3.0f * m;
+            this.head.pivotY = 10.0f * m - 14.0f * l;
+            this.head.pivotZ = -16.0f * m - 3.0f * l;
         }
-        this.head.pitch += m * (float)Math.PI * 0.15f;
+        this.head.pitch += l * (float)Math.PI * 0.15f;
     }
 }
 

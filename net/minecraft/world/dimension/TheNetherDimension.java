@@ -25,7 +25,7 @@ extends Dimension {
     private static final Vec3d field_21216 = new Vec3d(0.2f, 0.03f, 0.03f);
 
     public TheNetherDimension(World world, DimensionType dimensionType) {
-        super(world, dimensionType);
+        super(world, dimensionType, 0.1f);
         this.waterVaporizes = true;
         this.isNether = true;
     }
@@ -34,15 +34,6 @@ extends Dimension {
     @Environment(value=EnvType.CLIENT)
     public Vec3d getFogColor(float f, float g) {
         return field_21216;
-    }
-
-    @Override
-    protected void initializeLightLevelToBrightness() {
-        float f = 0.1f;
-        for (int i = 0; i <= 15; ++i) {
-            float g = 1.0f - (float)i / 15.0f;
-            this.lightLevelToBrightness[i] = (1.0f - g) / (g * 3.0f + 1.0f) * 0.9f + 0.1f;
-        }
     }
 
     @Override

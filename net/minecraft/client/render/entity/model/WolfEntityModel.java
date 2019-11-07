@@ -81,9 +81,9 @@ extends TintableAnimalModel<T> {
             this.field_3623.setPivot(0.0f, 18.0f, 0.0f);
             this.field_3623.pitch = 0.7853982f;
             this.field_3617.setPivot(-1.0f, 21.0f, 6.0f);
-            this.field_3622.setPivot(-2.5f, 22.0f, 2.0f);
+            this.field_3622.setPivot(-2.5f, 22.7f, 2.0f);
             this.field_3622.pitch = 4.712389f;
-            this.field_3620.setPivot(0.5f, 22.0f, 2.0f);
+            this.field_3620.setPivot(0.5f, 22.7f, 2.0f);
             this.field_3620.pitch = 4.712389f;
             this.field_3618.pitch = 5.811947f;
             this.field_3618.setPivot(-2.49f, 17.0f, -4.0f);
@@ -110,7 +110,7 @@ extends TintableAnimalModel<T> {
         this.field_20789.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.2f);
     }
 
-    public void method_17133(T wolfEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17133(T wolfEntity, float f, float g, float h, float i, float j) {
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = i * ((float)Math.PI / 180);
         this.field_3617.pitch = h;

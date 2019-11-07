@@ -34,14 +34,14 @@ extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
         return SKIN;
     }
 
-    public void method_4094(PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-        int i = pufferfishEntity.getPuffState();
-        if (i != this.modelSize) {
-            this.model = i == 0 ? this.smallModel : (i == 1 ? this.mediumModel : this.largeModel);
+    public void method_4094(PufferfishEntity pufferfishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        int j = pufferfishEntity.getPuffState();
+        if (j != this.modelSize) {
+            this.model = j == 0 ? this.smallModel : (j == 1 ? this.mediumModel : this.largeModel);
         }
-        this.modelSize = i;
-        this.field_4673 = 0.1f + 0.1f * (float)i;
-        super.method_4072(pufferfishEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        this.modelSize = j;
+        this.field_4673 = 0.1f + 0.1f * (float)j;
+        super.method_4072(pufferfishEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     protected void method_4095(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {

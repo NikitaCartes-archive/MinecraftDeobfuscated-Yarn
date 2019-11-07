@@ -48,7 +48,7 @@ public class EnchantmentHelper {
             CompoundTag compoundTag = listTag.getCompound(i);
             Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
             if (identifier2 == null || !identifier2.equals(identifier)) continue;
-            return compoundTag.getInt("lvl");
+            return MathHelper.clamp(compoundTag.getInt("lvl"), 0, 255);
         }
         return 0;
     }

@@ -26,14 +26,14 @@ extends EntityRenderer<EvokerFangsEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_3962(EvokerFangsEntity evokerFangsEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-        float i = evokerFangsEntity.getAnimationProgress(h);
-        if (i == 0.0f) {
+    public void method_3962(EvokerFangsEntity evokerFangsEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        float h = evokerFangsEntity.getAnimationProgress(g);
+        if (h == 0.0f) {
             return;
         }
         float j = 2.0f;
-        if (i > 0.9f) {
-            j = (float)((double)j * ((1.0 - (double)i) / (double)0.1f));
+        if (h > 0.9f) {
+            j = (float)((double)j * ((1.0 - (double)h) / (double)0.1f));
         }
         matrixStack.push();
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f - evokerFangsEntity.yaw));
@@ -41,12 +41,11 @@ extends EntityRenderer<EvokerFangsEntity> {
         float k = 0.03125f;
         matrixStack.translate(0.0, -0.626f, 0.0);
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        int l = evokerFangsEntity.getLightmapCoordinates();
-        this.model.setAngles(evokerFangsEntity, i, 0.0f, 0.0f, evokerFangsEntity.yaw, evokerFangsEntity.pitch, 0.03125f);
+        this.model.setAngles(evokerFangsEntity, h, 0.0f, 0.0f, evokerFangsEntity.yaw, evokerFangsEntity.pitch);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
-        this.model.render(matrixStack, vertexConsumer, l, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
-        super.render(evokerFangsEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(evokerFangsEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public Identifier method_3963(EvokerFangsEntity evokerFangsEntity) {

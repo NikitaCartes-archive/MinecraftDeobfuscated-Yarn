@@ -8,11 +8,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
@@ -27,17 +28,13 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(long l) {
-        Camera camera = this.client.gameRenderer.getCamera();
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
         ClientWorld iWorld = this.client.world;
-        double d = camera.getPos().x;
-        double e = camera.getPos().y;
-        double f = camera.getPos().z;
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
-        BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
+        BlockPos blockPos = new BlockPos(d, 0.0, f);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);

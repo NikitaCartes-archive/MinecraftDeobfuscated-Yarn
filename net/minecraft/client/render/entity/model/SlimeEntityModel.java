@@ -34,7 +34,7 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
     }
 
     @Override

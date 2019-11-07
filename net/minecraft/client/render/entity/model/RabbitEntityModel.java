@@ -105,24 +105,24 @@ extends EntityModel<T> {
             matrixStack.push();
             matrixStack.scale(0.56666666f, 0.56666666f, 0.56666666f);
             matrixStack.translate(0.0, 1.375, 0.125);
-            ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            ImmutableList.of(this.field_3529, this.field_3520, this.field_3523, this.field_3530).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
             matrixStack.pop();
             matrixStack.push();
             matrixStack.scale(0.4f, 0.4f, 0.4f);
             matrixStack.translate(0.0, 2.25, 0.0);
-            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3524).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
             matrixStack.pop();
         } else {
             matrixStack.push();
             matrixStack.scale(0.6f, 0.6f, 0.6f);
             matrixStack.translate(0.0, 1.0, 0.0);
-            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3529, this.field_3523, this.field_3520, this.field_3524, this.field_3530, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            ImmutableList.of(this.field_3525, this.field_3532, this.field_3526, this.field_3522, this.field_3528, this.field_3527, this.field_3521, this.field_3529, this.field_3523, this.field_3520, this.field_3524, this.field_3530, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
             matrixStack.pop();
         }
     }
 
-    public void method_17117(T rabbitEntity, float f, float g, float h, float i, float j, float k) {
-        float l = h - (float)((RabbitEntity)rabbitEntity).age;
+    public void method_17117(T rabbitEntity, float f, float g, float h, float i, float j) {
+        float k = h - (float)((RabbitEntity)rabbitEntity).age;
         this.field_3530.pitch = j * ((float)Math.PI / 180);
         this.field_3529.pitch = j * ((float)Math.PI / 180);
         this.field_3523.pitch = j * ((float)Math.PI / 180);
@@ -131,7 +131,7 @@ extends EntityModel<T> {
         this.field_3529.yaw = i * ((float)Math.PI / 180);
         this.field_3523.yaw = this.field_3530.yaw - 0.2617994f;
         this.field_3520.yaw = this.field_3530.yaw + 0.2617994f;
-        this.field_3531 = MathHelper.sin(((RabbitEntity)rabbitEntity).method_6605(l) * (float)Math.PI);
+        this.field_3531 = MathHelper.sin(((RabbitEntity)rabbitEntity).method_6605(k) * (float)Math.PI);
         this.field_3526.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
         this.field_3522.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
         this.field_3525.pitch = this.field_3531 * 50.0f * ((float)Math.PI / 180);

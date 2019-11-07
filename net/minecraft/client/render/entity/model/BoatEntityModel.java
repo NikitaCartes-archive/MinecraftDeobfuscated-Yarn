@@ -57,9 +57,9 @@ extends CompositeEntityModel<BoatEntity> {
         this.parts = builder.build();
     }
 
-    public void method_22952(BoatEntity boatEntity, float f, float g, float h, float i, float j, float k) {
-        this.renderPaddle(boatEntity, 0, k, f);
-        this.renderPaddle(boatEntity, 1, k, f);
+    public void method_22952(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
+        this.renderPaddle(boatEntity, 0, f);
+        this.renderPaddle(boatEntity, 1, f);
     }
 
     public ImmutableList<ModelPart> method_22953() {
@@ -81,11 +81,11 @@ extends CompositeEntityModel<BoatEntity> {
         return modelPart;
     }
 
-    protected void renderPaddle(BoatEntity boatEntity, int i, float f, float g) {
-        float h = boatEntity.interpolatePaddlePhase(i, g);
+    protected void renderPaddle(BoatEntity boatEntity, int i, float f) {
+        float g = boatEntity.interpolatePaddlePhase(i, f);
         ModelPart modelPart = this.paddles[i];
-        modelPart.pitch = (float)MathHelper.clampedLerp(-1.0471975803375244, -0.2617993950843811, (MathHelper.sin(-h) + 1.0f) / 2.0f);
-        modelPart.yaw = (float)MathHelper.clampedLerp(-0.7853981852531433, 0.7853981852531433, (MathHelper.sin(-h + 1.0f) + 1.0f) / 2.0f);
+        modelPart.pitch = (float)MathHelper.clampedLerp(-1.0471975803375244, -0.2617993950843811, (MathHelper.sin(-g) + 1.0f) / 2.0f);
+        modelPart.yaw = (float)MathHelper.clampedLerp(-0.7853981852531433, 0.7853981852531433, (MathHelper.sin(-g + 1.0f) + 1.0f) / 2.0f);
         if (i == 1) {
             modelPart.yaw = (float)Math.PI - modelPart.yaw;
         }

@@ -19,7 +19,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.LightType;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>>
@@ -43,13 +45,13 @@ extends LivingEntityRenderer<T, M> {
         return false;
     }
 
-    public void method_4072(T mobEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
-        super.method_4054(mobEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+    public void method_4072(T mobEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        super.method_4054(mobEntity, f, g, matrixStack, vertexConsumerProvider, i);
         Entity entity = ((MobEntity)mobEntity).getHoldingEntity();
         if (entity == null) {
             return;
         }
-        MobEntityRenderer.method_4073(mobEntity, h, matrixStack, vertexConsumerProvider, entity);
+        MobEntityRenderer.method_4073(mobEntity, g, matrixStack, vertexConsumerProvider, entity);
     }
 
     public static void method_4073(MobEntity mobEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
@@ -80,30 +82,28 @@ extends LivingEntityRenderer<T, M> {
         float t = (float)(m - q);
         float u = 0.025f;
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLeash());
-        Matrix4f matrix4f = matrixStack.peekModel();
+        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
         float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025f / 2.0f;
         float w = t * v;
         float x = r * v;
         int y = mobEntity.getLightmapCoordinates();
         int z = entity.getLightmapCoordinates();
-        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, y, z, r, s, t, 0.025f, 0.025f, w, x);
-        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, y, z, r, s, t, 0.025f, 0.0f, w, x);
+        int aa = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(mobEntity));
+        int ab = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(entity));
+        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.025f, w, x);
+        MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.0f, w, x);
         matrixStack.pop();
     }
 
-    public static void method_23186(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, int j, float f, float g, float h, float k, float l, float m, float n) {
-        int o = 24;
-        int p = LightmapTextureManager.method_23686(i);
-        int q = LightmapTextureManager.method_23686(j);
-        int r = LightmapTextureManager.method_23688(i);
-        int s = LightmapTextureManager.method_23688(j);
-        for (int t = 0; t < 24; ++t) {
-            float u = (float)t / 23.0f;
-            int v = (int)MathHelper.lerp(u, p, q);
-            int w = (int)MathHelper.lerp(u, r, s);
-            int x = LightmapTextureManager.method_23687(v, w);
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, x, f, g, h, k, l, 24, t, false, m, n);
-            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, x, f, g, h, k, l, 24, t + 1, true, m, n);
+    public static void method_23186(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, float h, int i, int j, int k, int l, float m, float n, float o, float p) {
+        int q = 24;
+        for (int r = 0; r < 24; ++r) {
+            float s = (float)r / 23.0f;
+            int t = (int)MathHelper.lerp(s, i, j);
+            int u = (int)MathHelper.lerp(s, k, l);
+            int v = LightmapTextureManager.method_23687(t, u);
+            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r, false, o, p);
+            MobEntityRenderer.method_23187(vertexConsumer, matrix4f, v, f, g, h, m, n, 24, r + 1, true, o, p);
         }
     }
 

@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -23,19 +24,19 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         super(featureRendererContext);
     }
 
-    public void method_4188(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4188(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, IronGolemEntity ironGolemEntity, float f, float g, float h, float j, float k, float l) {
         if (ironGolemEntity.method_6502() == 0) {
             return;
         }
         matrixStack.push();
-        matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(5.0f + 180.0f * ((IronGolemEntityModel)this.getModel()).getRightArm().pitch / (float)Math.PI));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
-        matrixStack.translate(0.6875, -0.3125, 1.0625);
-        float n = 0.5f;
+        ModelPart modelPart = ((IronGolemEntityModel)this.getModel()).getRightArm();
+        modelPart.rotate(matrixStack);
+        matrixStack.translate(-1.1875, 1.0625, -0.9375);
+        matrixStack.translate(0.5, 0.5, 0.5);
+        float m = 0.5f;
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(180.0f));
-        matrixStack.translate(-0.5, -0.5, 0.5);
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f));
+        matrixStack.translate(-0.5, -0.5, -0.5);
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }

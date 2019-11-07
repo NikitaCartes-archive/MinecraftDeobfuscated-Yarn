@@ -47,7 +47,7 @@ extends SkullEntityModel {
         matrixStack.push();
         matrixStack.translate(0.0, -0.374375f, 0.0);
         matrixStack.scale(0.75f, 0.75f, 0.75f);
-        this.head.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h);
+        this.head.render(matrixStack, vertexConsumer, i, j, null, f, g, h);
         matrixStack.pop();
     }
 }

@@ -29,19 +29,19 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         this.field_21012.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 32.0f, 16.0f);
     }
 
-    public void method_4203(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4203(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         if (!((LivingEntity)livingEntity).isUsingRiptide()) {
             return;
         }
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
-        for (int n = 0; n < 3; ++n) {
+        for (int m = 0; m < 3; ++m) {
             matrixStack.push();
-            float o = j * (float)(-(45 + n * 5));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(o));
-            float p = 0.75f * (float)n;
-            matrixStack.scale(p, p, p);
-            matrixStack.translate(0.0, -0.2f + 0.6f * (float)n, 0.0);
-            this.field_21012.render(matrixStack, vertexConsumer, m, i, OverlayTexture.DEFAULT_UV, null);
+            float n = j * (float)(-(45 + m * 5));
+            matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(n));
+            float o = 0.75f * (float)m;
+            matrixStack.scale(o, o, o);
+            matrixStack.translate(0.0, -0.2f + 0.6f * (float)m, 0.0);
+            this.field_21012.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, null);
             matrixStack.pop();
         }
     }

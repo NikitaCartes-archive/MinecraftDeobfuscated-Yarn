@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class TridentEntity
 extends ProjectileEntity {
     private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Boolean> field_21514 = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
     private boolean dealtDamage;
     public int returnTimer;
@@ -44,6 +45,7 @@ extends ProjectileEntity {
         super(EntityType.TRIDENT, livingEntity, world);
         this.tridentStack = itemStack.copy();
         this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(itemStack));
+        this.dataTracker.set(field_21514, itemStack.hasEnchantmentGlint());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -55,6 +57,7 @@ extends ProjectileEntity {
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(LOYALTY, (byte)0);
+        this.dataTracker.startTracking(field_21514, false);
     }
 
     @Override
@@ -99,6 +102,11 @@ extends ProjectileEntity {
     @Override
     protected ItemStack asItemStack() {
         return this.tridentStack.copy();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public boolean method_23751() {
+        return this.dataTracker.get(field_21514);
     }
 
     @Override
@@ -175,7 +183,7 @@ extends ProjectileEntity {
     }
 
     @Override
-    protected void age() {
+    public void age() {
         byte i = this.dataTracker.get(LOYALTY);
         if (this.pickupType != ProjectileEntity.PickupPermission.ALLOWED || i <= 0) {
             super.age();

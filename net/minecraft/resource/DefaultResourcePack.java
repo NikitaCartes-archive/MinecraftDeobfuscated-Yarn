@@ -4,7 +4,6 @@
 package net.minecraft.resource;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.io.File;
@@ -24,15 +23,14 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.resource.AbstractFileResourcePack;
 import net.minecraft.resource.DirectoryResourcePack;
 import net.minecraft.resource.ResourcePack;
@@ -78,19 +76,19 @@ implements ResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+    public Collection<Identifier> findResources(ResourceType resourceType, String string, String string2, int i, Predicate<String> predicate) {
         URI uRI;
         HashSet<Identifier> set = Sets.newHashSet();
         if (resourcePath != null) {
             try {
-                set.addAll(this.getIdentifiers(i, "minecraft", resourcePath.resolve(resourceType.getDirectory()).resolve("minecraft"), string, predicate));
+                DefaultResourcePack.getIdentifiers(set, i, string, resourcePath.resolve(resourceType.getDirectory()), string2, predicate);
             } catch (IOException iOException) {
                 // empty catch block
             }
             if (resourceType == ResourceType.CLIENT_RESOURCES) {
                 Enumeration<URL> enumeration = null;
                 try {
-                    enumeration = resourceClass.getClassLoader().getResources(resourceType.getDirectory() + "/minecraft");
+                    enumeration = resourceClass.getClassLoader().getResources(resourceType.getDirectory() + "/");
                 } catch (IOException iOException) {
                     // empty catch block
                 }
@@ -98,7 +96,7 @@ implements ResourcePack {
                     try {
                         uRI = ((URL)enumeration.nextElement()).toURI();
                         if (!"file".equals(uRI.getScheme())) continue;
-                        set.addAll(this.getIdentifiers(i, "minecraft", Paths.get(uRI), string, predicate));
+                        DefaultResourcePack.getIdentifiers(set, i, string, Paths.get(uRI), string2, predicate);
                     } catch (IOException | URISyntaxException uRI2) {}
                 }
             }
@@ -111,15 +109,12 @@ implements ResourcePack {
             }
             uRI = uRL.toURI();
             if ("file".equals(uRI.getScheme())) {
-                URL uRL2 = new URL(uRL.toString().substring(0, uRL.toString().length() - ".mcassetsroot".length()) + "minecraft");
-                if (uRL2 == null) {
-                    return set;
-                }
+                URL uRL2 = new URL(uRL.toString().substring(0, uRL.toString().length() - ".mcassetsroot".length()));
                 Path path = Paths.get(uRL2.toURI());
-                set.addAll(this.getIdentifiers(i, "minecraft", path, string, predicate));
+                DefaultResourcePack.getIdentifiers(set, i, string, path, string2, predicate);
             } else if ("jar".equals(uRI.getScheme())) {
-                Path path2 = typeToFileSystem.get((Object)resourceType).getPath("/" + resourceType.getDirectory() + "/minecraft", new String[0]);
-                set.addAll(this.getIdentifiers(i, "minecraft", path2, string, predicate));
+                Path path2 = typeToFileSystem.get((Object)resourceType).getPath("/" + resourceType.getDirectory(), new String[0]);
+                DefaultResourcePack.getIdentifiers(set, i, "minecraft", path2, string2, predicate);
             } else {
                 LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", (Object)uRI);
             }
@@ -130,15 +125,11 @@ implements ResourcePack {
         return set;
     }
 
-    private Collection<Identifier> getIdentifiers(int i, String string, Path path, String string2, Predicate<String> predicate) throws IOException {
-        ArrayList<Identifier> list = Lists.newArrayList();
-        Iterator iterator = Files.walk(path.resolve(string2), i, new FileVisitOption[0]).iterator();
-        while (iterator.hasNext()) {
-            Path path2 = (Path)iterator.next();
-            if (path2.endsWith(".mcmeta") || !Files.isRegularFile(path2, new LinkOption[0]) || !predicate.test(path2.getFileName().toString())) continue;
-            list.add(new Identifier(string, path.relativize(path2).toString().replaceAll("\\\\", "/")));
+    private static void getIdentifiers(Collection<Identifier> collection, int i, String string, Path path3, String string2, Predicate<String> predicate) throws IOException {
+        Path path22 = path3.resolve(string);
+        try (Stream<Path> stream = Files.walk(path22.resolve(string2), i, new FileVisitOption[0]);){
+            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0]) && predicate.test(path.getFileName().toString())).map(path2 -> new Identifier(string, path22.relativize((Path)path2).toString().replaceAll("\\\\", "/"))).forEach(collection::add);
         }
-        return list;
     }
 
     @Nullable

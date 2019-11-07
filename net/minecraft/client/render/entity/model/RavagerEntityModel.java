@@ -76,15 +76,15 @@ extends CompositeEntityModel<RavagerEntity> {
         return ImmutableList.of(this.field_3384, this.field_3387, this.field_3385, this.field_3383, this.field_3389, this.field_3382);
     }
 
-    public void method_17091(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17091(RavagerEntity ravagerEntity, float f, float g, float h, float i, float j) {
         this.field_3386.pitch = j * ((float)Math.PI / 180);
         this.field_3386.yaw = i * ((float)Math.PI / 180);
         this.field_3387.pitch = 1.5707964f;
-        float l = 0.4f * g;
-        this.field_3385.pitch = MathHelper.cos(f * 0.6662f) * l;
-        this.field_3383.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * l;
-        this.field_3389.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * l;
-        this.field_3382.pitch = MathHelper.cos(f * 0.6662f) * l;
+        float k = 0.4f * g;
+        this.field_3385.pitch = MathHelper.cos(f * 0.6662f) * k;
+        this.field_3383.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
+        this.field_3389.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
+        this.field_3382.pitch = MathHelper.cos(f * 0.6662f) * k;
     }
 
     public void method_17089(RavagerEntity ravagerEntity, float f, float g, float h) {

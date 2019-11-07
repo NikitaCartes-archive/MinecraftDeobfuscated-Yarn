@@ -251,7 +251,7 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        Biome biome = iWorld.getBiome(new BlockPos(this));
+        Biome biome = iWorld.method_23753(new BlockPos(this));
         Type type = Type.fromBiome(biome);
         boolean bl = false;
         if (entityData instanceof FoxData) {

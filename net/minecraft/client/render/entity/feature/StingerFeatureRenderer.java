@@ -12,6 +12,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.StickingOutThingsFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -35,35 +36,36 @@ extends StickingOutThingsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected void renderThing(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, Entity entity, float f, float g, float h, float i) {
-        float j = MathHelper.sqrt(f * f + h * h);
-        float k = (float)(Math.atan2(f, h) * 57.2957763671875);
-        float l = (float)(Math.atan2(g, j) * 57.2957763671875);
+    protected void renderThing(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, Entity entity, float f, float g, float h, float j) {
+        float k = MathHelper.sqrt(f * f + h * h);
+        float l = (float)(Math.atan2(f, h) * 57.2957763671875);
+        float m = (float)(Math.atan2(g, k) * 57.2957763671875);
         matrixStack.translate(0.0, 0.0, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k - 90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(l));
-        float m = 0.0f;
-        float n = 0.125f;
-        float o = 0.0f;
-        float p = 0.0625f;
-        float q = 0.03125f;
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(l - 90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(m));
+        float n = 0.0f;
+        float o = 0.125f;
+        float p = 0.0f;
+        float q = 0.0625f;
+        float r = 0.03125f;
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(45.0f));
         matrixStack.scale(0.03125f, 0.03125f, 0.03125f);
         matrixStack.translate(2.5, 0.0, 0.0);
-        int r = entity.getLightmapCoordinates();
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
         for (int s = 0; s < 4; ++s) {
             matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(90.0f));
-            Matrix4f matrix4f = matrixStack.peekModel();
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, -4.5f, -1, 0.0f, 0.0f, r);
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, 4.5f, -1, 0.125f, 0.0f, r);
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, 4.5f, 1, 0.125f, 0.0625f, r);
-            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, -4.5f, 1, 0.0f, 0.0625f, r);
+            MatrixStack.Entry entry = matrixStack.method_23760();
+            Matrix4f matrix4f = entry.method_23761();
+            Matrix3f matrix3f = entry.method_23762();
+            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, i);
+            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, -1, 0.125f, 0.0f, i);
+            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, 1, 0.125f, 0.0625f, i);
+            StingerFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, 1, 0.0f, 0.0625f, i);
         }
     }
 
-    private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, int i, float g, float h, int j) {
-        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).overlay(OverlayTexture.DEFAULT_UV).light(j).normal(0.0f, 1.0f, 0.0f).next();
+    private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, int i, float g, float h, int j) {
+        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).overlay(OverlayTexture.DEFAULT_UV).light(j).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 }
 

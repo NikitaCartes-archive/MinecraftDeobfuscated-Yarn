@@ -38,14 +38,14 @@ extends FeatureRenderer<T, M> {
         this.modelBody = bipedEntityModel2;
     }
 
-    public void method_17157(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.CHEST, i);
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.LEGS, i);
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.FEET, i);
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, m, EquipmentSlot.HEAD, i);
+    public void method_17157(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.CHEST, i);
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.LEGS, i);
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.FEET, i);
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, f, g, h, j, k, l, EquipmentSlot.HEAD, i);
     }
 
-    private void renderArmor(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, T livingEntity, float f, float g, float h, float i, float j, float k, float l, EquipmentSlot equipmentSlot, int m) {
+    private void renderArmor(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, T livingEntity, float f, float g, float h, float i, float j, float k, EquipmentSlot equipmentSlot, int l) {
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(equipmentSlot);
         if (!(itemStack.getItem() instanceof ArmorItem)) {
             return;
@@ -58,18 +58,18 @@ extends FeatureRenderer<T, M> {
         ((BipedEntityModel)this.getModel()).setAttributes(bipedEntityModel);
         ((BipedEntityModel)bipedEntityModel).method_17086(livingEntity, f, g, h);
         this.setVisible(bipedEntityModel, equipmentSlot);
-        ((BipedEntityModel)bipedEntityModel).method_17087(livingEntity, f, g, i, j, k, l);
+        ((BipedEntityModel)bipedEntityModel).method_17087(livingEntity, f, g, i, j, k);
         boolean bl = this.isLegs(equipmentSlot);
         boolean bl2 = itemStack.hasEnchantmentGlint();
         if (armorItem instanceof DyeableArmorItem) {
-            int n = ((DyeableArmorItem)armorItem).getColor(itemStack);
-            float o = (float)(n >> 16 & 0xFF) / 255.0f;
-            float p = (float)(n >> 8 & 0xFF) / 255.0f;
-            float q = (float)(n & 0xFF) / 255.0f;
-            this.renderArmorParts(matrixStack, vertexConsumerProvider, m, armorItem, bl2, bipedEntityModel, bl, o, p, q, null);
-            this.renderArmorParts(matrixStack, vertexConsumerProvider, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, "overlay");
+            int m = ((DyeableArmorItem)armorItem).getColor(itemStack);
+            float n = (float)(m >> 16 & 0xFF) / 255.0f;
+            float o = (float)(m >> 8 & 0xFF) / 255.0f;
+            float p = (float)(m & 0xFF) / 255.0f;
+            this.renderArmorParts(matrixStack, vertexConsumerProvider, l, armorItem, bl2, bipedEntityModel, bl, n, o, p, null);
+            this.renderArmorParts(matrixStack, vertexConsumerProvider, l, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, "overlay");
         } else {
-            this.renderArmorParts(matrixStack, vertexConsumerProvider, m, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, null);
+            this.renderArmorParts(matrixStack, vertexConsumerProvider, l, armorItem, bl2, bipedEntityModel, bl, 1.0f, 1.0f, 1.0f, null);
         }
     }
 

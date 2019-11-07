@@ -92,7 +92,7 @@ implements BufferVertexConsumer {
         for (int k = 0; k < is.length; ++k) {
             is[k] = k;
         }
-        IntArrays.quickSort(is, (i, j) -> Floats.compare(fs[j], fs[i]));
+        IntArrays.mergeSort(is, (i, j) -> Floats.compare(fs[j], fs[i]));
         BitSet bitSet = new BitSet();
         FloatBuffer floatBuffer2 = GlAllocationUtils.allocateFloatBuffer(this.format.getVertexSizeInteger() * 4);
         int l = bitSet.nextClearBit(0);

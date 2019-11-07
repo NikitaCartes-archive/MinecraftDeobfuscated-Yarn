@@ -24,9 +24,9 @@ extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
         this.addFeature(new WitchHeldItemFeatureRenderer<WitchEntity>(this));
     }
 
-    public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_4155(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         ((WitchEntityModel)this.model).setLiftingNose(!witchEntity.getMainHandStack().isEmpty());
-        super.method_4072(witchEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.method_4072(witchEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public Identifier method_4154(WitchEntity witchEntity) {

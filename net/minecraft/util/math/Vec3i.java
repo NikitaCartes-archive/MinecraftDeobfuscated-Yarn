@@ -4,6 +4,8 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
@@ -125,6 +127,11 @@ implements Comparable<Vec3i> {
 
     public String toString() {
         return MoreObjects.toStringHelper(this).add("x", this.getX()).add("y", this.getY()).add("z", this.getZ()).toString();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public String method_23854() {
+        return "" + this.getX() + ", " + this.getY() + ", " + this.getZ();
     }
 
     @Override

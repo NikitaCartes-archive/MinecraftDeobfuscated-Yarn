@@ -22,7 +22,7 @@ extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4209(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4209(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, WolfEntity wolfEntity, float f, float g, float h, float j, float k, float l) {
         if (!wolfEntity.isTamed() || wolfEntity.isInvisible()) {
             return;
         }

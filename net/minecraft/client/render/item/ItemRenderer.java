@@ -35,8 +35,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -122,8 +120,7 @@ implements SynchronousResourceReloadListener {
 
     private void method_23180(MatrixStack matrixStack, VertexConsumer vertexConsumer, List<BakedQuad> list, ItemStack itemStack, int i, int j) {
         boolean bl = !itemStack.isEmpty();
-        Matrix4f matrix4f = matrixStack.peekModel();
-        Matrix3f matrix3f = matrixStack.peekNormal();
+        MatrixStack.Entry entry = matrixStack.method_23760();
         for (BakedQuad bakedQuad : list) {
             int k = -1;
             if (bl && bakedQuad.hasColor()) {
@@ -132,7 +129,7 @@ implements SynchronousResourceReloadListener {
             float f = (float)(k >> 16 & 0xFF) / 255.0f;
             float g = (float)(k >> 8 & 0xFF) / 255.0f;
             float h = (float)(k & 0xFF) / 255.0f;
-            vertexConsumer.quad(matrix4f, matrix3f, bakedQuad, f, g, h, i, j);
+            vertexConsumer.quad(entry, bakedQuad, f, g, h, i, j);
         }
     }
 
@@ -228,7 +225,7 @@ implements SynchronousResourceReloadListener {
             String string2 = string == null ? String.valueOf(itemStack.getCount()) : string;
             matrixStack.translate(0.0, 0.0, this.zOffset + 200.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            textRenderer.draw(string2, i + 19 - 2 - textRenderer.getStringWidth(string2), j + 6 + 3, 0xFFFFFF, true, matrixStack.peekModel(), immediate, false, 0, 0xF000F0);
+            textRenderer.draw(string2, i + 19 - 2 - textRenderer.getStringWidth(string2), j + 6 + 3, 0xFFFFFF, true, matrixStack.method_23760().method_23761(), immediate, false, 0, 0xF000F0);
             immediate.draw();
         }
         if (itemStack.isDamaged()) {

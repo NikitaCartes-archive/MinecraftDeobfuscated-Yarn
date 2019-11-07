@@ -913,7 +913,7 @@ implements ResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+    public Collection<Identifier> findResources(ResourceType resourceType, String string, String string2, int i, Predicate<String> predicate) {
         return Collections.emptyList();
     }
 

@@ -66,7 +66,7 @@ extends AnimalModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = i * ((float)Math.PI / 180);
         if (this.animationState != 3) {

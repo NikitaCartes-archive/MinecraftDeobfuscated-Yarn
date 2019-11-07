@@ -397,6 +397,9 @@ implements Monster {
     }
 
     public boolean damagePart(EnderDragonPart enderDragonPart, DamageSource damageSource, float f) {
+        if (this.phaseManager.getCurrent().getType() == PhaseType.DYING) {
+            return false;
+        }
         f = this.phaseManager.getCurrent().modifyDamageTaken(damageSource, f);
         if (enderDragonPart != this.partHead) {
             f = f / 4.0f + Math.min(f, 1.0f);
@@ -653,7 +656,7 @@ implements Monster {
     }
 
     @Override
-    protected void checkDespawn() {
+    public void checkDespawn() {
     }
 
     public EnderDragonPart[] method_5690() {

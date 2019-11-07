@@ -25,10 +25,10 @@ extends FeatureRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4205(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, TropicalFishEntity tropicalFishEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4205(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, TropicalFishEntity tropicalFishEntity, float f, float g, float h, float j, float k, float l) {
         TintableCompositeModel entityModel = tropicalFishEntity.getShape() == 0 ? this.modelA : this.modelB;
         float[] fs = tropicalFishEntity.getPatternColorComponents();
-        TropicalFishSomethingFeatureRenderer.render(this.getModel(), entityModel, tropicalFishEntity.getVarietyId(), matrixStack, vertexConsumerProvider, i, tropicalFishEntity, f, g, j, k, l, m, h, fs[0], fs[1], fs[2]);
+        TropicalFishSomethingFeatureRenderer.render(this.getModel(), entityModel, tropicalFishEntity.getVarietyId(), matrixStack, vertexConsumerProvider, i, tropicalFishEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
     }
 }
 

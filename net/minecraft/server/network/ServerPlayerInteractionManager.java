@@ -82,7 +82,7 @@ public class ServerPlayerInteractionManager {
             if (blockState.isAir()) {
                 this.failedToMine = false;
             } else {
-                float f = this.continueMining(blockState, this.failedMiningPos);
+                float f = this.continueMining(blockState, this.failedMiningPos, this.failedStartMiningTime);
                 if (f >= 1.0f) {
                     this.failedToMine = false;
                     this.tryBreakBlock(this.failedMiningPos);
@@ -95,18 +95,18 @@ public class ServerPlayerInteractionManager {
                 this.blockBreakingProgress = -1;
                 this.mining = false;
             } else {
-                this.continueMining(blockState, this.miningPos);
+                this.continueMining(blockState, this.miningPos, this.startMiningTime);
             }
         }
     }
 
-    private float continueMining(BlockState blockState, BlockPos blockPos) {
-        int i = this.tickCounter - this.failedStartMiningTime;
-        float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(i + 1);
-        int j = (int)(f * 10.0f);
-        if (j != this.blockBreakingProgress) {
-            this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, j);
-            this.blockBreakingProgress = j;
+    private float continueMining(BlockState blockState, BlockPos blockPos, int i) {
+        int j = this.tickCounter - i;
+        float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(j + 1);
+        int k = (int)(f * 10.0f);
+        if (k != this.blockBreakingProgress) {
+            this.world.setBlockBreakingInfo(this.player.getEntityId(), blockPos, k);
+            this.blockBreakingProgress = k;
         }
         return f;
     }

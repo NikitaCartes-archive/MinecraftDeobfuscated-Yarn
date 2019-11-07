@@ -70,10 +70,10 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
         this.field_3583.yaw = i * ((float)Math.PI / 180);
         this.field_3583.pitch = j * ((float)Math.PI / 180);
-        float l = 0.7853982f;
+        float k = 0.7853982f;
         this.field_3580.roll = -0.7853982f;
         this.field_3578.roll = 0.7853982f;
         this.field_3586.roll = -0.58119464f;
@@ -82,8 +82,8 @@ extends CompositeEntityModel<T> {
         this.field_3581.roll = 0.58119464f;
         this.field_3576.roll = -0.7853982f;
         this.field_3582.roll = 0.7853982f;
-        float m = -0.0f;
-        float n = 0.3926991f;
+        float l = -0.0f;
+        float m = 0.3926991f;
         this.field_3580.yaw = 0.7853982f;
         this.field_3578.yaw = -0.7853982f;
         this.field_3586.yaw = 0.3926991f;
@@ -92,30 +92,30 @@ extends CompositeEntityModel<T> {
         this.field_3581.yaw = 0.3926991f;
         this.field_3576.yaw = -0.7853982f;
         this.field_3582.yaw = 0.7853982f;
-        float o = -(MathHelper.cos(f * 0.6662f * 2.0f + 0.0f) * 0.4f) * g;
-        float p = -(MathHelper.cos(f * 0.6662f * 2.0f + (float)Math.PI) * 0.4f) * g;
-        float q = -(MathHelper.cos(f * 0.6662f * 2.0f + 1.5707964f) * 0.4f) * g;
-        float r = -(MathHelper.cos(f * 0.6662f * 2.0f + 4.712389f) * 0.4f) * g;
-        float s = Math.abs(MathHelper.sin(f * 0.6662f + 0.0f) * 0.4f) * g;
-        float t = Math.abs(MathHelper.sin(f * 0.6662f + (float)Math.PI) * 0.4f) * g;
-        float u = Math.abs(MathHelper.sin(f * 0.6662f + 1.5707964f) * 0.4f) * g;
-        float v = Math.abs(MathHelper.sin(f * 0.6662f + 4.712389f) * 0.4f) * g;
-        this.field_3580.yaw += o;
-        this.field_3578.yaw += -o;
-        this.field_3586.yaw += p;
-        this.field_3577.yaw += -p;
-        this.field_3579.yaw += q;
-        this.field_3581.yaw += -q;
-        this.field_3576.yaw += r;
-        this.field_3582.yaw += -r;
-        this.field_3580.roll += s;
-        this.field_3578.roll += -s;
-        this.field_3586.roll += t;
-        this.field_3577.roll += -t;
-        this.field_3579.roll += u;
-        this.field_3581.roll += -u;
-        this.field_3576.roll += v;
-        this.field_3582.roll += -v;
+        float n = -(MathHelper.cos(f * 0.6662f * 2.0f + 0.0f) * 0.4f) * g;
+        float o = -(MathHelper.cos(f * 0.6662f * 2.0f + (float)Math.PI) * 0.4f) * g;
+        float p = -(MathHelper.cos(f * 0.6662f * 2.0f + 1.5707964f) * 0.4f) * g;
+        float q = -(MathHelper.cos(f * 0.6662f * 2.0f + 4.712389f) * 0.4f) * g;
+        float r = Math.abs(MathHelper.sin(f * 0.6662f + 0.0f) * 0.4f) * g;
+        float s = Math.abs(MathHelper.sin(f * 0.6662f + (float)Math.PI) * 0.4f) * g;
+        float t = Math.abs(MathHelper.sin(f * 0.6662f + 1.5707964f) * 0.4f) * g;
+        float u = Math.abs(MathHelper.sin(f * 0.6662f + 4.712389f) * 0.4f) * g;
+        this.field_3580.yaw += n;
+        this.field_3578.yaw += -n;
+        this.field_3586.yaw += o;
+        this.field_3577.yaw += -o;
+        this.field_3579.yaw += p;
+        this.field_3581.yaw += -p;
+        this.field_3576.yaw += q;
+        this.field_3582.yaw += -q;
+        this.field_3580.roll += r;
+        this.field_3578.roll += -r;
+        this.field_3586.roll += s;
+        this.field_3577.roll += -s;
+        this.field_3579.roll += t;
+        this.field_3581.roll += -t;
+        this.field_3576.roll += u;
+        this.field_3582.roll += -u;
     }
 }
 

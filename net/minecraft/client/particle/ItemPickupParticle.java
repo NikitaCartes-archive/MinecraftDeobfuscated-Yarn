@@ -45,17 +45,18 @@ extends Particle {
     }
 
     @Override
-    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
-        float l = ((float)this.field_3826 + f) / 3.0f;
-        l *= l;
+    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
+        float g = ((float)this.field_3826 + f) / 3.0f;
+        g *= g;
         double d = MathHelper.lerp((double)f, this.field_3821.prevRenderX, this.field_3821.getX());
         double e = MathHelper.lerp((double)f, this.field_3821.prevRenderY, this.field_3821.getY()) + 0.5;
-        double m = MathHelper.lerp((double)f, this.field_3821.prevRenderZ, this.field_3821.getZ());
-        double n = MathHelper.lerp((double)l, this.field_3823.getX(), d);
-        double o = MathHelper.lerp((double)l, this.field_3823.getY(), e);
-        double p = MathHelper.lerp((double)l, this.field_3823.getZ(), m);
+        double h = MathHelper.lerp((double)f, this.field_3821.prevRenderZ, this.field_3821.getZ());
+        double i = MathHelper.lerp((double)g, this.field_3823.getX(), d);
+        double j = MathHelper.lerp((double)g, this.field_3823.getY(), e);
+        double k = MathHelper.lerp((double)g, this.field_3823.getZ(), h);
         VertexConsumerProvider.Immediate immediate = this.field_20944.getEntityVertexConsumers();
-        this.field_3824.render(this.field_3823, n - cameraX, o - cameraY, p - cameraZ, this.field_3823.yaw, f, new MatrixStack(), immediate);
+        Vec3d vec3d = camera.getPos();
+        this.field_3824.render(this.field_3823, i - vec3d.getX(), j - vec3d.getY(), k - vec3d.getZ(), this.field_3823.yaw, f, new MatrixStack(), immediate, EntityRenderDispatcher.method_23839(this.field_3823));
         immediate.draw();
     }
 

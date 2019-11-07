@@ -54,11 +54,11 @@ extends CompositeEntityModel<T> {
         return this.field_20943;
     }
 
-    public void method_17130(T witherEntity, float f, float g, float h, float i, float j, float k) {
-        float l = MathHelper.cos(h * 0.1f);
-        this.field_3613[1].pitch = (0.065f + 0.05f * l) * (float)Math.PI;
+    public void method_17130(T witherEntity, float f, float g, float h, float i, float j) {
+        float k = MathHelper.cos(h * 0.1f);
+        this.field_3613[1].pitch = (0.065f + 0.05f * k) * (float)Math.PI;
         this.field_3613[2].setPivot(-2.0f, 6.9f + MathHelper.cos(this.field_3613[1].pitch) * 10.0f, -0.5f + MathHelper.sin(this.field_3613[1].pitch) * 10.0f);
-        this.field_3613[2].pitch = (0.265f + 0.1f * l) * (float)Math.PI;
+        this.field_3613[2].pitch = (0.265f + 0.1f * k) * (float)Math.PI;
         this.field_3612[0].yaw = i * ((float)Math.PI / 180);
         this.field_3612[0].pitch = j * ((float)Math.PI / 180);
     }

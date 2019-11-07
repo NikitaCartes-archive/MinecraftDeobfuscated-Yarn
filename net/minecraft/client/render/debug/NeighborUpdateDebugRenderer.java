@@ -6,7 +6,6 @@ package net.minecraft.client.render.debug;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,13 +13,12 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
@@ -48,23 +46,13 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
         long m = this.client.world.getTime();
-        Camera camera = this.client.gameRenderer.getCamera();
-        double d = camera.getPos().x;
-        double e = camera.getPos().y;
-        double f = camera.getPos().z;
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.lineWidth(2.0f);
-        RenderSystem.disableTexture();
-        RenderSystem.depthMask(false);
         int i = 200;
         double g = 0.0025;
         HashSet<BlockPos> set = Sets.newHashSet();
         HashMap<BlockPos, Integer> map = Maps.newHashMap();
-        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        VertexConsumer vertexConsumer = immediate.getBuffer(RenderLayer.getLines());
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
         Iterator<Map.Entry<Long, Map<BlockPos, Integer>>> iterator = this.neighborUpdates.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Long, Map<BlockPos, Integer>> entry = iterator.next();
@@ -84,15 +72,11 @@ implements DebugRenderer.Renderer {
                 map.put(blockPos, integer);
             }
         }
-        immediate.draw();
         for (Map.Entry entry : map.entrySet()) {
             BlockPos blockPos2 = (BlockPos)entry.getKey();
             Integer integer2 = (Integer)entry.getValue();
             DebugRenderer.drawString(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
         }
-        RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
     }
 }
 

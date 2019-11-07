@@ -29,11 +29,6 @@ import org.jetbrains.annotations.Nullable;
 public class SignBlockEntity
 extends BlockEntity {
     public final Text[] text = new Text[]{new LiteralText(""), new LiteralText(""), new LiteralText(""), new LiteralText("")};
-    @Environment(value=EnvType.CLIENT)
-    private boolean caretVisible;
-    private int currentRow = -1;
-    private int selectionStart = -1;
-    private int selectionEnd = -1;
     private boolean editable = true;
     private PlayerEntity editor;
     private final String[] textBeingEdited = new String[4];
@@ -159,42 +154,6 @@ extends BlockEntity {
             return true;
         }
         return false;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public void setSelectionState(int i, int j, int k, boolean bl) {
-        this.currentRow = i;
-        this.selectionStart = j;
-        this.selectionEnd = k;
-        this.caretVisible = bl;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public void resetSelectionState() {
-        this.currentRow = -1;
-        this.selectionStart = -1;
-        this.selectionEnd = -1;
-        this.caretVisible = false;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public boolean isCaretVisible() {
-        return this.caretVisible;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public int getCurrentRow() {
-        return this.currentRow;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public int getSelectionStart() {
-        return this.selectionStart;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public int getSelectionEnd() {
-        return this.selectionEnd;
     }
 }
 

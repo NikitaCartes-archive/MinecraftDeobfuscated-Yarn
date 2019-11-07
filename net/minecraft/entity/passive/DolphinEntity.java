@@ -45,6 +45,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -311,7 +312,7 @@ extends WaterCreatureEntity {
     }
 
     public static boolean canSpawn(EntityType<DolphinEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel() && (iWorld.getBiome(blockPos) != Biomes.OCEAN || iWorld.getBiome(blockPos) != Biomes.DEEP_OCEAN) && iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
+        return blockPos.getY() > 45 && blockPos.getY() < iWorld.getSeaLevel() && (iWorld.method_23753(blockPos) != Biomes.OCEAN || iWorld.method_23753(blockPos) != Biomes.DEEP_OCEAN) && iWorld.getFluidState(blockPos).matches(FluidTags.WATER);
     }
 
     @Override
@@ -435,12 +436,12 @@ extends WaterCreatureEntity {
             if (this.dolphin.isCloseToTarget() || this.dolphin.getNavigation().isIdle()) {
                 BlockPos blockPos;
                 Vec3d vec3d = new Vec3d(this.dolphin.getTreasurePos());
-                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 16, 1, vec3d, 0.3926991f);
+                Vec3d vec3d2 = TargetFinder.findTargetTowards((MobEntityWithAi)this.dolphin, 16, 1, vec3d, 0.3926991f);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 4, vec3d);
+                    vec3d2 = TargetFinder.method_23735(this.dolphin, 8, 4, vec3d);
                 }
                 if (!(vec3d2 == null || world.getFluidState(blockPos = new BlockPos(vec3d2)).matches(FluidTags.WATER) && world.getBlockState(blockPos).canPlaceAtSide(world, blockPos, BlockPlacementEnvironment.WATER))) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 5, vec3d);
+                    vec3d2 = TargetFinder.method_23735(this.dolphin, 8, 5, vec3d);
                 }
                 if (vec3d2 == null) {
                     this.field_6753 = true;

@@ -219,7 +219,7 @@ extends NetworkSyncedItem {
         Biome[] biomes = new Biome[128 * i * 128 * i];
         for (l = 0; l < 128 * i; ++l) {
             for (m = 0; m < 128 * i; ++m) {
-                biomes[l * 128 * i + m] = serverWorld.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l));
+                biomes[l * 128 * i + m] = serverWorld.method_23753(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l));
             }
         }
         for (l = 0; l < 128; ++l) {

@@ -24,18 +24,18 @@ extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_22751(EndGatewayBlockEntity endGatewayBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    public void method_22751(EndGatewayBlockEntity endGatewayBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
-            float h = endGatewayBlockEntity.isRecentlyGenerated() ? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(g) : endGatewayBlockEntity.getCooldownBeamHeight(g);
-            double k = endGatewayBlockEntity.isRecentlyGenerated() ? 256.0 - e : 50.0;
-            h = MathHelper.sin(h * (float)Math.PI);
-            int l = MathHelper.floor((double)h * k);
+            float g = endGatewayBlockEntity.isRecentlyGenerated() ? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(f) : endGatewayBlockEntity.getCooldownBeamHeight(f);
+            double d = endGatewayBlockEntity.isRecentlyGenerated() ? 256.0 : 50.0;
+            g = MathHelper.sin(g * (float)Math.PI);
+            int k = MathHelper.floor((double)g * d);
             float[] fs = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
-            long m = endGatewayBlockEntity.getWorld().getTime();
-            BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, g, h, m, 0, l, fs, 0.15f, 0.175f);
-            BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, g, h, m, 0, -l, fs, 0.15f, 0.175f);
+            long l = endGatewayBlockEntity.getWorld().getTime();
+            BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, 0, k, fs, 0.15f, 0.175f);
+            BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, 0, -k, fs, 0.15f, 0.175f);
         }
-        super.method_3591(endGatewayBlockEntity, d, e, f, g, matrixStack, vertexConsumerProvider, i, j);
+        super.method_3591(endGatewayBlockEntity, f, matrixStack, vertexConsumerProvider, i, j);
     }
 
     @Override

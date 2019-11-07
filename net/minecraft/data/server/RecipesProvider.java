@@ -106,7 +106,7 @@ implements DataProvider {
     }
 
     /*
-     * Opcode count of 15429 triggered aggressive code reduction.  Override with --aggressivesizethreshold.
+     * Opcode count of 15425 triggered aggressive code reduction.  Override with --aggressivesizethreshold.
      */
     private void generate(Consumer<RecipeJsonProvider> consumer) {
         ShapedRecipeJsonFactory.create(Blocks.ACACIA_WOOD, 3).input(Character.valueOf('#'), Blocks.ACACIA_LOG).pattern("##").pattern("##").group("bark").criterion("has_log", this.method_10426(Blocks.ACACIA_LOG)).offerTo(consumer);
@@ -201,7 +201,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.CAMPFIRE).input(Character.valueOf('L'), ItemTags.LOGS).input(Character.valueOf('S'), Items.STICK).input(Character.valueOf('C'), ItemTags.COALS).pattern(" S ").pattern("SCS").pattern("LLL").criterion("has_stick", this.method_10426(Items.STICK)).criterion("has_coal", this.method_10420(ItemTags.COALS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.CARROT_ON_A_STICK).input(Character.valueOf('#'), Items.FISHING_ROD).input(Character.valueOf('X'), Items.CARROT).pattern("# ").pattern(" X").criterion("has_carrot", this.method_10426(Items.CARROT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CAULDRON).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("# #").pattern("# #").pattern("###").criterion("has_water_bucket", this.method_10426(Items.WATER_BUCKET)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.COMPOSTER).input(Character.valueOf('F'), ItemTags.WOODEN_FENCES).input(Character.valueOf('#'), ItemTags.PLANKS).pattern("F F").pattern("F F").pattern("###").criterion("has_wooden_fences", this.method_10420(ItemTags.WOODEN_FENCES)).offerTo(consumer);
+        ShapedRecipeJsonFactory.create(Blocks.COMPOSTER).input(Character.valueOf('#'), ItemTags.WOODEN_SLABS).pattern("# #").pattern("# #").pattern("###").criterion("has_wood_slab", this.method_10420(ItemTags.WOODEN_SLABS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CHEST).input(Character.valueOf('#'), ItemTags.PLANKS).pattern("###").pattern("# #").pattern("###").criterion("has_lots_of_items", new InventoryChangedCriterion.Conditions(NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0])).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.CHEST_MINECART).input(Character.valueOf('A'), Blocks.CHEST).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", this.method_10426(Items.MINECART)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CHISELED_QUARTZ_BLOCK).input(Character.valueOf('#'), Blocks.QUARTZ_SLAB).pattern("#").pattern("#").criterion("has_chiseled_quartz_block", this.method_10426(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", this.method_10426(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", this.method_10426(Blocks.QUARTZ_PILLAR)).offerTo(consumer);

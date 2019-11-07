@@ -59,15 +59,7 @@ extends Entity {
     @Override
     @Environment(value=EnvType.CLIENT)
     public int getLightmapCoordinates() {
-        float f = 0.5f;
-        f = MathHelper.clamp(f, 0.0f, 1.0f);
-        int i = super.getLightmapCoordinates();
-        int j = i & 0xFF;
-        int k = i >> 16 & 0xFF;
-        if ((j += (int)(f * 15.0f * 16.0f)) > 240) {
-            j = 240;
-        }
-        return j | k << 16;
+        return MathHelper.clamp(super.getLightmapCoordinates() + 7, 0, 15);
     }
 
     @Override

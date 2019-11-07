@@ -24,6 +24,7 @@ import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
@@ -343,7 +344,9 @@ SynchronousResourceReloadListener {
             return;
         }
         this.method_22709(this.method_22973(camera, f, false));
-        matrixStack.peekModel().loadIdentity();
+        MatrixStack.Entry entry = matrixStack.method_23760();
+        entry.method_23761().loadIdentity();
+        entry.method_23762().loadIdentity();
         matrixStack.push();
         this.bobViewWhenHurt(matrixStack, f);
         if (this.client.options.bobView) {
@@ -352,7 +355,7 @@ SynchronousResourceReloadListener {
         boolean bl2 = bl = this.client.getCameraEntity() instanceof LivingEntity && ((LivingEntity)this.client.getCameraEntity()).isSleeping();
         if (this.client.options.perspective == 0 && !bl && !this.client.options.hudHidden && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
             this.lightmapTextureManager.enable();
-            this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers());
+            this.firstPersonRenderer.method_22976(f, matrixStack, this.buffers.getEntityVertexConsumers(), this.client.player, EntityRenderDispatcher.method_23839(this.client.player));
             this.lightmapTextureManager.disable();
         }
         matrixStack.pop();
@@ -374,13 +377,13 @@ SynchronousResourceReloadListener {
 
     public Matrix4f method_22973(Camera camera, float f, boolean bl) {
         MatrixStack matrixStack = new MatrixStack();
-        matrixStack.peekModel().loadIdentity();
+        matrixStack.method_23760().method_23761().loadIdentity();
         if (this.zoom != 1.0f) {
             matrixStack.translate(this.zoomX, -this.zoomY, 0.0);
             matrixStack.scale(this.zoom, this.zoom, 1.0f);
         }
-        matrixStack.peekModel().multiply(Matrix4f.method_4929(this.getFov(camera, f, bl), (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.viewDistance * 4.0f));
-        return matrixStack.peekModel();
+        matrixStack.method_23760().method_23761().multiply(Matrix4f.method_4929(this.getFov(camera, f, bl), (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05f, this.viewDistance * 4.0f));
+        return matrixStack.method_23760().method_23761();
     }
 
     public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -423,7 +426,6 @@ SynchronousResourceReloadListener {
                 RenderSystem.disableBlend();
                 RenderSystem.disableDepthTest();
                 RenderSystem.disableAlphaTest();
-                RenderSystem.disableFog();
                 RenderSystem.enableTexture();
                 RenderSystem.matrixMode(5890);
                 RenderSystem.pushMatrix();
@@ -441,7 +443,7 @@ SynchronousResourceReloadListener {
         RenderSystem.matrixMode(5888);
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0f, 0.0f, -2000.0f);
-        GuiLighting.enableForItems(matrixStack.peekModel());
+        GuiLighting.enableForItems(matrixStack.method_23760().method_23761());
         if (bl && this.client.world != null) {
             this.client.getProfiler().swap("gui");
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {

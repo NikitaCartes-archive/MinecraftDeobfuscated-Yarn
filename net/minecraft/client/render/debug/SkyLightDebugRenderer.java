@@ -8,8 +8,9 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -27,19 +28,18 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(long l) {
-        Camera camera = this.client.gameRenderer.getCamera();
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
         ClientWorld world = this.client.world;
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
-        BlockPos blockPos = new BlockPos(camera.getPos());
+        BlockPos blockPos = new BlockPos(d, e, f);
         LongOpenHashSet longSet = new LongOpenHashSet();
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             int i = world.getLightLevel(LightType.SKY, blockPos2);
-            float f = (float)(15 - i) / 15.0f * 0.5f + 0.16f;
-            int j = MathHelper.hsvToRgb(f, 0.9f, 0.9f);
+            float g = (float)(15 - i) / 15.0f * 0.5f + 0.16f;
+            int j = MathHelper.hsvToRgb(g, 0.9f, 0.9f);
             long m = ChunkSectionPos.fromGlobalPos(blockPos2.asLong());
             if (longSet.add(m)) {
                 DebugRenderer.drawString(((World)world).getChunkManager().getLightingProvider().method_22876(LightType.SKY, ChunkSectionPos.from(m)), ChunkSectionPos.getX(m) * 16 + 8, ChunkSectionPos.getY(m) * 16 + 8, ChunkSectionPos.getZ(m) * 16 + 8, 0xFF0000, 0.3f);

@@ -55,7 +55,7 @@ import org.jetbrains.annotations.Nullable;
 public class OverworldDimension
 extends Dimension {
     public OverworldDimension(World world, DimensionType dimensionType) {
-        super(world, dimensionType);
+        super(world, dimensionType, 0.0f);
     }
 
     @Override
@@ -180,7 +180,7 @@ extends Dimension {
     @Nullable
     public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(i, 0, j);
-        Biome biome = this.world.getBiome(mutable);
+        Biome biome = this.world.method_23753(mutable);
         BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
         if (bl && !blockState.getBlock().matches(BlockTags.VALID_SPAWN)) {
             return null;

@@ -25,16 +25,16 @@ extends FeatureRenderer<T, M> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float h, float j, float k, float l, float m) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T entity, float f, float g, float h, float j, float k, float l) {
         if (!((SkinOverlayOwner)entity).shouldRenderOverlay()) {
             return;
         }
-        float n = (float)((Entity)entity).age + h;
+        float m = (float)((Entity)entity).age + h;
         EntityModel<T> entityModel = this.getEnergySwirlModel();
         entityModel.animateModel(entity, f, g, h);
         ((EntityModel)this.getModel()).copyStateTo(entityModel);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(n), n * 0.01f));
-        entityModel.setAngles(entity, f, g, j, k, l, m);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(m), m * 0.01f));
+        entityModel.setAngles(entity, f, g, j, k, l);
         entityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f);
     }
 

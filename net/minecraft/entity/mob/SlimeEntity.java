@@ -126,10 +126,12 @@ implements Monster {
     }
 
     @Override
+    protected boolean method_23734() {
+        return this.getSize() > 0;
+    }
+
+    @Override
     public void tick() {
-        if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL && this.getSize() > 0) {
-            this.removed = true;
-        }
         this.stretch += (this.targetStretch - this.stretch) * 0.5f;
         this.lastStretch = this.stretch;
         super.tick();
@@ -281,7 +283,7 @@ implements Monster {
         }
         if (iWorld.getDifficulty() != Difficulty.PEACEFUL) {
             boolean bl;
-            Biome biome = iWorld.getBiome(blockPos);
+            Biome biome = iWorld.method_23753(blockPos);
             if (biome == Biomes.SWAMP && blockPos.getY() > 50 && blockPos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < iWorld.getMoonSize() && iWorld.getLightLevel(blockPos) <= random.nextInt(8)) {
                 return SlimeEntity.canMobSpawn(entityType, iWorld, spawnType, blockPos, random);
             }

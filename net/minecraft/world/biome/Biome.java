@@ -128,10 +128,8 @@ public abstract class Biome {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getSkyColor(float f) {
-        f /= 3.0f;
-        f = MathHelper.clamp(f, -1.0f, 1.0f);
-        return MathHelper.hsvToRgb(0.62222224f - f * 0.05f, 0.5f + f * 0.1f, 1.0f);
+    public int getSkyColor() {
+        return 8364543;
     }
 
     protected void addSpawn(EntityCategory entityCategory, SpawnEntry spawnEntry) {
@@ -262,15 +260,15 @@ public abstract class Biome {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getGrassColorAt(BlockPos blockPos) {
-        double d = MathHelper.clamp(this.getTemperature(blockPos), 0.0f, 1.0f);
-        double e = MathHelper.clamp(this.getRainfall(), 0.0f, 1.0f);
-        return GrassColors.getColor(d, e);
+    public int getGrassColorAt(double d, double e) {
+        double f = MathHelper.clamp(this.getTemperature(), 0.0f, 1.0f);
+        double g = MathHelper.clamp(this.getRainfall(), 0.0f, 1.0f);
+        return GrassColors.getColor(f, g);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getFoliageColorAt(BlockPos blockPos) {
-        double d = MathHelper.clamp(this.getTemperature(blockPos), 0.0f, 1.0f);
+    public int getFoliageColorAt() {
+        double d = MathHelper.clamp(this.getTemperature(), 0.0f, 1.0f);
         double e = MathHelper.clamp(this.getRainfall(), 0.0f, 1.0f);
         return FoliageColors.getColor(d, e);
     }

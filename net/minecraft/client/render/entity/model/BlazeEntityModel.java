@@ -38,28 +38,28 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-        int m;
-        float l = h * (float)Math.PI * -0.1f;
-        for (m = 0; m < 4; ++m) {
-            this.rods[m].pivotY = -2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
-            this.rods[m].pivotX = MathHelper.cos(l) * 9.0f;
-            this.rods[m].pivotZ = MathHelper.sin(l) * 9.0f;
-            l += 1.5707964f;
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
+        int l;
+        float k = h * (float)Math.PI * -0.1f;
+        for (l = 0; l < 4; ++l) {
+            this.rods[l].pivotY = -2.0f + MathHelper.cos(((float)(l * 2) + h) * 0.25f);
+            this.rods[l].pivotX = MathHelper.cos(k) * 9.0f;
+            this.rods[l].pivotZ = MathHelper.sin(k) * 9.0f;
+            k += 1.5707964f;
         }
-        l = 0.7853982f + h * (float)Math.PI * 0.03f;
-        for (m = 4; m < 8; ++m) {
-            this.rods[m].pivotY = 2.0f + MathHelper.cos(((float)(m * 2) + h) * 0.25f);
-            this.rods[m].pivotX = MathHelper.cos(l) * 7.0f;
-            this.rods[m].pivotZ = MathHelper.sin(l) * 7.0f;
-            l += 1.5707964f;
+        k = 0.7853982f + h * (float)Math.PI * 0.03f;
+        for (l = 4; l < 8; ++l) {
+            this.rods[l].pivotY = 2.0f + MathHelper.cos(((float)(l * 2) + h) * 0.25f);
+            this.rods[l].pivotX = MathHelper.cos(k) * 7.0f;
+            this.rods[l].pivotZ = MathHelper.sin(k) * 7.0f;
+            k += 1.5707964f;
         }
-        l = 0.47123894f + h * (float)Math.PI * -0.05f;
-        for (m = 8; m < 12; ++m) {
-            this.rods[m].pivotY = 11.0f + MathHelper.cos(((float)m * 1.5f + h) * 0.5f);
-            this.rods[m].pivotX = MathHelper.cos(l) * 5.0f;
-            this.rods[m].pivotZ = MathHelper.sin(l) * 5.0f;
-            l += 1.5707964f;
+        k = 0.47123894f + h * (float)Math.PI * -0.05f;
+        for (l = 8; l < 12; ++l) {
+            this.rods[l].pivotY = 11.0f + MathHelper.cos(((float)l * 1.5f + h) * 0.5f);
+            this.rods[l].pivotX = MathHelper.cos(k) * 5.0f;
+            this.rods[l].pivotZ = MathHelper.sin(k) * 5.0f;
+            k += 1.5707964f;
         }
         this.head.yaw = i * ((float)Math.PI / 180);
         this.head.pitch = j * ((float)Math.PI / 180);

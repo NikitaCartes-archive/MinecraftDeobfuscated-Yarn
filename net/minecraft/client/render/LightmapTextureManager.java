@@ -10,10 +10,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -24,8 +24,7 @@ implements AutoCloseable {
     private final NativeImage image;
     private final Identifier textureIdentifier;
     private boolean isDirty;
-    private float prevFlicker;
-    private float flicker;
+    private float field_21528;
     private final GameRenderer worldRenderer;
     private final MinecraftClient client;
 
@@ -49,9 +48,8 @@ implements AutoCloseable {
     }
 
     public void tick() {
-        this.flicker = (float)((double)this.flicker + (Math.random() - Math.random()) * Math.random() * Math.random());
-        this.flicker = (float)((double)this.flicker * 0.9);
-        this.prevFlicker += this.flicker - this.prevFlicker;
+        this.field_21528 = (float)((double)this.field_21528 + (Math.random() - Math.random()) * Math.random() * Math.random() * 0.1);
+        this.field_21528 = (float)((double)this.field_21528 * 0.9);
         this.isDirty = true;
     }
 
@@ -83,97 +81,81 @@ implements AutoCloseable {
         if (!this.isDirty) {
             return;
         }
+        this.isDirty = false;
         this.client.getProfiler().push("lightTex");
-        ClientWorld world = this.client.world;
-        if (world == null) {
+        ClientWorld clientWorld = this.client.world;
+        if (clientWorld == null) {
             return;
         }
-        float g = world.getAmbientLight(1.0f);
-        float h = g * 0.95f + 0.05f;
+        float g = clientWorld.method_23783(1.0f);
+        float h = clientWorld.method_23789() > 0 ? 1.0f : g * 0.95f + 0.05f;
         float i = this.client.player.method_3140();
         float j = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, f) : (i > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? i : 0.0f);
-        for (int k = 0; k < 16; ++k) {
-            for (int l = 0; l < 16; ++l) {
-                float x;
-                float m = this.method_23284(world, k) * h;
-                float n = this.method_23284(world, l) * (this.prevFlicker * 0.1f + 1.5f);
-                if (world.getTicksSinceLightning() > 0) {
-                    m = this.method_23284(world, k);
+        Vector3f vector3f = new Vector3f(g, g, 1.0f);
+        vector3f.method_23847(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);
+        float k = this.field_21528 + 1.5f;
+        Vector3f vector3f2 = new Vector3f();
+        for (int l = 0; l < 16; ++l) {
+            for (int m = 0; m < 16; ++m) {
+                float t;
+                Vector3f vector3f4;
+                float s;
+                float o;
+                float n = this.method_23284(clientWorld, l) * h;
+                float p = o = this.method_23284(clientWorld, m) * k;
+                float q = o * ((o * 0.6f + 0.4f) * 0.6f + 0.4f);
+                float r = o * (o * o * 0.6f + 0.4f);
+                vector3f2.set(p, q, r);
+                if (clientWorld.dimension.getType() == DimensionType.THE_END) {
+                    vector3f2.method_23847(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
+                } else {
+                    Vector3f vector3f3 = vector3f.method_23850();
+                    vector3f3.scale(n);
+                    vector3f2.method_23846(vector3f3);
+                    vector3f2.method_23847(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+                    if (this.worldRenderer.getSkyDarkness(f) > 0.0f) {
+                        s = this.worldRenderer.getSkyDarkness(f);
+                        vector3f4 = vector3f2.method_23850();
+                        vector3f4.method_23849(0.7f, 0.6f, 0.6f);
+                        vector3f2.method_23847(vector3f4, s);
+                    }
                 }
-                float o = m * (g * 0.65f + 0.35f);
-                float p = m * (g * 0.65f + 0.35f);
-                float q = m;
-                float r = n;
-                float s = n * ((n * 0.6f + 0.4f) * 0.6f + 0.4f);
-                float t = n * (n * n * 0.6f + 0.4f);
-                float u = o + r;
-                float v = p + s;
-                float w = q + t;
-                u = u * 0.96f + 0.03f;
-                v = v * 0.96f + 0.03f;
-                w = w * 0.96f + 0.03f;
-                if (this.worldRenderer.getSkyDarkness(f) > 0.0f) {
-                    x = this.worldRenderer.getSkyDarkness(f);
-                    u = u * (1.0f - x) + u * 0.7f * x;
-                    v = v * (1.0f - x) + v * 0.6f * x;
-                    w = w * (1.0f - x) + w * 0.6f * x;
+                vector3f2.clamp(0.0f, 1.0f);
+                if (j > 0.0f && (t = Math.max(vector3f2.getX(), Math.max(vector3f2.getY(), vector3f2.getZ()))) < 1.0f) {
+                    s = 1.0f / t;
+                    vector3f4 = vector3f2.method_23850();
+                    vector3f4.scale(s);
+                    vector3f2.method_23847(vector3f4, j);
                 }
-                if (world.dimension.getType() == DimensionType.THE_END) {
-                    u = 0.22f + r * 0.75f;
-                    v = 0.28f + s * 0.75f;
-                    w = 0.25f + t * 0.75f;
-                }
-                if (j > 0.0f) {
-                    x = Math.min(1.0f / u, Math.min(1.0f / v, 1.0f / w));
-                    u = u * (1.0f - j) + u * x * j;
-                    v = v * (1.0f - j) + v * x * j;
-                    w = w * (1.0f - j) + w * x * j;
-                }
-                u = MathHelper.clamp(u, 0.0f, 1.0f);
-                v = MathHelper.clamp(v, 0.0f, 1.0f);
-                w = MathHelper.clamp(w, 0.0f, 1.0f);
-                x = (float)this.client.options.gamma;
-                float y = 1.0f - u;
-                float z = 1.0f - v;
-                float aa = 1.0f - w;
-                y = 1.0f - y * y * y * y;
-                z = 1.0f - z * z * z * z;
-                aa = 1.0f - aa * aa * aa * aa;
-                u = u * (1.0f - x) + y * x;
-                v = v * (1.0f - x) + z * x;
-                w = w * (1.0f - x) + aa * x;
-                u = u * 0.96f + 0.03f;
-                v = v * 0.96f + 0.03f;
-                w = w * 0.96f + 0.03f;
-                u = MathHelper.clamp(u, 0.0f, 1.0f);
-                v = MathHelper.clamp(v, 0.0f, 1.0f);
-                w = MathHelper.clamp(w, 0.0f, 1.0f);
-                int ab = 255;
-                int ac = (int)(u * 255.0f);
-                int ad = (int)(v * 255.0f);
-                int ae = (int)(w * 255.0f);
-                this.image.setPixelRgba(l, k, 0xFF000000 | ae << 16 | ad << 8 | ac);
+                t = (float)this.client.options.gamma;
+                Vector3f vector3f5 = vector3f2.method_23850();
+                vector3f5.method_23848(this::method_23795);
+                vector3f2.method_23847(vector3f5, t);
+                vector3f2.method_23847(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+                vector3f2.clamp(0.0f, 1.0f);
+                vector3f2.scale(255.0f);
+                int u = 255;
+                int v = (int)vector3f2.getX();
+                int w = (int)vector3f2.getY();
+                int x = (int)vector3f2.getZ();
+                this.image.setPixelRgba(m, l, 0xFF000000 | x << 16 | w << 8 | v);
             }
         }
         this.texture.upload();
-        this.isDirty = false;
         this.client.getProfiler().pop();
     }
 
+    private float method_23795(float f) {
+        float g = 1.0f - f;
+        return 1.0f - g * g * g * g;
+    }
+
     private float method_23284(World world, int i) {
-        return world.dimension.getLightLevelToBrightness()[i];
+        return world.dimension.method_23759(i);
     }
 
     public static int method_23687(int i, int j) {
-        return i | j << 16;
-    }
-
-    public static int method_23686(int i) {
-        return i & 0xFFFF;
-    }
-
-    public static int method_23688(int i) {
-        return i >> 16 & 0xFFFF;
+        return i << 4 | j << 20;
     }
 }
 

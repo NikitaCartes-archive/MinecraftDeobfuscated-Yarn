@@ -10,10 +10,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -30,18 +31,14 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(long l) {
-        Camera camera = this.client.gameRenderer.getCamera();
-        double d = camera.getPos().x;
-        double e = camera.getPos().y;
-        double f = camera.getPos().z;
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
         World blockView = this.client.player.world;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.lineWidth(2.0f);
         RenderSystem.disableTexture();
         RenderSystem.depthMask(false);
-        BlockPos blockPos = new BlockPos(camera.getPos());
+        BlockPos blockPos = new BlockPos(d, e, f);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
             BlockState blockState = blockView.getBlockState(blockPos2);
             if (blockState.getBlock() == Blocks.AIR) continue;

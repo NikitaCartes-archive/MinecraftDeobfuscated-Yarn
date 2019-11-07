@@ -166,7 +166,6 @@ implements Drawable {
         int k = this.getScrollbarPosition();
         int l = k + 6;
         this.capYPosition();
-        RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);

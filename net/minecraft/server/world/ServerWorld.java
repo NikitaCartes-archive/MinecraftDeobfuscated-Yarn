@@ -322,6 +322,11 @@ extends World {
                 if (!this.server.shouldSpawnNpcs() && entity22 instanceof Npc) {
                     entity22.remove();
                 }
+                profiler.push("checkDespawn");
+                if (!entity22.removed) {
+                    entity22.checkDespawn();
+                }
+                profiler.pop();
                 if (entity3 != null) {
                     if (!entity3.removed && entity3.hasPassenger(entity22)) continue;
                     entity22.stopRiding();
@@ -378,14 +383,14 @@ extends World {
         if (this.random.nextInt(16) == 0) {
             blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(j, 0, k, 15));
             BlockPos blockPos2 = blockPos.method_10074();
-            Biome biome = this.getBiome(blockPos);
+            Biome biome = this.method_23753(blockPos);
             if (biome.canSetSnow(this, blockPos2)) {
                 this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
             }
             if (bl && biome.canSetIce(this, blockPos)) {
                 this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
             }
-            if (bl && this.getBiome(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
+            if (bl && this.method_23753(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
                 this.getBlockState(blockPos2).getBlock().rainTick(this, blockPos2);
             }
         }

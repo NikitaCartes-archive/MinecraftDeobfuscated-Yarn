@@ -23,18 +23,19 @@ extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
     }
 
     @Override
-    public void method_4208(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4208(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         ItemStack itemStack = ((LivingEntity)livingEntity).getMainHandStack();
         matrixStack.push();
         if (itemStack.getItem() == Items.POTION) {
-            ((WitchEntityModel)this.getModel()).getHead().rotate(matrixStack, 0.0625f);
-            ((WitchEntityModel)this.getModel()).getNose().rotate(matrixStack, 0.0625f);
-            matrixStack.translate(0.0, 0.3125, -0.125);
+            ((WitchEntityModel)this.getModel()).getHead().rotate(matrixStack);
+            ((WitchEntityModel)this.getModel()).getNose().rotate(matrixStack);
+            matrixStack.translate(0.0625, 0.25, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(180.0f));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(165.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(140.0f));
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(10.0f));
             matrixStack.translate(0.0, -0.4f, 0.4f);
         }
-        super.method_4208(matrixStack, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l, m);
+        super.method_4208(matrixStack, vertexConsumerProvider, i, livingEntity, f, g, h, j, k, l);
         matrixStack.pop();
     }
 }

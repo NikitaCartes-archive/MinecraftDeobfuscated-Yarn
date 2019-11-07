@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
@@ -51,9 +50,9 @@ extends Biome {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getGrassColorAt(BlockPos blockPos) {
-        double d = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.0225, (double)blockPos.getZ() * 0.0225, false);
-        if (d < -0.1) {
+    public int getGrassColorAt(double d, double e) {
+        double f = FOLIAGE_NOISE.sample(d * 0.0225, e * 0.0225, false);
+        if (f < -0.1) {
             return 5011004;
         }
         return 6975545;
@@ -61,7 +60,7 @@ extends Biome {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getFoliageColorAt(BlockPos blockPos) {
+    public int getFoliageColorAt() {
         return 6975545;
     }
 }

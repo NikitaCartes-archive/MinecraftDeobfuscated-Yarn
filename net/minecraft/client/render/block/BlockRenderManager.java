@@ -19,7 +19,6 @@ import net.minecraft.client.render.block.FluidRenderer;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
@@ -101,21 +100,15 @@ implements SynchronousResourceReloadListener {
         switch (blockRenderType) {
             case MODEL: {
                 BakedModel bakedModel = this.getModel(blockState);
-                matrixStack.push();
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f));
                 int k = this.blockColors.getColor(blockState, null, null, 0);
                 float f = (float)(k >> 16 & 0xFF) / 255.0f;
                 float g = (float)(k >> 8 & 0xFF) / 255.0f;
                 float h = (float)(k & 0xFF) / 255.0f;
-                this.blockModelRenderer.render(matrixStack.peekModel(), matrixStack.peekNormal(), vertexConsumerProvider.getBuffer(RenderLayers.getEntityBlockLayer(blockState)), blockState, bakedModel, f, g, h, i, j);
-                matrixStack.pop();
+                this.blockModelRenderer.render(matrixStack.method_23760(), vertexConsumerProvider.getBuffer(RenderLayers.getEntityBlockLayer(blockState)), blockState, bakedModel, f, g, h, i, j);
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {
-                matrixStack.push();
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f));
                 BuiltinModelItemRenderer.INSTANCE.render(new ItemStack(blockState.getBlock()), matrixStack, vertexConsumerProvider, i, j);
-                matrixStack.pop();
             }
         }
     }

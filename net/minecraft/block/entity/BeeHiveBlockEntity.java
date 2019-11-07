@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.BeeHiveBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
@@ -28,7 +28,6 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class BeeHiveBlockEntity
@@ -75,22 +74,13 @@ implements Tickable {
                 if (!(entity instanceof BeeEntity)) continue;
                 BeeEntity beeEntity = (BeeEntity)entity;
                 if (!(playerEntity.getPos().squaredDistanceTo(entity.getPos()) <= 16.0)) continue;
-                if (!this.isBeingSmoked(this.world, this.getPos())) {
+                if (!BeeHiveBlock.method_23755(this.world, this.getPos())) {
                     beeEntity.setBeeAttacker(playerEntity);
                     continue;
                 }
                 beeEntity.setCannotEnterHiveTicks(400);
             }
         }
-    }
-
-    private boolean isBeingSmoked(World world, BlockPos blockPos) {
-        for (int i = 1; i <= 5; ++i) {
-            BlockState blockState = world.getBlockState(blockPos.down(i));
-            if (blockState.isAir()) continue;
-            return blockState.getBlock() == Blocks.CAMPFIRE;
-        }
-        return false;
     }
 
     private List<Entity> tryReleaseBee(BlockState blockState, BeeState beeState) {
@@ -101,6 +91,10 @@ implements Tickable {
 
     public void tryEnterHive(Entity entity, boolean bl) {
         this.tryEnterHive(entity, bl, 0);
+    }
+
+    protected void method_23757() {
+        DebugRendererInfoManager.method_23856(this);
     }
 
     public void tryEnterHive(Entity entity, boolean bl, int i) {
@@ -228,6 +222,7 @@ implements Tickable {
             double f = (double)blockPos.getZ() + 0.5;
             this.world.playSound(null, d, e, f, SoundEvents.BLOCK_BEEHIVE_WORK, SoundCategory.BLOCKS, 1.0f, 1.0f);
         }
+        this.method_23757();
     }
 
     @Override

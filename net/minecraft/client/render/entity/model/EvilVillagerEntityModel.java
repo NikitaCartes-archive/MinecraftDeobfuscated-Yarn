@@ -77,9 +77,9 @@ ModelWithHead {
         return ImmutableList.of(this.field_3422, this.field_3425, this.field_3420, this.field_3418, this.field_3423, this.field_3426, this.field_3417);
     }
 
-    public void method_17094(T illagerEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17094(T illagerEntity, float f, float g, float h, float i, float j) {
         boolean bl;
-        float l;
+        float k;
         this.field_3422.yaw = i * ((float)Math.PI / 180);
         this.field_3422.pitch = j * ((float)Math.PI / 180);
         this.field_3423.pivotY = 3.0f;
@@ -114,8 +114,8 @@ ModelWithHead {
         }
         IllagerEntity.State state = ((IllagerEntity)illagerEntity).getState();
         if (state == IllagerEntity.State.ATTACKING) {
-            l = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
-            float m = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
+            k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
+            float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
             this.field_3426.roll = 0.0f;
             this.field_3417.roll = 0.0f;
             this.field_3426.yaw = 0.15707964f;
@@ -123,13 +123,13 @@ ModelWithHead {
             if (((MobEntity)illagerEntity).getMainArm() == Arm.RIGHT) {
                 this.field_3426.pitch = -1.8849558f + MathHelper.cos(h * 0.09f) * 0.15f;
                 this.field_3417.pitch = -0.0f + MathHelper.cos(h * 0.19f) * 0.5f;
-                this.field_3426.pitch += l * 2.2f - m * 0.4f;
-                this.field_3417.pitch += l * 1.2f - m * 0.4f;
+                this.field_3426.pitch += k * 2.2f - l * 0.4f;
+                this.field_3417.pitch += k * 1.2f - l * 0.4f;
             } else {
                 this.field_3426.pitch = -0.0f + MathHelper.cos(h * 0.19f) * 0.5f;
                 this.field_3417.pitch = -1.8849558f + MathHelper.cos(h * 0.09f) * 0.15f;
-                this.field_3426.pitch += l * 1.2f - m * 0.4f;
-                this.field_3417.pitch += l * 2.2f - m * 0.4f;
+                this.field_3426.pitch += k * 1.2f - l * 0.4f;
+                this.field_3417.pitch += k * 2.2f - l * 0.4f;
             }
             this.field_3426.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
             this.field_3417.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
@@ -161,9 +161,9 @@ ModelWithHead {
             this.field_3426.yaw = -0.8f;
             this.field_3426.pitch = -0.97079635f;
             this.field_3417.pitch = -0.97079635f;
-            l = MathHelper.clamp(this.field_3424, 0.0f, 25.0f);
-            this.field_3417.yaw = MathHelper.lerp(l / 25.0f, 0.4f, 0.85f);
-            this.field_3417.pitch = MathHelper.lerp(l / 25.0f, this.field_3417.pitch, -1.5707964f);
+            k = MathHelper.clamp(this.field_3424, 0.0f, 25.0f);
+            this.field_3417.yaw = MathHelper.lerp(k / 25.0f, 0.4f, 0.85f);
+            this.field_3417.pitch = MathHelper.lerp(k / 25.0f, this.field_3417.pitch, -1.5707964f);
         } else if (state == IllagerEntity.State.CELEBRATING) {
             this.field_3426.pivotZ = 0.0f;
             this.field_3426.pivotX = -5.0f;
@@ -203,8 +203,8 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
-        this.method_2813(arm).rotate(matrixStack, 0.0625f);
+    public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+        this.method_2813(arm).rotate(matrixStack);
     }
 }
 

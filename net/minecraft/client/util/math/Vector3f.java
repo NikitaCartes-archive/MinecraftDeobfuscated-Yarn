@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.util.math;
 
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Matrix3f;
@@ -28,11 +29,6 @@ public final class Vector3f {
         this.x = f;
         this.y = g;
         this.z = h;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public Vector3f(Vector3f vector3f) {
-        this(vector3f.x, vector3f.y, vector3f.z);
     }
 
     public Vector3f(Vec3d vec3d) {
@@ -83,21 +79,17 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static float clampFloat(float f, float g, float h) {
-        if (f < g) {
-            return g;
-        }
-        if (f > h) {
-            return h;
-        }
-        return f;
+    public void method_23849(float f, float g, float h) {
+        this.x *= f;
+        this.y *= g;
+        this.z *= h;
     }
 
     @Environment(value=EnvType.CLIENT)
     public void clamp(float f, float g) {
-        this.x = Vector3f.clampFloat(this.x, f, g);
-        this.y = Vector3f.clampFloat(this.y, f, g);
-        this.z = Vector3f.clampFloat(this.z, f, g);
+        this.x = MathHelper.clamp(this.x, f, g);
+        this.y = MathHelper.clamp(this.y, f, g);
+        this.z = MathHelper.clamp(this.z, f, g);
     }
 
     public void set(float f, float g, float h) {
@@ -111,6 +103,13 @@ public final class Vector3f {
         this.x += f;
         this.y += g;
         this.z += h;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void method_23846(Vector3f vector3f) {
+        this.x += vector3f.x;
+        this.y += vector3f.y;
+        this.z += vector3f.z;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -176,6 +175,14 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public void method_23847(Vector3f vector3f, float f) {
+        float g = 1.0f - f;
+        this.x = this.x * g + vector3f.x * f;
+        this.y = this.y * g + vector3f.y * f;
+        this.z = this.z * g + vector3f.z * f;
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public Quaternion method_23626(float f) {
         return new Quaternion(this, f, false);
     }
@@ -183,6 +190,18 @@ public final class Vector3f {
     @Environment(value=EnvType.CLIENT)
     public Quaternion getRotationQuaternion(float f) {
         return new Quaternion(this, f, true);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Vector3f method_23850() {
+        return new Vector3f(this.x, this.y, this.z);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void method_23848(Float2FloatFunction float2FloatFunction) {
+        this.x = float2FloatFunction.get(this.x);
+        this.y = float2FloatFunction.get(this.y);
+        this.z = float2FloatFunction.get(this.z);
     }
 }
 

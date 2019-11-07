@@ -55,11 +55,11 @@ extends QuadrupedEntityModel<T> {
         this.playAnimationProgress = ((PassiveEntity)pandaEntity).isBaby() ? 0.0f : ((PandaEntity)pandaEntity).getRollOverAnimationProgress(h);
     }
 
-    public void method_17103(T pandaEntity, float f, float g, float h, float i, float j, float k) {
-        super.setAngles(pandaEntity, f, g, h, i, j, k);
+    public void method_17103(T pandaEntity, float f, float g, float h, float i, float j) {
+        super.setAngles(pandaEntity, f, g, h, i, j);
         boolean bl = ((PandaEntity)pandaEntity).getAskForBambooTicks() > 0;
         boolean bl2 = ((PandaEntity)pandaEntity).isSneezing();
-        int l = ((PandaEntity)pandaEntity).getSneezeProgress();
+        int k = ((PandaEntity)pandaEntity).getSneezeProgress();
         boolean bl3 = ((PandaEntity)pandaEntity).isEating();
         boolean bl4 = ((PandaEntity)pandaEntity).method_6524();
         if (bl) {
@@ -71,11 +71,11 @@ extends QuadrupedEntityModel<T> {
             this.head.roll = 0.0f;
         }
         if (bl2) {
-            if (l < 15) {
-                this.head.pitch = -0.7853982f * (float)l / 14.0f;
-            } else if (l < 20) {
-                float m = (l - 15) / 5;
-                this.head.pitch = -0.7853982f + 0.7853982f * m;
+            if (k < 15) {
+                this.head.pitch = -0.7853982f * (float)k / 14.0f;
+            } else if (k < 20) {
+                float l = (k - 15) / 5;
+                this.head.pitch = -0.7853982f + 0.7853982f * l;
             }
         }
         if (this.scaredAnimationProgress > 0.0f) {

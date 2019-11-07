@@ -39,7 +39,10 @@ extends TrackTargetGoal {
                 this.target = playerEntity;
             }
         }
-        return this.target != null;
+        if (this.target == null) {
+            return false;
+        }
+        return !(this.target instanceof PlayerEntity) || !this.target.isSpectator() && !((PlayerEntity)this.target).isCreative();
     }
 
     @Override

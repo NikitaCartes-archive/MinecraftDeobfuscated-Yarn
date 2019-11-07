@@ -68,7 +68,7 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
         this.field_4658.pitch = j * ((float)Math.PI / 180);
         this.field_4658.yaw = i * ((float)Math.PI / 180);
         if (Entity.squaredHorizontalLength(((Entity)entity).getVelocity()) > 1.0E-7) {

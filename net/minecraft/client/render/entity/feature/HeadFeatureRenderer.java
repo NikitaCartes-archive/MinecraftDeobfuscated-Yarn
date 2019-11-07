@@ -37,8 +37,8 @@ extends FeatureRenderer<T, M> {
         super(featureRendererContext);
     }
 
-    public void method_17159(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
-        float n;
+    public void method_17159(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+        float m;
         boolean bl;
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.HEAD);
         if (itemStack.isEmpty()) {
@@ -48,15 +48,15 @@ extends FeatureRenderer<T, M> {
         matrixStack.push();
         boolean bl2 = bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
         if (((LivingEntity)livingEntity).isBaby() && !(livingEntity instanceof VillagerEntity)) {
-            n = 2.0f;
-            float o = 1.4f;
-            matrixStack.translate(0.0, 0.5f * m, 0.0);
+            m = 2.0f;
+            float n = 1.4f;
+            matrixStack.translate(0.0, 0.03125, 0.0);
             matrixStack.scale(0.7f, 0.7f, 0.7f);
-            matrixStack.translate(0.0, 16.0f * m, 0.0);
+            matrixStack.translate(0.0, 1.0, 0.0);
         }
-        ((ModelWithHead)this.getModel()).getHead().rotate(matrixStack, 0.0625f);
+        ((ModelWithHead)this.getModel()).getHead().rotate(matrixStack);
         if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
-            n = 1.1875f;
+            m = 1.1875f;
             matrixStack.scale(1.1875f, -1.1875f, -1.1875f);
             if (bl) {
                 matrixStack.translate(0.0, 0.0625, 0.0);
@@ -75,14 +75,14 @@ extends FeatureRenderer<T, M> {
             matrixStack.translate(-0.5, 0.0, -0.5);
             SkullBlockEntityRenderer.render(null, 180.0f, ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType(), gameProfile, f, matrixStack, vertexConsumerProvider, i);
         } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
-            n = 0.625f;
+            m = 0.625f;
             matrixStack.translate(0.0, -0.25, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
             matrixStack.scale(0.625f, -0.625f, -0.625f);
             if (bl) {
                 matrixStack.translate(0.0, 0.1875, 0.0);
             }
-            MinecraftClient.getInstance().getFirstPersonRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider);
+            MinecraftClient.getInstance().getFirstPersonRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
     }

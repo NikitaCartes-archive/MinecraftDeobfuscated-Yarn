@@ -8,7 +8,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
 import net.minecraft.world.gen.GenerationStep;
@@ -32,7 +31,7 @@ extends Biome {
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);
         DefaultBiomeFeatures.addDungeons(this);
-        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.RANDOM_SELECTOR.configure(new RandomFeatureConfig(ImmutableList.of(Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).method_23387(0.025f), Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).method_23387(0.05f), Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).method_23387(0.6666667f), Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21190).method_23387(0.1f)), Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21126))).createDecoratedFeature(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT)));
+        this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.RANDOM_SELECTOR.configure(new RandomFeatureConfig(ImmutableList.of(Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.field_21143).method_23387(0.025f), Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.field_21142).method_23387(0.05f), Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.field_21197).method_23387(0.6666667f), Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21187).method_23387(0.2f), Feature.FANCY_TREE.configure(DefaultBiomeFeatures.field_21190).method_23387(0.1f)), Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.field_21126))).createDecoratedFeature(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT)));
         DefaultBiomeFeatures.addForestFlowers(this);
         DefaultBiomeFeatures.addMineables(this);
         DefaultBiomeFeatures.addDefaultOres(this);
@@ -60,8 +59,8 @@ extends Biome {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getGrassColorAt(BlockPos blockPos) {
-        int i = super.getGrassColorAt(blockPos);
+    public int getGrassColorAt(double d, double e) {
+        int i = super.getGrassColorAt(d, e);
         return (i & 0xFEFEFE) + 2634762 >> 1;
     }
 }

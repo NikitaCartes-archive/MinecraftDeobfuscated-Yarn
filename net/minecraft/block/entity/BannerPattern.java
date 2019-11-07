@@ -84,8 +84,9 @@ public enum BannerPattern {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Identifier getSpriteId() {
-        return new Identifier("entity/banner/" + this.getName());
+    public Identifier getSpriteId(boolean bl) {
+        String string = bl ? "banner" : "shield";
+        return new Identifier("entity/" + string + "/" + this.getName());
     }
 
     @Environment(value=EnvType.CLIENT)

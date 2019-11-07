@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -36,15 +38,25 @@ public class TargetFinder {
     }
 
     @Nullable
-    public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+    public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, boolean bl) {
         Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
-        return TargetFinder.findTarget(mobEntityWithAi, i, j, vec3d2);
+        return TargetFinder.method_23737(mobEntityWithAi, i, j, vec3d2, bl);
+    }
+
+    @Nullable
+    public static Vec3d method_23735(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+        return TargetFinder.findTargetTowards(mobEntityWithAi, i, j, vec3d, true);
+    }
+
+    @Nullable
+    public static Vec3d method_23736(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d, boolean bl) {
+        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
+        return TargetFinder.method_21758(mobEntityWithAi, i, j, vec3d2, bl, d, mobEntityWithAi::getPathfindingFavor);
     }
 
     @Nullable
     public static Vec3d findTargetTowards(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
-        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
-        return TargetFinder.method_21758(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::getPathfindingFavor);
+        return TargetFinder.method_23736(mobEntityWithAi, i, j, vec3d, d, true);
     }
 
     @Nullable
@@ -70,6 +82,11 @@ public class TargetFinder {
     }
 
     @Nullable
+    private static Vec3d method_23737(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d, boolean bl) {
+        return TargetFinder.method_21758(mobEntityWithAi, i, j, vec3d, bl, 1.5707963705062866, mobEntityWithAi::getPathfindingFavor);
+    }
+
+    @Nullable
     private static Vec3d method_21758(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d, boolean bl, double d, ToDoubleFunction<BlockPos> toDoubleFunction) {
         return TargetFinder.findTarget(mobEntityWithAi, i, j, 0, vec3d, bl, d, toDoubleFunction, !bl, blockPos -> mobEntityWithAi.world.getBlockState((BlockPos)blockPos).getMaterial().isSolid(), 0, 0, true);
     }
@@ -84,6 +101,7 @@ public class TargetFinder {
         BlockPos blockPos = new BlockPos(mobEntityWithAi);
         for (int n = 0; n < 10; ++n) {
             double f;
+            PathNodeType pathNodeType;
             BlockPos blockPos3;
             BlockPos blockPos2 = TargetFinder.method_6374(random, i, j, k, vec3d, d);
             if (blockPos2 == null) continue;
@@ -100,7 +118,7 @@ public class TargetFinder {
             if (bl2) {
                 blockPos3 = TargetFinder.method_21761(blockPos3, random.nextInt(l + 1) + m, mobEntityWithAi.world.getHeight(), predicate);
             }
-            if (!bl && TargetFinder.isWater(blockPos3, mobEntityWithAi) || !((f = toDoubleFunction.applyAsDouble(blockPos3)) > e)) continue;
+            if (!bl && TargetFinder.isWater(blockPos3, mobEntityWithAi) || mobEntityWithAi.getPathfindingPenalty(pathNodeType = LandPathNodeMaker.method_23476(mobEntityWithAi.world, blockPos3.getX(), blockPos3.getY(), blockPos3.getZ())) != 0.0f || !((f = toDoubleFunction.applyAsDouble(blockPos3)) > e)) continue;
             e = f;
             blockPos = blockPos3;
             bl5 = true;

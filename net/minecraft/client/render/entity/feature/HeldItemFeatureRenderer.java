@@ -25,7 +25,7 @@ extends FeatureRenderer<T, M> {
         super(featureRendererContext);
     }
 
-    public void method_17162(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_17162(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         ItemStack itemStack2;
         boolean bl = ((LivingEntity)livingEntity).getMainArm() == Arm.RIGHT;
         ItemStack itemStack = bl ? ((LivingEntity)livingEntity).getOffHandStack() : ((LivingEntity)livingEntity).getMainHandStack();
@@ -35,26 +35,26 @@ extends FeatureRenderer<T, M> {
         }
         matrixStack.push();
         if (((EntityModel)this.getModel()).isChild) {
-            float n = 0.5f;
+            float m = 0.5f;
             matrixStack.translate(0.0, 0.75, 0.0);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
         }
-        this.renderItem((LivingEntity)livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider);
-        this.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider);
+        this.renderItem((LivingEntity)livingEntity, itemStack2, ModelTransformation.Type.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
+        this.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Type.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 
-    private void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, Arm arm, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    private void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Type type, Arm arm, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (itemStack.isEmpty()) {
             return;
         }
         matrixStack.push();
-        ((ModelWithArms)this.getModel()).setArmAngle(0.0625f, arm, matrixStack);
+        ((ModelWithArms)this.getModel()).setArmAngle(arm, matrixStack);
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;
         matrixStack.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(livingEntity, itemStack, type, bl, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

@@ -42,15 +42,15 @@ public abstract class EntityRenderer<T extends Entity> {
         return frustum.isVisible(box);
     }
 
-    public Vec3d getPositionOffset(T entity, double d, double e, double f, float g) {
+    public Vec3d getPositionOffset(T entity, float f) {
         return Vec3d.ZERO;
     }
 
-    public void render(T entity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void render(T entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (!this.hasLabel(entity)) {
             return;
         }
-        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName().asFormattedString(), matrixStack, vertexConsumerProvider);
+        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName().asFormattedString(), matrixStack, vertexConsumerProvider, i);
     }
 
     protected boolean hasLabel(T entity) {
@@ -63,14 +63,10 @@ public abstract class EntityRenderer<T extends Entity> {
         return this.renderManager.getTextRenderer();
     }
 
-    protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    protected void renderLabelIfPresent(T entity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         double d = this.renderManager.getSquaredDistanceToCamera((Entity)entity);
         if (d > 4096.0) {
             return;
-        }
-        int i = ((Entity)entity).getLightmapCoordinates();
-        if (((Entity)entity).isOnFire()) {
-            i = 0xF000F0;
         }
         boolean bl = !((Entity)entity).method_21751();
         float f = ((Entity)entity).getHeight() + 0.5f;
@@ -80,7 +76,7 @@ public abstract class EntityRenderer<T extends Entity> {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(-this.renderManager.cameraYaw));
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(this.renderManager.cameraPitch));
         matrixStack.scale(-0.025f, -0.025f, 0.025f);
-        Matrix4f matrix4f = matrixStack.peekModel();
+        Matrix4f matrix4f = matrixStack.method_23760().method_23761();
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
         int k = (int)(g * 255.0f) << 24;
         TextRenderer textRenderer = this.getFontRenderer();

@@ -96,12 +96,10 @@ extends AbstractFileResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+    public Collection<Identifier> findResources(ResourceType resourceType, String string, String string2, int i, Predicate<String> predicate) {
         File file = new File(this.base, resourceType.getDirectory());
         ArrayList<Identifier> list = Lists.newArrayList();
-        for (String string2 : this.getNamespaces(resourceType)) {
-            this.findFiles(new File(new File(file, string2), string), i, string2, list, string + "/", predicate);
-        }
+        this.findFiles(new File(new File(file, string), string2), i, string, list, string2 + "/", predicate);
         return list;
     }
 

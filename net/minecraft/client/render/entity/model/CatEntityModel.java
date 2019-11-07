@@ -68,8 +68,8 @@ extends OcelotEntityModel<T> {
         }
     }
 
-    public void method_17075(T catEntity, float f, float g, float h, float i, float j, float k) {
-        super.setAngles(catEntity, f, g, h, i, j, k);
+    public void method_17075(T catEntity, float f, float g, float h, float i, float j) {
+        super.setAngles(catEntity, f, g, h, i, j);
         if (this.sleepAnimation > 0.0f) {
             this.head.roll = ModelUtil.interpolateAngle(this.head.roll, -1.2707963f, this.sleepAnimation);
             this.head.yaw = ModelUtil.interpolateAngle(this.head.yaw, 1.2707963f, this.sleepAnimation);

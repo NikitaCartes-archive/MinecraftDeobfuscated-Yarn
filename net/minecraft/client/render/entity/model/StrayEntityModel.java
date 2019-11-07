@@ -57,20 +57,20 @@ extends BipedEntityModel<T> {
         super.method_17086(mobEntity, f, g, h);
     }
 
-    public void method_19690(T mobEntity, float f, float g, float h, float i, float j, float k) {
-        super.method_17087(mobEntity, f, g, h, i, j, k);
+    public void method_19690(T mobEntity, float f, float g, float h, float i, float j) {
+        super.method_17087(mobEntity, f, g, h, i, j);
         ItemStack itemStack = ((LivingEntity)mobEntity).getMainHandStack();
         if (((MobEntity)mobEntity).isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.BOW)) {
-            float l = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
-            float m = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
+            float k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
+            float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
             this.rightArm.roll = 0.0f;
             this.leftArm.roll = 0.0f;
-            this.rightArm.yaw = -(0.1f - l * 0.6f);
-            this.leftArm.yaw = 0.1f - l * 0.6f;
+            this.rightArm.yaw = -(0.1f - k * 0.6f);
+            this.leftArm.yaw = 0.1f - k * 0.6f;
             this.rightArm.pitch = -1.5707964f;
             this.leftArm.pitch = -1.5707964f;
-            this.rightArm.pitch -= l * 1.2f - m * 0.4f;
-            this.leftArm.pitch -= l * 1.2f - m * 0.4f;
+            this.rightArm.pitch -= k * 1.2f - l * 0.4f;
+            this.leftArm.pitch -= k * 1.2f - l * 0.4f;
             this.rightArm.roll += MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
             this.leftArm.roll -= MathHelper.cos(h * 0.09f) * 0.05f + 0.05f;
             this.rightArm.pitch += MathHelper.sin(h * 0.067f) * 0.05f;
@@ -79,12 +79,12 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void setArmAngle(float f, Arm arm, MatrixStack matrixStack) {
-        float g = arm == Arm.RIGHT ? 1.0f : -1.0f;
+    public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+        float f = arm == Arm.RIGHT ? 1.0f : -1.0f;
         ModelPart modelPart = this.getArm(arm);
-        modelPart.pivotX += g;
-        modelPart.rotate(matrixStack, f);
-        modelPart.pivotX -= g;
+        modelPart.pivotX += f;
+        modelPart.rotate(matrixStack);
+        modelPart.pivotX -= f;
     }
 }
 

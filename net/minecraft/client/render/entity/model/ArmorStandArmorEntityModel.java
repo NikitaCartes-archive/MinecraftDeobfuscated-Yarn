@@ -19,7 +19,7 @@ extends BipedEntityModel<ArmorStandEntity> {
         super(f, 0.0f, i, j);
     }
 
-    public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17066(ArmorStandEntity armorStandEntity, float f, float g, float h, float i, float j) {
         this.head.pitch = (float)Math.PI / 180 * armorStandEntity.getHeadRotation().getPitch();
         this.head.yaw = (float)Math.PI / 180 * armorStandEntity.getHeadRotation().getYaw();
         this.head.roll = (float)Math.PI / 180 * armorStandEntity.getHeadRotation().getRoll();

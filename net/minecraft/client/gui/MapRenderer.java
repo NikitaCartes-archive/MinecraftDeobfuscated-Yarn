@@ -110,7 +110,7 @@ implements AutoCloseable {
             boolean j = false;
             boolean k = false;
             float f = 0.0f;
-            Matrix4f matrix4f = matrixStack.peekModel();
+            Matrix4f matrix4f = matrixStack.method_23760().method_23761();
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getText(this.id));
             vertexConsumer.vertex(matrix4f, 0.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(i).next();
             vertexConsumer.vertex(matrix4f, 128.0f, 128.0f, -0.01f).color(255, 255, 255, 255).texture(1.0f, 1.0f).light(i).next();
@@ -129,7 +129,7 @@ implements AutoCloseable {
                 float h = (float)(b / 16 + 0) / 16.0f;
                 float m = (float)(b % 16 + 1) / 16.0f;
                 float n = (float)(b / 16 + 1) / 16.0f;
-                Matrix4f matrix4f2 = matrixStack.peekModel();
+                Matrix4f matrix4f2 = matrixStack.method_23760().method_23761();
                 float o = -0.001f;
                 VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getText(MAP_ICONS_TEXTURE));
                 vertexConsumer2.vertex(matrix4f2, -1.0f, 1.0f, (float)l * -0.001f).color(255, 255, 255, 255).texture(g, h).light(i).next();
@@ -148,7 +148,7 @@ implements AutoCloseable {
                     matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - p * q / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);
                     matrixStack.scale(q, q, 1.0f);
                     matrixStack.translate(0.0, 0.0, -0.1f);
-                    textRenderer.draw(string, 0.0f, 0.0f, -1, false, matrixStack.peekModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
+                    textRenderer.draw(string, 0.0f, 0.0f, -1, false, matrixStack.method_23760().method_23761(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
                     matrixStack.pop();
                 }
                 ++l;

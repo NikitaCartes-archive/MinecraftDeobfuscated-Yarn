@@ -25,30 +25,30 @@ extends FeatureRenderer<T, M> {
 
     protected abstract int getThingCount(T var1);
 
-    protected abstract void renderThing(MatrixStack var1, VertexConsumerProvider var2, Entity var3, float var4, float var5, float var6, float var7);
+    protected abstract void renderThing(MatrixStack var1, VertexConsumerProvider var2, int var3, Entity var4, float var5, float var6, float var7, float var8);
 
-    public void method_22132(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m) {
-        int n = this.getThingCount(livingEntity);
+    public void method_22132(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
+        int m = this.getThingCount(livingEntity);
         Random random = new Random(((Entity)livingEntity).getEntityId());
-        if (n <= 0) {
+        if (m <= 0) {
             return;
         }
-        for (int o = 0; o < n; ++o) {
+        for (int n = 0; n < m; ++n) {
             matrixStack.push();
             ModelPart modelPart = ((PlayerEntityModel)this.getModel()).getRandomPart(random);
             ModelPart.Cuboid cuboid = modelPart.getRandomCuboid(random);
-            modelPart.rotate(matrixStack, 0.0625f);
+            modelPart.rotate(matrixStack);
+            float o = random.nextFloat();
             float p = random.nextFloat();
             float q = random.nextFloat();
-            float r = random.nextFloat();
-            float s = MathHelper.lerp(p, cuboid.minX, cuboid.maxX) / 16.0f;
-            float t = MathHelper.lerp(q, cuboid.minY, cuboid.maxY) / 16.0f;
-            float u = MathHelper.lerp(r, cuboid.minZ, cuboid.maxZ) / 16.0f;
-            matrixStack.translate(s, t, u);
+            float r = MathHelper.lerp(o, cuboid.minX, cuboid.maxX) / 16.0f;
+            float s = MathHelper.lerp(p, cuboid.minY, cuboid.maxY) / 16.0f;
+            float t = MathHelper.lerp(q, cuboid.minZ, cuboid.maxZ) / 16.0f;
+            matrixStack.translate(r, s, t);
+            o = -1.0f * (o * 2.0f - 1.0f);
             p = -1.0f * (p * 2.0f - 1.0f);
             q = -1.0f * (q * 2.0f - 1.0f);
-            r = -1.0f * (r * 2.0f - 1.0f);
-            this.renderThing(matrixStack, vertexConsumerProvider, (Entity)livingEntity, p, q, r, h);
+            this.renderThing(matrixStack, vertexConsumerProvider, i, (Entity)livingEntity, o, p, q, h);
             matrixStack.pop();
         }
     }

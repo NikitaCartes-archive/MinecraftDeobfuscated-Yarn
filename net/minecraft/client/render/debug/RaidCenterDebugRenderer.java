@@ -4,13 +4,14 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(value=EnvType.CLIENT)
@@ -28,18 +29,7 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(long l) {
-        RenderSystem.pushMatrix();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
-        this.method_23124();
-        RenderSystem.enableTexture();
-        RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
-    }
-
-    private void method_23124() {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
         BlockPos blockPos = this.method_23125().getBlockPos();
         for (BlockPos blockPos2 : this.raidCenters) {
             if (!blockPos.isWithinDistance(blockPos2, 160.0)) continue;

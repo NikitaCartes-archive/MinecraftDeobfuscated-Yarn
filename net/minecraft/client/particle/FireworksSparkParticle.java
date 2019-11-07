@@ -78,9 +78,9 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
+        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
             this.setColorAlpha(0.6f - ((float)this.age + f - 1.0f) * 0.25f * 0.5f);
-            super.buildGeometry(vertexConsumer, camera, f, g, h, i, j, k);
+            super.buildGeometry(vertexConsumer, camera, f);
         }
 
         @Override
@@ -120,9 +120,9 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f, float g, float h, float i, float j, float k) {
+        public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
             if (!this.flicker || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-                super.buildGeometry(vertexConsumer, camera, f, g, h, i, j, k);
+                super.buildGeometry(vertexConsumer, camera, f);
             }
         }
 

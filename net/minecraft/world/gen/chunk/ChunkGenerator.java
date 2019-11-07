@@ -148,7 +148,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
     }
 
     public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
-        return this.world.getBiome(blockPos).getEntitySpawnList(entityCategory);
+        return this.world.method_23753(blockPos).getEntitySpawnList(entityCategory);
     }
 
     public void setStructureStarts(BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator<?> chunkGenerator, StructureManager structureManager) {

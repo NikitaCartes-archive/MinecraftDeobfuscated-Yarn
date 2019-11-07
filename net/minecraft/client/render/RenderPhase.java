@@ -68,7 +68,7 @@ public class RenderPhase {
         RenderSystem.defaultBlendFunc();
     }, () -> RenderSystem.disableBlend());
     protected static final Alpha ZERO_ALPHA = new Alpha(0.0f);
-    protected static final Alpha ONE_TENTH_ALPHA = new Alpha(0.1f);
+    protected static final Alpha ONE_TENTH_ALPHA = new Alpha(0.003921569f);
     protected static final Alpha HALF_ALPHA = new Alpha(0.5f);
     protected static final ShadeModel SHADE_MODEL = new ShadeModel(false);
     protected static final ShadeModel SMOOTH_SHADE_MODEL = new ShadeModel(true);
@@ -119,9 +119,18 @@ public class RenderPhase {
         RenderSystem.popMatrix();
         RenderSystem.matrixMode(5888);
     });
-    protected static final Fog NO_FOG = new Fog("no_fog", () -> RenderSystem.disableFog(), () -> RenderSystem.enableFog());
-    protected static final Fog FOG = new Fog("fog", () -> {}, () -> {});
-    protected static final Fog BLACK_FOG = new Fog("black_fog", () -> BackgroundRenderer.setFogBlack(true), () -> BackgroundRenderer.setFogBlack(false));
+    protected static final Fog NO_FOG = new Fog("no_fog", () -> {}, () -> {});
+    protected static final Fog FOG = new Fog("fog", () -> {
+        BackgroundRenderer.setFogBlack();
+        RenderSystem.enableFog();
+    }, () -> RenderSystem.disableFog());
+    protected static final Fog BLACK_FOG = new Fog("black_fog", () -> {
+        RenderSystem.fog(2918, 0.0f, 0.0f, 0.0f, 1.0f);
+        RenderSystem.enableFog();
+    }, () -> {
+        BackgroundRenderer.setFogBlack();
+        RenderSystem.disableFog();
+    });
     protected static final Target MAIN_TARGET = new Target("main_target", () -> {}, () -> {});
     protected static final Target OUTLINE_TARGET = new Target("outline_target", () -> MinecraftClient.getInstance().worldRenderer.method_22990().beginWrite(false), () -> MinecraftClient.getInstance().getFramebuffer().beginWrite(false));
     protected static final LineWidth FULL_LINEWIDTH = new LineWidth(1.0f);

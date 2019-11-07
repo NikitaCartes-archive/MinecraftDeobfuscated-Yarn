@@ -184,7 +184,7 @@ public class StructureTestUtil {
             BlockState[] blockStates = ((FlatChunkGeneratorConfig)chunkGeneratorConfig).getLayerBlocks();
             blockState = blockPos.getY() < i ? blockStates[blockPos.getY() - 1] : Blocks.AIR.getDefaultState();
         } else {
-            blockState = blockPos.getY() == i - 1 ? serverWorld.getBiome(blockPos).getSurfaceConfig().getTopMaterial() : (blockPos.getY() < i - 1 ? serverWorld.getBiome(blockPos).getSurfaceConfig().getUnderMaterial() : Blocks.AIR.getDefaultState());
+            blockState = blockPos.getY() == i - 1 ? serverWorld.method_23753(blockPos).getSurfaceConfig().getTopMaterial() : (blockPos.getY() < i - 1 ? serverWorld.method_23753(blockPos).getSurfaceConfig().getUnderMaterial() : Blocks.AIR.getDefaultState());
         }
         BlockStateArgument blockStateArgument = new BlockStateArgument(blockState, Collections.emptySet(), null);
         blockStateArgument.setBlockState(serverWorld, blockPos, 2);

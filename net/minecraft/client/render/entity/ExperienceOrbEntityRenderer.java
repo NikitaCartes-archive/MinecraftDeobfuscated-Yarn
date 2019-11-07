@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -29,18 +30,18 @@ extends EntityRenderer<ExperienceOrbEntity> {
         this.field_4672 = 0.75f;
     }
 
-    public void method_3966(ExperienceOrbEntity experienceOrbEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_3966(ExperienceOrbEntity experienceOrbEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        int i = experienceOrbEntity.getOrbSize();
-        float j = (float)(i % 4 * 16 + 0) / 64.0f;
-        float k = (float)(i % 4 * 16 + 16) / 64.0f;
-        float l = (float)(i / 4 * 16 + 0) / 64.0f;
-        float m = (float)(i / 4 * 16 + 16) / 64.0f;
+        int j = experienceOrbEntity.getOrbSize();
+        float h = (float)(j % 4 * 16 + 0) / 64.0f;
+        float k = (float)(j % 4 * 16 + 16) / 64.0f;
+        float l = (float)(j / 4 * 16 + 0) / 64.0f;
+        float m = (float)(j / 4 * 16 + 16) / 64.0f;
         float n = 1.0f;
         float o = 0.5f;
         float p = 0.25f;
         float q = 255.0f;
-        float r = ((float)experienceOrbEntity.renderTicks + h) / 2.0f;
+        float r = ((float)experienceOrbEntity.renderTicks + g) / 2.0f;
         int s = (int)((MathHelper.sin(r + 0.0f) + 1.0f) * 0.5f * 255.0f);
         int t = 255;
         int u = (int)((MathHelper.sin(r + 4.1887903f) + 1.0f) * 0.1f * 255.0f);
@@ -50,19 +51,20 @@ extends EntityRenderer<ExperienceOrbEntity> {
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(v));
         float w = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
-        int x = experienceOrbEntity.getLightmapCoordinates();
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(SKIN));
-        Matrix4f matrix4f = matrixStack.peekModel();
-        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, -0.5f, -0.25f, s, 255, u, j, m, x);
-        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, 0.5f, -0.25f, s, 255, u, k, m, x);
-        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, 0.5f, 0.75f, s, 255, u, k, l, x);
-        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, -0.5f, 0.75f, s, 255, u, j, l, x);
+        MatrixStack.Entry entry = matrixStack.method_23760();
+        Matrix4f matrix4f = entry.method_23761();
+        Matrix3f matrix3f = entry.method_23762();
+        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, matrix3f, -0.5f, -0.25f, s, 255, u, h, m, i);
+        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, matrix3f, 0.5f, -0.25f, s, 255, u, k, m, i);
+        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, matrix3f, 0.5f, 0.75f, s, 255, u, k, l, i);
+        ExperienceOrbEntityRenderer.method_23171(vertexConsumer, matrix4f, matrix3f, -0.5f, 0.75f, s, 255, u, h, l, i);
         matrixStack.pop();
-        super.render(experienceOrbEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(experienceOrbEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    private static void method_23171(VertexConsumer vertexConsumer, Matrix4f matrix4f, float f, float g, int i, int j, int k, float h, float l, int m) {
-        vertexConsumer.vertex(matrix4f, f, g, 0.0f).color(i, j, k, 128).texture(h, l).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+    private static void method_23171(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, float g, int i, int j, int k, float h, float l, int m) {
+        vertexConsumer.vertex(matrix4f, f, g, 0.0f).color(i, j, k, 128).texture(h, l).overlay(OverlayTexture.DEFAULT_UV).light(m).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
     public Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {

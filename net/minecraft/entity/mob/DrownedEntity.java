@@ -99,7 +99,7 @@ implements RangedAttackMob {
 
     public static boolean canSpawn(EntityType<DrownedEntity> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
         boolean bl;
-        Biome biome = iWorld.getBiome(blockPos);
+        Biome biome = iWorld.method_23753(blockPos);
         boolean bl2 = bl = iWorld.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(iWorld, blockPos, random) && (spawnType == SpawnType.SPAWNER || iWorld.getFluidState(blockPos).matches(FluidTags.WATER));
         if (biome == Biomes.RIVER || biome == Biomes.FROZEN_RIVER) {
             return random.nextInt(15) == 0 && bl;
@@ -445,7 +445,7 @@ implements RangedAttackMob {
         @Override
         public void tick() {
             if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.hasFinishedCurrentPath())) {
-                Vec3d vec3d = TargetFinder.findTargetTowards(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()));
+                Vec3d vec3d = TargetFinder.method_23735(this.drowned, 4, 8, new Vec3d(this.drowned.getX(), this.minY - 1, this.drowned.getZ()));
                 if (vec3d == null) {
                     this.foundTarget = true;
                     return;

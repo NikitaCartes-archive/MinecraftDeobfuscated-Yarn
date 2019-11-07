@@ -525,7 +525,16 @@ extends LivingEntity {
         return false;
     }
 
-    protected void checkDespawn() {
+    protected boolean method_23734() {
+        return false;
+    }
+
+    @Override
+    public void checkDespawn() {
+        if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.method_23734()) {
+            this.remove();
+            return;
+        }
         if (this.isPersistent() || this.cannotDespawn()) {
             this.despawnCounter = 0;
             return;
@@ -547,9 +556,6 @@ extends LivingEntity {
     @Override
     protected final void tickNewAi() {
         ++this.despawnCounter;
-        this.world.getProfiler().push("checkDespawn");
-        this.checkDespawn();
-        this.world.getProfiler().pop();
         this.world.getProfiler().push("sensing");
         this.visibilityCache.clear();
         this.world.getProfiler().pop();

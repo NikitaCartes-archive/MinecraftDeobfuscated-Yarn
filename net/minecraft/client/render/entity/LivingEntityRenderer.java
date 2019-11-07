@@ -57,20 +57,20 @@ implements FeatureRendererContext<T, M> {
         return this.model;
     }
 
-    public void method_4054(T livingEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_4054(T livingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         float n;
         Direction direction;
         matrixStack.push();
-        ((EntityModel)this.model).handSwingProgress = this.getHandSwingProgress(livingEntity, h);
+        ((EntityModel)this.model).handSwingProgress = this.getHandSwingProgress(livingEntity, g);
         ((EntityModel)this.model).isRiding = ((Entity)livingEntity).hasVehicle();
         ((EntityModel)this.model).isChild = ((LivingEntity)livingEntity).isBaby();
-        float i = MathHelper.lerpAngleDegrees(h, ((LivingEntity)livingEntity).prevBodyYaw, ((LivingEntity)livingEntity).bodyYaw);
-        float j = MathHelper.lerpAngleDegrees(h, ((LivingEntity)livingEntity).prevHeadYaw, ((LivingEntity)livingEntity).headYaw);
-        float k = j - i;
+        float h = MathHelper.lerpAngleDegrees(g, ((LivingEntity)livingEntity).prevBodyYaw, ((LivingEntity)livingEntity).bodyYaw);
+        float j = MathHelper.lerpAngleDegrees(g, ((LivingEntity)livingEntity).prevHeadYaw, ((LivingEntity)livingEntity).headYaw);
+        float k = j - h;
         if (((Entity)livingEntity).hasVehicle() && ((Entity)livingEntity).getVehicle() instanceof LivingEntity) {
             LivingEntity livingEntity2 = (LivingEntity)((Entity)livingEntity).getVehicle();
-            i = MathHelper.lerpAngleDegrees(h, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
-            k = j - i;
+            h = MathHelper.lerpAngleDegrees(g, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
+            k = j - h;
             float l = MathHelper.wrapDegrees(k);
             if (l < -85.0f) {
                 l = -85.0f;
@@ -78,52 +78,50 @@ implements FeatureRendererContext<T, M> {
             if (l >= 85.0f) {
                 l = 85.0f;
             }
-            i = j - l;
+            h = j - l;
             if (l * l > 2500.0f) {
-                i += l * 0.2f;
+                h += l * 0.2f;
             }
-            k = j - i;
+            k = j - h;
         }
-        float m = MathHelper.lerp(h, ((LivingEntity)livingEntity).prevPitch, ((LivingEntity)livingEntity).pitch);
+        float m = MathHelper.lerp(g, ((LivingEntity)livingEntity).prevPitch, ((LivingEntity)livingEntity).pitch);
         if (((Entity)livingEntity).getPose() == EntityPose.SLEEPING && (direction = ((LivingEntity)livingEntity).getSleepingDirection()) != null) {
             n = ((Entity)livingEntity).getEyeHeight(EntityPose.STANDING) - 0.1f;
             matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0, (float)(-direction.getOffsetZ()) * n);
         }
-        float l = this.getAge(livingEntity, h);
-        this.setupTransforms(livingEntity, matrixStack, l, i, h);
+        float l = this.getAge(livingEntity, g);
+        this.setupTransforms(livingEntity, matrixStack, l, h, g);
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        this.scale(livingEntity, matrixStack, h);
-        n = 0.0625f;
+        this.scale(livingEntity, matrixStack, g);
         matrixStack.translate(0.0, -1.501f, 0.0);
+        n = 0.0f;
         float o = 0.0f;
-        float p = 0.0f;
         if (!((Entity)livingEntity).hasVehicle() && ((LivingEntity)livingEntity).isAlive()) {
-            o = MathHelper.lerp(h, ((LivingEntity)livingEntity).lastLimbDistance, ((LivingEntity)livingEntity).limbDistance);
-            p = ((LivingEntity)livingEntity).limbAngle - ((LivingEntity)livingEntity).limbDistance * (1.0f - h);
+            n = MathHelper.lerp(g, ((LivingEntity)livingEntity).lastLimbDistance, ((LivingEntity)livingEntity).limbDistance);
+            o = ((LivingEntity)livingEntity).limbAngle - ((LivingEntity)livingEntity).limbDistance * (1.0f - g);
             if (((LivingEntity)livingEntity).isBaby()) {
-                p *= 3.0f;
+                o *= 3.0f;
             }
-            if (o > 1.0f) {
-                o = 1.0f;
+            if (n > 1.0f) {
+                n = 1.0f;
             }
         }
-        ((EntityModel)this.model).animateModel(livingEntity, p, o, h);
+        ((EntityModel)this.model).animateModel(livingEntity, o, n, g);
         boolean bl = this.method_4056(livingEntity, false);
         boolean bl2 = !bl && !((Entity)livingEntity).canSeePlayer(MinecraftClient.getInstance().player);
-        int q = ((Entity)livingEntity).getLightmapCoordinates();
-        ((EntityModel)this.model).setAngles(livingEntity, p, o, l, k, m, 0.0625f);
+        ((EntityModel)this.model).setAngles(livingEntity, o, n, l, k, m);
         if (bl || bl2) {
             Identifier identifier = this.getTexture(livingEntity);
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl2 ? RenderLayer.getEntityForceTranslucent(identifier) : ((Model)this.model).getLayer(identifier));
-            ((Model)this.model).render(matrixStack, vertexConsumer, q, LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, h)), 1.0f, 1.0f, 1.0f);
+            ((Model)this.model).render(matrixStack, vertexConsumer, i, LivingEntityRenderer.method_23622(livingEntity, this.method_23185(livingEntity, g)), 1.0f, 1.0f, 1.0f);
         }
         if (!((Entity)livingEntity).isSpectator()) {
             for (FeatureRenderer<T, M> featureRenderer : this.features) {
-                featureRenderer.render(matrixStack, vertexConsumerProvider, q, livingEntity, p, o, h, l, k, m, 0.0625f);
+                featureRenderer.render(matrixStack, vertexConsumerProvider, i, livingEntity, o, n, g, l, k, m);
             }
         }
         matrixStack.pop();
-        super.render(livingEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public static int method_23622(LivingEntity livingEntity, float f) {

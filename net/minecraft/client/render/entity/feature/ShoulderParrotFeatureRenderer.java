@@ -27,18 +27,18 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         super(featureRendererContext);
     }
 
-    public void method_4185(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, float k, float l, float m) {
-        this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, h, k, l, m, true);
-        this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, h, k, l, m, false);
+    public void method_4185(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, float k, float l) {
+        this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, k, l, true);
+        this.renderShoulderParrot(matrixStack, vertexConsumerProvider, i, playerEntity, f, g, k, l, false);
     }
 
-    private void renderShoulderParrot(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, float k, float l, boolean bl) {
+    private void renderShoulderParrot(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T playerEntity, float f, float g, float h, float j, boolean bl) {
         CompoundTag compoundTag = bl ? ((PlayerEntity)playerEntity).getShoulderEntityLeft() : ((PlayerEntity)playerEntity).getShoulderEntityRight();
         EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
             matrixStack.push();
             matrixStack.translate(bl ? (double)0.4f : (double)-0.4f, playerEntity.isInSneakingPose() ? (double)-1.3f : -1.5, 0.0);
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(ParrotEntityRenderer.SKINS[compoundTag.getInt("Variant")]));
-            this.model.method_17106(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, j, k, l, playerEntity.age);
+            this.model.method_17106(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, j, playerEntity.age);
             matrixStack.pop();
         });
     }

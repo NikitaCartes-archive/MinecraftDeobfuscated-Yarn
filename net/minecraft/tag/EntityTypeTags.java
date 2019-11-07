@@ -16,6 +16,7 @@ public class EntityTypeTags {
     public static final Tag<EntityType<?>> SKELETONS;
     public static final Tag<EntityType<?>> RAIDERS;
     public static final Tag<EntityType<?>> BEEHIVE_INHABITORS;
+    public static final Tag<EntityType<?>> ARROWS;
 
     public static void setContainer(TagContainer<EntityType<?>> tagContainer) {
         container = tagContainer;
@@ -34,6 +35,7 @@ public class EntityTypeTags {
         SKELETONS = EntityTypeTags.register("skeletons");
         RAIDERS = EntityTypeTags.register("raiders");
         BEEHIVE_INHABITORS = EntityTypeTags.register("beehive_inhabitors");
+        ARROWS = EntityTypeTags.register("arrows");
     }
 
     public static class CachingTag

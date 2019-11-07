@@ -8,10 +8,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 
 @Environment(value=EnvType.CLIENT)
 public class ChunkBorderDebugRenderer
@@ -23,23 +25,21 @@ implements DebugRenderer.Renderer {
     }
 
     @Override
-    public void render(long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, double d, double e, double f, long l) {
         int k;
+        RenderSystem.enableDepthTest();
         RenderSystem.shadeModel(7425);
         RenderSystem.enableAlphaTest();
         RenderSystem.defaultAlphaFunc();
-        Camera camera = this.client.gameRenderer.getCamera();
+        Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        double d = camera.getPos().x;
-        double e = camera.getPos().y;
-        double f = camera.getPos().z;
         double g = 0.0 - e;
         double h = 256.0 - e;
         RenderSystem.disableTexture();
         RenderSystem.disableBlend();
-        double i = (double)(camera.getFocusedEntity().chunkX << 4) - d;
-        double j = (double)(camera.getFocusedEntity().chunkZ << 4) - f;
+        double i = (double)(entity.chunkX << 4) - d;
+        double j = (double)(entity.chunkZ << 4) - f;
         RenderSystem.lineWidth(1.0f);
         bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
         for (k = -16; k <= 32; k += 16) {

@@ -39,6 +39,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -663,12 +664,12 @@ extends AnimalEntity {
             }
             if (this.turtle.getNavigation().isIdle()) {
                 Vec3d vec3d = new Vec3d(blockPos);
-                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = TargetFinder.findTargetTowards((MobEntityWithAi)this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
+                    vec3d2 = TargetFinder.method_23735(this.turtle, 8, 7, vec3d);
                 }
                 if (vec3d2 != null && !bl && this.turtle.world.getBlockState(new BlockPos(vec3d2)).getBlock() != Blocks.WATER) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 5, vec3d);
+                    vec3d2 = TargetFinder.method_23735(this.turtle, 16, 5, vec3d);
                 }
                 if (vec3d2 == null) {
                     this.noPath = true;
@@ -716,9 +717,9 @@ extends AnimalEntity {
         public void tick() {
             if (this.turtle.getNavigation().isIdle()) {
                 Vec3d vec3d = new Vec3d(this.turtle.getTravelPos());
-                Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
+                Vec3d vec3d2 = TargetFinder.findTargetTowards((MobEntityWithAi)this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
-                    vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
+                    vec3d2 = TargetFinder.method_23735(this.turtle, 8, 7, vec3d);
                 }
                 if (vec3d2 != null) {
                     int i = MathHelper.floor(vec3d2.x);

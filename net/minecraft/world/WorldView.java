@@ -3,6 +3,8 @@
  */
 package net.minecraft.world;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +20,7 @@ import net.minecraft.world.biome.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.level.ColorResolver;
 import org.jetbrains.annotations.Nullable;
 
 public interface WorldView
@@ -33,6 +36,18 @@ BiomeAccess.Storage {
     public int getTopY(Heightmap.Type var1, int var2, int var3);
 
     public int getAmbientDarkness();
+
+    public BiomeAccess getBiomeAccess();
+
+    default public Biome method_23753(BlockPos blockPos) {
+        return this.getBiomeAccess().getBiome(blockPos);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    default public int method_23752(BlockPos blockPos, ColorResolver colorResolver) {
+        return colorResolver.getColor(this.method_23753(blockPos), blockPos.getX(), blockPos.getZ());
+    }
 
     @Override
     default public Biome getStoredBiome(int i, int j, int k) {
@@ -78,8 +93,9 @@ BiomeAccess.Storage {
         return true;
     }
 
+    @Deprecated
     default public float getBrightness(BlockPos blockPos) {
-        return this.getDimension().getLightLevelToBrightness()[this.getLightLevel(blockPos)];
+        return this.getDimension().method_23759(this.getLightLevel(blockPos));
     }
 
     default public int getStrongRedstonePower(BlockPos blockPos, Direction direction) {

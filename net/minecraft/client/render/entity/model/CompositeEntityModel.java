@@ -16,7 +16,7 @@ public abstract class CompositeEntityModel<E extends Entity>
 extends EntityModel<E> {
     @Override
     public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-        this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+        this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
     }
 
     public abstract Iterable<ModelPart> getParts();

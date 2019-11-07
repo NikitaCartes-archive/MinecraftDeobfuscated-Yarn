@@ -25,18 +25,18 @@ extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4201(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, SnowGolemEntity snowGolemEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4201(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, SnowGolemEntity snowGolemEntity, float f, float g, float h, float j, float k, float l) {
         if (snowGolemEntity.isInvisible() || !snowGolemEntity.hasPumpkin()) {
             return;
         }
         matrixStack.push();
-        ((SnowmanEntityModel)this.getModel()).method_2834().rotate(matrixStack, 0.0625f);
-        float n = 0.625f;
+        ((SnowmanEntityModel)this.getModel()).method_2834().rotate(matrixStack);
+        float m = 0.625f;
         matrixStack.translate(0.0, -0.34375, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
         matrixStack.scale(0.625f, -0.625f, -0.625f);
         ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
-        MinecraftClient.getInstance().getItemRenderer().method_23177(snowGolemEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, snowGolemEntity.getLightmapCoordinates(), LivingEntityRenderer.method_23622(snowGolemEntity, 0.0f));
+        MinecraftClient.getInstance().getItemRenderer().method_23177(snowGolemEntity, itemStack, ModelTransformation.Type.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.method_23622(snowGolemEntity, 0.0f));
         matrixStack.pop();
     }
 }

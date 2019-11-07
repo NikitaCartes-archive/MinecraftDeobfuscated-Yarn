@@ -61,14 +61,14 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
+        float k = 1.0f;
         float l = 1.0f;
-        float m = 1.0f;
         if (!((Entity)entity).isInsideWater()) {
-            l = 1.3f;
-            m = 1.7f;
+            k = 1.3f;
+            l = 1.7f;
         }
-        this.field_3548.yaw = -l * 0.25f * MathHelper.sin(m * 0.6f * h);
+        this.field_3548.yaw = -k * 0.25f * MathHelper.sin(l * 0.6f * h);
     }
 }
 

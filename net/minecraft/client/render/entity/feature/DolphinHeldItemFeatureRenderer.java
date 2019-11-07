@@ -24,19 +24,19 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_17160(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, DolphinEntity dolphinEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_17160(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, DolphinEntity dolphinEntity, float f, float g, float h, float j, float k, float l) {
         boolean bl = dolphinEntity.getMainArm() == Arm.RIGHT;
         matrixStack.push();
-        float n = 1.0f;
-        float o = -1.0f;
-        float p = MathHelper.abs(dolphinEntity.pitch) / 60.0f;
+        float m = 1.0f;
+        float n = -1.0f;
+        float o = MathHelper.abs(dolphinEntity.pitch) / 60.0f;
         if (dolphinEntity.pitch < 0.0f) {
-            matrixStack.translate(0.0, 1.0f - p * 0.5f, -1.0f + p * 0.5f);
+            matrixStack.translate(0.0, 1.0f - o * 0.5f, -1.0f + o * 0.5f);
         } else {
-            matrixStack.translate(0.0, 1.0f + p * 0.8f, -1.0f + p * 0.2f);
+            matrixStack.translate(0.0, 1.0f + o * 0.8f, -1.0f + o * 0.2f);
         }
         ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(dolphinEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(dolphinEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

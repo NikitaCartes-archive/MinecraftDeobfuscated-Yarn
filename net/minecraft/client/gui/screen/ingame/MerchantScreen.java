@@ -118,7 +118,7 @@ extends AbstractContainerScreen<MerchantContainer> {
         }
         int n = 100;
         float f = 100 / (VillagerData.getUpperLevelExperience(k) - m);
-        int o = MathHelper.floor(f * (float)(l - m));
+        int o = Math.min(MathHelper.floor(f * (float)(l - m)), 100);
         MerchantScreen.blit(i + 136, j + 16, this.getBlitOffset(), 0.0f, 191.0f, o + 1, 5, 256, 512);
         int p = ((MerchantContainer)this.container).getTraderRewardedExperience();
         if (p > 0) {

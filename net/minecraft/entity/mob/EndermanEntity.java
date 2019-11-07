@@ -48,7 +48,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -330,8 +329,6 @@ extends HostileEntity {
 
         @Override
         public void tick() {
-            boolean bl;
-            Vec3d vec3d2;
             Random random = this.enderman.getRandom();
             World world = this.enderman.world;
             int i = MathHelper.floor(this.enderman.getX() - 2.0 + random.nextDouble() * 4.0);
@@ -341,8 +338,9 @@ extends HostileEntity {
             BlockState blockState = world.getBlockState(blockPos);
             Block block = blockState.getBlock();
             Vec3d vec3d = new Vec3d((double)MathHelper.floor(this.enderman.getX()) + 0.5, (double)j + 0.5, (double)MathHelper.floor(this.enderman.getZ()) + 0.5);
-            BlockHitResult blockHitResult = world.rayTrace(new RayTraceContext(vec3d, vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.enderman));
-            boolean bl2 = bl = blockHitResult.getType() != HitResult.Type.MISS && blockHitResult.getBlockPos().equals(blockPos);
+            Vec3d vec3d2 = new Vec3d((double)i + 0.5, (double)j + 0.5, (double)k + 0.5);
+            BlockHitResult blockHitResult = world.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, this.enderman));
+            boolean bl = blockHitResult.getBlockPos().equals(blockPos);
             if (block.matches(BlockTags.ENDERMAN_HOLDABLE) && bl) {
                 this.enderman.setCarriedBlock(blockState);
                 world.removeBlock(blockPos, false);
@@ -395,6 +393,7 @@ extends HostileEntity {
     static class ChasePlayerGoal
     extends Goal {
         private final EndermanEntity enderman;
+        private LivingEntity field_21513;
 
         public ChasePlayerGoal(EndermanEntity endermanEntity) {
             this.enderman = endermanEntity;
@@ -403,20 +402,25 @@ extends HostileEntity {
 
         @Override
         public boolean canStart() {
-            LivingEntity livingEntity = this.enderman.getTarget();
-            if (!(livingEntity instanceof PlayerEntity)) {
+            this.field_21513 = this.enderman.getTarget();
+            if (!(this.field_21513 instanceof PlayerEntity)) {
                 return false;
             }
-            double d = livingEntity.squaredDistanceTo(this.enderman);
+            double d = this.field_21513.squaredDistanceTo(this.enderman);
             if (d > 256.0) {
                 return false;
             }
-            return this.enderman.isPlayerStaring((PlayerEntity)livingEntity);
+            return this.enderman.isPlayerStaring((PlayerEntity)this.field_21513);
         }
 
         @Override
         public void start() {
             this.enderman.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            this.enderman.getLookControl().lookAt(this.field_21513.getX(), this.field_21513.method_23320(), this.field_21513.getZ());
         }
     }
 

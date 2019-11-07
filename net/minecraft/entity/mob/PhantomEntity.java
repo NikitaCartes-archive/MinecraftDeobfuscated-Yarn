@@ -39,7 +39,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -113,6 +112,11 @@ implements Monster {
     }
 
     @Override
+    protected boolean method_23734() {
+        return true;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (this.world.isClient) {
@@ -127,9 +131,6 @@ implements Monster {
             float k = (0.3f + f * 0.45f) * ((float)i * 0.2f + 1.0f);
             this.world.addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)h, this.getY() + (double)k, this.getZ() + (double)j, 0.0, 0.0, 0.0);
             this.world.addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)h, this.getY() + (double)k, this.getZ() - (double)j, 0.0, 0.0, 0.0);
-        }
-        if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-            this.remove();
         }
     }
 

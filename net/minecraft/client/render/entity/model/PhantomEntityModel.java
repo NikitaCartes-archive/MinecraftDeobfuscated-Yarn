@@ -71,15 +71,15 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-        float l = ((float)(((Entity)entity).getEntityId() * 3) + h) * 0.13f;
-        float m = 16.0f;
-        this.field_3477.roll = MathHelper.cos(l) * 16.0f * ((float)Math.PI / 180);
-        this.field_3476.roll = MathHelper.cos(l) * 16.0f * ((float)Math.PI / 180);
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
+        float k = ((float)(((Entity)entity).getEntityId() * 3) + h) * 0.13f;
+        float l = 16.0f;
+        this.field_3477.roll = MathHelper.cos(k) * 16.0f * ((float)Math.PI / 180);
+        this.field_3476.roll = MathHelper.cos(k) * 16.0f * ((float)Math.PI / 180);
         this.field_3474.roll = -this.field_3477.roll;
         this.field_3472.roll = -this.field_3476.roll;
-        this.field_3471.pitch = -(5.0f + MathHelper.cos(l * 2.0f) * 5.0f) * ((float)Math.PI / 180);
-        this.field_3473.pitch = -(5.0f + MathHelper.cos(l * 2.0f) * 5.0f) * ((float)Math.PI / 180);
+        this.field_3471.pitch = -(5.0f + MathHelper.cos(k * 2.0f) * 5.0f) * ((float)Math.PI / 180);
+        this.field_3473.pitch = -(5.0f + MathHelper.cos(k * 2.0f) * 5.0f) * ((float)Math.PI / 180);
     }
 }
 

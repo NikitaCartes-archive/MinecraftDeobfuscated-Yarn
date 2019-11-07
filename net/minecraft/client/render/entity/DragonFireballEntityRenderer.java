@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
@@ -26,24 +27,26 @@ extends EntityRenderer<DragonFireballEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_3906(DragonFireballEntity dragonFireballEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_3906(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.scale(2.0f, 2.0f, 2.0f);
-        float i = 1.0f;
-        float j = 0.5f;
-        float k = 0.25f;
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f - this.renderManager.cameraYaw));
-        float l = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
-        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
-        Matrix4f matrix4f = matrixStack.peekModel();
+        float h = (float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch;
+        matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(h));
+        MatrixStack.Entry entry = matrixStack.method_23760();
+        Matrix4f matrix4f = entry.method_23761();
+        Matrix3f matrix3f = entry.method_23762();
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCull(SKIN));
-        int m = dragonFireballEntity.getLightmapCoordinates();
-        vertexConsumer.vertex(matrix4f, -0.5f, -0.25f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, -0.25f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 1.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, 0.5f, 0.75f, 0.0f).color(255, 255, 255, 255).texture(1.0f, 0.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
-        vertexConsumer.vertex(matrix4f, -0.5f, 0.75f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 0.0f).overlay(OverlayTexture.DEFAULT_UV).light(m).normal(0.0f, 1.0f, 0.0f).next();
+        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
+        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
+        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
+        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0);
         matrixStack.pop();
-        super.render(dragonFireballEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(dragonFireballEntity, f, g, matrixStack, vertexConsumerProvider, i);
+    }
+
+    private static void method_23837(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, int i, float f, int j, int k, int l) {
+        vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.25f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).method_23763(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
     public Identifier method_3905(DragonFireballEntity dragonFireballEntity) {

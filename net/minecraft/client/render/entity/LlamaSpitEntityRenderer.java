@@ -27,17 +27,16 @@ extends EntityRenderer<LlamaSpitEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4061(LlamaSpitEntity llamaSpitEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_4061(LlamaSpitEntity llamaSpitEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.translate(0.0, 0.15f, 0.0);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(h, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch)));
-        int i = llamaSpitEntity.getLightmapCoordinates();
-        this.model.setAngles(llamaSpitEntity, h, 0.0f, -0.1f, 0.0f, 0.0f, 0.0625f);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(MathHelper.lerp(g, llamaSpitEntity.prevYaw, llamaSpitEntity.yaw) - 90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(MathHelper.lerp(g, llamaSpitEntity.prevPitch, llamaSpitEntity.pitch)));
+        this.model.setAngles(llamaSpitEntity, g, 0.0f, -0.1f, 0.0f, 0.0f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
-        super.render(llamaSpitEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(llamaSpitEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public Identifier method_4062(LlamaSpitEntity llamaSpitEntity) {

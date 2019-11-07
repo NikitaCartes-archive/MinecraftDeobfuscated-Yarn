@@ -89,7 +89,7 @@ extends ChunkManager {
     }
 
     @Nullable
-    public WorldChunk loadChunkFromPacket(World world, int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k) {
+    public WorldChunk loadChunkFromPacket(int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k) {
         if (!this.chunks.isInRadius(i, j)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)i, (Object)j);
             return null;
@@ -101,7 +101,7 @@ extends ChunkManager {
                 LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", (Object)i, (Object)j);
                 return null;
             }
-            worldChunk = new WorldChunk(world, new ChunkPos(i, j), biomeArray);
+            worldChunk = new WorldChunk(this.world, new ChunkPos(i, j), biomeArray);
             worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
             this.chunks.set(l, worldChunk);
         } else {
@@ -114,6 +114,7 @@ extends ChunkManager {
             ChunkSection chunkSection = chunkSections[m];
             lightingProvider.updateSectionStatus(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
         }
+        this.world.method_23782(i, j);
         return worldChunk;
     }
 

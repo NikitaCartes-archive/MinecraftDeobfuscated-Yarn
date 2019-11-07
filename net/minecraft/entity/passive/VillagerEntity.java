@@ -607,14 +607,14 @@ VillagerDataContainer {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
         if (spawnType == SpawnType.COMMAND || spawnType == SpawnType.SPAWN_EGG || spawnType == SpawnType.SPAWNER || spawnType == SpawnType.DISPENSER) {
-            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.getBiome(new BlockPos(this)))));
+            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.method_23753(new BlockPos(this)))));
         }
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 
     public VillagerEntity method_7225(PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
-        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.getBiome(new BlockPos(this))) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
+        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.method_23753(new BlockPos(this))) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
         villagerEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.BREEDING, null, null);
         return villagerEntity;

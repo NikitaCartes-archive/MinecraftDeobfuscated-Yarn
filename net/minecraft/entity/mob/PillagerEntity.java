@@ -140,7 +140,7 @@ RangedAttackMob {
         if (this.isAttacking()) {
             return IllagerEntity.State.ATTACKING;
         }
-        return IllagerEntity.State.CROSSED;
+        return IllagerEntity.State.NEUTRAL;
     }
 
     @Override

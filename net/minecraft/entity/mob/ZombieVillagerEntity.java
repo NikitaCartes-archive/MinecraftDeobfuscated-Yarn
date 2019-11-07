@@ -12,9 +12,11 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.datafixers.NbtOps;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -172,6 +174,17 @@ implements VillagerDataContainer {
     private void finishConversion(ServerWorld serverWorld) {
         PlayerEntity playerEntity;
         VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
+        for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+            ItemStack itemStack = this.getEquippedStack(equipmentSlot);
+            if (itemStack.isEmpty()) continue;
+            if (EnchantmentHelper.hasBindingCurse(itemStack)) {
+                villagerEntity.equip(equipmentSlot.getEntitySlotId() + 300, itemStack);
+                continue;
+            }
+            double d = this.getDropChance(equipmentSlot);
+            if (!(d > 1.0)) continue;
+            this.dropStack(itemStack);
+        }
         villagerEntity.copyPositionAndRotation(this);
         villagerEntity.setVillagerData(this.getVillagerData());
         if (this.field_20299 != null) {
@@ -269,7 +282,7 @@ implements VillagerDataContainer {
     @Override
     @Nullable
     public EntityData initialize(IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag) {
-        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.getBiome(new BlockPos(this)))));
+        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.method_23753(new BlockPos(this)))));
         return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
     }
 

@@ -75,7 +75,7 @@ extends CompositeEntityModel<ParrotEntity> {
         return ImmutableList.of(this.field_3458, this.field_3459, this.field_3455, this.field_3460, this.field_3452, this.field_3450, this.field_3457);
     }
 
-    public void method_17112(ParrotEntity parrotEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_17112(ParrotEntity parrotEntity, float f, float g, float h, float i, float j) {
         this.method_17111(ParrotEntityModel.getPose(parrotEntity), parrotEntity.age, f, g, h, i, j);
     }
 
@@ -83,10 +83,10 @@ extends CompositeEntityModel<ParrotEntity> {
         this.method_17110(ParrotEntityModel.getPose(parrotEntity));
     }
 
-    public void method_17106(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k, float l, int m) {
+    public void method_17106(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k, int l) {
         this.method_17110(Pose.ON_SHOULDER);
-        this.method_17111(Pose.ON_SHOULDER, m, f, g, 0.0f, h, k);
-        this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, l, i, j, null));
+        this.method_17111(Pose.ON_SHOULDER, l, f, g, 0.0f, h, k);
+        this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null));
     }
 
     private void method_17111(Pose pose, int i, float f, float g, float h, float j, float k) {

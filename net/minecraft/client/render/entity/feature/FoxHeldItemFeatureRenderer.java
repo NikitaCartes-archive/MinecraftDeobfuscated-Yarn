@@ -24,19 +24,19 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_18335(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, FoxEntity foxEntity, float f, float g, float h, float j, float k, float l, float m) {
-        float n;
+    public void method_18335(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, FoxEntity foxEntity, float f, float g, float h, float j, float k, float l) {
+        float m;
         boolean bl = foxEntity.isSleeping();
         boolean bl2 = foxEntity.isBaby();
         matrixStack.push();
         if (bl2) {
-            n = 0.75f;
+            m = 0.75f;
             matrixStack.scale(0.75f, 0.75f, 0.75f);
-            matrixStack.translate(0.0, 8.0f * m, 3.35f * m);
+            matrixStack.translate(0.0, 0.5, 0.209375f);
         }
         matrixStack.translate(((FoxEntityModel)this.getModel()).head.pivotX / 16.0f, ((FoxEntityModel)this.getModel()).head.pivotY / 16.0f, ((FoxEntityModel)this.getModel()).head.pivotZ / 16.0f);
-        n = foxEntity.getHeadRoll(h);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.method_23626(n));
+        m = foxEntity.getHeadRoll(h);
+        matrixStack.multiply(Vector3f.POSITIVE_Z.method_23626(m));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(k));
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(l));
         if (foxEntity.isBaby()) {
@@ -55,7 +55,7 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
             matrixStack.multiply(Vector3f.POSITIVE_Z.getRotationQuaternion(90.0f));
         }
         ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider);
+        MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Type.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

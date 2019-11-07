@@ -23,7 +23,7 @@ extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         super(featureRendererContext);
     }
 
-    public void method_4179(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, EndermanEntity endermanEntity, float f, float g, float h, float j, float k, float l, float m) {
+    public void method_4179(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, EndermanEntity endermanEntity, float f, float g, float h, float j, float k, float l) {
         BlockState blockState = endermanEntity.getCarriedBlock();
         if (blockState == null) {
             return;
@@ -33,8 +33,9 @@ extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         matrixStack.multiply(Vector3f.POSITIVE_X.getRotationQuaternion(20.0f));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(45.0f));
         matrixStack.translate(0.25, 0.1875, 0.25);
-        float n = 0.5f;
+        float m = 0.5f;
         matrixStack.scale(-0.5f, -0.5f, 0.5f);
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getRotationQuaternion(90.0f));
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }

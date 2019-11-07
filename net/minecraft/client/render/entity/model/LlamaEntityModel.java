@@ -70,7 +70,7 @@ extends EntityModel<T> {
         this.field_20940.pivotZ -= 1.0f;
     }
 
-    public void method_22962(T abstractDonkeyEntity, float f, float g, float h, float i, float j, float k) {
+    public void method_22962(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
         boolean bl;
         this.field_20935.pitch = j * ((float)Math.PI / 180);
         this.field_20935.yaw = i * ((float)Math.PI / 180);
@@ -91,21 +91,21 @@ extends EntityModel<T> {
             float l = 0.7f;
             matrixStack.scale(0.71428573f, 0.64935064f, 0.7936508f);
             matrixStack.translate(0.0, 1.3125, 0.22f);
-            this.field_20935.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h);
+            this.field_20935.render(matrixStack, vertexConsumer, i, j, null, f, g, h);
             matrixStack.pop();
             matrixStack.push();
             float m = 1.1f;
             matrixStack.scale(0.625f, 0.45454544f, 0.45454544f);
             matrixStack.translate(0.0, 2.0625, 0.0);
-            this.field_20936.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h);
+            this.field_20936.render(matrixStack, vertexConsumer, i, j, null, f, g, h);
             matrixStack.pop();
             matrixStack.push();
             matrixStack.scale(0.45454544f, 0.41322312f, 0.45454544f);
             matrixStack.translate(0.0, 2.0625, 0.0);
-            ImmutableList.of(this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            ImmutableList.of(this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
             matrixStack.pop();
         } else {
-            ImmutableList.of(this.field_20935, this.field_20936, this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h));
+            ImmutableList.of(this.field_20935, this.field_20936, this.field_20937, this.field_20938, this.field_20939, this.field_20940, this.field_3430, this.field_3429).forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j, null, f, g, h));
         }
     }
 }

@@ -30,7 +30,7 @@ extends EntityRenderer<FallingBlockEntity> {
         this.field_4673 = 0.5f;
     }
 
-    public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_3965(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         BlockState blockState = fallingBlockEntity.getBlockState();
         if (blockState.getRenderType() != BlockRenderType.MODEL) {
             return;
@@ -45,7 +45,7 @@ extends EntityRenderer<FallingBlockEntity> {
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
         blockRenderManager.getModelRenderer().render(world, blockRenderManager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.getBlockLayer(blockState)), false, new Random(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()), OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
-        super.render(fallingBlockEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(fallingBlockEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public Identifier method_3964(FallingBlockEntity fallingBlockEntity) {

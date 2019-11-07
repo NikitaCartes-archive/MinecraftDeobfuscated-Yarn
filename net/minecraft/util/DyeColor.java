@@ -65,11 +65,6 @@ public enum DyeColor implements StringIdentifiable
         return this.name;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public int getColorSwapped() {
-        return this.colorSwapped;
-    }
-
     public float[] getColorComponents() {
         return this.colorComponents;
     }

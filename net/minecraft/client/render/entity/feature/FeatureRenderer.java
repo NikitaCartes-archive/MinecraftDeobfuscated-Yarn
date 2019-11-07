@@ -24,12 +24,12 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
         this.context = featureRendererContext;
     }
 
-    protected static <T extends LivingEntity> void render(EntityModel<T> entityModel, EntityModel<T> entityModel2, Identifier identifier, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m, float n, float o, float p) {
+    protected static <T extends LivingEntity> void render(EntityModel<T> entityModel, EntityModel<T> entityModel2, Identifier identifier, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, float m, float n, float o) {
         if (!livingEntity.isInvisible()) {
             entityModel.copyStateTo(entityModel2);
-            entityModel2.animateModel(livingEntity, f, g, m);
-            entityModel2.setAngles(livingEntity, f, g, h, j, k, l);
-            FeatureRenderer.renderModel(entityModel2, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, n, o, p);
+            entityModel2.animateModel(livingEntity, f, g, l);
+            entityModel2.setAngles(livingEntity, f, g, h, j, k);
+            FeatureRenderer.renderModel(entityModel2, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, m, n, o);
         }
     }
 
@@ -46,6 +46,6 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
         return this.context.getTexture(entity);
     }
 
-    public abstract void render(MatrixStack var1, VertexConsumerProvider var2, int var3, T var4, float var5, float var6, float var7, float var8, float var9, float var10, float var11);
+    public abstract void render(MatrixStack var1, VertexConsumerProvider var2, int var3, T var4, float var5, float var6, float var7, float var8, float var9, float var10);
 }
 

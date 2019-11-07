@@ -38,7 +38,7 @@ extends Model {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h) {
-        this.field_3593.render(matrixStack, vertexConsumer, 0.0625f, i, j, null, f, g, h);
+        this.field_3593.render(matrixStack, vertexConsumer, i, j, null, f, g, h);
     }
 }
 

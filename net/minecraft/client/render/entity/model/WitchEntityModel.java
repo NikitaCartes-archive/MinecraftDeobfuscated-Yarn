@@ -50,13 +50,13 @@ extends VillagerResemblingModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-        super.setAngles(entity, f, g, h, i, j, k);
+    public void setAngles(T entity, float f, float g, float h, float i, float j) {
+        super.setAngles(entity, f, g, h, i, j);
         this.nose.setPivot(0.0f, -2.0f, 0.0f);
-        float l = 0.01f * (float)(((Entity)entity).getEntityId() % 10);
-        this.nose.pitch = MathHelper.sin((float)((Entity)entity).age * l) * 4.5f * ((float)Math.PI / 180);
+        float k = 0.01f * (float)(((Entity)entity).getEntityId() % 10);
+        this.nose.pitch = MathHelper.sin((float)((Entity)entity).age * k) * 4.5f * ((float)Math.PI / 180);
         this.nose.yaw = 0.0f;
-        this.nose.roll = MathHelper.cos((float)((Entity)entity).age * l) * 2.5f * ((float)Math.PI / 180);
+        this.nose.roll = MathHelper.cos((float)((Entity)entity).age * k) * 2.5f * ((float)Math.PI / 180);
         if (this.liftingNose) {
             this.nose.setPivot(0.0f, 1.0f, -1.5f);
             this.nose.pitch = -0.9f;

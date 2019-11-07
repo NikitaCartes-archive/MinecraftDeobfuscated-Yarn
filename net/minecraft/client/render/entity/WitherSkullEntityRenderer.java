@@ -27,17 +27,16 @@ extends EntityRenderer<WitherSkullEntity> {
         super(entityRenderDispatcher);
     }
 
-    public void method_4159(WitherSkullEntity witherSkullEntity, double d, double e, double f, float g, float h, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider) {
+    public void method_4159(WitherSkullEntity witherSkullEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        float i = MathHelper.method_22859(witherSkullEntity.prevYaw, witherSkullEntity.yaw, h);
-        float j = MathHelper.lerp(h, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
-        int k = witherSkullEntity.getLightmapCoordinates();
+        float h = MathHelper.method_22859(witherSkullEntity.prevYaw, witherSkullEntity.yaw, g);
+        float j = MathHelper.lerp(g, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.method_4160(witherSkullEntity)));
-        this.model.render(0.0f, i, j);
-        this.model.render(matrixStack, vertexConsumer, k, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
+        this.model.render(0.0f, h, j);
+        this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
-        super.render(witherSkullEntity, d, e, f, g, h, matrixStack, vertexConsumerProvider);
+        super.render(witherSkullEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public Identifier method_4160(WitherSkullEntity witherSkullEntity) {

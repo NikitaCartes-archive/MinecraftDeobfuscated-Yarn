@@ -43,11 +43,14 @@ public class MatrixStack {
         if (f == g && g == h) {
             return;
         }
-        float i = MathHelper.fastInverseCbrt(f * g * h);
+        float i = 1.0f / f;
+        float j = 1.0f / g;
+        float k = 1.0f / h;
+        float l = MathHelper.fastInverseCbrt(i * j * k);
         Matrix3f matrix3f = new Matrix3f();
-        matrix3f.set(0, 0, i / f);
-        matrix3f.set(1, 1, i / g);
-        matrix3f.set(2, 2, i / h);
+        matrix3f.set(0, 0, l * i);
+        matrix3f.set(1, 1, l * j);
+        matrix3f.set(2, 2, l * k);
         entry.normalMatrix.multiply(matrix3f);
     }
 
@@ -66,12 +69,8 @@ public class MatrixStack {
         this.stack.removeLast();
     }
 
-    public Matrix4f peekModel() {
-        return this.stack.getLast().modelMatrix;
-    }
-
-    public Matrix3f peekNormal() {
-        return this.stack.getLast().normalMatrix;
+    public Entry method_23760() {
+        return this.stack.getLast();
     }
 
     public boolean isEmpty() {
@@ -79,13 +78,21 @@ public class MatrixStack {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static final class Entry {
+    public static final class Entry {
         private final Matrix4f modelMatrix;
         private final Matrix3f normalMatrix;
 
         private Entry(Matrix4f matrix4f, Matrix3f matrix3f) {
             this.modelMatrix = matrix4f;
             this.normalMatrix = matrix3f;
+        }
+
+        public Matrix4f method_23761() {
+            return this.modelMatrix;
+        }
+
+        public Matrix3f method_23762() {
+            return this.normalMatrix;
         }
     }
 }

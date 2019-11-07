@@ -34,26 +34,26 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         super(blockEntityRenderDispatcher);
     }
 
-    public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
+    public void method_3576(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         World world = pistonBlockEntity.getWorld();
         if (world == null) {
             return;
         }
         BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.getMovementDirection().getOpposite());
         BlockState blockState = pistonBlockEntity.getPushedBlock();
-        if (blockState.isAir() || pistonBlockEntity.getProgress(g) >= 1.0f) {
+        if (blockState.isAir() || pistonBlockEntity.getProgress(f) >= 1.0f) {
             return;
         }
         BlockModelRenderer.enableBrightnessCache();
         matrixStack.push();
-        matrixStack.translate(pistonBlockEntity.getRenderOffsetX(g), pistonBlockEntity.getRenderOffsetY(g), pistonBlockEntity.getRenderOffsetZ(g));
-        if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(g) <= 4.0f) {
+        matrixStack.translate(pistonBlockEntity.getRenderOffsetX(f), pistonBlockEntity.getRenderOffsetY(f), pistonBlockEntity.getRenderOffsetZ(f));
+        if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(f) <= 4.0f) {
             blockState = (BlockState)blockState.with(PistonHeadBlock.SHORT, true);
             this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
         } else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
             PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;
             BlockState blockState2 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.TYPE, pistonType)).with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
-            blockState2 = (BlockState)blockState2.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(g) >= 0.5f);
+            blockState2 = (BlockState)blockState2.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(f) >= 0.5f);
             this.method_3575(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
             BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());
             matrixStack.pop();

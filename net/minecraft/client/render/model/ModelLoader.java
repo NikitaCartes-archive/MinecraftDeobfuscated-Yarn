@@ -88,6 +88,8 @@ public class ModelLoader {
     public static final Identifier field_20845 = new Identifier("entity/shulker/shulker");
     public static final List<Identifier> field_20846 = ImmutableList.of(new Identifier("entity/shulker/shulker_white"), new Identifier("entity/shulker/shulker_orange"), new Identifier("entity/shulker/shulker_magenta"), new Identifier("entity/shulker/shulker_light_blue"), new Identifier("entity/shulker/shulker_yellow"), new Identifier("entity/shulker/shulker_lime"), new Identifier("entity/shulker/shulker_pink"), new Identifier("entity/shulker/shulker_gray"), new Identifier("entity/shulker/shulker_light_gray"), new Identifier("entity/shulker/shulker_cyan"), new Identifier("entity/shulker/shulker_purple"), new Identifier("entity/shulker/shulker_blue"), new Identifier[]{new Identifier("entity/shulker/shulker_brown"), new Identifier("entity/shulker/shulker_green"), new Identifier("entity/shulker/shulker_red"), new Identifier("entity/shulker/shulker_black")});
     public static final Identifier field_20847 = new Identifier("entity/banner_base");
+    public static final Identifier field_21557 = new Identifier("entity/shield_base");
+    public static final Identifier field_21558 = new Identifier("entity/shield_base_nopattern");
     public static final Identifier field_21014 = new Identifier("entity/signs/oak");
     public static final Identifier field_21015 = new Identifier("entity/signs/spruce");
     public static final Identifier field_21016 = new Identifier("entity/signs/birch");
@@ -124,8 +126,11 @@ public class ModelLoader {
         hashSet.add(field_20845);
         hashSet.addAll(field_20846);
         hashSet.add(field_20847);
+        hashSet.add(field_21557);
+        hashSet.add(field_21558);
         for (BannerPattern bannerPattern : BannerPattern.values()) {
-            hashSet.add(bannerPattern.getSpriteId());
+            hashSet.add(bannerPattern.getSpriteId(true));
+            hashSet.add(bannerPattern.getSpriteId(false));
         }
         hashSet.add(field_21014);
         hashSet.add(field_21015);

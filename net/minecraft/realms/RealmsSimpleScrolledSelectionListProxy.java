@@ -73,7 +73,6 @@ extends ListWidget {
         int k = this.getScrollbarPosition();
         int l = k + 6;
         this.capYPosition();
-        RenderSystem.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         int m = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;

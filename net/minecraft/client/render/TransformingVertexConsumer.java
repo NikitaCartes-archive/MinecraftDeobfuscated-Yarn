@@ -9,6 +9,7 @@ import net.minecraft.client.render.FixedColorVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
@@ -33,12 +34,12 @@ extends FixedColorVertexConsumer {
     private float normalY;
     private float normalZ;
 
-    public TransformingVertexConsumer(VertexConsumer vertexConsumer, Matrix4f matrix4f) {
+    public TransformingVertexConsumer(VertexConsumer vertexConsumer, MatrixStack.Entry entry) {
         this.vertexConsumer = vertexConsumer;
-        this.textureMatrix = matrix4f.copy();
+        this.textureMatrix = entry.method_23761().copy();
         this.textureMatrix.invert();
-        this.normalMatrix = new Matrix3f(matrix4f);
-        this.normalMatrix.transpose();
+        this.normalMatrix = entry.method_23762().copy();
+        this.normalMatrix.method_23732();
         this.init();
     }
 
@@ -60,30 +61,17 @@ extends FixedColorVertexConsumer {
 
     @Override
     public void next() {
-        float g;
-        float f;
         Vector3f vector3f = new Vector3f(this.normalX, this.normalY, this.normalZ);
         vector3f.multiply(this.normalMatrix);
         Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ());
         Vector4f vector4f = new Vector4f(this.x, this.y, this.z, 1.0f);
         vector4f.multiply(this.textureMatrix);
-        switch (direction.getAxis()) {
-            case X: {
-                f = vector4f.getZ();
-                g = vector4f.getY();
-                break;
-            }
-            case Y: {
-                f = vector4f.getX();
-                g = vector4f.getZ();
-                break;
-            }
-            default: {
-                f = vector4f.getX();
-                g = vector4f.getY();
-            }
-        }
-        this.vertexConsumer.vertex(this.x, this.y, this.z).color(this.red, this.green, this.blue, this.alpha).texture(f, -g).overlay(this.u1, this.v1).light(this.light).normal(this.normalX, this.normalY, this.normalZ).next();
+        vector4f.method_23852(Vector3f.POSITIVE_Y.getRotationQuaternion(180.0f));
+        vector4f.method_23852(Vector3f.POSITIVE_X.getRotationQuaternion(-90.0f));
+        vector4f.method_23852(direction.getRotationQuaternion());
+        float f = -vector4f.getX();
+        float g = -vector4f.getY();
+        this.vertexConsumer.vertex(this.x, this.y, this.z).color(this.red, this.green, this.blue, this.alpha).texture(f, g).overlay(this.u1, this.v1).light(this.light).normal(this.normalX, this.normalY, this.normalZ).next();
         this.init();
     }
 

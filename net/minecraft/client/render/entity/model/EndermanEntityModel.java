@@ -41,11 +41,11 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
-        float n;
-        super.method_17087(livingEntity, f, g, h, i, j, k);
+    public void method_17087(T livingEntity, float f, float g, float h, float i, float j) {
+        float m;
+        super.method_17087(livingEntity, f, g, h, i, j);
         this.head.visible = true;
-        float l = -14.0f;
+        float k = -14.0f;
         this.body.pitch = 0.0f;
         this.body.pivotY = -14.0f;
         this.body.pivotZ = -0.0f;
@@ -55,7 +55,7 @@ extends BipedEntityModel<T> {
         this.leftArm.pitch = (float)((double)this.leftArm.pitch * 0.5);
         this.rightLeg.pitch = (float)((double)this.rightLeg.pitch * 0.5);
         this.leftLeg.pitch = (float)((double)this.leftLeg.pitch * 0.5);
-        float m = 0.4f;
+        float l = 0.4f;
         if (this.rightArm.pitch > 0.4f) {
             this.rightArm.pitch = 0.4f;
         }
@@ -101,10 +101,10 @@ extends BipedEntityModel<T> {
         this.headwear.yaw = this.head.yaw;
         this.headwear.roll = this.head.roll;
         if (this.angry) {
-            n = 1.0f;
+            m = 1.0f;
             this.head.pivotY -= 5.0f;
         }
-        n = -14.0f;
+        m = -14.0f;
         this.rightArm.setPivot(-5.0f, -12.0f, 0.0f);
         this.leftArm.setPivot(5.0f, -12.0f, 0.0f);
     }

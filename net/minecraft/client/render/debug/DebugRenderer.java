@@ -8,11 +8,13 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4703;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.BlockOutlineDebugRenderer;
@@ -32,6 +34,7 @@ import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.WaterDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
@@ -42,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class DebugRenderer {
-    public final PathfindingDebugRenderer pathfindingDebugRenderer;
+    public final PathfindingDebugRenderer pathfindingDebugRenderer = new PathfindingDebugRenderer();
     public final Renderer waterDebugRenderer;
     public final Renderer chunkBorderDebugRenderer;
     public final Renderer heightmapDebugRenderer;
@@ -55,25 +58,26 @@ public class DebugRenderer {
     public final Renderer blockOutlineDebugRenderer;
     public final Renderer chunkLoadingDebugRenderer;
     public final VillageDebugRenderer villageDebugRenderer;
+    public final class_4703 field_21547;
     public final RaidCenterDebugRenderer raidCenterDebugRenderer;
     public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
     public final GameTestDebugRenderer gameTestDebugRenderer;
     private boolean showChunkBorder;
 
     public DebugRenderer(MinecraftClient minecraftClient) {
-        this.pathfindingDebugRenderer = new PathfindingDebugRenderer(minecraftClient);
         this.waterDebugRenderer = new WaterDebugRenderer(minecraftClient);
         this.chunkBorderDebugRenderer = new ChunkBorderDebugRenderer(minecraftClient);
         this.heightmapDebugRenderer = new HeightmapDebugRenderer(minecraftClient);
         this.collisionDebugRenderer = new CollisionDebugRenderer(minecraftClient);
         this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(minecraftClient);
-        this.caveDebugRenderer = new CaveDebugRenderer(minecraftClient);
+        this.caveDebugRenderer = new CaveDebugRenderer();
         this.structureDebugRenderer = new StructureDebugRenderer(minecraftClient);
         this.skyLightDebugRenderer = new SkyLightDebugRenderer(minecraftClient);
-        this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer(minecraftClient);
+        this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer();
         this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(minecraftClient);
         this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(minecraftClient);
         this.villageDebugRenderer = new VillageDebugRenderer(minecraftClient);
+        this.field_21547 = new class_4703(minecraftClient);
         this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(minecraftClient);
         this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
         this.gameTestDebugRenderer = new GameTestDebugRenderer();
@@ -93,6 +97,7 @@ public class DebugRenderer {
         this.blockOutlineDebugRenderer.clear();
         this.chunkLoadingDebugRenderer.clear();
         this.villageDebugRenderer.clear();
+        this.field_21547.clear();
         this.raidCenterDebugRenderer.clear();
         this.goalSelectorDebugRenderer.clear();
         this.gameTestDebugRenderer.clear();
@@ -103,11 +108,11 @@ public class DebugRenderer {
         return this.showChunkBorder;
     }
 
-    public void render(long l) {
+    public void render(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, double d, double e, double f, long l) {
         if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-            this.chunkBorderDebugRenderer.render(l);
+            this.chunkBorderDebugRenderer.render(matrixStack, immediate, d, e, f, l);
         }
-        this.gameTestDebugRenderer.render(l);
+        this.gameTestDebugRenderer.render(matrixStack, immediate, d, e, f, l);
     }
 
     public static Optional<Entity> getTargettedEntity(@Nullable Entity entity2, int i) {
@@ -208,7 +213,7 @@ public class DebugRenderer {
 
     @Environment(value=EnvType.CLIENT)
     public static interface Renderer {
-        public void render(long var1);
+        public void render(MatrixStack var1, VertexConsumerProvider var2, double var3, double var5, double var7, long var9);
 
         default public void clear() {
         }

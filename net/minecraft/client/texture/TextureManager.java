@@ -6,6 +6,7 @@ package net.minecraft.client.texture;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.realmsclient.RealmsMainScreen;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -143,6 +144,7 @@ ResourceReloadListener {
     public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2) {
         return ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             MissingSprite.getMissingSpriteTexture();
+            RealmsMainScreen.method_23765(this.resourceContainer);
             Iterator<Map.Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<Identifier, AbstractTexture> entry = iterator.next();

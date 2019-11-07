@@ -15,7 +15,6 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
@@ -25,16 +24,15 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class RenderLayer
 extends RenderPhase {
-    private static final RenderLayer SOLID = new MultiPhase("solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 0x200000, true, false, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(false));
-    private static final RenderLayer CUTOUT_MIPPED = new MultiPhase("cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 131072, true, false, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).alpha(HALF_ALPHA).build(false));
-    private static final RenderLayer CUTOUT = new MultiPhase("cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 131072, true, false, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(BLOCK_ATLAS_TEXTURE).alpha(HALF_ALPHA).build(false));
-    private static final RenderLayer TRANSLUCENT = new MultiPhase("translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).transparency(TRANSLUCENT_TRANSPARENCY).build(false));
+    private static final RenderLayer SOLID = new MultiPhase("solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 0x200000, true, false, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true));
+    private static final RenderLayer CUTOUT_MIPPED = new MultiPhase("cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 131072, true, false, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).alpha(HALF_ALPHA).build(true));
+    private static final RenderLayer CUTOUT = new MultiPhase("cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 131072, true, false, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(BLOCK_ATLAS_TEXTURE).alpha(HALF_ALPHA).build(true));
+    private static final RenderLayer TRANSLUCENT = new MultiPhase("translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 262144, true, true, MultiPhaseData.builder().shadeModel(SMOOTH_SHADE_MODEL).lightmap(ENABLE_LIGHTMAP).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).transparency(TRANSLUCENT_TRANSPARENCY).build(true));
     private static final RenderLayer TRANSLUCENT_NO_CRUMBLING = new RenderLayer("translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, false, true, TRANSLUCENT::startDrawing, TRANSLUCENT::endDrawing);
     private static final RenderLayer LEASH = new MultiPhase("leash", VertexFormats.POSITION_COLOR_LIGHT, 7, 256, MultiPhaseData.builder().texture(NO_TEXTURE).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).build(false));
     private static final RenderLayer WATER_MASK = new MultiPhase("water_mask", VertexFormats.POSITION, 7, 256, MultiPhaseData.builder().texture(NO_TEXTURE).writeMaskState(DEPTH_MASK).build(false));
     private static final RenderLayer GLINT = new MultiPhase("glint", VertexFormats.POSITION_TEXTURE, 7, 256, MultiPhaseData.builder().texture(new RenderPhase.Texture(ItemRenderer.field_21010, false, false)).writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(GLINT_TEXTURING).build(false));
     private static final RenderLayer ENTITY_GLINT = new MultiPhase("entity_glint", VertexFormats.POSITION_TEXTURE, 7, 256, MultiPhaseData.builder().texture(new RenderPhase.Texture(ItemRenderer.field_21010, false, false)).writeMaskState(COLOR_MASK).cull(DISABLE_CULLING).depthTest(EQUAL_DEPTH_TEST).transparency(GLINT_TRANSPARENCY).texturing(ENTITY_GLINT_TEXTURING).build(false));
-    private static final RenderLayer BEACON_BEAM = new MultiPhase("beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, false, true, MultiPhaseData.builder().texture(new RenderPhase.Texture(BeaconBlockEntityRenderer.BEAM_TEX, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).writeMaskState(COLOR_MASK).fog(NO_FOG).build(false));
     private static final RenderLayer LIGHTNING = new MultiPhase("lightning", VertexFormats.POSITION_COLOR, 7, 256, false, true, MultiPhaseData.builder().writeMaskState(COLOR_MASK).transparency(LIGHTNING_TRANSPARENCY).shadeModel(SMOOTH_SHADE_MODEL).build(false));
     private final VertexFormat vertexFormat;
     private final int drawMode;
@@ -97,13 +95,18 @@ extends RenderPhase {
         return new MultiPhase("entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, multiPhaseData);
     }
 
+    public static RenderLayer getBeaconBeam(Identifier identifier, boolean bl) {
+        MultiPhaseData multiPhaseData = MultiPhaseData.builder().texture(new RenderPhase.Texture(identifier, false, false)).transparency(bl ? TRANSLUCENT_TRANSPARENCY : NO_TRANSPARENCY).writeMaskState(bl ? COLOR_MASK : ALL_MASK).fog(NO_FOG).build(false);
+        return new MultiPhase("beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, false, true, multiPhaseData);
+    }
+
     public static RenderLayer getEntityDecal(Identifier identifier) {
         MultiPhaseData multiPhaseData = MultiPhaseData.builder().texture(new RenderPhase.Texture(identifier, false, false)).diffuseLighting(ENABLE_DIFFUSE_LIGHTING).alpha(ONE_TENTH_ALPHA).depthTest(EQUAL_DEPTH_TEST).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);
         return new MultiPhase("entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, multiPhaseData);
     }
 
     public static RenderLayer getEntityNoOutline(Identifier identifier) {
-        MultiPhaseData multiPhaseData = MultiPhaseData.builder().texture(new RenderPhase.Texture(identifier, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(ENABLE_DIFFUSE_LIGHTING).alpha(ONE_TENTH_ALPHA).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(false);
+        MultiPhaseData multiPhaseData = MultiPhaseData.builder().texture(new RenderPhase.Texture(identifier, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(ENABLE_DIFFUSE_LIGHTING).alpha(ONE_TENTH_ALPHA).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).writeMaskState(COLOR_MASK).build(false);
         return new MultiPhase("entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, false, true, multiPhaseData);
     }
 
@@ -154,10 +157,6 @@ extends RenderPhase {
         return new MultiPhase("text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT, 7, 256, false, true, MultiPhaseData.builder().texture(new RenderPhase.Texture(identifier, false, false)).alpha(ONE_TENTH_ALPHA).transparency(TRANSLUCENT_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).depthTest(ALWAYS_DEPTH_TEST).writeMaskState(COLOR_MASK).build(false));
     }
 
-    public static RenderLayer getBeaconBeam() {
-        return BEACON_BEAM;
-    }
-
     public static RenderLayer getLightning() {
         return LIGHTNING;
     }
@@ -188,9 +187,12 @@ extends RenderPhase {
         this.field_21402 = bl2;
     }
 
-    public void draw(BufferBuilder bufferBuilder) {
+    public void draw(BufferBuilder bufferBuilder, int i, int j, int k) {
         if (!bufferBuilder.isBuilding()) {
             return;
+        }
+        if (this.field_21402) {
+            bufferBuilder.sortQuads(i, j, k);
         }
         bufferBuilder.end();
         this.startDrawing();

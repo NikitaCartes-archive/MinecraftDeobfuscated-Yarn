@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BeeHiveBlockEntity;
@@ -49,6 +50,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -123,19 +125,36 @@ extends BlockWithEntity {
             }
         }
         if (bl) {
-            this.emptyHoney(world, blockState, blockPos, playerEntity2, BeeHiveBlockEntity.BeeState.EMERGENCY);
+            if (!BeeHiveBlock.method_23755(world, blockPos)) {
+                this.emptyHoney(world, blockState, blockPos, playerEntity2, BeeHiveBlockEntity.BeeState.EMERGENCY);
+            } else {
+                this.method_23754(world, blockState, blockPos);
+            }
             return ActionResult.SUCCESS;
         }
         return super.onUse(blockState, world, blockPos, playerEntity2, hand, blockHitResult);
     }
 
+    public static boolean method_23755(World world, BlockPos blockPos) {
+        for (int i = 1; i <= 5; ++i) {
+            BlockState blockState = world.getBlockState(blockPos.down(i));
+            if (blockState.isAir()) continue;
+            return blockState.getBlock() == Blocks.CAMPFIRE;
+        }
+        return false;
+    }
+
     public void emptyHoney(World world, BlockState blockState, BlockPos blockPos, @Nullable PlayerEntity playerEntity, BeeHiveBlockEntity.BeeState beeState) {
-        world.setBlockState(blockPos, (BlockState)blockState.with(HONEY_LEVEL, 0), 3);
+        this.method_23754(world, blockState, blockPos);
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         if (blockEntity instanceof BeeHiveBlockEntity) {
             BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;
             beeHiveBlockEntity.angerBees(playerEntity, blockState, beeState);
         }
+    }
+
+    public void method_23754(World world, BlockState blockState, BlockPos blockPos) {
+        world.setBlockState(blockPos, (BlockState)blockState.with(HONEY_LEVEL, 0), 3);
     }
 
     @Override
@@ -205,7 +224,7 @@ extends BlockWithEntity {
     @Override
     public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
         BlockEntity blockEntity;
-        if (!world.isClient && playerEntity.isCreative() && (blockEntity = world.getBlockEntity(blockPos)) instanceof BeeHiveBlockEntity) {
+        if (!world.isClient && playerEntity.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && (blockEntity = world.getBlockEntity(blockPos)) instanceof BeeHiveBlockEntity) {
             CompoundTag compoundTag;
             ItemStack itemStack = new ItemStack(this);
             BeeHiveBlockEntity beeHiveBlockEntity = (BeeHiveBlockEntity)blockEntity;

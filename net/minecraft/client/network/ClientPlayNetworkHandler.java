@@ -39,6 +39,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.class_4703;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
@@ -665,7 +666,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(chunkDataS2CPacket, this, this.client);
         int i = chunkDataS2CPacket.getX();
         int j = chunkDataS2CPacket.getZ();
-        WorldChunk worldChunk = this.world.method_2935().loadChunkFromPacket(this.world, i, j, chunkDataS2CPacket.method_22422(), chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask());
+        WorldChunk worldChunk = this.world.method_2935().loadChunkFromPacket(i, j, chunkDataS2CPacket.method_22422(), chunkDataS2CPacket.getReadBuffer(), chunkDataS2CPacket.getHeightmaps(), chunkDataS2CPacket.getVerticalStripBitmask());
         if (worldChunk != null && chunkDataS2CPacket.isFullChunk()) {
             this.world.addEntitiesToChunk(worldChunk);
         }
@@ -1716,14 +1717,38 @@ implements ClientPlayPacketListener {
                     brain.field_19375.add(string9);
                 }
                 this.client.debugRenderer.villageDebugRenderer.addBrain(brain);
+            } else if (CustomPayloadS2CPacket.field_21559.equals(identifier)) {
+                double d = packetByteBuf.readDouble();
+                double e = packetByteBuf.readDouble();
+                double g = packetByteBuf.readDouble();
+                PositionImpl position = new PositionImpl(d, e, g);
+                UUID uUID = packetByteBuf.readUuid();
+                int o = packetByteBuf.readInt();
+                BlockPos blockPos4 = packetByteBuf.readBlockPos();
+                BlockPos blockPos5 = packetByteBuf.readBlockPos();
+                boolean bl4 = packetByteBuf.readBoolean();
+                Path path3 = bl4 ? Path.fromBuffer(packetByteBuf) : null;
+                class_4703.class_4704 lv = new class_4703.class_4704(uUID, o, position, path3, blockPos4, blockPos5);
+                int w = packetByteBuf.readInt();
+                for (int x = 0; x < w; ++x) {
+                    String string10 = packetByteBuf.readString();
+                    lv.field_21542.add(string10);
+                }
+                this.client.debugRenderer.field_21547.method_23805(lv);
+            } else if (CustomPayloadS2CPacket.field_21560.equals(identifier)) {
+                BlockPos blockPos2 = packetByteBuf.readBlockPos();
+                String string = packetByteBuf.readString();
+                int m = packetByteBuf.readInt();
+                class_4703.class_4705 lv2 = new class_4703.class_4705(blockPos2, string, m, this.world.getTime());
+                this.client.debugRenderer.field_21547.method_23807(lv2);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
                 this.client.debugRenderer.gameTestDebugRenderer.clear();
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_ADD_MARKER.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 int j = packetByteBuf.readInt();
-                String string10 = packetByteBuf.readString();
-                int w = packetByteBuf.readInt();
-                this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string10, w);
+                String string11 = packetByteBuf.readString();
+                int y = packetByteBuf.readInt();
+                this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, y);
             } else {
                 LOGGER.warn("Unknown custom packed identifier: {}", (Object)identifier);
             }

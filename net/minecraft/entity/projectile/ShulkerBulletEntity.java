@@ -211,12 +211,15 @@ extends Entity {
     }
 
     @Override
+    public void checkDespawn() {
+        if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
+            this.remove();
+        }
+    }
+
+    @Override
     public void tick() {
         Vec3d vec3d;
-        if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-            this.remove();
-            return;
-        }
         super.tick();
         if (!this.world.isClient) {
             List<LivingEntity> list;
@@ -298,7 +301,7 @@ extends Entity {
     @Override
     @Environment(value=EnvType.CLIENT)
     public int getLightmapCoordinates() {
-        return 0xF000F0;
+        return 15;
     }
 
     protected void onHit(HitResult hitResult) {

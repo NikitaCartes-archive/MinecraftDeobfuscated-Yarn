@@ -134,8 +134,8 @@ extends AnimalModel<T> {
         return ImmutableList.of(this.body, this.frontLeftLeg, this.frontRightLeg, this.rearLeftLeg, this.rearRightLeg);
     }
 
-    public void method_18332(T foxEntity, float f, float g, float h, float i, float j, float k) {
-        float l;
+    public void method_18332(T foxEntity, float f, float g, float h, float i, float j) {
+        float k;
         if (!(((FoxEntity)foxEntity).isSleeping() || ((FoxEntity)foxEntity).isWalking() || ((FoxEntity)foxEntity).isInSneakingPose())) {
             this.head.pitch = j * ((float)Math.PI / 180);
             this.head.yaw = i * ((float)Math.PI / 180);
@@ -146,14 +146,14 @@ extends AnimalModel<T> {
             this.head.roll = MathHelper.cos(h * 0.027f) / 22.0f;
         }
         if (((FoxEntity)foxEntity).isInSneakingPose()) {
-            this.body.yaw = l = MathHelper.cos(h) * 0.01f;
-            this.frontLeftLeg.roll = l;
-            this.frontRightLeg.roll = l;
-            this.rearLeftLeg.roll = l / 2.0f;
-            this.rearRightLeg.roll = l / 2.0f;
+            this.body.yaw = k = MathHelper.cos(h) * 0.01f;
+            this.frontLeftLeg.roll = k;
+            this.frontRightLeg.roll = k;
+            this.rearLeftLeg.roll = k / 2.0f;
+            this.rearRightLeg.roll = k / 2.0f;
         }
         if (((FoxEntity)foxEntity).isWalking()) {
-            l = 0.1f;
+            k = 0.1f;
             this.field_18025 += 0.67f;
             this.frontLeftLeg.pitch = MathHelper.cos(this.field_18025 * 0.4662f) * 0.1f;
             this.frontRightLeg.pitch = MathHelper.cos(this.field_18025 * 0.4662f + (float)Math.PI) * 0.1f;

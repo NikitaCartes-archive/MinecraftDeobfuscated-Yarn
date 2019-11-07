@@ -435,14 +435,18 @@ RangedAttackMob {
     }
 
     @Override
-    protected void checkDespawn() {
+    public void checkDespawn() {
+        if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.method_23734()) {
+            this.remove();
+            return;
+        }
         this.despawnCounter = 0;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public int getLightmapCoordinates() {
-        return 0xF000F0;
+        return 15;
     }
 
     @Override
